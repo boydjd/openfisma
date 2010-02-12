@@ -1,6 +1,6 @@
 IrIncidentActor:
     columns:
-        incident_id: 
+        incidentId: 
             type: integer
-        user_id: 
+        userId: 
             type: integer

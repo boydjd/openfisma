@@ -103,7 +103,7 @@ class PanelController extends SecurityController
     public function incidentAction()
     {
         $req = $this->getRequest();
-        $sub = $req->getParam('sub', 'searchbox');
+        $sub = $req->getParam('sub');
         $this->_helper->actionStack($sub, 'Incident');
         $this->_helper->actionStack('header');
     }

@@ -1,10 +1,30 @@
 IrWorkflowDef:
+    listeners: [XssListener]
+    
     columns:
         id: 
             type: integer
             primary: true
             autoincrement: true
+        createdTs: 
+            type: timestamp
+        modifiedTs: 
+            type: timestamp
         name: 
             type: string(255)
         description: 
             type: string(1000) 
+            extra: 
+                purify: html
+
+    actAs:
+        SoftDelete:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
+
+

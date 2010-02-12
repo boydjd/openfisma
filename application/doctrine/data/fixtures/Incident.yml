@@ -1,0 +1,20 @@
+Incident:
+    new1:
+        additionalInfo: Incident with New status #1
+        status: new 
+    new2:
+        additionalInfo: Incident with New status #2
+        status: new 
+    new3:
+        additionalInfo: Incident with New status #3
+        status: new 
+    new4:
+        additionalInfo: Incident with New status #4
+        status: new 
+    new5:
+        additionalInfo: Incident with New status #5
+        status: new 
+    new6:
+        additionalInfo: Incident with New status #6
+        status: new 
+

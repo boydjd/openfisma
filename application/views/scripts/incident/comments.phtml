@@ -1,0 +1,14 @@
+<?php 
+
+foreach($this->comments as $comment) {
+    print "<p><b>{$comment['createdTs']}</b> - {$comment['comment']}</p><hr />";
+}
+
+?>
+
+<h1>Add Comment:</h1>
+<form action="#" onsubmit="addcomment(); return false;" id="commentForm">
+    <input type="hidden" id="id" name="id" value="<?php print $this->id; ?>">
+    <textarea name="comments" id="comments" rows="10" cols="60"></textarea><br />
+    <input type="submit" value="Add Comment" />
+</form>

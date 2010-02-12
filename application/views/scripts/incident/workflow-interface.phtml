@@ -1,0 +1,45 @@
+<div id="workflow-interface-content" class="yui-navset">
+    <ul class="yui-nav">
+        <?php
+            foreach ($this->incident as $key => $incident) {
+                if($key == 0 ) {
+                    print "<li><a href='#tab$key'><em>Open Incident</em></a></li>";        
+                } elseif ($incident['status'] == 'current') {
+                    print "<li class='selected'><a href='#tab$key'><em>Step #$key</em></a></li>";        
+                } elseif ($key < (count($this->incident) - 1)) {
+                    print "<li><a href='#tab$key'><em>Step #$key</em></a></li>";        
+                }
+            }
+        ?>
+    </ul>            
+    <div class="yui-content">
+        <?php
+            foreach ($this->incident as $key => $incident) {
+                if($key == 0 ) {
+                    print "<div><p><b>Incident Opened: </b>{$incident['completeTs']}<br /><br /><b>Comments: </b>{$incident['comments']}</p></div>";        
+                } elseif ($key < (count($this->incident) -1)) {
+                    print "<div><p><b>Workflow Step:</b>{$incident['name']}</p>";
+                    if ($incident['description']) {
+                        print "<p><b>Description:</b>{$incident['description']}</p>";
+                    }                
+
+                    if ($incident['status'] == 'current') {
+                    ?>
+                        <form action="#" onsubmit="completestep(); return false;" id="stepForm">
+                            <input type="hidden" name="id" id="id" value="<?php print $this->id; ?>" />
+                            <input type="hidden" name="step_id" id="step_id" value="<?php print $incident['id']; ?>" />
+
+                            <b>Comments:</b><br />
+                            <textarea name="comments" id="comments" rows="10" cols="60"></textarea><br />
+                            <input type="submit" value="Step Completed" />
+                        </form>
+                    <?php
+                    } elseif ($incident['status'] == 'completed') {
+                        print "<br /><br /><b>Comments: </b>{$incident['comments']}</p><br /><br />";
+                    }
+                    print "</div>";        
+                }
+            }
+        ?>
+    </div>
+</div>

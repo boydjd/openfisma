@@ -4,9 +4,9 @@ IrHistory:
             type: integer
             primary: true
             autoincrement: true
-        incident_id: 
+        incidentId: 
             type: integer
-        user_id: 
+        userId: 
             type: integer
         createdTs: 
             type: timestamp

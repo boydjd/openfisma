@@ -1,124 +1,137 @@
 Incident:
+    listeners: [XssListener]
+    
     columns:
         id: 
             type: integer
             primary: true
             autoincrement: true
 
-        reporter_first_name: 
+        reporterFirstName: 
             type: string(255)
-        reporter_last_name: 
+        reporterLastName: 
             type: string(255)
-        reporter_title: 
+        reporterTitle: 
             type: string(255)
-        reporter_organization: 
-            type: string(255)
-
-        reporter_address1: 
-            type: string(255)
-        reporter_address2: 
-            type: string(255)
-        reporter_city: 
-            type: string(255)
-        reporter_state: 
-            type: string(255)
-        reporter_zip: 
+        reporterOrganization: 
             type: string(255)
 
-        reporter_phone: 
+        reporterAddress1: 
             type: string(255)
-        reporter_fax: 
+        reporterAddress2: 
             type: string(255)
-        reporter_email: 
+        reporterCity: 
+            type: string(255)
+        reporterState: 
+            type: string(255)
+        reporterZip: 
+            type: string(255)
+
+        reporterPhone: 
+            type: string(255)
+        reporterFax: 
+            type: string(255)
+        reporterEmail: 
             type: string(255)
         
-        location_building: 
+        locationBuilding: 
             type: string(255)
-        location_room: 
+        locationRoom: 
             type: string(255)
-        location_rack: 
+        locationRack: 
             type: string(255)
 
-        incident_ts: 
+        incidentTs: 
             type: timestamp
-        incident_tz: 
+        incidentTz: 
             type: enum
-            values: [EST, CST, MTN, PST]
+            values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
         
-        report_ts: 
+        reportTs: 
             type: timestamp
-        report_tz: 
+        reportTz: 
             type: enum
-            values: [EST, CST, MTN, PST]
+            values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
 
         classification:
             type: integer(8)
             unsigned: true
             
-        additional_info:
+        additionalInfo:
             type: string(1000) 
+            extra: 
+                purify: html
 
 
-        pii_involved:
+        piiInvolved:
             boolean
-        pii_additional:
+        piiAdditional:
             type: string(1000) 
-        pii_mobile_media:
+        piiMobileMedia:
             boolean
-        pii_modile_media_type:
+        piiModileMediaType:
             type: enum
             values: [laptop, disc, document, usb, tape, other]
-        pii_encrypted:
+        piiEncrypted:
             type: boolean
-        pii_authorities_contacted:
+        piiAuthoritiesContacted:
             type: boolean
-        pii_police_report:
+        piiPoliceReport:
             type: boolean
-        pii_individuals_count:
+        piiIndividualsCount:
             type: int(10)
-        pii_individuals_notification:
+        piiIndividualsNotification:
             type: boolean
-        pii_shipment:
+        piiShipment:
             type: boolean
-        pii_shipment_sender_contact:
+        piiShipmentSenderContact:
             type: string(255)
-        pii_shipment_sender_company:
+        piiShipmentSenderCompany:
             type: string(255)
-        pii_shipment_timeline:
+        piiShipmentTimeline:
             type: string(255)
-        pii_shipment_tracking_numbers:
+        piiShipmentTrackingNumbers:
             type: string(255)
 
-        host_ip:
+        hostIp:
             type: string(255)
-        host_name:
+        hostName:
             type: string(255)
-        host_os:
+        hostOs:
             type: enum
-            values: [2007, vista, xp, macos, linux, unix]
-        host_additional:
+            values: [win7, vista, xp, macos, linux, unix]
+        hostAdditional:
             type: string(1000)
+            extra: 
+                purify: html
         
-        source_ip:
+        sourceIp:
             type: string(255)
-        source_additional:
+        sourceAdditional:
             type: string(1000)
+            extra: 
+                purify: html
         
-        assessment_critical:
+        assessmentCritical:
             type: boolean
-        assessment_sensitivity:
+        assessmentSensitivity:
             type: enum
             values: [low, medium, high]
         
-        actions_taken:
+        actionsTaken:
             type: string(1000)
+            extra: 
+                purify: html
         
         files:
             type: string(255)
         
-        oig_id:
+        oigId:
             type: int(10)
 
+        status:
+            type: enum
+            values: [new, open, resolved, rejected, closed]
 
 
 

@@ -1,0 +1,15 @@
+<?php Fisma_Format_Section::startSection("Incident Information"); ?>
+
+<?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<b>$key</b>: $val<br /><br />";} } ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection("Incident History"); ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection("Close Incident"); ?>
+
+<?php echo $this->form; ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>

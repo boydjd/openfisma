@@ -1,0 +1,63 @@
+<div id="foo" style="width: 48%; float: left;">
+<?php Fisma_Format_Section::startSection("Incident Information"); ?>
+
+<?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<b>$key</b>: $val<br /><br />";} } ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+</div>
+
+<div id="foo" style="width: 48%; float: right;">
+<?php Fisma_Format_Section::startSection("Actors/Observers"); ?>
+
+<div id="actors">Loading...</div>
+
+<script type="text/javascript">
+
+var callback = {
+        success: function(o) {
+            document.getElementById('actors').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Actors/Observers");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/actor/id/1', callback, null);
+
+//this funciton will be called by onclick events defined in actors.phtml
+function callAJAX(url) {
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
+}
+
+//this funciton will be called by submitting the add actor form defined in actors.phtml
+function addActor() {
+    var id = document.getElementById('actor_incident_id').value; 
+    var userid = document.getElementById('actor_userid').value;
+    
+    var url = '/incident/actoradd/id/' + id  + '/userid/' + userid ;
+
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
+}
+
+//this funciton will be called by submitting the add observer form defined in actors.phtml
+function addObserver() {
+    var id = document.getElementById('observer_incident_id').value; 
+    var userid = document.getElementById('observer_userid').value;
+    
+    var url = '/incident/observeradd/id/' + id  + '/userid/' + userid ;
+
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
+}
+
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+</div>
+
+<div class="clear"></div>
+
+<?php Fisma_Format_Section::startSection("Classify/Reject Incident"); ?>
+
+<?php echo $this->form; ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>

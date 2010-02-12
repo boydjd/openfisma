@@ -279,8 +279,105 @@ Privilege:
         action: finding
         description: Finding Notifications
 
-    # Account Audit Logs
-    account_log_read:
-        resource: account_log
+    # Incident
+    incident_read:
+        resource: incident
         action: read
-        description: Account Audit Logs
+        description: View Incident
+        orgSpecific: false
+    incident_reject:
+        resource: incident
+        action: reject
+        description: Reject Incident
+        orgSpecific: false
+    incident_classify:
+        resource: incident
+        action: classify
+        description: Classify Incident
+        orgSpecific: false
+    incident_resolve:
+        resource: incident
+        action: resolve
+        description: Resolve Incident
+        orgSpecific: false
+    incident_close:
+        resource: incident
+        action: close
+        description: Close Incident
+        orgSpecific: false
+    incident_clone:
+        resource: incident
+        action: clone
+        description: Clone Incident
+        orgSpecific: false
+    incident_actors:
+        resource: incident
+        action: actors
+        description: Add and Remove Incident Actors
+        orgSpecific: false
+    incident_viewers:
+        resource: incident
+        action: viewers
+        description: Add and Remove Incident Viewers
+        orgSpecific: false
+
+    # IRWorkflow CRUD
+    irworkflowdef_create:
+        resource: irworkflowdef
+        action: create
+        description: Create IR Workflows and IR Workflow Steps
+        orgSpecific: false
+    irworkflowdef_read:
+        resource: irworkflowdef
+        action: read
+        description: View IR Workflows and IR Workflow Steps
+        orgSpecific: false
+    irworkflowdef_update:
+        resource: irworkflowdef
+        action: update
+        description: Edit IR Workflows and IR Workflow Steps
+        orgSpecific: false
+    irworkflow_delete:
+        resource: irworkflowdef
+        action: delete
+        description: Delete IR Workflows and IR Workflow Steps
+        orgSpecific: false
+
+    # IRCategory CRUD
+    irworkflowdef_create:
+        resource: ircategory
+        action: create
+        description: Create IR Categories and IR Sub Categories
+        orgSpecific: false
+    ircategory_read:
+        resource: ircategory
+        action: read
+        description: View IR Categories and IR Sub Categories
+        orgSpecific: false
+    ircategory_update:
+        resource: ircategory
+        action: update
+        description: Edit IR Categories and IR Sub Categories
+        orgSpecific: false
+    irworkflow_delete:
+        resource: ircategory
+        action: delete
+        description: Delete IR Categories and IR Sub Categories
+        orgSpecific: false
+
+    # IR Reporting
+    irreport_read:
+        resource: irreport
+        action: read
+        description: View IR Reports
+        orgSpecific: false
+    irreport_generate:
+        resource: irreport
+        action: generate
+        description: Generate Custom  IR Reports
+        orgSpecific: false
+    irreport_export:
+        resource: irreport
+        action: export
+        description: Export IR Reports to PDF
+        orgSpecific: false

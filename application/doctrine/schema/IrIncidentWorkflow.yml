@@ -4,7 +4,7 @@ IrIncidentWorkflow:
             type: integer
             primary: true
             autoincrement: true
-        incident_id: 
+        incidentId: 
             type: integer
         name: 
             type: string(255)
@@ -15,12 +15,12 @@ IrIncidentWorkflow:
         status:
             type: enum
             length: 9
-            values: ['QUEUED','CURRENT','COMPLETED','REOPENED']
+            values: ['queued','current','completed','reopened']
         completeTs: 
             type: timestamp
         comments:
             type: string(1000) 
         attachment: 
             type: string(255)
-        user_id: 
+        userId: 
             type: integer

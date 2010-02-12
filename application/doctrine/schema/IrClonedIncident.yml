@@ -4,13 +4,13 @@ IrClonedIncident:
             type: integer
             primary: true
             autoincrement: true
-        orig_incident_id: 
+        origIncidentId: 
             type: integer
-        clone_incident_id: 
+        cloneIncidentId: 
             type: integer
         createdTs: 
             type: timestamp
-        user_id: 
+        userId: 
             type: integer
         comments:
             type: string(1000) 

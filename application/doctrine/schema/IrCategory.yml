@@ -1,4 +1,6 @@
 IrCategory:
+    listeners: [XssListener]
+    
     columns:
         id: 
             type: integer
@@ -12,6 +14,8 @@ IrCategory:
             type: string(255)
         description:
             type: string(1000) 
+            extra: 
+                purify: html
         category:
             type: enum
             length: 4

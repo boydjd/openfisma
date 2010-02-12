@@ -1,113 +1,141 @@
 IrSubCategory:
-    SubCategory_28:
+    SubCategory28:
         id: 28
-        category_id: 1
+        categoryId: 1
+        workflowId: 3
         name: Exercise / Network Defense Testing
-    SubCategory_1:
+    SubCategory1:
         id: 1
-        category_id: 2
+        categoryId: 2
+        workflowId: 3
         name: User Account Compromise
-    SubCategory_2:
+    SubCategory2:
         id: 2
-        category_id: 2
+        categoryId: 2
+        workflowId: 3
         name: Root Compromise
-    SubCategory_3:
+    SubCategory3:
         id: 3
-        category_id: 2
+        categoryId: 2
+        workflowId: 3
         name: Viewing sensitive data without authorization
-    SubCategory_4:
+    SubCategory4:
         id: 4
-        category_id: 2
+        categoryId: 2
+        workflowId: 3
         name: Using an unattended, logged-in workstation without permission
-    SubCategory_5:
+    SubCategory5:
         id: 5
-        category_id: 3
+        categoryId: 3
+        workflowId: 3
         name: Network-based DoS against a particular host
-    SubCategory_6:
+    SubCategory6:
         id: 6
-        category_id: 3
+        categoryId: 3
+        workflowId: 3
         name: Network-based DoS against a network
-    SubCategory_7:
+    SubCategory7:
         id: 7
-        category_id: 3
+        categoryId: 3
+        workflowId: 3
         name: Dos against the operating system of a particular host
-    SubCategory_8:
+    SubCategory8:
         id: 8
-        category_id: 3
+        categoryId: 3
+        workflowId: 3
         name: DoS against an application on a particular host
-    SubCategory_9:
+    SubCategory9:
         id: 9
-        category_id: 3
+        categoryId: 3
+        workflowId: 3
         name: Distributed DoS
-    SubCategory_10:
+    SubCategory10:
         id: 10
-        category_id: 4
+        categoryId: 4
+        workflowId: 3
         name: Virus
-    SubCategory_11:
+    SubCategory11:
         id: 11
-        category_id: 4
+        categoryId: 4
+        workflowId: 3
         name: Trojan Horses
-    SubCategory_12:
+    SubCategory12:
         id: 12
-        category_id: 4
+        categoryId: 4
+        workflowId: 3
         name: Worms
-    SubCategory_13:
+    SubCategory13:
         id: 13
-        category_id: 4
+        categoryId: 4
+        workflowId: 3
         name: Mobile Code (To include Spyware, Adware, etc)
-    SubCategory_14:
+    SubCategory14:
         id: 14
-        category_id: 4
+        categoryId: 4
+        workflowId: 3
         name: Blended Attack
-    SubCategory_15:
+    SubCategory15:
         id: 15
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Download password cracking tools or pornography
-    SubCategory_16:
+    SubCategory16:
         id: 16
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Sending spam
-    SubCategory_17:
+    SubCategory17:
         id: 17
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Sending harassing email messages to coworkers
-    SubCategory_18:
+    SubCategory18:
         id: 18
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Using file sharing services to acquire or distribute pirated materials
-    SubCategory_19:
+    SubCategory19:
         id: 19
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Website defacement
-    SubCategory_20:
+    SubCategory20:
         id: 20
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Peer-To-Peer (P2P)
-    SubCategory_21:
+    SubCategory21:
         id: 21
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Porn
-    SubCategory_22:
+    SubCategory22:
         id: 22
-        category_id: 5
+        categoryId: 5
+        workflowId: 3
         name: Instant Messaging
-    SubCategory_23:
+    SubCategory23:
         id: 23 
-        category_id: 6
+        categoryId: 6
+        workflowId: 3
         name: Network Scanning / Probing
-    SubCategory_24:
+    SubCategory24:
         id: 24
-        category_id: 6
+        categoryId: 6
+        workflowId: 3
         name: Root Compromise
-    SubCategory_25:
+    SubCategory25:
         id: 25
-        category_id: 6
+        categoryId: 6
+        workflowId: 3
         name: User Account Compromise
-    SubCategory_26:
+    SubCategory26:
         id: 26
-        category_id: 6
+        categoryId: 6
+        workflowId: 3
         name: Social engineering
-    SubCategory_27:
+    SubCategory27:
         id: 27
-        category_id: 7
+        categoryId: 7
+        workflowId: 3
         name: Investigation

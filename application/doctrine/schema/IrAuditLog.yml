@@ -4,17 +4,17 @@ IrAuditLog:
             type: integer
             primary: true
             autoincrement: true
-        incident_id: 
+        incidentId: 
             type: integer
         createdTs: 
             type: timestamp
-        field_name: 
+        fieldName: 
             type: string(255)
-        origional_value: 
+        origionalValue: 
             type: string(1000) 
-        new_value: 
+        newValue: 
             type: string(1000) 
-        user_id: 
+        userId: 
             type: integer
-        address_ip:
+        addressIp:
             type: string(15)

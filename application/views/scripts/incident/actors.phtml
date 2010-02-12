@@ -1,0 +1,35 @@
+<h1>Actors:</h1>
+
+<form action="#" onsubmit="addActor();  return false;"> 
+    <input type="hidden" name="actor_incident_id" id="actor_incident_id" value="<?php echo $this->id;  ?>" />
+    <select name="actor_userid" id="actor_userid">
+        <?php foreach($this->users as $user) { ?>
+        <option value="<?php echo $user['id']; ?>"><?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?></option>
+        <?php } ?>
+    </select>
+    <input type="submit" value="Add Actor" />
+</form>
+<br /><br />
+
+<?php foreach($this->actors as $user) { ?>
+    <a  href="#"  onclick="callAJAX('/incident/actorremove/id/<?php echo $this->id; ?>/userid/<?php echo $user['id']; ?>')">Remove Actor</a> | <?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?><br />
+<?php } ?>
+
+<hr>
+
+<h1>Observers:</h1>
+<form action="#" onsubmit="addObserver(); return false;"> 
+    <input type="hidden" name="observer_incicdent_id" id="observer_incident_id"  value="<?php echo $this->id;  ?>" />
+    <select name="observer_userid" id="observer_userid">
+        <?php foreach($this->users as $user) { ?>
+        <option value="<?php echo $user['id']; ?>"><?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?></option>
+        <?php } ?>
+    </select>
+    <input type="submit" value="Add Observer" />
+</form>
+<br /><br />
+
+<?php foreach($this->observers as $user) { ?>
+    <a  href="#"  onclick="callAJAX('/incident/observerremove/id/<?php echo $this->id; ?>/userid/<?php echo $user['id']; ?>')">Remove Observer</a> | <?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?><br />
+<?php } ?>
+

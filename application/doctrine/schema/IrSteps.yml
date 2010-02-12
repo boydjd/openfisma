@@ -1,12 +1,18 @@
 IrSteps:
+    listeners: [XssListener]
+    
     columns:
         id: 
             type: integer
             primary: true
             autoincrement: true
-        workflow_id: 
+        createdTs: 
+            type: timestamp
+        modifiedTs: 
+            type: timestamp
+        workflowId: 
             type: integer
-        role_id: 
+        roleId: 
             type: integer
         sortorder: 
             type: integer
@@ -14,3 +20,15 @@ IrSteps:
             type: string(255)
         description:
             type: string(1000) 
+            extra: 
+                purify: html
+
+    actAs:
+        SoftDelete:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

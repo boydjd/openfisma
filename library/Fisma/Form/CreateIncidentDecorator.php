@@ -46,44 +46,44 @@ class Fisma_Form_CreateIncidentDecorator extends Fisma_Form_FismaDecorator
  
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element) {
-            if (in_array($element->getName(), array('reporter_title','reporter_first_name','reporter_last_name'))) {
+            if (in_array($element->getName(), array('reporterTitle','reporterFirstName','reporterLastName'))) {
                 $render = '<td>'
                 .   $this->buildLabel()
                 . '<br />'
                 .   $this->buildInput()
                 . '</td>';
-            } elseif (in_array($element->getName(), array('reporter_organization', 'reporter_address1', 'reporter_phone', 'reporter_email'))) {
+            } elseif (in_array($element->getName(), array('reporterOrganization', 'reporterAddress1', 'reporterPhone', 'reporterEmail'))) {
                 $render = '<tr><td><br />'
                 . $this->buildLabel()
                 . '</td><td colspan="2"><br />'
                 . $this->buildInput(). $content
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('reporter_address2', 'reporter_fax'))) {
+            } elseif (in_array($element->getName(), array('reporterAddress2', 'reporterFax'))) {
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '</td><td colspan="2">'
                 . $this->buildInput(). $content
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('reporter_city'))) {
+            } elseif (in_array($element->getName(), array('reporterCity'))) {
                 $render = '<tr><td>'
                 . 'City, State Zip</td><td>'
                 . $this->buildInput(). $content
                 . '</td>';
-            } elseif (in_array($element->getName(), array('reporter_state'))) {
+            } elseif (in_array($element->getName(), array('reporterState'))) {
                 $render = '<td>'
                 . $this->buildInput();
-            } elseif (in_array($element->getName(), array('reporter_zip'))) {
+            } elseif (in_array($element->getName(), array('reporterZip'))) {
                 $render = $this->buildInput()
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('incident_hour'))) {
+            } elseif (in_array($element->getName(), array('incidentHour'))) {
                 $render = '<tr><td>'
                 . $this->buildLabel()
                 . '<td>'
                 . $this->buildInput()
                 . ' : ';
-            } elseif (in_array($element->getName(), array('incident_minute', 'incident_ampm'))) {
+            } elseif (in_array($element->getName(), array('incidentMinute', 'incidentAmpm'))) {
                 $render = $this->buildInput();
-            } elseif (in_array($element->getName(), array('incident_tz'))) {
+            } elseif (in_array($element->getName(), array('incidentTz'))) {
                 $render = '&nbsp;&nbsp;&nbsp;&nbsp;'
                 . $this->buildInput()
                 .   '</td></tr>';
@@ -93,31 +93,31 @@ class Fisma_Form_CreateIncidentDecorator extends Fisma_Form_FismaDecorator
                 . '</td><td><br />'
                 . $this->buildInput(). $content
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('additional_info', 'host_additional', 'actions_taken', 'pii_additional', 'pii_shipment_timeline', 'pii_shipment_tracking_numbers'))) {
+            } elseif (in_array($element->getName(), array('additionalInfo', 'hostAdditional', 'actionsTaken', 'piiAdditional', 'piiShipmentTimeline', 'piiShipmentTrackingNumbers'))) {
                 $render = '<tr><td colspan="2" style="text-align: left"><br /><br />'
                 .   $this->buildLabel()
                 .   '<br />'
                 .   $this->buildInput()
                 .   '</td></tr>';
-            } elseif (in_array($element->getName(), array('host_name'))) {
+            } elseif (in_array($element->getName(), array('hostName'))) {
                 $render = '<tr><td style="text-align: left"><br />'
                 . $this->buildLabel()
                 . '<br />'
                 . $this->buildInput()
                 . '</td>';
-            } elseif (in_array($element->getName(), array('host_ip'))) {
+            } elseif (in_array($element->getName(), array('hostIp'))) {
                 $render = '<td><br />'
                 . $this->buildLabel()
                 . '<br />'
                 . $this->buildInput()
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('host_os'))) {
+            } elseif (in_array($element->getName(), array('hostOs'))) {
                 $render = '<tr><td style="text-align: left">'
                 . $this->buildLabel()
                 . '<br />'
                 . $this->buildInput()
                 . '</td><td>&nbsp;</td></tr>';
-            } elseif (in_array($element->getName(), array('pii_involved'))) {
+            } elseif (in_array($element->getName(), array('piiInvolved'))) {
                 $render = '<tr><td width="40%">'
                 . $this->buildLabel()
                 . '</td><td>'

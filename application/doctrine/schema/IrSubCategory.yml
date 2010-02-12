@@ -1,14 +1,37 @@
 IrSubCategory:
+    listeners: [XssListener]
+    
     columns:
         id: 
             type: integer
             primary: true
             autoincrement: true
-        category_id: 
+        createdTs: 
+            type: timestamp
+        modifiedTs: 
+            type: timestamp
+        categoryId: 
             type: integer
-        workflow_id: 
+        workflowId: 
             type: integer
         name: 
             type: string(255)
         description:
             type: string(1000) 
+            extra: 
+                purify: html
+
+    relations:
+        IrCategory:
+            local: id
+            foreign: id
+
+    actAs:
+        SoftDelete:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
