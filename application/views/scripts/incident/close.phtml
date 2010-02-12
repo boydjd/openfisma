@@ -6,6 +6,46 @@
 var incidentCallback = {
         success: function(o) {
             document.getElementById('incidentData').innerHTML =  o.responseText;
+            var viewDetailsButton = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "View Details",
+                                       id: "viewDetailsButton",
+                                       name: "viewDetailsButton",
+                                       value: "View Details",
+                                       container: "viewDetailsButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onViewButtonClick }
+                                   });
+            var hideDetails1Button = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Hide Details",
+                                       id: "hideDetailsButton",
+                                       name: "hideDetailsButton",
+                                       value: "Hide Details",
+                                       container: "hideDetails1ButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onHideButtonClick }
+                                   });
+            var hideDetails2Button = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Hide Details",
+                                       id: "hideDetailsButton",
+                                       name: "hideDetailsButton",
+                                       value: "Hide Details",
+                                       container: "hideDetails2ButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onHideButtonClick }
+                                   });
+            var editDetailsButton = new YAHOO.widget.Button({
+                                       type: "link",
+                                       href: "/panel/incident/sub/edit/id/<?php print $this->id; ?>", 
+                                       label: "Edit",
+                                       id: "editDetailsButton",
+                                       name: "editDetailsButton",
+                                       value: "Edit",
+                                       container: "editButtonContainer",
+                                       disabled: false,
+                                   });
         },
         failure: function(o) {
             alert("Error loading Incident Data");
@@ -13,6 +53,18 @@ var incidentCallback = {
     } 
 
 var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+
+function onViewButtonClick() {
+    document.getElementById('incident_details').style.display = 'block'; 
+    document.getElementById('hideDetails1ButtonContainer').style.display = 'inline'; 
+    return false;
+}
+
+function onHideButtonClick() {
+    document.getElementById('incident_details').style.display = 'none'; 
+    document.getElementById('hideDetails1ButtonContainer').style.display = 'none'; 
+    return false;
+}
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 

@@ -1,0 +1,43 @@
+<form action="/panel/incident/sub/list" method="post">
+    <div class="searchFilters" >
+        <table width="100%" style="text-align:left">
+            <tr>
+                <td>
+                    <b>Status:</b>
+                    <select id="status">
+                        <option value="all">All</option>
+                        <option value="new"      <?php if ($this->status=='all') print 'selected'; ?>>New</option>
+                        <option value="open"     <?php if ($this->status=='open') print 'selected'; ?>>Open</option>
+                        <option value="resolved" <?php if ($this->status=='resolved') print 'selected'; ?>>Resolved</option>
+                        <option value="closed"   <?php if ($this->status=='closed') print 'selected'; ?>>Closed</option>
+                        <option value="rejected" <?php if ($this->status=='rejected') print 'selected'; ?>>Rejected</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="startDt" id="startDt" value="<?php print $this->startDt; ?>" helper="formText" class="date">
+                    <img id="startDt_show" 
+                         src="/images/calendar.gif" 
+                         class="date" 
+                         width="18" 
+                         height="18" 
+                         alt="Calendar">
+                </td>
+                <td>
+                    <input type="text" name="endDt" id="endDt" value="<?php print $this->endDt; ?>" helper="formText" class="date">
+                    <img id="endDt_show" 
+                         src="/images/calendar.gif" 
+                         class="date" 
+                         width="18" 
+                         height="18" 
+                         alt="Calendar">
+                </td>
+                <td>
+                    <b>Keywords:</b>
+                    <input type="text" value="<?php print $this->keywords; ?>" name="keywords" id="keywords" helper="formText" />
+                </td>
+
+                <td><?php echo new Fisma_Yui_Form_Button_Submit('incidentSearchSubmit', array('label' => 'Search')); ?></td>
+            </tr>
+        </table>
+    </div>
+</form>

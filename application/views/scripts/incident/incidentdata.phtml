@@ -4,6 +4,12 @@
     <tr>
         <td colspan="3" style="text-align: left"><h1>Incident Summary:</h1></td>
     </tr>
+    <?php if ($this->cloneId) { ?>
+    <tr>
+        <td>Cloned From Incident:</td>
+        <td><a href="/panel/incident/view/id/<?php print $this->cloneId; ?>"><?php print $this->cloneId; ?></a></td>
+    </tr>
+    <? } ?>
     <tr>
         <td>IncidentID:</td>
         <td><?php print $incident['id']; ?></td>
@@ -40,10 +46,14 @@
         <td>&nbsp;</td>
         <td>
             <?php if ($this->association == 'actor') { ?>
-            <input type="button" value="Edit" onclick="window.location = '/panel/incident/sub/edit/id/<?php print $incident['id']; ?>';">
+                <?php if ($incident['status'] == 'closed' ) { ?>
+                    <span id="cloneButtonContainer"></span>
+                <?php } else { ?>
+                    <span id="editButtonContainer"></span>
+                <?php } ?>
             <?php } ?>
-            <input type="button" value="View Details" onclick="document.getElementById('incident_details').style.display = 'block'; document.getElementById('hide_details_button').style.display = 'inline'; return false;">
-            <input id="hide_details_button" type="button" value="Hide Details" onclick="document.getElementById('incident_details').style.display = 'none'; document.getElementById('hide_details_button').style.display = 'none'; return false;" style="display:none;">
+            <span id="viewDetailsButtonContainer"></span>
+            <span id="hideDetails1ButtonContainer" style="display: none;"></span>
         </td>
     </tr>
 </table>
@@ -200,7 +210,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input type="button" value="Hide Details" onclick="document.getElementById('incident_details').style.display = 'none'; document.getElementById('hide_details_button').style.display = 'none'; return false;">
+            <span id="hideDetails2ButtonContainer"></span>
         </td>
     </tr>
 </table>

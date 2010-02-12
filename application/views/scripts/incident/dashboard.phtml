@@ -1,30 +1,31 @@
-<div id="foo" style="width: 48%; float: left;">
 <?php Fisma_Format_Section::startSection("New Incidents: <span id='newSearchResultsTotalFound'></span>"); ?>
-
 <div id="newList"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"Incident ID", hidden: false}
-    ,{key:"additionalInfo", label:"Additional Info", hidden: false}
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
     ,{key:"status", label:"status", hidden: false}
-    ,{key:"piiInvolved", label:"PII", hidden: false}
-    ,{key:"category", label:"Category", hidden: false}
-    ,{key:"reportTs", label:"Reported", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
 ];
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {
         // Get states or use defaults
         oState = oState || {pagination:null, sortedBy:null};
-        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "reportTs";
         var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
-    
+   
+        sort = (sort=='category') ? 'classification' : sort;
+ 
         // Build custom request
         var request = "<?php echo $this->link; ?>" + 
-                      "/sortby/" + status +
+                      "/sortby/" + sort +
+                      "/status/new" +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
                       "/count/" + count;
@@ -82,21 +83,18 @@ var myColumnDefs = [
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
-
-<div id="foo" style="width: 48%; float: right;">
 
 <?php Fisma_Format_Section::startSection("Open Incidents: <span id='openSearchResultsTotalFound'></span>"); ?>
 <div id="openList"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"Incident ID", hidden: false}
-    ,{key:"additionalInfo", label:"Additional Info", hidden: false}
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
     ,{key:"status", label:"status", hidden: false}
-    ,{key:"piiInvolved", label:"PII", hidden: false}
-    ,{key:"category", label:"Category", hidden: false}
-    ,{key:"reportTs", label:"Reported", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
 ];
 
     // A function which builds the query string
@@ -108,12 +106,16 @@ var myColumnDefs = [
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
     
+        sort = (sort=='category') ? 'classification' : sort;
+ 
         // Build custom request
         var request = "<?php echo $this->link; ?>" + 
-                      "/sortby/" + status +
+                      "/sortby/" + sort +
+                      "/status/open" +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
                       "/count/" + count;
+        
         return request;
     };
 
@@ -167,22 +169,18 @@ var myColumnDefs = [
     <?php } ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
 
-<div class="clear"></div>
-
-<div id="foo" style="width: 48%; float: left;">
 <?php Fisma_Format_Section::startSection("Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>"); ?>
 <div id="resolvedList"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"Incident ID", hidden: false}
-    ,{key:"additionalInfo", label:"Additional Info", hidden: false}
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
     ,{key:"status", label:"status", hidden: false}
-    ,{key:"piiInvolved", label:"PII", hidden: false}
-    ,{key:"category", label:"Category", hidden: false}
-    ,{key:"reportTs", label:"Reported", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
 ];
 
     // A function which builds the query string
@@ -194,12 +192,16 @@ var myColumnDefs = [
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
     
+        sort = (sort=='category') ? 'classification' : sort;
+ 
         // Build custom request
         var request = "<?php echo $this->link; ?>" + 
-                      "/sortby/" + status +
+                      "/sortby/" + sort +
+                      "/status/resolved" +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
                       "/count/" + count;
+        
         return request;
     };
 
@@ -253,21 +255,18 @@ var myColumnDefs = [
     <?php } ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
 
-
-<div id="foo" style="width: 48%; float: right;">
 <?php Fisma_Format_Section::startSection("Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>"); ?>
 <div id="closedList"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"id", label:"Incident ID", hidden: false}
-    ,{key:"additionalInfo", label:"Additional Info", hidden: false}
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
     ,{key:"status", label:"status", hidden: false}
-    ,{key:"piiInvolved", label:"PII", hidden: false}
-    ,{key:"category", label:"Category", hidden: false}
-    ,{key:"reportTs", label:"Reported", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
 ];
 
     // A function which builds the query string
@@ -279,12 +278,16 @@ var myColumnDefs = [
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
     
+        sort = (sort=='category') ? 'classification' : sort;
+ 
         // Build custom request
         var request = "<?php echo $this->link; ?>" + 
-                      "/sortby/" + status +
+                      "/sortby/" + sort +
+                      "/status/closed" +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
                       "/count/" + count;
+        
         return request;
     };
 
@@ -338,11 +341,7 @@ var myColumnDefs = [
     <?php } ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
 
-<div class="clear"></div>
-
-<div id="foo" style="width: 48%; float: left;">
 <?php Fisma_Format_Section::startSection("Comments"); ?>
 <div id="commentData">Loading...</div>
 
@@ -362,10 +361,48 @@ var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/commentdashb
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
 
-<div id="foo" style="width: 48%; float: right;">
 <?php Fisma_Format_Section::startSection("Stats"); ?>
+
+<div style="float: right;">
+    <embed scale="noscale"
+           salign="TL"
+           bgcolor="#ffffff"
+           wmode="opaque"
+           src="/flash/charts.swf"
+           flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalstatus/format/xml"
+           name="my_chart"
+           menu="true"
+           allowfullscreen="true"
+           allowscriptaccess="sameDomain"
+           quality="high"
+           pluginspage="http://www.macromedia.com/go/getflashplayer"
+           play="true"
+           devicefont="false"
+           type="application/x-shockwave-flash"
+           width="350"
+           height="200"
+           align="middle">
+
+    <embed scale="noscale"
+           salign="TL"
+           bgcolor="#ffffff"
+           wmode="opaque"
+           src="/flash/charts.swf"
+           flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalcategory/format/xml"
+           name="my_chart"
+           menu="true"
+           allowfullscreen="true"
+           allowscriptaccess="sameDomain"
+           quality="high"
+           pluginspage="http://www.macromedia.com/go/getflashplayer"
+           play="true"
+           devicefont="false"
+           type="application/x-shockwave-flash"
+           width="350"
+           height="200"
+           align="middle">
+</div>
 
 <div id="reportData">Loading...</div>
 
@@ -385,5 +422,4 @@ var transaction = YAHOO.util.Connect.asyncRequest('GET', '/irreport/incidentdash
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
-</div>
 <div class="clear"></div>

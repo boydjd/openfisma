@@ -1,5 +1,5 @@
 <?php if ($this->association == 'actor' ) { ?>
-<form action="#" onsubmit="addActor();  return false;"> 
+<form action="#" onsubmit="addActor();  return false;" id="actorForm"> 
     <input type="hidden" name="actor_incident_id" id="actor_incident_id" value="<?php echo $this->id;  ?>" />
 <?php } ?>
     <table class="fisma_crud">
@@ -19,7 +19,7 @@
                 </select>
             </td>
             <td>
-                <input type="submit" value="Add Actor" />
+                <span id="actorButtonContainer"></span>
             </td>
         </tr>
         <?php } ?>
@@ -52,7 +52,7 @@
 <br />
 
 <?php if ($this->association == 'actor' ) { ?>
-<form action="#" onsubmit="addObserver();  return false;"> 
+<form action="#" onsubmit="addObserver();  return false;" id="observerForm"> 
     <input type="hidden" name="observer_incident_id" id="observer_incident_id" value="<?php echo $this->id;  ?>" />
 <?php } ?>
     <table class="fisma_crud">
@@ -72,7 +72,7 @@
                 </select>
             </td>
             <td>
-                <input type="submit" value="Add Observer" />
+                <span id="observerButtonContainer"></span>
             </td>
         </tr>
         <?php } ?>

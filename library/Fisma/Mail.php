@@ -157,6 +157,36 @@ class Fisma_Mail extends Zend_Mail
     }
     
     /**
+     * Send the new password to the user
+     *
+     * @param object $user include the unencrypt password
+     * @return bool
+     */
+    public function IRReport($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A new incident has been reported.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRReported.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+
+
+
+    /**
      * Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.
      * 

@@ -1,10 +1,19 @@
+<?php if ($this->step_completed_sort) {?>
+    <div id="msgbar" style="border-color: green; font-weight: bold; color: green; background-color: lightgreen; display: block;">
+        Workflow Step #<?php print $this->step_completed_sort; ?> has been completed.
+    </div>
+    <br />
+<?php } ?>
+
 <div id="workflow-interface-content" class="yui-navset">
     <ul class="yui-nav">
         <?php
             foreach ($this->steps as $key => $step) {
                 if($key == 0 ) {
                     print "<li><a href='#tab$key'><em>Open Incident</em></a></li>";        
-                } elseif ($step['status'] == 'current') {
+                } elseif (($this->step_completed_sort) and ($key == $this->step_completed_sort)) { 
+                    print "<li class='selected'><a href='#tab$key'><em>Step #$key</em></a></li>";        
+               } elseif (!($this->step_completed_sort) && ($step['status'] == 'current')) {
                     print "<li class='selected'><a href='#tab$key'><em>Step #$key</em></a></li>";        
                 } elseif ($key < (count($this->steps) - 1)) {
                     print "<li><a href='#tab$key'><em>Step #$key</em></a></li>";        

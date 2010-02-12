@@ -1,0 +1,94 @@
+<?php echo "{$this->doctype()}\n" ?>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="refresh" 
+              content="<?php echo Configuration::getConfig('session_inactivity_period'); ?>;url=/auth/logout">
+
+    <?php 
+    $this->headTitle()->prepend(Configuration::getConfig('system_name'));
+    echo $this->headTitle();
+    Fisma_Yui::includeLibrary('yahoo-dom-event');
+    Fisma_Yui::includeLibrary('element');
+    Fisma_Yui::includeLibrary('container');
+    Fisma_Yui::includeLibrary('json');
+    Fisma_Yui::includeLibrary('cookie');
+    Fisma_Yui::includeLibrary('get');
+    Fisma_Yui::includeLibrary('dragdrop');
+    Fisma_Yui::includeLibrary('animation');
+    Fisma_Yui::includeLibrary('menu');
+    Fisma_Yui::includeLibrary('button');
+    Fisma_Yui::includeLibrary('json');
+    Fisma_Yui::includeLibrary('connection');
+    Fisma_Yui::includeLibrary('logger');
+    Fisma_Yui::includeLibrary('tabview');
+    Fisma_Yui::includeLibrary('calendar');
+    Fisma_Yui::includeLibrary('paginator');
+    Fisma_Yui::includeLibrary('datasource');
+    Fisma_Yui::includeLibrary('datatable');
+    Fisma_Yui::includeLibrary('selector');
+    Fisma_Yui::includeLibrary('treeview');
+    Fisma_Yui::includeLibrary('uploader');
+    echo Fisma_Yui::printIncludes();
+    ?>
+
+    <script type="text/javascript" src="/javascripts/fisma.js"></script>
+    <script type="text/javascript" src="/javascripts/TreeTable.js"></script>
+    <script type="text/javascript" src="/javascripts/CheckboxTree.js"></script>
+    <script type="text/javascript" src="/javascripts/editable.js"></script>
+    <script type="text/javascript" src="/javascripts/help.js"></script>
+    <script type="text/javascript" src="/javascripts/tiny_mce/tiny_mce.js"></script>
+    <script type="text/javascript" src="/javascripts/tiny_mce_config.js"></script>
+    <script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
+    <script type="text/javascript" src="/javascripts/deleteconfirm.js"></script>
+
+    <?php 
+    echo $this->headLink()->appendStylesheet('/yui/reset-fonts-grids/reset-fonts-grids.css')
+                          ->appendStylesheet('/yui/assets/skins/sam/skin.css', 'screen,print')
+                          ->appendStylesheet('/stylesheets/main.css', 'screen,print')
+                          ->appendStylesheet('/stylesheets/print.css', 'print')
+                          ->appendStylesheet('/stylesheets/TreeTable.css', 'screen,print')
+                          ->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+    ?>
+        <!--[if IE 7]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
+        <![endif]-->
+        
+        <!--[if IE 6]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
+        <![endif]-->
+    </head>
+    <body class="yui-skin-sam">
+        <div id='header' >
+            <div id="logo">
+                <img alt="Logo" src="/images/logo.png">
+            </div>
+
+        </div>
+
+        <div class="externalMediaMarking">
+            WARNING: This document is for internal, official use only.  This document contains sensitive computer 
+            security related information. Public disclosure of this information would risk circumvention of the 
+            law. Recipients of this document must not, under any circumstances, show or release its contents for 
+            purposes other than official action. This document must be safeguarded to prevent improper disclosure. 
+            Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.
+        </div>
+   
+        <div class="clear"></div>
+             
+        <a name="contentStart"></a>
+        <div id='content'>
+                <?php echo $this->layout()->content; ?>
+        </div>
+        
+        <div id='footer'>
+             <div id="footerLinks">
+                <a href="mailto:openfisma@department.gov?Subject=OpenFISMA+Tech+Support">Contact Administrator</a>&nbsp;|&nbsp;
+                <a href="/auth/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
+                <a href="/auth/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
+
+                <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a></i>
+            </div>
+        </div>
+    </body>
+</html>

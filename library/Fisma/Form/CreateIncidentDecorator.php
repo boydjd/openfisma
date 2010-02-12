@@ -135,7 +135,10 @@ class Fisma_Form_CreateIncidentDecorator extends Fisma_Form_FismaDecorator
                                     Was PII involved
                                 </td>
                                 <td>
-                                        <select helper="formSelect" id="piiInvolved" name="piiInvolved" onchange="if(document.getElementById(\'piiInvolved\').value == \'1\') { document.getElementById(\'pii_table\').style.display=\'inline\';}">
+                                        <select     helper="formSelect" 
+                                                    id="piiInvolved" 
+                                                    name="piiInvolved" 
+                                                    onchange=" if(document.getElementById(\'piiInvolved\').value == \'1\') { document.getElementById(\'pii_table\').style.display=\'inline\';} else { document.getElementById(\'pii_table\').style.display=\'none\';}">
                                             <option label=" -- select -- " value=""> -- select -- </option>
                                             <option label=" NO " value="0"> NO </option>
                                             <option label=" YES " value="1"> YES </option>

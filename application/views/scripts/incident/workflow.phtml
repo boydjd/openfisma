@@ -8,6 +8,46 @@
 var incidentCallback = {
         success: function(o) {
             document.getElementById('incidentData').innerHTML =  o.responseText;
+            var viewDetailsButton = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "View Details",
+                                       id: "viewDetailsButton",
+                                       name: "viewDetailsButton",
+                                       value: "View Details",
+                                       container: "viewDetailsButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onViewButtonClick }
+                                   });
+            var hideDetails1Button = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Hide Details",
+                                       id: "hideDetailsButton",
+                                       name: "hideDetailsButton",
+                                       value: "Hide Details",
+                                       container: "hideDetails1ButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onHideButtonClick }
+                                   });
+            var hideDetails2Button = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Hide Details",
+                                       id: "hideDetailsButton",
+                                       name: "hideDetailsButton",
+                                       value: "Hide Details",
+                                       container: "hideDetails2ButtonContainer",
+                                       disabled: false,
+                                       onclick: { fn: onHideButtonClick }
+                                   });
+            var editDetailsButton = new YAHOO.widget.Button({
+                                       type: "link",
+                                       href: "/panel/incident/sub/edit/id/<?php print $this->id; ?>", 
+                                       label: "Edit",
+                                       id: "editDetailsButton",
+                                       name: "editDetailsButton",
+                                       value: "Edit",
+                                       container: "editButtonContainer",
+                                       disabled: false,
+                                   });
         },
         failure: function(o) {
             alert("Error loading Incident Data");
@@ -15,6 +55,18 @@ var incidentCallback = {
     } 
 
 var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+
+function onViewButtonClick() {
+    document.getElementById('incident_details').style.display = 'block'; 
+    document.getElementById('hideDetails1ButtonContainer').style.display = 'inline'; 
+    return false;
+}
+
+function onHideButtonClick() {
+    document.getElementById('incident_details').style.display = 'none'; 
+    document.getElementById('hideDetails1ButtonContainer').style.display = 'none'; 
+    return false;
+}
 
 </script>
 
@@ -33,6 +85,26 @@ var callback = {
             document.getElementById('actors').innerHTML =  o.responseText;
             actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", { context:"actor_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Actors</b> can add/remove users to/from an incident, complete workflow steps, and submit comments to an incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
             observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", { context:"observer_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Observers</b> can view an incident, and will be notified when the incident is updated.  They cannot perform any actions on the incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
+            var actorButton = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Add Actor",
+                                       id: "actorButton",
+                                       name: "actorButton",
+                                       value: "Add Actor",
+                                       container: "actorButtonContainer",
+                                       disabled: false
+                                       
+                                   });
+            var observerButton = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Add Observer",
+                                       id: "observerButton",
+                                       name: "observerButton",
+                                       value: "Add Observer",
+                                       container: "observerButtonContainer",
+                                       disabled: false
+                                       
+                                   });
         },
         failure: function(o) {
             alert("Error loading Actors/Observers");
@@ -138,6 +210,16 @@ function addObserver() {
     var comCallback = {
         success: function(o) {
             document.getElementById('comment-container').innerHTML =  o.responseText;
+            var commentButton = new YAHOO.widget.Button({
+                                       type: "submit",
+                                       label: "Add Comment",
+                                       id: "commentButton",
+                                       name: "commentButton",
+                                       value: "Add Comment",
+                                       container: "commentButtonContainer",
+                                       disabled: false
+                                       
+                                   });
         },
         failure: function(o) {
             alert("Error loading Comments");
