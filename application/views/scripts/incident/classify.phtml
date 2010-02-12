@@ -1,15 +1,22 @@
 <div id="foo" style="width: 48%; float: left;">
 <?php Fisma_Format_Section::startSection("Incident Information"); ?>
 
-<table class="fisma_crud">
-    <tr>
-        <td colspan="3" style="text-align: left"><h1>Incident Information:</h1></td>
-    </tr>
-    
-    <?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<tr><td>".ucfirst(preg_replace('/([A-Z])/', ' $1', $key)).":</td><td>$val</td></tr>";} } ?>
-    
-    <tr><td>&nbsp;</td><td><a href="#">View Details</a></td></tr>
-</table>
+<div id="incidentData">Loading...</div>
+
+<script type="text/javascript">
+
+var incidentCallback = {
+        success: function(o) {
+            document.getElementById('incidentData').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Incident Data");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+
+</script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>
@@ -24,6 +31,8 @@
 var callback = {
         success: function(o) {
             document.getElementById('actors').innerHTML =  o.responseText;
+            actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", { context:"actor_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Actors</b> can add/remove users to/from an incident, complete workflow steps, and submit comments to an incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
+            observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", { context:"observer_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Observers</b> can view an incident, and will be notified when the incident is updated.  They cannot perform any actions on the incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
         },
         failure: function(o) {
             alert("Error loading Actors/Observers");

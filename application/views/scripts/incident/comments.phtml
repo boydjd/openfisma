@@ -1,12 +1,16 @@
+<?php
+if ($this->association == 'actor') {
+?>
 <form action="#" onsubmit="addcomment(); return false;" id="commentForm">
     <input type="hidden" id="id" name="id" value="<?php print $this->id; ?>">
+<?php } ?>
     <table class="fisma_crud">
         <?php 
             if ($this->comments) {
                 foreach($this->comments as $comment) {
                     print " <tr>
                                 <td style='text-align: left'><b>{$comment['createdTs']}</b></td>
-                                <td>{$comment['user']['nameFirst']} {$comment['user']['nameLast']} ({$comment['user']['username']})</td>
+                                <td>{$comment['user']['nameFirst']} {$comment['user']['nameLast']} ({$comment['user']['role']})</td>
                             </tr>
                             <tr>
                                 <td>&nbsp;</td>
@@ -21,6 +25,9 @@
                 print "<tr><td colspan='3'><hr /></td></tr>";
             }
         ?>
+<?php
+if ($this->association == 'actor') {
+?>
         <tr>
             <td style="text-align: left" colspan="3"><br /><h1>Add Comment:</h1></td>
         </tr>
@@ -34,5 +41,6 @@
                 <input type="submit" value="Add Comment" />
             </td>
         </tr>
+<?php } ?>
     </table>
 </form>

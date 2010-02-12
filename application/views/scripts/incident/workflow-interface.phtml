@@ -47,18 +47,25 @@
 
                     if ($step['status'] == 'current') {
                         $current_step = $key;
+                        if (($this->user_roleId == $step['role']['id']) && ($this->association == 'actor')) {
                         print " <tr>
                                     <td colspan='2' style='text-align: left;'>
-                                        <br />Comments: <br />
-                                        <form action='#' onsubmit='completestep(); return false;' id='stepForm'>
-                                            <input type='hidden' name='id' id='id' value='{$this->id}' />
-                                            <input type='hidden' name='step_id' id='step_id' value='{$step['id']}' />
-                                            <textarea name='comments' id='comments' rows='10' cols='60'></textarea>
-                                            <br /><br />
-                                            <input type='submit' value='Step Completed' />
-                                        </form>
+                                            <br />Comments: <br />
+                                            <form action='#' onsubmit='completestep(); return false;' id='stepForm'>
+                                                <input type='hidden' name='id' id='id' value='{$this->id}' />
+                                                <input type='hidden' name='step_id' id='step_id' value='{$step['id']}' />
+                                                <textarea name='comments' id='comments' rows='10' cols='60'></textarea>
+                                                <br /><br />
+                                                <input type='submit' value='Step Completed' />
+                                            </form>
                                     </td>
                                 </tr>";
+                        } else {
+                            print " <tr>
+                                        <td nowrap valign='top'><br />Step must be completed by:</td>
+                                        <td><br /><h2>{$step['role']['name']} ({$step['role']['nickname']})</h2></td>
+                                    </tr>";
+                        }
                     }
                     
                     if ($step['status'] == 'completed') {

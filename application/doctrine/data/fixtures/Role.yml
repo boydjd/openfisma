@@ -25,6 +25,24 @@ Role:
             - organization_update
             - asset_read
             - asset_update
+            - incident_read
+            - incident_classify
+            - incident_reject
+            - incident_resolve
+            - incident_close
+            - incident_create
+            - incident_update
+            - irworkflowdef_read
+            - irworkflowdef_create
+            - irworkflowdef_update
+            - irworkflowdef_delete
+            - ircategory_read
+            - ircategory_update
+            - ircategory_create
+            - ircategory_delete
+            - irreport_read
+            - irreport_generate
+            - irreport_export
 
     REVIEWER:
         name: Reviewer
@@ -243,40 +261,40 @@ Role:
         name: OIG Representative
         nickname: OIG
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]
 
     ED-CIRC:
         name: Incident Manager
-        nickname: ED-CIRC
+        nickname: EDCIRC
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_reject, incident_classify, incident_resolve, incident_close, incident_create, incident_update, ircategory_read, ircategory_update, ircategory_create, ircategory_delete, irworkflowdef_read, irworkflowdef_update, irworkflowdef_create, irworkflowdef_delete, irreport_read, irreport_generate, irreport_export]
 
     IRC:
         name: Incident Response Coordinator
         nickname: IRC
         description: 
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]
     
     DBR:
         name: Data Breach Representatives
         nickname: DBR
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]
    
     PA:
         name: Privacy Advocate
         nickname: PA
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]
         
     IRS:
         name: Incident Response Specialist
         nickname: IRS
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]
   
     HDR:
         name: Help Desk Representative
         nickname: HDR
         description:
-        Privileges: [incident_read]
+        Privileges: [areas_dashboard, incident_read, incident_create]

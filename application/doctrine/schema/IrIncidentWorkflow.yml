@@ -6,6 +6,8 @@ IrIncidentWorkflow:
             autoincrement: true
         incidentId: 
             type: integer
+        roleId: 
+            type: integer
         name: 
             type: string(255)
         description:

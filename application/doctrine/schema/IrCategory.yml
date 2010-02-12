@@ -20,3 +20,13 @@ IrCategory:
             type: enum
             length: 4
             values: ['CAT0','CAT1','CAT2','CAT3','CAT4','CAT5','CAT6']
+
+    actAs:
+        SoftDelete:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

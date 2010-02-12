@@ -23,8 +23,10 @@ IrSubCategory:
 
     relations:
         IrCategory:
-            local: id
+            class: IrCategory
+            local: categoryId
             foreign: id
+            foreignAlias: ParentCategory
 
     actAs:
         SoftDelete:

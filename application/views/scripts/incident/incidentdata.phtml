@@ -1,0 +1,206 @@
+<?php $incident = $this->incident[0]; ?>
+
+<table class="fisma_crud">
+    <tr>
+        <td colspan="3" style="text-align: left"><h1>Incident Summary:</h1></td>
+    </tr>
+    <tr>
+        <td>IncidentID:</td>
+        <td><?php print $incident['id']; ?></td>
+    </tr>
+    <tr>
+        <td>Classification:</td>
+        <td><?php print $incident['category']; ?></td>
+    </tr>
+    <tr>
+        <td>Description:</td>
+        <td><?php print $incident['additionalInfo']; ?></td>
+    </tr>
+    <tr>
+        <td>Actions Taken:</td>
+        <td><?php print $incident['actionsTaken']; ?></td>
+    </tr>
+    <tr>
+        <td>Assessment Critical:</td>
+        <td><?php print $incident['assessmentCritical']; ?></td>
+    </tr>
+    <tr>
+        <td>Assessment Sensitivity:</td>
+        <td><?php print $incident['assessmentSensitivity']; ?></td>
+    </tr>
+    <tr>
+        <td>PII Involved</td>
+        <td><?php print ($incident['piiInvolved'] == 1) ? 'yes' : 'no';  ?></td>
+    </tr>
+    <tr>
+        <td>Status</td>
+        <td><?php print $incident['status']; ?></td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <?php if ($this->association == 'actor') { ?>
+            <input type="button" value="Edit" onclick="window.location = '/panel/incident/sub/edit/id/<?php print $incident['id']; ?>';">
+            <?php } ?>
+            <input type="button" value="View Details" onclick="document.getElementById('incident_details').style.display = 'block'; document.getElementById('hide_details_button').style.display = 'inline'; return false;">
+            <input id="hide_details_button" type="button" value="Hide Details" onclick="document.getElementById('incident_details').style.display = 'none'; document.getElementById('hide_details_button').style.display = 'none'; return false;" style="display:none;">
+        </td>
+    </tr>
+</table>
+
+<br /><br />
+
+<table class="fisma_crud" id="incident_details" style="display: none;">
+    <tr>
+        <td colspan="3" style="text-align: left"><h1>Incident Details:</h1></td>
+    </tr>
+    <tr><td colspan="2" style="text-align: left;"><br /><u>Reporter Information</u></td></tr>
+    <tr>    
+        <td>Name:</td>
+        <td><?php print $incident['reporterTitle']; ?> <?php print $incident['reporterFirstName']; ?> <?php print $incident['reporterLastName']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Organiation:</td>
+        <td><?php print $incident['reporterOrganization']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Address 1:</td>
+        <td><?php print $incident['reporterAddress1']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Address 2:</td>
+        <td><?php print $incident['reporterAddress2']; ?></td>
+    </tr>    
+    <tr>    
+        <td>City, State Zip:</td>
+        <td><?php print $incident['reporterCity']; ?>, <?php print $incident['reporterState']; ?> <?php print $incident['reporterZip']; ?></td>
+    </tr>    
+    <tr>    
+    <tr>    
+        <td>Phone:</td>
+        <td><?php print $incident['reporterPhone']; ?></td>
+    </tr>    
+        <td>Fax:</td>
+        <td><?php print $incident['reporterFax']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Email:</td>
+        <td><?php print $incident['reporterEmail']; ?></td>
+    </tr>    
+    
+
+    <tr><td colspan="2" style="text-align: left;"><br /><u>Incident Location</u></td></tr>
+    <tr>    
+        <td>Building:</td>
+        <td><?php print $incident['locationBuilding']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Room:</td>
+        <td><?php print $incident['locationRoom']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Rack:</td>
+        <td><?php print $incident['locationRack']; ?></td>
+    </tr>    
+    
+
+    <tr><td colspan="2" style="text-align: left;"><br /><u>Incident Time</u></td></tr>
+    <tr>    
+        <td>Incident Occured:</td>
+        <td><?php print $incident['incidentTs']; ?> <?php print $incident['incidentTz']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Report Timestamp:</td>
+        <td><?php print $incident['reportTs']; ?> <?php print $incident['reportTz']; ?></td>
+    </tr>    
+    
+
+    <tr><td colspan="2" style="text-align: left;"><br /><u>PII</u></td></tr>
+    <tr>    
+        <td>Description:</td>
+        <td><?php print $incident['piiAdditional']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Mobile Media Involved:</td>
+        <td><?php if($incident['piiMobileMedia']) { print ($incident['piiMobileMedia'] == 1) ? 'yes' : 'no'; } ?></td>
+    </tr>    
+    <tr>    
+        <td>Media Type:</td>
+        <td><?php print $incident['piiMediaType']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Encrypted:</td>
+        <td><?php if($incident['piiEncrypted']) { print ($incident['piiEncrypted']  == 1) ? 'yes' : 'no'; } ?></td>
+    </tr>    
+    <tr>    
+        <td>Authorities Contacted:</td>
+        <td><?php if($incident['piiAuthoritiesContacted']) { print ($incident['piiAuthoritiesContacted'] == 1) ? 'yes' : 'no'; } ?></td>
+    </tr>    
+    <tr>    
+        <td>Police Report Filed:</td>
+        <td><?php print $incident['piiPoliceReport']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Individual Count:</td>
+        <td><?php print $incident['piiIndividualsCount']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Individuals Notified:</td>
+        <td><?php if($incident['piiIndividualsNotification']) { print ($incident['piiIndividualsNotification'] == 1) ? 'yes' : 'no'; }  ?></td>
+    </tr>    
+    <tr>    
+        <td>PII in Shipment:</td>
+        <td><?php if($incident['piiShipment']) { print ($incident['piiShipment'] == 1) ? 'yes' : 'no'; } ?></td>
+    </tr>    
+    <tr>    
+        <td>Shipment Sender Contacted:</td>
+        <td><?php print $incident['piiShipmentSenderContact']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Shipment Company:</td>
+        <td><?php print $incident['piiShipmentSenderCompany']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Shipment Timeline:</td>
+        <td><?php print $incident['piiShipmentTimeline']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Shipment Tracking Numbers:</td>
+        <td><?php print $incident['piiShipmentTrackingNumbers']; ?></td>
+    </tr>    
+
+    <tr><td colspan="2" style="text-align: left;"><br /><u>Host</u></td></tr>
+    <tr>    
+        <td>Host:</td>
+        <td><?php print $incident['hostName']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Host IP:</td>
+        <td><?php print $incident['hostIp']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Host OS:</td>
+        <td><?php print $incident['hostOs']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Host Description:</td>
+        <td><?php print $incident['hostAdditional']; ?></td>
+    </tr>    
+
+    <tr><td colspan="2" style="text-align: left;"><br /><u>Source</u></td></tr>
+    <tr>    
+        <td>Source IP:</td>
+        <td><?php print $incident['sourceIp']; ?></td>
+    </tr>    
+    <tr>    
+        <td>Source Description:</td>
+        <td><?php print $incident['sourceAdditional']; ?></td>
+    </tr>    
+    
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input type="button" value="Hide Details" onclick="document.getElementById('incident_details').style.display = 'none'; document.getElementById('hide_details_button').style.display = 'none'; return false;">
+        </td>
+    </tr>
+</table>

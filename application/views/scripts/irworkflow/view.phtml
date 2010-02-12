@@ -1,9 +1,9 @@
 <?php
 $operation = '';
-if (Fisma_Acl::hasPrivilege('irworkflow','update')) {
+if (Fisma_Acl::hasPrivilege('irworkflowdef','update')) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Acl::hasPrivilege('irworkflow','delete')) {
+if (Fisma_Acl::hasPrivilege('irworkflowdef','delete')) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Workflow Information</b> $operation"); ?>

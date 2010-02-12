@@ -3,86 +3,103 @@ IrSteps:
     step1:
         workflowId: 1
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step2:
         workflowId: 1
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step3:
         workflowId: 1
         sortorder: 3
+        roleId: 1
         name: Perform an initial containment of the incident
         description:
     step4:
         workflowId: 1
         sortorder: 4
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step5:
         workflowId: 1
         sortorder: 5
+        roleId: 1
         name: Confirm the containment of the incident
         description: <ol><li>Further analyze the incident and determine if containment was sufficient</li><li>Implement additional containment measures if necessary</li></ol>
     step6:
         workflowId: 1
         sortorder: 6
+        roleId: 1
         name: Eradicate the incident
         description:
     step7:
         workflowId: 1
         sortorder: 7
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step8:
         workflowId: 1
         sortorder: 8
+        roleId: 1
         name: Create a follow-up report
         description:
     step9:
         workflowId: 1
         sortorder: 9
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     step11:
         workflowId: 2
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step12:
         workflowId: 2
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step13:
         workflowId: 2
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step14:
         workflowId: 2
         sortorder: 4
+        roleId: 1
         name: Contain the incident – halt the DoS if it has not already been stopped
         description: <ol><li>Identify and mitigate all vulnerabilities that were used</li><li>If not yet contained, implement filtering based on the characteristics of the attack</li><li>If not yet contained, contact ISP or assistance in filtering attack</li><li>If not yet contained, relocate the target</li></ol>
     step15:
         workflowId: 2
         sortorder: 5
+        roleId: 1
         name: Eradicate the incident; if Step 4.1 was not performed, identify and mitigate all vulnerabilities that were used.
         description:
     step16:
         workflowId: 2
         sortorder: 6
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step17:
         workflowId: 2
         sortorder: 7
+        roleId: 1
         name: Create a follow-up report
         description:
     step18:
         workflowId: 2
         sortorder: 8
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     
@@ -91,231 +108,277 @@ IrSteps:
     step21:
         workflowId: 3
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step22:
         workflowId: 3
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step23:
         workflowId: 3
         sortorder: 3
+        roleId: 1
         name: Contain the incident
         description: <ol><li>Identify infected systems</li><li>Disconnect infected systems from the network</li><li>Mitigate vulnerabilities that were exploited by the malicious code</li><li>If necessary, block the transmission mechanisms for the malicious code</li></ol>
     step24:
         workflowId: 3
         sortorder: 4
+        roleId: 1
         name: Eradicate the incident
         description: <ol><li>Disinfect, quarantine, delete, and replace infected files</li><li>Mitigate the exploited vulnerabilities for other hosts within the organization</li></ol>
     step25:
         workflowId: 3
         sortorder: 5
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready statei</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step26:
         workflowId: 3
         sortorder: 6
+        roleId: 1
         name: Create a follow-up report
         description:
     step27:
         workflowId: 3
         sortorder: 7
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
    
     step31:
         workflowId: 4
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affectedi</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step32:
         workflowId: 4
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step33:
         workflowId: 4
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step34:
         workflowId: 4
         sortorder: 4
+        roleId: 1
         name: If necessary, contain and eradicate the incident
         description:
     step35:
         workflowId: 4
         sortorder: 5
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step36:
         workflowId: 4
         sortorder: 6
+        roleId: 1
         name: Create a follow-up report
         description:
     step37:
         workflowId: 4
         sortorder: 7
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     step41:
         workflowId: 5
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step42:
         workflowId: 5
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step43:
         workflowId: 5
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step44:
         workflowId: 5
         sortorder: 4
+        roleId: 1
         name: Contain the incident
         description:
     step45:
         workflowId: 5
         sortorder: 5
+        roleId: 1
         name: Eradicate the incident
         description:
     step46:
         workflowId: 5
         sortorder: 6
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step47:
         workflowId: 5
         sortorder: 7
+        roleId: 1
         name: Create a follow-up report
         description:
     step48:
         workflowId: 5
         sortorder: 8
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     step51:
         workflowId: 6
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step52:
         workflowId: 6
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step53:
         workflowId: 6
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step54:
         workflowId: 6
         sortorder: 4
+        roleId: 1
         name: Contain the incident
         description:
     step55:
         workflowId: 6
         sortorder: 5
+        roleId: 1
         name: Eradicate the incident
         description:
     step56:
         workflowId: 6
         sortorder: 6
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step57:
         workflowId: 6
         sortorder: 7
+        roleId: 1
         name: Create a follow-up report
         description:
     step58:
         workflowId: 6
         sortorder: 8
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     step61:
         workflowId: 7
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step62:
         workflowId: 7
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step63:
         workflowId: 7
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step64:
         workflowId: 7
         sortorder: 4
+        roleId: 1
         name: Contain the incident
         description:
     step65:
         workflowId: 7
         sortorder: 5
+        roleId: 1
         name: Eradicate the incident
         description:
     step66:
         workflowId: 7
         sortorder: 6
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step67:
         workflowId: 7
         sortorder: 7
+        roleId: 1
         name: Create a follow-up report
         description:
     step68:
         workflowId: 7
         sortorder: 8
+        roleId: 1
         name: Hold a lessons learned meeting
         description:
     step71:
         workflowId: 8
         sortorder: 1
+        roleId: 1
         name: Prioritize handling the incident based on the business impact
         description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step72:
         workflowId: 8
         sortorder: 2
+        roleId: 1
         name: Report the incident to the appropriate internal personnel and external organizations
         description:
     step73:
         workflowId: 8
         sortorder: 3
+        roleId: 1
         name: Acquire, preserve, secure, and document evidence
         description:
     step74:
         workflowId: 8
         sortorder: 4
+        roleId: 1
         name: Contain the incident
         description:
     step75:
         workflowId: 8
         sortorder: 5
+        roleId: 1
         name: Eradicate the incident
         description:
     step76:
         workflowId: 8
         sortorder: 6
+        roleId: 1
         name: Recover from the incident
         description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step77:
         workflowId: 8
         sortorder: 7
+        roleId: 1
         name: Create a follow-up report
         description:
     step78:
         workflowId: 8
         sortorder: 8
+        roleId: 1
         name: Hold a lessons learned meeting 
         description:

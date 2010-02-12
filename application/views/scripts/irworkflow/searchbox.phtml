@@ -16,7 +16,7 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('irworkflow', 'create')) {
+        <?php if(Fisma_Acl::hasPrivilege('irworkflowdef', 'create')) {
         $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                array('value' => 'Add IR Workflow', 
                                                      'imageSrc' => '/images/add.png',

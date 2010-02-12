@@ -1,13 +1,19 @@
 <?php Fisma_Format_Section::startSection("Incident Information"); ?>
-<table class="fisma_crud">
-    <tr>
-        <td colspan="3" style="text-align: left"><h1>Incident Information:</h1></td>
-    </tr>
-    
-    <?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<tr><td>".ucfirst(preg_replace('/([A-Z])/', ' $1', $key)).":</td><td>$val</td></tr>";} } ?>
-    
-    <tr><td>&nbsp;</td><td><a href="#">View Details</a></td></tr>
-</table>
+<div id="incidentData">Loading...</div>
+
+<script type="text/javascript">
+
+var incidentCallback = {
+        success: function(o) {
+            document.getElementById('incidentData').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Incident Data");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+</script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php Fisma_Format_Section::startSection("Close Incident"); ?>

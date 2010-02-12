@@ -395,11 +395,38 @@ class IRWorkflowController extends SecurityController
         
         $form->getElement('workflowId')->addMultiOptions($workflows);
         
-        $form->getElement('roleId')->addMultiOptions(array('1'=>'role #1', '2'=>'role #2', '3'=>'role #3'));
 
-        $form->getElement('sortorder')->addMultiOptions(array('1'=>'1','2'=>'2','3'=>'3'));
+        /* Get roles*/
+        $q = Doctrine_Query::create()
+             ->select('r.id, r.name')
+             ->from('Role r')
+             ->where('r.nickname IN ("ISSO", "ISO", "OIG", "ED-CIRC", "IRC", "DBR", "PA", "IRS")')
+             ->orderby('r.name');          
+ 
+        $role = $q->execute()->toArray();        
+
+        foreach($role as $key => $val) {
+            $roles[$val['id']] = $val['name']; 
+        } 
         
+        $form->getElement('roleId')->addMultiOptions($roles);
 
+        /* Get max sortorder */ 
+        $q = Doctrine_Query::create()
+             ->select('max(s.sortorder) as sortorder')
+             ->from('IrSteps s');
+ 
+        $max = $q->execute()->toArray();        
+
+        for ($x==1; $x<=$max[0]['sortorder']; $x+=1) {
+            $sortorders[$x] = $x;
+        }
+
+        foreach($wfs as $key => $val) {
+            $workflows[$val['id']] = $val['name']; 
+        } 
+        
+        $form->getElement('sortorder')->addMultiOptions($sortorders);
 
         return Fisma_Form_Manager::prepareForm($form);
     }
@@ -459,10 +486,9 @@ class IRWorkflowController extends SecurityController
         
         $form = $this->_getWorkflowForm($irworkflowstep);
         $wfsValues = $this->_request->getPost();
-        
+       
         if ($form->isValid($wfsValues)) {
             $isModify = false;
-            $wfsValues = $form->getValues();
             $irworkflowstep->merge($wfsValues);
 
             if ($irworkflowstep->isModified()) {
@@ -478,6 +504,9 @@ class IRWorkflowController extends SecurityController
                 $model = self::M_WARNING;
             }
             $this->message($msg, $model);
+
+            $this->_sortSteps();
+        
             $this->_forward('stepview', null, null, array('id' => $irworkflowstep->id));
         } else {
             $errorString = Fisma_Form_Manager::getErrors($form);
@@ -528,7 +557,41 @@ class IRWorkflowController extends SecurityController
                 $model = self::M_WARNING;
             }
             $this->message($msg, $model);
+            $this->_sortSteps();
         }
         $this->_forward('tree');
+    }
+
+    /**
+     * Resort all the workflow steps so that the sort orders start at 1 and don't skip any numbers
+     */
+    private function _sortSteps() 
+    {
+        $q = Doctrine_Query::create()
+             ->select('s.id, s.workflowId')
+             ->from('IrSteps s')
+             ->orderBy('s.workflowId, s.sortorder, s.modifiedTs DESC');
+
+        $wfs = $q->execute()->toArray();
+
+        $count = 1;
+        $old_wf = -1;
+
+        foreach($wfs as $key => $val) {
+            if(!($old_wf == $val['workflowId'])) {
+                $old_wf = $val['workflowId'];
+                $count = 1;
+            }
+
+            $updates[$val['id']] = $count;
+            
+            $count += 1;
+        }
+           
+        foreach($updates as $key => $val) {
+            $irworkflow = Doctrine::getTable('IrSteps')->find($key);
+            $irworkflow->sortorder = $val;
+            $irworkflow->save();
+        }
     }
 }

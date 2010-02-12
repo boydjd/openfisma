@@ -8,6 +8,8 @@ var myColumnDefs = [
     {key:"id", label:"Incident ID", hidden: false}
     ,{key:"additionalInfo", label:"Additional Info", hidden: false}
     ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false}
+    ,{key:"category", label:"Category", hidden: false}
     ,{key:"reportTs", label:"Reported", hidden: false}
 ];
 
@@ -68,7 +70,7 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('organization','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('incident','read')) { ?>
             myDataTable.subscribe("rowClickEvent", 
                 function (oArgs) {
                     var elTarget = oArgs.target;
@@ -92,6 +94,8 @@ var myColumnDefs = [
     {key:"id", label:"Incident ID", hidden: false}
     ,{key:"additionalInfo", label:"Additional Info", hidden: false}
     ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false}
+    ,{key:"category", label:"Category", hidden: false}
     ,{key:"reportTs", label:"Reported", hidden: false}
 ];
 
@@ -152,7 +156,7 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('organization','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('incident','read')) { ?>
             myDataTable.subscribe("rowClickEvent", 
                 function (oArgs) {
                     var elTarget = oArgs.target;
@@ -176,6 +180,8 @@ var myColumnDefs = [
     {key:"id", label:"Incident ID", hidden: false}
     ,{key:"additionalInfo", label:"Additional Info", hidden: false}
     ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false}
+    ,{key:"category", label:"Category", hidden: false}
     ,{key:"reportTs", label:"Reported", hidden: false}
 ];
 
@@ -236,7 +242,7 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('organization','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('incident','read')) { ?>
             myDataTable.subscribe("rowClickEvent", 
                 function (oArgs) {
                     var elTarget = oArgs.target;
@@ -259,6 +265,8 @@ var myColumnDefs = [
     {key:"id", label:"Incident ID", hidden: false}
     ,{key:"additionalInfo", label:"Additional Info", hidden: false}
     ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false}
+    ,{key:"category", label:"Category", hidden: false}
     ,{key:"reportTs", label:"Reported", hidden: false}
 ];
 
@@ -319,7 +327,7 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilege('organization','read')) { ?>
+    <?php if (Fisma_Acl::hasPrivilege('incident','read')) { ?>
             myDataTable.subscribe("rowClickEvent", 
                 function (oArgs) {
                     var elTarget = oArgs.target;
@@ -336,10 +344,46 @@ var myColumnDefs = [
 
 <div id="foo" style="width: 48%; float: left;">
 <?php Fisma_Format_Section::startSection("Comments"); ?>
+<div id="commentData">Loading...</div>
+
+<script type="text/javascript">
+
+var commentCallback = {
+        success: function(o) {
+            document.getElementById('commentData').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Report Data");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/commentdashboard', commentCallback, null);
+
+</script>
+
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
 <div id="foo" style="width: 48%; float: right;">
 <?php Fisma_Format_Section::startSection("Stats"); ?>
+
+<div id="reportData">Loading...</div>
+
+<script type="text/javascript">
+
+var reportCallback = {
+        success: function(o) {
+            document.getElementById('reportData').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Report Data");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/irreport/incidentdashboard', reportCallback, null);
+
+</script>
+
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>
+<div class="clear"></div>

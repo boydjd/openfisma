@@ -55,12 +55,6 @@ User:
         email: openfisma@agency.gov
         nameFirst: Thomas
         nameLast: Taylor
-    pa2:
-        username: pa2
-        password: 0p3nfism@
-        email: openfisma@agency.gov
-        nameFirst: Mark
-        nameLast: White
 
     oig:
         username: oig

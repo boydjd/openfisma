@@ -285,6 +285,16 @@ Privilege:
         action: read
         description: View Incident
         orgSpecific: false
+    incident_create:
+        resource: incident
+        action: create
+        description: Create Incident
+        orgSpecific: false
+    incident_update:
+        resource: incident
+        action: update
+        description: Create Incident
+        orgSpecific: false
     incident_reject:
         resource: incident
         action: reject
@@ -337,14 +347,14 @@ Privilege:
         action: update
         description: Edit IR Workflows and IR Workflow Steps
         orgSpecific: false
-    irworkflow_delete:
+    irworkflowdef_delete:
         resource: irworkflowdef
         action: delete
         description: Delete IR Workflows and IR Workflow Steps
         orgSpecific: false
 
     # IRCategory CRUD
-    irworkflowdef_create:
+    ircategory_create:
         resource: ircategory
         action: create
         description: Create IR Categories and IR Sub Categories
@@ -359,7 +369,7 @@ Privilege:
         action: update
         description: Edit IR Categories and IR Sub Categories
         orgSpecific: false
-    irworkflow_delete:
+    ircategory_delete:
         resource: ircategory
         action: delete
         description: Delete IR Categories and IR Sub Categories
