@@ -1,15 +1,38 @@
 <?php Fisma_Format_Section::startSection("Incident Information"); ?>
-
-<?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<b>$key</b>: $val<br /><br />";} } ?>
-
-<?php Fisma_Format_Section::stopSection(); ?>
-
-<?php Fisma_Format_Section::startSection("Incident History"); ?>
-
+<table class="fisma_crud">
+    <tr>
+        <td colspan="3" style="text-align: left"><h1>Incident Information:</h1></td>
+    </tr>
+    
+    <?php foreach($this->incident[0] as $key => $val) { if($val != '') { print "<tr><td>".ucfirst(preg_replace('/([A-Z])/', ' $1', $key)).":</td><td>$val</td></tr>";} } ?>
+    
+    <tr><td>&nbsp;</td><td><a href="#">View Details</a></td></tr>
+</table>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php Fisma_Format_Section::startSection("Close Incident"); ?>
 
 <?php echo $this->form; ?>
 
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection("Incident History"); ?>
+<table class="fisma_crud">
+
+    <?php 
+        foreach ($this->steps as $key => $step) {
+            if ($key < (count($this->steps) - 1)) { 
+                print "<tr><td>Workflow Step:</td><td><h2>{$step['name']}</h2></td></tr>";
+                print "<tr><td>Completed By:</td> <td><h2>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</h2></td></tr>";
+                print "<tr><td>Completed On:</td> <td><h2>{$step['completeTs']}</h2></td></tr>";
+                print "<tr><td>Comments:</td>     <td><h2>{$step['comments']}</h2></td></tr>";
+                if ($key < (count($this->steps) - 2)) { 
+                    print "<tr><td colspan='2'><hr /></td></tr>";
+                }
+            }
+        }
+    ?>
+    
+
+</table>
 <?php Fisma_Format_Section::stopSection(); ?>

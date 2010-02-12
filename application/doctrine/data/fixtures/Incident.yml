@@ -1,20 +1,46 @@
 Incident:
     new1:
-        additionalInfo: Incident with New status #1
+        additionalInfo: Description of test incident 1
         status: new 
+        piiInvolved: 0
+        classification: 1
     new2:
-        additionalInfo: Incident with New status #2
+        additionalInfo: Description of test incident 2
         status: new 
+        piiInvolved: 0
+        classification: 1
     new3:
-        additionalInfo: Incident with New status #3
+        additionalInfo: Description of test incident 3
         status: new 
+        piiInvolved: 1
+        classification: 2
     new4:
-        additionalInfo: Incident with New status #4
+        additionalInfo: Description of test incident 4
         status: new 
+        piiInvolved: 1
+        classification: 7
     new5:
-        additionalInfo: Incident with New status #5
+        additionalInfo: Description of test incident 5
         status: new 
+        piiInvolved: 1
+        classification: 9
     new6:
-        additionalInfo: Incident with New status #6
+        additionalInfo: Description of test incident 6
         status: new 
-
+        piiInvolved: 1
+        classification: 6
+    new7:
+        additionalInfo: Description of test incident 7
+        status: new 
+        piiInvolved: 0
+        classification: 2
+    new8:
+        additionalInfo: Description of test incident 8
+        status: new 
+        piiInvolved: 0
+        classification: 9
+    new9:
+        additionalInfo: Description of test incident 9
+        status: new 
+        piiInvolved: 1
+        classification: 13

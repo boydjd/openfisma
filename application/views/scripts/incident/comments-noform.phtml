@@ -1,5 +1,3 @@
-<form action="#" onsubmit="addcomment(); return false;" id="commentForm">
-    <input type="hidden" id="id" name="id" value="<?php print $this->id; ?>">
     <table class="fisma_crud">
         <?php 
             if ($this->comments) {
@@ -17,22 +15,7 @@
                             </tr>";
                 }
             } else {
-                print "<tr><td colspan='3'style='text-align: left;'>No comments have been added</td></tr>";
-                print "<tr><td colspan='3'><hr /></td></tr>";
+                print "<tr><td>No comments have been added</td></tr>";
             }
         ?>
-        <tr>
-            <td style="text-align: left" colspan="3"><br /><h1>Add Comment:</h1></td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <textarea name="comments" id="comments" rows="10" cols="60"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: left" colspan="3">
-                <input type="submit" value="Add Comment" />
-            </td>
-        </tr>
     </table>
-</form>

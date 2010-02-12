@@ -72,7 +72,10 @@ function contextMenuHandler(event, eventArgs) {
     // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
     parent = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvitem");
 
-    // Now the organization or system Id & type can be looked up in the treemap
+    // Now the workflow id
+
+    console.log(treeMap[parent.id]);
+ 
     var wfid = treeMap[parent.id]['workflow_id'];
     var id   = treeMap[parent.id]['id'];
 
@@ -103,7 +106,7 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         treeMap[yuiNode.getElId()] = {
             id: treeNode.id,
             name: treeNode.name,
-            workflow_id: treeNode.workflow_id
+            workflow_id: treeNode.workflowId
         };
 
         // Automatically expand the workflow steps

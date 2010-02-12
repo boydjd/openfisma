@@ -2,52 +2,52 @@ IrSubCategory:
     SubCategory28:
         id: 28
         categoryId: 1
-        workflowId: 3
+        workflowId: 4
         name: Exercise / Network Defense Testing
     SubCategory1:
         id: 1
         categoryId: 2
-        workflowId: 3
+        workflowId: 1
         name: User Account Compromise
     SubCategory2:
         id: 2
         categoryId: 2
-        workflowId: 3
+        workflowId: 1
         name: Root Compromise
     SubCategory3:
         id: 3
         categoryId: 2
-        workflowId: 3
+        workflowId: 1
         name: Viewing sensitive data without authorization
     SubCategory4:
         id: 4
         categoryId: 2
-        workflowId: 3
+        workflowId: 1
         name: Using an unattended, logged-in workstation without permission
     SubCategory5:
         id: 5
         categoryId: 3
-        workflowId: 3
+        workflowId: 2
         name: Network-based DoS against a particular host
     SubCategory6:
         id: 6
         categoryId: 3
-        workflowId: 3
+        workflowId: 2
         name: Network-based DoS against a network
     SubCategory7:
         id: 7
         categoryId: 3
-        workflowId: 3
+        workflowId: 2
         name: Dos against the operating system of a particular host
     SubCategory8:
         id: 8
         categoryId: 3
-        workflowId: 3
+        workflowId: 2
         name: DoS against an application on a particular host
     SubCategory9:
         id: 9
         categoryId: 3
-        workflowId: 3
+        workflowId: 2
         name: Distributed DoS
     SubCategory10:
         id: 10
@@ -77,65 +77,65 @@ IrSubCategory:
     SubCategory15:
         id: 15
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Download password cracking tools or pornography
     SubCategory16:
         id: 16
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Sending spam
     SubCategory17:
         id: 17
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Sending harassing email messages to coworkers
     SubCategory18:
         id: 18
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Using file sharing services to acquire or distribute pirated materials
     SubCategory19:
         id: 19
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Website defacement
     SubCategory20:
         id: 20
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Peer-To-Peer (P2P)
     SubCategory21:
         id: 21
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Porn
     SubCategory22:
         id: 22
         categoryId: 5
-        workflowId: 3
+        workflowId: 4
         name: Instant Messaging
     SubCategory23:
         id: 23 
         categoryId: 6
-        workflowId: 3
+        workflowId: 5
         name: Network Scanning / Probing
     SubCategory24:
         id: 24
         categoryId: 6
-        workflowId: 3
+        workflowId: 5
         name: Root Compromise
     SubCategory25:
         id: 25
         categoryId: 6
-        workflowId: 3
+        workflowId: 5
         name: User Account Compromise
     SubCategory26:
         id: 26
         categoryId: 6
-        workflowId: 3
+        workflowId: 5
         name: Social engineering
     SubCategory27:
         id: 27
         categoryId: 7
-        workflowId: 3
+        workflowId: 7
         name: Investigation

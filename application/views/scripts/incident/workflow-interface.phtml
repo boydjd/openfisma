@@ -1,12 +1,12 @@
 <div id="workflow-interface-content" class="yui-navset">
     <ul class="yui-nav">
         <?php
-            foreach ($this->incident as $key => $incident) {
+            foreach ($this->steps as $key => $step) {
                 if($key == 0 ) {
                     print "<li><a href='#tab$key'><em>Open Incident</em></a></li>";        
-                } elseif ($incident['status'] == 'current') {
+                } elseif ($step['status'] == 'current') {
                     print "<li class='selected'><a href='#tab$key'><em>Step #$key</em></a></li>";        
-                } elseif ($key < (count($this->incident) - 1)) {
+                } elseif ($key < (count($this->steps) - 1)) {
                     print "<li><a href='#tab$key'><em>Step #$key</em></a></li>";        
                 }
             }
@@ -14,30 +14,77 @@
     </ul>            
     <div class="yui-content">
         <?php
-            foreach ($this->incident as $key => $incident) {
+            foreach ($this->steps as $key => $step) {
                 if($key == 0 ) {
-                    print "<div><p><b>Incident Opened: </b>{$incident['completeTs']}<br /><br /><b>Comments: </b>{$incident['comments']}</p></div>";        
-                } elseif ($key < (count($this->incident) -1)) {
-                    print "<div><p><b>Workflow Step:</b>{$incident['name']}</p>";
-                    if ($incident['description']) {
-                        print "<p><b>Description:</b>{$incident['description']}</p>";
-                    }                
+                    print " <table class='fisma_crud'>
+                                <tr>
+                                    <td>Incident Opened By:</td>
+                                    <td><h2>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</h2></td>
+                                </tr>    
+                                <tr>
+                                    <td><br />Incident Opened:</td>
+                                    <td><br /><h2>{$step['completeTs']}</h2></td>
+                                </tr>    
+                                <tr>
+                                    <td><br />Comments:</td>
+                                    <td><br /><h2>{$step['comments']}</h2></td>
+                                </tr>    
+                            </table>";
+                } elseif ($key < (count($this->steps) -1)) {
+                    print " <table class='fisma_crud'> 
+                                <tr>
+                                    <td>Workflow Step:</td>
+                                    <td><h2>{$step['name']}</h2></td>
+                                </tr>";
+                                                
+                    if ($step['description']) {
+                        print " <tr>
+                                    <td nowrap valign='top'><br />Workflow Description:</td>
+                                    <td><br /><h2>{$step['description']}</h2></td>
+                                </tr>";
 
-                    if ($incident['status'] == 'current') {
-                    ?>
-                        <form action="#" onsubmit="completestep(); return false;" id="stepForm">
-                            <input type="hidden" name="id" id="id" value="<?php print $this->id; ?>" />
-                            <input type="hidden" name="step_id" id="step_id" value="<?php print $incident['id']; ?>" />
-
-                            <b>Comments:</b><br />
-                            <textarea name="comments" id="comments" rows="10" cols="60"></textarea><br />
-                            <input type="submit" value="Step Completed" />
-                        </form>
-                    <?php
-                    } elseif ($incident['status'] == 'completed') {
-                        print "<br /><br /><b>Comments: </b>{$incident['comments']}</p><br /><br />";
                     }
-                    print "</div>";        
+
+                    if ($step['status'] == 'current') {
+                        $current_step = $key;
+                        print " <tr>
+                                    <td colspan='2' style='text-align: left;'>
+                                        <br />Comments: <br />
+                                        <form action='#' onsubmit='completestep(); return false;' id='stepForm'>
+                                            <input type='hidden' name='id' id='id' value='{$this->id}' />
+                                            <input type='hidden' name='step_id' id='step_id' value='{$step['id']}' />
+                                            <textarea name='comments' id='comments' rows='10' cols='60'></textarea>
+                                            <br /><br />
+                                            <input type='submit' value='Step Completed' />
+                                        </form>
+                                    </td>
+                                </tr>";
+                    }
+                    
+                    if ($step['status'] == 'completed') {
+                        print " <tr>
+                                    <td><br />Completed By:</td>
+                                    <td><br /><h2>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</h2></td>
+                                </tr>
+                                <tr>
+                                    <td><br />Completed On:</td>
+                                    <td><br /><h2>{$step['completeTs']}</h2></td>
+                                </tr>
+                                <tr>
+                                    <td><br />Comments:</td>
+                                    <td><br /><h2>{$step['comments']}</h2></td>
+                                </tr> ";
+
+                    }
+
+                    if ($step['status'] == 'queued') {
+                        print " <tr>
+                                    <td><br />NOTE:</td>
+                                    <td><br /><h2> Step #$current_step must be completed next.</h2></td>
+                                </tr>";
+                    }
+    
+                    print "</table>";
                 }
             }
         ?>

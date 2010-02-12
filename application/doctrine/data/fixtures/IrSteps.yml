@@ -4,7 +4,7 @@ IrSteps:
         workflowId: 1
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step2:
         workflowId: 1
         sortorder: 2
@@ -24,7 +24,7 @@ IrSteps:
         workflowId: 1
         sortorder: 5
         name: Confirm the containment of the incident
-        description: 1.Further analyze the incident and determine if containment was sufficient<br /> 2.Implement additional containment measures if necessary
+        description: <ol><li>Further analyze the incident and determine if containment was sufficient</li><li>Implement additional containment measures if necessary</li></ol>
     step6:
         workflowId: 1
         sortorder: 6
@@ -34,7 +34,7 @@ IrSteps:
         workflowId: 1
         sortorder: 7
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step8:
         workflowId: 1
         sortorder: 8
@@ -49,7 +49,7 @@ IrSteps:
         workflowId: 2
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step12:
         workflowId: 2
         sortorder: 2
@@ -64,7 +64,7 @@ IrSteps:
         workflowId: 2
         sortorder: 4
         name: Contain the incident – halt the DoS if it has not already been stopped
-        description: 1.Identify and mitigate all vulnerabilities that were used<br /> 2.If not yet contained, implement filtering based on the characteristics of the attack<br /> 3.If not yet contained, contact ISP or assistance in filtering attack<br /> 4.If not yet contained, relocate the target
+        description: <ol><li>Identify and mitigate all vulnerabilities that were used</li><li>If not yet contained, implement filtering based on the characteristics of the attack</li><li>If not yet contained, contact ISP or assistance in filtering attack</li><li>If not yet contained, relocate the target</li></ol>
     step15:
         workflowId: 2
         sortorder: 5
@@ -74,7 +74,7 @@ IrSteps:
         workflowId: 2
         sortorder: 6
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step17:
         workflowId: 2
         sortorder: 7
@@ -92,7 +92,7 @@ IrSteps:
         workflowId: 3
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step22:
         workflowId: 3
         sortorder: 2
@@ -102,17 +102,17 @@ IrSteps:
         workflowId: 3
         sortorder: 3
         name: Contain the incident
-        description: 1.Identify infected systems<br /> 2.Disconnect infected systems from the network<br /> 3.Mitigate vulnerabilities that were exploited by the malicious code<br /> 4.If necessary, block the transmission mechanisms for the malicious code
+        description: <ol><li>Identify infected systems</li><li>Disconnect infected systems from the network</li><li>Mitigate vulnerabilities that were exploited by the malicious code</li><li>If necessary, block the transmission mechanisms for the malicious code</li></ol>
     step24:
         workflowId: 3
         sortorder: 4
         name: Eradicate the incident
-        description: 1.Disinfect, quarantine, delete, and replace infected files<br /> 2.Mitigate the exploited vulnerabilities for other hosts within the organization
+        description: <ol><li>Disinfect, quarantine, delete, and replace infected files</li><li>Mitigate the exploited vulnerabilities for other hosts within the organization</li></ol>
     step25:
         workflowId: 3
         sortorder: 5
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready statei<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready statei</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step26:
         workflowId: 3
         sortorder: 6
@@ -128,7 +128,7 @@ IrSteps:
         workflowId: 4
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affectedi<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affectedi</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step32:
         workflowId: 4
         sortorder: 2
@@ -148,7 +148,7 @@ IrSteps:
         workflowId: 4
         sortorder: 5
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step36:
         workflowId: 4
         sortorder: 6
@@ -163,7 +163,7 @@ IrSteps:
         workflowId: 5
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step42:
         workflowId: 5
         sortorder: 2
@@ -188,7 +188,7 @@ IrSteps:
         workflowId: 5
         sortorder: 6
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step47:
         workflowId: 5
         sortorder: 7
@@ -203,7 +203,7 @@ IrSteps:
         workflowId: 6
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step52:
         workflowId: 6
         sortorder: 2
@@ -228,7 +228,7 @@ IrSteps:
         workflowId: 6
         sortorder: 6
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step57:
         workflowId: 6
         sortorder: 7
@@ -243,7 +243,7 @@ IrSteps:
         workflowId: 7
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step62:
         workflowId: 7
         sortorder: 2
@@ -268,7 +268,7 @@ IrSteps:
         workflowId: 7
         sortorder: 6
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step67:
         workflowId: 7
         sortorder: 7
@@ -283,7 +283,7 @@ IrSteps:
         workflowId: 8
         sortorder: 1
         name: Prioritize handling the incident based on the business impact
-        description: 1.Identify which resources have been affected and forecast which resources will be affected<br /> 2.Estimate the current and potential technical effect of the incident<br /> 3.Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources
+        description: <ol><li>Identify which resources have been affected and forecast which resources will be affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find the appropriate cell(s) in the prioritization matrix based on the technical effect and affected resources</li></ol>
     step72:
         workflowId: 8
         sortorder: 2
@@ -308,7 +308,7 @@ IrSteps:
         workflowId: 8
         sortorder: 6
         name: Recover from the incident
-        description: 1.Return affected systems to an operationally ready state<br /> 2.Confirm that the affected systems are functioning normally<br /> 3.If necessary and feasible, implement additional monitoring to look for future related activity.
+        description: <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected systems are functioning normally</li><li>If necessary and feasible, implement additional monitoring to look for future related activity.</li></ol>
     step77:
         workflowId: 8
         sortorder: 7

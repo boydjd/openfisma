@@ -50,9 +50,6 @@ class IncidentController extends BaseController
     {
         parent::init();
     }
-   
-
-
 
     public function dashboardAction() 
     {
@@ -91,6 +88,15 @@ class IncidentController extends BaseController
         } elseif ($status == 'new') {
             $form = Fisma_Form_Manager::loadForm('incident_classify');
 
+            $this->_createBoolean(&$form, array('pii', 'oig'));
+        
+            $form->setDisplayGroupDecorators(array(
+                new Zend_Form_Decorator_FormElements(),
+                new Fisma_Form_CreateIncidentDecorator()
+            ));
+
+            $form->setElementDecorators(array(new Fisma_Form_ClassifyIncidentDecorator()));
+
             foreach($this->_getCategories() as $id => $cat) {
                 $form->getElement('classification')
                      ->addMultiOptions(array($id => $cat));
@@ -112,10 +118,10 @@ class IncidentController extends BaseController
             $element->setValue($incident_id);
             
             $form->addElement($element);
-            
+        
             $q  = Doctrine_Query::create()
                 ->select('s.id')
-                ->from('irIncidentWorkflow s')
+                ->from('IrIncidentWorkflow s')
                 ->where('s.incidentId = ?', $incident_id)
                 ->andWhere('s.status = ?', 'current');
  
@@ -126,12 +132,55 @@ class IncidentController extends BaseController
             $element2->setValue($step[0]['id']);
      
             $form->addElement($element2);
+            
+            $form->setDisplayGroupDecorators(array(
+                new Zend_Form_Decorator_FormElements(),
+                new Fisma_Form_CreateIncidentDecorator()
+            ));
+
+            $form->setElementDecorators(array(new Fisma_Form_ClassifyIncidentDecorator()));
 
             $this->view->assign('form', $form);
+
+            $q  = Doctrine_Query::create()
+                ->select('iw.*')
+                ->from('IrIncidentWorkflow iw')
+                ->where('iw.incidentId = ?', $incident_id);
+
+            $steps = $q->execute();
+
+            $steps = $steps->toArray();
+            
+            foreach($steps as $key => $step) {
+                if($step['userId']) {
+                    $steps[$key]['user'] = $this->_getUser($step['userId']);
+                }
+            }
+
+            $this->view->assign('steps', $steps);
 
             $this->render('close');
 
         } elseif($status == 'closed') {
+            
+            $q  = Doctrine_Query::create()
+                ->select('iw.*')
+                ->from('IrIncidentWorkflow iw')
+                ->where('iw.incidentId = ?', $incident_id);
+
+            $steps = $q->execute();
+
+            $steps = $steps->toArray();
+            
+            foreach($steps as $key => $step) {
+                if($step['userId']) {
+                    $steps[$key]['user'] = $this->_getUser($step['userId']);
+                }
+            }
+
+            $this->view->assign('steps', $steps);
+            
+
             $this->render('history');
         }
     }
@@ -141,13 +190,22 @@ class IncidentController extends BaseController
         
         $q  = Doctrine_Query::create()
             ->select('iw.*')
-            ->from('irIncidentWorkflow iw')
+            ->from('IrIncidentWorkflow iw')
             ->where('iw.incidentId = ?', $incident_id);
 
-        $incident = $q->execute();
+        $steps = $q->execute();
+
+        $steps = $steps->toArray();
+       
+        foreach($steps as $key => $step) {
+            if($step['userId']) {
+                $steps[$key]['user'] = $this->_getUser($step['userId']);
+            }
+        }
+        
 
         $this->view->assign('id', $incident_id);
-        $this->view->assign('incident', $incident->toArray());
+        $this->view->assign('steps', $steps);
 
         $this->render('workflow-interface');
     }
@@ -175,7 +233,7 @@ class IncidentController extends BaseController
         /* check for last step and set incident status to resolved */
         $q  = Doctrine_Query::create()
             ->select('count(*) as count')
-            ->from('irIncidentWorkflow iw')
+            ->from('IrIncidentWorkflow iw')
             ->where('iw.incidentId = ?', $incident_id)
             ->andWhere('iw.status = ?', 'queued');
 
@@ -200,6 +258,7 @@ class IncidentController extends BaseController
     public function closeAction() {
         $incident_id = $this->_request->getParam('id');
         $step_id     = $this->_request->getParam('step_id');
+        $comment     = $this->_request->getParam('comment');
 
         $incident = new Incident();
         $incident = $incident->getTable()->find($incident_id);
@@ -211,7 +270,7 @@ class IncidentController extends BaseController
         $step = $step->getTable()->find($step_id);
 
         $step->status     = 'completed';
-        $step->comments   = $comments;
+        $step->comments   = $comment;
         $step->userId     = Zend_Auth::getInstance()->getIdentity()->id;
         $step->completeTs = date('Y-m-d H:i:s');
 
@@ -226,103 +285,117 @@ class IncidentController extends BaseController
         $subCategoryId = $this->_request->getParam('classification');
         $comment       =  $this->_request->getParam('comment');
 
-        
-        if ($this->_request->getParam('reject') == 'reject') {
-            $this->message('Incident Rejected', self::M_NOTICE);
-            
-            $incident = new Incident();
-            $incident = $incident->getTable()->find($id);
-            $incident->status = 'rejected';
-            $incident->save();
-        
-            
-            /* Add rejected step to workflow table*/
-            $iw = new IrIncidentWorkflow();    
-           
-            $iw->incidentId  = $id; 
-            $iw->name        = 'Incident Rejected';
-            $iw->comments    = $comment;
-            $iw->sortorder   = 0;
-            $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
-            $iw->completeTs = date('Y-m-d H:i:s');
+        /*  check to make sure nothing has been added to the incident workflow table for this incident already
+            this will prevent duplicate entries if the classify page is refreshed
+        */
+        $q  = Doctrine_Query::create()
+            ->select('count(*) as count')
+            ->from('IrIncidentWorkflow iw')
+            ->where('iw.incidentId = ?', $id);
 
-            $iw->status      = 'completed';
-
-            $iw->save();
-
-            /* Add final close step to incident workflow table*/
-            $iw = new IrIncidentWorkflow();    
-           
-            $iw->incidentId  = $id; 
-            $iw->name        = 'Close Incident';
-            $iw->sortorder   = 1;
-
-            $iw->status      = 'queued';
-
-            $iw->save();
-
-        } elseif ($this->_request->getParam('open') == 'open')  {
-            $this->message('Incident Opened', self::M_NOTICE);
-
-            /* update incident status and category */
-            $incident                 = new Incident();
-            $incident                 = $incident->getTable()->find($id);
-            $incident->status         = 'open';
-            $incident->classification = $subCategoryId;
-            
-            $incident->save();
+        $count = $q->execute();
+        $count = $count->toArray();    
+        $count = $count[0]['count'];
 
 
-            /* Add opened step to workflow table*/
-            $iw = new IrIncidentWorkflow();    
-           
-            $iw->incidentId  = $id; 
-            $iw->name        = 'Incident Opened';
-            $iw->comments    = $comment;
-            $iw->sortorder   = 0;
-            $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
-            $iw->completeTs = date('Y-m-d H:i:s');
-
-            $iw->status      = 'completed';
-
-            $iw->save();
-
-            /* create snapshot of workflow and add it to the ir_incident_workflow table */
-            $subcat = Doctrine::getTable('irSubCategory')->find($subCategoryId);
-           
-            $q = Doctrine_Query::create()
-                 ->select('s.id, s.roleid, s.sortorder, s.name, s.description')
-                 ->from('irSteps s')
-                 ->where('s.workflowid = ?', $subcat->workflowId)
-                 ->orderby('s.sortorder');
+        if($count == 0) {    
+            if ($this->_request->getParam('Reject') == 'Reject') {
+                $this->message('Incident Rejected', self::M_NOTICE);
                 
-            $steps = $q->execute();
- 
-            $steps = $steps->toArray();
-
-            foreach($steps as $step) {
+                $incident = new Incident();
+                $incident = $incident->getTable()->find($id);
+                $incident->status = 'rejected';
+                $incident->save();
+            
+                
+                /* Add rejected step to workflow table*/
                 $iw = new IrIncidentWorkflow();    
                
                 $iw->incidentId  = $id; 
-                $iw->name        = $step['name'];
-                $iw->description = $step['description'];
-                $iw->sortorder   = $step['sortorder'];
+                $iw->name        = 'Incident Rejected';
+                $iw->comments    = $comment;
+                $iw->sortorder   = 0;
+                $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
+                $iw->completeTs = date('Y-m-d H:i:s');
 
-                $iw->status      = ($step['sortorder'] == 1) ? 'current' : 'queued';
-                                
+                $iw->status      = 'completed';
+
+                $iw->save();
+
+                /* Add final close step to incident workflow table*/
+                $iw = new IrIncidentWorkflow();    
+               
+                $iw->incidentId  = $id; 
+                $iw->name        = 'Close Incident';
+                $iw->sortorder   = 1;
+
+                $iw->status      = 'queued';
+
+                $iw->save();
+
+            } elseif ($this->_request->getParam('Open') == 'Open')  {
+                $this->message('Incident Opened', self::M_NOTICE);
+
+                /* update incident status and category */
+                $incident                 = new Incident();
+                $incident                 = $incident->getTable()->find($id);
+                $incident->status         = 'open';
+                $incident->classification = $subCategoryId;
+                
+                $incident->save();
+
+
+                /* Add opened step to workflow table*/
+                $iw = new IrIncidentWorkflow();    
+               
+                $iw->incidentId  = $id; 
+                $iw->name        = 'Incident Opened';
+                $iw->comments    = $comment;
+                $iw->sortorder   = 0;
+                $iw->userId      = Zend_Auth::getInstance()->getIdentity()->id;
+                $iw->completeTs = date('Y-m-d H:i:s');
+
+                $iw->status      = 'completed';
+
+                $iw->save();
+
+                /* create snapshot of workflow and add it to the ir_incident_workflow table */
+                $subcat = Doctrine::getTable('IrSubCategory')->find($subCategoryId);
+               
+                $q = Doctrine_Query::create()
+                     ->select('s.id, s.roleid, s.sortorder, s.name, s.description')
+                     ->from('IrSteps s')
+                     ->where('s.workflowid = ?', $subcat->workflowId)
+                     ->orderby('s.sortorder');
+                    
+                $steps = $q->execute();
+     
+                $steps = $steps->toArray();
+
+                foreach($steps as $step) {
+                    $iw = new IrIncidentWorkflow();    
+                   
+                    $iw->incidentId  = $id; 
+                    $iw->name        = $step['name'];
+                    $iw->description = $step['description'];
+                    $iw->sortorder   = $step['sortorder'];
+
+                    $iw->status      = ($step['sortorder'] == 1) ? 'current' : 'queued';
+                                    
+                    $iw->save();
+                }
+
+                /* Add final close step to incident workflow table*/
+                $iw = new IrIncidentWorkflow();    
+               
+                $iw->incidentId  = $id; 
+                $iw->name        = 'Close Incident';
+                $iw->sortorder   = $step['sortorder'] + 1;
+
+                $iw->status      = 'queued';
+
                 $iw->save();
             }
-
-            /* Add final close step to incident workflow table*/
-            $iw = new IrIncidentWorkflow();    
-           
-            $iw->incidentId  = $id; 
-            $iw->name        = 'Close Incident';
-            $iw->sortorder   = $step['sortorder'] + 1;
-
-            $iw->status      = 'queued';
-
-            $iw->save();
         }
 
         $this->_forward('view');
@@ -334,15 +407,44 @@ class IncidentController extends BaseController
 
         $q  = Doctrine_Query::create()
             ->select('c.*')
-            ->from('irComment c')
+            ->from('IrComment c')
             ->where('c.incidentId = ?', $incident_id)
             ->orderBy('createdTs DESC');
 
         $comments = $q->execute();
 
-        $this->view->assign('comments', $comments->toArray());
+        $comments = $comments->toArray();
+
+        foreach($comments as $key => $comment) {
+            $comments[$key]['user'] = $this->_getUser($comment['userId']);
+        }
+
+        $this->view->assign('comments', $comments);
 
         $this->render('comments');   
+    }
+    
+    function commentsnoformAction() {
+        $incident_id = $this->_request->getParam('id');
+        $this->view->assign('id', $incident_id);
+
+        $q  = Doctrine_Query::create()
+            ->select('c.*')
+            ->from('IrComment c')
+            ->where('c.incidentId = ?', $incident_id)
+            ->orderBy('createdTs DESC');
+
+        $comments = $q->execute();
+
+        $comments = $comments->toArray();
+
+        foreach($comments as $key => $comment) {
+            $comments[$key]['user'] = $this->_getUser($comment['userId']);
+        }
+
+        $this->view->assign('comments', $comments);
+
+        $this->render('comments-noform');   
     }
 
     function addcommentAction() {
@@ -372,10 +474,12 @@ class IncidentController extends BaseController
         $id = $this->_request->getParam('id');
 
         $q = Doctrine_Query::create()
-             ->select('u.id, u.nameFirst, u.nameLast')
+             ->select('u.id, u.nameFirst, u.nameLast, u.username')
              ->from('user u')
-             ->where('u.id NOT IN (SELECT ia.userId FROM irIncidentActor ia WHERE ia.incidentid = ?)', $id)
-             ->andWhere('u.id NOT IN (SELECT io.userId FROM irIncidentObserver io WHERE io.incidentid = ?)', $id);
+             ->where('u.id NOT IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentid = ?)', $id)
+             ->andWhere('u.id NOT IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentid = ?)', $id)
+             ->andWhere('NOT (u.username = ?)', 'root')
+             ->orderBy('u.nameLast');
 
         $users = $q->execute();
 
@@ -383,18 +487,20 @@ class IncidentController extends BaseController
         $this->view->assign('users',$users->toArray());
 
         $q = Doctrine_Query::create()
-             ->select('u.id, u.nameFirst, u.nameLast')
+             ->select('u.id, u.nameFirst, u.nameLast, u.username')
              ->from('user u')
-             ->where('u.id IN (SELECT ia.userId FROM irIncidentActor ia WHERE ia.incidentid = ?)', $id);
+             ->where('u.id IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentid = ?)', $id)
+             ->orderBy('u.nameLast');
 
         $users = $q->execute();
 
         $this->view->assign('actors',$users->toArray());
         
         $q = Doctrine_Query::create()
-             ->select('u.id, u.nameFirst, u.nameLast')
+             ->select('u.id, u.nameFirst, u.nameLast, u.username')
              ->from('user u')
-             ->where('u.id IN (SELECT io.userId FROM irIncidentObserver io WHERE io.incidentid = ?)', $id);
+             ->where('u.id IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentid = ?)', $id)
+             ->orderBy('u.nameLast');
 
         $users = $q->execute();
 
@@ -422,7 +528,7 @@ class IncidentController extends BaseController
         $userid = $this->_request->getParam('userid');
         
         $q =    Doctrine_Query::create()
-                ->delete('irIncidentActor ia')
+                ->delete('IrIncidentActor ia')
                 ->where('ia.userid = ?', $userid)
                 ->andWhere('ia.incidentid = ?', $id);
         
@@ -450,7 +556,7 @@ class IncidentController extends BaseController
         $userid = $this->_request->getParam('userid');
         
         $q =    Doctrine_Query::create()
-                ->delete('irIncidentObserver io')
+                ->delete('IrIncidentObserver io')
                 ->where('io.userid = ?', $userid)
                 ->andWhere('io.incidentid = ?', $id);
         
@@ -492,7 +598,7 @@ class IncidentController extends BaseController
         
         $q = Doctrine_Query::create()
              ->select('*')
-             ->from('incident i')
+             ->from('Incident i')
              ->whereIn('i.status', $status)
              ->orderBy("i.$sortBy $order")
              ->limit($this->_paging['count'])
@@ -628,6 +734,8 @@ class IncidentController extends BaseController
 
         $values['reportTs'] = date('Y-m-d G:i:s');
         $values['reportTz'] = date('T');
+        
+        $values['status'] = 'new';
 
         if ($values['incidentHour'] && $values['incidentMinute'] && $values['incidentAmpm']) {
             if ($values['incidentAmpm'] == 'PM') {
@@ -763,7 +871,7 @@ class IncidentController extends BaseController
     private function _getCategories() {
         $q = Doctrine_Query::create()
              ->select('s.id, s.name')
-             ->from('irSubCategory s')
+             ->from('IrSubCategory s')
              ->orderBy("s.name");
 
         $categories = $q->execute();
@@ -773,5 +881,18 @@ class IncidentController extends BaseController
         }
 
         return $ret_val;
+    }
+
+    private function _getUser($id) {
+        $q = Doctrine_Query::create()
+             ->select('u.*')
+             ->from('User u')
+             ->where("u.id = ?", $id);
+
+        $user = $q->execute();
+        
+        $user = $user->toArray();
+
+        return $user[0];
     }
 }
