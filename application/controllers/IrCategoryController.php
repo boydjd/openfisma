@@ -56,7 +56,6 @@ class IrCategoryController extends SecurityController
                       ->initContext();
     }
 
-
     public function listAction() 
     {
         Fisma_Acl::requirePrivilege('ircategory', 'read'); 
@@ -67,7 +66,6 @@ class IrCategoryController extends SecurityController
         $this->view->assign('link', $link);
         $this->render('list');
     }
-    
 
     /**
      * list the ir_categories from the search, 
@@ -88,7 +86,6 @@ class IrCategoryController extends SecurityController
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             throw new Fisma_Exception('Invalid "sortBy" parameter');
         }
-        
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -161,7 +158,7 @@ class IrCategoryController extends SecurityController
         $cats = $q->execute()->toArray();        
 
         /* For each category, get the related subcategories and format them so they will work as a tree */
-        foreach($cats as $key => $val) {
+        foreach ($cats as $key => $val) {
             $cats[$key]['children'] =  ''; 
 
             $q2 = Doctrine_Query::create()
@@ -170,7 +167,7 @@ class IrCategoryController extends SecurityController
                   ->where('sc.categoryId = ?', $val['id']);  
 
             $cats[$key]['children'] = $q2->execute()->toArray();
-            foreach($cats[$key]['children'] as $key2 => $val2) {
+            foreach ($cats[$key]['children'] as $key2 => $val2) {
                 $cats[$key]['children'][$key2]['children'] = array();
             }
         }
@@ -199,16 +196,14 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink',
-                                "/panel/ircategory/sub/view/id/$id");
+            $this->view->assign('viewLink', "/panel/ircategory/sub/view/id/$id");
             $form->setAction("/panel/ircategory/sub/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/ircategory/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/panel/ircategory/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink',"/panel/ircategory/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/panel/ircategory/sub/delete/id/$id");
         $form->setDefaults($ircategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -259,9 +254,7 @@ class IrCategoryController extends SecurityController
         $this->view->title = "Create ";
         $this->view->form = $form;
         $this->render('create');
-
     }
-   
  
     /**
      * Update category information after submitting an edit form.
@@ -372,9 +365,7 @@ class IrCategoryController extends SecurityController
             if ($form->isValid($subCatValues)) {
                 $subCatValues = $form->getValues();
                 $irsubcategory = new IrSubCategory();
-                $irsubcategory->merge($subCatValues);
-                
-                
+                $irsubcategory->merge($subCatValues);                
 
                 // save the data, if failure then return false
                 if (!$irsubcategory->trySave()) {
@@ -426,10 +417,9 @@ class IrCategoryController extends SecurityController
  
         $cats = $q->execute()->toArray();        
 
-        foreach($cats as $key => $val) {
+        foreach ($cats as $key => $val) {
             $categories[$val['id']] = $val['category'] . ' - ' . $val['name']; 
-        } 
-
+        }
 
         /* Get all workflows */ 
         $q = Doctrine_Query::create()
@@ -439,7 +429,7 @@ class IrCategoryController extends SecurityController
  
         $wfs = $q->execute()->toArray();        
 
-        foreach($wfs as $key => $val) {
+        foreach ($wfs as $key => $val) {
             $workflows[$val['id']] = $val['name']; 
         } 
 
@@ -470,16 +460,14 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'subedit') {
-            $this->view->assign('viewLink',
-                                "/panel/ircategory/sub/subview/id/$id");
+            $this->view->assign('viewLink', "/panel/ircategory/sub/subview/id/$id");
             $form->setAction("/panel/ircategory/sub/subupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/ircategory/sub/subview/id/$id/v/subedit");
+            $this->view->assign('editLink', "/panel/ircategory/sub/subview/id/$id/v/subedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink',"/panel/ircategory/sub/subdelete/id/$id");
+        $this->view->assign('deleteLink', "/panel/ircategory/sub/subdelete/id/$id");
         $form->setDefaults($irsubcategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -554,4 +542,3 @@ class IrCategoryController extends SecurityController
         $this->_forward('tree');
     }
 }
-?>

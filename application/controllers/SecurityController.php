@@ -100,7 +100,8 @@ class SecurityController extends Zend_Controller_Action
 
         if (!(($cont == 'incident') && (in_array($act, array('anonreport','anoncreate','anonsuccess'))))) {
             if (empty($this->_me)) {
-                throw new Fisma_Exception_InvalidAuthentication('Your session has expired. Please log in again to begin a new session.');
+                $message = 'Your session has expired. Please log in again to begin a new session.';
+                throw new Fisma_Exception_InvalidAuthentication($message);
             }
         }
     }

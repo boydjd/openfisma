@@ -56,7 +56,6 @@ class IRWorkflowController extends SecurityController
                       ->addActionContext('tree-data', 'json')
                       ->initContext();
     }
-
     
     public function listAction() 
     {
@@ -98,8 +97,7 @@ class IRWorkflowController extends SecurityController
         $organization = Doctrine::getTable('IrWorkflowDef');
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             throw new Fisma_Exception('Invalid "sortBy" parameter');
-        }
-        
+        }        
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -160,7 +158,7 @@ class IRWorkflowController extends SecurityController
         $wfs = $q->execute()->toArray();        
 
         /* For each workflow, get the related workflow steps and format them so they will work as a tree */
-        foreach($wfs as $key => $val) {
+        foreach ($wfs as $key => $val) {
             $wfs[$key]['children'] =  ''; 
 
             $q2 = Doctrine_Query::create()
@@ -170,7 +168,7 @@ class IRWorkflowController extends SecurityController
                   ->orderBy('s.cardinality');
 
             $wfs[$key]['children'] = $q2->execute()->toArray();
-            foreach($wfs[$key]['children'] as $key2 => $val2) {
+            foreach ($wfs[$key]['children'] as $key2 => $val2) {
                 $wfs[$key]['children'][$key2]['children'] = array();
             }
         }
@@ -229,10 +227,9 @@ class IRWorkflowController extends SecurityController
      * Returns the standard form for creating, reading, and
      * updating workflows.
      * 
-     * @param Object $currWF current record of workflow
      * @return Zend_Form
      */
-    private function _getWorkflowForm($currWF = null)
+    private function _getWorkflowForm()
     {
         $form = Fisma_Form_Manager::loadForm('irworkflow');
         return Fisma_Form_Manager::prepareForm($form);
@@ -259,23 +256,20 @@ class IRWorkflowController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink',
-                                "/panel/irworkflow/sub/view/id/$id");
+            $this->view->assign('viewLink', "/panel/irworkflow/sub/view/id/$id");
             $form->setAction("/panel/irworkflow/sub/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/irworkflow/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/panel/irworkflow/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink',"/panel/irworkflow/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/panel/irworkflow/sub/delete/id/$id");
         $form->setDefaults($irworkflow);
         $this->view->form = $form;
         $this->view->assign('id', $id);
         $this->render($v);
     }
     
-
     /**
      * Update workflow information after submitting an edit form.
      *
@@ -380,10 +374,9 @@ class IRWorkflowController extends SecurityController
      * Returns the standard form for creating, reading, and
      * updating workflow steps.
      * 
-     * @param Object $currWFS current record of workflow step
      * @return Zend_Form
      */
-    private function _getWorkflowStepForm($currWFS = null)
+    private function _getWorkflowStepForm()
     {
         $form = Fisma_Form_Manager::loadForm('irworkflowstep');
         
@@ -395,12 +388,11 @@ class IRWorkflowController extends SecurityController
  
         $wfs = $q->execute()->toArray();        
 
-        foreach($wfs as $key => $val) {
+        foreach ($wfs as $key => $val) {
             $workflows[$val['id']] = $val['name']; 
         } 
         
         $form->getElement('workflowId')->addMultiOptions($workflows);
-        
 
         /* Get roles*/
         $q = Doctrine_Query::create()
@@ -411,7 +403,7 @@ class IRWorkflowController extends SecurityController
  
         $role = $q->execute()->toArray();        
 
-        foreach($role as $key => $val) {
+        foreach ($role as $key => $val) {
             $roles[$val['id']] = $val['name']; 
         } 
         
@@ -430,7 +422,7 @@ class IRWorkflowController extends SecurityController
             $cardinalitys[$x] = $x;
         }
 
-        foreach($wfs as $key => $val) {
+        foreach ($wfs as $key => $val) {
             $workflows[$val['id']] = $val['name']; 
         } 
         
@@ -460,16 +452,14 @@ class IRWorkflowController extends SecurityController
         }
 
         if ($v == 'stepedit') {
-            $this->view->assign('viewLink',
-                                "/panel/irworkflow/sub/stepview/id/$id");
+            $this->view->assign('viewLink', "/panel/irworkflow/sub/stepview/id/$id");
             $form->setAction("/panel/irworkflow/sub/stepupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink',
-                                "/panel/irworkflow/sub/stepview/id/$id/v/stepedit");
+            $this->view->assign('editLink', "/panel/irworkflow/sub/stepview/id/$id/v/stepedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink',"/panel/irworkflow/sub/stepdelete/id/$id");
+        $this->view->assign('deleteLink', "/panel/irworkflow/sub/stepdelete/id/$id");
         $form->setDefaults($irworkflowstep);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -588,11 +578,11 @@ class IRWorkflowController extends SecurityController
         $wfs = $q->execute()->toArray();
 
         $count = 1;
-        $old_wf = -1;
+        $oldWf = -1;
 
-        foreach($wfs as $key => $val) {
-            if(!($old_wf == $val['workflowId'])) {
-                $old_wf = $val['workflowId'];
+        foreach ($wfs as $key => $val) {
+            if (!($oldWf == $val['workflowId'])) {
+                $oldWf = $val['workflowId'];
                 $count = 1;
             }
 
@@ -601,7 +591,7 @@ class IRWorkflowController extends SecurityController
             $count += 1;
         }
            
-        foreach($updates as $key => $val) {
+        foreach ($updates as $key => $val) {
             $irworkflow = Doctrine::getTable('IrStep')->find($key);
             $irworkflow->cardinality = $val;
             $irworkflow->save();

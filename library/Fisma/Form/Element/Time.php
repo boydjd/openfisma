@@ -32,7 +32,7 @@
  * @package   Fisma_Form
  */
 class Fisma_Form_Element_Time extends Zend_Form_Element
-{   
+{
     /**
      * Contains valid values for AM and PM
      * 
