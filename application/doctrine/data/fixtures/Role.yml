@@ -170,7 +170,9 @@ Role:
             - notification_admin
             - notification_asset
             - notification_finding
-            - account_log_read
+            - incident_area
+            - incident_admin_area
+            - incident_report_area
             - incident_read
             - incident_classify
             - incident_reject
@@ -178,17 +180,14 @@ Role:
             - incident_close
             - incident_create
             - incident_update
-            - irworkflowdef_read
-            - irworkflowdef_create
-            - irworkflowdef_update
-            - irworkflowdef_delete
-            - ircategory_read
-            - ircategory_update
-            - ircategory_create
-            - ircategory_delete
-            - irreport_read
-            - irreport_generate
-            - irreport_export
+            - ir_workflow_def_read
+            - ir_workflow_def_create
+            - ir_workflow_def_update
+            - ir_workflow_def_delete
+            - ir_category_read
+            - ir_category_update
+            - ir_category_create
+            - ir_category_delete
 
     certagent_role:
         name: Certification Agent
@@ -270,6 +269,9 @@ Role:
         description:
         Privileges: 
             - areas_dashboard
+            - incident_area
+            - incident_admin_area
+            - incident_report_area
             - incident_read
             - incident_reject
             - incident_classify
@@ -277,20 +279,17 @@ Role:
             - incident_close
             - incident_create
             - incident_update
-            - ircategory_read
-            - ircategory_update
-            - ircategory_create
-            - ircategory_delete
-            - irworkflowdef_read
-            - irworkflowdef_update
-            - irworkflowdef_create
-            - irworkflowdef_delete
-            - irreport_read
-            - irreport_generate
-            - irreport_export
+            - ir_category_read
+            - ir_category_update
+            - ir_category_create
+            - ir_category_delete
+            - ir_workflow_def_read
+            - ir_workflow_def_update
+            - ir_workflow_def_create
+            - ir_workflow_def_delete
     
     dbr_role:
-        name: Data Breach Representatives
+        name: Data Breach Representative
         nickname: DBR
         description:
         Privileges: [areas_dashboard, incident_read, incident_create]

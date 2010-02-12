@@ -296,94 +296,76 @@ Privilege:
         resource: incident
         action: read
         description: View Incident
-        orgSpecific: false
     incident_create:
         resource: incident
         action: create
         description: Create Incident
-        orgSpecific: false
     incident_update:
         resource: incident
         action: update
         description: Create Incident
-        orgSpecific: false
     incident_reject:
         resource: incident
         action: reject
         description: Reject Incident
-        orgSpecific: false
     incident_classify:
         resource: incident
         action: classify
         description: Classify Incident
-        orgSpecific: false
     incident_resolve:
         resource: incident
         action: resolve
         description: Resolve Incident
-        orgSpecific: false
     incident_close:
         resource: incident
         action: close
         description: Close Incident
-        orgSpecific: false
     incident_clone:
         resource: incident
         action: clone
         description: Clone Incident
-        orgSpecific: false
     incident_actors:
         resource: incident
         action: actors
         description: Add and Remove Incident Actors
-        orgSpecific: false
     incident_viewers:
         resource: incident
         action: viewers
         description: Add and Remove Incident Viewers
-        orgSpecific: false
 
     # IRWorkflow CRUD
     ir_workflow_def_create:
         resource: ir_workflow_def
         action: create
         description: Create IR Workflows and IR Workflow Steps
-        orgSpecific: false
     ir_workflow_def_read:
         resource: ir_workflow_def
         action: read
         description: View IR Workflows and IR Workflow Steps
-        orgSpecific: false
     ir_workflow_def_update:
         resource: ir_workflow_def
         action: update
         description: Edit IR Workflows and IR Workflow Steps
-        orgSpecific: false
     ir_workflow_def_delete:
         resource: ir_workflow_def
         action: delete
         description: Delete IR Workflows and IR Workflow Steps
-        orgSpecific: false
 
     # IRCategory CRUD
     ir_category_create:
         resource: ir_category
         action: create
         description: Create IR Categories and IR Sub Categories
-        orgSpecific: false
     ir_category_read:
         resource: ir_category
         action: read
         description: View IR Categories and IR Sub Categories
-        orgSpecific: false
     ir_category_update:
         resource: ir_category
         action: update
         description: Edit IR Categories and IR Sub Categories
-        orgSpecific: false
     ir_category_delete:
         resource: ir_category
         action: delete
         description: Delete IR Categories and IR Sub Categories
-        orgSpecific: false
 

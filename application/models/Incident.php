@@ -91,7 +91,7 @@ class Incident extends BaseIncident
      * 
      * @param Doctrine_Event $event
      */
-    public function preInsert(Doctrine_Event $event)
+    public function preInsert($event)
     {
         $this->sourceIp = $_SERVER['REMOTE_ADDR'];
 

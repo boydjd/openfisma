@@ -6,7 +6,7 @@ User:
         nameFirst: Sample
         nameLast: User
         hashType: sha1
-        Roles: [ADMIN]
+        Roles: [admin_role]
         Organizations: 
             - BGA_ORG
             - BOP_ORG
