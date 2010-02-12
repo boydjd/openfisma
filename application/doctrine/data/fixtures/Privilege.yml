@@ -344,45 +344,45 @@ Privilege:
         orgSpecific: false
 
     # IRWorkflow CRUD
-    irworkflowdef_create:
-        resource: irworkflowdef
+    ir_workflow_def_create:
+        resource: ir_workflow_def
         action: create
         description: Create IR Workflows and IR Workflow Steps
         orgSpecific: false
-    irworkflowdef_read:
-        resource: irworkflowdef
+    ir_workflow_def_read:
+        resource: ir_workflow_def
         action: read
         description: View IR Workflows and IR Workflow Steps
         orgSpecific: false
-    irworkflowdef_update:
-        resource: irworkflowdef
+    ir_workflow_def_update:
+        resource: ir_workflow_def
         action: update
         description: Edit IR Workflows and IR Workflow Steps
         orgSpecific: false
-    irworkflowdef_delete:
-        resource: irworkflowdef
+    ir_workflow_def_delete:
+        resource: ir_workflow_def
         action: delete
         description: Delete IR Workflows and IR Workflow Steps
         orgSpecific: false
 
     # IRCategory CRUD
-    ircategory_create:
-        resource: ircategory
+    ir_category_create:
+        resource: ir_category
         action: create
         description: Create IR Categories and IR Sub Categories
         orgSpecific: false
-    ircategory_read:
-        resource: ircategory
+    ir_category_read:
+        resource: ir_category
         action: read
         description: View IR Categories and IR Sub Categories
         orgSpecific: false
-    ircategory_update:
-        resource: ircategory
+    ir_category_update:
+        resource: ir_category
         action: update
         description: Edit IR Categories and IR Sub Categories
         orgSpecific: false
-    ircategory_delete:
-        resource: ircategory
+    ir_category_delete:
+        resource: ir_category
         action: delete
         description: Delete IR Categories and IR Sub Categories
         orgSpecific: false

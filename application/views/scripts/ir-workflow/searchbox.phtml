@@ -16,18 +16,18 @@
         echo $listButton;
         ?>
 
-        <?php if(Fisma_Acl::hasPrivilege('irworkflowdef', 'create')) {
+        <?php if (Fisma_Acl::hasPrivilege('IrWorkflowDef', 'create')) {
         $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                array('value' => 'Add IR Workflow', 
                                                      'imageSrc' => '/images/add.png',
                                                      'href' => '/panel/irworkflow/sub/create'));
         echo $createButton;
         
-        $createButton = new Fisma_Yui_Form_Button_Link('subCcreateButton', 
+        $subCreateButton = new Fisma_Yui_Form_Button_Link('subCreateButton', 
                                                array('value' => 'Add IR Workflow Step', 
                                                      'imageSrc' => '/images/add.png',
                                                      'href' => '/panel/irworkflow/sub/step_create'));
-        echo $createButton;
+        echo $subCreateButton;
         } 
         ?>
     </div>
