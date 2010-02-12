@@ -34,7 +34,6 @@
  */
 class IncidentController extends BaseController
 {
-    
     /**
      * The main name of the model.
      * 
@@ -157,34 +156,47 @@ class IncidentController extends BaseController
      * @return string the rendered page
      */
     public function anoncreateAction() {
+        $form = $this->getForm();
         $values = $this->_request->getPost();
 
-        $values['sourceIp'] = $_SERVER['REMOTE_ADDR'];
+        if ($form->isValid($values)) {
+            $values['sourceIp'] = $_SERVER['REMOTE_ADDR'];
 
-        $values['reportTs'] = date('Y-m-d G:i:s');
-        $values['reportTz'] = date('T');
-        
-        $values['status'] = 'new';
-
-        if ($values['incidentHour'] && $values['incidentMinute'] && $values['incidentAmpm']) {
-            if ($values['incidentAmpm'] == 'PM') {
-                $values['incidentHour'] += 12;
-            }
-            $values['incidentTs'] .= " {$values['incidentHour']}:{$values['incidentMinute']}:00";
-        }
-
-        $incident = new Incident();
-
-        $incident->merge($values);
-        $incident->save();
-
-        $actor = new IrIncidentActor();
-
-        $actor->incidentId = $incident['id'];
-        $actor->userId = $this->_getEDCIRC();
-        $actor->save();
+            $values['reportTs'] = date('Y-m-d G:i:s');
+            $values['reportTz'] = date('T');
             
-        $this->_forward('anonsuccess'); 
+            $values['status'] = 'new';
+
+            if ($values['incidentHour'] && $values['incidentMinute'] && $values['incidentAmpm']) {
+                if ($values['incidentAmpm'] == 'PM') {
+                    $values['incidentHour'] += 12;
+                }
+                $values['incidentTs'] .= " {$values['incidentHour']}:{$values['incidentMinute']}:00";
+            }
+
+            $incident = new Incident();
+
+            $incident->merge($values);
+            $incident->save();
+
+            $actor = new IrIncidentActor();
+
+            $actor->incidentId = $incident['id'];
+            $edcirc = $this->_getEDCIRC();
+            $actor->userId = $edcirc;
+            $actor->save();
+            
+            $mail = new Fisma_Mail();
+            $mail->IRReport($edcirc, $subject['id']);
+                
+            $this->_forward('anonsuccess'); 
+
+        } else {
+            $errorString = Fisma_Form_Manager::getErrors($form);
+            $this->message("Unable to create the {$this->_modelName}:<br>$errorString", self::M_WARNING);    
+  
+            $this->_forward('anonreport'); 
+        }
     }
 
     /**
@@ -211,7 +223,20 @@ class IncidentController extends BaseController
         
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
-        
+       
+        /* NATHAN: This seems like it should work, but I am out of time to debug. When you submit a form the 
+            dashboard is getting rendered two times.  
+         */
+
+        /* 
+        $front = Zend_Controller_Front::getInstance();
+        if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
+            //clear the action stack to prevent additional exceptions would be throwed
+            while($stack->popStack()) { print 'poping<br>'; } 
+        }
+        $this->_helper->actionStack('header', 'panel');
+        */     
+
         $this->render('dashboard');
     }  
 
@@ -231,7 +256,7 @@ class IncidentController extends BaseController
 
         $this->view->assign('comments', $comments);
 
-        $this->render('commentsdashboard');
+        $this->render('commentdashboard');
     } 
 
     /**
@@ -251,7 +276,7 @@ class IncidentController extends BaseController
         
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
         $this->view->assign('status', $status);
-        
+
         $this->view->assign('startDt', $this->_request->getParam('startDt'));
         
         $this->view->assign('endDt',   $this->_request->getParam('endDt'));
@@ -570,9 +595,21 @@ class IncidentController extends BaseController
             $incident->status = 'resolved';
 
             $incident->save();
-            
+           
+    
+            foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+                /* Must instantiate object for each message to prevent exceptions */
+                $mail = new Fisma_Mail();
+                $mail->IRResolve($userid, $incident_id);
+            }
+ 
             print 'redirect'; 
             exit;
+        }
+
+        foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+            $mail = new Fisma_Mail();
+            $mail->IRStep($userid, $incident_id);
         }
 
         $this->view->assign('step_completed', $step_completed);
@@ -606,7 +643,13 @@ class IncidentController extends BaseController
         $step->completeTs = date('Y-m-d H:i:s');
 
         $step->save();
-            
+        
+        foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+            $mail = new Fisma_Mail();
+            $mail->IRClose($userid, $incident_id);
+        }
+
+ 
         $this->message('Incident Closed', self::M_NOTICE);
         $this->_forward('dashboard');
     }
@@ -754,7 +797,11 @@ class IncidentController extends BaseController
                     $actor->userId = $userid;
                     $actor->save();
                 }
-
+        
+                foreach($this->_getAssociatedUsers($id) as $userid) {
+                    $mail = new Fisma_Mail();
+                    $mail->IROpen($userid, $id);
+                }
             }
         }
 
@@ -836,6 +883,11 @@ class IncidentController extends BaseController
         $comment->comment    = $comments;
 
         $comment->save();
+        
+        foreach($this->_getAssociatedUsers($incident_id) as $userid) {
+            $mail = new Fisma_Mail();
+            $mail->IRComment($userid, $incident_id);
+        }
 
         $this->_forward('comments');
     }
@@ -870,7 +922,7 @@ class IncidentController extends BaseController
              ->from('user u')
              ->innerJoin('u.UserRole ur')
              ->innerJoin('ur.Role r')
-             ->where('u.id IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentid = ?)', $id)
+             ->where('u.id IN (SELECT ia.userId FROM IrIncidentActor ia WHERE ia.incidentId = ?)', $id)
              ->orderBy('u.nameLast');
 
         $users = $q->execute();
@@ -882,7 +934,7 @@ class IncidentController extends BaseController
              ->from('user u')
              ->innerJoin('u.UserRole ur')
              ->innerJoin('ur.Role r')
-             ->where('u.id IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentid = ?)', $id)
+             ->where('u.id IN (SELECT io.userId FROM IrIncidentObserver io WHERE io.incidentId = ?)', $id)
              ->orderBy('u.nameLast');
 
         $users = $q->execute();
@@ -912,6 +964,9 @@ class IncidentController extends BaseController
         $actor->incidentId = $id;
         $actor->userId = $userid;
         $actor->save();
+
+        $mail = new Fisma_Mail();
+        $mail->IRAssign($userid, $id);
 
         $this->_forward('actor'); 
     }
@@ -949,7 +1004,9 @@ class IncidentController extends BaseController
         $actor->incidentId = $id;
         $actor->userId = $userid;
         $actor->save();
-
+        
+        $mail = new Fisma_Mail();
+        $mail->IRAssign($userid, $id);
 
         $this->_forward('actor'); 
     }
@@ -1268,7 +1325,12 @@ class IncidentController extends BaseController
 
         $mail = new Fisma_Mail();
         $mail->IRReport($edcirc, $subject['id']);
+        
+        $mail = new Fisma_Mail();
+        $mail->IRReport($user['id'], $subject['id']);
+        
 
+        /* Not sure what is happening here.. if the method is called the dashboard renders twice */
         $this->_forward('dashboard');
     }
 
@@ -1569,19 +1631,50 @@ class IncidentController extends BaseController
         return ($actor[0]['count'] >= 1) ? 'actor' : 'viewer';
     }   
 
-    private function _getClone($incident_id) {
-
+    private function _getClone($incident_id = null) {
         $q = Doctrine_Query::create()
              ->select('i.origincidentid')
              ->from('IrClonedIncident i')
              ->where('i.cloneincidentid = ?', $incident_id);
 
         $data = $q->execute()->toArray();
-
-        if ($data[0]['origIncidentId']) {
-            return $data[0]['origIncidentId'];
-        } else {
-            return false;
+        
+       
+        if ($data ) { 
+            if ($data[0]['origIncidentId']) {
+                return $data[0]['origIncidentId'];
+            } 
         }
+            
+        return false;
     }
+
+    private function _getAssociatedUsers($incident_id) {
+        $q = Doctrine_Query::create()
+             ->select('u.userId')
+             ->from('IrIncidentActor u')   
+             ->where('u.incidentId = ?', $incident_id)
+             ->groupBy('u.userId');
+
+        $data = $q->execute()->toArray();
+        
+        foreach($data as $key => $val) {
+            $ret_val[] = $val['userId'];
+        }
+    
+        $q = Doctrine_Query::create()
+             ->select('u.userId')
+             ->from('IrIncidentObserver u')   
+             ->where('u.incidentId = ?', $incident_id)
+             ->groupBy('u.userId');
+
+        $data = $q->execute()->toArray();
+        
+        foreach($data as $key => $val) {
+            $ret_val[] = $val['userId'];
+        }    
+
+        return $ret_val;
+    }
+    
 }

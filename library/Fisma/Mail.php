@@ -157,10 +157,11 @@ class Fisma_Mail extends Zend_Mail
     }
     
     /**
-     * Send the new password to the user
+     * Notify users a new incident has been reported
      *
-     * @param object $user include the unencrypt password
-     * @return bool
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
      */
     public function IRReport($userId, $incidentId)
     {
@@ -183,8 +184,174 @@ class Fisma_Mail extends Zend_Mail
         }
     }
 
+    /**
+     * Notify users they have been assigned to a new incident
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRAssign($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
 
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("You have been assigned to a new incident.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRAssign.phtml');
+        
+        $this->setBodyText($content);
 
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users that an incident has been opened
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IROpen($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been opened.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IROpen.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users that an incident workflow step has been completed
+     *
+     * @param int $userId     id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * @param int $step       the sortorder of the workflow step that has been completed 
+     * 
+     */
+    public function IRStep($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A workflow step has been completed.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRStep.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users that a comment has been added to an incident
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRComment($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A comment has been added to an incident.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRComment.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+    
+    /**
+     * Notify users that an incident has been resolved
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRResolve($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been resolved.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRResolve.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+    
+    /**
+     * Notify users that an incident has been closed
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRClose($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been closed.");
+        
+        $this->_contentTpl->host       = Zend_Controller_Front::getInstance()->getRequest()->getHttpHost();
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRClose.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass,

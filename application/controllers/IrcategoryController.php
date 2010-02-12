@@ -434,7 +434,7 @@ class IRCategoryController extends SecurityController
         /* Get all workflows */ 
         $q = Doctrine_Query::create()
              ->select('w.id, w.name ')
-             ->from('IRWorkflowDef w')
+             ->from('IrWorkflowDef w')
              ->orderby('w.name');          
  
         $wfs = $q->execute()->toArray();        
