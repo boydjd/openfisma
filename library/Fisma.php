@@ -146,6 +146,14 @@ class Fisma
      * @var boolean
      */
     private static $_isInstall = false;
+
+    /**
+     * A zend session that OpenFISMA can use without worries about collisions to other frameworks that may
+     * be running.
+     * 
+     * @var Zend_Session_Namespace
+     */
+    private static $_session;
     
     /**
      * A system-wide configuration object
@@ -658,5 +666,20 @@ class Fisma
         } else {
             self::$_configuration = $config;
         }
+    }
+    
+    /**
+     * Return a Zend_Session_Namespace which is unique to OpenFISMA (won't collide with any other framework
+     * that may be running.)
+     * 
+     * @return Zend_Session_Namespace
+     */
+    public static function getSession()
+    {
+        if (!self::$_session) {
+            self::$_session = new Zend_Session_Namespace('OpenFISMA');
+        }
+        
+        return self::$_session;
     }
 }

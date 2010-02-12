@@ -1,0 +1,70 @@
+<?php 
+Fisma_Format_Section::startSection("Review Incident Report");
+?>
+
+<h1>Review Report</h1>
+
+<p>
+   Please review all of the report details which you have provided. If anything needs to be changed, you can use the
+   "Go Back" button to revisit the form. When you are satisfied, click the "Submit Report" button.
+</p>
+
+<p>
+    <i>Once you click "Submit Report", the report will be submitted and it cannot be modified after that.</i>
+</p>
+
+<table class="keyValues">
+    <?php
+    foreach ($this->incidentReview as $key => $value):
+    ?>    
+        <tr>
+            <td><?php echo $key; ?>:</td>
+            <td><?php echo $value; ?></td>
+        </tr>
+    <?php
+    endforeach;
+    ?>
+</table>
+
+<div class="toolbar">
+    <form method="post" action="/incident/report/step/<?php echo $this->step; ?>" style="display: inline;">
+        <?php
+        $backwardButton = new Fisma_Yui_Form_Button_Submit(
+                'backwards', 
+                array(
+                    'label' => 'Go Back', 
+                    'imageSrc' => '/images/left_arrow.png',
+                    'class' => 'left'
+                )
+            );
+        echo $backwardButton;
+        ?>
+    </form>
+    
+    <form method="post" action="/incident/save-report" style="display: inline">
+        <?php
+        $saveReportButton = new Fisma_Yui_Form_Button_Submit(
+                'save', 
+                array(
+                    'label' => 'Submit Report', 
+                    'imageSrc' => '/images/add.png',
+                    'class' => 'left',
+                    'onClick' => 'confirmIrSubmit'
+                )
+            );
+        echo $saveReportButton;
+        ?>
+    </form>
+</div>
+
+<?php
+Fisma_Format_Section::stopSection();
+?>
+
+<script type="text/javascript">
+    function confirmIrSubmit()
+    {
+        alert('are you sure?');
+        return false;
+    }
+</script>

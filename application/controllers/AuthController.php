@@ -163,10 +163,10 @@ class AuthController extends Zend_Controller_Action
             
             // Finally, if the user has passed through all of this, 
             // send them to their original requested page or dashboard otherwise
-            $redirectInfo = new Zend_Session_Namespace('redirect_page');
-            if (isset($redirectInfo->page) && !empty($redirectInfo->page)) {
-                $path = $redirectInfo->page;
-                unset($redirectInfo->page);
+            $session = Fisma::getSession();
+            if (isset($session->redirectPage) && !empty($session->redirectPage)) {
+                $path = $session->redirectPage;
+                unset($session->redirectPage);
                 $this->_response->setRedirect($path);
             } else {
                 $this->_forward('index', 'Panel');

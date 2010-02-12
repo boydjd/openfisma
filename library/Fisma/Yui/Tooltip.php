@@ -71,11 +71,19 @@ class Fisma_Yui_Tooltip
      */
     function __toString() 
     {
+        // Wrap the text in <p> tags if none exist
+        $content = $this->_content;
+        if (!strpos($content, '<p>')) {
+            $content = "<p>$content</p>";
+
+        }
+        
+        // Render the tooltip
         $render = "<span id='{$this->_id}Tooltip' class='tooltip'>$this->_title</span><script type='text/javascript'>"
                 . "var {$this->_id}TooltipVar = new YAHOO.widget.Tooltip("
                 . "\"{$this->_id}TooltipObj\", { context:\"{$this->_id}Tooltip\", "
                 . "showdelay: 150, hidedelay: 150, autodismissdelay: 25000, "
-                . "text:\"{$this->_content}\", "
+                . "text:\"{$content}\", "
                 . 'effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, '
                 . 'width: "50%"})</script>';
                 

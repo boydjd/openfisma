@@ -1,14 +1,28 @@
 IrComment:
     columns:
-        id: 
-            type: integer
-            primary: true
-            autoincrement: true
-        incidentId: 
-            type: integer
-        userId: 
-            type: integer
         createdTs: 
             type: timestamp
         comment:
             type: string(1000) 
+        
+        userId: 
+            type: integer
+            comment: The user who left this comment
+        incidentId: 
+            type: integer
+            comment: The incident that this comment belongs to
+
+    relations:
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: IrComments
+        Incident:
+            local: incidentId
+            foreign: id
+            foreignAlias: Comments
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp

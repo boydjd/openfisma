@@ -1,20 +1,34 @@
 IrAuditLog:
     columns:
-        id: 
-            type: integer
-            primary: true
-            autoincrement: true
-        incidentId: 
-            type: integer
         createdTs: 
             type: timestamp
         fieldName: 
             type: string(255)
-        origionalValue: 
-            type: string(1000) 
+            extra:
+                purify: plaintext
+        originalValue: 
+            type: string
+            extra:
+                purify: plaintext
         newValue: 
-            type: string(1000) 
-        userId: 
-            type: integer
+            type: string
+            extra:
+                purify: plaintext
         addressIp:
             type: string(15)
+            ip: true
+            extra:
+                purify: plaintext
+                
+        incidentId: 
+            type: integer
+        userId: 
+            type: integer
+
+    relations:
+        Incident:
+            local: incidentId
+            foreign: id
+        User:
+            local: userId
+            foreign: id

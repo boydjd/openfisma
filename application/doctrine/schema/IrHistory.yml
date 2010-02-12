@@ -1,20 +1,30 @@
 IrHistory:
     columns:
-        id: 
-            type: integer
-            primary: true
-            autoincrement: true
-        incidentId: 
-            type: integer
-        userId: 
-            type: integer
         createdTs: 
             type: timestamp
         type:
             type: enum
-            length: 8
             values: ['COMMENT','WORKFLOW','REPORT','CLASSIFY','RESOLVE','CLOSE']
         name: 
             type: string(255)
+            extra:
+                purify: plaintext
         description:
-            type: string(1000) 
+            type: string
+            extra:
+                purify: html
+                
+        userId: 
+            type: integer
+            comment: The user who left this comment
+        incidentId: 
+            type: integer
+            comment: The incident that this comment belongs to
+    
+    relations:
+        User:
+            local: userId
+            foreign: id
+        Incident:
+            local: incidentId
+            foreign: id

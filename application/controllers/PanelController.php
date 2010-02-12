@@ -100,13 +100,13 @@ class PanelController extends SecurityController
     /** 
      * Forward to incident Controller
      */
-    public function incidentAction()
+/*    public function incidentAction()
     {
         $req = $this->getRequest();
         $sub = $req->getParam('sub');
         $this->_helper->actionStack($sub, 'Incident');
         $this->_helper->actionStack('header');
-    }
+    }*/
 
     /** 
      * Forward to ir category Controller

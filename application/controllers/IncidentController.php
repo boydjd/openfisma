@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IncidentController extends BaseController
+class IncidentController extends Zend_Controller_Action // extends BaseController
 {
     /**
      * The main name of the model.
@@ -42,17 +42,53 @@ class IncidentController extends BaseController
     protected $_modelName = 'Incident';
 
     /**
+     * Timezones
+     * 
+     * @todo this doesn't belong here
+     */
+    private $_timezones = array(
+        ''     =>   '',
+        'AST'  =>   'Atlantic Standard Time',
+        'ADT'  =>   'Atlantic Daylight Time',
+        'EST'  =>   'Eastern Standard Time',
+        'EDT'  =>   'Eastern Daylight Time',
+        'CST'  =>   'Central Standard Time',
+        'CDT'  =>   'Central Daylight Time',
+        'MST'  =>   'Mountain Standard Time',
+        'MDT'  =>   'Mountain Daylight Time',
+        'PST'  =>   'Pacific Standard Time',
+        'PDT'  =>   'Pacific Daylight Time',
+        'AKST' =>   'Alaska Standard Time',
+        'AKDT' =>   'Alaska Daylight Time',
+        'HAST' =>   'Hawaii-Aleutian Standard Time',
+        'HADT' =>   'Hawaii-Aleutian Daylight Time'
+    );
+    
+    /**
      * initialize the basic information, my orgSystems
      *
      */
     public function init()
     {
-        parent::init();
-
         $this->_paging['count'] = 10;
         $this->_paging['startIndex'] = 0;
     }
 
+    /**
+     * A list of the separate parts of the incident report form, in order
+     * 
+     * @var array
+     */
+    private $_formParts = array(
+        array('name' => 'incident0Instructions', 'title' => 'Instructions'),
+        array('name' => 'incident1Contact', 'title' => 'Contact Information'),
+        array('name' => 'incident2Basic', 'title' => 'Incident Details'),
+        array('name' => 'incident3Host', 'title' => 'Affected Asset'),
+        array('name' => 'incident4PiiQuestion', 'title' => 'Was PII Involved?'),
+        array('name' => 'incident5PiiDetails', 'title' => 'PII Details'),
+        array('name' => 'incident6Shipping', 'title' => 'Shipment Details')
+    );
+    
    /**
      * preDispatch() - invoked before each Actions
      */
@@ -133,70 +169,239 @@ class IncidentController extends BaseController
         $this->view->summary = $arrTotal;
     }
 
+    /**
+     * Handles the process of creating a new incident report. 
+     * 
+     * This is organized like a wizard which has several, successive screens to make the process simpler for 
+     * the user.
+     */
+    public function reportAction() 
+    {
+        // Unauthenticated users see a different layout that doesn't have a menubar
+        if (!User::currentUser()) {
+            $this->_helper->layout->setLayout('anonlayout');
+        }
+        
+        // Fetch the incident report draft from the session or create it if necessary
+        $session = Fisma::getSession();
+        if (isset($session->irDraft)) {
+            $incident = unserialize($session->irDraft);
+        } else {
+            $incident = new Incident();
+        }
+                
+        // Save the current form into the Incident and save the incident into the sesion
+        $incident->merge($this->getRequest()->getPost());
+        $session->irDraft = serialize($incident);
+        
+        // Get the current step of the process, defaults to zero
+        $step = $this->getRequest()->getParam('step');
+        if (is_null($step)) {
+            $step = 0;
+        } else {
+            // The user can move forwards or backwards
+            if ($this->getRequest()->getParam('forwards')) {
+                $step++;
+            } elseif ($this->getRequest()->getParam('backwards')) {
+                $step--;
+            } else {
+                throw new Fisma_Exception('User must move forwards or backwards');
+            }
+        }
+        if ($step < 0) {
+            throw new Fisma_Exception("Illegal step number: $step");
+        }
+        
+        // Some business logic to determine if any steps can be skipped based on previous answers:
+        // Authenticated users skip step 1 (which is reporter contact information)
+        if (User::currentUser() && 1 == $step) {
+            $incident->ReportingUser = User::currentUser();
+            $step++;
+        }
+        // If no PII after step 5, then skip to end
+        if ($step >=5 && 0 == $incident->piiInvolved) {
+            if ($this->getRequest()->getParam('forwards')) {
+                $step = count($this->_formParts);
+            } else {
+                $step = 4;
+            }
+        } elseif ($step >= 6 && 0 == $incident->piiShipment) {
+            if ($this->getRequest()->getParam('forwards')) {
+                $step = count($this->_formParts);
+            } else {
+                $step = 5;
+            }            
+        }
+        
+        // Load the form part corresponding to this step
+        if ($step < count($this->_formParts)) {
+            $formPart = $this->getFormPart($step);            
+        } else {
+            $this->_forward('review-report', 'Incident');
+            return;
+        }
+        $formPart->setAction("/incident/report/step/$step");
+        
+        // Use the validator to load the incident data into the form. Notice that there aren't actually any
+        // validators which could fail here.
+        $formPart->isValid($incident->toArray());
+
+        // Render the current step
+        $this->view->assign('formPart', $formPart);
+        $this->view->assign('stepNumber', $step);
+        $this->view->assign('stepTitle', $this->_formParts[$step]['title']);
+
+        $this->render('report');
+    }
 
     /**
-     * Displays a incident report form for users who aren't logged into the system
+     * Loads the specified part of the incident report form
      *
-     * @return string the rendered page
+     * @param int $step The step number
+     * @return Zend_Form
      */
-    public function anonreportAction() {
-        $this->_helper->layout->setLayout('anonlayout'); 
+    public function getFormPart($step)
+    {
+        $formPart = Fisma_Form_Manager::loadForm($this->_formParts[$step]['name']);
 
-        $form = $this->getForm();
-        $form->setAction('/incident/anoncreate');
- 
-        $this->view->assign('form', $form);
+        // Add forward/backward buttons to the form
+        if ($step > 0) {
+            $backwardButton = new Fisma_Yui_Form_Button_Submit(
+                'backwards', 
+                array(
+                    'label' => 'Go Back', 
+                    'imageSrc' => '/images/left_arrow.png',
+                )
+            );
+            $formPart->addElement($backwardButton);
+        }
+        $forwardButton = new Fisma_Yui_Form_Button_Submit(
+            'forwards', 
+            array(
+                'label' => 'Continue', 
+                'imageSrc' => '/images/right_arrow.png',
+            )
+        );
+        $formPart->addElement($forwardButton);
 
-        $this->render('anonreport');
-    }   
+        // Assign decorators
+        $formPart->setDisplayGroupDecorators(array(
+            new Zend_Form_Decorator_FormElements(),
+            new Fisma_Form_CreateIncidentDecorator()
+        ));
+        $formPart->setElementDecorators(array(new Fisma_Form_CreateIncidentDecorator()));
+
+        // Each step has some specific data that needs to be set up
+        switch ($step) {
+            case 1:
+                // setting up state dropdown
+                $formPart->getElement('reporterState')->addMultiOptions(array(0 => '--select--'));
+                foreach ($this->_getStates() as $key => $val) {
+                    $formPart->getElement('reporterState')->addMultiOptions(array($key => $val));
+                }            
+                break;
+            case 2:    
+                // Decorators for the timestamp
+                $timestamp = $formPart->getElement('incidentDate');
+                $timestamp->clearDecorators();
+                $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
+                $timestamp->addDecorator(new Fisma_Form_CreateIncidentDecorator);
+                $tz = $formPart->getElement('incidentTimezone');
+                $tz->addMultiOptions($this->_timezones);
+                break;
+            case 3:
+                foreach($this->_getOS() as $key => $os) {
+                    $formPart->getElement('hostOs')
+                             ->addMultiOptions(array($key => $os));
+                }
+                break;
+            case 4:
+                $this->_createBoolean(&$formPart, array('piiInvolved'));
+                break;
+            case 5:
+                $this->_createBoolean(&$formPart, array('piiMobileMedia', 
+                                                        'piiEncrypted', 
+                                                        'piiAuthoritiesContacted', 
+                                                        'piiPoliceReport',
+                                                        'piiIndividualsNotification',
+                                                        'piiShipment'));
+                $formPart->getElement('piiMobileMediaType')->addMultiOptions(array(0 => '--select--'));
+                foreach($this->_getMobileMedia() as $key => $mm) {
+                    $formPart->getElement('piiMobileMediaType')
+                             ->addMultiOptions(array($key => $mm));
+                }
+                break;
+            case 6:
+                $this->_createBoolean(&$formPart, array('piiShipmentSenderContact'));
+                break;
+        }
+
+        return $formPart;
+    }
+
+    /**
+     * Lets a user review the incident report in its entirety before submitting it.
+     */
+    public function reviewReportAction() 
+    {
+        // Fetch the incident report draft from the session
+        $session = Fisma::getSession();
+        if (isset($session->irDraft)) {
+            $incident = unserialize($session->irDraft);
+        } else {
+            throw new Fisma_Exception('No incident report found in session');
+        }
+        
+        // Load the view with all of the non-empty values that the user provided
+        $incidentReport = $incident->toArray();
+        $incidentReview = array();
+        $incidentTable = Doctrine::getTable('Incident');
+        foreach ($incidentReport as $key => &$value) {
+            $cleanValue = trim(strip_tags($value));
+            if (!empty($cleanValue)) {
+                $columnDef = $incidentTable->getDefinitionOf($key);
+                if ('boolean' == $columnDef['type']) {
+                    $value = ($value == 1) ? 'YES' : 'NO';
+                }
+                if ($columnDef) {
+                    $logicalName = stripslashes($columnDef['extra']['logicalName']);
+                    $incidentReview[$logicalName] = stripslashes($value);
+                } else {
+                    throw new Fisma_Exception("Column ($key) does not have a logical name");
+                }
+            }
+        }
+        
+        $this->view->incidentReview = $incidentReview;
+        $this->view->step = count($this->_formParts);
+    }
 
     /**
      * Inserts an incident record and forwards to the success page
      *
      * @return string the rendered page
      */
-    public function anoncreateAction() {
-        $form = $this->getForm();
-        $values = $this->_request->getPost();
-
-        if ($form->isValid($values)) {
-            $values['sourceIp'] = $_SERVER['REMOTE_ADDR'];
-
-            $values['reportTs'] = date('Y-m-d G:i:s');
-            $values['reportTz'] = date('T');
-            
-            $values['status'] = 'new';
-
-            if ($values['incidentHour'] && $values['incidentMinute'] && $values['incidentAmpm']) {
-                if ($values['incidentAmpm'] == 'PM') {
-                    $values['incidentHour'] += 12;
-                }
-                $values['incidentTs'] .= " {$values['incidentHour']}:{$values['incidentMinute']}:00";
-            }
-
-            $incident = new Incident();
-
-            $incident->merge($values);
-            $incident->save();
-
-            $actor = new IrIncidentActor();
-
-            $actor->incidentId = $incident['id'];
-            $edcirc = $this->_getEDCIRC();
-            $actor->userId = $edcirc;
-            $actor->save();
-            
-            $mail = new Fisma_Mail();
-            $mail->IRReport($edcirc, $subject['id']);
-                
-            $this->_forward('anonsuccess'); 
-
+    public function saveReportAction() {
+        // Fetch the incident report draft from the session
+        $session = Fisma::getSession();
+        if (isset($session->irDraft)) {
+            $incident = unserialize($session->irDraft);
         } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
-            $this->message("Unable to create the {$this->_modelName}:<br>$errorString", self::M_WARNING);    
-  
-            $this->_forward('anonreport'); 
+            throw new Fisma_Exception('No incident report found in session');
         }
+
+        $incident->save();
+
+        // Add the EDCIRC as an actor
+        $actor = new IrIncidentActor();
+        $actor->incidentId = $incident->id;
+        $edcirc = $this->_getEDCIRC();
+        $actor->userId = $edcirc;
+        $actor->save();
+        
+        // Send an email
+        $mail = new Fisma_Mail();
+        $mail->IRReport($edcirc, $subject['id']);
     }
 
     /**
@@ -746,7 +951,7 @@ class IncidentController extends BaseController
                
                 $q = Doctrine_Query::create()
                      ->select('s.id, s.roleId, s.sortorder, s.name, s.description')
-                     ->from('IrSteps s')
+                     ->from('IrStep s')
                      ->where('s.workflowid = ?', $subcat->workflowId)
                      ->orderby('s.sortorder');
                     
@@ -1128,93 +1333,6 @@ class IncidentController extends BaseController
         echo json_encode($tableData);
     }
 
-    /**
-     * Returns the standard form for creating an incident
-     *
-     * @return Zend_Form
-     */
-    public function getForm()
-    {
-        $form = Fisma_Form_Manager::loadForm('incident');
-
-        /* setting up state dropdown */
-        $form->getElement('reporterState')->addMultiOptions(array(0 => '--select--'));
-        foreach ($this->_getStates() as $key => $val) {
-            $form->getElement('reporterState')
-                 ->addMultiOptions(array($key => $val));
-        }
-
-        /* setting up timestamp and timezone dropdowns */
-        $form->getElement('incidentHour')->addMultiOptions(array(0 => ' -- ')); 
-        $form->getElement('incidentMinute')->addMultiOptions(array(0 => ' -- ')); 
-        $form->getElement('incidentAmpm')->addMultiOptions(array(0 => ' -- ')); 
-        $form->getElement('incidentTz')->addMultiOptions(array(0 => ' -- ')); 
-
-        foreach($this->_getHours() as $hour) {
-            $form->getElement('incidentHour')
-                 ->addMultiOptions(array($hour => $hour));
-        }
-        
-        foreach($this->_getMinutes() as $min) {
-            $form->getElement('incidentMinute')
-                 ->addMultiOptions(array($min => $min));
-        }
-        
-        foreach($this->_getAmpm() as $ampm) {
-            $form->getElement('incidentAmpm')
-                 ->addMultiOptions(array($ampm => $ampm));
-        }
-        
-        foreach($this->_getTz() as $key => $val) {
-            $form->getElement('incidentTz')
-                 ->addMultiOptions(array($key => $val));
-        }
-
-        foreach($this->_getOS() as $key => $os) {
-            $form->getElement('hostOs')
-                 ->addMultiOptions(array($key => $os));
-        }
-
-        $form->getElement('piiMobileMediaType')->addMultiOptions(array(0 => '--select--'));
-        foreach($this->_getMobileMedia() as $key => $mm) {
-            $form->getElement('piiMobileMediaType')
-                 ->addMultiOptions(array($key => $mm));
-        }
-
-        $form->getElement('classification')->addMultiOptions($this->_getCategories()); 
-        
-        $form->getElement('assessmentSensitivity')->addMultiOptions(array(   'low' => ' LOW ')); 
-        $form->getElement('assessmentSensitivity')->addMultiOptions(array('medium' => ' MEDIUM ')); 
-        $form->getElement('assessmentSensitivity')->addMultiOptions(array(  'high' => ' HIGN ')); 
-       
-        /* this method defined below adds yes/no values to all select elements passed in the 2nd argument */
-        $this->_createBoolean(&$form,    array(  'assessmentCritical', 
-                                                 'piiInvolved', 
-                                                 'piiMobileMedia', 
-                                                 'piiEncrypted', 
-                                                 'piiAuthoritiesContacted', 
-                                                 'piiPoliceReport',
-                                                 'piiIndividualsNotification',
-                                                 'piiShipment',
-                                                 'piiShipmentSenderContact'
-                                        )
-                            );
-
-        $form->setDisplayGroupDecorators(array(
-            new Zend_Form_Decorator_FormElements(),
-            new Fisma_Form_CreateIncidentDecorator()
-        ));
-
-        $form->setElementDecorators(array(new Fisma_Form_CreateIncidentDecorator()));
-
-        $timestamp = $form->getElement('incidentTs');
-        $timestamp->clearDecorators();
-        $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-        $timestamp->addDecorator(new Fisma_Form_CreateFindingDecorator());
-
-        return $form;
-    }
-
     public function editAction() 
     {
         $incident_id = $this->_request->getParam('id');
@@ -1395,37 +1513,10 @@ class IncidentController extends BaseController
 
         return $states;
     }
-
-    private function _getHours() {
-        return array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12');
-    }
-    private function _getMinutes() {
-        return array('00', '15', '30', '45');
-    }
-    private function _getAmpm() {
-        return array('AM', 'PM');
-    }
-    private function _getTz() {
-        return  array(
-                    'AST'  =>   'Atlantic Standard Time',
-                    'ADT'  =>   'Atlantic Daylight Time',
-                    'EST'  =>   'Eastern Standard Time',
-                    'EDT'  =>   'Eastern Daylight Time',
-                    'CST'  =>   'Central Standard Time',
-                    'CDT'  =>   'Central Daylight Time',
-                    'MST'  =>   'Mountain Standard Time',
-                    'MDT'  =>   'Mountain Daylight Time',
-                    'PST'  =>   'Pacific Standard Time',
-                    'PDT'  =>   'Pacific Daylight Time',
-                    'AKST' =>   'Alaska Standard Time',
-                    'AKDT' =>   'Alaska Daylight Time',
-                    'HAST' =>   'Hawaii-Aleutian Standard Time',
-                    'HADT' =>   'Hawaii-Aleutian Daylight Time',
-                );
-    }
     
     private function _getOS() {
-        return array(    'win7' => 'Windows 7',
+        return array(        '' => '',
+                         'win7' => 'Windows 7',
                         'vista' => 'Vista',
                            'xp' => 'XP',
                         'macos' => 'Mac OSX',
@@ -1445,10 +1536,11 @@ class IncidentController extends BaseController
     }
 
     private function _createBoolean(&$form, $elements) {
-        foreach($elements as $element) {
-            $form->getElement($element)->addMultiOptions(array('' => ' -- select -- ')); 
-            $form->getElement($element)->addMultiOptions(array('0' => ' NO ')); 
-            $form->getElement($element)->addMultiOptions(array('1' => ' YES ')); 
+        foreach($elements as $elementName) {
+            $element = $form->getElement($elementName);
+            $element->addMultiOptions(array('' => ' -- select -- ')); 
+            $element->addMultiOptions(array('0' => ' NO ')); 
+            $element->addMultiOptions(array('1' => ' YES ')); 
         }
 
         return 1;

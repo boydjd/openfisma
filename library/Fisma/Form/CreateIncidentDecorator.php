@@ -93,58 +93,6 @@ class Fisma_Form_CreateIncidentDecorator extends Fisma_Form_FismaDecorator
                 . '</td><td><br />'
                 . $this->buildInput(). $content
                 . '</td></tr>';
-            } elseif (in_array($element->getName(), array('additionalInfo', 'hostAdditional', 'actionsTaken', 'piiShipmentTimeline'))) {
-                $render = '<tr><td colspan="2" style="text-align: left"><br /><br />'
-                .   $this->buildLabel()
-                .   '<br />'
-                .   $this->buildInput()
-                .   '</td></tr>';
-            } elseif (in_array($element->getName(), array('piiAdditional'))) {
-                $render = '<div id="pii_table" class="subform" style="display:none;"><table class="fisma_crud"><tr><td colspan="2" style="text-align: left"><br /><br />'
-                .   $this->buildLabel()
-                .   '<br />'
-                .   $this->buildInput()
-                .   '</td></tr>';
-            } elseif (in_array($element->getName(), array('piiShipmentTrackingNumbers'))) {
-                $render = '<tr><td colspan="2" style="text-align: left"><br /><br />'
-                .   $this->buildLabel()
-                .   '<br />'
-                .   $this->buildInput()
-                .   '</td></tr></table>';
-            } elseif (in_array($element->getName(), array('hostName'))) {
-                $render = '<tr><td style="text-align: left"><br />'
-                . $this->buildLabel()
-                . '<br />'
-                . $this->buildInput()
-                . '</td>';
-            } elseif (in_array($element->getName(), array('hostIp'))) {
-                $render = '<td><br />'
-                . $this->buildLabel()
-                . '<br />'
-                . $this->buildInput()
-                . '</td></tr>';
-            } elseif (in_array($element->getName(), array('hostOs'))) {
-                $render = '<tr><td style="text-align: left">'
-                . $this->buildLabel()
-                . '<br />'
-                . $this->buildInput()
-                . '</td><td>&nbsp;</td></tr>';
-            } elseif (in_array($element->getName(), array('piiInvolved'))) {
-                $render = '<tr>
-                                <td width="40%">
-                                    Was PII involved
-                                </td>
-                                <td>
-                                        <select     helper="formSelect" 
-                                                    id="piiInvolved" 
-                                                    name="piiInvolved" 
-                                                    onchange=" if(document.getElementById(\'piiInvolved\').value == \'1\') { document.getElementById(\'pii_table\').style.display=\'inline\';} else { document.getElementById(\'pii_table\').style.display=\'none\';}">
-                                            <option label=" -- select -- " value=""> -- select -- </option>
-                                            <option label=" NO " value="0"> NO </option>
-                                            <option label=" YES " value="1"> YES </option>
-                                        </select>
-                                </td>
-                        </tr></table></div><div class="clear"></div>';
             } else {
                 $render = '<tr><td>'
                 . $this->buildLabel()

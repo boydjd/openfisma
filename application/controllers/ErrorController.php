@@ -68,7 +68,7 @@ class ErrorController extends Zend_Controller_Action
             $this->view->content = $content;
 
             if ($errors->exception instanceof Fisma_Exception_InvalidPrivilege) {
-                $this->view->message = "<p>You do not have permission to perform the requested function.</p>";   
+                $this->view->message = $errors->exception->getMessage();
             } else {         
                 $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
                                      . " for administrator review.</p><p>You may want to try again in a"
@@ -81,7 +81,11 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-            $this->_helper->actionStack('header', 'panel');
+            
+            // Add headers and footers for logged in users
+            if ($auth->hasIdentity()) {
+                $this->_helper->actionStack('header', 'panel');
+            }
         }
     }
 

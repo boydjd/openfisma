@@ -1,28 +1,43 @@
 IrIncidentWorkflow:
     columns:
-        id: 
-            type: integer
-            primary: true
-            autoincrement: true
-        incidentId: 
-            type: integer
-        roleId: 
-            type: integer
         name: 
             type: string(255)
+            extra:
+                purify: plaintext
         description:
-            type: string(1000) 
-        sortorder: 
+            type: string
+            extra:
+                purify: html
+        cardinality: 
             type: integer
         status:
             type: enum
-            length: 9
             values: ['queued','current','completed','reopened']
         completeTs: 
             type: timestamp
         comments:
-            type: string(1000) 
+            type: string
+            extra: 
+                purify: html
         attachment: 
-            type: string(255)
-        userId: 
+            type: string
+            extra:
+                purify: plaintext
+
+        incidentId: 
             type: integer
+        roleId: 
+            type: integer
+
+    relations:
+        # One to one:
+        Incident:
+            local: incidentId
+            foreign: id
+            foreignType: one
+            foreignAlias: Workflow
+        # One to Many:
+        Role:
+            local: roleId
+            foreign: id
+            foreignAlias: IncidentWorkflows

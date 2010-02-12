@@ -1,141 +1,140 @@
 IrSubCategory:
-    SubCategory28:
-        id: 28
-        categoryId: 1
-        workflowId: 4
+    exercise: 
+        Category: CAT0
+        Workflow: improper_usage_wkflw
         name: Exercise / Network Defense Testing
-    SubCategory1:
-        id: 1
-        categoryId: 2
-        workflowId: 1
+
+    user_compromise: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
         name: User Account Compromise
-    SubCategory2:
-        id: 2
-        categoryId: 2
-        workflowId: 1
+
+    root_compromise: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
         name: Root Compromise
-    SubCategory3:
-        id: 3
-        categoryId: 2
-        workflowId: 1
+
+    view_data_without_access: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
         name: Viewing sensitive data without authorization
-    SubCategory4:
-        id: 4
-        categoryId: 2
-        workflowId: 1
+
+    unattended_workstation: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
         name: Using an unattended, logged-in workstation without permission
-    SubCategory5:
-        id: 5
-        categoryId: 3
-        workflowId: 2
+
+    network_to_host_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
         name: Network-based DoS against a particular host
-    SubCategory6:
-        id: 6
-        categoryId: 3
-        workflowId: 2
+
+    network_to_network_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
         name: Network-based DoS against a network
-    SubCategory7:
-        id: 7
-        categoryId: 3
-        workflowId: 2
+
+    operating_system_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
         name: Dos against the operating system of a particular host
-    SubCategory8:
-        id: 8
-        categoryId: 3
-        workflowId: 2
+
+    application_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
         name: DoS against an application on a particular host
-    SubCategory9:
-        id: 9
-        categoryId: 3
-        workflowId: 2
+
+    distributed_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
         name: Distributed DoS
-    SubCategory10:
-        id: 10
-        categoryId: 4
-        workflowId: 3
+
+    virus: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
         name: Virus
-    SubCategory11:
-        id: 11
-        categoryId: 4
-        workflowId: 3
+
+    trojan_horse: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
         name: Trojan Horses
-    SubCategory12:
-        id: 12
-        categoryId: 4
-        workflowId: 3
+
+    worms: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
         name: Worms
-    SubCategory13:
-        id: 13
-        categoryId: 4
-        workflowId: 3
+
+    mobile_code: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
         name: Mobile Code (To include Spyware, Adware, etc)
-    SubCategory14:
-        id: 14
-        categoryId: 4
-        workflowId: 3
+
+    blended_attack: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
         name: Blended Attack
-    SubCategory15:
-        id: 15
-        categoryId: 5
-        workflowId: 4
+
+    cracking_software: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Download password cracking tools or pornography
-    SubCategory16:
-        id: 16
-        categoryId: 5
-        workflowId: 4
+
+    spam: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Sending spam
-    SubCategory17:
-        id: 17
-        categoryId: 5
-        workflowId: 4
+
+    harassment: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Sending harassing email messages to coworkers
-    SubCategory18:
-        id: 18
-        categoryId: 5
-        workflowId: 4
+
+    pirating: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Using file sharing services to acquire or distribute pirated materials
-    SubCategory19:
-        id: 19
-        categoryId: 5
-        workflowId: 4
+
+    defacement: 
+        Category: CAT4
+        Workflow: defacement_wkflw
         name: Website defacement
-    SubCategory20:
-        id: 20
-        categoryId: 5
-        workflowId: 4
+
+    peer_to_peer: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Peer-To-Peer (P2P)
-    SubCategory21:
-        id: 21
-        categoryId: 5
-        workflowId: 4
+
+    porn: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Porn
-    SubCategory22:
-        id: 22
-        categoryId: 5
-        workflowId: 4
+
+    instant_messaging: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
         name: Instant Messaging
-    SubCategory23:
-        id: 23 
-        categoryId: 6
-        workflowId: 5
+
+    scanning_probing: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
         name: Network Scanning / Probing
-    SubCategory24:
-        id: 24
-        categoryId: 6
-        workflowId: 5
+
+    root_compromise: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
         name: Root Compromise
-    SubCategory25:
-        id: 25
-        categoryId: 6
-        workflowId: 5
+
+    user_compromise: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
         name: User Account Compromise
-    SubCategory26:
-        id: 26
-        categoryId: 6
-        workflowId: 5
+
+    social_engineering: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
         name: Social engineering
-    SubCategory27:
-        id: 27
-        categoryId: 7
-        workflowId: 7
+
+    investigation: 
+        Category: CAT6
+        Workflow: social_engineering_wkflw
         name: Investigation

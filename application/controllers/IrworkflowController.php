@@ -165,7 +165,7 @@ class IRWorkflowController extends SecurityController
 
             $q2 = Doctrine_Query::create()
                   ->select('s.name, s.sortorder, s.workflowId')
-                  ->from('IrSteps s')
+                  ->from('IrStep s')
                   ->where('s.workflowId = ?', $val['id'])
                   ->orderBy('s.sortorder');
 
@@ -336,7 +336,7 @@ class IRWorkflowController extends SecurityController
         if ($wfsValues) {
             if ($form->isValid($wfsValues)) {
                 $wfsValues = $form->getValues();
-                $irworkflowstep = new IrSteps();
+                $irworkflowstep = new IrStep();
                 $irworkflowstep->merge($wfsValues);
                 
                 // save the data, if failure then return false
@@ -414,7 +414,7 @@ class IRWorkflowController extends SecurityController
         /* Get max sortorder */ 
         $q = Doctrine_Query::create()
              ->select('max(s.sortorder) as sortorder')
-             ->from('IrSteps s');
+             ->from('IrStep s');
  
         $max = $q->execute()->toArray();        
 
@@ -441,7 +441,7 @@ class IRWorkflowController extends SecurityController
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'stepview');
         
-        $irworkflowstep = Doctrine::getTable('IrSteps')->find($id);
+        $irworkflowstep = Doctrine::getTable('IrStep')->find($id);
         
         $form = $this->_getWorkflowStepForm($irworkflowstep);
         
@@ -477,7 +477,7 @@ class IRWorkflowController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('irworkflowdef', 'update'); 
         $id = $this->_request->getParam('id', 0);
-        $irworkflowstep = new IrSteps();
+        $irworkflowstep = new IrStep();
         $irworkflowstep = $irworkflowstep->getTable()->find($id);
 
         if (!$irworkflowstep) {
@@ -547,7 +547,7 @@ class IRWorkflowController extends SecurityController
     {
         Fisma_Acl::requirePrivilege('irworkflowdef', 'delete');
         $id = $this->_request->getParam('id');
-        $irworkflow = Doctrine::getTable('IrSteps')->find($id);
+        $irworkflow = Doctrine::getTable('IrStep')->find($id);
         if ($irworkflow) {
             if ($irworkflow->delete()) {
                 $msg = "Workflow Step deleted successfully";
@@ -569,7 +569,7 @@ class IRWorkflowController extends SecurityController
     {
         $q = Doctrine_Query::create()
              ->select('s.id, s.workflowId')
-             ->from('IrSteps s')
+             ->from('IrStep s')
              ->orderBy('s.workflowId, s.sortorder, s.modifiedTs DESC');
 
         $wfs = $q->execute()->toArray();
@@ -589,7 +589,7 @@ class IRWorkflowController extends SecurityController
         }
            
         foreach($updates as $key => $val) {
-            $irworkflow = Doctrine::getTable('IrSteps')->find($key);
+            $irworkflow = Doctrine::getTable('IrStep')->find($key);
             $irworkflow->sortorder = $val;
             $irworkflow->save();
         }

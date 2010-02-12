@@ -223,6 +223,10 @@ div#footerLinks {
 
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
+table.keyValues tr:nth-child(even) {
+	background-color: #e1f6ff;
+}
+
 table.keyValues td {
     padding: 2px 5px;
     vertical-align: top;
