@@ -1,0 +1,15 @@
+; This is the first form part for IR. It simply contains instructions on how to complete the rest of the forms.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident0Instructions]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.value = "<p>The system will ask you a series of questions to try to get as much information as possible about the reported incident. Please specify as much information as you can. However, if there are questions that you do not know the answer to, you are encouraged to leave those questions blank and to submit the incident report in a timely manner.</p><p>Use the Continue and Go Back buttons to navigate through these screens. Based on your answers, the system may ask additional questions to get further information on a particular topic. The report will not be submitted until you reach the final step and click the Submit Incident button.</p>"
+displayGroups.help.elements.instructions = "instructions"

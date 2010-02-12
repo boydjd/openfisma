@@ -1,0 +1,77 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[incident1Contact]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>You are allowed to file the report anonymously without leaving any contact information; however, contact information is very helpful, and so you are encouraged to provide current contact information if possible.</p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.reporterTitle.type = "text"
+elements.reporterTitle.options.label = "Title"
+elements.reporterTitle.options.style = "width:25px"
+displayGroups.reporter.elements.reporterTitle = "reporterTitle"
+
+elements.reporterFirstName.type = "text"
+elements.reporterFirstName.options.label = "First Name"
+elements.reporterFirstName.options.style = "width:200px"
+displayGroups.reporter.elements.reporterFirstName = "reporterFirstName"
+
+elements.reporterLastName.type = "text"
+elements.reporterLastName.options.label = "Last Name"
+elements.reporterLastName.options.style = "width:200px"
+displayGroups.reporter.elements.reporterLastName = "reporterLastName"
+
+elements.reporterOrganization.type = "text"
+elements.reporterOrganization.options.label = "Organization"
+elements.reporterOrganization.options.style = "width:400px"
+displayGroups.reporter.elements.reporterOrganization = "reporterOrganization"
+
+elements.reporterAddress1.type = "text"
+elements.reporterAddress1.options.label = "Address1"
+elements.reporterAddress1.options.style = "width:400px"
+displayGroups.reporter.elements.reporterAddress1 = "reporterAddress1"
+
+elements.reporterAddress2.type = "text"
+elements.reporterAddress2.options.label = "Address2"
+elements.reporterAddress2.options.style = "width:400px"
+displayGroups.reporter.elements.reporterAddress2 = "reporterAddress2"
+
+elements.reporterCity.type = "text"
+elements.reporterCity.options.label = "City"
+elements.reporterCity.options.style = "width:200px"
+displayGroups.reporter.elements.reporterCity = "reporterCity"
+
+elements.reporterState.type = "select"
+elements.reporterState.options.label = "State"
+displayGroups.reporter.elements.reporterState = "reporterState"
+
+elements.reporterZip.type = "text"
+elements.reporterZip.options.label = "Zip"
+elements.reporterZip.options.style = "width:75px"
+displayGroups.reporter.elements.reporterZip = "reporterZip"
+
+elements.reporterPhone.type = "text"
+elements.reporterPhone.options.label = "Phone"
+elements.reporterPhone.options.tooltip = "Phone numbers should be U.S., 10 digit phone numbers" 
+elements.reporterPhone.options.style = "width:150px"
+displayGroups.reporter.elements.reporterPhone = "reporterPhone"
+
+elements.reporterFax.type = "text"
+elements.reporterFax.options.label = "Fax"
+elements.reporterPhone.options.tooltip = "Phone numbers should be U.S., 10 digit phone numbers" 
+elements.reporterFax.options.style = "width:150px"
+displayGroups.reporter.elements.reporterFax = "reporterFax"
+
+elements.reporterEmail.type = "text"
+elements.reporterEmail.options.label = "Email"
+elements.reporterEmail.options.style = "width:225px"
+displayGroups.reporter.elements.reporterEmail = "reporterEmail"

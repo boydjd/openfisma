@@ -1,0 +1,37 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident6Shipping]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>You indicated that PII may have been lost as the result of a shipment. Please answer the following questions pertaining to that shipment.</p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.piiShipmentSenderCompany.type="text"
+elements.piiShipmentSenderCompany.options.label="What company handled the shipment?"
+displayGroups.pii.elements.piiShipmentSenderCompany="piiShipmentSenderCompany"
+
+elements.piiShipmentSenderContact.type="select"
+elements.piiShipmentSenderContact.label="l"
+elements.piiShipmentSenderContact.options.label="Has the shipping company been contacted?"
+displayGroups.pii.elements.piiShipmentSenderContact="piiShipmentSenderContact"
+
+elements.piiShipmentTimeline.type="textarea"
+elements.piiShipmentTimeline.options.label="Describe shipment timeline"
+elements.piiShipmentTimeline.options.cols = "70%"
+elements.piiShipmentTimeline.options.rows = "7"
+displayGroups.pii.elements.piiShipmentTimeline="piiShipmentTimeline"
+
+elements.piiShipmentTrackingNumbers.type="textarea"
+elements.piiShipmentTrackingNumbers.options.label="Tracking numbers"
+elements.piiShipmentTrackingNumbers.options.cols = "70%"
+elements.piiShipmentTrackingNumbers.options.rows = "7"
+displayGroups.pii.elements.piiShipmentTrackingNumbers="piiShipmentTrackingNumbers"

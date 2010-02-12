@@ -1,0 +1,36 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident3Host]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>If this incident involves a computer workstation, server, or other computer asset, please describe that asset as fully as possible on this page.</p><p>This section is <i>optional.</i></p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.hostName.type="text"
+elements.hostName.options.label="Asset Name"
+elements.hostName.options.style="width:200px"
+displayGroups.incident.elements.hostName="hostName"
+
+elements.hostIp.type="text"
+elements.hostIp.options.label="Asset IP Address"
+elements.hostIp.options.style="width:125px"
+displayGroups.incident.elements.hostIp="hostIp"
+
+elements.hostOs.type="select"
+elements.hostOs.options.label="Asset Operating System"
+displayGroups.incident.elements.hostOs="hostOs"
+
+elements.hostAdditional.type="textarea"
+elements.hostAdditional.options.label="Additional information about the asset"
+elements.hostAdditional.options.cols = "70%"
+elements.hostAdditional.options.rows = "7"
+displayGroups.incident.elements.hostAdditional="hostAdditional"
