@@ -483,12 +483,16 @@ class IncidentController extends Zend_Controller_Action
         if (User::currentUser()) {
             $incident->ReportingUser = User::currentUser();
         }
-        $incident->link('Actors', $this->_getIrcs());
-        $incident->save();
         
+        $coordinators = $this->_getIrcs();
+        $incident->link('Actors', $coordinators);
+        $incident->save();
+
         // Send an email
-        $mail = new Fisma_Mail();
-        $mail->IRReport($edcirc, $subject['id']);
+        foreach ($coordinators as $coordinator) {
+            $mail = new Fisma_Mail();
+            $mail->IRReport($coordinator, $incident->id);
+        }
         
         // Clear out serialized incident object
         unset($session->irDraft);

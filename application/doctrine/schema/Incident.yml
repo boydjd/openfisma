@@ -70,7 +70,8 @@ Incident:
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterEmail: 
             type: string(255)
-            email: true
+            email: 
+                check_mx: false
             extra:
                 purify: plaintext
                 logicalName: Reporter\'s E-mail Address

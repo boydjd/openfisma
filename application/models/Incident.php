@@ -31,6 +31,20 @@
 class Incident extends BaseIncident
 {
     /**
+     * Set custom mutators
+     * 
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        
+        $this->hasMutator('hostIp', 'setHostIp');
+        $this->hasMutator('reporterEmail', 'setReporterEmail');
+        $this->hasMutator('ReportingUser', 'setReportingUser');
+    }
+
+    /**
      * Reject this incident
      * 
      * @param string $comment A comment to add with this rejection
@@ -101,6 +115,34 @@ class Incident extends BaseIncident
         $this->status = 'new';
     }
     
+    /**
+     * Mutator for hostIp to convert blank values to null for validation purposes
+     * 
+     * @param string $value
+     */
+    public function setHostIp($value)
+    {
+        if (empty($value)) {
+            $this->_set('hostIp', null);
+        } else {
+            $this->_set('hostIp', $value);
+        }
+    }
+    
+    /**
+     * Mutator for reporterEmail to convert blank values to null for validation purposes
+     * 
+     * @param string $value
+     */
+    public function setReporterEmail($value='')
+    {
+        if (empty($value)) {
+            $this->_set('reporterEmail', null);
+        } else {
+            $this->_set('reporterEmail', $value);
+        }
+    }
+        
     /**
      * When setting a user as the incident reporter, then unset all of the reporter fields
      * 
