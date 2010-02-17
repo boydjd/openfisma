@@ -22,7 +22,7 @@ Privilege:
         description: Incident Module
     incident_admin_area:
         resource: area
-        action: incident_area
+        action: incident_admin
         description: Incident Module Administration
     incident_report_area:
         resource: area
