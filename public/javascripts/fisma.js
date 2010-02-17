@@ -835,8 +835,8 @@ function updateTimeField(id) {
         hour = parseInt(hour) + 12;
     }
     
-    hour = str_pad(hour, 2, '0', 'STR_PAD_LEFT');
-    minute = str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
+    hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
+    minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
     
     var time = hour + ':' + minute + ':00';
     hiddenEl.value = time;

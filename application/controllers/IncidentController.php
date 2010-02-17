@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IncidentController
+class IncidentController extends Zend_Controller_Action
 {
     /**
      * The main name of the model.
@@ -94,8 +94,6 @@ class IncidentController
      */
     function preDispatch()
     {
-        parent::preDispatch();
-
         if (in_array($this->_request->action, array('totalstatus','totalcategory'))) {
 
             $contextSwitch = $this->_helper->getHelper('contextSwitch');
@@ -192,7 +190,7 @@ class IncidentController
         } else {
             $incident = new Incident();
         }
-                
+
         // Save the current form into the Incident and save the incident into the sesion
         $incident->merge($this->getRequest()->getPost());
         $session->irDraft = serialize($incident);

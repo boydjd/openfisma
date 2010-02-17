@@ -200,7 +200,7 @@ Incident:
 
         hostIp:
             type: string(15)
-            ip: true
+            Fisma_Validator_Ip: true
             extra:
                 purify: plaintext
                 logicalName: Host IP Address
@@ -223,7 +223,7 @@ Incident:
         
         sourceIp:
             type: string(15)
-            ip: true
+            Fisma_Validator_Ip: true
             extra:
                 purify: plaintext
                 logicalName: Source IP Address

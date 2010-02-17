@@ -82,15 +82,16 @@ class Fisma_Form_Element_Time extends Zend_Form_Element
             }
         }
 
-        $this->_minute = $parts[1];
+        $this->_minute = isset($parts[1]) ? $parts[1] : '';
     }
 
     /**
      * Render the form element
      *
+     * @param Zend_View_Interface $view Not used but required because of parent's render() signature
      * @return string The rendered element
      */
-    public function render() 
+    public function render(Zend_View_Interface $view = null) 
     {
         $label = $this->getLabel();
         
@@ -135,10 +136,10 @@ class Fisma_Form_Element_Time extends Zend_Form_Element
     {
         $render = "<select onchange='updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Minute' id='{$this->_name}Minute'><option value=''></option>";
-        
+
         for ($minute = 0; $minute <= 55; $minute += 5) {
             $minuteStr = str_pad($minute, 2, '0', STR_PAD_LEFT);
-            $selected = ($this->_minute == $minute) ? ' selected' : '';
+            $selected = ($this->_minute === $minuteStr) ? ' selected' : '';
             $render .= "<option value='$minuteStr'$selected>$minuteStr</option>";
         }
         
