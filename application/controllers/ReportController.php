@@ -250,9 +250,9 @@ class ReportController extends SecurityController
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) moreThan60')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 90 AND 119, 1, 0)) moreThan90')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) >= 120, 1, 0)) moreThan120')
-                 ->addSelect('COUNT(f.id) total')
-                 ->addSelect('ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))) average')
-                 ->addSelect('MAX(DATEDIFF(NOW(), f.nextduedate)) max')
+                 ->addSelect('IFNULL(COUNT(f.id), 0) total')
+                 ->addSelect('IFNULL(ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))), 0) average')
+                 ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
                  ->from('Finding f')
                  ->leftJoin('f.ResponsibleOrganization o')
                  ->where('f.nextduedate < NOW()');
