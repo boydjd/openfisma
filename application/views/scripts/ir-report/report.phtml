@@ -1,0 +1,51 @@
+<?php Fisma_Format_Section::startSection("Incident Report"); ?>
+<table class="fisma_crud">
+    <tr><td colspan="2" style="text-align:left;"><h1>Report Criteria:</h1></td></tr>
+    <tr>
+        <td>Start Date:</td>
+        <td><?php print $this->startDate; ?></td>
+    </tr>
+    <tr>
+        <td>End Date:</td>
+        <td><?php print $this->endDate; ?></td>
+    </tr>
+    <tr>
+        <td valign="top">Category:</td>
+        <td><?php print $this->category; ?></td>
+    </tr>
+    <tr>
+        <td>Status:</td>
+        <td><?php print $this->status; ?></td>
+    </tr>
+</table>
+<br /><br />
+<table class="ir_report">
+    <tr>
+        <th>Incident ID</th>
+        <th>Reported</th>
+        <th>PII Involved</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Description</th>
+    </tr>
+<?php
+
+foreach ($this->incidents as $key => $incident) {
+
+    print "<tr>";
+    
+    print "<td><a href='/panel/incident/sub/view/id/{$incident['id']}'>{$incident['id']}</a></td>";
+    print "<td>{$incident['reportTs']}</td>";
+    print "<td>{$incident['piiInvolved']}</td>";
+    print "<td style='text-align:left'>{$incident['category']}</td>";
+    print "<td>{$incident['status']}</td>";
+    print "<td>{$incident['additionalInfo']}</td>";
+
+    print "</tr>";
+
+}
+
+?>
+</table>
+
+<?php Fisma_Format_Section::stopSection(); ?>

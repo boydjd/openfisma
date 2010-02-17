@@ -1,0 +1,76 @@
+<?php echo "{$this->doctype()}\n" ?>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="refresh" 
+              content="<?php echo Fisma::configuration()->getConfig('session_inactivity_period'); ?>;url=/auth/logout">
+
+    <?php 
+    $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
+    echo $this->headTitle();
+    $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
+                           'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
+                           'paginator', 'datasource', 'datatable', 'selector', 'treeview', 'uploader',
+                           'reset-fonts-grids', 'autocomplete');
+
+    $yui = new Fisma_Loader();
+    $yui->load($yuiComponents);
+
+    $this->headScript()->appendFile('/javascripts/tiny_mce/tiny_mce.js');
+    $this->injectAsset('/javascripts/combined.js', 'js', true);
+    $this->injectAsset('/stylesheets/combined.css', 'css', true);
+    $this->injectAsset('/stylesheets/print.css', 'css', false, 'print');
+    $this->injectAsset('/stylesheets/ie7hacks.css', 'css', false, 'screen', 'IE 7');
+    $this->injectAsset('/stylesheets/ie6hacks.css', 'css', false, 'screen', 'IE 6');
+
+    $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+
+    echo $yui;
+    echo $this->headScript();
+    echo $this->headLink();
+    ?>
+        <!--[if IE 7]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
+        <![endif]-->
+        
+        <!--[if IE 6]>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
+        <![endif]-->
+    </head>
+    <body class="yui-skin-sam">
+        <div id='header' >
+            <div id="logo">
+                <a href="/"><img alt="Logo" src="/images/logo.png"></a>
+            </div>
+            <div class="clear"> </div>
+            <div id="msgbar"><!-- Any user error messages are rendered into this div --></div>
+        </div>
+
+        <div class="externalMediaMarking">
+            WARNING: This document is for internal, official use only.  This document contains sensitive computer 
+            security related information. Public disclosure of this information would risk circumvention of the 
+            law. Recipients of this document must not, under any circumstances, show or release its contents for 
+            purposes other than official action. This document must be safeguarded to prevent improper disclosure. 
+            Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.
+        </div>
+   
+        <div class="clear"></div>
+             
+        <a name="contentStart"></a>
+        <div id='content'>
+                <?php echo $this->layout()->content; ?>
+        </div>
+        
+        <div id='footer'>
+             <div id="footerLinks">
+                <a href="mailto:openfisma@department.gov?Subject=OpenFISMA+Tech+Support">
+                    Contact Administrator
+                </a>&nbsp;|&nbsp;
+                <a href="/auth/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
+                <a href="/auth/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
+
+                <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a></i>
+            </div>
+        </div>
+    </body>
+</html>

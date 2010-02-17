@@ -66,10 +66,6 @@ class SecurityController extends Zend_Controller_Action
         $auth->setStorage(new Fisma_Auth_Storage_Session());
 
         if ($auth->hasIdentity()) {
-            if (isset($redirectInfo->page)) {
-                unset($redirectInfo->page);
-            }
-
             // Store a reference to the authenticated user inside the controller, for convenience
             $this->_me = User::currentUser();
              
@@ -79,8 +75,8 @@ class SecurityController extends Zend_Controller_Action
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their
             // original destination after they have authenticated.
-            $redirectInfo = new Zend_Session_Namespace('OpenFISMA');
-            $redirectInfo->page = $_SERVER['REQUEST_URI'];
+            $session = Fisma::getSession();
+            $session->redirectPage = $_SERVER['REQUEST_URI'];
         }
     }
 
@@ -94,9 +90,15 @@ class SecurityController extends Zend_Controller_Action
     public function preDispatch()
     {
         parent::preDispatch();
-        if (empty($this->_me)) {
-            $error = 'Your session has expired. Please log in again to begin a new session.';
-            throw new Fisma_Exception_InvalidAuthentication($error);
+   
+        $cont = $this->_request->controller; 
+        $act  = $this->_request->action; 
+
+        if (!(($cont == 'incident') && (in_array($act, array('anonreport','anoncreate','anonsuccess'))))) {
+            if (empty($this->_me)) {
+                $message = 'Your session has expired. Please log in again to begin a new session.';
+                throw new Fisma_Exception_InvalidAuthentication($message);
+            }
         }
     }
 }

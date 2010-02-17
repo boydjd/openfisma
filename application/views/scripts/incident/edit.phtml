@@ -1,0 +1,16 @@
+<?php
+$viewUri = "/panel/incident/sub/view/id/{$this->id}";
+Fisma_Format_Section::startSection("Edit Incident <a href='$viewUri'>[View]</a>");
+
+if (isset($this->reportingUser)):
+?>
+
+    <b>Reported by user: <?php echo $this->reportingUser; ?></b>
+
+<?php
+endif;
+
+echo $this->form;
+
+Fisma_Format_Section::stopSection();
+?>

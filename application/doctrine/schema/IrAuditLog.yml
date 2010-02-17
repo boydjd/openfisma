@@ -1,0 +1,34 @@
+IrAuditLog:
+    columns:
+        createdTs: 
+            type: timestamp
+        fieldName: 
+            type: string(255)
+            extra:
+                purify: plaintext
+        originalValue: 
+            type: string
+            extra:
+                purify: plaintext
+        newValue: 
+            type: string
+            extra:
+                purify: plaintext
+        addressIp:
+            type: string(15)
+            ip: true
+            extra:
+                purify: plaintext
+                
+        incidentId: 
+            type: integer
+        userId: 
+            type: integer
+
+    relations:
+        Incident:
+            local: incidentId
+            foreign: id
+        User:
+            local: userId
+            foreign: id

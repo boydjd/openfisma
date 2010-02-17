@@ -16,6 +16,18 @@ Privilege:
         resource: area
         action: configuration
         description: Configure Application
+    incident_area:
+        resource: area
+        action: incident
+        description: Incident Module
+    incident_admin_area:
+        resource: area
+        action: incident_admin
+        description: Incident Module Administration
+    incident_report_area:
+        resource: area
+        action: incident_report
+        description: Incident Module Reports
 
     # Findings CRUD
     findings_create:
@@ -279,8 +291,81 @@ Privilege:
         action: finding
         description: Finding Notifications
 
-    # Account Audit Logs
-    account_log_read:
-        resource: account_log
+    # Incident
+    incident_read:
+        resource: incident
         action: read
-        description: Account Audit Logs
+        description: View Incident
+    incident_create:
+        resource: incident
+        action: create
+        description: Create Incident
+    incident_update:
+        resource: incident
+        action: update
+        description: Create Incident
+    incident_reject:
+        resource: incident
+        action: reject
+        description: Reject Incident
+    incident_classify:
+        resource: incident
+        action: classify
+        description: Classify Incident
+    incident_resolve:
+        resource: incident
+        action: resolve
+        description: Resolve Incident
+    incident_close:
+        resource: incident
+        action: close
+        description: Close Incident
+    incident_clone:
+        resource: incident
+        action: clone
+        description: Clone Incident
+    incident_actors:
+        resource: incident
+        action: actors
+        description: Add and Remove Incident Actors
+    incident_viewers:
+        resource: incident
+        action: viewers
+        description: Add and Remove Incident Viewers
+
+    # IRWorkflow CRUD
+    ir_workflow_def_create:
+        resource: ir_workflow_def
+        action: create
+        description: Create IR Workflows and IR Workflow Steps
+    ir_workflow_def_read:
+        resource: ir_workflow_def
+        action: read
+        description: View IR Workflows and IR Workflow Steps
+    ir_workflow_def_update:
+        resource: ir_workflow_def
+        action: update
+        description: Edit IR Workflows and IR Workflow Steps
+    ir_workflow_def_delete:
+        resource: ir_workflow_def
+        action: delete
+        description: Delete IR Workflows and IR Workflow Steps
+
+    # IRCategory CRUD
+    ir_category_create:
+        resource: ir_category
+        action: create
+        description: Create IR Categories and IR Sub Categories
+    ir_category_read:
+        resource: ir_category
+        action: read
+        description: View IR Categories and IR Sub Categories
+    ir_category_update:
+        resource: ir_category
+        action: update
+        description: Edit IR Categories and IR Sub Categories
+    ir_category_delete:
+        resource: ir_category
+        action: delete
+        description: Delete IR Categories and IR Sub Categories
+

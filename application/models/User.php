@@ -308,7 +308,7 @@ class User extends BaseUser
                     $newRole = new Zend_Acl_Role($role->nickname);
                     $acl->addRole($newRole);
                     $roleArray[] = $role->nickname;
-                
+
                     foreach ($role->Privileges as $privilege) {
                         /**
                          * Check whether this privilege corresponds to a class, and if it does, then check whether that
@@ -664,5 +664,21 @@ class User extends BaseUser
         $userRolesResult = $userRolesQuery->execute();
         
         return $userRolesResult;
+    }
+
+    /**
+     * Renders a user object to HTML
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        $render = $this->username;
+
+        if (Fisma_Acl::hasPrivilegeForObject('read', $this)) {
+            $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
+        }
+
+        return $render;
     }
 }

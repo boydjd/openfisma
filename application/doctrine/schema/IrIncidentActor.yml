@@ -1,0 +1,6 @@
+IrIncidentActor:
+    columns:
+        incidentId: 
+            type: integer
+        userId: 
+            type: integer

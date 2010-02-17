@@ -1,0 +1,35 @@
+IrSubCategory:
+    listeners: [XssListener]
+    
+    columns:
+        name: 
+            type: string(255)
+        description:
+            type: string
+            extra: 
+                purify: html
+        categoryId: 
+            type: integer
+        workflowId: 
+            type: integer
+
+    relations:
+        Category:
+            class: IrCategory
+            local: categoryId
+            foreign: id
+            foreignAlias: SubCategories
+        Workflow:
+            class: IrWorkflowDef
+            local: workflowId
+            foreign: id
+            foreignAlias: SubCategories
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

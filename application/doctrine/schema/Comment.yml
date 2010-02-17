@@ -7,7 +7,7 @@ Comment:
         content:
             type: string(255)
             extra:
-                purify: plaintext
+                purify: html
             comment: The text of the comment
         
         findingEvaluationId: integer

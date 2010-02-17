@@ -1,0 +1,493 @@
+<div class="searchFilters">
+    <div class="left">
+        <b>Jump to:</b>
+        <?php
+        echo new Fisma_Yui_Form_Button_Link(
+            'summaryButton',
+            array(
+                'value' => 'Summary',
+                'href' => '#summary'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'newButton',
+            array(
+                'value' => 'New Incidents',
+                'href' => '#new'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'openButton',
+            array(
+                'value' => 'Open Incidents',
+                'href' => '#open'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'resolvedButton',
+            array(
+                'value' => 'Resolved Incidents',
+                'href' => '#resolved'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'closeButton',
+            array(
+                'value' => 'Closed Incidents',
+                'href' => '#closed'
+            )
+        );
+
+        echo new Fisma_Yui_Form_Button_Link(
+            'commentsButton',
+            array(
+                'value' => 'Recent Comments',
+                'href' => '#comments'
+            )
+        );
+        ?>
+    </div>
+    
+    <div class="clear"></div>
+</div>
+
+<?php Fisma_Format_Section::startSection("Summary", null, 'summary'); ?>
+    <div style="text-align: center">
+        <embed scale="noscale"
+               salign="TL"
+               bgcolor="#ffffff"
+               wmode="opaque"
+               src="/flash/charts.swf"
+               flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalstatus/format/xml"
+               name="my_chart"
+               menu="true"
+               allowfullscreen="true"
+               allowscriptaccess="sameDomain"
+               quality="high"
+               pluginspage="http://www.macromedia.com/go/getflashplayer"
+               play="true"
+               devicefont="false"
+               type="application/x-shockwave-flash"
+               width="400"
+               height="250"
+               align="middle">
+        &nbsp;&nbsp;&nbsp;
+        <embed scale="noscale"
+               salign="TL"
+               bgcolor="#ffffff"
+               wmode="opaque"
+               src="/flash/charts.swf"
+               flashvars="library_path=/flash/charts_library&amp;xml_source=/incident/totalcategory/format/xml"
+               name="my_chart"
+               menu="true"
+               allowfullscreen="true"
+               allowscriptaccess="sameDomain"
+               quality="high"
+               pluginspage="http://www.macromedia.com/go/getflashplayer"
+               play="true"
+               devicefont="false"
+               type="application/x-shockwave-flash"
+               width="400"
+               height="250"
+               align="middle">
+    </div>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection("New Incidents: <span id='newSearchResultsTotalFound'></span>", null, 'new'); 
+?>
+<div id="newList"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
+    ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
+];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "reportTs";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+   
+        sort = (sort=='category') ? 'classification' : sort;
+ 
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/status/new" +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/panel/incident/sub/search");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    // DataTable configuration
+    var myConfigs = {
+        //dynamicData: false
+        initialRequest: "<?php echo $this->newIncidentsUrl; ?>",
+        dynamicData: true, 
+        sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+    var myDataTable = new YAHOO.widget.DataTable("newList", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var newSearchResultsHeader = document.getElementById('newSearchResultsTotalFound');
+        if (!newSearchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            newSearchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection("Open Incidents: <span id='openSearchResultsTotalFound'></span>", null, 'open'); 
+?>
+<div id="openList"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
+    ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
+];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        sort = (sort=='category') ? 'classification' : sort;
+ 
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/status/open" +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        
+        return request;
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/panel/incident/sub/search");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    // DataTable configuration
+    var myConfigs = {
+        //dynamicData: false
+        initialRequest: "<?php echo $this->openIncidentsUrl; ?>",
+        dynamicData: true, 
+        sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+    var myDataTable = new YAHOO.widget.DataTable("openList", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var openSearchResultsHeader = document.getElementById('openSearchResultsTotalFound');
+        if (!openSearchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            openSearchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection(
+    "Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>",
+    null, 
+    'resolved'
+);
+?>
+<div id="resolvedList"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
+    ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
+];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        sort = (sort=='category') ? 'classification' : sort;
+ 
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/status/resolved" +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        
+        return request;
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/panel/incident/sub/search");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    // DataTable configuration
+    var myConfigs = {
+        //dynamicData: false
+        initialRequest: "<?php echo $this->resolvedIncidentsUrl; ?>",
+        dynamicData: true, 
+        sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+    var myDataTable = new YAHOO.widget.DataTable("resolvedList", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var resolvedSearchResultsHeader = document.getElementById('resolvedSearchResultsTotalFound');
+        if (!resolvedSearchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            resolvedSearchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection(
+    "Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>", 
+    null, 
+    'closed'
+);
+?>
+<div id="closedList"></div>
+<script type="text/javascript">
+// Column definitions
+var myColumnDefs = [
+    {key:"id", label:"Incident ID", hidden: false, sortable: true}
+    ,{key:"additionalInfo", label:"Additional Info", hidden: false, sortable: true}
+    ,{key:"status", label:"status", hidden: false}
+    ,{key:"piiInvolved", label:"PII", hidden: false, sortable: true}
+    ,{key:"category", label:"Category", hidden: false, sortable: true}
+    ,{key:"reportTs", label:"Reported", hidden: false, sortable: true}
+];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        sort = (sort=='category') ? 'classification' : sort;
+ 
+        // Build custom request
+        var request = "<?php echo $this->link; ?>" + 
+                      "/sortby/" + sort +
+                      "/status/closed" +
+                      "/order/" + dir +
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        
+        return request;
+    };
+
+    // DataSource instance
+    var myDataSource = new YAHOO.util.DataSource("/panel/incident/sub/search");
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    // DataTable configuration
+    var myConfigs = {
+        //dynamicData: false
+        initialRequest: "<?php echo $this->closedIncidentsUrl; ?>",
+        dynamicData: true, 
+        sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ), 
+        generateRequest : myRequestBuilder
+    };
+    var myDataTable = new YAHOO.widget.DataTable("closedList", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var closedSearchResultsHeader = document.getElementById('closedSearchResultsTotalFound');
+        if (!closedSearchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            closedSearchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif;
+    ?>
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection("Recent Comments", null, 'comments'); ?>
+<div id="commentData">Loading...</div>
+
+<script type="text/javascript">
+
+var commentCallback = {
+        success: function(o) {
+            document.getElementById('commentData').innerHTML =  o.responseText;
+        },
+        failure: function(o) {
+            alert("Error loading Report Data");
+        }
+    } 
+
+var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/commentdashboard', commentCallback, null);
+
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

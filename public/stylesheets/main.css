@@ -223,9 +223,13 @@ div#footerLinks {
 
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
+table.keyValues tr:nth-child(even) {
+	background-color: #e1f6ff;
+}
+
 table.keyValues td {
     padding: 2px 5px;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 /* The first column in a keyValues table is bold text */
@@ -548,4 +552,55 @@ div.yui-ac-bd {
 
 .yui-ac-content ul {
     margin-right: 20px !important;
+}
+
+/* Styles for incident report reports section */
+
+table.ir_report {
+    margin: 0px 15px;
+    background-color: #f0f0f0;
+    border: 1px dotted #c0c0c0;
+}
+
+table.ir_report tr td, table.ir_report tr td input {
+    font-family: 'Verdana', 'Arial', 'Helvetica';
+    color: #404040;
+    padding: 3px 2px;
+}
+
+table.ir_report td {
+    text-align: center;
+    border-left: 1px solid #c0c0c0;
+}
+
+table.ir_report tr td a {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+table.ir_report tr {
+    border-bottom: 1px solid #c0c0c0;
+}
+
+table.ir_report th {
+    border-left: 1px solid #c0c0c0;
+    text-align: center;
+    font-family: 'Verdana', 'Arial', 'Helvetica';
+    color: #404040;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 3px 1px;
+}
+
+table.ir_report_dash tr td {
+    font-size: 10px;
+}
+
+table.ir_report_dash tr th {
+    font-size: 12px;
+}
+
+table.ir_report tr td a {
+    font-size: 12px;
+    font-weight: bold;
 }

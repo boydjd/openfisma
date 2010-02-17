@@ -1,0 +1,140 @@
+IrSubCategory:
+    exercise: 
+        Category: CAT0
+        Workflow: improper_usage_wkflw
+        name: Exercise / Network Defense Testing
+
+    user_compromise: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
+        name: User Account Compromise
+
+    root_compromise: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
+        name: Root Compromise
+
+    view_data_without_access: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
+        name: Viewing sensitive data without authorization
+
+    unattended_workstation: 
+        Category: CAT1
+        Workflow: unauthorized_access_wkflw
+        name: Using an unattended, logged-in workstation without permission
+
+    network_to_host_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
+        name: Network-based DoS against a particular host
+
+    network_to_network_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
+        name: Network-based DoS against a network
+
+    operating_system_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
+        name: Dos against the operating system of a particular host
+
+    application_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
+        name: DoS against an application on a particular host
+
+    distributed_dos: 
+        Category: CAT2
+        Workflow: denial_of_service_wkflw
+        name: Distributed DoS
+
+    virus: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
+        name: Virus
+
+    trojan_horse: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
+        name: Trojan Horses
+
+    worms: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
+        name: Worms
+
+    mobile_code: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
+        name: Mobile Code (To include Spyware, Adware, etc)
+
+    blended_attack: 
+        Category: CAT3
+        Workflow: malicious_code_wkflw
+        name: Blended Attack
+
+    cracking_software: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Download password cracking tools or pornography
+
+    spam: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Sending spam
+
+    harassment: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Sending harassing email messages to coworkers
+
+    pirating: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Using file sharing services to acquire or distribute pirated materials
+
+    defacement: 
+        Category: CAT4
+        Workflow: defacement_wkflw
+        name: Website defacement
+
+    peer_to_peer: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Peer-To-Peer (P2P)
+
+    porn: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Porn
+
+    instant_messaging: 
+        Category: CAT4
+        Workflow: improper_usage_wkflw
+        name: Instant Messaging
+
+    scanning_probing: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
+        name: Network Scanning / Probing
+
+    root_compromise: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
+        name: Root Compromise
+
+    user_compromise: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
+        name: User Account Compromise
+
+    social_engineering: 
+        Category: CAT5
+        Workflow: scan_probe_wkflw
+        name: Social engineering
+
+    investigation: 
+        Category: CAT6
+        Workflow: social_engineering_wkflw
+        name: Investigation

@@ -1,0 +1,46 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident2Basic]
+
+elements.incidentDate.type = "text"
+elements.incidentDate.options.label = "What date did the incident occur?"
+elements.incidentDate.options.class = "date"
+displayGroups.incident.elements.incidentDate = "incidentDate"
+
+elements.incidentTime.type = "Element_Time"
+elements.incidentTime.options.label = "What time did the incident occur?"
+displayGroups.incident.elements.incidentTime = "incidentTime"
+
+elements.incidentTimezone.type = "select"
+elements.incidentTimezone.options.label = "In what timezone did the incident occur?"
+displayGroups.incident.elements.incidentTimezone = "incidentTimezone"
+
+elements.locationBuilding.type = "text"
+elements.locationBuilding.options.label = "What building did the incident occur in?"
+elements.locationBuilding.options.style = "width:200px"
+displayGroups.incident.elements.locationBuilding = "locationBuilding"
+
+elements.locationRoom.type = "text"
+elements.locationRoom.options.label = "What room did the incident occur in?"
+elements.locationRoom.options.style = "width:200px"
+displayGroups.incident.elements.locationRoom = "locationRoom"
+
+elements.additionalInfo.type = "textarea"
+elements.additionalInfo.options.label = "Describe the incident"
+elements.additionalInfo.options.cols = "70%"
+elements.additionalInfo.options.rows = "7"
+displayGroups.incident.elements.additionalInfo = "additionalInfo"
+
+elements.actionsTaken.type="textarea"
+elements.actionsTaken.options.label="Describe what actions have already been taken"
+elements.actionsTaken.options.cols = "70%"
+elements.actionsTaken.options.rows = "7"
+displayGroups.incident.elements.actionsTaken="actionsTaken"

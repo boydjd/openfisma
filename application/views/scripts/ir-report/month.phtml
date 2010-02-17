@@ -1,0 +1,44 @@
+<?php Fisma_Format_Section::startSection("Incidents by Month (2009)"); ?>
+<table class="ir_report">
+<?php
+
+print "<tr><td colspan='2' style='border-left: 0px;'>&nbsp;</td>";
+
+$months = array(    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', '5' => 'May', '6' => 'Jun', 
+                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sept', '10' => 'Oct', '11' => 'Nov', '12' => 'Dec' );
+
+for ($x=1;$x<=12;$x+=1):
+    print "<th style='padding-left: 3px; padding-right: 3px;'>{$months[$x]}</th>";
+endfor;
+
+print "</tr>";
+
+foreach ($this->cats as $id => $cat):
+    foreach ($cat['children'] as $key => $subcat):
+        print "<tr><th style='border-left: 0px; text-align: right;'>"
+            . "{$cat['category']}</th><th style='text-align: left;'>{$subcat['name']}</th>";
+
+        for ($x=1;$x<=12;$x+=1):
+            print "<td>";
+
+            if ($this->incidentMonth[$x][$cat['category']][$subcat['id']]['count'] == '0'):
+                print "0";
+            else:
+                print "<a href='/panel/irreport/sub/report/start_date/2009-"
+                    . str_pad(($x), 2, "0", STR_PAD_LEFT)
+                    . "-01/end_date/2009-"
+                    . str_pad(($x+1), 2, "0", STR_PAD_LEFT)
+                    . "-01/status/all/category/{$subcat['id']}'>"
+                    . "{$this->incidentMonth[$x][$cat['category']][$subcat['id']]['count']}</a>";
+            endif;
+
+            print "</td>";
+        endfor;
+        
+        print "</tr>";
+    endforeach;
+endforeach;
+
+?>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>

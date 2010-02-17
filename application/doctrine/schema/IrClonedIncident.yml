@@ -1,0 +1,18 @@
+IrClonedIncident:
+    columns:
+        createdTs: 
+            type: timestamp
+        origIncidentId: 
+            type: integer
+        cloneIncidentId: 
+            type: integer
+        userId: 
+            type: integer
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                disabled: true

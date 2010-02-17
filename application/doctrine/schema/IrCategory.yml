@@ -1,0 +1,29 @@
+IrCategory:
+    listeners: [XssListener]
+    
+    columns:
+        createdTs: 
+            type: timestamp
+        modifiedTs: 
+            type: timestamp
+        name: 
+            type: string(255)
+            extra:
+                purify: plaintext
+        description:
+            type: string
+            extra: 
+                purify: html
+        category:
+            type: enum
+            values: ['CAT0','CAT1','CAT2','CAT3','CAT4','CAT5','CAT6']
+            comment: Maps this category to a pre-defined US-CERT category
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

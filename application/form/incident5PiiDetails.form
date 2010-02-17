@@ -1,0 +1,60 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident5PiiDetails]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions.</p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.piiMobileMedia.type="select"
+elements.piiMobileMedia.options.label="Was the PII stored on Mobile Media?"
+elements.piiMobileMedia.options.tooltip = "<i>Mobile media</i> refers to any computer storage device which can be removed from a computer and carried separately, such as a CD, DVD, USB drive, etc." 
+displayGroups.pii.elements.piiMobileMedia="piiMobileMedia"
+
+elements.piiMobileMediaType.type="select"
+elements.piiMobileMediaType.options.label="What type of Mobile Media?"
+displayGroups.pii.elements.piiMobileMediaType="piiMobileMediaType"
+
+elements.piiEncrypted.type="select"
+elements.piiEncrypted.options.label="Was the PII encrypted?"
+displayGroups.pii.elements.piiEncrypted="piiEncrypted"
+
+elements.piiAuthoritiesContacted.type="select"
+elements.piiAuthoritiesContacted.options.label="Were authorities contacted?"
+displayGroups.pii.elements.piiAuthoritiesContacted="piiAuthoritiesContacted"
+
+elements.piiPoliceReport.type="select"
+elements.piiPoliceReport.options.label="Was a police report filed?"
+displayGroups.pii.elements.piiPoliceReport="piiPoliceReport"
+
+elements.piiIndividualsCount.type="text"
+elements.piiIndividualsCount.options.label="How many individuals are affected by this loss of PII?"
+elements.piiIndividualsCount.options.style="width:100px"
+elements.piiIndividualsCount.options.tooltip = "For example, if a file containing 100 unique social security numbers was lost, then that would affect 100 individuals." 
+elements.piiIndividualsCount.options.validators.alnum.validator = "Digits"
+displayGroups.pii.elements.piiIndividualsCount="piiIndividualsCount"
+
+elements.piiIndividualsNotification.type="select"
+elements.piiIndividualsNotification.options.label="Have the affected individuals been notified?"
+displayGroups.pii.elements.piiIndividualsNotification="piiIndividualsNotification"
+
+elements.piiShipment.type="select"
+elements.piiShipment.options.label="Was the PII lost in a shipment?"
+elements.piiShipment.options.tooltip = "Shipments include standard carriers like the postal service, FedEx, and UPS, as well as private couriers or interoffice mail." 
+displayGroups.pii.elements.piiShipment="piiShipment"
+
+elements.piiAdditional.type="textarea"
+elements.piiAdditional.options.label="Additional Information"
+elements.piiAdditional.options.tooltip = "<p>Explain what kind of PII was lost: <ul><li>Social security number<li>First or last names<li>Phone numbers or addresses<li>Combination of the above</ul></p><p>If encryption was used, specify the type of encryption. Try to provide as much detail as possible.</p>" 
+elements.piiAdditional.options.cols = "70%"
+elements.piiAdditional.options.rows = "7"
+displayGroups.pii.elements.piiAdditional="piiAdditional"

@@ -62,8 +62,13 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
                            container: \"{$this->getName()}Container\",
                            disabled: $disabled
                            $onClickRender
-                       });
-                   </script>";
+                       });";
+        $image = $this->getAttrib('imageSrc');
+        if (isset($image)) {
+           $render .= "{$this->getName()}._button.style.background = 'url($image) 10% 50% no-repeat';\n";
+           $render .= "{$this->getName()}._button.style.paddingLeft = '3em';\n";
+        }
+        $render .= "</script>";
         return $render;
     }
 }

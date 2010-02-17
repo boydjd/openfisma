@@ -6,7 +6,7 @@ User:
         nameFirst: Sample
         nameLast: User
         hashType: sha1
-        Roles: [ADMIN]
+        Roles: [admin_role]
         Organizations: 
             - BGA_ORG
             - BOP_ORG
@@ -24,3 +24,52 @@ User:
             - OCOO_ORG
             - SCMS_ORG
             - CRMS_ORG
+    irc1_user:
+        username: irc1
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: IRC1
+        nameLast: User
+        Roles: [irc_role]
+    irc2_user:
+        username: irc2
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: IRC2
+        nameLast: User
+        Roles: [irc_role]
+    oig_user:
+        username: oig
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: OIG
+        nameLast: User
+        Roles: [oig_role]
+    dbr_user:
+        username: dbr
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: DBR
+        nameLast: User
+        Roles: [dbr_role]
+    pa_user:
+        username: pa
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: PA
+        nameLast: User
+        Roles: [pa_role]
+    irs_user:
+        username: irs
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: IRS
+        nameLast: User
+        Roles: [irs_role]
+    hdr_user:
+        username: hdr
+        password: 0p3nfism@
+        email: mehaase@gmail.com
+        nameFirst: HDR
+        nameLast: User
+        Roles: [hdr_role]

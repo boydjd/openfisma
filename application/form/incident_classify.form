@@ -1,0 +1,44 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Nathan Harris <nathan.harris@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2150 2009-08-25 23:47:25Z nathanrharris $
+
+[incident_classify]
+elementPrefixPath.prefix = Fisma_Form
+elementPrefixPath.path = Fisma/Form
+elementPrefixPath.type = Validate
+method = "post"
+action = "/panel/incident/sub/classify"
+
+elements.categoryId.type = "select"
+elements.categoryId.options.label = "Incident Category"
+displayGroups.incident.elements.categoryId = "categoryId"
+
+elements.comment.type = "textarea"
+elements.comment.options.validators.mce.validator = "MceNotEmpty"
+elements.comment.options.label = "Comments"
+elements.comment.options.cols = "70%"
+elements.comment.options.rows = "7"
+elements.comment.options.required = true
+displayGroups.incident.elements.comment = "comment"
+
+elements.pii.type="select"
+elements.pii.options.label="Assign Privacy Advocate"
+displayGroups.incident.elements.pii="pii"
+
+elements.oig.type="select"
+elements.oig.options.label="Assign OIG"
+displayGroups.incident.elements.oig="oig"
+
+elements.Open.type = "Form_Button_Submit"
+elements.Open.options.value = "Open Incident"
+displayGroups.incident.elements.Open = "Open"
+
+elements.Reject.type = "Form_Button_Submit"
+elements.Reject.options.value = "Reject Incident"
+displayGroups.incident.elements.Reject = "Reject"

@@ -1,0 +1,14 @@
+<form action="/panel/incident/sub/list" method="post">
+    <div class="searchFilters" >
+        <div class="right">
+            <input type="text" 
+                   value="<?php print $this->keywords; ?>" 
+                   name="keywords" 
+                   id="keywords" 
+                   helper="formText" />
+            <?php echo new Fisma_Yui_Form_Button_Submit('incidentSearchSubmit', array('label' => 'Search')); ?>
+        </div>
+        
+        <div class="clear"></div>
+    </div>
+</form>

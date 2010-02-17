@@ -820,3 +820,24 @@ function showCalendar(block, trigger) {
     }
     dialog.show();
 }
+
+function updateTimeField(id) {
+    var hiddenEl = document.getElementById(id);
+    var hourEl = document.getElementById(id + 'Hour');
+    var minuteEl = document.getElementById(id + 'Minute');
+    var ampmEl = document.getElementById(id + 'Ampm');
+    
+    var hour = hourEl.value;
+    var minute = minuteEl.value;
+    var ampm = ampmEl.value;
+    
+    if ('PM' == ampm) {
+        hour = parseInt(hour) + 12;
+    }
+    
+    hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
+    minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
+    
+    var time = hour + ':' + minute + ':00';
+    hiddenEl.value = time;
+}

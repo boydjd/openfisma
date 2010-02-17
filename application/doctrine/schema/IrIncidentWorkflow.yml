@@ -1,0 +1,52 @@
+IrIncidentWorkflow:
+    columns:
+        name: 
+            type: string(255)
+            extra:
+                purify: plaintext
+        description:
+            type: string
+            extra:
+                purify: html
+        cardinality: 
+            type: integer
+        status:
+            type: enum
+            values: ['queued','current','completed','reopened']
+        completeTs: 
+            type: timestamp
+        comments:
+            type: string
+            extra: 
+                purify: html
+        attachment: 
+            type: string
+            extra:
+                purify: plaintext
+
+        incidentId: 
+            type: integer
+            comment: Foreign key to the incident to which this workflow step belongs
+        roleId: 
+            type: integer
+            comment: Foreign key to the role which is required to execute this workflow step
+        userId:
+            type: integer
+            comment: Foreign key to the user who completed this step
+
+    relations:
+        # One to one:
+        Incident:
+            local: incidentId
+            foreign: id
+            foreignType: one
+            foreignAlias: Workflow
+        # One to Many:
+        Role:
+            local: roleId
+            foreign: id
+            foreignAlias: IncidentWorkflows
+        User:
+            local: userId
+            foreign: id
+            foreignAlias: WorkflowSteps

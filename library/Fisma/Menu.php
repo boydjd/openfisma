@@ -79,6 +79,43 @@ class Fisma_Menu
             
             $mainMenuBar->add($systems);
         }
+
+        if (Fisma_Acl::hasArea('incident')) {
+            // Incidents main menu
+            $incidentMenu = new Fisma_Yui_Menu('Incidents');
+
+            $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/panel/incident/sub/report'));
+      
+            if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
+                $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/panel/incident/sub/list'));
+                $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/panel/incident/sub/dashboard'));
+            }
+
+            // Incident Administration submenu
+            if (Fisma_Acl::hasArea('incident_admin')) {
+                $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
+
+                if (Fisma_Acl::hasPrivilegeForClass('read', 'IrCategory')) {
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/panel/ircategory/sub/list'));
+                }
+                
+                if (Fisma_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef')) {
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/panel/irworkflow/sub/list'));
+                }
+
+                $incidentMenu->add($incidentAdminSubmenu);
+            }
+        
+            // Incident reports submenu
+            if (Fisma_Acl::hasArea('incident_report')) {
+                $reportsSubmenu = new Fisma_Yui_Menu('Reports');
+                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incidents By Category', '/panel/irreport/sub/category'));
+                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incidents By Month', '/panel/irreport/sub/month'));
+                $incidentMenu->add($reportsSubmenu);
+            }
+
+            $mainMenuBar->add($incidentMenu);
+        }
         
         if (Fisma_Acl::hasArea('reports')) {
             $reports = new Fisma_Yui_Menu('Reports');

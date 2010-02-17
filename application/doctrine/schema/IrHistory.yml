@@ -1,0 +1,30 @@
+IrHistory:
+    columns:
+        createdTs: 
+            type: timestamp
+        type:
+            type: enum
+            values: ['COMMENT','WORKFLOW','REPORT','CLASSIFY','RESOLVE','CLOSE']
+        name: 
+            type: string(255)
+            extra:
+                purify: plaintext
+        description:
+            type: string
+            extra:
+                purify: html
+                
+        userId: 
+            type: integer
+            comment: The user who left this comment
+        incidentId: 
+            type: integer
+            comment: The incident that this comment belongs to
+    
+    relations:
+        User:
+            local: userId
+            foreign: id
+        Incident:
+            local: incidentId
+            foreign: id

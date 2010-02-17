@@ -1,0 +1,20 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident4PiiQuestion]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions.</p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.piiInvolved.type="select"
+elements.piiInvolved.options.label="Was PII involved?"
+displayGroups.pii.elements.piiInvolved="piiInvolved"

@@ -1,0 +1,300 @@
+Incident:
+    listeners: [XssListener, IndexListener]
+    
+    columns:
+        reporterTitle: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Title
+        reporterFirstName: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s First Name
+                searchIndex: unstored
+            comment: >
+                The reporter is the user who reports the incident to the organization. The report can be made directly
+                (by logging into OpenFISMA) or can be made indirectly by reporting to an intermediary authority (such
+                as the customer service desk) which has the privilege to enter data into OpenFISMA.
+        reporterLastName: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Last Name
+                searchIndex: unstored
+        reporterOrganization: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Organization
+                searchIndex: unstored
+
+        reporterAddress1: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Street Address Line 1
+        reporterAddress2: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Street Address Line 2
+        reporterCity: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s City
+        reporterState: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s State
+        reporterZip: 
+            type: string(10)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Zip Code
+
+        reporterPhone: 
+            type: string(10)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Phone Number
+            comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
+        reporterFax: 
+            type: string(10)
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s Fax Number
+            comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
+        reporterEmail: 
+            type: string(255)
+            email: 
+                check_mx: false
+            extra:
+                purify: plaintext
+                logicalName: Reporter\'s E-mail Address
+        
+        locationBuilding: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Building
+            comment: The building in which the incident is believed to have occurred
+        locationRoom: 
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Room
+            comment: The room in which the incident is believed to have occurred
+
+        incidentDate: 
+            type: date
+            extra:
+                logicalName: Incident Date
+            comment: The date on which the incident was known or believed to have occurred
+        incidentTime: 
+            type: time
+            extra:
+                logicalName: Incident Time
+            comment: The time at which the incident was known or believed to have occurred
+        incidentTimezone: 
+            type: enum
+            values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
+            extra:
+                logicalName: Incident Timezone
+            comment: The timezone in which the incident timestamp belongs
+        
+        reportTs: 
+            type: timestamp
+            extra:
+                logicalName: Report Date and Time
+            comment: The time at which the incident was reported
+        reportTz: 
+            type: enum
+            values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
+            extra:
+                logicalName: Report Timezone
+            comment: The timezone in which the report timestamp belongs
+            
+        additionalInfo:
+            type: string
+            extra: 
+                purify: html
+                logicalName: Additional Incident Details
+                searchIndex: unstored
+
+        piiInvolved:
+            type: boolean
+            extra:
+                logicalName: PII Involved
+            comment: Indicates whether personally identifiable information was involved
+        piiAdditional:
+            type: string
+            extra:
+                purify: html
+                logicalName: Additional PII Details
+                searchIndex: unstored
+            comment: Additional space to explain the nature of PII involved
+        piiMobileMedia:
+            type: boolean
+            extra:
+                logicalName: PII Stored On Mobile Media
+            comment: Was the PII stored on mobile media, such as a disc or removable drive?
+        piiMobileMediaType:
+            type: enum
+            values: [laptop, disc, document, usb, tape, other]
+            extra:
+                logicalName: PI Type Of Mobile Media
+        piiEncrypted:
+            type: boolean
+            extra:
+                logicalName: PII Encrypted
+            comment: Was PII data encrypted on the lost media?
+        piiAuthoritiesContacted:
+            type: boolean
+            extra:
+                logicalName: Authorities Contacted For Loss Of PII
+            comment: Have the relevant authorities been contacted?
+        piiPoliceReport:
+            type: boolean
+            extra:
+                logicalName: Police Report Filed For Loss Of PII
+            comment: Has a police report been filed?
+        piiIndividualsCount:
+            type: int(10)
+            extra:
+                logicalName: Number Of Individuals Affected By Loss Of PII
+            comment: "The number of individuals potentially compromised by this incident\'s loss of PII"
+        piiIndividualsNotification:
+            type: boolean
+            extra:
+                logicalName: Inviduals Affected By PII Have Been Notified
+            comment: Have the affected individuals been contacted?
+        piiShipment:
+            type: boolean
+            extra:
+                logicalName: PII Lost During Shipment
+            comment: Was the loss of PII due to a shipment?
+        piiShipmentSenderContact:
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Shipping Company Point Of Contact
+            comment: Contact information for the company responsible for shipping the PII
+        piiShipmentSenderCompany:
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Name Of Shipping Company
+        piiShipmentTimeline:
+            type: string
+            extra:
+                purify: html
+                logicalName: Description Of Shipment Timeline
+        piiShipmentTrackingNumbers:
+            type: string
+            extra:
+                purify: html
+                logicalName: Shipment Tracking Numbers
+
+        hostIp:
+            type: string(15)
+            Fisma_Validator_Ip: true
+            extra:
+                purify: plaintext
+                logicalName: Host IP Address
+            comment: The IP address of the affected host
+        hostName:
+            type: string(255)
+            extra:
+                purify: plaintext
+                logicalName: Host Name
+        hostOs:
+            type: enum
+            values: [win7, vista, xp, macos, linux, unix]
+            extra:
+                logicalName: Host Operating System
+        hostAdditional:
+            type: string
+            extra: 
+                purify: html
+                logicalName: Additional Host Details
+        
+        sourceIp:
+            type: string(15)
+            Fisma_Validator_Ip: true
+            extra:
+                purify: plaintext
+                logicalName: Source IP Address
+            comment: The IP address from which the incident is believed to have originated
+        sourceAdditional:
+            type: string
+            extra: 
+                purify: html
+                logicalName: Additional Details About Incident Source
+            comment: Additional description of the source or origin of the incident
+        
+        assessmentCritical:
+            type: boolean
+        assessmentSensitivity:
+            type: enum
+            values: [low, medium, high]
+        
+        actionsTaken:
+            type: string
+            extra: 
+                purify: html
+                logicalName: Actions That Were Taken Prior To Incident Report
+                searchIndex: unstored
+            comment: What actions were taken prior to reporting the incident?
+        
+        files:
+            type: string(255)
+
+        status:
+            type: enum
+            values: [new, open, resolved, rejected, closed]
+            extra:
+                searchIndex: unstored
+
+        workflowId:
+            type: integer
+            comment: Foreign key to the workflow for this incident
+        reportingUserId:
+            type: integer
+            comment: Foreign key to the user who reported this incident
+        categoryId:
+            type: integer
+            comment: Foreign key to the IR sub category in which this incident belongs
+
+    relations:
+        Workflow:
+            class: IrIncidentWorkflow
+            local: workflowId
+            foreign: id
+        ClonedFromIncident:
+            class: Incident
+            local: origIncidentId
+            foreign: cloneIncidentId
+            refClass: IrClonedIncident
+        ReportingUser:
+            class: User
+            local: reportingUserId
+            foreign: id
+            foreignType: one
+        Category:
+            class: IrSubCategory
+            local: categoryId
+            foreign: id
+        Actors:
+            class: User
+            local: incidentId
+            foreign: userId
+            refClass: IrIncidentActor
+        Observers:
+            class: User
+            local: incidentId
+            foreign: userId
+            refClass: IrIncidentObserver

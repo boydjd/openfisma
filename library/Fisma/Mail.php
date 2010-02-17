@@ -42,9 +42,10 @@ class Fisma_Mail extends Zend_Mail
      */
     public function __construct()
     {
-        $view       = new Zend_View();
-        $contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
-        $this->_contentTpl = $contentTpl;
+        $view = new Zend_View();
+        $this->_contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
+        $view->addHelperPath(Fisma::getPath('viewHelper'), 'View_Helper_');
+        
         $this->setFrom(Fisma::configuration()->getConfig('sender'), Fisma::configuration()->getConfig('system_name'));
     }
 
@@ -156,6 +157,198 @@ class Fisma_Mail extends Zend_Mail
         }
     }
     
+    /**
+     * Notify users a new incident has been reported
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRReport($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A new incident has been reported.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRReported.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users they have been assigned to a new incident
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRAssign($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("You have been assigned to a new incident.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRAssign.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users that an incident has been opened
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IROpen($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been opened.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IROpen.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify a user that an incident workflow step has been completed
+     *
+     * @param int $userId ID of the user that will receive the email
+     * @param int $incidentId
+     * @param string $workflowStep Description of the completed step
+     * @param string $workflowCompletedBy Name of user who completed the step
+     */
+    public function IRStep($userId, $incidentId, $workflowStep, $workflowCompletedBy)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A workflow step has been completed.");
+        
+        $this->_contentTpl->workflowStep = $workflowStep;
+        $this->_contentTpl->workflowCompletedBy = $workflowCompletedBy;
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRStep.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
+    /**
+     * Notify users that a comment has been added to an incident
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRComment($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("A comment has been added to an incident.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRComment.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+    
+    /**
+     * Notify users that an incident has been resolved
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRResolve($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been resolved.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRResolve.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+    
+    /**
+     * Notify users that an incident has been closed
+     *
+     * @param int $userId id of the user that will receive the email
+     * @param int $incidentId id of the incident that the email is referencing 
+     * 
+     */
+    public function IRClose($userId, $incidentId)
+    {
+        $user = new User();
+        $user = $user->getTable()->find($userId);
+
+        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
+        $this->setSubject("An incident has been closed.");
+        
+        $this->_contentTpl->incidentId = $incidentId;
+        
+        $content = $this->_contentTpl->render('IRClose.phtml');
+        
+        $this->setBodyText($content);
+
+        try {
+            $this->send($this->_getTransport());
+        } catch (Exception $excetpion) {
+        }
+    }
+
     /**
      * Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.

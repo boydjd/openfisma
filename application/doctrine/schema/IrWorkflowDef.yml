@@ -1,0 +1,21 @@
+IrWorkflowDef:
+    listeners: [XssListener]
+    
+    columns:
+        name: 
+            type: string(255)
+            extra:
+                purify: plaintext
+        description: 
+            type: string
+            extra: 
+                purify: html
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

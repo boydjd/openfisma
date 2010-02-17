@@ -1,5 +1,5 @@
 Role:
-    ISSO:
+    isso_role:
         name: Information System Security Officer
         nickname: ISSO
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The information system security officer is the individual responsible to the authorizing official, information system owner, or the senior agency information security officer for ensuring the appropriate operational security posture is maintained for an information system or program. The information system security officer also serves as the principal advisor to the authorizing official, information system owner, or senior agency information security officer on all matters (technical and otherwise) involving the security of the information system. The information system security officer typically has the detailed knowledge and expertise required to manage the security aspects of the information system and, in many agencies, is assigned responsibility for the day-to-day security operations of the system. This responsibility may also include, but is not limited to, physical security, personnel security, incident handling, and security training and awareness. The information system security officer may be called upon to assist in the development of the system security policy and to ensure compliance with that policy on a routine basis. In close coordination with the information system owner, the information system security officer often plays an active role in developing and updating the system security plan as well as in managing and controlling changes to the system and assessing the security impact of those changes.</p><p><strong>[OpenFISMA definition]</strong></p><p>The Information Systems Security Officer Group is designed to allow Information System Security Officers the ability to identify, assess, prioritize, and monitor the progress of corrective efforts for security weaknesses found in their system.</p>
@@ -26,7 +26,7 @@ Role:
             - asset_read
             - asset_update
 
-    REVIEWER:
+    reviewer_role:
         name: Reviewer
         nickname: REVIEWER
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Reviewer Group gives users the ability to view all information on the Plan of Actions and Milestones report for the information system. They do not have the ability to create, edit, or delete any information.</p>
@@ -39,7 +39,7 @@ Role:
             - notification_asset
             - notification_finding
         
-    IVV:
+    ivv_role:
         name: Independent Verification and Validation
         nickname: IV&V
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Independent Verification and Validation group serves as a third party independent of the correction process who validates whether or not the security weakness has been successfully closed. They have the ability to view all agency Plan of Actions and Milestone information and the ability to close an open item.</p>
@@ -72,7 +72,7 @@ Role:
             - notification_asset
             - notification_finding
             - product_read
-    SAISO:
+    saiso_role:
         name: Senior Agency Information Security Officer
         nickname: SAISO
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The senior agency information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The SAISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
@@ -105,7 +105,8 @@ Role:
             - notification_asset
             - notification_finding
             - product_read
-    ADMIN:
+    
+    admin_role:
         name: Application Administrator
         nickname: ADMIN
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Application Administrators group provides administrative privileges to the OpenFISMA application. Users will have the ability to access all security controls and functions.</p>
@@ -169,9 +170,26 @@ Role:
             - notification_admin
             - notification_asset
             - notification_finding
-            - account_log_read
+            - incident_area
+            - incident_admin_area
+            - incident_report_area
+            - incident_read
+            - incident_classify
+            - incident_reject
+            - incident_resolve
+            - incident_close
+            - incident_create
+            - incident_update
+            - ir_workflow_def_read
+            - ir_workflow_def_create
+            - ir_workflow_def_update
+            - ir_workflow_def_delete
+            - ir_category_read
+            - ir_category_update
+            - ir_category_create
+            - ir_category_delete
 
-    CERTAGENT:
+    certagent_role:
         name: Certification Agent
         nickname: CERTAGENT
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The certification agent is an individual, group, or organization responsible for conducting a security certification, or comprehensive assessment of the management, operational, and technical security controls in an information system to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting the security requirements for the system. The certification agent also provides recommended corrective actions to reduce or eliminate vulnerabilities in the information system. Prior to initiating the security assessment activities that are a part of the certification process, the certification agent provides an independent assessment of the system security plan to ensure the plan provides a set of security controls for the information system that is adequate to meet all applicable security requirements. </p><p><p><strong>[OpenFISMA Definition]</strong></p><p>This group is used by independent auditors to view finding information, create findings, set initial risk levels, and provide recommended corrective actions.</p>
@@ -184,7 +202,7 @@ Role:
             - findings_update_finding_recommendation
             - notification_finding      
 
-    ISO:
+    iso_role:
         name: Information System Owner
         nickname: ISO
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The information system owner is an agency official responsible for the overall procurement, development, integration, modification, or operation and maintenance of an information system. The information system owner is responsible for the development and maintenance of the system security plan and ensures the system is deployed and operated according to the agreed-upon security requirements. The information system owner is also responsible for deciding who has access to the information system (and with what types of privileges or access rights) and ensures that system users and support personnel receive the requisite security training (e.g., instruction in rules of behavior). The information system owner informs key agency officials of the need to conduct a security certification and accreditation of the information system, ensures that appropriate resources are available for the effort, and provides the necessary system-related documentation to the certification agent. The information system owner receives the security assessment results from the certification agent. After taking appropriate steps to reduce or eliminate vulnerabilities, the information system owner assembles the security accreditation package and submits the package to the authorizing official or the authorizing officials designated representative for adjudication. </p><p>The role of information system owner can be interpreted in a variety of ways depending on the particular agency and the system development life cycle phase of the information system. Some agencies may refer to information system owners as program managers or business/asset/mission owners. In some situations, the notification of the need to conduct a security certification and accreditation may come from the senior agency information security officer or authorizing official as they endeavor to ensure compliance with federal or agency policy. The responsibility for ensuring appropriate resources are allocated to the security certification and accreditation effort depends on whether the agency uses a centralized or decentralized funding mechanism. Depending on how the agency has organized and structured its security certification and accreditation activities, the authorizing official may choose to designate an individual other than the information system owner to compile and assemble the information for the accreditation package. In this situation, the designated individual must coordinate the compilation and assembly activities with the information system owner.</p>
@@ -207,7 +225,7 @@ Role:
             - notification_asset
             - notification_finding
 
-    AO:
+    ao_role:
         name: Authorizing Official
         nickname: AO
         description: <p>The authorizing official (or designated approving/accrediting authority as referred to by some agencies) is a senior management official or executive with the authority to formally assume responsibility for operating an information system at an acceptable level of risk to agency operations, agency assets, or individuals. </p><p>The authorizing official should have the authority to oversee the budget and business operations of the information system within the agency and is often called upon to approve system security requirements, system security plans, and memorandums of agreement and/or memorandums of understanding. </p><p>The AO issues a formal approval to operate and information system, an interim authorization to operate the information system under specific terms and conditions; or deny authorization to operate the information system (or if the system is already operational, halt operations) if unacceptable security risks exist.</p>
@@ -219,7 +237,7 @@ Role:
             - notification_asset
             - notification_finding
 
-    OSS:
+    oss_role:
         name: Operational Support Staff
         nickname: OSS
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>Operational Support StaffOperational support staff has the ability to view POA&M information and participates in the POA&M process in any or all of the following ways: </p><p><ul><li>Submitting course of action, mitigation strategy and/or expected completion date for the approval of the SSO. <li>Submitting threats and countermeasures information for the approval of the SSO. <li>Submitting evidence packages for the approval of the SSO.</ul></p>
@@ -238,3 +256,58 @@ Role:
             - asset_read
             - notification_asset
             - notification_finding
+
+    oig_role:
+        name: OIG Representative
+        nickname: OIG
+        description:
+        Privileges: [areas_dashboard, incident_read, incident_create]
+
+    irc_role:
+        name: Incident Response Coordinator
+        nickname: IRC
+        description:
+        Privileges: 
+            - areas_dashboard
+            - incident_area
+            - incident_admin_area
+            - incident_report_area
+            - incident_read
+            - incident_reject
+            - incident_classify
+            - incident_resolve
+            - incident_close
+            - incident_create
+            - incident_update
+            - ir_category_read
+            - ir_category_update
+            - ir_category_create
+            - ir_category_delete
+            - ir_workflow_def_read
+            - ir_workflow_def_update
+            - ir_workflow_def_create
+            - ir_workflow_def_delete
+    
+    dbr_role:
+        name: Data Breach Representative
+        nickname: DBR
+        description:
+        Privileges: [areas_dashboard, incident_read, incident_create]
+   
+    pa_role:
+        name: Privacy Advocate
+        nickname: PA
+        description:
+        Privileges: [areas_dashboard, incident_read, incident_create]
+        
+    irs_role:
+        name: Incident Response Specialist
+        nickname: IRS
+        description:
+        Privileges: [areas_dashboard, incident_read, incident_create]
+  
+    hdr_role:
+        name: Help Desk Representative
+        nickname: HDR
+        description:
+        Privileges: [areas_dashboard, incident_read, incident_create]

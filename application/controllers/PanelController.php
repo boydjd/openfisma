@@ -96,6 +96,50 @@ class PanelController extends SecurityController
         $this->_helper->actionStack($sub, 'Finding');
         $this->_helper->actionStack('header');
     }
+    
+    /** 
+     * Forward to incident Controller
+     */
+    public function incidentAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub, 'Incident');
+        $this->_helper->actionStack('header');
+    }
+
+    /** 
+     * Forward to ir category Controller
+     */
+    public function ircategoryAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub, 'ir-category');
+        $this->_helper->actionStack('header');
+    }
+    
+    /** 
+     * Forward to ir workflow Controller
+     */
+    public function irworkflowAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub, 'ir-workflow');
+        $this->_helper->actionStack('header');
+    }
+
+    /** 
+     * Forward to ir report Controller
+     */
+    public function irreportAction()
+    {
+        $req = $this->getRequest();
+        $sub = $req->getParam('sub');
+        $this->_helper->actionStack($sub, 'ir-report');
+        $this->_helper->actionStack('header');
+    }
 
     /** 
      * Forward to account Controller

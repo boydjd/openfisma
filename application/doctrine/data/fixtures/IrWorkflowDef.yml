@@ -1,0 +1,373 @@
+IrWorkflowDef:
+    unauthorized_access_wkflw:
+        name: Workflow for handling unauthorized access incidents
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Perform an initial containment of the incident
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Confirm the containment of the incident
+                description: >
+                    <ol><li>Further analyze the incident and determine if containment was sufficient</li><li>Implement 
+                    additional containment measures if necessary</li></ol>
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Eradicate the incident
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 9
+                Role: IRS
+                name: Hold a lessons learned meeting
+
+    denial_of_service_wkflw:
+        name: Workflow for handling DoS attack
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Contain the incident – halt the DoS if it has not already been stopped
+                description: >
+                    <ol><li>Identify and mitigate all vulnerabilities that were used</li><li>If not yet contained, 
+                    implement filtering based on the characteristics of the attack</li><li>If not yet contained, 
+                    contact ISP or assistance in filtering attack</li><li>If not yet contained, relocate the 
+                    target</li></ol>
+            -
+                cardinality: 5
+                Role: IRS
+                name: >
+                    Eradicate the incident; if previous step was not performed, identify and mitigate all 
+                    vulnerabilities that were used.
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Hold a lessons learned meeting
+              
+    malicious_code_wkflw:
+        name: Workflow for handling malicious code incident
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Contain the incident
+                description: >
+                    <ol><li>Identify infected systems</li><li>Disconnect infected systems from the 
+                    network</li><li>Mitigate vulnerabilities that were exploited by the malicious code</li><li>If 
+                    necessary, block the transmission mechanisms for the malicious code</li></ol>
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Eradicate the incident
+                description: >
+                    <ol><li>Disinfect, quarantine, delete, and replace infected files</li><li>Mitigate the exploited 
+                    vulnerabilities for other hosts within the organization</li></ol>
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready statei</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Hold a lessons learned meeting            
+            
+    improper_usage_wkflw: 
+        name: Workflow for handling improper usage incidents
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: If necessary, contain and eradicate the incident
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Hold a lessons learned meeting
+
+    scan_probe_wkflw:
+        name: Workflow for handling scan / probe / attempted access incident 
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Contain the incident
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Eradicate the incident
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Hold a lessons learned meeting
+
+    defacement_wkflw:
+        name: Workflow for handling web site defacement incident
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Contain the incident
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Eradicate the incident
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Hold a lessons learned meeting
+
+    social_engineering_wkflw:
+        name: Workflow for handling social engineering incident
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Contain the incident
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Eradicate the incident
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Hold a lessons learned meeting
+
+    pii_compromise_wkflw:
+        name: Workflow for handling compromise of PII  
+        Steps:
+            - 
+                cardinality: 1
+                Role: IRS
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be 
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find 
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected 
+                    resources</li></ol>
+            - 
+                cardinality: 2
+                Role: IRS
+                name: Report the incident to the appropriate internal personnel and external organizations
+            - 
+                cardinality: 3
+                Role: IRS
+                name: Acquire, preserve, secure, and document evidence
+            - 
+                cardinality: 4
+                Role: IRS
+                name: Contain the incident
+            - 
+                cardinality: 5
+                Role: IRS
+                name: Eradicate the incident
+            - 
+                cardinality: 6
+                Role: IRS
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional 
+                    monitoring to look for future related activity.</li></ol>
+            - 
+                cardinality: 7
+                Role: IRS
+                name: Create a follow-up report
+            - 
+                cardinality: 8
+                Role: IRS
+                name: Hold a lessons learned meeting
