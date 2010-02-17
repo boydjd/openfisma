@@ -58,7 +58,8 @@ class IrCategoryController extends SecurityController
 
     public function listAction() 
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read'); 
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         $this->searchbox();
@@ -79,7 +80,8 @@ class IrCategoryController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $value = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
@@ -132,7 +134,8 @@ class IrCategoryController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
@@ -143,7 +146,8 @@ class IrCategoryController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $this->searchbox();
         $this->render('tree');        
     }
@@ -153,8 +157,8 @@ class IrCategoryController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read');
-       
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+               
         /* Get all categories */ 
         $q = Doctrine_Query::create()
              ->select('c.name, c.category')
@@ -185,7 +189,8 @@ class IrCategoryController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read'); 
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
@@ -220,7 +225,8 @@ class IrCategoryController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'create'); 
+        Fisma_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        
         $form = $this->_getCategoryForm();
         
         $catValues = $this->_request->getPost();
@@ -268,7 +274,8 @@ class IrCategoryController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'update'); 
+        Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        
         $id = $this->_request->getParam('id', 0);
         $ircategory = new IrCategory();
         $ircategory = $ircategory->getTable()->find($id);
@@ -340,7 +347,8 @@ class IrCategoryController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'delete');
+        Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        
         $id = $this->_request->getParam('id');
         $ircategory = Doctrine::getTable('IrCategory')->find($id);
         if ($ircategory) {
@@ -361,7 +369,8 @@ class IrCategoryController extends SecurityController
      */
     public function subcreateAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'create'); 
+        Fisma_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        
         $form = $this->_getSubCategoryForm();
         
         $subCatValues = $this->_request->getPost();
@@ -449,7 +458,8 @@ class IrCategoryController extends SecurityController
      */
     public function subviewAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'read'); 
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'subview');
@@ -486,7 +496,8 @@ class IrCategoryController extends SecurityController
      */
     public function subupdateAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'update'); 
+        Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        
         $id = $this->_request->getParam('id', 0);
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
 
@@ -531,7 +542,8 @@ class IrCategoryController extends SecurityController
      */
     public function subdeleteAction()
     {
-        Fisma_Acl::requirePrivilege('ircategory', 'delete');
+        Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        
         $id = $this->_request->getParam('id');
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
         if ($irsubcategory) {

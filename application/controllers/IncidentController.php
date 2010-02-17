@@ -111,7 +111,7 @@ class IncidentController extends Zend_Controller_Action
      */
     public function totalstatusAction()
     {
-        Fisma_Acl::requirePrivilege('incident', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         
         $arrTotal = array (
                         'new'      => 0,
@@ -142,7 +142,7 @@ class IncidentController extends Zend_Controller_Action
      */
     public function totalcategoryAction()
     {
-        Fisma_Acl::requirePrivilege('incident', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         
         $arrTotal = array (
                         'CAT0'      => 0,
@@ -522,7 +522,7 @@ class IncidentController extends Zend_Controller_Action
      */
     public function dashboardAction() 
     {
-        Fisma_Acl::requirePrivilege('incident', 'read'); 
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
 
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
@@ -644,7 +644,7 @@ class IncidentController extends Zend_Controller_Action
      */
     public function viewAction() 
     { 
-        Fisma_Acl::requirePrivilege('incident', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
 
         $incidentId = $this->_request->getParam('id');
         $this->view->assign('id', $incidentId);
@@ -1266,7 +1266,7 @@ class IncidentController extends Zend_Controller_Action
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('incident', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
@@ -1451,7 +1451,7 @@ class IncidentController extends Zend_Controller_Action
     private function _assertCurrentUserCanUpdateIncident($incidentId)
     {
         // A quick check:
-        Fisma_Acl::requirePrivilege('incident', 'update');
+        Fisma_Acl::requirePrivilegeForClass('update', 'Incident');
         
         // Otherwise, check if this user is in the actors list
         $q = Doctrine_Query::create()
@@ -1477,10 +1477,7 @@ class IncidentController extends Zend_Controller_Action
     private function _assertCurrentUserCanViewIncident($incidentId)
     {
         // A quick check:
-        /**
-         * @todo wtf
-         */
-        //Fisma_Acl::requirePrivilege('incident', 'read');
+        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         
         // Otherwise, check if this user is in the observers list
         $q = Doctrine_Query::create()

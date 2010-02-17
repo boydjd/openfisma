@@ -34,14 +34,20 @@
 class IrReportController extends SecurityController
 {
     /**
+     * Check that the user has the privilege to run reports
+     */
+    public function preDispatch()
+    {
+        Fisma_Acl::requireArea('incident_report');
+    }
+    
+    /**
      * Breakdown of incidents by category, status (open, resolved, closed), and time frame (week, month, year)
      * 
      * @todo this is copied from the old listAction and probably has unneeded code
      */
     public function categoryAction()
-    {
-        Fisma_Acl::requirePrivilege('irreport', 'read');
-
+    {        
         $cats  = $this->_getCats();
 
         /* SETUP CURRENT INCIDENTS ARRAY */
@@ -264,9 +270,7 @@ class IrReportController extends SecurityController
     }
 
     public function reportAction() 
-    {
-        Fisma_Acl::requirePrivilege('irreport', 'read');
-        
+    {                
         $startDate = $this->_request->getParam('startDate');
         $endDate   = $this->_request->getParam('endDate');
         $status     = $this->_request->getParam('status');
@@ -348,9 +352,7 @@ class IrReportController extends SecurityController
      * @todo this is copied from the old listAction and probably has unneeded code
      */
     public function monthAction()
-    {
-        Fisma_Acl::requirePrivilege('irreport', 'read');
-
+    {        
         $cats  = $this->_getCats();
 
         /* SETUP CURRENT INCIDENTS ARRAY */
