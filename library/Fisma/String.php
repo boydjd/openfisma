@@ -54,6 +54,20 @@ class Fisma_String
         
         return $random;
     }
+
+    /**
+     * Return lorem ipsum style text 
+     * 
+     * @param mixed $wordCount Number of words 
+     * @param string $format Can be 'html', 'txt', or 'plain'
+     * @param mixed $loremIpsum Whether or not the content should begin with 'Lorem ipsum'
+     * @return string The generated lorem ipsum text
+     */
+    static function loremIpsum($wordCount, $format = 'txt', $loremIpsum = false)
+    {
+        $lorem = new Fisma_String_LoremIpsum();
+        return $lorem->getContent($wordCount, $format, $loremIpsum);
+    }
     
     /**
      * A helper for converting HTML to roughly equivalent plain text
