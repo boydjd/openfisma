@@ -675,7 +675,7 @@ class User extends BaseUser
     {
         $render = $this->username;
 
-        if (Fisma_Acl::hasPrivilegeForObject('user', 'read')) {
+        if (Fisma_Acl::hasPrivilegeForObject('read', $this)) {
             $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
         }
 

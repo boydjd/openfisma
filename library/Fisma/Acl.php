@@ -134,6 +134,7 @@ class Fisma_Acl extends Zend_Acl
     static public function hasPrivilegeForClass($privilege, $className)
     {
         $user = Zend_Auth::getInstance()->getIdentity();
+        
         $resourceName = Doctrine_Inflector::tableize($className);
         $hasPrivilege = false;
 
@@ -146,7 +147,6 @@ class Fisma_Acl extends Zend_Acl
             }
 
             $hasPrivilege = self::_isAllowed($user, $resourceName, $privilege);
-            
         } else {
             
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them

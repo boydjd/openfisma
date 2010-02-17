@@ -61,10 +61,18 @@ function onViewButtonClick() {
 foreach ($this->steps as $key => $step):
     print "<table width='50%' class='fisma_crud' style='margin-bottom: 10px;'>"
         . "<tr><td width='15%'>Workflow Step:</td><td width='35%'><h2>{$step['name']}</h2></td></tr>"
-        . "<tr><td>Completed By:</td> <td><h2>{$step['user']['nameFirst']}"
-        . " {$step['user']['nameLast']} ({$step['user']['username']})</h2></td></tr>"
-        . "<tr><td>Completed On:</td> <td><h2>{$step['completeTs']}</h2></td></tr>"
-        . "<tr><td>Comments:</td>     <td><h2>{$step['comments']}</h2></td></tr></table>";
+        . "<tr><td>Completed By:</td>";
+
+    if ('completed' == $step['status']):
+        print "<td>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</td></tr>"
+            . "<tr><td>Completed On:</td> <td>{$step['completeTs']}</td></tr>"
+            . "<tr><td>Comments:</td>     <td>{$step['comments']}</td></tr>";
+        
+    else:
+        print "<td>&lt;not completed&gt;</td></tr>";
+    endif;
+
+    print "</table>";
 endforeach;
 ?>  
 

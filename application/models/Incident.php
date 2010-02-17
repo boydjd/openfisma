@@ -152,18 +152,18 @@ class Incident extends BaseIncident
     {
         // Since we're overridding the setter, we have to manipulate the ids directly
         $this->reportingUserId = $user->id;
-        
-        unset($this->reporterTitle);
-        unset($this->reporterFirstName);
-        unset($this->reporterLastName);
-        unset($this->reporterOrganization);
-        unset($this->reporterAddress1);
-        unset($this->reporterAddress2);
-        unset($this->reporterCity);
-        unset($this->reporterState);
-        unset($this->reporterZip);
-        unset($this->reporterPhone);
-        unset($this->reporterFax);
-        unset($this->reporterEmail);
+
+        $this->reporterTitle = null;
+        $this->reporterFirstName = null;
+        $this->reporterLastName = null;
+        $this->reporterOrganization = null;
+        $this->reporterAddress1 = null;
+        $this->reporterAddress2 = null;
+        $this->reporterCity = null;
+        $this->reporterState = null;
+        $this->reporterZip = null;
+        $this->reporterPhone = null;
+        $this->reporterFax = null;
+        $this->reporterEmail = null;
     }
 }

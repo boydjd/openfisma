@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IncidentController extends Zend_Controller_Action
+class IncidentController extends SecurityController
 {
     /**
      * The main name of the model.
@@ -70,6 +70,8 @@ class IncidentController extends Zend_Controller_Action
      */
     public function init()
     {
+        parent::init();
+        
         $this->_paging['count'] = 10;
         $this->_paging['startIndex'] = 0;
     }
@@ -93,7 +95,7 @@ class IncidentController extends Zend_Controller_Action
      * preDispatch() - invoked before each Actions
      */
     function preDispatch()
-    {
+    {        
         if (in_array($this->_request->action, array('totalstatus','totalcategory'))) {
 
             $contextSwitch = $this->_helper->getHelper('contextSwitch');
@@ -478,12 +480,11 @@ class IncidentController extends Zend_Controller_Action
         } else {
             throw new Fisma_Exception('No incident report found in session');
         }
-        
+
         // Set the reporting user and assign the IRCs as default actors
         if (User::currentUser()) {
             $incident->ReportingUser = User::currentUser();
         }
-        
         $coordinators = $this->_getIrcs();
         $incident->link('Actors', $coordinators);
         $incident->save();
@@ -588,7 +589,7 @@ class IncidentController extends Zend_Controller_Action
         $this->view->assign('link', $link);
         $this->view->allIncidentsUrl = $link
                                      . '/status/all/sortby/reportTs/order/asc/startIndex/0/count/'
-                                     . $this->_pagin['count'];
+                                     . $this->_paging['count'];
         
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
         $this->view->assign('status', $status);
@@ -1357,7 +1358,7 @@ class IncidentController extends Zend_Controller_Action
         $form->setDefaults($incident->toArray());
         
         // If this was reported by a user with an account on the system, then remove the "reporter" part of the form
-        if ($incident->ReportingUser) {
+        if (isset($incident->ReportingUser)) {
             $form->removeSubForm('incident1Contact');
             $this->view->reportingUser = $incident->ReportingUser;
         }
