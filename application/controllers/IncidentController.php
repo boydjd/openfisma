@@ -32,7 +32,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  */
-class IncidentController extends MessageController
+class IncidentController
 {
     /**
      * The main name of the model.
@@ -777,7 +777,7 @@ class IncidentController extends MessageController
         $cloneLink->userId          = User::currentUser()->id;
         $cloneLink->save();
 
-        $this->message('The incident has been cloned.', self::M_NOTICE);
+        $this->view->priorityMessenger('The incident has been cloned.', 'notice');
         $this->_redirect('/panel/incident/sub/dashboard');
     }
         
@@ -900,7 +900,7 @@ class IncidentController extends MessageController
             $mail->IRClose($userId, $incidentId);
         }
  
-        $this->message('Incident Closed', self::M_NOTICE);
+        $this->view->priorityMessenger('Incident Closed', 'notice');
         $this->_forward('dashboard');
     }
 
@@ -931,9 +931,9 @@ class IncidentController extends MessageController
                 $incident->reject($comment);
                 $incident->save();
                 
-                $this->message('Incident Rejected', self::M_NOTICE);
+                $this->view->priorityMessenger('Incident Rejected', 'notice');
             } elseif ($this->_request->getParam('Open') == 'Open') {
-                $this->message('Incident Opened', self::M_NOTICE);
+                $this->view->priorityMessenger('Incident Opened', 'notice');
 
                 // update incident status and category
                 $incident = Doctrine::getTable('Incident')->find($id);
