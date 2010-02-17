@@ -1,153 +1,228 @@
-<?php if ($this->association == 'actor' ) { ?>
-<form action="#" onsubmit="addActor();  return false;" id="actorForm"> 
-    <input type="hidden" name="actor_incident_id" id="actor_incident_id" value="<?php echo $this->id;  ?>" />
-<?php } ?>
-    <table class="fisma_crud">
-        <tr>
-            <td colspan="3" style="text-align: left"><h1>Actors:</h1></td>
-        </tr>
-        <?php if ($this->association == 'actor' ) { ?>
-        <tr>
-            <td nowrap>
-                <span class="tooltip" id="actor_useridTooltip"><label for="actor_userid">Add Actor:</label></span>
-            </td>
-            <td>
-                <?php
-                if (count($this->users) > 0):
-                ?>
-                    <select name="actor_userid" id="actor_userid">
-                    <?php 
-                    foreach($this->users as $user):
-                    ?>
-                        <option value="<?php echo $user['id']; ?>">
-                            <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
-                        </option>
-                    <?php 
-                    endforeach;
-                    ?>
-                    </select>
-                <?php
-                else:
-                ?>
-                    <i>No users available</i>
-                <?php
-                endif;
-                ?>
-            </td>
-            <td>
-                <?php
-                if (count($this->users) > 0):
-                    echo new Fisma_Yui_Form_Button_Submit(
-                        'actorButton',
-                        array(
-                            'label' => 'Add Actor'
-                        )
-                    );
-                endif;
-                ?>
-                &nbsp;
-            </td>
-        </tr>
-        <?php } ?>
-        <tr><td colspan="3">&nbsp;</td></tr>
-            <?php if ($this->actors) { foreach ($this->actors as $key => $user) { ?>
+<?php 
+if ($this->association == 'actor' ): 
+?>
+    <form action="#" onsubmit="addActor();  return false;" id="actorForm"> 
+        <input type="hidden" name="actor_incident_id" id="actor_incident_id" value="<?php echo $this->id;  ?>" />
+<?php 
+endif;
+?>
+        <table class="fisma_crud">
+            <tr>
+                <td colspan="3" style="text-align: left"><h1>Actors:</h1></td>
+            </tr>
+            <?php 
+            if ($this->association == 'actor' ): 
+            ?>
                 <tr>
-                    <?php if($key == 0 ) { print "<td>Assigned:</td>"; } else { print "<td>&nbsp;</td>"; } ?>
-                    <td> 
-                        <?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?> (<?php echo $user['role'];  ?>) 
+                    <td nowrap>
+                        <span class="tooltip" id="actor_useridTooltip">
+                            <label for="actor_userid">Add Actor:</label>
+                        </span>
                     </td>
                     <td>
-                        <?php if (($this->association == 'actor') && ($this->user_id <> $user['id'])) { ?>
-                        <a  href="#"  onclick="callAJAX('/incident/actorremove/id/<?php echo $this->id; ?>/userid/<?php echo $user['id']; ?>')">Remove</a>
-                        <?php } ?>
+                        <?php
+                        if (count($this->users) > 0):
+                        ?>
+                            <select name="actor_userid" id="actor_userid">
+                            <?php 
+                            foreach($this->users as $user):
+                            ?>
+                                <option value="<?php echo $user['id']; ?>">
+                                    <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
+                                </option>
+                            <?php 
+                            endforeach;
+                            ?>
+                            </select>
+                        <?php
+                        else:
+                        ?>
+                            <i>No users available</i>
+                        <?php
+                        endif;
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                        if (count($this->users) > 0):
+                            echo new Fisma_Yui_Form_Button_Submit(
+                                'actorButton',
+                                array(
+                                    'label' => 'Add Actor'
+                                )
+                            );
+                        endif;
+                        ?>
+                        &nbsp;
                     </td>
                 </tr>
-            <?php }} else { ?>
+            <?php 
+            endif; 
+            ?>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <?php 
+            if ($this->actors):
+                foreach ($this->actors as $key => $user):
+            ?>
+                <tr>
+                    <?php 
+                    if ($key == 0):
+                        print "<td>Assigned:</td>"; 
+                    else:
+                        print "<td>&nbsp;</td>";
+                    endif;
+                    ?>
+                    <td> 
+                        <?php echo $user['nameFirst']; ?>
+                        <?php echo $user['nameLast']; ?>
+                        (<?php echo $user['role']; ?>)
+                    </td>
+                    <td>
+                        <?php 
+                        if (($this->association == 'actor') && ($this->userId <> $user['id'])): 
+                        ?>
+                            <a href="#" onclick="<?php echo $this->removeActorClickHandler; ?>">
+                                Remove
+                            </a>
+                        <?php 
+                        endif; 
+                        ?>
+                    </td>
+                </tr>
+            <?php
+                endforeach;
+            else:
+            ?>
                 <tr>
                     <td>Assigned:</td>
                     <td colspan="2"> No actors have been assigned.</td>
                 </tr>
-            <?php }  ?>
-        </tr>
-    </table>
-<?php if ($this->association == 'actor' ) { ?>
-</form>
-<?php } ?>
+            <?php 
+            endif;  
+            ?>
+            </tr>
+        </table>
+<?php 
+if ($this->association == 'actor'): 
+?>
+    </form>
+<?php 
+endif; 
+?>
 
 <div class="clear"></div>
 <br />
 
-<?php if ($this->association == 'actor' ) { ?>
-<form action="#" onsubmit="addObserver();  return false;" id="observerForm"> 
-    <input type="hidden" name="observer_incident_id" id="observer_incident_id" value="<?php echo $this->id;  ?>" />
-<?php } ?>
-    <table class="fisma_crud">
-        <tr>
-            <td colspan="3" style="text-align: left"><h1>Observers:</h1></td>
-        </tr>
-        <?php if ($this->association == 'actor' ) { ?>
-        <tr>
-            <td nowrap>
-                <span class="tooltip" id="observer_useridTooltip"><label for="observer_userid">Add Observer:</label></span>
-            </td>
-            <td>
-                <?php
-                if (count($this->users) > 0):
-                ?>
-                    <select name="observer_userid" id="observer_userid">
-                    <?php 
-                    foreach($this->users as $user):
-                    ?>
-                        <option value="<?php echo $user['id']; ?>">
-                            <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
-                        </option>
-                    <?php
-                    endforeach;
-                    ?>
-                    </select>
-                <?php
-                else:
-                ?>
-                    <i>No users available</i>
-                <?php
-                endif;
-                ?>
-            </td>
-            <td>
-                <?php
-                    if (count($this->users) > 0):
-                        echo new Fisma_Yui_Form_Button_Submit(
-                            'observerButton',
-                            array(
-                                'label' => 'Add Observer'
-                            )
-                        );
-                    endif;
-                ?>
-            </td>
-        </tr>
-        <?php } ?>
-        <tr><td colspan="3">&nbsp;</td></tr>
-            <?php if ($this->observers) { foreach ($this->observers as $key => $user) { ?>
+<?php 
+if ($this->association == 'actor' ):
+?>
+    <form action="#" onsubmit="addObserver();  return false;" id="observerForm"> 
+        <input type="hidden" name="observer_incident_id" id="observer_incident_id" value="<?php echo $this->id;  ?>" />
+<?php 
+endif;
+?>
+        <table class="fisma_crud">
+            <tr>
+                <td colspan="3" style="text-align: left"><h1>Observers:</h1></td>
+            </tr>
+            <?php 
+            if ($this->association == 'actor'):
+            ?>
                 <tr>
-                    <?php if($key == 0 ) { print "<td>Assigned:</td>"; } else { print "<td>&nbsp;</td>"; } ?>
-                    <td> 
-                        <?php echo $user['nameFirst']; ?> <?php echo $user['nameLast'];  ?> (<?php echo $user['role'];  ?>) 
+                    <td nowrap>
+                        <span class="tooltip" id="observer_useridTooltip">
+                            <label for="observer_userid">Add Observer:</label>
+                        </span>
                     </td>
                     <td>
-                        <?php if (($this->association == 'actor') && ($this->user_id <> $user['id'])) { ?>
-                        <a  href="#"  onclick="callAJAX('/incident/observerremove/id/<?php echo $this->id; ?>/userid/<?php echo $user['id']; ?>')">Remove</a>
-                        <?php } ?>
+                        <?php
+                        if (count($this->users) > 0):
+                        ?>
+                            <select name="observer_userid" id="observer_userid">
+                            <?php 
+                            foreach($this->users as $user):
+                            ?>
+                                <option value="<?php echo $user['id']; ?>">
+                                    <?php echo "{$user['nameFirst']} {$user['nameLast']} ({$user['role']})"; ?>
+                                </option>
+                            <?php
+                            endforeach;
+                            ?>
+                            </select>
+                        <?php
+                        else:
+                        ?>
+                            <i>No users available</i>
+                        <?php
+                        endif;
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                            if (count($this->users) > 0):
+                                echo new Fisma_Yui_Form_Button_Submit(
+                                    'observerButton',
+                                    array(
+                                        'label' => 'Add Observer'
+                                    )
+                                );
+                            endif;
+                        ?>
                     </td>
                 </tr>
-            <?php }} else { ?>
+            <?php 
+            endif; 
+            ?>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <?php 
+            if ($this->observers):
+                foreach ($this->observers as $key => $user):
+            ?>
+                    <tr>
+                        <?php 
+                        if ($key == 0):
+                            print "<td>Assigned:</td>";
+                        else:
+                            print "<td>&nbsp;</td>";
+                        endif;
+                        ?>
+                        <td> 
+                            <?php echo $user['nameFirst']; ?>
+                            <?php echo $user['nameLast']; ?>
+                            (<?php echo $user['role']; ?>) 
+                        </td>
+                        <td>
+                            <?php 
+                            if (($this->association == 'actor') && ($this->userId <> $user['id'])):
+                            ?>
+                                <a href="#" onclick="<?php echo $this->removeObserverClickHandler; ?>">
+                                    Remove
+                                </a>
+                            <?php 
+                            endif; 
+                            ?>
+                        </td>
+                    </tr>
+            <?php 
+                endforeach;
+            else: 
+            ?>
                 <tr>
                     <td>Assigned:</td>
                     <td colspan="2"> No observers have been assigned.</td>
                 </tr>
-            <?php }  ?>
-        </tr>
-    </table>
-<?php if ($this->association == 'actor' ) { ?>
-</form>
-<?php } ?>
+            <?php 
+            endif; 
+            ?>
+        </table>
+<?php 
+if ($this->association == 'actor' ):
+?>
+    </form>
+<?php 
+endif; 
+?>

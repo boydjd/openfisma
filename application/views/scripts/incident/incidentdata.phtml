@@ -38,13 +38,19 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <?php if ($this->association == 'actor') { ?>
-                <?php if ($this->incident['status'] == 'closed' ) { ?>
+            <?php 
+            if ($this->association == 'actor'):
+                if ($this->incident['status'] == 'closed' ):
+            ?>
                     <span id="cloneButtonContainer"></span>
-                <?php } else { ?>
+                <?php
+                else:
+                ?>
                     <span id="editButtonContainer"></span>
-                <?php } ?>
-            <?php } ?>
+            <?php 
+                endif; 
+            endif;
+            ?>
             <span id="viewDetailsButtonContainer"></span>
             <span id="hideDetails1ButtonContainer" style="display: none;"></span>
         </td>
@@ -67,7 +73,11 @@
         <tr><td colspan="2" style="text-align: left;"><br /><u>Reporter Information</u></td></tr>
         <tr>    
             <td>Name:</td>
-            <td><?php print $this->incident['reporterTitle']; ?> <?php print $this->incident['reporterFirstName']; ?> <?php print $this->incident['reporterLastName']; ?></td>
+            <td>
+                <?php print $this->incident['reporterTitle']; ?> 
+                <?php print $this->incident['reporterFirstName']; ?> 
+                <?php print $this->incident['reporterLastName']; ?>
+            </td>
         </tr>    
         <tr>    
             <td>Organization:</td>
@@ -83,7 +93,11 @@
         </tr>    
         <tr>    
             <td>City, State Zip:</td>
-            <td><?php print $this->incident['reporterCity']; ?>, <?php print $this->incident['reporterState']; ?> <?php print $this->incident['reporterZip']; ?></td>
+            <td>
+                <?php print $this->incident['reporterCity']; ?>, 
+                <?php print $this->incident['reporterState']; ?> 
+                <?php print $this->incident['reporterZip']; ?>
+            </td>
         </tr>    
         <tr>    
         <tr>    
@@ -133,7 +147,13 @@
     </tr>    
     <tr>    
         <td>Mobile Media Involved:</td>
-        <td><?php if($this->incident['piiMobileMedia']) { print ($this->incident['piiMobileMedia'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td>
+            <?php 
+            if ($this->incident['piiMobileMedia']):
+                print ($this->incident['piiMobileMedia'] == 1) ? 'yes' : 'no'; 
+            endif;
+            ?>
+        </td>
     </tr>    
     <tr>    
         <td>Media Type:</td>
@@ -141,11 +161,23 @@
     </tr>    
     <tr>    
         <td>Encrypted:</td>
-        <td><?php if($this->incident['piiEncrypted']) { print ($this->incident['piiEncrypted']  == 1) ? 'yes' : 'no'; } ?></td>
+        <td>
+            <?php 
+            if ($this->incident['piiEncrypted']):
+                print ($this->incident['piiEncrypted']  == 1) ? 'yes' : 'no';
+            endif;
+            ?>
+        </td>
     </tr>    
     <tr>    
         <td>Authorities Contacted:</td>
-        <td><?php if($this->incident['piiAuthoritiesContacted']) { print ($this->incident['piiAuthoritiesContacted'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td>
+            <?php 
+                if ($this->incident['piiAuthoritiesContacted']):
+                    print ($this->incident['piiAuthoritiesContacted'] == 1) ? 'yes' : 'no';
+                endif; 
+            ?>
+        </td>
     </tr>    
     <tr>    
         <td>Police Report Filed:</td>
@@ -157,11 +189,23 @@
     </tr>    
     <tr>    
         <td>Individuals Notified:</td>
-        <td><?php if($this->incident['piiIndividualsNotification']) { print ($this->incident['piiIndividualsNotification'] == 1) ? 'yes' : 'no'; }  ?></td>
+        <td>
+            <?php 
+            if ($this->incident['piiIndividualsNotification']):
+                print ($this->incident['piiIndividualsNotification'] == 1) ? 'yes' : 'no';
+            endif;
+            ?>
+        </td>
     </tr>    
     <tr>    
         <td>PII in Shipment:</td>
-        <td><?php if($this->incident['piiShipment']) { print ($this->incident['piiShipment'] == 1) ? 'yes' : 'no'; } ?></td>
+        <td>
+            <?php 
+            if ($this->incident['piiShipment']):
+                print ($this->incident['piiShipment'] == 1) ? 'yes' : 'no'; 
+            endif; 
+            ?>
+        </td>
     </tr>    
     <tr>    
         <td>Shipment Sender Contacted:</td>

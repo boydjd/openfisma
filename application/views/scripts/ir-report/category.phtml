@@ -23,78 +23,142 @@
 <?php
 foreach ($this->cats as $id => $cat ) {
     foreach ($cat['children'] as $key => $subcat) {
-        print "<tr><th style='text-align:right; border-left: 0px;'>{$cat['category']}</th><th style='text-align:left;'>{$subcat['name']}</th>";
+        print "<tr><th style='text-align:right; border-left: 0px;'>{$cat['category']}</th>
+               <th style='text-align:left;'>{$subcat['name']}</th>";
 
         print "<td>";
-        if( $this->incident_current['week'][$cat['category']][$subcat['id']]['open'] == '0') {
+        if ( $this->incidentCurrent['week'][$cat['category']][$subcat['id']]['open'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".$this->weeks[date('W')]['start']."/end_date/".$this->weeks[date('W')]['end']."/status/open/category/{$subcat['id']}'>{$this->incident_current['week'][$cat['category']][$subcat['id']]['open']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+                . $this->weeks[date('W')]['start'] 
+                . "/end_date/"
+                . $this->weeks[date('W')]['end']
+                . "/status/open/category/{$subcat['id']}'>"
+                . "{$this->incidentCurrent['week'][$cat['category']][$subcat['id']]['open']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['month'][$cat['category']][$subcat['id']]['open'] == '0') {
+        if ($this->incidentCurrent['month'][$cat['category']][$subcat['id']]['open'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".date('Y')."-".date('m')."-01/end_date/".date('Y')."-".date('m')."-".date('t')."/status/open/category/{$subcat['id']}'>{$this->incident_current['month'][$cat['category']][$subcat['id']]['open']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-01/end_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-"
+            . date('t')
+            . "/status/open/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['month'][$cat['category']][$subcat['id']]['open']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['year'][$cat['category']][$subcat['id']]['open'] == '0') {
+        if ($this->incidentCurrent['year'][$cat['category']][$subcat['id']]['open'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".date('Y')."-01-01/end_date/".date('Y')."-12-31/status/open/category/{$subcat['id']}'>{$this->incident_current['year'][$cat['category']][$subcat['id']]['open']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-01-01/end_date/"
+            . date('Y')
+            . "-12-31/status/open/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['year'][$cat['category']][$subcat['id']]['open']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['week'][$cat['category']][$subcat['id']]['resolved'] == '0') {
+        if ($this->incidentCurrent['week'][$cat['category']][$subcat['id']]['resolved'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".$this->weeks[date('W')]['start']."/end_date/".$this->weeks[date('W')]['end']."/status/resolved/category/{$subcat['id']}'>{$this->incident_current['week'][$cat['category']][$subcat['id']]['resolved']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . $this->weeks[date('W')]['start']
+            . "/end_date/"
+            . $this->weeks[date('W')]['end']
+            . "/status/resolved/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['week'][$cat['category']][$subcat['id']]['resolved']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['month'][$cat['category']][$subcat['id']]['resolved'] == '0') {
+        if ($this->incidentCurrent['month'][$cat['category']][$subcat['id']]['resolved'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".date('Y')."-".date('m')."-01/end_date/".date('Y')."-".date('m')."-".date('t')."/status/resolved/category/{$subcat['id']}'>{$this->incident_current['month'][$cat['category']][$subcat['id']]['resolved']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-01/end_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-"
+            . date('t')
+            . "/status/resolved/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['month'][$cat['category']][$subcat['id']]['resolved']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['year'][$cat['category']][$subcat['id']]['resolved'] == '0') {
+        if ($this->incidentCurrent['year'][$cat['category']][$subcat['id']]['resolved'] == '0'):
             print "0";
-        } else {
-            print "<a href='panel/irreport/sub/report/start_date/".date('Y')."-01-01/end_date/".date('Y')."-12-31/status/resolved/category/{$subcat['id']}'>{$this->incident_current['year'][$cat['category']][$subcat['id']]['resolved']}</a>";
-        }
+        else:
+            print "<a href='panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-01-01/end_date/"
+            . date('Y')
+            . "-12-31/status/resolved/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['year'][$cat['category']][$subcat['id']]['resolved']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['week'][$cat['category']][$subcat['id']]['closed'] == '0') {
+        if ($this->incidentCurrent['week'][$cat['category']][$subcat['id']]['closed'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".$this->weeks[date('W')]['start']."/end_date/".$this->weeks[date('W')]['end']."/status/closed/category/{$subcat['id']}'>{$this->incident_current['week'][$cat['category']][$subcat['id']]['closed']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . $this->weeks[date('W')]['start']
+            . "/end_date/"
+            . $this->weeks[date('W')]['end']
+            . "/status/closed/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['week'][$cat['category']][$subcat['id']]['closed']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['month'][$cat['category']][$subcat['id']]['closed'] == '0') {
+        if ($this->incidentCurrent['month'][$cat['category']][$subcat['id']]['closed'] == '0'):
             print "0";
-        } else {
-            print "<a href='/panel/irreport/sub/report/start_date/".date('Y')."-".date('m')."-01/end_date/".date('Y')."-".date('m')."-".date('t')."/status/closed/category/{$subcat['id']}'>{$this->incident_current['month'][$cat['category']][$subcat['id']]['closed']}</a>";
-        }
+        else:
+            print "<a href='/panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-01/end_date/"
+            . date('Y')
+            . "-"
+            . date('m')
+            . "-"
+            . date('t')
+            . "/status/closed/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['month'][$cat['category']][$subcat['id']]['closed']}</a>";
+        endif;
         print "</td>";
         
         print "<td>";
-        if( $this->incident_current['year'][$cat['category']][$subcat['id']]['closed'] == '0') {
+        if ($this->incidentCurrent['year'][$cat['category']][$subcat['id']]['closed'] == '0'):
             print "0";
-        } else {
-            print "<a href='panel/irreport/sub/report/start_date/".date('Y')."-01-01/end_date/".date('Y')."-12-31/status/closed/category/{$subcat['id']}'>{$this->incident_current['year'][$cat['category']][$subcat['id']]['closed']}</a>";
-        }
+        else:
+            print "<a href='panel/irreport/sub/report/start_date/"
+            . date('Y')
+            . "-01-01/end_date/"
+            . date('Y')
+            . "-12-31/status/closed/category/{$subcat['id']}'>"
+            . "{$this->incidentCurrent['year'][$cat['category']][$subcat['id']]['closed']}</a>";
+        endif;
         print "</td>";
         
         print "</tr>";

@@ -3,7 +3,7 @@
         <?php 
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'IR Category List', 
-                                                     'imageSrc' => '/images/view_list.png',                                            
+                                                     'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/ircategory/sub/list'));
         echo $listButton;
         ?>
@@ -16,13 +16,14 @@
         echo $listButton;
         ?>
 
-        <?php if (Fisma_Acl::hasPrivilegeForClass('create', 'IrCategory')) {    
-        $createButton = new Fisma_Yui_Form_Button_Link('createSubcategoryButton', 
-                                               array('value' => 'Add IR Sub Category', 
-                                                     'imageSrc' => '/images/add.png',
-                                                     'href' => '/panel/ircategory/sub/sub_create'));
-        echo $createButton;
-        } 
+        <?php 
+        if (Fisma_Acl::hasPrivilegeForClass('create', 'IrCategory')):
+            $createButton = new Fisma_Yui_Form_Button_Link('createSubcategoryButton', 
+                                                   array('value' => 'Add IR Sub Category', 
+                                                         'imageSrc' => '/images/add.png',
+                                                         'href' => '/panel/ircategory/sub/sub_create'));
+            echo $createButton;
+        endif;
         ?>
     </div>
     <div class="clear"></div>

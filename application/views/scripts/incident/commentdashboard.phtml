@@ -1,18 +1,28 @@
-
 <table class="ir_report ir_report_dash">
     <tr>
-        <th style="border-left: 0px;">Incident ID</th>
+        <th>Incident ID</th>
         <th>Date</th>
         <th>Commenter</th>
         <th>Comment</th>
     </tr>
-    <?php foreach($this->comments as $key => $comment) { 
-            print " <tr>
-                        <td style='border-left: 0px;'><a href='/panel/incident/sub/view/id/{$comment['incidentId']}'>{$comment['incidentId']}</a></td>
-                        <td>{$comment['createdTs']}</td>
-                        <td>{$comment['user']['nameFirst']} {$comment['user']['nameLast']} ({$comment['user']['role']})</td>
-                        <td>{$comment['comment']}</td>
-                    </tr>";
-
-        } ?>
+    <?php 
+    foreach($this->comments as $key => $comment):
+    ?>
+        <tr>
+            <td>
+                <a href='/panel/incident/sub/view/id/{$comment['incidentId']}'>
+                    <?php echo $comment['incidentId']; ?>
+                </a>
+            </td>
+            <td><?php echo $comment['createdTs']; ?></td>
+            <td>
+                <?php echo $comment['user']['nameFirst']; ?>
+                <?php echo $comment['user']['nameLast']; ?> 
+                (<?php echo $comment['user']['role']; ?>)
+            </td>
+            <td><?php echo $comment['comment']; ?></td>
+        </tr>
+    <?php
+    endforeach;
+    ?>
 </table>

@@ -528,7 +528,8 @@ class IncidentController
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
        
-        /* NATHAN: This seems like it should work, but I am out of time to debug. When you submit a form the 
+        /* @todo
+         * NATHAN: This seems like it should work, but I am out of time to debug. When you submit a form the 
             dashboard is getting rendered two times.  
          */
 
@@ -540,6 +541,12 @@ class IncidentController
         }
         $this->_helper->actionStack('header', 'panel');
         */     
+
+        $urlSuffix = '/sortby/reportTs/order/asc/startIndex/0/count/' . $this->_paging['count'];
+        $this->view->newIncidentsUrl = $link . '/status/new' . $urlSuffix;
+        $this->view->openIncidentsUrl = $link . '/status/open' . $urlSuffix;
+        $this->view->resolvedIncidentsUrl = $link . '/status/resolved' . $urlSuffix;
+        $this->view->closedIncidentsUrl = $link . '/status/resolved' . $urlSuffix;
 
         $this->render('dashboard');
     }  
@@ -577,6 +584,9 @@ class IncidentController
         
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
+        $this->view->allIncidentsUrl = $link
+                                     . '/status/all/sortby/reportTs/order/asc/startIndex/0/count/'
+                                     . $this->_pagin['count'];
         
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
         $this->view->assign('status', $status);
@@ -1147,7 +1157,19 @@ class IncidentController
         $this->view->assign('association', $association);
         
         $user = User::currentUser();
-        $this->view->assign('user_id', $user['id']);
+        $this->view->assign('userId', $user['id']);
+        
+        $this->view->removeActorClickHandler = 'callAJAX(\'/incident/actorremove/id/'
+                                              . $id
+                                              . '/userid/'
+                                              . $user['id']
+                                              . '\')';
+
+        $this->view->removeObserverClickHandler = 'callAJAX(\'/incident/observerremove/id/'
+                                                . $id
+                                                . '/userid/'
+                                                . $user['id']
+                                                . '\')';
 
         $this->render('actors');
     }

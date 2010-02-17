@@ -144,7 +144,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/status/new/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->newIncidentsUrl; ?>",
         dynamicData: true, 
         sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -171,15 +171,19 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) { ?>
-            myDataTable.subscribe("rowClickEvent", 
-                function (oArgs) {
-                    var elTarget = oArgs.target;
-                    var oRecord = this.getRecord(elTarget);
-                    document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
-                }
-            );
-    <?php } ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
@@ -233,7 +237,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/status/open/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->openIncidentsUrl; ?>",
         dynamicData: true, 
         sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -260,20 +264,28 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) { ?>
-            myDataTable.subscribe("rowClickEvent", 
-                function (oArgs) {
-                    var elTarget = oArgs.target;
-                    var oRecord = this.getRecord(elTarget);
-                    document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
-                }
-            );
-    <?php } ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php 
-Fisma_Format_Section::startSection("Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>", null, 'resolved'); 
+Fisma_Format_Section::startSection(
+    "Resolved / Rejected Incidents: <span id='resolvedSearchResultsTotalFound'></span>",
+    null, 
+    'resolved'
+);
 ?>
 <div id="resolvedList"></div>
 <script type="text/javascript">
@@ -321,7 +333,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/status/resolved/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->resolvedIncidentsUrl; ?>",
         dynamicData: true, 
         sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -348,19 +360,29 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) { ?>
-            myDataTable.subscribe("rowClickEvent", 
-                function (oArgs) {
-                    var elTarget = oArgs.target;
-                    var oRecord = this.getRecord(elTarget);
-                    document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
-                }
-            );
-    <?php } ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif; 
+    ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>", null, 'closed'); ?>
+<?php 
+Fisma_Format_Section::startSection(
+    "Recently Closed Incidents: <span id='closedSearchResultsTotalFound'></span>", 
+    null, 
+    'closed'
+);
+?>
 <div id="closedList"></div>
 <script type="text/javascript">
 // Column definitions
@@ -407,7 +429,7 @@ var myColumnDefs = [
     // DataTable configuration
     var myConfigs = {
         //dynamicData: false
-        initialRequest: "<?php echo $this->link; ?>/status/closed/sortby/reportTs/order/asc/startIndex/0/count/<?php echo $this->pageInfo['count']?>",
+        initialRequest: "<?php echo $this->closedIncidentsUrl; ?>",
         dynamicData: true, 
         sortedBy : {key:"reportTs", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -434,15 +456,19 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) { ?>
-            myDataTable.subscribe("rowClickEvent", 
-                function (oArgs) {
-                    var elTarget = oArgs.target;
-                    var oRecord = this.getRecord(elTarget);
-                    document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
-                }
-            );
-    <?php } ?>
+    <?php 
+    if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')):
+    ?>
+        myDataTable.subscribe("rowClickEvent", 
+            function (oArgs) {
+                var elTarget = oArgs.target;
+                var oRecord = this.getRecord(elTarget);
+                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            }
+        );
+    <?php 
+    endif;
+    ?>
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 

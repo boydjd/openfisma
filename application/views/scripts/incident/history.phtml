@@ -34,7 +34,8 @@ var incidentCallback = {
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+var transactionUrl = '/incident/incidentdata/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
     if ('block' == document.getElementById('incident_details').style.display) {
@@ -80,7 +81,8 @@ Fisma_Format_Section::stopSection();
         }
     } 
     
-    var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/commentsnoform/id/<?php print $this->id; ?>', comCallback, null);
+    var transactionUrl = '/incident/commentsnoform/id/<?php print $this->id; ?>';
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, comCallback, null);
 
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>

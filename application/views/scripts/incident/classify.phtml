@@ -35,7 +35,8 @@ var incidentCallback = {
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+var transactionUrl = '/incident/incidentdata/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
     if ('block' == document.getElementById('incident_details').style.display) {
@@ -78,15 +79,47 @@ var callback = {
                 }
             }
             
-            actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", { context:"actor_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Actors</b> can add/remove users to/from an incident, complete workflow steps, and submit comments to an incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
-            observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", { context:"observer_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Observers</b> can view an incident, and will be notified when the incident is updated.  They cannot perform any actions on the incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
+            actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", 
+                { 
+                    context:"actor_useridTooltip", 
+                    showdelay: 150, 
+                    hidedelay: 150, 
+                    autodismissdelay: 25000, 
+                    text: "<b>Actors</b> can add/remove users to/from an incident, \
+                           complete workflow steps, and submit comments to an incident.", 
+                    effect: 
+                        {
+                            effect:YAHOO.widget.ContainerEffect.FADE,
+                            duration:0.25
+                        }, 
+                    width: "50%"
+                }
+            );
+            
+            observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", 
+                {
+                    context:"observer_useridTooltip", 
+                    showdelay: 150, 
+                    hidedelay: 150, 
+                    autodismissdelay: 25000, 
+                    text:"<b>Observers</b> can view an incident, and will be notified when the \
+                          incident is updated.  They cannot perform any actions on the incident.",      
+                    effect:
+                        {
+                            effect:YAHOO.widget.ContainerEffect.FADE,
+                            duration:0.25
+                        }, 
+                    width: "50%"
+                }
+            );
         },
         failure: function(o) {
             alert("Error loading Actors/Observers");
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/actor/id/<?php print $this->id; ?>', callback, null);
+var transactionUrl = '/incident/actor/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, callback, null);
 
 //this funciton will be called by onclick events defined in actors.phtml
 function callAJAX(url) {

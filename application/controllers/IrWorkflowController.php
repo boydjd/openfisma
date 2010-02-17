@@ -65,6 +65,11 @@ class IRWorkflowController extends SecurityController
         $this->searchbox();
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
+        
+        $this->view->initialReqestUrl = $link
+                                      . '/sortby/name/order/asc/startIndex/0/count/'
+                                      . $this->_paging['count'];
+
         $this->render('list');
     }
     

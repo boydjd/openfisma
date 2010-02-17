@@ -33,7 +33,8 @@ var incidentCallback = {
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+var transactionUrl = '/incident/incidentdata/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
     if ('block' == document.getElementById('incident_details').style.display) {

@@ -35,7 +35,8 @@ var incidentCallback = {
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/incidentdata/id/<?php print $this->id; ?>', incidentCallback, null);
+var transactionUrl = '/incident/incidentdata/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
     if ('block' == document.getElementById('incident_details').style.display) {
@@ -62,8 +63,40 @@ function onViewButtonClick() {
 var callback = {
         success: function(o) {
             document.getElementById('actors').innerHTML =  o.responseText;
-            actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", { context:"actor_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Actors</b> can add/remove users to/from an incident, complete workflow steps, and submit comments to an incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
-            observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", { context:"observer_useridTooltip", showdelay: 150, hidedelay: 150, autodismissdelay: 25000, text:"<b>Observers</b> can view an incident, and will be notified when the incident is updated.  They cannot perform any actions on the incident.", effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, width: "50%"});
+            actor_useridTooltip = new YAHOO.widget.Tooltip("actor_useridTooltipObj", 
+                {
+                    context:"actor_useridTooltip", 
+                    showdelay: 150, 
+                    hidedelay: 150, 
+                    autodismissdelay: 25000, 
+                    text: "<b>Actors</b> can add/remove users to/from an incident, \
+                          complete workflow steps, and submit comments to an incident.",    
+                    effect:
+                        {
+                            effect:YAHOO.widget.ContainerEffect.FADE,
+                            duration:0.25
+                        }, 
+                    width: "50%"
+                }
+            );
+            
+            observer_useridTooltip = new YAHOO.widget.Tooltip("observer_useridTooltipObj", 
+                {
+                    context:"observer_useridTooltip", 
+                    showdelay: 150, 
+                    hidedelay: 150, 
+                    autodismissdelay: 25000, 
+                    text: "<b>Observers</b> can view an incident, and will be notified when \
+                          the incident is updated.  They cannot perform any actions on the incident.",  
+                    effect:
+                        {
+                            effect:YAHOO.widget.ContainerEffect.FADE,
+                            duration:0.25
+                        }, 
+                    width: "50%"
+                }
+            );
+            
             var actorButton = new YAHOO.widget.Button({
                                        type: "submit",
                                        label: "Add Actor",
@@ -90,7 +123,8 @@ var callback = {
         }
     } 
 
-var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/actor/id/<?php print $this->id; ?>', callback, null);
+var transactionUrl = '/incident/actor/id/<?php print $this->id; ?>';
+var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, callback, null);
 
 //this funciton will be called by onclick events defined in actors.phtml
 function callAJAX(url) {
@@ -146,7 +180,8 @@ function addObserver() {
             }
         } 
 
-    var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/workflow/id/<?php print $this->id; ?>', wfCallback, null);
+    var transactionUrl = '/incident/workflow/id/<?php print $this->id; ?>';
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, wfCallback, null);
     
     function completestep() {
         var formObject = document.getElementById('stepForm');
@@ -167,7 +202,9 @@ function addObserver() {
             plugin_insertdate_dateFormat : "%Y-%m-%d",
             plugin_insertdate_timeFormat : "%H:%M:%S",
             browsers : "msie,gecko,safari,opera",
-            theme_advanced_buttons1 : "bold, italic, underline, |, bullist, numlist, |, outdent, indent, |, cut, copy, paste, |, undo, redo, |, spellchecker, |, search, replace, |, insertdate, inserttime, link, unlink, |, print, fullscreen",
+            theme_advanced_buttons1 : "bold, italic, underline, |, bullist, numlist, |, outdent, indent, |, \
+                                      cut, copy, paste, |, undo, redo, |, spellchecker, |, search, replace, |, \
+                                      insertdate, inserttime, link, unlink, |, print, fullscreen",
             theme_advanced_buttons2 : "",
             theme_advanced_buttons3 : "",
             theme_advanced_toolbar_location : "top",
@@ -205,7 +242,8 @@ function addObserver() {
         }
     } 
     
-    var transaction = YAHOO.util.Connect.asyncRequest('GET', '/incident/comments/id/<?php print $this->id; ?>', comCallback, null);
+    var transactionUrl = '/incident/comments/id/<?php print $this->id; ?>';
+    var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, comCallback, null);
 
     function addcomment() {
         var formObject = document.getElementById('commentForm');

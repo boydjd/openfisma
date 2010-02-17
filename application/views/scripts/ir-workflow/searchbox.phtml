@@ -3,7 +3,7 @@
         <?php 
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'IR Workflow List', 
-                                                     'imageSrc' => '/images/view_list.png',                                            
+                                                     'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/irworkflow/sub/list'));
         echo $listButton;
         ?>
@@ -16,19 +16,20 @@
         echo $listButton;
         ?>
 
-        <?php if (Fisma_Acl::hasPrivilege('IrWorkflowDef', 'create')) {
-        $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
-                                               array('value' => 'Add IR Workflow', 
-                                                     'imageSrc' => '/images/add.png',
-                                                     'href' => '/panel/irworkflow/sub/create'));
-        echo $createButton;
+        <?php 
+        if (Fisma_Acl::hasPrivilege('IrWorkflowDef', 'create')):
+            $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                                   array('value' => 'Add IR Workflow', 
+                                                         'imageSrc' => '/images/add.png',
+                                                         'href' => '/panel/irworkflow/sub/create'));
+            echo $createButton;
         
-        $subCreateButton = new Fisma_Yui_Form_Button_Link('subCreateButton', 
-                                               array('value' => 'Add IR Workflow Step', 
-                                                     'imageSrc' => '/images/add.png',
-                                                     'href' => '/panel/irworkflow/sub/step_create'));
-        echo $subCreateButton;
-        } 
+            $subCreateButton = new Fisma_Yui_Form_Button_Link('subCreateButton', 
+                                                   array('value' => 'Add IR Workflow Step', 
+                                                         'imageSrc' => '/images/add.png',
+                                                         'href' => '/panel/irworkflow/sub/step_create'));
+            echo $subCreateButton;
+        endif; 
         ?>
     </div>
     <div class="clear"></div>
