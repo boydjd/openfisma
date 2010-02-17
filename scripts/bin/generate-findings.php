@@ -96,6 +96,7 @@ try {
         $discoveredDate = rand(0, time());
 
         $finding = array();
+        $finding['currentEcd'] = date("Y-m-d", $discoveredDate+rand());
         $finding['type'] = $type[rand(0, $typeCount)];
         $finding['status'] = $status[rand(0, $statusCount)];
         $finding['threatLevel'] = $threat[rand(0, $threatCount)];
@@ -104,14 +105,13 @@ try {
         $finding['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
         $finding['sourceId'] = $sourceIds[rand(0, $sourceIdsCount)][0];
         $finding['securityControlId'] = $securityControlIds[rand(0, $securityControlIdsCount)][0];
-        $finding['description'] = Fisma_String::loremIpsum(rand(1, 1000));
-        $finding['recommendation'] = Fisma_String::loremIpsum(rand(1, 1000));
-        $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(1, 1000));
-        $finding['resourcesRequired'] = Fisma_String::loremIpsum(rand(1, 1000));
-        $finding['threat'] = Fisma_String::loremIpsum(rand(1, 1000));
-        $finding['countermeasures'] = Fisma_String::loremIpsum(rand(1, 1000));
+        $finding['description'] = Fisma_String::loremIpsum(rand(2, 1000));
+        $finding['recommendation'] = Fisma_String::loremIpsum(rand(2, 1000));
+        $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(2, 1000));
+        $finding['resourcesRequired'] = Fisma_String::loremIpsum(rand(2, 1000));
+        $finding['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
+        $finding['countermeasures'] = Fisma_String::loremIpsum(rand(2, 1000));
         $finding['discoveredDate'] = date("Y-m-d", $discoveredDate);
-        $finding['currentEcd'] = date("Y-m-d", $discoveredDate+rand());
         $finding['ecdLocked'] = FALSE;
         $findings[] = $finding;
         unset($finding);
