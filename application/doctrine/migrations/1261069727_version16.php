@@ -70,7 +70,7 @@ class Version16 extends Doctrine_Migration_Base
 
         $this->createForeignKey(
             'finding_audit_log', 
-            'objectid_idx',
+            'finding_audit_log_objectid_finding_id_idx',
             array(
                 'local' => 'objectid',
                 'foreign' => 'id',
@@ -80,7 +80,7 @@ class Version16 extends Doctrine_Migration_Base
         
         $this->createForeignKey(
             'finding_audit_log', 
-            'userid_idx',
+            'finding_audit_log_userid_user_id_idx',
             array(
                 'local' => 'userid',
                 'foreign' => 'id',
