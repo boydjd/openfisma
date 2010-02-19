@@ -38,7 +38,6 @@ class Version12 extends Doctrine_Migration_Base
         $privilege->resource = 'account_log';
         $privilege->action = 'read';
         $privilege->description = 'Account Audit Logs';
-        $privilege->orgSpecific = 0;
         $privilege->save();
 
         $role      = $this->_getRole();

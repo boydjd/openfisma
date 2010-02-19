@@ -1,3 +1,6 @@
+<?php
+  $yuiVersion = Fisma::configuration()->getConfig('yui_version');
+?>
 <script id='uploadDocumentScript' type="text/javascript">
 var uiLayer = YAHOO.util.Dom.getRegion('selectLink');
 var overlay = YAHOO.util.Dom.get('uploaderOverlay');
@@ -5,7 +8,7 @@ YAHOO.util.Dom.setStyle(overlay, 'width', uiLayer.right-uiLayer.left + "px");
 YAHOO.util.Dom.setStyle(overlay, 'height', uiLayer.bottom-uiLayer.top + "px");
 
 // Custom URL for the uploader swf file (same folder).
-YAHOO.widget.Uploader.SWFURL = "/yui/uploader/assets/uploader.swf";
+YAHOO.widget.Uploader.SWFURL = "/lib/<?php echo $yuiVersion; ?>/build/uploader/assets/uploader.swf";
 
 // Instantiate the uploader and write it to its placeholder div.
 
