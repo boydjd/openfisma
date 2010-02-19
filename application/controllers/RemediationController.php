@@ -253,6 +253,101 @@ class RemediationController extends SecurityController
     }
 
     /**
+     * Returns summary counts for organizations
+     *
+     * @TODO: Add check for privileged organizations
+     * @return array
+     */
+    private function getSummaryCounts()
+    {
+        $summary = Doctrine_Query::create()
+                   ->select("CONCAT_WS(' - ', parent.nickname, parent.name) label")
+                   ->addSelect('parent.nickname nickname')
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'NEW', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0))"
+                       . " ontimeNew"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'NEW', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0))"
+                       . " overdueNew"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'DRAFT', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)"
+                       . ") ontimeDraft"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'DRAFT', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)"
+                       . ") overdueDraft"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS ISSO', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0,"
+                       . " 1), 0)) ontimeMsisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS ISSO', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1,"
+                       . " 0), 0)) overdueMsisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS IV&V', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0,"
+                       . " 1), 0)) ontimeMsivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS IV&V', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1,"
+                       . " 0), 0)) overdueMsivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'EN', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0))"
+                       . " ontimeEn"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'EN', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0))"
+                       . " overdueEn"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV ISSO', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0,"
+                       . " 1), 0)) ontimeEvisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV ISSO', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1,"
+                       . " 0), 0)) overdueEvisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV IV&V', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0,"
+                       . " 1), 0)) ontimeEvivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV IV&V', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1,"
+                       . " 0), 0)) overdueEvivv"
+                   )
+                   ->addSelect("SUM(IF(finding.status = 'CLOSED', 1, 0)) closed")
+                   ->addSelect("COUNT(finding.id) total")
+                   ->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgtype")
+                   ->addSelect('parent.lft as lft')
+                   ->addSelect('parent.rgt as rgt')
+                   ->addSelect('parent.id as id')
+                   ->addSelect(
+                       "IF(parent.orgtype <> 'system', CONCAT(UPPER(SUBSTRING(parent.orgtype, 1, 1)), SUBSTRING"
+                       . "(parent.orgtype, 2)), CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
+                       . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
+                       . "'Minor Application' END) orgTypeLabel"
+                   )
+                   ->addSelect('parent.level level')
+                   ->from(
+                       'Organization node, node.System system, Organization parent, Finding finding, '
+                       . 'finding.CurrentEvaluation evaluation'
+                   )
+                   ->where('node.lft BETWEEN parent.lft and parent.rgt')
+                   ->andWhere('node.id = finding.responsibleOrganizationId')
+                   ->andWhere("finding.status <> 'PEND'")
+                   ->groupBy('parent.nickname')
+                   ->orderBy('parent.lft')
+                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+                   ->execute();
+
+        return $summary;
+    }
+
+    /**
      * This is duplicated from the organization controller. it would be nice to consolidate
      * this into the organization class. Doctrine should do this at v2.0, but if not, we 
      * should do it ourselves.
