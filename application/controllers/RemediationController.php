@@ -247,7 +247,20 @@ class RemediationController extends SecurityController
             }
             
             // Convert organizations into hierarchical array
-            $organizations = $this->toHierarchy($organizations, $type, $source);
+            $organizations = $this->getSummaryCounts();
+            foreach ($organizations as &$organization) {
+                foreach ($organization as $k => $v) {
+                    if (strstr($k, '_')) {
+                        switch ($strippedKey = substr($k, 1)) {
+                            default:
+                              $newKey = $strippedKey;
+                        }
+                        $organization[$newKey] = $v;
+                        unset($organization[$k]);
+                    }
+                }
+            }
+
             $this->view->summaryData = $organizations;
         } 
     }
