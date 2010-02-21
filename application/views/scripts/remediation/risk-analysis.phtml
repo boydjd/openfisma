@@ -34,19 +34,18 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 }
 ?>
 
-<?php Fisma_Format_Section::startSection("Threats"); ?>
-<p>
-    <i>
-        A threat is the potential for a particular threat-source to successfully exercise a particular 
-        vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an application, system, 
-        device, or service that could lead to a failure of confidentiality, integrity, or availability. 
-        The threat level allows the organization to prioritize security weaknesses based on their level 
-        of threat to the information system. Usually, the security level and description are pre-populated 
-        from vulnerability scan data, however, manual findings need an assigned threat level and 
-        description. 
-    </i>
-</p>
-
+<?php
+    $threatsText    = "<p>A threat is the potential for a particular threat-source to successfully exercise a "
+                    . "particular vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an "
+                    . "application, system, device, or service that could lead to a failure of confidentiality, "
+                    . "integrity, or availability.</p>"
+                    . "<p>The threat level allows the organization to prioritize security weaknesses based on "
+                    . "their level of threat to the information system. Usually, the security level and "
+                    . "description are pre-populated from vulnerability scan data, however, manual findings need "
+                    . "an assigned threat level and description.</p>";
+     $threatTooltip = new Fisma_Yui_Tooltip('threats', 'Threats', $threatsText);
+     Fisma_Format_Section::startSection('Threats', null, null, $threatTooltip);
+?>
 <p>
     <b>Threat Level:</b>
 
@@ -76,20 +75,19 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection("Countermeasures"); ?>
-<p>
-    <i>
-        The goal of this step is to analyze the controls that are currently implemented by the 
-        organization to minimize or eliminate the likelihood (or probability) of the vulnerability 
-        being exercised or exploited. This should not include countermeasures that are planned 
-        and are not currently in place. Countermeasures or Security controls can be technical and
-        nontechnical methods. Examples of technical controls would be; access control mechanisms, 
-        identification and authentication mechanisms, encryption methods, intrusion detection 
-        software, etc. Examples of nontechnical controls would be management and operational 
-        controls, such as; security policies, operational procedures, personnel, physical, and 
-        environmental security.
-    </i>
-</p>
+<?php
+    $countermeasuresText    = "<p>The goal of this step is to analyze the controls that are currently implemented "
+                    	    . "by the organization to minimize or eliminate the likelihood (or probability) of the "
+                    	    . "vulnerability being exercised or exploited. This should not include countermeasures "
+                    	    . "that are planned and are not currently in place. </p>"
+                    	    . "<p>Countermeasures or Security controls can be technical and nontechnical methods. "
+                    	    . "Examples of technical controls would be; access control mechanisms, identification and "
+                    	    . "authentication mechanisms, encryption methods, software, etc. Examples of nontechnical "
+                    	    . "controls would be management and operational controls, such as; security policies, "
+                    	    . "operational procedures, personnel, physical, and environmental security.</p>";
+    $countermeasuresTooltip = new Fisma_Yui_Tooltip('countermeasures', 'Countermeasures', $countermeasuresText);
+    Fisma_Format_Section::startSection('Countermeasures', null, null, $countermeasuresTooltip);
+?>
 
 <p>
     <b>Countermeasures Effectiveness:</b>
