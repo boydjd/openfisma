@@ -43,8 +43,8 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
                     . "their level of threat to the information system. Usually, the security level and "
                     . "description are pre-populated from vulnerability scan data, however, manual findings need "
                     . "an assigned threat level and description.</p>";
-     $threatTooltip = new Fisma_Yui_Tooltip('threats', 'Threats', $threatsText);
-     Fisma_Format_Section::startSection('Threats', null, null, $threatTooltip);
+    $threatTooltip = new Fisma_Yui_Tooltip('threats', 'Threats', $threatsText);
+    Fisma_Format_Section::startSection('Threats', null, null, $threatTooltip);
 ?>
 <p>
     <b>Threat Level:</b>
@@ -77,14 +77,14 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 
 <?php
     $countermeasuresText    = "<p>The goal of this step is to analyze the controls that are currently implemented "
-                    	    . "by the organization to minimize or eliminate the likelihood (or probability) of the "
-                    	    . "vulnerability being exercised or exploited. This should not include countermeasures "
-                    	    . "that are planned and are not currently in place. </p>"
-                    	    . "<p>Countermeasures or Security controls can be technical and nontechnical methods. "
-                    	    . "Examples of technical controls would be; access control mechanisms, identification and "
-                    	    . "authentication mechanisms, encryption methods, software, etc. Examples of nontechnical "
-                    	    . "controls would be management and operational controls, such as; security policies, "
-                    	    . "operational procedures, personnel, physical, and environmental security.</p>";
+                            . "by the organization to minimize or eliminate the likelihood (or probability) of the "
+                            . "vulnerability being exercised or exploited. This should not include countermeasures "
+                            . "that are planned and are not currently in place. </p>"
+                            . "<p>Countermeasures or Security controls can be technical and nontechnical methods. "
+                            . "Examples of technical controls would be; access control mechanisms, identification and "
+                            . "authentication mechanisms, encryption methods, software, etc. Examples of nontechnical "
+                            . "controls would be management and operational controls, such as; security policies, "
+                            . "operational procedures, personnel, physical, and environmental security.</p>";
     $countermeasuresTooltip = new Fisma_Yui_Tooltip('countermeasures', 'Countermeasures', $countermeasuresText);
     Fisma_Format_Section::startSection('Countermeasures', null, null, $countermeasuresTooltip);
 ?>
