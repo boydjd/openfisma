@@ -2,7 +2,7 @@ User:
     sample:
         username: sample
         password: Sample1
-        email: sample@agency.gov
+        email: openfisma-default-install@googlegroups.com
         nameFirst: Sample
         nameLast: User
         hashType: sha1
@@ -24,52 +24,45 @@ User:
             - OCOO_ORG
             - SCMS_ORG
             - CRMS_ORG
-    irc1_user:
-        username: irc1
+    irc_user:
+        username: irc
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: IRC1
-        nameLast: User
-        Roles: [irc_role]
-    irc2_user:
-        username: irc2
-        password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: IRC2
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Incident Response
+        nameLast: Coordinator
         Roles: [irc_role]
     oig_user:
         username: oig
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: OIG
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Inspector
+        nameLast: General
         Roles: [oig_role]
     dbr_user:
         username: dbr
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: DBR
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Data Breach
+        nameLast: Representative
         Roles: [dbr_role]
     pa_user:
         username: pa
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: PA
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Privacy
+        nameLast: Advocate
         Roles: [pa_role]
     irs_user:
         username: irs
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: IRS
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Incident Response
+        nameLast: Specialist
         Roles: [irs_role]
     hdr_user:
         username: hdr
         password: 0p3nfism@
-        email: mehaase@gmail.com
-        nameFirst: HDR
-        nameLast: User
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Help Desk
+        nameLast: Representative
         Roles: [hdr_role]
