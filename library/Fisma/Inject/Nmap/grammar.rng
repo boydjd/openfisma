@@ -70,6 +70,9 @@
             </attribute>
           </element>
           <element name="taskend">
+            <optional>
+              <attribute name="extrainfo"/>
+            </optional>
             <attribute name="task"/>
             <attribute name="time">
               <data type="integer"/>
@@ -159,29 +162,39 @@
                       <data type="NCName"/>
                     </attribute>
                   </element>
-                  <element name="service">
-                    <attribute name="conf">
-                      <data type="integer"/>
-                    </attribute>
-                    <optional>
-                      <attribute name="extrainfo"/>
-                    </optional>
-                    <attribute name="method">
-                      <data type="NCName"/>
-                    </attribute>
-                    <attribute name="name"/>
-                    <optional>
-                      <attribute name="ostype">
+                  <optional>
+                    <element name="service">
+                      <attribute name="conf">
+                        <data type="integer"/>
+                      </attribute>
+                      <optional>
+                        <attribute name="extrainfo"/>
+                      </optional>
+                      <attribute name="method">
                         <data type="NCName"/>
                       </attribute>
-                    </optional>
-                    <optional>
-                      <attribute name="product"/>
-                    </optional>
-                    <optional>
-                      <attribute name="version"/>
-                    </optional>
-                  </element>
+                      <attribute name="name"/>
+                      <optional>
+                        <attribute name="ostype">
+                          <data type="NCName"/>
+                        </attribute>
+                      </optional>
+                      <optional>
+                        <attribute name="product"/>
+                      </optional>
+                      <optional>
+                        <attribute name="version"/>
+                      </optional>
+                    </element>
+                  </optional>
+                  <optional>
+                    <element name="script">
+                      <attribute name="id">
+                        <data type="NCName"/>
+                      </attribute>
+                      <attribute name="output"/>
+                    </element>
+                  </optional>
                 </element>
               </zeroOrMore>
             </element>
