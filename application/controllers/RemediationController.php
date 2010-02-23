@@ -519,14 +519,27 @@ class RemediationController extends SecurityController
     }
     
     /**
-     * Get remediation detail info
+     * View details of a finding object
      * 
      * @return void
      */
     public function viewAction()
     {
-        $this->_viewFinding();
-        $this->view->keywords =  $this->_request->getParam('keywords');
+        $id = $this->_request->getParam('id');
+
+        $finding = $this->_getFinding($id);
+        $this->view->finding = $finding;
+        
+        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+
+        $tabView = new Fisma_Yui_TabView('FindingView', $id);
+        $tabView->addTab("Finding $id", "/remediation/finding/id/$id");
+        $tabView->addTab("Mitigation Strategy", "/remediation/mitigation-strategy/id/$id");
+        $tabView->addTab("Risk Analysis", "/remediation/risk-analysis/id/$id");
+        $tabView->addTab("Security Control", "/remediation/security-control/id/$id");
+        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/remediation/artifacts/id/$id");
+        $tabView->addTab("Audit Log", "/remediation/audit-log/id/$id");
+        $this->view->tabView = $tabView;
     }
     
     /**
