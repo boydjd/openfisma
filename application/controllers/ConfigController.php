@@ -82,6 +82,7 @@ class ConfigController extends SecurityController
      */
     public function indexAction()
     {
+        // Handle any updates to the configuration
         if ($this->_request->isPost()) {
             $type = $this->_request->getParam('type');
             $form = $this->getConfigForm($type . '_config');
@@ -106,7 +107,22 @@ class ConfigController extends SecurityController
                 $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
             }
         }
-        $this->render();
+
+        // Display tab view
+        $tabView = new Fisma_Yui_TabView('ConfigurationIndex');
+
+        $tabView->addTab('General Policy', '/config/general');
+        $tabView->addTab('Privacy Policy', '/config/privacy');
+        $tabView->addTab('Technical Contact', '/config/contact');
+        $tabView->addTab('E-mail', '/config/email');
+        $tabView->addTab('Password Policy', '/config/password');
+        
+        if ('ldap' == Fisma::configuration()->getConfig('auth_type')) {
+            $tabView->addTab('LDAP', '/config/ldaplist');
+        }
+        
+        $this->view->tabView = $tabView;
+    
     }
 
     /**

@@ -533,12 +533,14 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilegeForObject('read', $finding);
 
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
+
         $tabView->addTab("Finding $id", "/remediation/finding/id/$id");
         $tabView->addTab("Mitigation Strategy", "/remediation/mitigation-strategy/id/$id");
         $tabView->addTab("Risk Analysis", "/remediation/risk-analysis/id/$id");
         $tabView->addTab("Security Control", "/remediation/security-control/id/$id");
         $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/remediation/artifacts/id/$id");
         $tabView->addTab("Audit Log", "/remediation/audit-log/id/$id");
+
         $this->view->tabView = $tabView;
     }
     
