@@ -13,7 +13,7 @@
         </li>
 <?php if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) : ?>
         <li>
-            There are <b><a href="<?php echo $this->url ?>PEND"><?php echo $this->alert['PEND'];?></a></b>
+            There are <b><a href="<?php echo $this->pendingUrl ?>"><?php echo $this->alert['PEND'];?></a></b>
             PENDING findings awaiting approval.
         </li>
 <?php endif; ?>

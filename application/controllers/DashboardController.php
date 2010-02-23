@@ -140,6 +140,7 @@ class DashboardController extends SecurityController
         $url = '/panel/remediation/sub/searchbox/status/';
 
         $this->view->url = $url;
+        $this->view->pendingUrl = '/panel/finding/sub/approve';
         $this->view->alert = $alert;
         
         // Look up the last login information. If it's their first time logging in, then the view

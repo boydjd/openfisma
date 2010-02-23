@@ -33,22 +33,23 @@
         ,{key:"oStatus", label:"Duplicate POAM Status", hidden: false}
     ];
      
-    var dataSource = { rows: [<?php
+<?php
     $records = array();
-    $i = 0;
+
     foreach ($this->findings as $finding) {
-        $records[$i] = '{';
-        $records[$i] .= "nId: " . $finding->id . ",";
-        $records[$i] .= "nId: " . $finding->id . ",";
-        $records[$i] .= "nNickname: '" . $finding->ResponsibleOrganization->nickname . "',";
-        $records[$i] .= "nDesc: '" . preg_replace('/\s+/', ' ', addslashes(strip_tags($finding->description))) . "',";
-        $records[$i] .= "oId: " . $finding->DuplicateFinding->id . ",";
-        $records[$i] .= "oNickname: '" . $finding->DuplicateFinding->ResponsibleOrganization->nickname . "',";
-        $records[$i] .= "oType: '" . $finding->DuplicateFinding->type . "',";
-        $records[$i] .= "oStatus: '" . $finding->DuplicateFinding->status . "'";
-        $records[$i] .= '}';
-        $i++;
-    } echo implode(',', $records)?>] };
+        $records[] = array(
+            'nId' => $finding->id, 
+            'nNickname' => $finding->ResponsibleOrganization->nickname, 
+            'nDesc' => $finding->description, 
+            'oId' => $finding->DuplicateFinding->ResponsibleOrganization->nickname,
+            'oType' => $finding->DuplicateFinding->type, 
+            'oStatus' => $finding->DuplicateFinding->status
+        );
+    }
+
+    $records = json_encode($records);
+?>
+    var dataSource = { rows: <?php echo $records; ?> }; 
      
     var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
     
