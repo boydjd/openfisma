@@ -545,10 +545,6 @@ class OrganizationController extends SecurityController
         if ($src && $dest) {
             // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
             if (!$dest->getNode()->isDescendantOf($src)) {
-                // Invalidate the cache for the source node BEFORE the move. This way, its old parents
-                // will be updated.
-                $src->invalidateCache();
-                
                 // Based on the dragLocation parameter, execute a corresponding tree move method
                 $dragLocation = $this->getRequest()->getParam('dragLocation');
                 switch ($dragLocation) {
@@ -565,10 +561,6 @@ class OrganizationController extends SecurityController
                         $return['success'] = false;
                         $return['message'] = "Invalid dragLocation parameter ($dragLocation)";
                 }
-                
-                // Invalidate the cache for the souce node AFTER the move. This way its new parents will be
-                // updated, too.
-                $src->invalidateCache();
                 
                 // Get refreshed organization tree data
                 $return['treeData'] = $this->getOrganizationTree();

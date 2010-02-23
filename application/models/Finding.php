@@ -392,21 +392,6 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
     }
 
     /**
-     * Invalidate the caches that contain this finding. 
-     * 
-     * This will ensure that users always see accurate summary counts on the finding summary screen.
-     * 
-     * @param Doctrine_Event $event The listened doctrine event to be processed
-     * @return void
-     */
-    public function postSave($event)
-    {
-        // Invalidate the caches that contain this finding. This will ensure that users always see
-        // accurate summary counts on the finding summary screen.
-        $this->ResponsibleOrganization->invalidateCache();
-    }
-
-    /**
      * Doctrine hook
      * 
      * @param Doctrine_Event $event The listened doctrine event to be processed
