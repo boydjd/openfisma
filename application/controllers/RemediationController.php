@@ -245,9 +245,22 @@ class RemediationController extends SecurityController
             if ('json' == $this->getRequest()->getParam('format')) {
                 $this->getResponse()->setHeader('Content-Encoding', 'gzip', true);
             }
-            
-            // Convert organizations into hierarchical array
-            $organizations = $this->getSummaryCounts();
+
+            // Get user organizations
+            $organizationsQuery = User::currentUser()->getOrganizationsQuery();
+            $organizationsQuery->select('o.id');
+            $organizationsQuery->setHydrationMode(Doctrine::HYDRATE_NONE);
+            $organizations = $organizationsQuery->execute();
+
+            foreach ($organizations as $k => $v) {
+                $organizations[] = $v[0];
+                unset($organizations[$k]);
+            }
+
+            // Get finding summary counts
+            $organizations = $this->getSummaryCounts($organizations, $type, $source);
+
+            // Remove model names from array keys
             foreach ($organizations as &$organization) {
                 foreach ($organization as $k => $v) {
                     if (strstr($k, '_')) {
@@ -259,7 +272,74 @@ class RemediationController extends SecurityController
                         unset($organization[$k]);
                     }
                 }
+
+                // Store counts in arrays for YUI data table
+                $organization['children'] = array();
+                $organization['single_ontime'] = array();
+                $organization['single_overdue'] = array();
+                $organization['all_ontime'] = array();
+                $organization['all_overdue'] = array();
+
+                $keys = array(
+                            'all_ontime' => array(
+                                                    'NEW' => 'ontimeNew', 
+                                                    'DRAFT' => 'ontimeDraft', 
+                                                    'MS ISSO' => 'ontimeMsisso', 
+                                                    'MS IV&V' => 'ontimeMsivv', 
+                                                    'EN' => 'ontimeEn', 
+                                                    'EV ISSO' => 'ontimeEvisso',
+                                                    'EV IV&V' => 'ontimeEvivv', 
+                                                    'CLOSED' => 'closed', 
+                                                    'TOTAL' => 'total'
+                                            ),
+                            'all_overdue' => array(
+                                                    'NEW' => 'overdueNew',
+                                                    'DRAFT' => 'overdueDraft',
+                                                    'MS ISSO' => 'overdueMsisso',
+                                                    'MS IV&V' => 'overdueMsivv',
+                                                    'EN' => 'overdueEn',
+                                                    'EV ISSO' => 'overdueEvisso',
+                                                    'EV IV&V' => 'overdueEvivv'
+                                            ),
+                            'single_ontime' => array(
+                                                    'NEW' => 'singleOntimeNew',
+                                                    'DRAFT' => 'singleOntimeDraft',
+                                                    'MS ISSO' => 'singleOntimeMsisso',
+                                                    'MS IV&V' => 'singleOntimeMsivv',
+                                                    'EN' => 'singleOntimeEn',
+                                                    'EV ISSO' => 'singleOntimeEvisso',
+                                                    'EV IV&V' => 'singleOntimeEvivv',
+                                                    'CLOSED' => 'singleClosed',
+                                                    'TOTAL' => 'singleTotal'
+                                                ),
+                            'single_overdue' => array(
+                                                    'NEW' => 'singleOverdueNew',
+                                                    'DRAFT' => 'singleOverdueDraft',
+                                                    'MS ISSO' => 'singleOverdueMsisso',
+                                                    'MS IV&V' => 'singleOverdueMsivv',
+                                                    'EN' => 'singleOverdueEn',
+                                                    'EV ISSO' => 'singleOverdueEvisso',
+                                                    'EV IV&V' => 'singleOverdueEvivv'
+                                                )
+                            );
+
+                // Loop through the keys and rename them as defined in the array above
+                foreach ($keys as $list => $category) {
+                    foreach ($category as $k => $v) {
+                        $organization[$list][$k] = $organization[$v];
+                        unset($organization[$v]);
+                    }
+                }
             }
+
+            // Assign children to parents accordingly
+            $temp = array(array());
+            foreach ($organizations as $n => $a) {
+                    $d = $a['level']+1;
+                    $temp[$d-1]['children'][] = &$organizations[$n];
+                    $temp[$d] = &$organizations[$n];
+            }
+            $organizations = $temp[0]['children'];
 
             $this->view->summaryData = $organizations;
         } 
@@ -268,14 +348,77 @@ class RemediationController extends SecurityController
     /**
      * Returns summary counts for organizations
      *
-     * @TODO: Add check for privileged organizations
+     * @param array $organization Array of organizations to get counts for
+     * @param string $type Type of findings to get counts for
+     * @param int $source Finding source ids to get counts for
      * @return array
      */
-    private function getSummaryCounts()
+    private function getSummaryCounts($organization, $type, $source)
     {
         $summary = Doctrine_Query::create()
                    ->select("CONCAT_WS(' - ', parent.nickname, parent.name) label")
                    ->addSelect('parent.nickname nickname')
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'NEW' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeNew"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'NEW' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueNew"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'DRAFT' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeDraft"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'DRAFT' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueDraft"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS ISSO' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeMsisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS ISSO' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueMsisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS IV&V' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeMsivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'MS IV&V' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueMsivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'EN' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeEn"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'EN' AND finding.responsibleorganizationid = parent.id, IF(DATEDIFF("
+                       . "NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueEn"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV ISSO' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeEvisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV ISSO' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueEvisso"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV IV&V' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntimeEvivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(evaluation.nickname = 'EV IV&V' AND finding.responsibleorganizationid = parent.id, IF("
+                       . "DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdueEvivv"
+                   )
+                   ->addSelect(
+                       "SUM(IF(finding.status = 'CLOSED' AND finding.responsibleorganizationid = parent.id, 1,"
+                       . " 0)) singleClosed"
+                   )
+                   ->addSelect("SUM(IF(finding.responsibleorganizationid = parent.id, 1, 0)) singleTotal")
                    ->addSelect(
                        "SUM(IF(finding.status = 'NEW', IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0))"
                        . " ontimeNew"
@@ -334,7 +477,7 @@ class RemediationController extends SecurityController
                    )
                    ->addSelect("SUM(IF(finding.status = 'CLOSED', 1, 0)) closed")
                    ->addSelect("COUNT(finding.id) total")
-                   ->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgtype")
+                   ->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgType")
                    ->addSelect('parent.lft as lft')
                    ->addSelect('parent.rgt as rgt')
                    ->addSelect('parent.id as id')
@@ -354,75 +497,22 @@ class RemediationController extends SecurityController
                    ->andWhere("finding.status <> 'PEND'")
                    ->groupBy('parent.nickname')
                    ->orderBy('parent.lft')
-                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
-                   ->execute();
+                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        return $summary;
+        if (!empty($organization))
+            $summary->andWhereIn('node.id', $organization);
+
+        if (!empty($type))
+            $summary->andWhere('finding.type = ?', $type);
+
+        if (!empty($source)) {
+            $summary->leftJoin('finding.Source s')
+                ->andWhere('s.id = ?', $source);
+        }
+
+        return $summary->execute();
     }
 
-    /**
-     * This is duplicated from the organization controller. it would be nice to consolidate
-     * this into the organization class. Doctrine should do this at v2.0, but if not, we 
-     * should do it ourselves.
-     * 
-     * @param Doctrine_Collection $collection The collection of organization to process
-     * @param string $type The mitigation strategy type to filter for
-     * @param int $source The id of the finding source to filter for
-     * @return array The array representation of organization hierarchy
-     * @todo see if the organization model's function can be used instead
-     */
-    public function toHierarchy($collection, $type, $source) 
-    { 
-        // Trees mapped 
-        $trees = array(); 
-        $l = 0; 
-        if (count($collection) > 0) { 
-            // Node Stack. Used to help building the hierarchy 
-            $rootLevel = $collection[0]->level;
-            
-            $stack = array(); 
-            foreach ($collection as $node) { 
-                $item = $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
-                $item['level'] -= $rootLevel;
-                $item['label'] = $item['nickname'] . ' - ' . $item['name'];
-                $item['orgType'] = $node->getType();
-                $item['orgTypeLabel'] = $node->getOrgTypeLabel();
-
-                $summaryCounts = $node->getSummaryCounts($type, $source);
-                $item = array_merge($item, $summaryCounts);
-
-                // OFJ-177 The finding controller summary-data action returns extraneous data
-                unset($item['createdTs']);
-                unset($item['modifiedTs']);
-                unset($item['name']);
-                unset($item['description']);
-                unset($item['deleted_at']);
-                
-                $item['children'] = array();
-                // Number of stack items 
-                $l = count($stack); 
-                // Check if we're dealing with different levels 
-                while ($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
-                    array_pop($stack); 
-                    $l--; 
-                } 
-                // Stack is empty (we are inspecting the root) 
-                if ($l == 0) { 
-                    // Assigning the root node 
-                    $i = count($trees); 
-                    $trees[$i] = $item; 
-                    $stack[] = & $trees[$i]; 
-                } else { 
-                    // Add node to parent 
-                    $i = count($stack[$l - 1]['children']); 
-                    $stack[$l - 1]['children'][$i] = $item; 
-                    $stack[] = & $stack[$l - 1]['children'][$i]; 
-                }
-            } 
-        } 
-        return $trees; 
-    }    
-    
     /**
      * Parse and translate the URL to criterias
      * which can be used by searchBoxAction method and searchAction method.
