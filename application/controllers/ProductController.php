@@ -65,40 +65,4 @@ class ProductController extends BaseController
         $this->view->priorityMessenger($msg, $type);
         $this->_forward('list');
     }
-    
-    /**
-     * Render the form for searching the products
-     * 
-     * @return void
-     */
-    public function advancesearchAction()
-    {
-        Fisma_Acl::requirePrivilegeForObject('read', 'Product');
-
-        $this->_helper->layout->setLayout('ajax');
-        $product = new Product();
-        $req = $this->getRequest();
-        $prodId = $req->getParam('prodList', '');
-        $prodName = $req->getParam('prodName', '');
-        $prodVendor = $req->getParam('prodVendor', '');
-        $prodVersion = $req->getParam('prodVersion', '');
-        $qry = Doctrine_Query::create()
-               ->select()
-               ->from('Product');
-        if (!empty($prodName)) {
-            $qry->andWhere("name like ?", "%$prodName%");
-            $this->view->prodName = $prodName;
-        }
-        if (!empty($prodVendor)) {
-            $qry->andWhere("vendor like ?", "%$prodVendor%");
-            $this->view->prodVendor = $prodVendor;
-        }
-        if (!empty($prodVersion)) {
-            $qry->andWhere("version like ?", "%$prodVersion%");
-            $this->view->prodVersion = $prodVersion;
-        }
-        $qry->limit(100)
-            ->offset(0);
-        $this->view->prodList = $qry->execute()->toArray();
-    }
 }
