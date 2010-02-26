@@ -26,11 +26,27 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Import_Asset extends Fisma_Import_Abstract implements Fisma_Import_Interface
+class Fisma_Import_Asset extends Fisma_Import_Abstract
 {
+    /**
+     * Array of assets 
+     * 
+     * @var array
+     */
     private $_assets = array();
+
+    /**
+     * Array of products 
+     * 
+     * @var array
+     */
     private $_products = array();
 
+    /**
+     * Parse assets out of the imported file 
+     * 
+     * @return boolean 
+     */
     public function parse()
     {
         //@TODO: Detect type of file and create filter of appropriate type or return an error.

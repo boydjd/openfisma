@@ -27,17 +27,41 @@
  */
 class Fisma_Import_Filter_Nmap
 {
+    /**
+     * Path to file 
+     * 
+     * @var string 
+     */
     private $_filePath;
+
+    /**
+     * Organization ID
+     * 
+     * @var int
+     */
     private $_orgSystemId;
+
+    /**
+     * Network ID
+     * 
+     * @var int
+     */
     private $_networkId;
+
+    /**
+     * XML loaded into XMLReader 
+     * 
+     * @var XMLReader 
+     * @access private
+     */
     private $_report;
 
     /**
      * Constructor
      * 
-     * @param mixed $filePath 
-     * @param mixed $orgSystemId 
-     * @param mixed $networkId 
+     * @param string $filePath 
+     * @param int $orgSystemId 
+     * @param int $networkId 
      * @return void|boolean
      */
     public function __construct($filePath, $orgSystemId, $networkId)
@@ -57,6 +81,11 @@ class Fisma_Import_Filter_Nmap
         $this->_report = $report;
     }
 
+    /**
+     * Destructor
+     * 
+     * @return void
+     */
     public function __destruct()
     {
         $this->_report->close();

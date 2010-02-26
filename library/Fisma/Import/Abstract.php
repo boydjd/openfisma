@@ -29,11 +29,46 @@
  */
 abstract class Fisma_Import_Abstract
 {
+    /**
+     * Collection of errors 
+     * 
+     * @var array
+     */
     protected $_errors = array();
+
+    /**
+     * Organization Id 
+     * 
+     * @var int 
+     */
     protected $_orgSystemId;
+
+    /**
+     * Network ID 
+     * 
+     * @var int 
+     */
     protected $_networkId;
+
+    /**
+     * Path to file 
+     * 
+     * @var string 
+     */
     protected $_filePath;
+
+    /**
+     * Number of items imported 
+     * 
+     * @var int 
+     */
     protected $_numImported = 0;
+
+    /**
+     * Number of items suppressed
+     * 
+     * @var int 
+     */
     protected $_numSuppressed = 0;
 
     /**
@@ -52,7 +87,6 @@ abstract class Fisma_Import_Abstract
     /**
      * Return array of errors. 
      * 
-     * @access public
      * @return array 
      */
     public function getErrors()
@@ -74,7 +108,6 @@ abstract class Fisma_Import_Abstract
     /**
      * Get number of items imported 
      * 
-     * @access public
      * @return int 
      */
     public function getNumImported()
@@ -85,7 +118,6 @@ abstract class Fisma_Import_Abstract
     /**
      * Get number of items suppressed 
      * 
-     * @access public
      * @return int 
      */
     public function getNumSuppressed()
@@ -93,4 +125,10 @@ abstract class Fisma_Import_Abstract
         return $this->_numSuppressed;
     }
 
+    /**
+     * Require parse() to be defined in child class 
+     * 
+     * @return void
+     */
+    abstract public function parse();
 }

@@ -492,19 +492,17 @@ class AssetController extends BaseController
                     
                 $import = Fisma_Import_Factory::create('asset', $values);
                 $success = $import->parse();
+
                 if (!$success) {
-                    foreach ($import->getErrors() as $error) {
+                    foreach ($import->getErrors() as $error)
                         $msgs[] = array('warning' => $error);
-                    }
 
                     $err = TRUE;
                 } else {
                     $numCreated = $import->getNumImported();
                     $numSuppressed = $import->getNumSuppressed();
-                    $this->view->priorityMessenger(
-                        array('notice' => "{$numCreated} asset(s) were imported successfully.")
-                    );
-                    $this->view->priorityMessenger(array('notice' => "{$numSuppressed} asset(s) were not imported."));
+                    $msgs[] = array('notice' => "{$numCreated} asset(s) were imported successfully.");
+                    $msgs[] = array('notice' => "{$numSuppressed} asset(s) were not imported.");
                 }
             }
 
@@ -514,12 +512,11 @@ class AssetController extends BaseController
                     $upload->delete();
                 }
 
-                if (!$msgs) {
+                if (!$msgs) 
                     $msgs[] = array('notice' => 'An unrecoverable error has occured.');
-                }
-
-                $this->view->priorityMessenger($msgs);
             }
+
+            $this->view->priorityMessenger($msgs);
         }
     }
 }
