@@ -413,27 +413,28 @@ class RemediationController extends SecurityController
                 . "'Minor Application' END) orgTypeLabel"
             )
             ->addSelect('parent.level level')
-            ->from(
-                'Organization node, node.System system, Organization parent, Finding finding, '
-                . 'finding.CurrentEvaluation evaluation'
-            )
+            ->from('Organization node');
+
+        if (!empty($type))
+            $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND' AND finding.type = ?", $type);
+        else
+            $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
+           
+        $summary->leftJoin('node.System system')
+            ->leftJoin('finding.CurrentEvaluation evaluation');
+
+        if (!empty($source)) {
+            $summary->leftJoin('finding.Source s on s.id = ?', $source);
+        }
+
+        $summary->leftJoin('Organization parent')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
-            ->andWhere('node.id = finding.responsibleOrganizationId')
-            ->andWhere("finding.status <> 'PEND'")
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         if (!empty($organization))
             $summary->andWhereIn('node.id', $organization);
-
-        if (!empty($type))
-            $summary->andWhere('finding.type = ?', $type);
-
-        if (!empty($source)) {
-            $summary->leftJoin('finding.Source s')
-                ->andWhere('s.id = ?', $source);
-        }
 
         return $summary->execute();
     }
