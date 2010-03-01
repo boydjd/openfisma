@@ -154,7 +154,12 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
                 'onClickFunction' => 'selectNoneUnsafe'
             )
         );
-        
+
+        if ($this->readOnly) {
+            $selectAllButton->readOnly  = true;
+            $selectNoneButton->readOnly = true;
+        }
+
         $render .= "<tr><td>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
                  . "$selectAllButton $selectNoneButton</td></tr>";
