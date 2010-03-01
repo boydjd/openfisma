@@ -41,8 +41,9 @@
             'nId' => $finding->id, 
             'nNickname' => $finding->ResponsibleOrganization->nickname, 
             'nDesc' => $finding->description, 
-            'oId' => $finding->DuplicateFinding->ResponsibleOrganization->nickname,
+            'oId' => $finding->DuplicateFinding->ResponsibleOrganization->id,
             'oType' => $finding->DuplicateFinding->type, 
+            'oNickname' => $finding->DuplicateFinding->ResponsibleOrganization->nickname,
             'oStatus' => $finding->DuplicateFinding->status
         );
     }
