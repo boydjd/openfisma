@@ -171,7 +171,7 @@ class Fisma_Inject_Excel
              * tags are stripped out and remaining special chars are encoded.
              */                
             $finding = array_map('strip_tags', $finding);
-            $finding = array_map('htmlspecialchars', $finding);
+            $finding = array_map('html_entity_decode', $finding);
             
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
@@ -193,7 +193,6 @@ class Fisma_Inject_Excel
             }
             $poam['responsibleOrganizationId'] = $organization->id;
             
-            $finding['findingSource'] = html_entity_decode($finding['findingSource']);
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
