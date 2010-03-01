@@ -673,7 +673,7 @@ class User extends BaseUser
      */
     public function __toString()
     {
-        $render = $this->username;
+        $render = "$this->nameFirst $this->nameLast ($this->username)";
 
         if (Fisma_Acl::hasPrivilegeForObject('read', $this)) {
             $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";

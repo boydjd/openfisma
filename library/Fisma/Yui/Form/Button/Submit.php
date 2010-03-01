@@ -53,7 +53,8 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
         }
         $render = "<span id=\"{$this->getName()}Container\"></span>
                    <script type='text/javascript'>
-                       var {$this->getName()} = new YAHOO.widget.Button({
+                       YAHOO.util.Event.onDOMReady(function() {
+                           var {$this->getName()} = new YAHOO.widget.Button({
                            type: \"submit\",
                            label: \"{$this->getLabel()}\",
                            id: \"{$this->getName()}\",
@@ -62,7 +63,7 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
                            container: \"{$this->getName()}Container\",
                            disabled: $disabled
                            $onClickRender
-                       });";
+                       })});";
         $image = $this->getAttrib('imageSrc');
         if (isset($image)) {
            $render .= "{$this->getName()}._button.style.background = 'url($image) 10% 50% no-repeat';\n";

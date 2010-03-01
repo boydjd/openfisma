@@ -1,0 +1,710 @@
+<form method="post" action="<?php echo $this->formAction; ?>">
+    <?php
+    if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+    ?>
+        <div class="toolbar">
+            <?php
+            echo $this->discardChangesButton;
+            echo $this->saveChangesButton;
+            ?>
+        </div>
+    <?php
+    endif;
+    ?>
+
+    <div class="column left">
+        <?php
+        Fisma_Format_Section::startSection('Incident Details')
+        ?>
+        <table class="keyValues">
+            <?php 
+            if (isset($this->incident->ClonedFromIncident)):
+            ?>
+            <tr>
+                <td>Cloned From Incident:</td>
+                <td><a href="/panel/incident/view/id/<?php echo $id; ?>"><?php echo $id; ?></a></td>
+            </tr>
+            <?php
+            endif;
+            ?>
+            <tr>
+                <td>Incident ID:</td>
+                <td><?php echo $this->incident->id; ?></td>
+            </tr>
+            <tr>
+                <td>
+                    Status:
+                </td>
+                <td><?php echo $this->incident->status; ?></td>
+            </tr>
+            <tr>
+                <td>
+                    Resolution:
+                </td>
+                <td>
+                    <?php
+                    if (!empty($this->incident->resolution)):
+                        echo $this->incident->resolution;
+                    else:
+                        echo "n/a";
+                    endif;
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Category:</td>
+                <td>
+                    <?php 
+                    if (!empty($this->incident->Category->name)):
+                        echo $this->incident->Category->name;
+                    else:
+                        echo '<i>No Category Assigned</i>';
+                    endif;
+                    ?>
+                </td>
+            </tr>
+            <tr>    
+                <td>Incident Occured:</td>
+                <td>
+                    <?php echo "{$this->incident->incidentDate} 
+                                 {$this->incident->incidentTime} 
+                                 {$this->incident->incidentTimezone}"; ?>
+                </td>
+            </tr>    
+            <tr>    
+                <td>Report Created:</td>
+                <td><?php echo $this->incident->reportTs; ?> <?php echo $this->incident->reportTz; ?></td>
+            </tr>    
+            <tr>
+                <td>Description:</td>
+                <td>
+                    <div name="incident[additionalInfo]" 
+                         id="additionalInfo"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="textarea"
+                             target="additionalInfo"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->additionalInfo; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Actions Taken Prior To Report:</td>
+                <td>
+                    <div name="incident[actionsTaken]" 
+                         id="actionsTaken"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="textarea"
+                             target="actionsTaken"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->actionsTaken; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <?php
+        Fisma_Format_Section::stopSection();
+        Fisma_Format_Section::startSection('Asset');
+        ?>
+        <table class="keyValues">
+            <tr>    
+                <td>Host:</td>
+                <td>
+                    <div name="incident[hostName]" 
+                         id="hostName"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="hostName"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->hostName; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+            <tr>    
+                <td>Host IP:</td>
+                <td>
+                    <div name="incident[hostIp]" 
+                         id="hostIp"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="hostIp"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->hostIp; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+            <tr>    
+                <td>Host OS:</td>
+                <td>
+                    <div name="incident[hostOs]" 
+                         id="hostOs"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="select"
+                             href="/metadata/enum/model/Incident/field/hostOs/"
+                             target="hostOs"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->hostOs; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+            <tr>    
+                <td>Host Description:</td>
+                <td>
+                    <div name="incident[hostAdditional]" 
+                         id="hostAdditional"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="textarea"
+                             target="hostAdditional"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->hostAdditional; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+        </table>
+        <?php
+        Fisma_Format_Section::stopSection();
+        ?>
+    </div>
+    <div class="column right">
+        <?php
+        Fisma_Format_Section::startSection('Reported By');
+        ?>
+        <table class="keyValues">
+            <?php
+            if (isset($this->incident->ReportingUser)):
+            ?>
+                <tr>
+                    <th colspan="2">Reported By Registered User</th>
+                </tr>
+                <tr>
+                    <td>User:</td>
+                    <td><?php echo $this->incident->ReportingUser; ?></td>
+                </tr>
+            <?php
+            else:
+            ?>
+                <tr>
+                    <th colspan="2">Reported By Unregistered User</th>
+                </tr>
+                <tr>    
+                    <td>Name:</td>
+                    <td>
+                        <?php echo $this->incident->reporterTitle; ?> 
+                        <?php echo $this->incident->reporterFirstName; ?> 
+                        <?php echo $this->incident->reporterLastName; ?>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Organization:</td>
+                    <td>
+                        <div name="incident[reporterOrganization]" 
+                             id="reporterOrganization"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterOrganization"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterOrganization; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Address 1:</td>
+                    <td>
+                        <div name="incident[reporterAddress1]" 
+                             id="reporterAddress1"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterAddress1"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterAddress1; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Address 2:</td>
+                    <td>
+                        <div name="incident[reporterAddress2]" 
+                             id="reporterAddress2"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterAddress2"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterAddress2; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>City/State/Zip:</td>
+                    <td>
+                        <?php echo $this->incident->reporterCity; ?> 
+                        <?php echo $this->incident->reporterState; ?> 
+                        <?php echo $this->incident->reporterZip; ?>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Phone:</td>
+                    <td>
+                        <div name="incident[reporterPhone]" 
+                             id="reporterPhone"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterPhone"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterPhone; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                    <td>Fax:</td>
+                    <td>
+                        <div name="incident[reporterFax]" 
+                             id="reporterFax"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterFax"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterFax; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Email:</td>
+                    <td>
+                        <div name="incident[reporterEmail]" 
+                             id="reporterEmail"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="reporterEmail"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->reporterEmail; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+            <?php
+            endif;
+            ?>
+        </table>
+        <?php
+        Fisma_Format_Section::stopSection();
+        Fisma_Format_Section::startSection('Location');
+        ?>
+        <table class="keyValues">
+            <tr>
+                <td>Building:</td>
+                <td>
+                    <div name="incident[locationBuilding]" 
+                         id="locationBuilding"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="locationBuilding"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->locationBuilding; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Room:</td>
+                <td>
+                    <div name="incident[locationRoom]" 
+                         id="locationRoom"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="locationRoom"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->locationRoom; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Source IP:</td>
+                <td>
+                    <div name="incident[sourceIp]" 
+                         id="sourceIp"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="sourceIp"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->sourceIp; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+            <tr>    
+                <td>Source Description:</td>
+                <td>
+                    <div name="incident[sourceAdditional]" 
+                         id="sourceAdditional"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="textarea"
+                             target="sourceAdditional"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->sourceAdditional; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
+        </table>
+        <?php
+        Fisma_Format_Section::stopSection();
+        Fisma_Format_Section::startSection('Personally Identifiable Information');
+        ?>
+        <table class="keyValues">
+            <?php
+            if ('YES' != $this->incident->piiInvolved):
+            ?>
+                <tr>    
+                    <th colspan="2">No PII reported in this incident.</td>
+                </tr>    
+            <?php
+            endif;
+            ?>
+            <tr>
+                <td>PII Involved:</td>
+                <td>
+                    <div name="incident[piiInvolved]" 
+                         id="piiInvolved"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="select"
+                             href="/metainfo/list/o/yesNo/format/html/"
+                             target="piiInvolved"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->incident->piiInvolved; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <?php
+            if ('YES' == $this->incident->piiInvolved):
+            ?>
+                <tr>    
+                    <td>Description:</td>
+                    <td>
+                        <div name="incident[piiAdditional]" 
+                             id="piiAdditional"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="textarea"
+                                 target="piiAdditional"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiAdditional; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Mobile Media Involved:</td>
+                    <td>
+                        <div name="incident[piiMobileMedia]" 
+                             id="piiMobileMedia"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiMobileMedia"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiMobileMedia; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Media Type:</td>
+                    <td>
+                        <div name="incident[piiMobileMediaType]" 
+                             id="piiMobileMediaType"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metadata/enum/model/Incident/field/piiMobileMediaType/"
+                                 target="piiMobileMediaType"
+                             <?php
+                             endif;
+                             ?>>
+                            <?php echo $this->incident->piiMobileMediaType; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Encrypted:</td>
+                    <td>
+                        <div name="incident[piiEncrypted]" 
+                             id="piiEncrypted"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiEncrypted"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiEncrypted; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Authorities Contacted:</td>
+                    <td>
+                        <div name="incident[piiAuthoritiesContacted]" 
+                             id="piiAuthoritiesContacted"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiAuthoritiesContacted"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiAuthoritiesContacted; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Police Report Filed:</td>
+                    <td>
+                        <div name="incident[piiPoliceReport]" 
+                             id="piiPoliceReport"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiPoliceReport"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiPoliceReport; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Individual Count:</td>
+                    <td>
+                        <div name="incident[piiIndividualsCount]" 
+                             id="piiIndividualsCount"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="piiIndividualsCount"
+                             <?php
+                             endif;
+                             ?>>
+                            <?php echo $this->incident->piiIndividualsCount; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Individuals Notified:</td>
+                    <td>
+                        <div name="incident[piiIndividualsNotified]" 
+                             id="piiIndividualsNotified"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiIndividualsNotified"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiIndividualsNotified; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>PII in Shipment:</td>
+                    <td>
+                        <div name="incident[piiShipment]" 
+                             id="piiShipment"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiShipment"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiShipment; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Shipment Company:</td>
+                    <td>
+                        <div name="incident[piiShipmentSenderCompany]" 
+                             id="piiShipmentSenderCompany"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="text"
+                                 target="piiShipmentSenderCompany"
+                             <?php
+                             endif;
+                             ?>>
+                            <?php echo $this->incident->piiShipmentSenderCompany; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Shipping Company Contacted:</td>
+                    <td>
+                        <div name="incident[piiShipmentSenderContacted]" 
+                             id="piiShipmentSenderContacted"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="select"
+                                 href="/metainfo/list/o/yesNo/format/html/"
+                                 target="piiShipmentSenderContacted"
+                             <?php
+                             endif;
+                             ?>>
+                             <?php echo $this->incident->piiShipmentSenderContacted; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Shipment Timeline:</td>
+                    <td>
+                        <div name="incident[piiShipmentTimeline]" 
+                             id="piiShipmentTimeline"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="textarea"
+                                 target="piiShipmentTimeline"
+                             <?php
+                             endif;
+                             ?>>
+                            <?php echo $this->incident->piiShipmentTimeline; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+                <tr>    
+                    <td>Shipment Tracking Numbers:</td>
+                    <td>
+                        <div name="incident[piiShipmentTrackingNumbers]" 
+                             id="piiShipmentTrackingNumbers"
+                             <?php
+                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             ?>
+                                 class="editable"
+                                 type="textarea"
+                                 target="piiShipmentTrackingNumbers"
+                             <?php
+                             endif;
+                             ?>>
+                            <?php echo $this->incident->piiShipmentTrackingNumbers; ?>&nbsp;
+                        </div>
+                    </td>
+                </tr>
+            <?php
+            endif;
+            ?>
+        </table>
+        <?php
+        Fisma_Format_Section::stopSection();
+        ?>
+    </div>
+</form>

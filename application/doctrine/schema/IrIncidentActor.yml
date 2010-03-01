@@ -4,3 +4,8 @@ IrIncidentActor:
             type: integer
         userId: 
             type: integer
+
+    indexes:
+        unique_incident_actor:
+            fields: [incidentId, userId]
+            type: unique

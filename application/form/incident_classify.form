@@ -13,7 +13,6 @@ elementPrefixPath.prefix = Fisma_Form
 elementPrefixPath.path = Fisma/Form
 elementPrefixPath.type = Validate
 method = "post"
-action = "/panel/incident/sub/classify"
 
 elements.categoryId.type = "select"
 elements.categoryId.options.label = "Incident Category"
@@ -27,18 +26,20 @@ elements.comment.options.rows = "7"
 elements.comment.options.required = true
 displayGroups.incident.elements.comment = "comment"
 
-elements.pii.type="select"
-elements.pii.options.label="Assign Privacy Advocate"
-displayGroups.incident.elements.pii="pii"
+elements.pa.type="checkbox"
+elements.pa.options.label="Assign Privacy Advocate"
+elements.pa.options.tooltip = "If selected, then privacy advocates will be notified and added as actors for this incident." 
+displayGroups.incident.elements.pa="pa"
 
-elements.oig.type="select"
+elements.oig.type="checkbox"
 elements.oig.options.label="Assign OIG"
+elements.oig.options.tooltip = "If selected, the representatives from the Office of the Inspector General will be notified and added as actors for this incident." 
 displayGroups.incident.elements.oig="oig"
 
-elements.Open.type = "Form_Button_Submit"
-elements.Open.options.value = "Open Incident"
-displayGroups.incident.elements.Open = "Open"
+elements.open.type = "Form_Button_Submit"
+elements.open.options.value = "Open Incident"
+displayGroups.incident.elements.open = "open"
 
-elements.Reject.type = "Form_Button_Submit"
-elements.Reject.options.value = "Reject Incident"
-displayGroups.incident.elements.Reject = "Reject"
+elements.reject.type = "Form_Button_Submit"
+elements.reject.options.value = "Reject Incident"
+displayGroups.incident.elements.reject = "reject"

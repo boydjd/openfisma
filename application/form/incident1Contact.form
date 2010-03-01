@@ -36,12 +36,12 @@ elements.reporterOrganization.options.style = "width:400px"
 displayGroups.reporter.elements.reporterOrganization = "reporterOrganization"
 
 elements.reporterAddress1.type = "text"
-elements.reporterAddress1.options.label = "Address1"
+elements.reporterAddress1.options.label = "Address 1"
 elements.reporterAddress1.options.style = "width:400px"
 displayGroups.reporter.elements.reporterAddress1 = "reporterAddress1"
 
 elements.reporterAddress2.type = "text"
-elements.reporterAddress2.options.label = "Address2"
+elements.reporterAddress2.options.label = "Address 2"
 elements.reporterAddress2.options.style = "width:400px"
 displayGroups.reporter.elements.reporterAddress2 = "reporterAddress2"
 

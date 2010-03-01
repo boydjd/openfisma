@@ -19,10 +19,6 @@ IrIncidentWorkflow:
             type: string
             extra: 
                 purify: html
-        attachment: 
-            type: string
-            extra:
-                purify: plaintext
 
         incidentId: 
             type: integer

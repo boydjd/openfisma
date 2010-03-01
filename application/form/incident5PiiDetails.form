@@ -43,9 +43,9 @@ elements.piiIndividualsCount.options.tooltip = "For example, if a file containin
 elements.piiIndividualsCount.options.validators.alnum.validator = "Digits"
 displayGroups.pii.elements.piiIndividualsCount="piiIndividualsCount"
 
-elements.piiIndividualsNotification.type="select"
-elements.piiIndividualsNotification.options.label="Have the affected individuals been notified?"
-displayGroups.pii.elements.piiIndividualsNotification="piiIndividualsNotification"
+elements.piiIndividualsNotified.type="select"
+elements.piiIndividualsNotified.options.label="Have the affected individuals been notified?"
+displayGroups.pii.elements.piiIndividualsNotified="piiIndividualsNotified"
 
 elements.piiShipment.type="select"
 elements.piiShipment.options.label="Was the PII lost in a shipment?"

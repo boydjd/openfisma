@@ -1,50 +1,74 @@
 <?php
-if ($this->association == 'actor'):
+Fisma_Format_Section::startSection('Comments');
+    if ($this->showAddCommentForm):
 ?>
-    <form action="#" onsubmit="addcomment(); return false;" id="commentForm">
-        <input type="hidden" id="id" name="id" value="<?php print $this->id; ?>">
-<?php 
-endif; 
-?>
-    <table class="fisma_crud">
-        <?php 
-        if (count($this->comments) > 0):
-            foreach ($this->comments as $comment):
-                print " <tr>
-                            <td style='text-align: left'><b>{$comment['c_createdTs']}</b></td>
-                            <td>{$comment['u_nameFirst']} {$comment['u_nameLast']}</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td><h2>{$comment['c_comment']}</h2></td>
-                        </tr>
-                        <tr>
-                            <td colspan='3'><hr /></td>
-                        </tr>";
-            endforeach;
-        else:
-            print "<tr><td colspan='3'style='text-align: left;'>No comments have been added</td></tr>";
-            print "<tr><td colspan='3'><hr /></td></tr>";
-        endif;
-        ?>
+    <form action="/incident/add-comment/id/<?php echo $this->id; ?>" method="post">
+        <p>
+            <b>Add a comment:</b>
+        </p>
+        <p>
+            <textarea name="comment" rows="5" cols="60"></textarea>
+        </p>
+        <p>
+            <?php echo new Fisma_Yui_Form_Button_Submit('addComment', array('label' => 'Add Comment')); ?>
+        </p>
+    </form>
+    <?php
+    endif;
+    ?>
+    <div id="comments">
+        <table id="commentsTable">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($this->comments as $comment):
+                ?>
+                    <tr>
+                        <td><?php echo $comment['c_createdTs']; ?></td>
+                        <td>
+                            <?php echo $comment['u_nameFirst']; ?>
+                            <?php echo $comment['u_nameLast']; ?>
+                            (<?php echo $comment['u_username']; ?>)
+                        </td>
+                        <td>
+                            <?php echo Fisma_String::textToHtml($comment['c_comment']); ?>
+                        </td>
+                    </tr>                
+                <?php
+                endforeach;
+                ?>
+            </tbody>
+        </table>
+    </div>
 <?php
-if ($this->association == 'actor'):
+Fisma_Format_Section::stopSection();
 ?>
-        <tr>
-            <td style="text-align: left" colspan="3"><br /><h1>Add Comment:</h1></td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <textarea name="comments" id="comments" rows="10" cols="60"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: left" colspan="3">
-                <span id="commentButtonContainer"></span>
-            </td>
-        </tr>
-<?php 
-endif; 
-?>
-    </table>
-</form>
+
+<script type="text/javascript">
+// Convert comments table to YUI table
+YAHOO.util.Event.onContentReady('comments', function() {
+    var myColumnDefs = [
+        {key:'timestamp', label:'Timestamp', sortable:true},
+        {key:'username', label:'User', sortable:true},
+        {key:'comment', label:'Comment', sortable:false}
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("commentsTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            {key:'timestamp'},
+            {key:'username'},
+            {key:'comment'}
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("comments", myColumnDefs, this.myDataSource, {});
+});
+</script>

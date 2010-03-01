@@ -5,11 +5,13 @@ Incident:
         reporterTitle: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Title
         reporterFirstName: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s First Name
                 searchIndex: unstored
@@ -20,12 +22,14 @@ Incident:
         reporterLastName: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Last Name
                 searchIndex: unstored
         reporterOrganization: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Organization
                 searchIndex: unstored
@@ -33,38 +37,44 @@ Incident:
         reporterAddress1: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Street Address Line 1
         reporterAddress2: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Street Address Line 2
         reporterCity: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s City
         reporterState: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s State
         reporterZip: 
             type: string(10)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Zip Code
-
         reporterPhone: 
             type: string(10)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Phone Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterFax: 
             type: string(10)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s Fax Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
@@ -73,18 +83,21 @@ Incident:
             email: 
                 check_mx: false
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Reporter\'s E-mail Address
         
         locationBuilding: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Building
             comment: The building in which the incident is believed to have occurred
         locationRoom: 
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Room
             comment: The room in which the incident is believed to have occurred
@@ -92,17 +105,20 @@ Incident:
         incidentDate: 
             type: date
             extra:
+                auditLog: true
                 logicalName: Incident Date
             comment: The date on which the incident was known or believed to have occurred
         incidentTime: 
             type: time
             extra:
+                auditLog: true
                 logicalName: Incident Time
             comment: The time at which the incident was known or believed to have occurred
         incidentTimezone: 
             type: enum
             values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
             extra:
+                auditLog: true
                 logicalName: Incident Timezone
             comment: The timezone in which the incident timestamp belongs
         
@@ -121,81 +137,103 @@ Incident:
         additionalInfo:
             type: string
             extra: 
+                auditLog: true
                 purify: html
                 logicalName: Additional Incident Details
                 searchIndex: unstored
 
         piiInvolved:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: PII Involved
             comment: Indicates whether personally identifiable information was involved
         piiAdditional:
             type: string
             extra:
+                auditLog: true
                 purify: html
                 logicalName: Additional PII Details
                 searchIndex: unstored
             comment: Additional space to explain the nature of PII involved
         piiMobileMedia:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: PII Stored On Mobile Media
             comment: Was the PII stored on mobile media, such as a disc or removable drive?
         piiMobileMediaType:
             type: enum
             values: [laptop, disc, document, usb, tape, other]
             extra:
+                auditLog: true
                 logicalName: PI Type Of Mobile Media
         piiEncrypted:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: PII Encrypted
             comment: Was PII data encrypted on the lost media?
         piiAuthoritiesContacted:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: Authorities Contacted For Loss Of PII
             comment: Have the relevant authorities been contacted?
         piiPoliceReport:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: Police Report Filed For Loss Of PII
             comment: Has a police report been filed?
         piiIndividualsCount:
             type: int(10)
             extra:
+                auditLog: true
                 logicalName: Number Of Individuals Affected By Loss Of PII
             comment: "The number of individuals potentially compromised by this incident\'s loss of PII"
-        piiIndividualsNotification:
-            type: boolean
+        piiIndividualsNotified:
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: Inviduals Affected By PII Have Been Notified
             comment: Have the affected individuals been contacted?
         piiShipment:
-            type: boolean
+            type: enum
+            values: ["YES", "NO"]
             extra:
+                auditLog: true
                 logicalName: PII Lost During Shipment
             comment: Was the loss of PII due to a shipment?
-        piiShipmentSenderContact:
-            type: string(255)
+        piiShipmentSenderContacted:
+            type: enum
+            values: ["YES", "NO"]
             extra:
-                purify: plaintext
-                logicalName: Shipping Company Point Of Contact
+                auditLog: true
+                logicalName: Shipping Company Contacted
             comment: Contact information for the company responsible for shipping the PII
         piiShipmentSenderCompany:
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Name Of Shipping Company
         piiShipmentTimeline:
             type: string
             extra:
+                auditLog: true
                 purify: html
                 logicalName: Description Of Shipment Timeline
         piiShipmentTrackingNumbers:
             type: string
             extra:
+                auditLog: true
                 purify: html
                 logicalName: Shipment Tracking Numbers
 
@@ -203,22 +241,26 @@ Incident:
             type: string(15)
             Fisma_Validator_Ip: true
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Host IP Address
             comment: The IP address of the affected host
         hostName:
             type: string(255)
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Host Name
         hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]
             extra:
+                auditLog: true
                 logicalName: Host Operating System
         hostAdditional:
             type: string
             extra: 
+                auditLog: true
                 purify: html
                 logicalName: Additional Host Details
         
@@ -226,40 +268,43 @@ Incident:
             type: string(15)
             Fisma_Validator_Ip: true
             extra:
+                auditLog: true
                 purify: plaintext
                 logicalName: Source IP Address
             comment: The IP address from which the incident is believed to have originated
         sourceAdditional:
             type: string
             extra: 
+                auditLog: true
                 purify: html
                 logicalName: Additional Details About Incident Source
             comment: Additional description of the source or origin of the incident
         
-        assessmentCritical:
-            type: boolean
-        assessmentSensitivity:
-            type: enum
-            values: [low, medium, high]
-        
         actionsTaken:
             type: string
             extra: 
+                auditLog: true
                 purify: html
                 logicalName: Actions That Were Taken Prior To Incident Report
                 searchIndex: unstored
             comment: What actions were taken prior to reporting the incident?
         
-        files:
-            type: string(255)
-
         status:
             type: enum
-            values: [new, open, resolved, rejected, closed]
+            values: [new, open, closed]
             extra:
+                auditLog: true
+                logicalName: Status
+                searchIndex: unstored
+        resolution:
+            type: enum
+            values: [rejected, resolved]
+            extra:
+                auditLog: true
+                logicalName: Resolution
                 searchIndex: unstored
 
-        workflowId:
+        currentWorkflowStepId:
             type: integer
             comment: Foreign key to the workflow for this incident
         reportingUserId:
@@ -270,9 +315,9 @@ Incident:
             comment: Foreign key to the IR sub category in which this incident belongs
 
     relations:
-        Workflow:
+        CurrentWorkflowStep:
             class: IrIncidentWorkflow
-            local: workflowId
+            local: currentWorkflowStepId
             foreign: id
         ClonedFromIncident:
             class: Incident
@@ -284,6 +329,7 @@ Incident:
             local: reportingUserId
             foreign: id
             foreignType: one
+            foreignAlias: ReportedIncidents
         Category:
             class: IrSubCategory
             local: categoryId
@@ -293,8 +339,16 @@ Incident:
             local: incidentId
             foreign: userId
             refClass: IrIncidentActor
+            foreignAlias: ActorIncidents
         Observers:
             class: User
             local: incidentId
             foreign: userId
             refClass: IrIncidentObserver
+            foreignAlias: ObserverIncidents
+
+    actAs:
+        Fisma_Behavior_AuditLoggable:
+            logCreateObject: true
+            logUpdateField: true
+            logDeleteObject: true

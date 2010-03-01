@@ -56,6 +56,10 @@ em {
     font-weight: bold;
 }
 
+ul {
+    padding-bottom: 10px;
+}
+
 ul li {
     display: list-item;
     list-style: disc outside;
@@ -71,7 +75,7 @@ ol li {
 }
 
 p {
-    margin: 10px 8px;
+    margin: 10px 0px 10px 0px;
 }
 
 h1 {
@@ -224,11 +228,11 @@ div#footerLinks {
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
 table.keyValues tr:nth-child(even) {
-	background-color: #e1f6ff;
+	background-color: #eef5fe;
 }
 
 table.keyValues td {
-    padding: 2px 5px;
+    padding: 5px;
     vertical-align: middle;
 }
 
@@ -238,19 +242,11 @@ table.keyValues td:first-child {
     text-align: right;
 }
 
-/* This style is used for displaying audit log tables. */
-table.auditLog {
-	width: 100%;
-    background-color: #ffffff;
-}
-
-table.auditLog th {
+table.keyValues th {
+    text-align: center;
     font-weight: bold;
-}
-
-table.auditLog th, table.auditLog td {
-	border: 1px solid #cecece;
-	padding: 3px;
+    font-style: normal;
+    padding: 5px;
 }
 
 /* A container for holding a row of buttons */
@@ -554,53 +550,58 @@ div.yui-ac-bd {
     margin-right: 20px !important;
 }
 
-/* Styles for incident report reports section */
+div.incidentStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    position: relative;
+}
 
-table.ir_report {
-    margin: 0px 15px;
+div.incidentStep td {
+	padding: 5px;
+}
+
+div.incidentStep td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.incidentCardinality {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    padding: 5px 10px;
+    font-size: x-large;
+}
+
+div.completedIncidentStep {
+    border: 2px solid gray;
     background-color: #f0f0f0;
-    border: 1px dotted #c0c0c0;
 }
 
-table.ir_report tr td, table.ir_report tr td input {
-    font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #404040;
-    padding: 3px 2px;
+div.completedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
 }
 
-table.ir_report td {
-    text-align: center;
-    border-left: 1px solid #c0c0c0;
+div.currentIncidentStep {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
 }
 
-table.ir_report tr td a {
-    font-size: 10px;
-    font-weight: bold;
+div.currentIncidentStep div.incidentCardinality {
+    border: 2px solid #416ed7;
+    border-bottom: none;    
+    color: #416ed7;
 }
 
-table.ir_report tr {
-    border-bottom: 1px solid #c0c0c0;
+div.queuedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
 }
 
-table.ir_report th {
-    border-left: 1px solid #c0c0c0;
-    text-align: center;
-    font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #404040;
-    font-weight: bold;
-    font-size: 10px;
-    padding: 3px 1px;
-}
-
-table.ir_report_dash tr td {
-    font-size: 10px;
-}
-
-table.ir_report_dash tr th {
-    font-size: 12px;
-}
-
-table.ir_report tr td a {
-    font-size: 12px;
-    font-weight: bold;
+div.queuedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
 }

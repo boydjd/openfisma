@@ -39,10 +39,17 @@ function setupEditFields() {
              var type = target.getAttribute('type');
              var url = target.getAttribute('href');
              var eclass = target.className;
+             var oldWidth = target.offsetWidth;
+             var oldHeight = target.offsetHeight;
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
              if (type == 'text') {
                  target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
+                 textEl = document.getElementById(t_name);
+                 if (oldWidth < 200) {
+                     oldWidth = 200;
+                 }
+                 textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
@@ -59,6 +66,9 @@ function setupEditFields() {
                  var row = target.getAttribute('rows');
                  var col = target.getAttribute('cols');
                  target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">' + cur_html+ '</textarea>';
+                 var textareaEl = document.getElementById(name);
+                 textareaEl.style.width = oldWidth + "px";
+                 textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
              } else {
                  YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {

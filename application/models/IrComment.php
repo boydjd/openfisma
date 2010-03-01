@@ -12,5 +12,29 @@
  */
 class IrComment extends BaseIrComment
 {
-
+    /**
+     * Add mutators
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        
+        $this->hasMutator('comment', 'setComment');
+    }
+    
+    /**
+     * Ensure comments are not blank
+     * 
+     * @param $comment
+     */
+    public function setComment($comment)
+    {
+        $trimComment = trim($comment);
+        
+        if (empty($trimComment)) {
+            throw new Fisma_Exception("Comment cannot be blank.");
+        }
+        
+        $this->_set('comment', $trimComment);
+    }
 }

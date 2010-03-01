@@ -34,7 +34,15 @@ tinyMCE.init({
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
-	theme_advanced_buttons1 : "bold, italic, underline, |, bullist, numlist, |, outdent, indent, |, cut, copy, paste, |, undo, redo, |, spellchecker, |, search, replace, |, insertdate, inserttime, link, unlink, |, print, fullscreen",
+	/** 
+	 * Be careful when adding buttons to ensure that you don't use up too much horizontal spaces and cause the editor
+	 * to overflow its parent container.
+	 */
+	theme_advanced_buttons1 : "bold, italic, underline, |, \
+	                           bullist, numlist, |, \
+	                           outdent, indent, |, \
+	                           spellchecker, search, replace, |, \
+	                           link, unlink, print, fullscreen",
 	theme_advanced_buttons2 : "",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",

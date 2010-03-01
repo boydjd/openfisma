@@ -107,7 +107,7 @@ class Fisma_Yui_TabView
      */
     public function addTab($name, $url)
     {
-        $this->_tabs[] = array('name' => $name, 'url' => $url);
+        $this->_tabs[] = array('name' => htmlspecialchars($name), 'url' => $url);
     }
     
     /**

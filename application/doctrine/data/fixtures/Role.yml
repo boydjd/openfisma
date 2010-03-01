@@ -72,6 +72,7 @@ Role:
             - notification_asset
             - notification_finding
             - product_read
+
     saiso_role:
         name: Senior Agency Information Security Officer
         nickname: SAISO
@@ -188,6 +189,7 @@ Role:
             - ir_category_update
             - ir_category_create
             - ir_category_delete
+            - user_read
 
     certagent_role:
         name: Certification Agent
@@ -261,7 +263,10 @@ Role:
         name: OIG Representative
         nickname: OIG
         description:
-        Privileges: [areas_dashboard, incident_read, incident_create]
+        Privileges: 
+            - areas_dashboard
+            - incident_read
+            - incident_create
 
     irc_role:
         name: Incident Response Coordinator
@@ -292,22 +297,34 @@ Role:
         name: Data Breach Representative
         nickname: DBR
         description:
-        Privileges: [areas_dashboard, incident_read, incident_create]
+        Privileges: 
+            - areas_dashboard
+            - incident_read
+            - incident_create
    
     pa_role:
         name: Privacy Advocate
         nickname: PA
         description:
-        Privileges: [areas_dashboard, incident_read, incident_create]
+        Privileges: 
+            - areas_dashboard
+            - incident_read
+            - incident_create
         
     irs_role:
         name: Incident Response Specialist
         nickname: IRS
         description:
-        Privileges: [areas_dashboard, incident_read, incident_create]
+        Privileges: 
+            - areas_dashboard
+            - incident_read
+            - incident_create
   
     hdr_role:
         name: Help Desk Representative
         nickname: HDR
         description:
-        Privileges: [areas_dashboard, incident_read, incident_create]
+        Privileges: 
+            - areas_dashboard
+            - incident_read
+            - incident_create

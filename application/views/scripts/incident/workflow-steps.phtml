@@ -1,0 +1,119 @@
+<?php 
+Fisma_Format_Section::startSection("Workflow Steps"); 
+
+if ('closed' == $this->incident->status):
+?>
+    <p>
+        <b>
+            This workflow has been completed and the incident is now officially closed.
+        </b>
+    </p>
+<?php
+endif;
+
+foreach ($this->steps as $step):
+    switch ($step->status):
+        case 'current':
+            $class = 'currentIncidentStep';
+            break;
+        case 'completed':
+            $class = 'completedIncidentStep';
+            break;
+        case 'queued':
+            $class = 'queuedIncidentStep';
+            break;
+    endswitch;
+?>
+    <form method="post" action="/incident/complete-workflow-step/id/<?php echo $this->id; ?>">
+        <input type="hidden" name="stepId" value="<?php ; ?>">
+        <div class="incidentStep <?php echo $class; ?>">
+            <div class="incidentCardinality">
+                <?php echo ($step->cardinality + 1); ?>
+            </div>
+            <table>
+                <tr>
+                    <td>Step:</td>
+                    <td><?php echo $step->name; ?></td>
+                </tr>
+                <tr>
+                    <td>Status:</td>
+                    <td><?php echo ucfirst($step->status); ?></td>
+                </tr>
+                <?php
+                if (!is_null($step->userId)):
+                ?>
+                    <tr>
+                        <td>Completion Date:</td>
+                        <td>
+                            <?php echo empty($step->completeTs) ? 'n/a' : $step->completeTs; ?>
+                        </td>
+                    </tr>
+                <?php
+                endif;
+
+                if (!is_null($step->userId)):
+                ?>
+                    <tr>
+                        <td>Completed By:</td>
+                        <td><?php echo $step->User; ?></td>
+                    </tr>
+                <?php
+                endif;
+
+                if (isset($step->Role)):
+                ?>
+                    <tr>
+                        <td>Role Required:</td>
+                        <td><?php echo "({$step->Role->nickname}) {$step->Role->name}"; ?></td>
+                    </tr>
+                <?php
+                endif;
+
+                if (!empty($step->description)):
+                ?>
+                    <tr>
+                        <td>Description:</td>
+                        <td><?php echo $step->description; ?></td>
+                    </tr>
+                <?php
+                endif;
+
+                if (!empty($step->comments)):
+                ?>
+                    <tr>
+                        <td>Comments:</td>
+                        <td><?php echo Fisma_String::textToHtml($step->comments); ?></td>
+                    </tr>
+                <?php
+                endif;
+
+                if ('current' == $step->status && Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                ?>
+                    <tr>
+                        <td>*Comments:</td>
+                        <td>
+                            <textarea rows="8" cols="60" name="comment"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>
+                            <?php
+                            echo new Fisma_Yui_Form_Button_Submit(
+                                'completeStep', 
+                                array('label' => 'Complete Step')
+                            );
+                            ?>
+                        </td>
+                    </tr>
+                <?php
+                endif;
+                ?>            
+            </table>
+        </div>
+    </form>
+<?php 
+endforeach;
+
+Fisma_Format_Section::stopSection(); 
+?>

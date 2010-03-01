@@ -212,33 +212,6 @@ class Fisma_Mail extends Zend_Mail
     }
 
     /**
-     * Notify users that an incident has been opened
-     *
-     * @param int $userId id of the user that will receive the email
-     * @param int $incidentId id of the incident that the email is referencing 
-     * 
-     */
-    public function IROpen($userId, $incidentId)
-    {
-        $user = new User();
-        $user = $user->getTable()->find($userId);
-
-        $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
-        $this->setSubject("An incident has been opened.");
-        
-        $this->_contentTpl->incidentId = $incidentId;
-        
-        $content = $this->_contentTpl->render('IROpen.phtml');
-        
-        $this->setBodyText($content);
-
-        try {
-            $this->send($this->_getTransport());
-        } catch (Exception $excetpion) {
-        }
-    }
-
-    /**
      * Notify a user that an incident workflow step has been completed
      *
      * @param int $userId ID of the user that will receive the email

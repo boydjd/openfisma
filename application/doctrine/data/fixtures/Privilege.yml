@@ -320,18 +320,6 @@ Privilege:
         resource: incident
         action: close
         description: Close Incident
-    incident_clone:
-        resource: incident
-        action: clone
-        description: Clone Incident
-    incident_actors:
-        resource: incident
-        action: actors
-        description: Add and Remove Incident Actors
-    incident_viewers:
-        resource: incident
-        action: viewers
-        description: Add and Remove Incident Viewers
 
     # IRWorkflow CRUD
     ir_workflow_def_create:
