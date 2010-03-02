@@ -1,10 +1,7 @@
 <div class="column left">
     <?php
     Fisma_Format_Section::startSection("Actors");
-    if (1==0) {
-        exit;
-    }
-    if (Fisma_Acl::hasPrivilegeForClass('update', 'Incident')/* && Fisma_Acl::hasPrivilegeForClass('read', 'User')*/):
+    if (Fisma_Acl::hasPrivilegeForClass('update', 'Incident')):
     ?>
         <form method="post" action="/incident/add-actor/type/actor/id/<?php echo $this->id; ?>">
             <input type="hidden" id="actorId" name="userId" value="">
@@ -62,7 +59,7 @@
     if (1==0) {
         exit;
     }
-    if (Fisma_Acl::hasPrivilegeForClass('update', 'Incident')/* && Fisma_Acl::hasPrivilegeForClass('read', 'User')*/):
+    if (Fisma_Acl::hasPrivilegeForClass('update', 'Incident')):
     ?>
     <form method="post" action="/incident/add-actor/type/observer/id/<?php echo $this->id; ?>">
         <input type="hidden" id="observerId" name="userId" value="">

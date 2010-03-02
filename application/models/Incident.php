@@ -166,7 +166,7 @@ class Incident extends BaseIncident
             $this->status = 'closed';
             $this->resolution = 'resolved';
             $this->save();
-        } elseif (1 == count($nextStepResult))  {
+        } elseif (1 == count($nextStepResult)) {
             // The next step will change status to 'current'
             $nextStep = $nextStepResult[0];            
             $nextStep->status = 'current';

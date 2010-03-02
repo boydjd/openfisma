@@ -949,7 +949,6 @@ class IncidentController extends SecurityController
         }
         $form->getElement('categoryId')->setValue($incident->categoryId);
 
-
         Fisma_Form_Manager::prepareForm($form);
         $this->view->assign('form', $form);
     }
