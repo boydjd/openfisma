@@ -56,9 +56,6 @@
 <div class="column right">
     <?php
     Fisma_Format_Section::startSection("Observers");
-    if (1==0) {
-        exit;
-    }
     if (Fisma_Acl::hasPrivilegeForClass('update', 'Incident')):
     ?>
     <form method="post" action="/incident/add-actor/type/observer/id/<?php echo $this->id; ?>">
