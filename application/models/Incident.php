@@ -73,17 +73,21 @@ class Incident extends BaseIncident
             throw new Fisma_Exception('Cannot reject an incident unless it is in "new" status');
         }
         
+        // Create a workflow step for rejecting then mark it as closed
         $rejectStep = new IrIncidentWorkflow();
+
         $rejectStep->Incident = $this;
-        $rejectStep->name = 'Open Incident';
+        $rejectStep->name = 'Reject Incident';
         $rejectStep->cardinality = 0;
-        $rejectStep->status = 'completed';
-        $rejectStep->comments = $comment;
-        $rejectStep->User == User::currentUser();
+
+        $rejectStep->completeStep();
         $rejectStep->save();
         
         $this->status = 'closed';
         $this->resolution = 'rejected';
+        
+        // Update incident log
+        $this->getAuditLog()->write('Rejected Incident Report');
     }
     
     /**
@@ -133,9 +137,9 @@ class Incident extends BaseIncident
 
             $iw->save();
         }
-        
+
         // Now mark the first step (the opening step) as being complete
-        $this->completeStep($comment);     
+        $this->completeStep($comment);   
     }
     
     /**
@@ -148,6 +152,13 @@ class Incident extends BaseIncident
         // Update the completed step first
         $completedStep = $this->CurrentWorkflowStep;
         $completedStep->completeStep($comment);
+        
+        // Log the completed step
+        $logMessage = 'Completed workflow step #'
+                    . ($completedStep->cardinality + 1)
+                    . ': '
+                    . $completedStep->name;
+        $this->getAuditLog()->write($logMessage);
         
         /*
          * The next step can be identified by its cardinality, which is always one more than the cardinality of the 
@@ -166,6 +177,9 @@ class Incident extends BaseIncident
             $this->status = 'closed';
             $this->resolution = 'resolved';
             $this->save();
+            
+            // Log the closure of the incident
+            $this->getAuditLog()->write('Incident Resolved and Closed');
         } elseif (1 == count($nextStepResult)) {
             // The next step will change status to 'current'
             $nextStep = $nextStepResult[0];            

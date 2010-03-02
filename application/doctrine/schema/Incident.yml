@@ -7,13 +7,13 @@ Incident:
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Title
+                logicalName: Reporter's Title
         reporterFirstName: 
             type: string(255)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s First Name
+                logicalName: Reporter's First Name
                 searchIndex: unstored
             comment: >
                 The reporter is the user who reports the incident to the organization. The report can be made directly
@@ -24,14 +24,14 @@ Incident:
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Last Name
+                logicalName: Reporter's Last Name
                 searchIndex: unstored
         reporterOrganization: 
             type: string(255)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Organization
+                logicalName: Reporter's Organization
                 searchIndex: unstored
 
         reporterAddress1: 
@@ -39,44 +39,44 @@ Incident:
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Street Address Line 1
+                logicalName: Reporter's Street Address Line 1
         reporterAddress2: 
             type: string(255)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Street Address Line 2
+                logicalName: Reporter's Street Address Line 2
         reporterCity: 
             type: string(255)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s City
+                logicalName: Reporter's City
         reporterState: 
             type: string(255)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s State
+                logicalName: Reporter's State
         reporterZip: 
             type: string(10)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Zip Code
+                logicalName: Reporter's Zip Code
         reporterPhone: 
-            type: string(10)
+            type: string(15)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Phone Number
+                logicalName: Reporter's Phone Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterFax: 
-            type: string(10)
+            type: string(15)
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s Fax Number
+                logicalName: Reporter's Fax Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterEmail: 
             type: string(255)
@@ -85,7 +85,7 @@ Incident:
             extra:
                 auditLog: true
                 purify: plaintext
-                logicalName: Reporter\'s E-mail Address
+                logicalName: Reporter's E-mail Address
         
         locationBuilding: 
             type: string(255)
@@ -139,7 +139,7 @@ Incident:
             extra: 
                 auditLog: true
                 purify: html
-                logicalName: Additional Incident Details
+                logicalName: Incident Description
                 searchIndex: unstored
 
         piiInvolved:
@@ -169,7 +169,7 @@ Incident:
             values: [laptop, disc, document, usb, tape, other]
             extra:
                 auditLog: true
-                logicalName: PI Type Of Mobile Media
+                logicalName: PII Type Of Mobile Media
         piiEncrypted:
             type: enum
             values: ["YES", "NO"]

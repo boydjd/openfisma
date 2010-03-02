@@ -222,7 +222,7 @@ class Fisma_Behavior_AuditLoggable_Generator extends Doctrine_Record_Generator
         $query = Doctrine_Query::create()->from("{$this->_options['className']} o")
                                          ->leftJoin('o.User u')
                                          ->where('o.objectId = ?', $instance->id)
-                                         ->orderBy('o.createdTs desc');
+                                         ->orderBy('o.createdTs desc, o.id desc');
         
         return $query;
     }

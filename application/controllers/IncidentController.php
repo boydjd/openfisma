@@ -645,6 +645,7 @@ class IncidentController extends SecurityController
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/actors/id/$id");
         $tabView->addTab('Comments', "/incident/comments/id/$id");
+        $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
     }
@@ -682,6 +683,25 @@ class IncidentController extends SecurityController
         );
     
         $this->view->formAction = "/incident/update/id/$id";
+    }
+    
+    /**
+     * Display the audit log for an incident
+     */
+    public function auditLogAction()
+    {
+        $id = $this->_request->getParam('id');
+        
+        $incident = Doctrine::getTable('Incident')->find($id);
+        
+        $logs = $incident->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
+        
+        // Convert log messages from plain text to HTML
+        foreach ($logs as &$log) {
+            $log['o_message'] = $this->view->textToHtml($log['o_message']);
+        }
+
+        $this->view->logs = $logs;
     }
     
     /**
