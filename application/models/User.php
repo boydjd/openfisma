@@ -583,6 +583,20 @@ class User extends BaseUser
     }
 
     /**
+     * Doctrine hook for pre-delete
+     * 
+     * @param Doctrine_Event $event The triggered doctrine event
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if ('root' == $this->username) {
+            /**@todo english*/
+            throw new Doctrine_Exception('The root user can not be deleted !');
+        }
+    }
+
+    /**
      * Set the last rules of behavior acceptance timestamp
      * 
      * @params string $value
