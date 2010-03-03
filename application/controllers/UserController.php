@@ -187,9 +187,11 @@ class UserController extends BaseController
      */
     protected function setForm($subject, $form)
     {
-        $roleId = $subject->Roles[0]->id;
+        $roles = array();
+        $assignedRoles = $subject->Roles->toArray();
+        array_walk($assignedRoles, create_function('$v, $k, &$roles', '$roles[] = $v[\'id\'];'), &$roles);
         $form->setDefaults($subject->toArray());
-        $form->getElement('role')->setValue($roleId);
+        $form->getElement('role')->setValue($roles);
         $orgs = $subject->Organizations;
         $orgIds = array();
         foreach ($orgs as $o) {

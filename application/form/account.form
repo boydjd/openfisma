@@ -78,9 +78,10 @@ displayGroups.accountInfo.elements.email = "email"
 
 ; The roles are populated dynamically in the account controller since they can
 ; change at any time.
-elements.role.type = "select"
-elements.role.options.label = "Role"
+elements.role.type = "multiselect"
+elements.role.options.label = "Role(s)"
 elements.role.options.required = true
+elements.role.options.size = 5
 displayGroups.accountInfo.elements.roles = "role"
 
 elements.title.type = "text"
