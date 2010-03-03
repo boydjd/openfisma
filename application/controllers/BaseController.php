@@ -274,13 +274,16 @@ abstract class BaseController extends SecurityController
                 Doctrine_Manager::connection()->commit();
                 $msg   = "{$this->_modelName} deleted successfully";
                 $type = 'notice';
+            } catch (Fisma_Exception $e) {
+                $msg  = $e->getMessage();
+                $type = 'warning';
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 if (Fisma::debug()) {
                     $msg .= $e->getMessage();
                 }
                 $type = 'warning';
-            } 
+            }
         }
         $this->view->priorityMessenger($msg, $type);
         $this->_forward('list');

@@ -592,7 +592,7 @@ class User extends BaseUser
     {
         if ('root' == $this->username) {
             /**@todo english*/
-            throw new Doctrine_Exception('The root user can not be deleted !');
+            throw new Fisma_Exception('The root user is not deletable!');
         }
     }
 

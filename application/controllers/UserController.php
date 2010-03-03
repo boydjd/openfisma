@@ -415,37 +415,6 @@ class UserController extends BaseController
     }
 
     /**
-     * Override parent->deleteAction() to delete a user
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $userId = $this->_request->getParam('id');
-        $user = Doctrine::getTable('User')->find($userId);
-        Fisma_Acl::requirePrivilegeForObject('delete', $user);
-
-        if (!$user) {
-            $msg   = "Invalid User ID";
-            $type  = 'warning';
-        } else {
-            try {
-                Doctrine_Manager::connection()->beginTransaction();
-                $user->delete();
-                Doctrine_Manager::connection()->commit();
-                $msg  = "user deleted successfully";
-                $type = 'notice';
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                $msg  = $e->getMessage();
-                $type = 'warning';
-            }
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
-    }
-
-    /**
      * Generate a password that meet the application's password complexity requirements.
      * 
      * @return void
