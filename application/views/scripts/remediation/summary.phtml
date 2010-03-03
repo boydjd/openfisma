@@ -104,7 +104,7 @@ function menuHandler(source) {
     
     var url = '/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/source/' + selectedSource.value)
+            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value)
             + '/format/json';
     reloadTable(url);
 
@@ -112,7 +112,7 @@ function menuHandler(source) {
     document.getElementById('finding_summary_search_<?php echo urlencode($status);?>').href = 
         '/panel/remediation/sub/searchbox/status/<?php echo urlencode($status);?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/source/' + selectedSource.value);
+        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
 }
 </script>
