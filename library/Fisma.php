@@ -372,8 +372,29 @@ class Fisma
         if (isset($_POST['sessionId'])) {
             Zend_Session::setId($_POST['sessionId']);
         }
-        
+
         $frontController = Zend_Controller_Front::getInstance();
+
+        if (self::debug()) {
+            $cache = self::getCacheManager()->getCache('default');
+
+            $zfDebugOptions = array(
+                                'plugins' => array(
+                                    'Variables',
+                                    'Html',
+                                    'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
+                                    'File' => array('base_path' => '/home/josh/src/openfisma/trunk'),
+                                    'Memory',
+                                    'Cache' => array('backend' => $cache->getBackend()),
+                                    'Time',
+                                    'Registry',
+                                    'Exception')
+                                );
+
+            $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
+            $frontController->registerPlugin($debug);
+        }
+
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
         Zend_Date::setOptions(array('format_type' => 'php'));
