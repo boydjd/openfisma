@@ -383,7 +383,7 @@ class Fisma
                                     'Variables',
                                     'Html',
                                     'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
-                                    'File' => array('base_path' => '/home/josh/src/openfisma/trunk'),
+                                    'File' => array('base_path' => self::$_rootPath),
                                     'Memory',
                                     'Cache' => array('backend' => $cache->getBackend()),
                                     'Time',
