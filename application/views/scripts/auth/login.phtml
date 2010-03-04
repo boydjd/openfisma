@@ -4,7 +4,7 @@
 
 <div class="bd">
     <?php echo Fisma::configuration()->getConfig('use_notification');?>
-    
+        
     <p class="message">
         <?php 
             if (isset($this->error)) {
@@ -39,13 +39,28 @@
             <tr>
                 <td>&nbsp;</td>
                 <td>
-                    <?php echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); ?>
+                    <?php 
+                    echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); 
+                    ?>
                 </td>
             </tr>
+        </table>
+        <hr>
+        <table>
             <tr>
-                <td>&nbsp;</td>
-                <td nowrap><br /><a href="/incident/report">Report Security Incident</a></td>
-            </tr> 
+                <td colspan="2">
+                    <?php 
+                    echo new Fisma_Yui_Form_Button_Link(
+                        'reportIncident', 
+                        array(
+                            'value' => 'Report A Security Incident',
+                            'href' => '/incident/report',
+                            'imageSrc' => '/images/report_incident.png'
+                        )
+                    ); 
+                    ?>
+                </td>
+            </tr>
         </table>
     </form>
 </div>

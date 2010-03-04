@@ -22,7 +22,7 @@
  *
  *******************************************************************************
  *
- * Contains styles used on the logins creen
+ * Contains styles used on the login screen
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
  * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
@@ -42,6 +42,11 @@ body {
     min-height: 100%;
 }
 
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Messages related to login errors */
 p.message {
     color: #416ed7;
@@ -51,7 +56,6 @@ p.message {
 form#loginForm {
     font-size: 1em;
     font-weight: bold;
-    width: 20em;
     margin: 0px auto;
 }
 
@@ -78,3 +82,12 @@ div#footerLinks {
 div#footerLinks a {
     color: white;
 }
+
+hr {
+	border: none;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+    border-bottom: 1px solid #ccc;
+}
+
