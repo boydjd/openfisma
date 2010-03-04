@@ -172,9 +172,8 @@ class RemediationController extends SecurityController
         Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
 
         $type = $this->getRequest()->getParam('type');
-        $source = $this->getRequest()->getParam('source');        
+        $source = $this->getRequest()->getParam('sourceId');        
         $format = $this->_helper->contextSwitch()->getCurrentContext();
-
         // Prepare summary data
 
         // Get user organizations
@@ -419,13 +418,12 @@ class RemediationController extends SecurityController
             $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND' AND finding.type = ?", $type);
         else
             $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
+
+        if (!empty($source))
+            $summary->innerJoin('finding.Source s WITH s.id = ?', $source);
            
         $summary->leftJoin('node.System system')
             ->leftJoin('finding.CurrentEvaluation evaluation');
-
-        if (!empty($source)) {
-            $summary->leftJoin('finding.Source s on s.id = ?', $source);
-        }
 
         $summary->leftJoin('Organization parent')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
