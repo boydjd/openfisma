@@ -194,8 +194,8 @@ class OrganizationController extends SecurityController
         $userOrgQuery->andWhere("o.orgType IS NULL")
                      ->orWhere("o.orgType != 'system'")
                      ->orderBy("o.$sortBy $order")
-                     ->limit($this->_paging['count'])
-                     ->offset($this->_paging['startIndex']);
+                     ->limit('?', $this->_paging['count'])
+                     ->offset('?', $this->_paging['startIndex']);
         if (!empty($keywords)) {
             $index = new Fisma_Index('Organization');
             $organizationIds = $index->findIds($keywords);
