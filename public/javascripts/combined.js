@@ -2388,7 +2388,7 @@ Fisma.AutoComplete = function() {
              * @returns {String}
              */
             ac.generateRequest = function(query) {
-                return params.queryPrepend + '"' + query + '"';
+                return params.queryPrepend + query;
             };
 
             ac.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe, { hiddenFieldId: params.hiddenFieldId } );

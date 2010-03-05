@@ -191,11 +191,11 @@ class OrganizationController extends SecurityController
         }
         
         $userOrgQuery = $this->_me->getOrganizationsQuery();
-        $userOrgQuery->where("o.orgType IS NULL")
+        $userOrgQuery->andWhere("o.orgType IS NULL")
                      ->orWhere("o.orgType != 'system'")
                      ->orderBy("o.$sortBy $order")
-                     ->limit($this->_paging['count'])
-                     ->offset($this->_paging['startIndex']);
+                     ->limit('?', $this->_paging['count'])
+                     ->offset('?', $this->_paging['startIndex']);
         if (!empty($keywords)) {
             $index = new Fisma_Index('Organization');
             $organizationIds = $index->findIds($keywords);
@@ -205,7 +205,6 @@ class OrganizationController extends SecurityController
             $implodedOrganizationIds = implode(',', $organizationIds);
             $userOrgQuery->andWhere("o.id IN ($implodedOrganizationIds)");
         }
-        
         $totalRecords = $userOrgQuery->count();
         $organizations = $userOrgQuery->execute();
         
@@ -436,28 +435,14 @@ class OrganizationController extends SecurityController
      */
     public function getOrganizationTree() 
     {
-        // Doctrine supports the idea of using a base query when populating a tree. In our case, the base
-        // query selects all Organizations which the user has access to.
-        if ('root' == Zend_Auth::getInstance()->getIdentity()->username) {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->leftJoin('o.System s');
-        } else {
-            $userOrgQuery = Doctrine_Query::create()
-                            ->select('o.name, o.nickname, o.orgType, s.type')
-                            ->from('Organization o')
-                            ->innerJoin('o.Users u')
-                            ->leftJoin('o.System s')
-                            ->where('u.id = ?', $this->_me->id);
-        }
+        $userOrgQuery = $this->_me->getOrganizationsQuery();
+        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
+            ->leftJoin('o.System s');
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
-        
         $organizations = $this->toHierarchy($organizations);
-        
         return $organizations;
     }
     
@@ -506,20 +491,37 @@ class OrganizationController extends SecurityController
                     array_pop($stack); 
                     $l--; 
                 } 
-                // Stack is empty (we are inspecting the root) 
-                if ($l == 0) { 
-                    // Assigning the root node 
-                    $i = count($trees); 
-                    $trees[$i] = $item; 
-                    $stack[] = & $trees[$i]; 
-                } else { 
-                    // Add node to parent 
-                    $i = count($stack[$l - 1]['children']); 
-                    $stack[$l - 1]['children'][$i] = $item; 
-                    $stack[] = & $stack[$l - 1]['children'][$i]; 
-                } 
-            } 
-        } 
+
+                if ($l != 0) { 
+                    if ($node->getNode()->getParent()->name == $stack[$l-1]['name']) {
+                        // Add node to parent 
+                        $i = count($stack[$l - 1]['children']); 
+                        $stack[$l - 1]['children'][$i] = $item; 
+                        $stack[] = & $stack[$l - 1]['children'][$i]; 
+                    } else {
+                        // Find where the node belongs
+                        for ($j = $l; $j >= 0; $j--) {
+                            if ($j == 0) {
+                                $i = count($trees);
+                                $trees[$i] = $item;
+                                $stack[] = &$trees[$i];
+                            } elseif ($node->getNode()->getParent()->name == $stack[$j-1]['name']) {
+                                // Add node to parent
+                                $i = count($stack[$j-1]['children']);
+                                $stack[$j-1]['children'][$i] = $item;
+                                $stack[] = &$stack[$j-1]['children'][$i];
+                                break;
+                            }
+                        }
+                    }
+                } elseif ($l == 0) {
+                    // Assigning the root node
+                    $i = count($trees);
+                    $trees[$i] = $item;
+                    $stack[] = &$trees[$i];
+                }
+            }
+        }
         return $trees;
     }    
     
@@ -545,10 +547,6 @@ class OrganizationController extends SecurityController
         if ($src && $dest) {
             // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
             if (!$dest->getNode()->isDescendantOf($src)) {
-                // Invalidate the cache for the source node BEFORE the move. This way, its old parents
-                // will be updated.
-                $src->invalidateCache();
-                
                 // Based on the dragLocation parameter, execute a corresponding tree move method
                 $dragLocation = $this->getRequest()->getParam('dragLocation');
                 switch ($dragLocation) {
@@ -565,10 +563,6 @@ class OrganizationController extends SecurityController
                         $return['success'] = false;
                         $return['message'] = "Invalid dragLocation parameter ($dragLocation)";
                 }
-                
-                // Invalidate the cache for the souce node AFTER the move. This way its new parents will be
-                // updated, too.
-                $src->invalidateCache();
                 
                 // Get refreshed organization tree data
                 $return['treeData'] = $this->getOrganizationTree();

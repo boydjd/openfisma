@@ -238,9 +238,7 @@ class Fisma_Inject_Excel
             if (!empty($finding['threatDescription'])) {
                 $poam['threat'] = $finding['threatDescription'];
             }
-            if (empty($poam['countermeasuresEffectiveness'])) {
-                $poam['countermeasuresEffectiveness'] = 'NONE';
-            } else {
+            if (!empty($finding['countermeasuresEffectiveness'])) {
                 $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
             }
             if (!empty($finding['countermeasureDescription'])) {

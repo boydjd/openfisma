@@ -13,7 +13,7 @@
         </li>
 <?php if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) : ?>
         <li>
-            There are <b><a href="<?php echo $this->url ?>PEND"><?php echo $this->alert['PEND'];?></a></b>
+            There are <b><a href="<?php echo $this->pendingUrl ?>"><?php echo $this->alert['PEND'];?></a></b>
             PENDING findings awaiting approval.
         </li>
 <?php endif; ?>
@@ -86,13 +86,13 @@ if (isset($this->notifications)) {
 
 <script type="text/javascript">
     function barChartClick(status) {
-        document.location = "/panel/remediation/sub/searchbox/status/" + status;
+        document.location = "/panel/remediation/sub/searchbox/status/" + $P.urlencode(status);
     }
     function pieChartClick(columnNumber) {
         // Lookup table for converting the column number to the remediation type code
         var columns = ['NONE', 'CAP', 'FP', 'AR'];
         var type = columns[columnNumber-1];
-        document.location = "/panel/remediation/sub/searchbox/type/" + type;
+        document.location = "/panel/remediation/sub/searchbox/type/" + $P.urlencode(type);
     }
 </script>
 <?php 
