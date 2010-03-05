@@ -592,7 +592,7 @@ class User extends BaseUser
     {
         if ('root' == $this->username) {
             /**@todo english*/
-            throw new Fisma_Exception('The root user is not deletable!');
+            throw new Fisma_Exception_User('The root user is not deletable!');
         }
     }
 
