@@ -582,16 +582,15 @@ class User extends BaseUser
     }
 
     /**
-     * Doctrine hook for pre-delete
+     * Prevent the root user from being deleted
      * 
-     * @param Doctrine_Event $event The triggered doctrine event
+     * @param Doctrine_Event $event
      * @return void
      */
     public function preDelete($event)
     {
         if ('root' == $this->username) {
-            /**@todo english*/
-            throw new Fisma_Exception_User('The root user is not deletable!');
+            throw new Fisma_Exception_User('The root user cannot be deleted.');
         }
     }
 
