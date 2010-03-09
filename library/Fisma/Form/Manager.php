@@ -42,6 +42,7 @@ class Fisma_Form_Manager
     static function loadForm($formName) 
     {
         // Load the form from a .form file
+	$formName = strtolower($formName);
         $config = new Zend_Config_Ini(Fisma::getPath('form') . "/{$formName}.form", $formName);
         $form = new Fisma_Form();
         

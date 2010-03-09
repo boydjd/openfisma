@@ -99,7 +99,7 @@ abstract class BaseController extends SecurityController
         static $form = null;
         if (is_null($form)) {
             if (is_null($formName)) {
-                $formName = strtolower((string) $this->_modelName);
+                $formName = (string) $this->_modelName;
             }
             $form = Fisma_Form_Manager::loadForm($formName);
             $form = Fisma_Form_Manager::prepareForm($form);
