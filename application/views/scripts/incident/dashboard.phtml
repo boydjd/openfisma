@@ -184,6 +184,35 @@ var myColumnDefs = [
     <?php 
     endif; 
     ?>
+    
+    var contextMenuItems = ["View"];
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu", 
+        { 
+            trigger:  myDataTable.getTbodyEl(), 
+            itemdata: contextMenuItems, 
+            lazyload: true 
+        }
+    );
+    
+    contextMenu.subscribe("click", contextMenuHandler);
+    
+    function contextMenuHandler(event, eventArgs) {
+        var targetElement = this.contextEventTarget;
+        var rowElement = myDataTable.getTrEl(targetElement);
+        var rowRecord = myDataTable.getRecord(rowElement);
+        var menuItem = eventArgs[1];
+        var actionUrl = '';
+        switch (menuItem.index) {
+            case 0 :
+                actionUrl = "/panel/incident/sub/view/id/" + rowRecord.getData("id");
+                break;
+        }
+        if (actionUrl != '') {
+            window.open(actionUrl);
+        }
+    }
+    
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>
@@ -277,6 +306,35 @@ var myColumnDefs = [
     <?php 
     endif; 
     ?>
+    
+    var contextMenuItems = ["View"];
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu", 
+        { 
+            trigger:  myDataTable.getTbodyEl(), 
+            itemdata: contextMenuItems, 
+            lazyload: true 
+        }
+    );
+    
+    contextMenu.subscribe("click", contextMenuHandler);
+    
+    function contextMenuHandler(event, eventArgs) {
+        var targetElement = this.contextEventTarget;
+        var rowElement = myDataTable.getTrEl(targetElement);
+        var rowRecord = myDataTable.getRecord(rowElement);
+        var menuItem = eventArgs[1];
+        var actionUrl = '';
+        switch (menuItem.index) {
+            case 0 :
+                actionUrl = "/panel/incident/sub/view/id/" + rowRecord.getData("id");
+                break;
+        }
+        if (actionUrl != '') {
+            window.open(actionUrl);
+        }
+    }
+    
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -373,6 +431,35 @@ var myColumnDefs = [
     <?php 
     endif; 
     ?>
+    
+    var contextMenuItems = ["View"];
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu", 
+        { 
+            trigger:  myDataTable.getTbodyEl(), 
+            itemdata: contextMenuItems, 
+            lazyload: true 
+        }
+    );
+    
+    contextMenu.subscribe("click", contextMenuHandler);
+    
+    function contextMenuHandler(event, eventArgs) {
+        var targetElement = this.contextEventTarget;
+        var rowElement = myDataTable.getTrEl(targetElement);
+        var rowRecord = myDataTable.getRecord(rowElement);
+        var menuItem = eventArgs[1];
+        var actionUrl = '';
+        switch (menuItem.index) {
+            case 0 :
+                actionUrl = "/panel/incident/sub/view/id/" + rowRecord.getData("id");
+                break;
+        }
+        if (actionUrl != '') {
+            window.open(actionUrl);
+        }
+    }
+    
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -469,6 +556,35 @@ var myColumnDefs = [
     <?php 
     endif;
     ?>
+    
+    var contextMenuItems = ["View"];
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu", 
+        { 
+            trigger:  myDataTable.getTbodyEl(), 
+            itemdata: contextMenuItems, 
+            lazyload: true 
+        }
+    );
+    
+    contextMenu.subscribe("click", contextMenuHandler);
+    
+    function contextMenuHandler(event, eventArgs) {
+        var targetElement = this.contextEventTarget;
+        var rowElement = myDataTable.getTrEl(targetElement);
+        var rowRecord = myDataTable.getRecord(rowElement);
+        var menuItem = eventArgs[1];
+        var actionUrl = '';
+        switch (menuItem.index) {
+            case 0 :
+                actionUrl = "/panel/incident/sub/view/id/" + rowRecord.getData("id");
+                break;
+        }
+        if (actionUrl != '') {
+            window.open(actionUrl);
+        }
+    }
+    
 </script>
 <?php Fisma_Format_Section::stopSection(); ?>
 
