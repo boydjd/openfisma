@@ -110,8 +110,7 @@ class AssetController extends BaseController
      */
     public function getForm($formName=null)
     {
-        $formName = (!empty($formName)) ? $formName : $this->_modelName;
-        $form = Fisma_Form_Manager::loadForm($formName);
+        $form = parent::getForm($formName);
         $systems = $this->_me->getOrganizations();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
@@ -140,9 +139,8 @@ class AssetController extends BaseController
 
         if ($this->getRequest()->getParam('sub') != 'edit') 
             $form->getElement('product')->setAttrib('readonly', true);
-    
-        $form->setDefaults($subject->toArray());
-        return $form;
+
+        return parent::setForm($subject, $form);
     }
 
     /**
