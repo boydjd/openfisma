@@ -396,6 +396,8 @@ class Fisma
         $view = Zend_Layout::getMvcInstance()->getView();
         $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
         $view->doctype('HTML4_STRICT');
+        // Make sure that we don't double encode
+        $view->setEscape(array('Fisma', 'htmlentities'));
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
@@ -658,5 +660,16 @@ class Fisma
         } else {
             self::$_configuration = $config;
         }
+    }
+
+    /**
+     * Wrapper for htmlentities to turn off double encoding 
+     * 
+     * @param mixed $value 
+     * @return string 
+     */
+    public static function htmlentities($value)
+    {
+        return htmlentities($value, ENT_COMPAT, 'UTF-8', FALSE);
     }
 }
