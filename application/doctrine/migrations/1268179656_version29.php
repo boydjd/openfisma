@@ -92,6 +92,7 @@ class Version29 extends Doctrine_Migration_Base
 
     /**
      * Keep decoding escaping until there's no more decoding to be done 
+     * Then encode with htmlspecialchars ONCE
      * 
      * @param mixed $value 
      * @return string 
@@ -101,6 +102,8 @@ class Version29 extends Doctrine_Migration_Base
         do {
             $value = htmlspecialchars_decode($value);
         } while ($value != htmlspecialchars_decode($value));
+
+        $value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', FALSE);
 
         return $value;
     }
