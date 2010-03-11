@@ -67,8 +67,8 @@ class IncidentDashboardController extends SecurityController
      */
     public function chartsAction()
     {
-        $this->view->statusChart = new Fisma_Chart('/incident-chart/reported/period/6/format/xml', 400, 250);
-        $this->view->categoryChart = new Fisma_Chart('/incident-chart/category/format/xml', 400, 250);
+        $this->view->statusChart = new Fisma_Chart('/incident-chart/history/period/6/format/xml', 450, 300);
+        $this->view->categoryChart = new Fisma_Chart('/incident-chart/category/format/xml', 450, 300);
     }
     
     /**

@@ -1,8 +1,8 @@
 <?php 
-Fisma_Format_Section::startSection("Incidents Closed In Last 5 Hours <span id='searchResultsTotalFound'></span>"); 
+Fisma_Format_Section::startSection("Incidents Closed In Last 5 Days <span id='closedIncidentsFound'></span>"); 
 ?>
 
-<div id="list"></div>
+<div id="recently_closed"></div>
 
 <script type="text/javascript">
     // Column definitions
@@ -54,12 +54,12 @@ Fisma_Format_Section::startSection("Incidents Closed In Last 5 Hours <span id='s
         generateRequest : myRequestBuilder
     };
     
-    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    var myDataTable = new YAHOO.widget.DataTable("recently_closed", myColumnDefs, myDataSource, myConfigs);
     // Update totalRecords on the fly with value from server
     myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         oPayload.totalRecords = oResponse.meta.totalRecords;
         // display total records in the search results header, if not already present
-        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        var searchResultsHeader = document.getElementById('closedIncidentsFound');
         if (!searchResultsHeader.firstChild) {
             var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
             var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');

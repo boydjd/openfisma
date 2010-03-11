@@ -35,41 +35,87 @@ class IncidentChartController extends SecurityController
         parent::init();
         
         $this->_helper->contextSwitch
-                      ->setActionContext('reported', 'xml')
+                      ->setActionContext('history', 'xml')
                       ->setActionContext('category', 'xml')
                       ->initContext();
     }
     
     /**
-     * A bar chart which shows how many incidents were reported on a month-by-month basis in recent history
+     * A bar chart which shows how many incidents were reported/resolved/rejected on a month-by-month basis 
+     * in recent history
      */
-    public function reportedAction()
+    public function historyAction()
     {
-        // $period is the number of months of history to limit the results to
+        /**
+         * $period is the number of months of history to limit the results to. It's limited to 12 due to the way
+         * the query is structured (indexed by month number, which would wrap around with a 12+ month period)
+         */
         $period = $this->getRequest()->getParam('period');
         
-        if (!is_int((int)$period)) {
-            throw new Fisma_Exception("Incident status chart period parameter must be an integer.");
+        if (!is_int((int)$period) || $period > 12) {
+            $message = "Incident status chart period parameter must be an integer less than or equal to 12.";
+            throw new Fisma_Exception($message);
         }
         
-        // Calculate the cutoff date based on the period
-        $today = Zend_Date::now();
-        
-        $cutoffDate = $today->sub($period, Zend_Date::MONTH)->get('Y-m-d');
+        // Calculate the cutoff date based on the period        
+        $cutoffDate = Zend_Date::now()->sub($period, Zend_Date::MONTH)->get('Y-m-d');
 
-        // Get chart data
+        // Get chart data. This is done in two queries because one groups by reportTs and the other groups by closedTs
         $reportedIncidentsQuery = Doctrine_Query::create()
-                                  ->select('COUNT(i.id) AS count')
-                                  ->addSelect('YEAR(i.reportTs) AS year')
+                                  ->addSelect('COUNT(i.id) AS reported')
                                   ->addSelect('MONTH(i.reportTs) AS monthNumber')
-                                  ->addSelect("DATE_FORMAT(i.reportTs, '%b') AS month")
-                                  ->from('Incident i')
+                                  ->from('Incident i INDEXBY monthNumber')
                                   ->where("i.reportTs > '$cutoffDate'")
-                                  ->groupBy('month')
-                                  ->orderBy('year, monthNumber')
+                                  ->groupBy('monthNumber')
                                   ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
-        $this->view->results = $reportedIncidentsQuery->execute();
+        $reportedIncidents = $reportedIncidentsQuery->execute();
+
+        $closedIncidentsQuery = Doctrine_Query::create()
+                                ->addSelect("SUM(IF(i.resolution = 'resolved', 1, 0)) AS resolved")
+                                ->addSelect("SUM(IF(i.resolution = 'rejected', 1, 0)) AS rejected")
+                                ->addSelect('MONTH(i.closedTs) AS monthNumber')
+                                ->from('Incident i INDEXBY monthNumber')
+                                ->where("i.closedTs > '$cutoffDate'")
+                                ->groupBy('monthNumber')
+                                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        $closedIncidents = $closedIncidentsQuery->execute();
+
+        // Merge results and fill in placeholders for months that have no data
+        $mergedData = array();
+        $firstMonth = Zend_Date::now()->sub($period, Zend_Date::MONTH);
+
+        for ($monthOffset = 1; $monthOffset <= $period; $monthOffset++) {
+            $currentMonth = clone $firstMonth;
+            $currentMonth->add($monthOffset, Zend_Date::MONTH);
+            
+            // Fill in default values in case one or both queries had no matching records for this month
+            $monthData = array(
+                'reported' => 0, 
+                'resolved' => 0, 
+                'rejected' => 0,
+                'monthName' => $currentMonth->get('M'), // short name for month
+                'year' => $currentMonth->get('Y')
+                
+            );
+
+            // Merge reported counts with rejected/resolved counts for each month
+            $currentMonthNumber = $currentMonth->get('n'); // current month as number with no leading zero
+            
+            if (isset($reportedIncidents[$currentMonthNumber])) {
+                $monthData['reported'] = $reportedIncidents[$currentMonthNumber]['reported'];
+            }
+
+            if (isset($closedIncidents[$currentMonthNumber])) {
+                $monthData['resolved'] = $closedIncidents[$currentMonthNumber]['resolved'];
+                $monthData['rejected'] = $closedIncidents[$currentMonthNumber]['rejected'];
+            }
+
+            $mergedData[$currentMonthNumber] = $monthData;
+        }
+        
+        $this->view->months = $mergedData;
     }
     
     /**

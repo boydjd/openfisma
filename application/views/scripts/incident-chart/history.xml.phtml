@@ -1,0 +1,44 @@
+<chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+    <link_data url="javascript:pieChartClick(_col_)" target="javascript" />
+
+    <chart_data>
+        <row>
+            <null />
+            <?php
+            foreach ($this->months as $monthNumber => $monthData):
+                print "<string>{$monthData['monthName']}</string>";
+            endforeach;
+            ?>
+    	</row>
+	    <?php
+        foreach (array('reported', 'resolved', 'rejected') as $series):
+        ?>
+        	<row>
+        	    <string>Incidents <?php echo $series; ?></string>
+        	    <?php
+                foreach ($this->months as $monthNumber => $monthData):
+                ?>
+                    <number tooltip='<?php echo $monthData[$series] . ' Incidents ' . $series; ?>'>
+                        <?php echo $monthData[$series]; ?></number>
+                <?php
+                endforeach;
+                ?>	    
+        	</row>
+        <?php
+        endforeach;
+        ?>
+    </chart_data>
+
+    <chart_grid_h thickness='1' />
+
+    <chart_type>column</chart_type>
+
+	<series bar_gap='10' set_gap='25' />
+
+    <series_color>
+        <color>ff3333</color>
+        <color>ff9933</color>
+        <color>eaed1e</color>
+    </series_color>
+</chart> 

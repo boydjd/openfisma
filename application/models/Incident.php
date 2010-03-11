@@ -84,6 +84,7 @@ class Incident extends BaseIncident
         $rejectStep->save();
         
         $this->status = 'closed';
+        $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
         $this->resolution = 'rejected';
         
         // Update incident log
@@ -175,6 +176,7 @@ class Incident extends BaseIncident
             // There is no next step, so close this incident
             $this->CurrentWorkflowStep = null;
             $this->status = 'closed';
+            $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
             $this->resolution = 'resolved';
             $this->save();
             

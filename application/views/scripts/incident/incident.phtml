@@ -51,6 +51,20 @@
                     ?>
                 </td>
             </tr>
+            <?php
+            if (!empty($this->incident->closedTs)):
+            ?>
+            <tr>
+                <td>
+                    Closed Timestamp:
+                </td>
+                <td>
+                    <?php echo $this->incident->closedTs; ?>
+                </td>
+            </tr>
+            <?php
+            endif;
+            ?>
             <tr>
                 <td>Category:</td>
                 <td>

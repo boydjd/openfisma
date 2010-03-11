@@ -1,8 +1,8 @@
 <?php 
-Fisma_Format_Section::startSection("New Incidents <span id='searchResultsTotalFound'></span>"); 
+Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'></span>"); 
 ?>
 
-<div id="list"></div>
+<div id="new_incidents"></div>
 
 <script type="text/javascript">
     // Column definitions
@@ -54,12 +54,12 @@ Fisma_Format_Section::startSection("New Incidents <span id='searchResultsTotalFo
         generateRequest : myRequestBuilder
     };
     
-    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    var myDataTable = new YAHOO.widget.DataTable("new_incidents", myColumnDefs, myDataSource, myConfigs);
     // Update totalRecords on the fly with value from server
     myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         oPayload.totalRecords = oResponse.meta.totalRecords;
         // display total records in the search results header, if not already present
-        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        var searchResultsHeader = document.getElementById('newIncidentsFound');
         if (!searchResultsHeader.firstChild) {
             var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
             var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
