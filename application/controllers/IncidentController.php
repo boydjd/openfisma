@@ -515,44 +515,6 @@ class IncidentController extends SecurityController
             unset($session->irDraft);
         }
     }
-   
-    /**
-     * Displays incident dashboard
-     *
-     * @return string the rendered page
-     */
-    public function dashboardAction() 
-    {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
-
-        $value = trim($this->_request->getParam('keywords'));
-        empty($value) ? $link = '' : $link = '/keywords/' . $value;
-        
-        $this->view->assign('pageInfo', $this->_paging);
-        $this->view->assign('link', $link);
-       
-        /* @todo
-         * NATHAN: This seems like it should work, but I am out of time to debug. When you submit a form the 
-            dashboard is getting rendered two times.  
-         */
-
-        /* 
-        $front = Zend_Controller_Front::getInstance();
-        if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
-            //clear the action stack to prevent additional exceptions would be throwed
-            while($stack->popStack()) { print 'poping<br>'; } 
-        }
-        $this->_helper->actionStack('header', 'panel');
-        */     
-
-        $urlSuffix = '/sortby/reportTs/order/asc/startIndex/0/count/' . $this->_paging['count'];
-        $this->view->newIncidentsUrl = $link . '/status/new' . $urlSuffix;
-        $this->view->openIncidentsUrl = $link . '/status/open' . $urlSuffix;
-        $this->view->resolvedIncidentsUrl = $link . '/status/resolved' . $urlSuffix;
-        $this->view->closedIncidentsUrl = $link . '/status/resolved' . $urlSuffix;
-
-        $this->render('dashboard');
-    }  
 
     /**
      * Displays the incident search page

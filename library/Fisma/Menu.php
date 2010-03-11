@@ -88,7 +88,7 @@ class Fisma_Menu
       
             if (Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
                 $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/panel/incident/sub/list'));
-                $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/panel/incident/sub/dashboard'));
+                $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/incident-dashboard'));
             }
 
             // Incident Administration submenu

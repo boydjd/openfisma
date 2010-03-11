@@ -1,0 +1,35 @@
+<div class="column left">
+    <div style='text-align: center;'>
+        <?php
+        Fisma_Format_Section::startSection('Incidents Reported');
+
+        echo $this->statusChart;
+        ?>
+        
+        <em>
+            Incidents reported each month for the last 6 months.
+        </em>
+
+        <?php
+        Fisma_Format_Section::stopSection();
+        ?>
+    </div>
+</div>
+
+<div class="column right">
+    <div style='text-align: center;'>
+        <?php
+        Fisma_Format_Section::startSection('Incident Categories');
+
+        echo $this->categoryChart;
+        ?>
+        
+        <em>
+            Breakdown of all open incidents by category.
+        </em>
+
+        <?php
+        Fisma_Format_Section::stopSection();
+        ?>
+    </div>
+</div>

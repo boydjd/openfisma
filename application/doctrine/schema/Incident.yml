@@ -2,6 +2,9 @@ Incident:
     listeners: [XssListener, IndexListener]
     
     columns:
+        modifiedTs: timestamp
+        closedTs: timestamp
+        
         reporterTitle: 
             type: string(255)
             extra:
@@ -352,3 +355,10 @@ Incident:
             logCreateObject: true
             logUpdateField: true
             logDeleteObject: true
+
+        Timestampable:
+            created:
+                disabled: true
+            updated:
+                name: modifiedTs
+                type: timestamp

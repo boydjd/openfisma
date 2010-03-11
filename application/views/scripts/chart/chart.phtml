@@ -1,0 +1,39 @@
+<div id="<?php echo $this->containerId; ?>">
+</div>
+
+<script language="JavaScript" type="text/javascript">
+    var hasRightVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
+    if (hasRightVersion) {
+        var flashContent = AC_FL_RunContent(
+            'codebase', 'https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9.0.45.0',
+            'width', '<?php echo $this->width; ?>',
+            'height', '<?php echo $this->height; ?>',
+            'scale', 'noscale',
+            'salign', 'TL',
+            'bgcolor', '#FFFFFF',
+            'wmode', 'opaque',
+            'movie', '/flash/charts',
+            'src', '/flash/charts',
+            'FlashVars', 'library_path=/flash/charts_library&xml_source=<?php echo $this->sourceUrl; ?>',
+            'id', 'my_chart',
+            'name', 'my_chart',
+            'menu', 'true',
+            'allowFullScreen', 'true',
+            'allowScriptAccess', 'sameDomain',
+            'quality', 'high',
+            'align', 'middle',
+            'pluginspage', 'https://www.macromedia.com/go/getflashplayer',
+            'play', 'true',
+            'devicefont', 'false'
+        );
+        var containerEl = document.getElementById('<?php echo $this->containerId; ?>');
+        containerEl.innerHTML = flashContent;
+    } else {
+        var alternateContent = 'This content requires the Adobe Flash Player.';
+        alert(alternateContent);
+    }
+</script>
+
+<noscript>
+    <p>This content requires JavaScript.</p>
+</noscript>

@@ -1,0 +1,49 @@
+<chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+    <link_data url="javascript:IncidentChart.category(_col_)" target="javascript" />
+
+    <chart_data>
+        <row>
+            <null />
+            <?php
+            foreach (array_keys($this->categoryCounts) as $categoryName):
+            ?>
+                <string><?php echo $categoryName; ?></string>
+            <?php
+            endforeach;
+            ?>
+        </row>
+        <row>
+            <string>count</string>
+            <?php
+            foreach ($this->categoryCounts as $category => $info):
+            ?>
+            <number tooltip='<?php echo "$category - {$info['name']}: {$info['count']} Incidents"; ?>'>
+                <?php echo $info['count']; ?></number>
+            <?php
+            endforeach;
+            ?>
+        </row>
+    </chart_data>
+
+    <chart_type>pie</chart_type>
+    
+    <chart_label font='arial'
+                 bold='true'
+                 size='12'
+                 position='outside'
+                 as_percentage='true' />
+
+    <legend layout='vertical'
+            bullet='circle' />
+
+    <series_color>
+        <color>b3b3b3</color>
+        <color>ff3333</color>
+        <color>ff9933</color>
+        <color>eaed1e</color>
+        <color>66ff66</color>
+        <color>7197e1</color>
+        <color>c385f1</color>
+    </series_color>
+</chart> 
