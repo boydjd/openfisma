@@ -291,40 +291,41 @@ class RemediationController extends SecurityController
             ->addSelect('parent.nickname nickname');
 
         foreach ($allStatuses as $status) {
+            $s = $status;
             $status = urlencode($status);
             // These statuses are constant, and should never change
             if (array_search($status, array('PEND', 'NEW', 'DRAFT', 'EN', 'CLOSED'))) {
                 $summary->addSelect(
-                    "SUM(IF(finding.status = '$status' AND finding.responsibleorganizationid = parent.id"
+                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = parent.id"
                     . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(finding.status = '$status' AND finding.responsibleorganizationid = parent.id"
+                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = parent.id"
                     . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(finding.status = '$status' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
+                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
                     . "0, 1), 0)) ontime$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(finding.status = '$status' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
+                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
                     . "1, 0), 0)) overdue$status"
                 );
             } else { // These are statuses relating to workflow when finding status is EA or MSA, which are dynamic
                 $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$status' AND finding.responsibleorganizationid = parent.id"
+                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = parent.id"
                     . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$status' AND finding.responsibleorganizationid = parent.id"
+                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = parent.id"
                     . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$status' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
+                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
                     . "> 0, 0, 1), 0)) ontime$status"
                 );
                 $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$status' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
+                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
                     . "> 0, 1, 0), 0)) overdue$status"
                 );
             }
