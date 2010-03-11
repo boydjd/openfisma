@@ -58,7 +58,7 @@ tr.over td{background:#bcd4ec;}
 .notice p{padding:0 5px;}
 .notice h1{text-align:left;padding:5px 5px;color:#44637a;background-color:#ddd;line-height:23px;font-weight:bold;margin-top:0;}
 div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;display:none;}
-.yui-navset div.loading div{background:url(/yui/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
+.yui-navset div.loading div{background:url(/lib/2.7.0/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
 .agency{display:block;padding-left:20px;background:url(/images/agency-small.png) no-repeat;}
 .bureau{display:block;padding-left:20px;background:url(/images/bureau-small.png) no-repeat;}
 .organization{display:block;padding-left:20px;background:url(/images/organization-small.png) no-repeat;}
