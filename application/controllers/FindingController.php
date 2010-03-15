@@ -234,12 +234,17 @@ class FindingController extends BaseController
                 move_uploaded_file($file['tmp_name'], $path . $newName);
                 
                 Doctrine_Manager::connection()->commit();
-                $this->view->priorityMessenger("$rowsProcessed findings were created.", 'notice');
+                $error = "$rowsProcessed findings were created.";
+                $type  = 'notice';
             } catch (Fisma_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
                 $error = "The file cannot be processed due to an error.<br>{$e->getMessage()}";
-                $this->view->priorityMessenger($error, 'warning');
+                $type  = 'warning';
+            } catch (Doctrine_Validator_Exception $e) {
+                $error = $e->getMessage();
+                $type  = 'warning';
             }
+            $this->view->priorityMessenger($error, $type);
         }
         $this->render();
     }
