@@ -219,8 +219,13 @@ div#footerLinks {
 
 .searchField {
     position: relative;
-    top: 3px;
+    top: -5px;
 }
+
+.searchField label {
+    display: none;
+}
+
 .searchFilters select {
     margin-right: 10px;
 }

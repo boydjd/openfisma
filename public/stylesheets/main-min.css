@@ -25,7 +25,8 @@ p.stacktrace{margin:10px;border:1px solid #d3d3d3;#fff-space:pre;font-family:mon
 div#footer{margin:10px 0;padding:3px;}
 div#footerLinks{float:right;}
 .searchFilters{text-align:center;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
-.searchField{position:relative;top:3px;}
+.searchField{position:relative;top:-5px;}
+.searchField label{display:none;}
 .searchFilters select{margin-right:10px;}
 table.keyValues tr:nth-child(even){background-color:#eef5fe;}
 table.keyValues td{padding:5px;vertical-align:middle;}
