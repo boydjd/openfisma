@@ -761,7 +761,15 @@ tinyMCE.init({
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
-	theme_advanced_buttons1 : "bold, italic, underline, |, bullist, numlist, |, outdent, indent, |, cut, copy, paste, |, undo, redo, |, spellchecker, |, search, replace, |, insertdate, inserttime, link, unlink, |, print, fullscreen",
+	/** 
+	 * Be careful when adding buttons to ensure that you don't use up too much horizontal spaces and cause the editor
+	 * to overflow its parent container.
+	 */
+	theme_advanced_buttons1 : "bold, italic, underline, |, \
+	                           bullist, numlist, |, \
+	                           outdent, indent, |, \
+	                           spellchecker, search, replace, |, \
+	                           link, unlink, print, fullscreen",
 	theme_advanced_buttons2 : "",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
@@ -1593,6 +1601,27 @@ function showCalendar(block, trigger) {
     }
     dialog.show();
 }
+
+function updateTimeField(id) {
+    var hiddenEl = document.getElementById(id);
+    var hourEl = document.getElementById(id + 'Hour');
+    var minuteEl = document.getElementById(id + 'Minute');
+    var ampmEl = document.getElementById(id + 'Ampm');
+    
+    var hour = hourEl.value;
+    var minute = minuteEl.value;
+    var ampm = ampmEl.value;
+    
+    if ('PM' == ampm) {
+        hour = parseInt(hour) + 12;
+    }
+    
+    hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
+    minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
+    
+    var time = hour + ':' + minute + ':00';
+    hiddenEl.value = time;
+}
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -1725,10 +1754,17 @@ function setupEditFields() {
              var type = target.getAttribute('type');
              var url = target.getAttribute('href');
              var eclass = target.className;
+             var oldWidth = target.offsetWidth;
+             var oldHeight = target.offsetHeight;
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
              if (type == 'text') {
                  target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
+                 textEl = document.getElementById(t_name);
+                 if (oldWidth < 200) {
+                     oldWidth = 200;
+                 }
+                 textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
@@ -1745,6 +1781,9 @@ function setupEditFields() {
                  var row = target.getAttribute('rows');
                  var col = target.getAttribute('cols');
                  target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">' + cur_html+ '</textarea>';
+                 var textareaEl = document.getElementById(name);
+                 textareaEl.style.width = oldWidth + "px";
+                 textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
              } else {
                  YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
@@ -2227,7 +2266,7 @@ function AC_Generateobj(objAttrs, params, embedAttrs)
     str += '> </embed>';
   }
 
-  document.write(str);
+  return str;
 }
 
 function AC_FL_RunContent(){
@@ -2236,7 +2275,7 @@ function AC_FL_RunContent(){
     (  arguments, ".swf", "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
      , "application/x-shockwave-flash"
     );
-  AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
+  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
 }
 
 function AC_SW_RunContent(){
@@ -2245,7 +2284,7 @@ function AC_SW_RunContent(){
     (  arguments, ".dcr", "src", "clsid:166B1BCA-3F9C-11CF-8075-444553540000"
      , null
     );
-  AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
+  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
 }
 
 function AC_GetArgs(args, ext, srcParamName, classid, mimeType){

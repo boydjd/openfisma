@@ -56,6 +56,10 @@ em {
     font-weight: bold;
 }
 
+ul {
+    padding-bottom: 10px;
+}
+
 ul li {
     display: list-item;
     list-style: disc outside;
@@ -71,7 +75,7 @@ ol li {
 }
 
 p {
-    margin: 10px 8px;
+    margin: 10px 0px 10px 0px;
 }
 
 h1 {
@@ -223,9 +227,13 @@ div#footerLinks {
 
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
+table.keyValues tr:nth-child(even) {
+	background-color: #eef5fe;
+}
+
 table.keyValues td {
-    padding: 2px 5px;
-    vertical-align: top;
+    padding: 5px;
+    vertical-align: middle;
 }
 
 /* The first column in a keyValues table is bold text */
@@ -234,19 +242,11 @@ table.keyValues td:first-child {
     text-align: right;
 }
 
-/* This style is used for displaying audit log tables. */
-table.auditLog {
-	width: 100%;
-    background-color: #ffffff;
-}
-
-table.auditLog th {
+table.keyValues th {
+    text-align: center;
     font-weight: bold;
-}
-
-table.auditLog th, table.auditLog td {
-	border: 1px solid #cecece;
-	padding: 3px;
+    font-style: normal;
+    padding: 5px;
 }
 
 /* A container for holding a row of buttons */
@@ -548,6 +548,62 @@ div.yui-ac-bd {
 
 .yui-ac-content ul {
     margin-right: 20px !important;
+}
+
+div.incidentStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    position: relative;
+}
+
+div.incidentStep td {
+	padding: 5px;
+}
+
+div.incidentStep td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.incidentCardinality {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    padding: 5px 10px;
+    font-size: x-large;
+}
+
+div.completedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.completedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
+}
+
+div.currentIncidentStep {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
+}
+
+div.currentIncidentStep div.incidentCardinality {
+    border: 2px solid #416ed7;
+    border-bottom: none;    
+    color: #416ed7;
+}
+
+div.queuedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.queuedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
 }
 /* @override http://localhost/stylesheets/TreeTable.css */
 /*******************************************************************************

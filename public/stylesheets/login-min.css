@@ -1,8 +1,10 @@
 html{min-height:100%;}
 body{background-color:#416ed7;margin:0;min-height:100%;}
+table{margin-left:auto;margin-right:auto;}
 p.message{color:#416ed7;font-weight:bold;}
-form#loginForm{font-size:1em;font-weight:bold;width:20em;margin:0 auto;}
+form#loginForm{font-size:1em;font-weight:bold;margin:0 auto;}
 form#loginForm input{padding:5px;font-size:1em;font-weight:bold;width:150px;}
 div#footer{position:absolute;bottom:10px;width:100%;text-align:right;}
 div#footerLinks{color:white;font-weight:bold;padding-right:10px;}
 div#footerLinks a{color:white;}
+hr{border:none;width:100%;margin-left:auto;margin-right:auto;border-bottom:1px solid #ccc;}

@@ -1,9 +1,10 @@
 #skip a,#skip a:hover,#skip a:visited{position:absolute;left:0;top:-500px;width:1px;height:1px;overflow:hidden;}
 #skip a:active,#skip a:focus{position:static;width:auto;height:auto;}
 em{font-weight:bold;}
+ul{padding-bottom:10px;}
 ul li{display:list-item;list-style:disc outside;margin-left:35px;text-align:left;}
 ol li{display:list-item;list-style:decimal outside;margin-left:35px;text-align:left;}
-p{margin:10px 8px;}
+p{margin:10px 0 10px 0;}
 h1{font-size:large;font-weight:bold;}
 body{padding:10px;text-align:left;}
 div#logo{float:left;margin-bottom:10px;}
@@ -26,11 +27,10 @@ div#footerLinks{float:right;}
 .searchFilters{text-align:center;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
 .searchField{position:relative;top:3px;}
 .searchFilters select{margin-right:10px;}
-table.keyValues td{padding:2px 5px;vertical-align:top;}
+table.keyValues tr:nth-child(even){background-color:#eef5fe;}
+table.keyValues td{padding:5px;vertical-align:middle;}
 table.keyValues td:first-child{font-weight:bold;text-align:right;}
-table.auditLog{width:100%;background-color:#fff;}
-table.auditLog th{font-weight:bold;}
-table.auditLog th,table.auditLog td{border:1px solid #cecece;padding:3px;}
+table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.toolbar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
 div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:10px;}
@@ -77,3 +77,13 @@ div#product_ac_container{position:relative;top:0;width:234px;}
 div.yui-ac-content[style]{height:auto!important;width:auto!important;margin-top:5px;}
 div.yui-ac-bd{overflow:auto;overflow-x:hidden;height:auto!important;max-height:200px;}
 .yui-ac-content ul{margin-right:20px!important;}
+div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
+div.incidentStep td{padding:5px;}
+div.incidentStep td:first-child{font-weight:bold;text-align:right;}
+div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
+div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.completedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
+div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
+div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
