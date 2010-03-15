@@ -120,7 +120,7 @@ if (isset($queryString) && !empty($queryString)) {
                      
                      //Handle image path corrections (order is important)
                      $crtResourceContent = preg_replace(
-                         '/((url\()([^\.\.|^http]\S+)(\)))/', '${2}'. 
+                         '/((url\()([^\.\.]\S+)(\)))/', '${2}'. 
                          $crtResourceBase . '${3}${4}', $crtResourceContent
                      ); // just filename or subdirs/filename (e.g) url(foo.png),
                         // url(foo/foo.png)
@@ -147,7 +147,7 @@ if (isset($queryString) && !empty($queryString)) {
             $rawCss = str_replace("/build/build/", "/build/", $rawCss);
             
             if (APC_AVAIL === true) {
-                apc_store(server(true), $rawCss, APC_TTL);
+               apc_store(server(true), $rawCss, APC_TTL);
             }
             echo $rawCss;
         }

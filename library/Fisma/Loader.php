@@ -66,6 +66,8 @@ class Fisma_Loader
                              . $this->_appVersion, $this->_config);
         }
 
+        $this->_loader->base = "/lib/" . $this->_yuiVersion . "/build/";
+
         /**
          * If we're in debug mode, turn off rollups and combines, switch to DEBUG filter.
          */
@@ -73,7 +75,6 @@ class Fisma_Loader
             $this->_loader->allowRollups = FALSE;
             $this->_loader->filter = YUI_DEBUG;
             $this->_loader->combine = FALSE;
-            $this->_loader->base = "/lib/" . $this->_yuiVersion . "/build/";
         } elseif ($this->_loader->apcAvail && $this->_loader->curlAvail) {
             /**
              * If embedding is available, we turn on rollups and local combo loader
@@ -88,7 +89,6 @@ class Fisma_Loader
              */
             $this->_loader->allowRollups = TRUE;
             $this->_loader->combine = FALSE;
-            $this->_loader->base = "/lib/" . $this->_yuiVersion . "/build/";
         }
     }
 

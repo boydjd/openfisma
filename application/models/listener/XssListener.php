@@ -65,7 +65,7 @@ class XssListener extends Fisma_Record_Listener
                 $purifyType = $columnDefinition['extra']['purify'];
                 switch ($purifyType) {
                     case 'plaintext':
-                        $invoker[$column] = htmlspecialchars($value);
+                        $invoker[$column] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', FALSE);
                         break;
                     case 'html':
                         $invoker[$column] = $this->getPurifier()->purify($value);
