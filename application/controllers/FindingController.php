@@ -240,9 +240,6 @@ class FindingController extends BaseController
                 Doctrine_Manager::connection()->rollback();
                 $error = "The file cannot be processed due to an error.<br>{$e->getMessage()}";
                 $type  = 'warning';
-            } catch (Doctrine_Validator_Exception $e) {
-                $error = $e->getMessage();
-                $type  = 'warning';
             }
             $this->view->priorityMessenger($error, $type);
         }
