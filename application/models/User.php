@@ -579,6 +579,12 @@ class User extends BaseUser
             $mail = new Fisma_Mail();
             $mail->validateEmail($this, $emailValidation->email);
         }
+
+        // Ensure that any user can not change root username
+        if (isset($modified['username']) && 'root' == $modified['username']) {
+            /**@todo english*/
+            throw new Fisma_Exception_User('The root username is not editable!');
+        }
     }
 
     /**

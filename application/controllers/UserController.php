@@ -412,8 +412,14 @@ class UserController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
-    
-        parent::editAction();
+
+        try {
+            parent::editAction();
+        } catch (Fisma_Exception_User $e) {
+            $error = $e->getMessage();
+            $this->view->priorityMessenger($error, 'warning');
+            $this->_forward('list');
+        }
     }
 
     /**
