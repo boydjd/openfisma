@@ -196,7 +196,7 @@ function upload_evidence() {
     }
     // set the encoding for a file upload
     document.finding_detail.enctype = "multipart/form-data";
-    panel('Upload Evidence', document.finding_detail, '/remediation/upload-form');
+    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', null);
     return false;
 }
 
@@ -224,7 +224,7 @@ function ev_approve(formname){
     button.value = 'Continue';
     content.appendChild(button);
 
-    panel('Evidence Approval', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -267,7 +267,7 @@ function ev_deny(formname){
     button.value = 'Continue';
     content.appendChild(button);
 
-    panel('Evidence Denial', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -315,7 +315,7 @@ function ms_approve(formname){
     button.value = 'Continue';
     content.appendChild(button);
     
-    panel('Mitigation Strategy Approval', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -359,7 +359,7 @@ function ms_deny(formname){
     button.value = 'Continue';
     content.appendChild(button);
     
-    panel('Mitigation Strategy Denial', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -689,42 +689,6 @@ function dump(arr) {
     }
     alert(text);
 } 
-
-/* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
-function panel(title, parent, src, html, callback) {
-    var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
-    newPanel.setHeader(title);
-    newPanel.setBody("Loading...");
-    newPanel.render(parent);
-    newPanel.center();
-    newPanel.show();
-    
-    if (src != '') {
-        // Load the help content for this module
-        YAHOO.util.Connect.asyncRequest('GET', 
-                                        src,
-                                        {
-                                            success: function(o) {
-                                                // Set the content of the panel to the text of the help module
-                                                o.argument.setBody(o.responseText);
-                                                // Re-center the panel (because the content has changed)
-                                                o.argument.center();
-                                                
-                                                if (callback) {
-                                                    callback();
-                                                }
-                                            },
-                                            failure: function(o) {alert('Failed to load the specified panel.');},
-                                            argument: newPanel
-                                        }, 
-                                        null);
-    } else {
-        // Set the content of the panel to the text of the help module
-        newPanel.setBody(html);
-        // Re-center the panel (because the content has changed)
-        newPanel.center();
-    }
-}
 
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);

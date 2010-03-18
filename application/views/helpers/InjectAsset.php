@@ -50,6 +50,8 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Email.js',
                                       '/javascripts/Fisma/FindingSummary.js',
+                                      '/javascripts/Fisma/UrlPanel.js',
+                                      '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/AC_RunActiveContent.js'
                                  ),
                                 '/stylesheets/combined.css' =>
