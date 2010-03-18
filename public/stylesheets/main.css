@@ -447,7 +447,7 @@ div#msgbar {
 
 /* This style adds a loading graphic to the YUI tab view */
 .yui-navset div.loading div {
-    background:url(/lib/2.7.0/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
+    background:url(/lib/2.8.0r4/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
     height:8em; /* hold some space while loading */
 }
 

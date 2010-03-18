@@ -170,4 +170,4 @@ Configuration:
 
     yui_version:
         name: yui_version
-        value: 2.7.0
+        value: 2.8.0r4
