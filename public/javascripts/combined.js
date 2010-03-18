@@ -977,7 +977,7 @@ function upload_evidence() {
     }
     // set the encoding for a file upload
     document.finding_detail.enctype = "multipart/form-data";
-    panel('Upload Evidence', document.finding_detail, '/remediation/upload-form');
+    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', null);
     return false;
 }
 
@@ -1005,7 +1005,7 @@ function ev_approve(formname){
     button.value = 'Continue';
     content.appendChild(button);
 
-    panel('Evidence Approval', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -1048,7 +1048,7 @@ function ev_deny(formname){
     button.value = 'Continue';
     content.appendChild(button);
 
-    panel('Evidence Denial', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -1096,7 +1096,7 @@ function ms_approve(formname){
     button.value = 'Continue';
     content.appendChild(button);
     
-    panel('Mitigation Strategy Approval', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -1140,7 +1140,7 @@ function ms_deny(formname){
     button.value = 'Continue';
     content.appendChild(button);
     
-    panel('Mitigation Strategy Denial', document.finding_detail, '', content.innerHTML);
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
     document.getElementById('dialog_continue').onclick = function (){
         var form2 = formname;
         if  (document.all) { // IE
@@ -1470,42 +1470,6 @@ function dump(arr) {
     }
     alert(text);
 } 
-
-/* temporary helper function to fix a bug in evidence upload for IE6/IE7 */
-function panel(title, parent, src, html, callback) {
-    var newPanel = new YAHOO.widget.Panel('panel', {width:"540px", modal:true} );
-    newPanel.setHeader(title);
-    newPanel.setBody("Loading...");
-    newPanel.render(parent);
-    newPanel.center();
-    newPanel.show();
-    
-    if (src != '') {
-        // Load the help content for this module
-        YAHOO.util.Connect.asyncRequest('GET', 
-                                        src,
-                                        {
-                                            success: function(o) {
-                                                // Set the content of the panel to the text of the help module
-                                                o.argument.setBody(o.responseText);
-                                                // Re-center the panel (because the content has changed)
-                                                o.argument.center();
-                                                
-                                                if (callback) {
-                                                    callback();
-                                                }
-                                            },
-                                            failure: function(o) {alert('Failed to load the specified panel.');},
-                                            argument: newPanel
-                                        }, 
-                                        null);
-    } else {
-        // Set the content of the panel to the text of the help module
-        newPanel.setBody(html);
-        // Re-center the panel (because the content has changed)
-        newPanel.center();
-    }
-}
 
 var e = YAHOO.util.Event;
 e.onDOMReady(readyFunc);
@@ -2473,83 +2437,93 @@ Fisma.AutoComplete = function() {
 Fisma.Email = function() {
     return {
         /**
+         * Hold the opened YUI panel object.
+         * 
+         * @type YAHOO.widget.Panel
+         */
+        panelElement : null,
+
+        /**
          * Initializes the ShowRecipientDialog widget
          */
         showRecipientDialog : function() {
-            // If someone opens the dialog, and then just closes the dialog, but leave pannel_c div there, 
-            // it can be display two pannel_c div when open again, so we need remove it.
-            var tabContainer = document.getElementById('tabContainer');
-            if (document.getElementById("panel_c")) {
-                tabContainer.removeChild(document.getElementById("panel_c"));
-            }
-
-            // Create a dialog
-            var content = document.createElement('div');
-            var p = document.createElement('p');
-            var contentTitle = document.createTextNode('* Target E-mail Address:');
-            p.appendChild(contentTitle);
-            content.appendChild(p);
-
-            // Add email address input to dialog
-            var emailAddress = document.createElement('input');
-            emailAddress.id = 'testEmailRecipient';
-            emailAddress.name = 'recipient';
-            content.appendChild(emailAddress);
-
-            // Add line spacing to dialog
-            var lineSpacingDiv = document.createElement('div');
-            lineSpacingDiv.style.height = '10px';
-            content.appendChild(lineSpacingDiv);
-
-            // Add submmit button to dialog
-            var sendBtn = document.createElement('input');
-            sendBtn.type = 'button';
-            sendBtn.id = 'dialogRecipientSendBtn';
-            sendBtn.style.marginLeft = '10px';
-            sendBtn.value = 'Send';
-            content.appendChild(sendBtn);
-
-            // Load panel
-            panel('Test E-mail Configuration', tabContainer, '', content.innerHTML);
-
-            // Set onclick handler to handle dialog_recipient 
-            document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
-        },
-
-        /**
-         * Send test email to specified recipient
-         */
-        sendTestEmail : function() {
-            if (document.getElementById('testEmailRecipient').value == '') {
-                /** @todo english */
-                alert("Recipient is required.");
-                document.getElementById('testEmailRecipient').focus();
-                return false;
-            }
-
-            // Get dialog_recipient value to recipient
-            var recipient = document.getElementById('testEmailRecipient').value;
-            var form  = document.getElementById('email_config');
-            form.elements['recipient'].value = recipient;
-
-            // Post data through YUI
-            YAHOO.util.Connect.setForm(form);
-            YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json',
-                                            {
-                                                success: function(o) {
-                                                    var data = YAHOO.lang.JSON.parse(o.responseText);
-                                                    message(data.msg, data.type);
-                                                },
-                                                /** @todo english */
-                                                failure: function(o) {alert('Failed to send mail: ' + o.statusText);}
-                                            },
-                                            null);
-
-            // Remove panel
-            var panelMask = document.getElementById("panel_mask");
-            panelMask.style.visibility = "hidden";
-            document.getElementById('tabContainer').removeChild(document.getElementById("panel_c"));
+            // Remove old panel
+        if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            Fisma.Email.panelElement.removeMask();
+            Fisma.Email.panelElement.destroy();
+            Fisma.Email.panelElement = null;
         }
+
+        // Create a dialog
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var contentTitle = document.createTextNode('* Target E-mail Address:');
+        p.appendChild(contentTitle);
+        content.appendChild(p);
+
+        // Add email address input to dialog
+        var emailAddress = document.createElement('input');
+        emailAddress.id = 'testEmailRecipient';
+        emailAddress.name = 'recipient';
+        content.appendChild(emailAddress);
+
+        // Add line spacing to dialog
+        var lineSpacingDiv = document.createElement('div');
+        lineSpacingDiv.style.height = '10px';
+        content.appendChild(lineSpacingDiv);
+
+        // Add submmit button to dialog
+        var sendBtn = document.createElement('input');
+        sendBtn.type = 'button';
+        sendBtn.id = 'dialogRecipientSendBtn';
+        sendBtn.style.marginLeft = '10px';
+        sendBtn.value = 'Send';
+        content.appendChild(sendBtn);
+
+        // Load panel
+        /** @todo english */
+        Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
+
+        // Set onclick handler to handle dialog_recipient
+        document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
+    },
+
+    /**
+     * Send test email to specified recipient
+     */
+    sendTestEmail : function() {
+        if (document.getElementById('testEmailRecipient').value == '') {
+            /** @todo english */
+            alert("Recipient is required.");
+            document.getElementById('testEmailRecipient').focus();
+            return false;
+        }
+
+        // Get dialog_recipient value to recipient
+        var recipient = document.getElementById('testEmailRecipient').value;
+        var form = document.getElementById('email_config');
+        form.elements['recipient'].value = recipient;
+
+        // Post data through YUI
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
+            success : function(o) {
+                var data = YAHOO.lang.JSON.parse(o.responseText);
+                message(data.msg, data.type);
+            },
+            failure : function(o) {
+                /** @todo english */
+                alert('Failed to send mail: ' + o.statusText);
+            }
+        }, null);
+
+        // Remove used panel
+        if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            Fisma.Email.panelElement.removeMask();
+            Fisma.Email.panelElement.destroy();
+            Fisma.Email.panelElement = null;
+        }
+    }
     };
 }();
 /**
@@ -3101,3 +3075,136 @@ Fisma.FindingSummary = function() {
         }
     };
 };
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview Offer a utility javascript function which renders a YUI dialog from specified HTML text.
+ *
+ * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+Fisma.HtmlPanel = function() {
+    return {
+        /**
+         * Popup a YUI panel dialog which renders user specified HTML text.
+         * 
+         * @param {String} title The YUI panel dialog title
+         * @param {String} html The content source of the panel
+         * @returns {YAHOO.widget.Panel} The opened YUI panel object
+         */
+        showPanel : function(title, html) {
+            var newPanel = new YAHOO.widget.Panel('panel', {
+                width : "540px",
+                modal : true
+            });
+            newPanel.setHeader(title);
+            /** @todo english */
+            newPanel.setBody("Loading...");
+            newPanel.render(document.body);
+            newPanel.center();
+            newPanel.show();
+
+            if (html != '') {
+                newPanel.setBody(html);
+                newPanel.center();
+            } else {
+                /** @todo english */
+                alert('The parameter html can not be empty.');
+            }
+
+            return newPanel;
+        }
+    };
+}();
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview Offer a utility javascript function which renders a YUI dialog from user specified URL.
+ *
+ * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+Fisma.UrlPanel = function() {
+    return {
+        /**
+         * Popup a YUI panel dialog which renders user URL specified page
+         * asynchronously.
+         * 
+         * @param {String} title The YUI panel dialog title
+         * @param {String} url The source that YUI panel dialog loads content from
+         * @param {Function} callback The callback handler function
+         * @returns {YAHOO.widget.Panel} The opened YUI panel object
+         */
+        showPanel : function(title, url, callback) {
+            var newPanel = new YAHOO.widget.Panel('panel', {
+                width : "540px",
+                modal : true
+            });
+            newPanel.setHeader(title);
+            /** @todo english */
+            newPanel.setBody("Loading...");
+            newPanel.render(document.body);
+            newPanel.center();
+            newPanel.show();
+
+            if (url != '') {
+                YAHOO.util.Connect.asyncRequest('GET', url, {
+                    success : function(o) {
+                        o.argument.setBody(o.responseText);
+                        o.argument.center();
+                        
+                        if (typeof(callback) == "function") {
+                            callback();
+                        }
+                    },
+                    failure : function(o) {
+                        /** @todo english */
+                        alert('Failed to load the specified panel.');
+                    },
+                    argument : newPanel
+                }, null);
+            } else {
+                /** @todo english */
+                alert('The parameter url can not be empty.');
+            }
+
+            return newPanel;
+        }
+    };
+}();
