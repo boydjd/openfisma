@@ -103,28 +103,10 @@ if ( !empty( $this->alert['TOTAL'] ) ) {
             <tr><td colspan="2"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
             <tr>
                 <td align="center">
-                <?php 
-                echo $this->partial(
-                    '/dashboard/chart.phtml', 
-                    array(
-                        'sourceUrl'=> urlencode('/dashboard/totalstatus/format/xml'),
-                        'width'=>380,
-                        'height'=>275
-                    )
-                );
-                ?>
+                <?php echo $this->statusChart; ?>
                 </td>
                 <td align="center">
-                <?php 
-                echo $this->partial(
-                    '/dashboard/chart.phtml', 
-                    array(
-                        'sourceUrl'=> '/dashboard/totaltype/format/xml',
-                        'width'=>380,
-                        'height'=>275
-                    )
-                );
-                ?>
+                <?php echo $this->typeChart; ?>
                 </td>
             </tr>
             <tr>
