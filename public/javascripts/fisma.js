@@ -194,10 +194,12 @@ function upload_evidence() {
     if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
         return false;
     }
-    // set the encoding for a file upload
-    document.finding_detail.enctype = "multipart/form-data";
-    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', null);
+    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', upload_evidence_form_init);
     return false;
+}
+
+function upload_evidence_form_init() {
+    document.finding_detail_upload_evidence.action = document.finding_detail.action;
 }
 
 function ev_approve(formname){
