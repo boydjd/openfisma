@@ -582,8 +582,7 @@ class User extends BaseUser
 
         // Ensure that any user can not change root username
         if (isset($modified['username']) && 'root' == $modified['username']) {
-            /**@todo english*/
-            throw new Fisma_Exception_User('The root username is not editable!');
+            throw new Fisma_Exception_User('The root user\'s username cannot be modified.');
         }
     }
 
