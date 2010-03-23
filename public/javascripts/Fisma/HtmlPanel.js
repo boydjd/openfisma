@@ -31,29 +31,41 @@ Fisma.HtmlPanel = function() {
          * 
          * @param {String} title The YUI panel dialog title
          * @param {String} html The content source of the panel
+         * @param {String} element The optional element or its id representing the Panel
+         * @param {YAHOO.util.Config} userConfig The optional user specified config object
          * @returns {YAHOO.widget.Panel} The opened YUI panel object
          */
-        showPanel : function(title, html) {
-            var newPanel = new YAHOO.widget.Panel('panel', {
-                width : "540px",
-                modal : true
-            });
-            newPanel.setHeader(title);
-            /** @todo english */
-            newPanel.setBody("Loading...");
-            newPanel.render(document.body);
-            newPanel.center();
-            newPanel.show();
-
-            if (html != '') {
-                newPanel.setBody(html);
-                newPanel.center();
-            } else {
-                /** @todo english */
-                alert('The parameter html can not be empty.');
+        showPanel : function(title, html, element, userConfig) {
+            // Initialize element or its id representing the panel with default value conditionally
+            if (typeof(element) == 'undefined' || element == null)
+            {
+                element = "panel";
             }
-
-            return newPanel;
+            // Initialize user config with default config object if the user config is not specified or null
+            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            {
+                userConfig = {
+                    width : "540px",
+                    modal : true
+                };
+            }
+            
+            // Instantiate YUI panel for rendering
+            var panel = new YAHOO.widget.Panel(element, userConfig);
+            panel.setHeader(title);
+            /** @todo english */
+            panel.setBody("Loading...");
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            
+            // Fill the panel with HTML text
+            if (html != '') {
+                panel.setBody(html);
+                panel.center();
+            }
+            
+            return panel;
         }
     };
 }();

@@ -49,6 +49,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/deleteconfirm.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Email.js',
+                                      '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/FindingSummary.js',
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/HtmlPanel.js',

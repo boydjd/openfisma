@@ -33,20 +33,35 @@ Fisma.UrlPanel = function() {
          * @param {String} title The YUI panel dialog title
          * @param {String} url The source that YUI panel dialog loads content from
          * @param {Function} callback The callback handler function
+         * @param {String} element The optional element or its id representing the Panel
+         * @param {YAHOO.util.Config} userConfig The optional user specified config object
          * @returns {YAHOO.widget.Panel} The opened YUI panel object
          */
-        showPanel : function(title, url, callback) {
-            var newPanel = new YAHOO.widget.Panel('panel', {
-                width : "540px",
-                modal : true
-            });
-            newPanel.setHeader(title);
+        showPanel : function(title, url, callback, element, userConfig) {
+            // Initialize element or its id representing the panel with default value if necessary
+            if (typeof(element) == 'undefined' || element == null)
+            {
+                element = "panel";
+            }
+            // Initialize user config with default config object if the user config is not specified or null
+            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            {
+                userConfig = {
+                    width : "540px",
+                    modal : true
+                };
+            }
+            
+            // Instantiate YUI panel for rendering
+            var panel = new YAHOO.widget.Panel(element, userConfig);
+            panel.setHeader(title);
             /** @todo english */
-            newPanel.setBody("Loading...");
-            newPanel.render(document.body);
-            newPanel.center();
-            newPanel.show();
-
+            panel.setBody("Loading...");
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            
+            // Load panel content from url
             if (url != '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
@@ -61,14 +76,11 @@ Fisma.UrlPanel = function() {
                         /** @todo english */
                         alert('Failed to load the specified panel.');
                     },
-                    argument : newPanel
+                    argument : panel
                 }, null);
-            } else {
-                /** @todo english */
-                alert('The parameter url can not be empty.');
             }
-
-            return newPanel;
+            
+            return panel;
         }
     };
 }();
