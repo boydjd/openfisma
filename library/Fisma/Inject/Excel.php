@@ -320,10 +320,16 @@ class Fisma_Inject_Excel
                 $assetRecord = $q->execute()->toArray();
                 
                 if (empty($assetRecord)) {
-                    $assetRecord = new Asset();
-                    $assetRecord->merge($asset);
-                    $assetRecord->save();
-                    $assetId = $assetRecord->id;
+                    try {
+                        $assetRecord = new Asset();
+                        $assetRecord->merge($asset);
+                        $assetRecord->save();
+                        $assetId = $assetRecord->id;
+                    } catch (Doctrine_Validator_Exception $e) {
+                        /**@todo english*/
+                        $message = "Row $rowNumber: " . $e->getMessage();
+                        throw new Fisma_Exception_InvalidFileFormat($message);
+                    }
                 } else {
                     $assetId = $assetRecord[0]['id'];
                 }
