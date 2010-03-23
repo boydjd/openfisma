@@ -243,6 +243,7 @@ abstract class Fisma_Inject_Abstract
             ->select('f.id, f.responsibleOrganizationId, f.type, f.status')
             ->from('Finding f')
             ->where('description LIKE ?', $cleanDescription)
+            ->andWhere('status <> ?', 'PEND')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
