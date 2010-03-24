@@ -65,8 +65,7 @@ class IncidentController extends SecurityController
     );
     
     /**
-     * initialize the basic information, my orgSystems
-     *
+     * Set up JSON context switch
      */
     public function init()
     {
@@ -599,6 +598,8 @@ class IncidentController extends SecurityController
         
         $this->view->id = $id;
         $this->view->incident = $incident;
+        
+        $artifactCount = $incident->getArtifacts()->count();
 
         // Create tab view
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
@@ -607,6 +608,7 @@ class IncidentController extends SecurityController
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/actors/id/$id");
         $tabView->addTab('Comments', "/incident/comments/id/$id");
+        $tabView->addTab("Artifacts ($artifactCount)", "/incident/artifacts/id/$id");
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
@@ -1040,6 +1042,122 @@ class IncidentController extends SecurityController
         $this->view->showAddCommentForm = Fisma_Acl::hasPrivilegeForObject('update', $incident);
 
         $this->view->assign('comments', $comments);
+    }
+    
+    /**
+     * Display file artifacts associated with an incident
+     */
+    public function artifactsAction()
+    {
+        $id = $this->_request->getParam('id');
+        $this->view->assign('id', $id);
+        $incident = Doctrine::getTable('Incident')->find($id);
+
+        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+
+        // Upload button
+        $uploadPanelButton = new Fisma_Yui_Form_Button(
+            'uploadPanelButton', 
+            array(
+                'label' => 'Upload New Artifact', 
+                'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'server' => array(
+                        'controller' => 'incident',
+                        'action' => 'attach-artifact'                        
+                    ),
+                    'callback' => array(
+                        'object' => 'Incident',
+                        'method' => 'attachArtifactCallback'
+                    )
+                )
+            )
+        );
+
+        if (!Fisma_Acl::hasPrivilegeForObject('update', $incident)) {
+            $uploadPanelButton->readOnly = true;
+        }
+        
+        $this->view->uploadPanelButton = $uploadPanelButton;
+
+        // Artifact data
+        $artifacts = $incident->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);
+
+        $this->view->artifacts = $artifacts;
+        
+        $form = Fisma_Form_Manager::loadForm('upload_artifact');
+                
+        $this->view->form = $form;
+        
+    }
+    
+    /**
+     * Attach a new artifact to this incident
+     * 
+     * This is called asychronously through the attach artifacts behavior. This is a bit hacky since it is invoked
+     * by YUI's asynchronous file upload. This means the response is written to an iframe, so we can't render this view
+     * as JSON.
+     * 
+     * Instead, we render an HTML view with the JSON-serialized response inside it.
+     */
+    public function attachArtifactAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $comment = $this->getRequest()->getParam('comment');
+        
+        $this->_helper->layout->disableLayout();
+        
+        $response = new Fisma_AsyncResponse();
+        
+        try {
+            
+            $incident = Doctrine::getTable('Incident')->find($id);
+
+            Fisma_Acl::requirePrivilegeForObject('update', $incident);
+            
+            // 'file' is the name of the file input element
+            if (!isset($_FILES['file'])) {
+                throw new Fisma_Exception_User('You did not specify a file to upload.');
+            }
+
+            $incident->getArtifacts()->attach($_FILES['file'], $comment);
+            
+        } catch (Fisma_Exception_User $e) {
+            $reponse->fail($e->getMessage());
+        } catch (Exception $e) {
+            if (Fisma::debug()) {
+                $response->fail("Failure (debug mode): " . $e->getMessage());
+            } else {
+                $response->fail("Internal system error. File not uploaded.");
+            }
+
+            Fisma::getLogInstance()->err($e->getMessage());
+        }
+        
+        $this->view->response = json_encode($response);
+        
+        $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
+    }
+    
+    /**
+     * Download an artifact to the user's browser
+     */
+    public function downloadArtifactAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        
+        $incidentId = $this->getRequest()->getParam('id');
+        $artifactId = $this->getRequest()->getParam('artifactId');
+        
+        // If user can view this artifact's incident, then they can download the artifact itself
+        $incident = Doctrine::getTable('Incident')->find($incidentId);
+
+        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+
+        // Send artifact to browser
+        $incident->getArtifacts()->find($artifactId)->send();
     }
     
     /**

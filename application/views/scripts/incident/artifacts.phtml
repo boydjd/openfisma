@@ -1,0 +1,55 @@
+<div class="toolbar">
+    <?php echo $this->uploadPanelButton; ?>
+</div>
+
+<?php
+Fisma_Format_Section::startSection('Artifacts');
+?>
+
+<table border="1" class="systemDocuments">
+    <tr>
+        <th>File Name</th>
+        <th>Size</th>
+        <th>Uploaded By</th>
+        <th>Upload Date</th>
+        <th>Comment</th>
+    </tr>
+
+    <?php
+    foreach ($this->artifacts as $artifact):
+        $downloadUrl = '/incident/download-artifact/id/'
+                     . $this->id
+                     . '/artifactId/'
+                     . $artifact->id;
+    ?>
+        <tr>
+            <td>
+                <a href='<?php echo $downloadUrl; ?>'>
+                    <img src='<?php echo $artifact->getIconUrl(); ?>'>
+                    <div>
+                        <?php echo $artifact->fileName; ?>
+                    </div>
+                </a>
+            </td>
+            <td>
+                <?php echo $artifact->getFileSize(); ?>
+            </td>
+            <td>
+                <?php echo $artifact->User; ?>
+            </td>
+            <td>
+                <?php echo $artifact->createdTs; ?>
+            </td>
+            <td>
+                <?php echo $artifact->comment; ?>
+            </td>
+        </tr>
+    <?php
+    endforeach;
+    ?>
+
+</table>
+
+<?php
+Fisma_Format_Section::stopSection();
+?>
