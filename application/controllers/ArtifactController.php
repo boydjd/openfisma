@@ -1,0 +1,79 @@
+<?php
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ */
+
+/**
+ * Provide helper actions for the AttachArtifacts behavior
+ * 
+ * @author     Mark E. Haase
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Controller
+ * @version    $Id$
+ */
+class ArtifactController extends SecurityController
+{
+    /**
+     * Set JSON context for the upload-progress action
+     */
+    public function init()
+    {
+        parent::init();
+        
+        $this->_helper->contextSwitch
+                      ->setActionContext('upload-progress', 'json')
+                      ->initContext();
+    }
+
+    /**
+     * Display the artifact upload form
+     */
+    public function uploadFormAction()
+    {
+        $this->_helper->layout->disableLayout();
+
+        $form = Fisma_Form_Manager::loadForm('upload_artifact');
+                
+        $this->view->form = $form;
+    }
+    
+    /**
+     * Check upload progress if APC is available
+     */
+    public function uploadProgressAction()
+    {
+        $apcId = $this->getRequest()->getParam('id');
+
+        // Sanity check the apc id
+        if (!preg_match('/^[0-9A-Za-z]+$/', $apcId)) {
+            throw new Fisma_Exception("Invalid APC upload progress ID");
+        }
+
+        // Default return object. Indicates that upload progress is not an available feature on this server.
+        $progress = array(
+            'available' => false
+        );
+        
+        // If APC exists, then add current progress info into return object
+        if (function_exists('apc_fetch') && ini_get('apc.rfc1867')) {
+            //array_merge($progress, Zend_File_Transfer_Adapter_Http::getProgress($apcId));
+            $progress = Zend_File_Transfer_Adapter_Http::getProgress($apcId);
+        }
+
+        $this->view->progress = $progress;
+    }
+}

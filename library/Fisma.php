@@ -226,9 +226,10 @@ class Fisma
             'sampleData' => 'application/doctrine/data/sample',
             'sampleDataBuild' => 'application/doctrine/data/sample-build',
             'schema' => 'application/doctrine/schema',
+            'scripts' => 'scripts',
             'systemDocument' => 'data/uploads/system-document',
             'test' => 'tests',
-            'scripts' => 'scripts',
+            'uploads' => 'data/uploads',
             'viewHelper' => 'application/views/helpers',
             'yui' => 'public/yui'
         );

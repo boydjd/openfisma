@@ -1,0 +1,31 @@
+; This is the form for uploading an artifact
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license GPLv3
+; Version   $Id$
+
+[upload_artifact]
+method = "post"
+name = "uploadArtifactForm"
+enctype = "multipart/form-data"
+onsubmit = "return Fisma.AttachArtifacts.trackUploadProgress();"
+
+elements.comment.type = "textarea"
+elements.comment.options.label = "Comments (optional)"
+elements.comment.options.cols = 50
+elements.comment.options.rows = 6
+elements.comment.options.required = true
+
+elements.file.type = "File"
+elements.file.options.id = "fileUpload"
+elements.file.options.label = "Select File"
+elements.file.options.required = true
+elements.file.options.decorators.file.decorator = "File"
+elements.file.options.decorators.definitionList.decorator = "DtDdWrapper"
+
+elements.uploadButton.type = "submit"
+elements.uploadButton.options.label = "Upload"
