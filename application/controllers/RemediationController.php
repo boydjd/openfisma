@@ -1192,7 +1192,7 @@ class RemediationController extends SecurityController
                     } elseif (in_array($v, array('NEW', 'DRAFT', 'EN', 'CLOSED'))) {
                         $q->andWhere("f.status = ?", $v);
                     } else {
-                        $q->andWhere("ce.nickname = ?", $v);
+                        $q->andWhere("ce.nickname = ?", htmlspecialchars($v, ENT_COMPAT, 'UTF-8', FALSE));
                     }
                 } elseif ($k == 'modify_ts') {
                     $v = $v->toString('Y-m-d H:i:s');
