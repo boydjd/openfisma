@@ -124,7 +124,7 @@ Fisma.AttachArtifacts = {
     trackUploadProgress : function () {
 
         // Disable the upload button
-        var uploadButtton = document.getElementById('uploadButton');
+        var uploadButton = document.getElementById('uploadButton');
         uploadButton.disabled = true;
 
         /**
