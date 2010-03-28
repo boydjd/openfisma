@@ -127,6 +127,9 @@ Fisma.AttachArtifacts = {
         var uploadButton = document.getElementById('uploadButton');
         uploadButton.disabled = true;
 
+        // Bind 'this' to a local variable for closure in setTimeout
+        var closedThis = this;
+
         /**
          * If upload progress is enabled on the server, then there will be a hidden element in the page with the ID
          * 'progress_key'. This is an indicator whether or not to enable upload progress on the client side.
@@ -172,9 +175,10 @@ Fisma.AttachArtifacts = {
             this.pollingEnabled = true;
             
             setTimeout(
-                this.getProgress, 
-                this.sampleInterval, 
-                this
+                function () {
+                    closedThis.getProgress(closedThis);
+                },
+                this.sampleInterval
             );
         }
 
@@ -186,7 +190,12 @@ Fisma.AttachArtifacts = {
          * Post the form. This needs to be done aysnchronously, or else the web browser will not 
          * respond to the progress tracking XHRs
          */
-        setTimeout(this.postForm, 0, this);
+        setTimeout(
+            function () {
+                closedThis.postForm(closedThis);
+            },
+            0
+        );
         
         return false;
     },
@@ -293,7 +302,8 @@ Fisma.AttachArtifacts = {
             attachArtifacts.yuiProgressBar.get('anim').duration = .5;
             attachArtifacts.yuiProgressBar.set('value', 100);
         }
-        document.getElementById('progressTextContainer').firstChild.textValue = 'Verifying file.';
+        var progressTextEl = document.getElementById('progressTextContainer').firstChild;
+        progressTextEl.nodeValue = 'Verifying file.';
                 
         /**
          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
