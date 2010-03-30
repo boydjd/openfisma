@@ -1,0 +1,21 @@
+UserRole:
+    sample_user_role:
+        User: sample
+        Role: admin_role
+        Organizations:
+            - BGA_ORG
+            - BOP_ORG
+            - OCIO_ORG
+            - WDC_ORG
+            - OF_ORG
+            - OSC_ORG
+            - OCFO_ORG
+            - FMS_ORG
+            - TETS_ORG
+            - BOS_ORG
+            - OIG_ORG
+            - IAD_ORG
+            - CIT_ORG
+            - OCOO_ORG
+            - SCMS_ORG
+            - CRMS_ORG

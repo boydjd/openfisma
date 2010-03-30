@@ -25,7 +25,14 @@ if (!empty($this->requirements)) {
 ?>
 
 <div class="form_box">
-    <?php echo $this->form ?>
+    <form method="post" action="/panel/User/sub/edit/id/<?php echo $this->id ?>">
+    <?php 
+    $this->form->removeDecorator('Fisma_Form_FismaDecorator');
+    echo $this->form;
+    echo $this->tabView; ?>
+    </form>
 </div>
-
-<?php Fisma_Format_Section::stopSection(); ?>
+<?php 
+Fisma_Format_Section::stopSection();
+echo $this->partial('tab-view/roles.phtml', array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0));
+?>

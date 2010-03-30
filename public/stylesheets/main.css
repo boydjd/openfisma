@@ -611,6 +611,24 @@ div.queuedIncidentStep div.incidentCardinality {
     color: gray;
 }
 
+ul.treelist li {
+    list-style: none;
+}
+
+div#TabView_UserView_TabViewContainer {
+    float: left;
+    margin-top: 14px;
+    max-width: 60%;
+}
+
+div.section > div > div.clear {
+    display: none;
+}
+
+div.section > div.form_box > form > div.clear {
+    display: none;
+}
+
 /* Styles for Zend_Form default decorator */
 
 form dl.zend_form {

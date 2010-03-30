@@ -104,10 +104,12 @@ class Fisma_Yui_TabView
      * 
      * @param string $name The name displayed on the tab
      * @param string $url The URL which supplies the HTML when this tab is selected
+     * @param string $id The id to assign to the tab
      */
-    public function addTab($name, $url)
+    public function addTab($name, $url, $id = NULL)
     {
-        $this->_tabs[] = array('name' => htmlspecialchars($name), 'url' => $url);
+        $id = (empty($id)) ? $name : $id;
+        $this->_tabs[] = array('id' => $id, 'name' => $name, 'url' => $url);
     }
     
     /**

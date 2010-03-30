@@ -75,7 +75,8 @@ class Notification extends BaseNotification
         
         // If the object has an ACL dependency on Organization, then extend the query for that condition
         if ($record instanceof Fisma_Acl_OrganizationDependency) {
-            $eventsQuery->innerJoin('u.Organizations o')
+            $eventsQuery->innerJoin('u.UserRole ur')
+                        ->leftJoin('ur.Organizations o')
                         ->andWhere('o.id = ?', $record->getOrganizationDependencyId());
         }
 

@@ -1,8 +1,22 @@
 UserRole:
     columns:
+        userRoleId:
+            type: integer
+            primary: true
+            autoincrement: true
         userId:
             type: integer
-            primary: true
+            notnull: true
         roleId:
             type: integer
-            primary: true
+            notnull: true
+    relations:
+        Organizations:
+            class: Organization
+            refClass: UserRoleOrganization
+            local: userRoleId 
+            foreign: organizationId
+    indexes:
+        userRoleIndex:
+            fields: [userId, roleId]
+            type: unique

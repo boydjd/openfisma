@@ -70,18 +70,7 @@ class UserController extends BaseController
         foreach ($roles as $role) {
             $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
         }
-        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = Doctrine_Query::create()
-                ->select('o.id, o.name, o.level')
-                ->from('Organization o');
-        $organizationTreeObject->setBaseQuery($q);
-        $organizationTree = $organizationTreeObject->fetchTree();
-        if ($organizationTree) {
-            $orgs = $form->getElement('organizations');
-            foreach ($organizationTree as $organization) {
-                $orgs->addCheckbox($organization['id'], $organization['name'], $organization['level']);
-            }
-        }
+
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('checkAccount');
             $this->view->requirements =  $this->_getPasswordRequirements();
@@ -127,7 +116,7 @@ class UserController extends BaseController
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
-        $form->removeElement('organizations');
+//        $form->removeElement('organizations');
         return $form;
     }
 
@@ -141,6 +130,8 @@ class UserController extends BaseController
      */
     protected function saveValue($form, $subject=null)
     {
+        $rolesOrganizations = $this->_request->getPost('organizations', array());
+
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } elseif (!($subject instanceof Doctrine_Record)) {
@@ -170,12 +161,26 @@ class UserController extends BaseController
          */
         $subject->save();
 
-        $subject->unlink('Roles');
-        $subject->link('Roles', $values['role']);
-
-        $subject->unlink('Organizations');
-        $subject->link('Organizations', $values['organizations']);
+        foreach ($subject->UserRole as $role) {
+            $role->unlink('Organizations');
+        }
         $subject->save();
+        $subject->unlink('Roles');
+        $subject->save();
+
+        foreach ($rolesOrganizations as $role => $organizations) {
+            $userRole = new UserRole();
+            $userRole->userId = (int) $subject->id;
+            $userRole->roleId = (int) $role;
+            $userRole->save();
+
+            foreach ($organizations as $organization) {
+                $userRoleOrganization = new UserRoleOrganization();
+                $userRoleOrganization->organizationId = (int) $organization;
+                $userRoleOrganization->userRoleId = (int) $userRole->userRoleId;
+                $userRoleOrganization->save();
+            }
+        }
     }
 
     /**
@@ -192,12 +197,7 @@ class UserController extends BaseController
         array_walk($assignedRoles, create_function('$v, $k, &$roles', '$roles[] = $v[\'id\'];'), &$roles);
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roles);
-        $orgs = $subject->Organizations;
-        $orgIds = array();
-        foreach ($orgs as $o) {
-            $orgIds[] = $o->id;
-        }
-        $form->getElement('organizations')->setValue($orgIds);
+
         return $form;
     }
     
@@ -401,8 +401,84 @@ class UserController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
-    
+
+        $tabView = new Fisma_Yui_TabView('UserView');
+
+        $q = Doctrine_Query::create()
+            ->from('User u')
+            ->leftJoin('u.Roles r')
+            ->where('u.id = ?', $id);
+
+        $user = $q->fetchArray();
+
+        foreach ($user[0]['Roles'] as $role) {
+            $tabView->addTab(
+                $role['nickname'], 
+                "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/1", 
+                $role['id']
+            );
+        }
+
+        $this->view->tabView = $tabView;
+
         parent::viewAction();
+    }
+
+    /**
+     * Retrieve the organization subform 
+     * 
+     * @return void
+     */
+    public function getOrganizationSubformAction()
+    {
+        $this->_helper->layout()->setLayout('ajax');
+
+        $userId = $this->getRequest()->getParam('user');
+        $roleId = $this->getRequest()->getParam('role');
+        $readOnly = $this->getRequest()->getParam('readOnly');
+
+        $user = Doctrine::getTable('User')->find($userId);
+        $userOrgs = $user->getOrganizationsByRole($roleId);
+
+        $assignedOrgs = array();
+
+        foreach ($userOrgs as $userOrg) {
+            $assignedOrgs[] = $userOrg->id;
+        }
+
+        $subForm = new Zend_Form_SubForm();
+        $subForm->removeDecorator('DtDdWrapper');
+        $subForm->removeDecorator('HtmlTag');
+
+        $organizations = new Fisma_Form_Element_CheckboxTree("organizations");
+        $organizations->setDecorators(null);
+        $organizations->setLabel('Organizations & Information Systems');
+
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+        $q = Doctrine_Query::create()
+                ->select('o.id, o.name, o.level')
+                ->from('Organization o');
+        $organizationTreeObject->setBaseQuery($q);
+        $organizationTree = $organizationTreeObject->fetchTree();
+
+        if (!empty($organizationTree)) {
+            foreach ($organizationTree as $organization) {
+                $organizations->addCheckbox(
+                    $organization['id'], 
+                    $organization['name'], 
+                    $organization['level'], 
+                    $roleId
+                );
+            }
+        }
+
+        $organizations->setValue($assignedOrgs);
+
+        $organizations->readOnly = (boolean) $readOnly;
+
+        $subForm->addElement($organizations);
+
+        $this->view->subForm = $subForm;
     }
     
     /**
@@ -411,7 +487,32 @@ class UserController extends BaseController
     public function editAction()
     {
         $id = $this->getRequest()->getParam('id');
+        $tabView = new Fisma_Yui_TabView('UserView');
+
+        $q = Doctrine_Query::create()
+            ->from('User u')
+            ->leftJoin('u.Roles r')
+            ->where('u.id = ?', $id);
+
+        $user = $q->fetchArray();
+
+        foreach ($user[0]['Roles'] as $role) {
+            $tabView->addTab(
+                $role['nickname'], 
+                "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
+                $role['id']
+            );
+        }
+
+        $roles = Doctrine_Query::create()
+            ->select('r.id, r.nickname')
+            ->from('Role r')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+
         $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
+        $this->view->tabView = $tabView;
+        $this->view->roles = Zend_Json::encode($roles);
 
         try {
             parent::editAction();

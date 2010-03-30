@@ -329,7 +329,7 @@ class User extends BaseUser
                         // e.g. Organization->Finding->Create versus Network->Create
                         if ($organizationDependency) {
                             // This is the cartesian join between roles and systems
-                            foreach ($this->Organizations as $organization) {
+                            foreach ($this->getOrganizationsByRole($role->id) as $organization) {
                                 // Fake hierarhical access control by storing system-specific attributes like this:
                                 // If the system nickname is "ABC" and the resource is called "finding", then the
                                 // resource stored in the ACL is called "ABC/finding"
@@ -338,7 +338,7 @@ class User extends BaseUser
                                     $acl->add(new Zend_Acl_Resource($systemResource));
                                 }
                                 $acl->allow($newRole, $systemResource, $privilege->action);
-                            
+                                
                                 // The wildcard resources indicates whether a user has this privilege on *any* 
                                 // system. This is useful for knowing when to show certain user interface elements
                                 // like menu items.
@@ -349,11 +349,11 @@ class User extends BaseUser
                                 $acl->allow($newRole, $wildcardResource, $privilege->action); 
                             }
                         } else {
-                            // Create a resource and grant it to the current role
-                            if (!$acl->has($privilege->resource)) {
-                                $acl->add(new Zend_Acl_Resource($privilege->resource));
-                            }
-                            $acl->allow($newRole, $privilege->resource, $privilege->action);
+                                // Create a resource and grant it to the current role
+                                if (!$acl->has($privilege->resource)) {
+                                    $acl->add(new Zend_Acl_Resource($privilege->resource));
+                                }
+                                $acl->allow($newRole, $privilege->resource, $privilege->action);
                         }
                     }
                 }
@@ -500,6 +500,24 @@ class User extends BaseUser
         
         return $result;
     }
+
+    /**
+     * Get the user's organizations for a specific role 
+     * If the user is root, then we ignore the roleId
+     *
+     * @param int $roleId 
+     * @return Doctrine_Collection THe collection of user's organizations 
+     */
+    public function getOrganizationsByRole($roleId)
+    {
+        $query = $this->getOrganizationsQuery();
+
+        if ($this->username != 'root') { 
+            $query->where("ur.roleid = $roleId"); 
+        }
+
+        return $query->execute();
+    }
     
     /**
      * Get a query which will select this user's organizations.
@@ -514,15 +532,18 @@ class User extends BaseUser
     {
         // The base query grabs all organizations and sorts by 'lft', which will put the records into 
         // tree order.
-        $query = Doctrine_Query::create()
-                 ->from('Organization o')
-                 ->orderBy('o.lft');
-        
-        // For all users other than root, we want to join to the user table to limit the systems returned
-        // to those which this user has been granted access to.
-        if ('root' != $this->username) {
-            $query->innerJoin("o.Users u WITH u.id = $this->id");
-        } 
+        if ($this->username == 'root') {
+            $query = Doctrine_Query::create()
+                ->from('Organization o')
+                ->orderBy('o.lft');
+        } else {
+            // For all users other than root, we want to join to the user table to limit the systems returned
+            // to those which this user has been granted access to.
+            $query = Doctrine_Query::create()
+                ->select('o.*')
+                ->from("Organization o, o.UserRole ur WITH ur.userid = $this->id")
+                ->orderBy('o.lft');
+        }
         
         return $query;
     }

@@ -49,9 +49,9 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
      * @param string $label The label that is placed next to the checkbox
      * @return void
      */
-    function addCheckbox($name, $label, $level) 
+    function addCheckbox($name, $label, $level, $group = NULL) 
     {
-        $this->_checkboxes[] = array('name' => $name, 'label' => $label, 'level'=>$level);
+        $this->_checkboxes[] = array('name' => $name, 'label' => $label, 'level'=>$level, 'group' => $group);
     }
     
     /**
@@ -103,7 +103,7 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
                      . ' systems and organizations within it. Clicking the same box again will deselect'
                      . ' all of the nested items.</p><p><i>Hold down the Option or Alt key while clicking'
                      . ' in order to select a single checkbox.</i></p>';
-        $tooltip = new Fisma_Yui_Tooltip('checkboxMatrix', 
+        $tooltip = new Fisma_Yui_Tooltip("{$this->getName()}checkboxMatrix", 
                                          ucfirst($this->getLabel()), 
                                          $tooltipHtml);
         
@@ -128,42 +128,21 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
                      . "em\">";
             $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
             $render .= "<input type='checkbox'"
-                     . " id =\"{$groupName}[{$checkbox['name']}]\""
-                     . " name=\"{$groupName}[]\""
+                     . " id =\"{$groupName}[{$checkbox['group']}][{$checkbox['name']}]\""
+                     . " name=\"{$groupName}[{$checkbox['group']}][]\""
                      . " value='{$checkbox['name']}'"
                      . ' onclick=\'YAHOO.fisma.CheckboxTree.handleClick(this, event);\''
                      . " nestedLevel=\"{$checkbox['level']}\""
                      . "$class$checked$disabled>&nbsp;"
-                     . "<label for=\"{$groupName}[{$checkbox['name']}]\">{$checkbox['label']}</label>"
-                     . "&nbsp;</li>";
+                     . "<label for=\"{$groupName}[{$checkbox['group']}][{$checkbox['name']}]\">"
+                     . "{$checkbox['label']}</label>&nbsp;</li>";
         }
         $render .= "</ul></td></tr>\n";
 
-        $selectAllButton = new Fisma_Yui_Form_Button(
-            'Select All',
-            array(
-                'value' => 'Select All',
-                'onClickFunction' => 'selectAllUnsafe'
-            )
-        );
-
-        $selectNoneButton = new Fisma_Yui_Form_Button(
-            'Select None',
-            array(
-                'value' => 'Select None',
-                'onClickFunction' => 'selectNoneUnsafe'
-            )
-        );
-
-        if ($this->readOnly) {
-            $selectAllButton->readOnly  = true;
-            $selectNoneButton->readOnly = true;
-        }
-
         $render .= "<tr><td>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
-                 . "$selectAllButton $selectNoneButton</td></tr>";
-        
+                 . "</td></tr>";
+
         return $render;
     }
 }
