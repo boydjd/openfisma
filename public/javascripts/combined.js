@@ -969,199 +969,8 @@ function search_function() {
                 },
         failure: handleFailure});
 }
+
 var handleFailure = function(o){alert('error');}
-
-function upload_evidence() {
-    if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
-        return false;
-    }
-    // set the encoding for a file upload
-    document.finding_detail.enctype = "multipart/form-data";
-    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', null);
-    return false;
-}
-
-function ev_approve(formname){
-    if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
-    content.appendChild(p);
-    var dt = document.createElement('textarea');
-    dt.rows = 5;
-    dt.cols = 60;
-    dt.id = 'dialog_comment';
-    dt.name = 'comment';
-    content.appendChild(dt);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-
-    Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
-        }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'APPROVED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_ea';
-        submitMsa.value = 'APPROVED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
-
-function ev_deny(formname){
-    if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Comments:'));
-    content.appendChild(p);
-    var dt = document.createElement('textarea');
-    dt.rows = 5;
-    dt.cols = 60;
-    dt.id = 'dialog_comment';
-    dt.name = 'comment';
-    content.appendChild(dt);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-
-    Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
-        }
-        if (comment.match(/^\s*$/)) {
-            alert('Comments are required in order to deny.');
-            return;
-        }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENIED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_ea';
-        submitMsa.value = 'DENIED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
-
-function ms_approve(formname){
-    if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    var c_title = document.createTextNode('Comments (OPTIONAL):');
-    p.appendChild(c_title);
-    content.appendChild(p);
-    var textarea = document.createElement('textarea');
-    textarea.id = 'dialog_comment';
-    textarea.name = 'comment';
-    textarea.rows = 5;
-    textarea.cols = 60;
-    content.appendChild(textarea);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-    
-    Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
-        }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'APPROVED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_msa';
-        submitMsa.value = 'APPROVED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
-
-function ms_deny(formname){
-    if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    var c_title = document.createTextNode('Comments:');
-    p.appendChild(c_title);
-    content.appendChild(p);
-    var textarea = document.createElement('textarea');
-    textarea.id = 'dialog_comment';
-    textarea.name = 'comment';
-    textarea.rows = 5;
-    textarea.cols = 60;
-    content.appendChild(textarea);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-    
-    Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
-        }
-        if (comment.match(/^\s*$/)) {
-            alert('Comments are required in order to submit.');
-            return;
-        }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENIED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_msa';
-        submitMsa.value = 'DENIED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
 
 function getProdId(){
     var trigger= document.getElementById('productId');
@@ -2338,6 +2147,337 @@ function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
  *
  * This file is part of OpenFISMA.
  *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
+ * 
+ * @todo This is currently set up to only handle one file upload at time. With some refactoring, however, we could
+ * support multiple file uploads in parallel.
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.AttachArtifacts = {
+    
+    /**
+     * The amount of time to delay in between requesting upload progress
+     */
+    sampleInterval : 1000,
+    
+    /**
+     * The APC file upload ID which is used to track this upload on the server side
+     */
+    apcId : null,
+    
+    /**
+     * A reference to the YUI progress bar
+     */
+    yuiProgressBar : null,
+    
+    /**
+     * Server polling timeout ID
+     * 
+     * Polling is accomplished using settimout(). The ID which that returns is saved so that the timeout can be
+     * canceled when the upload is finished (or fails).
+     */
+    pollingTimeoutId : null,
+    
+    /**
+     * Reference to the last asynchonrous request dispatched by this object
+     * 
+     * This can be used to cancel the last pending request before it completes
+     */
+    lastAsyncRequest : null,
+    
+    /**
+     * A flag that indicates whether polling is enabled or not
+     */
+    pollingEnabled : false,
+    
+    /**
+     * A configuration object specified by the invoker of showPanel
+     * 
+     * See technical specification for Attach Artifacts behavior for the structure of this object
+     */
+    config : null,
+    
+    /**
+     * Reference to the YUI panel which is displayed to handle file uploads
+     */
+     yuiPanel : null,
+        
+    /**
+     * Show the file upload panel
+     * 
+     * This is an event handler, so 'this' will not refer to the local object
+     * 
+     * @param event Required to implement an event handler but not used
+     * @param config Contains the callback information for this file upload (See definition of config member)
+     */
+    showPanel : function (event, config) {
+        Fisma.AttachArtifacts.config = config;
+
+        // Create a new panel
+        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : false});
+        newPanel.setHeader('Upload Artifact');
+        newPanel.setBody("Loading...");
+        newPanel.render(document.body);
+        newPanel.center();
+        newPanel.show();
+
+        Fisma.AttachArtifacts.yuiPanel = newPanel;
+
+        // Get panel content from artifact controller
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/artifact/upload-form',
+            {
+                success: function(o) {
+                    o.argument.setBody(o.responseText);
+                    o.argument.center();
+                },
+
+                failure: function(o) {
+                    o.argument.setBody('The content for this panel could not be loaded.');
+                    o.argument.center();
+                },
+                
+                argument: newPanel
+            }, 
+            null
+        );
+    },
+    
+    /**
+     * Show the progress bar and kick off the tracking process
+     * 
+     * This is called in the onSubmit event
+     */
+    trackUploadProgress : function () {
+
+        // Disable the upload button
+        var uploadButton = document.getElementById('uploadButton');
+        uploadButton.disabled = true;
+
+        // Bind 'this' to a local variable for closure in setTimeout
+        var closedThis = this;
+
+        /**
+         * If upload progress is enabled on the server, then there will be a hidden element in the page with the ID
+         * 'progress_key'. This is an indicator whether or not to enable upload progress on the client side.
+         */
+        var apcHiddenEl = document.getElementById('progress_key');
+
+        if (apcHiddenEl) {
+            this.apcId = apcHiddenEl.value;
+            
+            // Remove the inderminate progress bar
+            var progressBarContainer = document.getElementById('progressBarContainer');
+
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+
+            YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
+
+            while (progressBarContainer.hasChildNodes()) {
+                progressBarContainer.removeChild(progressBarContainer.firstChild);
+            }
+
+            // Add YUI bar
+            var yuiProgressBar = new YAHOO.widget.ProgressBar();
+            
+            yuiProgressBar.set('width', progressBarWidth); 
+            yuiProgressBar.set('height', progressBarHeight);
+            
+            yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
+
+            yuiProgressBar.set('anim', true);
+            var animation = yuiProgressBar.get('anim')
+            animation.duration = 2;
+            animation.method = YAHOO.util.Easing.easeNone;
+            
+            yuiProgressBar.render('progressBarContainer');
+            
+            YAHOO.util.Dom.addClass(progressBarContainer, 'attachArtifactsProgressBar');
+            
+            // Store progress bar reference inside this object
+            this.yuiProgressBar = yuiProgressBar;
+
+            // Kick off the polling loop
+            this.pollingEnabled = true;
+            
+            setTimeout(
+                function () {
+                    closedThis.getProgress(closedThis);
+                },
+                this.sampleInterval
+            );
+        }
+
+        // Display the progress bar
+        document.getElementById('progressBarContainer').style.display = 'block';
+        document.getElementById('progressTextContainer').style.display = 'block';
+
+        /**
+         * Post the form. This needs to be done aysnchronously, or else the web browser will not 
+         * respond to the progress tracking XHRs
+         */
+        setTimeout(
+            function () {
+                closedThis.postForm(closedThis);
+            },
+            0
+        );
+        
+        return false;
+    },
+    
+    /**
+     * Posts the artifact attachment form asynchronously
+     * 
+     * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
+     * requests -- which would totally defeat the purpose of upload progress tracking.
+     * 
+     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
+     * won't refer to the object either. So the object is passed in as the 'arg' parameter
+     * 
+     * @param arg The AttachArtifacts object
+     */
+    postForm : function(arg) {
+
+        var postUrl = "/"
+                    + encodeURIComponent(arg.config.server.controller)
+                    + "/"
+                    + encodeURIComponent(arg.config.server.action)
+                    + "/id/"
+                    + encodeURIComponent(arg.config.id)
+                    + "/format/json";
+
+        YAHOO.util.Connect.setForm('uploadArtifactForm', true);
+        YAHOO.util.Connect.asyncRequest(
+            'POST', 
+            postUrl, 
+            {
+                upload : arg.handleUploadComplete,
+                
+                failure : function (o) {
+                    alert('Document upload failed.');
+                }, 
+                
+                argument : arg
+            }, 
+            null
+        );
+    },
+    
+    /**
+     * Poll the server for file upload progress
+     * 
+     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
+     * won't refer to the object either. So the object is passed in as the 'arg' parameter
+     * 
+     * @param arg The AttachArtifacts object
+     */
+    getProgress : function (arg) {
+
+        if (arg.pollingEnabled) {
+            arg.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                '/artifact/upload-progress/format/json/id/' + arg.apcId,
+                {
+                    success : function (asyncResponse) {
+                    
+                        // Parse server response and update progress bar
+                        var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                        var percent = Math.round((response.progress.current / response.progress.total) * 100);
+                        arg.yuiProgressBar.set('value', percent);
+                    
+                        // Update progress text
+                        var progressTextEl = document.getElementById('progressTextContainer').firstChild;
+
+                        progressTextEl.nodeValue = percent + '%';
+                    
+                        // Reschedule the timeout to call this method again
+                        arg.pollingTimeoutId = setTimeout(arg.getProgress, arg.sampleInterval, arg);
+                    }
+                }, 
+                null
+            );
+        }
+    },
+    
+    /**
+     * Handle a completed file upload
+     * 
+     * This object's contents are passed as asyncResponse.argument and stored into the local variable "attachArtifacts"
+     * 
+     * @param asyncResponse Response object from YUI connection
+     */
+    handleUploadComplete : function (asyncResponse) {
+
+        var attachArtifacts = asyncResponse.argument;
+
+        // Check response status and display error message if necessary
+        var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+        
+        if (!responseStatus.success) {
+            alert(responseStatus.message);
+        }
+        
+        // Stop the polling process and cancel the last asynchronous request
+        attachArtifacts.pollingEnabled = false;
+        clearTimeout(attachArtifacts.pollingTimeoutId);
+        YAHOO.util.Connect.abort(attachArtifacts.lastAsyncRequest);
+        
+        // Update progress to 100%
+        if (attachArtifacts.yuiProgressBar) {
+            attachArtifacts.yuiProgressBar.get('anim').duration = .5;
+            attachArtifacts.yuiProgressBar.set('value', 100);
+        }
+        var progressTextEl = document.getElementById('progressTextContainer').firstChild;
+        progressTextEl.nodeValue = 'Verifying file.';
+                
+        /**
+         * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
+         * references using array access notation.
+         * 
+         * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
+         * realize if these callbacks are invalid.
+         */
+        var callbackObject = Fisma[attachArtifacts.config.callback.object];
+
+        if (typeof callbackObject != "Undefined") {
+            
+            var callbackMethod = callbackObject[attachArtifacts.config.callback.method];
+            
+            if (typeof callbackMethod == "function") {
+                
+                /**
+                 * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
+                 * its expected meaning.
+                 */
+                callbackMethod.call(callbackObject, attachArtifacts.yuiPanel);
+            }
+        }
+    }
+};
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
  * OpenFISMA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -2447,83 +2587,83 @@ Fisma.Email = function() {
          * Initializes the ShowRecipientDialog widget
          */
         showRecipientDialog : function() {
-            // Remove old panel
-        if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-            Fisma.Email.panelElement.removeMask();
-            Fisma.Email.panelElement.destroy();
-            Fisma.Email.panelElement = null;
-        }
-
-        // Create a dialog
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var contentTitle = document.createTextNode('* Target E-mail Address:');
-        p.appendChild(contentTitle);
-        content.appendChild(p);
-
-        // Add email address input to dialog
-        var emailAddress = document.createElement('input');
-        emailAddress.id = 'testEmailRecipient';
-        emailAddress.name = 'recipient';
-        content.appendChild(emailAddress);
-
-        // Add line spacing to dialog
-        var lineSpacingDiv = document.createElement('div');
-        lineSpacingDiv.style.height = '10px';
-        content.appendChild(lineSpacingDiv);
-
-        // Add submmit button to dialog
-        var sendBtn = document.createElement('input');
-        sendBtn.type = 'button';
-        sendBtn.id = 'dialogRecipientSendBtn';
-        sendBtn.style.marginLeft = '10px';
-        sendBtn.value = 'Send';
-        content.appendChild(sendBtn);
-
-        // Load panel
-        /** @todo english */
-        Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
-
-        // Set onclick handler to handle dialog_recipient
-        document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
-    },
-
-    /**
-     * Send test email to specified recipient
-     */
-    sendTestEmail : function() {
-        if (document.getElementById('testEmailRecipient').value == '') {
-            /** @todo english */
-            alert("Recipient is required.");
-            document.getElementById('testEmailRecipient').focus();
-            return false;
-        }
-
-        // Get dialog_recipient value to recipient
-        var recipient = document.getElementById('testEmailRecipient').value;
-        var form = document.getElementById('email_config');
-        form.elements['recipient'].value = recipient;
-
-        // Post data through YUI
-        YAHOO.util.Connect.setForm(form);
-        YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
-            success : function(o) {
-                var data = YAHOO.lang.JSON.parse(o.responseText);
-                message(data.msg, data.type);
-            },
-            failure : function(o) {
-                /** @todo english */
-                alert('Failed to send mail: ' + o.statusText);
+            // Remove used old panel if necessary
+            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+                Fisma.Email.panelElement.removeMask();
+                Fisma.Email.panelElement.destroy();
+                Fisma.Email.panelElement = null;
             }
-        }, null);
+    
+            // Create a dialog
+            var content = document.createElement('div');
+            var p = document.createElement('p');
+            var contentTitle = document.createTextNode('* Target E-mail Address:');
+            p.appendChild(contentTitle);
+            content.appendChild(p);
+    
+            // Add email address input to dialog
+            var emailAddress = document.createElement('input');
+            emailAddress.id = 'testEmailRecipient';
+            emailAddress.name = 'recipient';
+            content.appendChild(emailAddress);
+    
+            // Add line spacing to dialog
+            var lineSpacingDiv = document.createElement('div');
+            lineSpacingDiv.style.height = '10px';
+            content.appendChild(lineSpacingDiv);
+    
+            // Add submmit button to dialog
+            var sendBtn = document.createElement('input');
+            sendBtn.type = 'button';
+            sendBtn.id = 'dialogRecipientSendBtn';
+            sendBtn.style.marginLeft = '10px';
+            sendBtn.value = 'Send';
+            content.appendChild(sendBtn);
+    
+            // Load panel
+            /** @todo english */
+            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
+    
+            // Set onclick handler to handle dialog_recipient
+            document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
+        },
 
-        // Remove used panel
-        if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-            Fisma.Email.panelElement.removeMask();
-            Fisma.Email.panelElement.destroy();
-            Fisma.Email.panelElement = null;
+        /**
+         * Send test email to specified recipient
+         */
+        sendTestEmail : function() {
+            if (document.getElementById('testEmailRecipient').value == '') {
+                /** @todo english */
+                alert("Recipient is required.");
+                document.getElementById('testEmailRecipient').focus();
+                return false;
+            }
+    
+            // Get dialog_recipient value to recipient
+            var recipient = document.getElementById('testEmailRecipient').value;
+            var form = document.getElementById('email_config');
+            form.elements['recipient'].value = recipient;
+    
+            // Post data through YUI
+            YAHOO.util.Connect.setForm(form);
+            YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
+                success : function(o) {
+                    var data = YAHOO.lang.JSON.parse(o.responseText);
+                    message(data.msg, data.type);
+                },
+                failure : function(o) {
+                    /** @todo english */
+                    alert('Failed to send mail: ' + o.statusText);
+                }
+            }, null);
+    
+            // Remove used panel
+            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+                Fisma.Email.panelElement.removeMask();
+                Fisma.Email.panelElement.destroy();
+                Fisma.Email.panelElement = null;
+            }
         }
-    }
     };
 }();
 /**
@@ -3108,32 +3248,333 @@ Fisma.HtmlPanel = function() {
          * 
          * @param {String} title The YUI panel dialog title
          * @param {String} html The content source of the panel
+         * @param {String} element The optional element or its id representing the Panel
+         * @param {YAHOO.util.Config} userConfig The optional user specified config object
          * @returns {YAHOO.widget.Panel} The opened YUI panel object
          */
-        showPanel : function(title, html) {
-            var newPanel = new YAHOO.widget.Panel('panel', {
-                width : "540px",
-                modal : true
-            });
-            newPanel.setHeader(title);
-            /** @todo english */
-            newPanel.setBody("Loading...");
-            newPanel.render(document.body);
-            newPanel.center();
-            newPanel.show();
-
-            if (html != '') {
-                newPanel.setBody(html);
-                newPanel.center();
-            } else {
-                /** @todo english */
-                alert('The parameter html can not be empty.');
+        showPanel : function(title, html, element, userConfig) {
+            // Initialize element or its id representing the panel with default value conditionally
+            if (typeof(element) == 'undefined' || element == null)
+            {
+                element = "panel";
             }
-
-            return newPanel;
+            // Initialize user config with default config object if the user config is not specified or null
+            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            {
+                userConfig = {
+                    width : "540px",
+                    modal : true
+                };
+            }
+            
+            // Instantiate YUI panel for rendering
+            var panel = new YAHOO.widget.Panel(element, userConfig);
+            panel.setHeader(title);
+            /** @todo english */
+            panel.setBody("Loading...");
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            
+            // Fill the panel with HTML text
+            if (html != '') {
+                panel.setBody(html);
+                panel.center();
+            }
+            
+            return panel;
         }
     };
 }();
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the Incident Reporting module
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.Incident = {
+    /**
+     * This is called after an artifact has been uploaded successfully. We could do something nifty here like
+     * dynamically update the page, but at the moment I'm going to be lazy and just refresh the entire page.
+     * 
+     * @param yuiPanel This is required for a callback but not used here
+     */
+    attachArtifactCallback : function (yuiPanel) {
+        window.location.href = window.location.href;
+    }
+};
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview This file contains related javascript code about the feature finding remediation
+ *
+ * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+/**
+ * Popup a panel for upload evidence
+ * 
+ * @return {Boolean} False to interrupt consequent operations
+ */
+function upload_evidence() {
+    if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
+        return false;
+    }
+    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', upload_evidence_form_init);
+    return false;
+}
+
+/**
+ * Initialize another form finding_detail_upload_evidence after panel loaded
+ */
+function upload_evidence_form_init() {
+    // Initialize form action from finding_detail.action since they are separated forms and the form from
+    // from the panel belongs to document body rather than the form document.finding_detail.But they should
+    // have same target action. So set the latter`s action with the former`s.
+    document.finding_detail_upload_evidence.action = document.finding_detail.action;
+}
+
+/**
+ * To approve evidence with optional comment
+ * 
+ * @param {String} formname The main form name from page
+ * @return {Boolean} False if user gives up this operation
+ */
+function ev_approve(formname){
+    if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
+        return false;
+    }
+
+    var content = document.createElement('div');
+    var p = document.createElement('p');
+    p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
+    content.appendChild(p);
+    var dt = document.createElement('textarea');
+    dt.rows = 5;
+    dt.cols = 60;
+    dt.id = 'dialog_comment';
+    dt.name = 'comment';
+    content.appendChild(dt);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
+
+    Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'APPROVED';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_ea';
+        submitMsa.value = 'APPROVED';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
+}
+
+/**
+ * To deny evidence with comment
+ * 
+ * @param {String} formname The main form name from page
+ * @return {Boolean} False if user gives up this operation
+ */
+function ev_deny(formname){
+    if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
+        return false;
+    }
+
+    var content = document.createElement('div');
+    var p = document.createElement('p');
+    p.appendChild(document.createTextNode('Comments:'));
+    content.appendChild(p);
+    var dt = document.createElement('textarea');
+    dt.rows = 5;
+    dt.cols = 60;
+    dt.id = 'dialog_comment';
+    dt.name = 'comment';
+    content.appendChild(dt);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
+
+    Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        if (comment.match(/^\s*$/)) {
+            alert('Comments are required in order to deny.');
+            return;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'DENIED';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_ea';
+        submitMsa.value = 'DENIED';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
+}
+
+/**
+ * To approve mitigation strategy with optional comment
+ * 
+ * @param {String} formname The main form name from page
+ * @return {Boolean} False if user gives up this operation
+ */
+function ms_approve(formname){
+    if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
+        return false;
+    }
+
+    var content = document.createElement('div');
+    var p = document.createElement('p');
+    var c_title = document.createTextNode('Comments (OPTIONAL):');
+    p.appendChild(c_title);
+    content.appendChild(p);
+    var textarea = document.createElement('textarea');
+    textarea.id = 'dialog_comment';
+    textarea.name = 'comment';
+    textarea.rows = 5;
+    textarea.cols = 60;
+    content.appendChild(textarea);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
+    
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'APPROVED';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_msa';
+        submitMsa.value = 'APPROVED';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
+}
+
+/**
+ * To deny mitigation strategy with comment
+ * 
+ * @param {String} formname The main form name from page
+ * @return {Boolean} False if user gives up this operation
+ */
+function ms_deny(formname){
+    if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
+        return false;
+    }
+
+    var content = document.createElement('div');
+    var p = document.createElement('p');
+    var c_title = document.createTextNode('Comments:');
+    p.appendChild(c_title);
+    content.appendChild(p);
+    var textarea = document.createElement('textarea');
+    textarea.id = 'dialog_comment';
+    textarea.name = 'comment';
+    textarea.rows = 5;
+    textarea.cols = 60;
+    content.appendChild(textarea);
+    var div = document.createElement('div');
+    div.style.height = '20px';
+    content.appendChild(div);
+    var button = document.createElement('input');
+    button.type = 'button';
+    button.id = 'dialog_continue';
+    button.value = 'Continue';
+    content.appendChild(button);
+    
+    Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
+    document.getElementById('dialog_continue').onclick = function (){
+        var form2 = formname;
+        if  (document.all) { // IE
+            var comment = document.getElementById('dialog_comment').innerHTML;
+        } else {// firefox
+            var comment = document.getElementById('dialog_comment').value;
+        }
+        if (comment.match(/^\s*$/)) {
+            alert('Comments are required in order to submit.');
+            return;
+        }
+        form2.elements['comment'].value = comment;
+        form2.elements['decision'].value = 'DENIED';
+        var submitMsa = document.createElement('input');
+        submitMsa.type = 'hidden';
+        submitMsa.name = 'submit_msa';
+        submitMsa.value = 'DENIED';
+        form2.appendChild(submitMsa);
+        form2.submit();
+    }
+}
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -3169,20 +3610,35 @@ Fisma.UrlPanel = function() {
          * @param {String} title The YUI panel dialog title
          * @param {String} url The source that YUI panel dialog loads content from
          * @param {Function} callback The callback handler function
+         * @param {String} element The optional element or its id representing the Panel
+         * @param {YAHOO.util.Config} userConfig The optional user specified config object
          * @returns {YAHOO.widget.Panel} The opened YUI panel object
          */
-        showPanel : function(title, url, callback) {
-            var newPanel = new YAHOO.widget.Panel('panel', {
-                width : "540px",
-                modal : true
-            });
-            newPanel.setHeader(title);
+        showPanel : function(title, url, callback, element, userConfig) {
+            // Initialize element or its id representing the panel with default value if necessary
+            if (typeof(element) == 'undefined' || element == null)
+            {
+                element = "panel";
+            }
+            // Initialize user config with default config object if the user config is not specified or null
+            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            {
+                userConfig = {
+                    width : "540px",
+                    modal : true
+                };
+            }
+            
+            // Instantiate YUI panel for rendering
+            var panel = new YAHOO.widget.Panel(element, userConfig);
+            panel.setHeader(title);
             /** @todo english */
-            newPanel.setBody("Loading...");
-            newPanel.render(document.body);
-            newPanel.center();
-            newPanel.show();
-
+            panel.setBody("Loading...");
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            
+            // Load panel content from url
             if (url != '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
@@ -3197,14 +3653,11 @@ Fisma.UrlPanel = function() {
                         /** @todo english */
                         alert('Failed to load the specified panel.');
                     },
-                    argument : newPanel
+                    argument : panel
                 }, null);
-            } else {
-                /** @todo english */
-                alert('The parameter url can not be empty.');
             }
-
-            return newPanel;
+            
+            return panel;
         }
     };
 }();
