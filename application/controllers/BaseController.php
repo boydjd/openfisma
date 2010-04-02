@@ -199,7 +199,6 @@ abstract class BaseController extends SecurityController
             }
         }
         $this->view->form = $form;
-        $this->render();
     }
 
     /**
@@ -250,7 +249,6 @@ abstract class BaseController extends SecurityController
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
-        $this->render();
     }
 
     /**
