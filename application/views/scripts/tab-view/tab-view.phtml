@@ -43,7 +43,8 @@
                 id : "<?php echo $tab['id']; ?>",
                 label : "<?php echo $tab['name']; ?>",
                 dataSrc : "<?php echo $tab['url']; ?>",
-                cacheData : true
+                cacheData : true,
+                active: <?php echo $tab['active']; ?>
             });
             
             newTab.subscribe("dataLoadedChange", prepareTab);
