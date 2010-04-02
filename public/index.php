@@ -20,12 +20,13 @@
  * @license   http://www.openfisma.org/content/license GPLv3
  * @version   $Id$
  */
-
 require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
 
 try {
     Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
+    register_shutdown_function('Zend_Session::writeClose', true);
     Fisma::setConfiguration(new Fisma_Configuration_Database());
+    
     if (Fisma::isInstall()) {
         Fisma::connectDb();
     }
@@ -49,4 +50,3 @@ try {
              . '</pre></p>';
     }
 }
-Zend_Session::writeClose(true);
