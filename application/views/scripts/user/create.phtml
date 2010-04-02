@@ -21,7 +21,6 @@ if (!empty($this->requirements)) {
 <div class="form_box">
     <form method="post" action="/panel/User/sub/edit/id/<?php echo $this->id ?>">
         <?php 
-        $this->form->removeDecorator('Fisma_Form_Decorator'); 
         echo $this->form;
         echo $this->tabView;
         ?>

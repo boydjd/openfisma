@@ -232,6 +232,7 @@ abstract class BaseController extends SecurityController
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
+                    $this->_forward('view');
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";

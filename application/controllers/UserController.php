@@ -116,7 +116,6 @@ class UserController extends BaseController
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
-//        $form->removeElement('organizations');
         return $form;
     }
 
@@ -130,56 +129,80 @@ class UserController extends BaseController
      */
     protected function saveValue($form, $subject=null)
     {
-        $rolesOrganizations = $this->_request->getPost('organizations', array());
+        $conn = Doctrine_Manager::connection();
 
-        if (is_null($subject)) {
-            $subject = new $this->_modelName();
-        } elseif (!($subject instanceof Doctrine_Record)) {
-            throw new Fisma_Exception('Invalid parameter, expected a Doctrine_Model');
-        }
-        $values = $form->getValues();
-        if (empty($values['password'])) {
-            unset($values['password']);
-        }
-        
-        if ($values['locked'] && !$subject->locked) {
-            $subject->lockAccount(User::LOCK_TYPE_MANUAL);
-            unset($values['locked']);
-            unset($values['lockTs']);
-        } elseif (!$values['locked'] && $subject->locked) {
-            $subject->unlockAccount();
-            unset($values['locked']);
-            unset($values['lockTs']);
-        }
-        
-        $subject->merge($values);
+        try {
+            $conn->beginTransaction();
 
-        /*
-         * We need to save the model once before linking related records, because Doctrine has a weird behavior where
-         * an invalid record will result in failed foreign key constraints. If this record is invalid, saving it here
-         * will avoid those errors.
-         */
-        $subject->save();
+            $rolesOrganizations = $this->_request->getPost('organizations', array());
 
-        foreach ($subject->UserRole as $role) {
-            $role->unlink('Organizations');
-        }
-        $subject->save();
-        $subject->unlink('Roles');
-        $subject->save();
-
-        foreach ($rolesOrganizations as $role => $organizations) {
-            $userRole = new UserRole();
-            $userRole->userId = (int) $subject->id;
-            $userRole->roleId = (int) $role;
-            $userRole->save();
-
-            foreach ($organizations as $organization) {
-                $userRoleOrganization = new UserRoleOrganization();
-                $userRoleOrganization->organizationId = (int) $organization;
-                $userRoleOrganization->userRoleId = (int) $userRole->userRoleId;
-                $userRoleOrganization->save();
+            if (is_null($subject)) {
+                $subject = new $this->_modelName();
+            } elseif (!($subject instanceof Doctrine_Record)) {
+                throw new Fisma_Exception('Invalid parameter, expected a Doctrine_Model');
             }
+            $values = $form->getValues();
+
+            // If any roles were added to the user without any organizations, make sure they're added
+            // to the appropriate array for saving the User Roles.
+            foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
+                $rolesOrganizations[$k] = array();
+            }
+
+            unset($values['role']);
+
+            if (empty($values['password'])) {
+                unset($values['password']);
+            }
+            
+            if ($values['locked'] && !$subject->locked) {
+                $subject->lockAccount(User::LOCK_TYPE_MANUAL);
+                unset($values['locked']);
+                unset($values['lockTs']);
+            } elseif (!$values['locked'] && $subject->locked) {
+                $subject->unlockAccount();
+                unset($values['locked']);
+                unset($values['lockTs']);
+            }
+            
+            $subject->merge($values);
+
+            /*
+             * We need to save the model once before linking related records, because Doctrine has a weird behavior 
+             * where an invalid record will result in failed foreign key constraints. If this record is invalid, 
+             * saving it here will avoid those errors.
+             */
+            $subject->save();
+
+            foreach ($subject->UserRole as $role) {
+                $role->unlink('Organizations');
+            }
+            $subject->save();
+            $subject->unlink('Roles');
+            $subject->save();
+
+            foreach ($rolesOrganizations as $role => $organizations) {
+                $userRole = new UserRole();
+                $userRole->userId = (int) $subject->id;
+                $userRole->roleId = (int) $role;
+                $userRole->save();
+
+                foreach ($organizations as $organization) {
+                    $userRoleOrganization = new UserRoleOrganization();
+                    $userRoleOrganization->organizationId = (int) $organization;
+                    $userRoleOrganization->userRoleId = (int) $userRole->userRoleId;
+                    $userRoleOrganization->save();
+                    $userRoleOrganization->free();
+                    unset($userRoleOrganization);
+                }
+
+                $userRole->free();
+                unset($userRole);
+            }
+            $conn->commit();
+        } catch (Doctrine_Exception $e) {
+            $conn->rollback();
+            throw new Fisma_Exception('Unable to save user.');
         }
     }
 
@@ -396,6 +419,8 @@ class UserController extends BaseController
 
     /**
      * Override parent to add a link for audit logs
+     *
+     * @return void
      */
     public function viewAction()
     {
@@ -415,7 +440,8 @@ class UserController extends BaseController
             $tabView->addTab(
                 $role['nickname'], 
                 "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/1", 
-                $role['id']
+                $role['id'],
+                'false'
             );
         }
 
@@ -483,6 +509,8 @@ class UserController extends BaseController
     
     /**
      * Override parent to add a link for audit logs
+     *
+     * @return void
      */
     public function editAction()
     {
@@ -500,7 +528,8 @@ class UserController extends BaseController
             $tabView->addTab(
                 $role['nickname'], 
                 "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
-                $role['id']
+                $role['id'],
+                'true' 
             );
         }
 
@@ -514,13 +543,19 @@ class UserController extends BaseController
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
-        try {
-            parent::editAction();
-        } catch (Fisma_Exception_User $e) {
-            $error = $e->getMessage();
-            $this->view->priorityMessenger($error, 'warning');
-            $this->_forward('list');
-        }
+        parent::editAction();
+        $this->view->form->removeDecorator('Fisma_Form_FismaDecorator');
+    }
+
+    /**
+     * Override parent method
+     * 
+     * @return void
+     */
+    public function createAction()
+    {
+        parent::createAction();
+        $this->view->form->removeDecorator('Fisma_Form_FismaDecorator');
     }
 
     /**
