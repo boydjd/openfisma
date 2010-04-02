@@ -13,7 +13,7 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $this->subject)) {
 Fisma_Format_Section::startSection("User Account Information $operation"); ?>
 
 <div>
-    <?php $this->form->removeDecorator('form'); echo $this->form; ?>
+    <?php echo $this->form; ?>
     <?php echo $this->tabView; ?>
 </div>
 
