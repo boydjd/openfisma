@@ -59,6 +59,7 @@ class View_Helper_InjectAsset
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
+                                      '/stylesheets/AttachArtifacts.css',
                                       '/stylesheets/FindingSummary.css'
                                 )
                             );

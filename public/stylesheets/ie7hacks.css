@@ -50,3 +50,9 @@ div#menu ul ul {
 select {
   font-family: Verdana;
 }
+
+/* Fix the attach artifacts rendering. IE7 renders this to  */
+
+div.attachArtifactsProgressBar {
+    margin: 10px 0px 0px 10px;
+}

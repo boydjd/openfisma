@@ -128,7 +128,7 @@ Fisma.AttachArtifacts = {
         uploadButton.disabled = true;
 
         // Bind 'this' to a local variable for closure in setTimeout
-        var closedThis = this;
+        var that = this;
 
         /**
          * If upload progress is enabled on the server, then there will be a hidden element in the page with the ID
@@ -173,10 +173,10 @@ Fisma.AttachArtifacts = {
 
             // Kick off the polling loop
             this.pollingEnabled = true;
-            
+
             setTimeout(
                 function () {
-                    closedThis.getProgress(closedThis);
+                    that.getProgress.call(that);
                 },
                 this.sampleInterval
             );
@@ -192,7 +192,7 @@ Fisma.AttachArtifacts = {
          */
         setTimeout(
             function () {
-                closedThis.postForm(closedThis);
+                that.postForm.call(that);
             },
             0
         );
@@ -206,19 +206,18 @@ Fisma.AttachArtifacts = {
      * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
      * requests -- which would totally defeat the purpose of upload progress tracking.
      * 
-     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
-     * won't refer to the object either. So the object is passed in as the 'arg' parameter
-     * 
      * @param arg The AttachArtifacts object
      */
-    postForm : function(arg) {
+    postForm : function() {
 
+        var that = this;
+        
         var postUrl = "/"
-                    + encodeURIComponent(arg.config.server.controller)
+                    + encodeURIComponent(this.config.server.controller)
                     + "/"
-                    + encodeURIComponent(arg.config.server.action)
+                    + encodeURIComponent(this.config.server.action)
                     + "/id/"
-                    + encodeURIComponent(arg.config.id)
+                    + encodeURIComponent(this.config.id)
                     + "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
@@ -226,13 +225,13 @@ Fisma.AttachArtifacts = {
             'POST', 
             postUrl, 
             {
-                upload : arg.handleUploadComplete,
+                upload : function (asyncResponse) {
+                    that.handleUploadComplete.call(that, asyncResponse);
+                },
                 
                 failure : function (o) {
                     alert('Document upload failed.');
-                }, 
-                
-                argument : arg
+                }
             }, 
             null
         );
@@ -241,24 +240,23 @@ Fisma.AttachArtifacts = {
     /**
      * Poll the server for file upload progress
      * 
-     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
-     * won't refer to the object either. So the object is passed in as the 'arg' parameter
-     * 
      * @param arg The AttachArtifacts object
      */
-    getProgress : function (arg) {
+    getProgress : function () {
+        
+        var that = this;
 
-        if (arg.pollingEnabled) {
-            arg.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
+        if (this.pollingEnabled) {
+            this.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
                 'GET', 
-                '/artifact/upload-progress/format/json/id/' + arg.apcId,
+                '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
-                    
+
                         // Parse server response and update progress bar
                         var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         var percent = Math.round((response.progress.current / response.progress.total) * 100);
-                        arg.yuiProgressBar.set('value', percent);
+                        that.yuiProgressBar.set('value', percent);
                     
                         // Update progress text
                         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
@@ -266,7 +264,12 @@ Fisma.AttachArtifacts = {
                         progressTextEl.nodeValue = percent + '%';
                     
                         // Reschedule the timeout to call this method again
-                        arg.pollingTimeoutId = setTimeout(arg.getProgress, arg.sampleInterval, arg);
+                        that.pollingTimeoutId = setTimeout(
+                            function () {
+                                that.getProgress.call(that);
+                            }, 
+                            that.sampleInterval
+                        );
                     }
                 }, 
                 null
@@ -277,13 +280,9 @@ Fisma.AttachArtifacts = {
     /**
      * Handle a completed file upload
      * 
-     * This object's contents are passed as asyncResponse.argument and stored into the local variable "attachArtifacts"
-     * 
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
-
-        var attachArtifacts = asyncResponse.argument;
 
         // Check response status and display error message if necessary
         var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
@@ -293,14 +292,14 @@ Fisma.AttachArtifacts = {
         }
         
         // Stop the polling process and cancel the last asynchronous request
-        attachArtifacts.pollingEnabled = false;
-        clearTimeout(attachArtifacts.pollingTimeoutId);
-        YAHOO.util.Connect.abort(attachArtifacts.lastAsyncRequest);
+        this.pollingEnabled = false;
+        clearTimeout(this.pollingTimeoutId);
+        YAHOO.util.Connect.abort(this.lastAsyncRequest);
         
         // Update progress to 100%
-        if (attachArtifacts.yuiProgressBar) {
-            attachArtifacts.yuiProgressBar.get('anim').duration = .5;
-            attachArtifacts.yuiProgressBar.set('value', 100);
+        if (this.yuiProgressBar) {
+            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
         progressTextEl.nodeValue = 'Verifying file.';
@@ -312,11 +311,11 @@ Fisma.AttachArtifacts = {
          * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
          * realize if these callbacks are invalid.
          */
-        var callbackObject = Fisma[attachArtifacts.config.callback.object];
+        var callbackObject = Fisma[this.config.callback.object];
 
         if (typeof callbackObject != "Undefined") {
             
-            var callbackMethod = callbackObject[attachArtifacts.config.callback.method];
+            var callbackMethod = callbackObject[this.config.callback.method];
             
             if (typeof callbackMethod == "function") {
                 
@@ -324,7 +323,7 @@ Fisma.AttachArtifacts = {
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
                  * its expected meaning.
                  */
-                callbackMethod.call(callbackObject, attachArtifacts.yuiPanel);
+                callbackMethod.call(callbackObject, this.yuiPanel);
             }
         }
     }
