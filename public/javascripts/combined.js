@@ -2230,7 +2230,7 @@ Fisma.AttachArtifacts = {
         Fisma.AttachArtifacts.config = config;
 
         // Create a new panel
-        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : false});
+        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
         newPanel.setHeader('Upload Artifact');
         newPanel.setBody("Loading...");
         newPanel.render(document.body);
@@ -2272,7 +2272,7 @@ Fisma.AttachArtifacts = {
         uploadButton.disabled = true;
 
         // Bind 'this' to a local variable for closure in setTimeout
-        var closedThis = this;
+        var that = this;
 
         /**
          * If upload progress is enabled on the server, then there will be a hidden element in the page with the ID
@@ -2317,10 +2317,10 @@ Fisma.AttachArtifacts = {
 
             // Kick off the polling loop
             this.pollingEnabled = true;
-            
+
             setTimeout(
                 function () {
-                    closedThis.getProgress(closedThis);
+                    that.getProgress.call(that);
                 },
                 this.sampleInterval
             );
@@ -2336,7 +2336,7 @@ Fisma.AttachArtifacts = {
          */
         setTimeout(
             function () {
-                closedThis.postForm(closedThis);
+                that.postForm.call(that);
             },
             0
         );
@@ -2350,19 +2350,18 @@ Fisma.AttachArtifacts = {
      * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
      * requests -- which would totally defeat the purpose of upload progress tracking.
      * 
-     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
-     * won't refer to the object either. So the object is passed in as the 'arg' parameter
-     * 
      * @param arg The AttachArtifacts object
      */
-    postForm : function(arg) {
+    postForm : function() {
 
+        var that = this;
+        
         var postUrl = "/"
-                    + encodeURIComponent(arg.config.server.controller)
+                    + encodeURIComponent(this.config.server.controller)
                     + "/"
-                    + encodeURIComponent(arg.config.server.action)
+                    + encodeURIComponent(this.config.server.action)
                     + "/id/"
-                    + encodeURIComponent(arg.config.id)
+                    + encodeURIComponent(this.config.id)
                     + "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
@@ -2370,13 +2369,13 @@ Fisma.AttachArtifacts = {
             'POST', 
             postUrl, 
             {
-                upload : arg.handleUploadComplete,
+                upload : function (asyncResponse) {
+                    that.handleUploadComplete.call(that, asyncResponse);
+                },
                 
                 failure : function (o) {
                     alert('Document upload failed.');
-                }, 
-                
-                argument : arg
+                }
             }, 
             null
         );
@@ -2385,24 +2384,23 @@ Fisma.AttachArtifacts = {
     /**
      * Poll the server for file upload progress
      * 
-     * This is called by settimeout(), which means the execution context is not the object, and the 'this' keyword
-     * won't refer to the object either. So the object is passed in as the 'arg' parameter
-     * 
      * @param arg The AttachArtifacts object
      */
-    getProgress : function (arg) {
+    getProgress : function () {
+        
+        var that = this;
 
-        if (arg.pollingEnabled) {
-            arg.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
+        if (this.pollingEnabled) {
+            this.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
                 'GET', 
-                '/artifact/upload-progress/format/json/id/' + arg.apcId,
+                '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
-                    
+                        
                         // Parse server response and update progress bar
                         var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         var percent = Math.round((response.progress.current / response.progress.total) * 100);
-                        arg.yuiProgressBar.set('value', percent);
+                        that.yuiProgressBar.set('value', percent);
                     
                         // Update progress text
                         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
@@ -2410,7 +2408,12 @@ Fisma.AttachArtifacts = {
                         progressTextEl.nodeValue = percent + '%';
                     
                         // Reschedule the timeout to call this method again
-                        arg.pollingTimeoutId = setTimeout(arg.getProgress, arg.sampleInterval, arg);
+                        that.pollingTimeoutId = setTimeout(
+                            function () {
+                                that.getProgress.call(that);
+                            }, 
+                            that.sampleInterval
+                        );
                     }
                 }, 
                 null
@@ -2421,13 +2424,9 @@ Fisma.AttachArtifacts = {
     /**
      * Handle a completed file upload
      * 
-     * This object's contents are passed as asyncResponse.argument and stored into the local variable "attachArtifacts"
-     * 
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
-
-        var attachArtifacts = asyncResponse.argument;
 
         // Check response status and display error message if necessary
         var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
@@ -2437,14 +2436,14 @@ Fisma.AttachArtifacts = {
         }
         
         // Stop the polling process and cancel the last asynchronous request
-        attachArtifacts.pollingEnabled = false;
-        clearTimeout(attachArtifacts.pollingTimeoutId);
-        YAHOO.util.Connect.abort(attachArtifacts.lastAsyncRequest);
+        this.pollingEnabled = false;
+        clearTimeout(this.pollingTimeoutId);
+        YAHOO.util.Connect.abort(this.lastAsyncRequest);
         
         // Update progress to 100%
-        if (attachArtifacts.yuiProgressBar) {
-            attachArtifacts.yuiProgressBar.get('anim').duration = .5;
-            attachArtifacts.yuiProgressBar.set('value', 100);
+        if (this.yuiProgressBar) {
+            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
         progressTextEl.nodeValue = 'Verifying file.';
@@ -2456,11 +2455,11 @@ Fisma.AttachArtifacts = {
          * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
          * realize if these callbacks are invalid.
          */
-        var callbackObject = Fisma[attachArtifacts.config.callback.object];
+        var callbackObject = Fisma[this.config.callback.object];
 
         if (typeof callbackObject != "Undefined") {
             
-            var callbackMethod = callbackObject[attachArtifacts.config.callback.method];
+            var callbackMethod = callbackObject[this.config.callback.method];
             
             if (typeof callbackMethod == "function") {
                 
@@ -2468,12 +2467,342 @@ Fisma.AttachArtifacts = {
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
                  * its expected meaning.
                  */
-                callbackMethod.call(callbackObject, attachArtifacts.yuiPanel);
+                callbackMethod.call(callbackObject, this.yuiPanel);
             }
         }
     }
 };
-/**
+Fisma.AttachArtifacts={sampleInterval:1000,apcId:null,yuiProgressBar:null,pollingTimeoutId:null,lastAsyncRequest:null,pollingEnabled:false,config:null,yuiPanel:null,showPanel:function(c,b){Fisma.AttachArtifacts.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:false});a.setHeader("Upload Artifact");a.setBody("Loading...");a.render(document.body);a.center();a.show();Fisma.AttachArtifacts.yuiPanel=a;YAHOO.util.Connect.asyncRequest("GET","/artifact/upload-form",{success:function(d){d.argument.setBody(d.responseText);d.argument.center()},failure:function(d){d.argument.setBody("The content for this panel could not be loaded.");d.argument.center()},argument:a},null)},trackUploadProgress:function(){var b=document.getElementById("uploadButton");b.disabled=true;var f=this;var d=document.getElementById("progress_key");if(d){this.apcId=d.value;var h=document.getElementById("progressBarContainer");var a=parseInt(YAHOO.util.Dom.getStyle(h,"width"));var g=parseInt(YAHOO.util.Dom.getStyle(h,"height"));YAHOO.util.Dom.removeClass(h,"attachArtifactsProgressBar");while(h.hasChildNodes()){h.removeChild(h.firstChild)}var e=new YAHOO.widget.ProgressBar();e.set("width",a);e.set("height",g);e.set("ariaTextTemplate","Upload is {value}% complete");e.set("anim",true);var c=e.get("anim");c.duration=2;c.method=YAHOO.util.Easing.easeNone;e.render("progressBarContainer");YAHOO.util.Dom.addClass(h,"attachArtifactsProgressBar");this.yuiProgressBar=e;this.pollingEnabled=true;setTimeout(function(){f.getProgress(f)},this.sampleInterval)}document.getElementById("progressBarContainer").style.display="block";document.getElementById("progressTextContainer").style.display="block";setTimeout(function(){f.postForm(f)},0);return false},postForm:function(a){var b="/"+encodeURIComponent(a.config.server.controller)+"/"+encodeURIComponent(a.config.server.action)+"/id/"+encodeURIComponent(a.config.id)+"/format/json";YAHOO.util.Connect.setForm("uploadArtifactForm",true);YAHOO.util.Connect.asyncRequest("POST",b,{upload:a.handleUploadComplete,failure:function(c){alert("Document upload failed.")},argument:a},null)},getProgress:function(a){if(a.pollingEnabled){a.lastAsyncRequest=YAHOO.util.Connect.asyncRequest("GET","/artifact/upload-progress/format/json/id/"+a.apcId,{success:function(c){var b=YAHOO.lang.JSON.parse(c.responseText);var d=Math.round((b.progress.current/b.progress.total)*100);a.yuiProgressBar.set("value",d);var e=document.getElementById("progressTextContainer").firstChild;e.nodeValue=d+"%";a.pollingTimeoutId=setTimeout(a.getProgress,a.sampleInterval,a)}},null)}},handleUploadComplete:function(c){var d=c.argument;var b=YAHOO.lang.JSON.parse(c.responseText);if(!b.success){alert(b.message)}d.pollingEnabled=false;clearTimeout(d.pollingTimeoutId);YAHOO.util.Connect.abort(d.lastAsyncRequest);if(d.yuiProgressBar){d.yuiProgressBar.get("anim").duration=0.5;d.yuiProgressBar.set("value",100)}var f=document.getElementById("progressTextContainer").firstChild;f.nodeValue="Verifying file.";var e=Fisma[d.config.callback.object];if(typeof e!="Undefined"){var a=e[d.config.callback.method];if(typeof a=="function"){a.call(e,d.yuiPanel)}}}};/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
+ * 
+ * @todo This is currently set up to only handle one file upload at time. With some refactoring, however, we could
+ * support multiple file uploads in parallel.
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.AttachArtifacts = {
+    
+    /**
+     * The amount of time to delay in between requesting upload progress
+     */
+    sampleInterval : 1000,
+    
+    /**
+     * The APC file upload ID which is used to track this upload on the server side
+     */
+    apcId : null,
+    
+    /**
+     * A reference to the YUI progress bar
+     */
+    yuiProgressBar : null,
+    
+    /**
+     * Server polling timeout ID
+     * 
+     * Polling is accomplished using settimout(). The ID which that returns is saved so that the timeout can be
+     * canceled when the upload is finished (or fails).
+     */
+    pollingTimeoutId : null,
+    
+    /**
+     * Reference to the last asynchonrous request dispatched by this object
+     * 
+     * This can be used to cancel the last pending request before it completes
+     */
+    lastAsyncRequest : null,
+    
+    /**
+     * A flag that indicates whether polling is enabled or not
+     */
+    pollingEnabled : false,
+    
+    /**
+     * A configuration object specified by the invoker of showPanel
+     * 
+     * See technical specification for Attach Artifacts behavior for the structure of this object
+     */
+    config : null,
+    
+    /**
+     * Reference to the YUI panel which is displayed to handle file uploads
+     */
+     yuiPanel : null,
+        
+    /**
+     * Show the file upload panel
+     * 
+     * This is an event handler, so 'this' will not refer to the local object
+     * 
+     * @param event Required to implement an event handler but not used
+     * @param config Contains the callback information for this file upload (See definition of config member)
+     */
+    showPanel : function (event, config) {
+        Fisma.AttachArtifacts.config = config;
+
+        // Create a new panel
+        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : false});
+        newPanel.setHeader('Upload Artifact');
+        newPanel.setBody("Loading...");
+        newPanel.render(document.body);
+        newPanel.center();
+        newPanel.show();
+
+        Fisma.AttachArtifacts.yuiPanel = newPanel;
+
+        // Get panel content from artifact controller
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/artifact/upload-form',
+            {
+                success: function(o) {
+                    o.argument.setBody(o.responseText);
+                    o.argument.center();
+                },
+
+                failure: function(o) {
+                    o.argument.setBody('The content for this panel could not be loaded.');
+                    o.argument.center();
+                },
+                
+                argument: newPanel
+            }, 
+            null
+        );
+    },
+    
+    /**
+     * Show the progress bar and kick off the tracking process
+     * 
+     * This is called in the onSubmit event
+     */
+    trackUploadProgress : function () {
+
+        // Disable the upload button
+        var uploadButton = document.getElementById('uploadButton');
+        uploadButton.disabled = true;
+
+        // Bind 'this' to a local variable for closure in setTimeout
+        var that = this;
+
+        /**
+         * If upload progress is enabled on the server, then there will be a hidden element in the page with the ID
+         * 'progress_key'. This is an indicator whether or not to enable upload progress on the client side.
+         */
+        var apcHiddenEl = document.getElementById('progress_key');
+
+        if (apcHiddenEl) {
+            this.apcId = apcHiddenEl.value;
+            
+            // Remove the inderminate progress bar
+            var progressBarContainer = document.getElementById('progressBarContainer');
+
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+
+            YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
+
+            while (progressBarContainer.hasChildNodes()) {
+                progressBarContainer.removeChild(progressBarContainer.firstChild);
+            }
+
+            // Add YUI bar
+            var yuiProgressBar = new YAHOO.widget.ProgressBar();
+            
+            yuiProgressBar.set('width', progressBarWidth); 
+            yuiProgressBar.set('height', progressBarHeight);
+            
+            yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
+
+            yuiProgressBar.set('anim', true);
+            var animation = yuiProgressBar.get('anim')
+            animation.duration = 2;
+            animation.method = YAHOO.util.Easing.easeNone;
+            
+            yuiProgressBar.render('progressBarContainer');
+            
+            YAHOO.util.Dom.addClass(progressBarContainer, 'attachArtifactsProgressBar');
+            
+            // Store progress bar reference inside this object
+            this.yuiProgressBar = yuiProgressBar;
+
+            // Kick off the polling loop
+            this.pollingEnabled = true;
+
+            setTimeout(
+                function () {
+                    that.getProgress.call(that);
+                },
+                this.sampleInterval
+            );
+        }
+
+        // Display the progress bar
+        document.getElementById('progressBarContainer').style.display = 'block';
+        document.getElementById('progressTextContainer').style.display = 'block';
+
+        /**
+         * Post the form. This needs to be done aysnchronously, or else the web browser will not 
+         * respond to the progress tracking XHRs
+         */
+        setTimeout(
+            function () {
+                that.postForm.call(that);
+            },
+            0
+        );
+        
+        return false;
+    },
+    
+    /**
+     * Posts the artifact attachment form asynchronously
+     * 
+     * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
+     * requests -- which would totally defeat the purpose of upload progress tracking.
+     * 
+     * @param arg The AttachArtifacts object
+     */
+    postForm : function() {
+
+        var that = this;
+        
+        var postUrl = "/"
+                    + encodeURIComponent(this.config.server.controller)
+                    + "/"
+                    + encodeURIComponent(this.config.server.action)
+                    + "/id/"
+                    + encodeURIComponent(this.config.id)
+                    + "/format/json";
+
+        YAHOO.util.Connect.setForm('uploadArtifactForm', true);
+        YAHOO.util.Connect.asyncRequest(
+            'POST', 
+            postUrl, 
+            {
+                upload : function (asyncResponse) {
+                    that.handleUploadComplete.call(that, asyncResponse);
+                },
+                
+                failure : function (o) {
+                    alert('Document upload failed.');
+                }
+            }, 
+            null
+        );
+    },
+    
+    /**
+     * Poll the server for file upload progress
+     * 
+     * @param arg The AttachArtifacts object
+     */
+    getProgress : function () {
+        
+        var that = this;
+
+        if (this.pollingEnabled) {
+            this.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                '/artifact/upload-progress/format/json/id/' + this.apcId,
+                {
+                    success : function (asyncResponse) {
+
+                        // Parse server response and update progress bar
+                        var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                        var percent = Math.round((response.progress.current / response.progress.total) * 100);
+                        that.yuiProgressBar.set('value', percent);
+                    
+                        // Update progress text
+                        var progressTextEl = document.getElementById('progressTextContainer').firstChild;
+
+                        progressTextEl.nodeValue = percent + '%';
+                    
+                        // Reschedule the timeout to call this method again
+                        that.pollingTimeoutId = setTimeout(
+                            function () {
+                                that.getProgress.call(that);
+                            }, 
+                            that.sampleInterval
+                        );
+                    }
+                }, 
+                null
+            );
+        }
+    },
+    
+    /**
+     * Handle a completed file upload
+     * 
+     * @param asyncResponse Response object from YUI connection
+     */
+    handleUploadComplete : function (asyncResponse) {
+
+        // Check response status and display error message if necessary
+        var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+        
+        if (!responseStatus.success) {
+            alert(responseStatus.message);
+        }
+        
+        // Stop the polling process and cancel the last asynchronous request
+        this.pollingEnabled = false;
+        clearTimeout(this.pollingTimeoutId);
+        YAHOO.util.Connect.abort(this.lastAsyncRequest);
+        
+        // Update progress to 100%
+        if (this.yuiProgressBar) {
+            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.set('value', 100);
+        }
+        var progressTextEl = document.getElementById('progressTextContainer').firstChild;
+        progressTextEl.nodeValue = 'Verifying file.';
+                
+        /**
+         * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
+         * references using array access notation.
+         * 
+         * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
+         * realize if these callbacks are invalid.
+         */
+        var callbackObject = Fisma[this.config.callback.object];
+
+        if (typeof callbackObject != "Undefined") {
+            
+            var callbackMethod = callbackObject[this.config.callback.method];
+            
+            if (typeof callbackMethod == "function") {
+                
+                /**
+                 * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
+                 * its expected meaning.
+                 */
+                callbackMethod.call(callbackObject, this.yuiPanel);
+            }
+        }
+    }
+};
+Fisma.AutoComplete=function(){return{init:function(a,e,d){var c=new YAHOO.widget.DS_XHR(d.xhr,d.schema);c.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;c.maxCacheEntries=500;c.queryMatchContains=true;var b=new YAHOO.widget.AutoComplete(d.fieldId,d.containerId,c);b.maxResultsDisplayed=20;b.forceSelection=true;b.generateRequest=function(f){return d.queryPrepend+f};b.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:d.hiddenFieldId})},subscribe:function(c,b,a){document.getElementById(a.hiddenFieldId).value=b[2][1]["id"]}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2548,7 +2877,7 @@ Fisma.AutoComplete = function() {
         }
     };
 }();
-/**
+Fisma.Email=function(){return{panelElement:null,showRecipientDialog:function(){if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}var c=document.createElement("div");var f=document.createElement("p");var b=document.createTextNode("* Target E-mail Address:");f.appendChild(b);c.appendChild(f);var d=document.createElement("input");d.id="testEmailRecipient";d.name="recipient";c.appendChild(d);var e=document.createElement("div");e.style.height="10px";c.appendChild(e);var a=document.createElement("input");a.type="button";a.id="dialogRecipientSendBtn";a.style.marginLeft="10px";a.value="Send";c.appendChild(a);Fisma.Email.panelElement=Fisma.HtmlPanel.showPanel("Test E-mail Configuration",c.innerHTML);document.getElementById("dialogRecipientSendBtn").onclick=Fisma.Email.sendTestEmail},sendTestEmail:function(){if(document.getElementById("testEmailRecipient").value==""){alert("Recipient is required.");document.getElementById("testEmailRecipient").focus();return false}var b=document.getElementById("testEmailRecipient").value;var a=document.getElementById("email_config");a.elements.recipient.value=b;YAHOO.util.Connect.setForm(a);YAHOO.util.Connect.asyncRequest("POST","/config/test-email-config/format/json",{success:function(d){var c=YAHOO.lang.JSON.parse(d.responseText);message(c.msg,c.type)},failure:function(c){alert("Failed to send mail: "+c.statusText)}},null);if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2666,7 +2995,7 @@ Fisma.Email = function() {
         }
     };
 }();
-/**
+Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(var r in o){count=o[r];cell=a.insertCell(m++);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.id,r,"ontime",l.expanded)}for(var r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.id,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){var d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";var d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname==e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!=false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,d,b,h,e){if(!a.hasChildNodes()){if(g>0){var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(d,b,h,e)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(f,g,j,i){var e="";if(!(g=="CLOSED"||g=="TOTAL")){var e="/ontime/"+j}var h="";if(g!=""){h="/status/"+escape(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!=""){a="/type/"+this.filterType}var b="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!=""){b="/sourceId/"+this.filterSource}var d="/panel/remediation/sub/search"+e+h+"/responsibleOrganizationId/"+f+"/expanded/"+i+a+b;return d},exportTable:function(b){var a="/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3215,7 +3544,7 @@ Fisma.FindingSummary = function() {
         }
     };
 };
-/**
+Fisma.HtmlPanel=function(){return{showPanel:function(e,c,b,d){if(typeof(b)=="undefined"||b==null){b="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(b,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(c!=""){a.setBody(c);a.center()}return a}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3286,7 +3615,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-/**
+Fisma.Incident={attachArtifactCallback:function(a){window.location.href=window.location.href}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3321,7 +3650,7 @@ Fisma.Incident = {
         window.location.href = window.location.href;
     }
 };
-/**
+function upload_evidence(){if(!form_confirm(document.finding_detail,"Upload Evidence")){return false}Fisma.UrlPanel.showPanel("Upload Evidence","/remediation/upload-form",upload_evidence_form_init);return false}function upload_evidence_form_init(){document.finding_detail_upload_evidence.action=document.finding_detail.action}function ev_approve(d){if(!form_confirm(document.finding_detail,"approve the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments (OPTIONAL):"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}h.elements.comment.value=i;h.elements.decision.value="APPROVED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="APPROVED";h.appendChild(g);h.submit()}}function ev_deny(d){if(!form_confirm(document.finding_detail,"deny the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments:"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}if(i.match(/^\s*$/)){alert("Comments are required in order to deny.");return}h.elements.comment.value=i;h.elements.decision.value="DENIED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="DENIED";h.appendChild(g);h.submit()}}function ms_approve(d){if(!form_confirm(document.finding_detail,"approve the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments (OPTIONAL):");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}i.elements.comment.value=j;i.elements.decision.value="APPROVED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="APPROVED";i.appendChild(h);i.submit()}}function ms_deny(d){if(!form_confirm(document.finding_detail,"deny the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments:");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}if(j.match(/^\s*$/)){alert("Comments are required in order to submit.");return}i.elements.comment.value=j;i.elements.decision.value="DENIED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="DENIED";i.appendChild(h);i.submit()}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3575,7 +3904,130 @@ function ms_deny(formname){
         form2.submit();
     }
 }
-/**
+/*---------------
+ * jQuery iToggle Plugin by Engage Interactive
+ * Examples and documentation at: http://labs.engageinteractive.co.uk/itoggle/
+ * Copyright (c) 2009 Engage Interactive
+ * Version: 1.0 (10-JUN-2009)
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl.html
+ * Requires: jQuery v1.3 or later
+---------------*/
+
+(function($){
+	$.fn.iToggle = function(options) {
+		
+		clickEnabled = true;
+		
+		var defaults = {
+			type: 'checkbox',
+			keepLabel: true,
+			easing: false,
+			speed: 200,
+			onClick: function(){},
+			onClickOn: function(){},
+			onClickOff: function(){},
+			onSlide: function(){},
+			onSlideOn: function(){},
+			onSlideOff: function(){}
+		},
+		settings = $.extend({}, defaults, options);
+		
+		this.each(function(){
+			var $this = $(this);
+			if($this.attr('tagName') == 'INPUT'){
+				var id=$this.attr('id');
+				label(settings.keepLabel, id);
+				$this.addClass('iT_checkbox').before('<label class="itoggle" for="'+id+'"><span></span></label>');
+				if($this.attr('checked')){
+					$this.prev('label').addClass('iTon');
+				}else{
+					$this.prev('label').addClass('iToff');
+				}
+			}else{
+				$this.children('input:'+settings.type).each(function(){
+					var id = $(this).attr('id');
+					label(settings.keepLabel, id);
+					$(this).addClass('iT_checkbox').before('<label class="itoggle" for="'+id+'"><span></span></label>');
+					if($(this).attr('checked')){
+						$(this).prev('label').addClass('iTon');
+					}else{
+						$(this).prev('label').addClass('iToff');
+					}
+					if(settings.type == 'radio'){
+						$(this).prev('label').addClass('iT_radio');
+					}
+				});
+			}
+		});
+		
+		function label(e, id){
+			if(e == true){
+				if(settings.type == 'radio'){
+					$('label[for='+id+']').addClass('ilabel_radio');
+				}else{
+					$('label[for='+id+']').addClass('ilabel');
+				}
+			}else{
+				$('label[for='+id+']').remove();
+			}
+		}
+
+		$('label.itoggle').click(function(){
+			if(clickEnabled == true){
+				clickEnabled = false;
+				if($(this).hasClass('iT_radio')){
+					if($(this).hasClass('iTon')){
+						clickEnabled = true;
+					}else{
+						slide($(this), true);
+					}
+				}else{
+					slide($(this));
+				}
+			}
+			return false;
+		});
+		$('label.ilabel').click(function(){
+			if(clickEnabled == true){
+				clickEnabled = false;
+				slide($(this).next('label.itoggle'));
+			}
+			return false;
+		});
+		
+		function slide($object, radio){
+			settings.onClick.call($object); //Generic click callback for click at any state
+			h=$object.innerHeight();
+			t=$object.attr('for');
+			if($object.hasClass('iTon')){
+				settings.onClickOff.call($object); //Click that turns the toggle to off position
+				$object.animate({backgroundPosition:'100% -'+h+'px'}, settings.speed, settings.easing, function(){
+					$object.removeClass('iTon').addClass('iToff');
+					clickEnabled = true;
+					settings.onSlide.call(this); //Generic callback after the slide has finnished
+					settings.onSlideOff.call(this); //Callback after the slide turns the toggle off
+				});
+				$('input#'+t).removeAttr('checked');
+			}else{
+				settings.onClickOn.call($object);
+				$object.animate({backgroundPosition:'0% -'+h+'px'}, settings.speed, settings.easing, function(){
+					$object.removeClass('iToff').addClass('iTon');
+					clickEnabled = true;
+					settings.onSlide.call(this); //Generic callback after the slide has finnished
+					settings.onSlideOn.call(this); //Callback after the slide turns the toggle on
+				});
+				$('input#'+t).attr('checked','checked');
+			}
+			if(radio == true){
+				name = $('#'+t).attr('name');
+				slide($object.siblings('label[for]'));
+			}
+		}
+
+	};
+})(jQuery);Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
