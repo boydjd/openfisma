@@ -94,11 +94,18 @@ Fisma.AttachArtifacts = {
         newPanel.show();
 
         Fisma.AttachArtifacts.yuiPanel = newPanel;
+        
+        // Construct form action URL
+        var uploadFormAction = '/artifact/upload-form';
+        
+        if (config.form) {
+            uploadFormAction += '/form/' + encodeURIComponent(config.form);
+        }
 
         // Get panel content from artifact controller
         YAHOO.util.Connect.asyncRequest(
             'GET', 
-            '/artifact/upload-form',
+            uploadFormAction,
             {
                 success: function(o) {
                     o.argument.setBody(o.responseText);

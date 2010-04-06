@@ -9,10 +9,6 @@
 ; Version   $Id$
 
 [upload_artifact]
-method = "post"
-name = "uploadArtifactForm"
-enctype = "multipart/form-data"
-onsubmit = "return Fisma.AttachArtifacts.trackUploadProgress();"
 
 elements.comment.type = "textarea"
 elements.comment.options.label = "Comments (optional)"

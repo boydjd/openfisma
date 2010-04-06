@@ -44,10 +44,37 @@ class ArtifactController extends SecurityController
      */
     public function uploadFormAction()
     {
+        // The view is rendered into a panel, so it doesn't need a layout
         $this->_helper->layout->disableLayout();
+        
+        // The upload form can be specified as a parameter. If not specified, load the default form.
+        $formName = $this->getRequest()->getParam('form');
 
-        $form = Fisma_Form_Manager::loadForm('upload_artifact');
-                
+        if (!$formName) {
+            $formName = 'upload_artifact';
+        }
+
+        $form = Fisma_Form_Manager::loadForm($formName);
+
+        // Check that the form includes a few required elements to function correctly
+        $fileElement = $form->getElement('file');
+
+        if (is_null($fileElement) || !($fileElement instanceof Zend_Form_Element_File)) {
+            throw new Fisma_Exception('Upload forms require a Zend_Form_Element_File named "file"');
+        }
+        
+        $uploadElement = $form->getElement('uploadButton');
+
+        if (is_null($uploadElement) || !($uploadElement instanceof Zend_Form_Element_Submit)) {
+            throw new Fisma_Exception('Upload forms require a Zend_Form_Element_Submit named "uploadButton"');
+        }
+        
+        // Set additional form attributes
+        $form->setMethod("post");
+        $form->setName("uploadArtifactForm");
+        $form->setEnctype("multipart/form-data");
+        $form->setAttrib('onsubmit', "return Fisma.AttachArtifacts.trackUploadProgress()");
+                        
         $this->view->form = $form;
     }
     
