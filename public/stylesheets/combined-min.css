@@ -94,7 +94,6 @@ div.section>div>div.clear{display:none;}
 div.section>div.form_box>form>div.clear{display:none;}
 form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
-div.attachArtifactsProgressBar{width:128px;height:15px;margin:10px auto 0 auto;display:none;}
 table.treeTable{width:100%;}
 table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
 table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}

@@ -1,51 +1,11 @@
 <script type="text/javascript">
-/**
- * Handle adding and removing tabs for role/organization assignments to the tabview
- */
-YAHOO.util.Event.onDOMReady(function() {
-    YAHOO.util.Event.addListener('role', 'change', function(e) {
-        YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
-            var tabView = Fisma.tabView;
-            var tabs = tabView.get('tabs');
-            var roles = <?php echo $this->roles ?>;
-
-            if (el.selected) {
-                var found = 0;
-                
-                for (var i in tabs) {
-                    if (tabs[i].get('id') == el.value) {
-                        found = 1;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    for (var i in roles) {
-                        if (roles[i]['id'] == el.value) {
-                            var label = roles[i]['nickname'];
-                            break;
-                        }
-                    }
-
-                    var newTab = new YAHOO.widget.Tab({
-                        id: el.value,
-                        label: label,
-                        dataSrc: '/user/get-organization-subform/user/<?php echo $this->id ?>/role/' 
-                            + el.value + '/readOnly/<?php echo $this->readOnly ?>',
-                        cacheData: true,
-                        active: true
-                    });
-                    newTab.subscribe("dataLoadedChange", Fisma.prepareTab);
-                    tabView.addTab(newTab);
-                }
-            } else {
-                for (var i in tabs) {
-                    if (tabs[i].get('id') == el.value) {
-                        tabView.removeTab(tabs[i]);
-                    }
-                }
-            }
-        });
-    });
-});
+YAHOO.util.Event.onDOMReady(
+    function() { 
+        Fisma.TabView.Roles.init(
+            <?php echo((!empty($this->roles)) ? $this->roles : 'NULL'); ?>, 
+            <?php echo((!empty($this->id)) ? $this->id : '-1'); ?>, 
+            <?php echo((!empty($this->readOnly)) ? $this->readOnly : '0'); ?>
+        )
+    }
+);
 </script>

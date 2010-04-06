@@ -640,14 +640,6 @@ form dl.zend_form dt, form dl.zend_form dd {
     font-weight: bold;
     margin: 5px;
 }
-/* Style the progress bar that's displayed in the attach artifacts dialog box */
-
-div.attachArtifactsProgressBar {
-    width: 128px; 
-    height: 15px;
-    margin: 10px auto 0px auto;
-    display: none;
-}
 /* @override http://localhost/stylesheets/TreeTable.css */
 /*******************************************************************************
  *
