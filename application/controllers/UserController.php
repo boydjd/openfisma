@@ -200,6 +200,7 @@ class UserController extends BaseController
                 unset($userRole);
             }
             $conn->commit();
+            $this->view->id = $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
             throw new Fisma_Exception('Unable to save user.');
@@ -464,12 +465,15 @@ class UserController extends BaseController
         $readOnly = $this->getRequest()->getParam('readOnly');
 
         $user = Doctrine::getTable('User')->find($userId);
-        $userOrgs = $user->getOrganizationsByRole($roleId);
 
         $assignedOrgs = array();
 
-        foreach ($userOrgs as $userOrg) {
-            $assignedOrgs[] = $userOrg->id;
+        if (!empty($user)) {
+            $userOrgs = $user->getOrganizationsByRole($roleId);
+
+            foreach ($userOrgs as $userOrg) {
+                $assignedOrgs[] = $userOrg->id;
+            }
         }
 
         $subForm = new Zend_Form_SubForm();
@@ -524,13 +528,15 @@ class UserController extends BaseController
 
         $user = $q->fetchArray();
 
-        foreach ($user[0]['Roles'] as $role) {
-            $tabView->addTab(
-                $role['nickname'], 
-                "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
-                $role['id'],
-                'true' 
-            );
+        if (isset($user[0]['Roles'])) {
+            foreach ($user[0]['Roles'] as $role) {
+                $tabView->addTab(
+                    $role['nickname'], 
+                    "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
+                    $role['id'],
+                    'true' 
+                );
+            }
         }
 
         $roles = Doctrine_Query::create()
@@ -554,8 +560,23 @@ class UserController extends BaseController
      */
     public function createAction()
     {
+        $tabView = new Fisma_Yui_TabView('UserView');
+
+        $roles = Doctrine_Query::create()
+            ->select('r.id, r.nickname')
+            ->from('Role r')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+
+        $this->view->roles = Zend_Json::encode($roles);
+        $this->view->tabView = $tabView;
         parent::createAction();
         $this->view->form->removeDecorator('Fisma_Form_FismaDecorator');
+
+        if (!empty($this->view->id)) {
+            $this->_request->setParam('id', $this->view->id);
+            $this->_forward('view');
+        }
     }
 
     /**
