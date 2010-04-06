@@ -477,7 +477,7 @@ class UserController extends BaseController
         $subForm->removeDecorator('HtmlTag');
 
         $organizations = new Fisma_Form_Element_CheckboxTree("organizations");
-        $organizations->setDecorators(null);
+        $organizations->clearDecorators();
         $organizations->setLabel('Organizations & Information Systems');
 
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
