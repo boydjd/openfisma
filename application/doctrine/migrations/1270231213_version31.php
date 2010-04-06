@@ -22,7 +22,7 @@
  * @package Migration
  * @version $Id: 1268179656_version29.php 3090 2010-03-10 14:10:59Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Version31 extends Doctrine_Migration_Base
