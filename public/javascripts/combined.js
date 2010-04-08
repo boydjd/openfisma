@@ -2230,12 +2230,17 @@ Fisma.AttachArtifacts = {
         Fisma.AttachArtifacts.config = config;
 
         // Create a new panel
-        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : false});
+        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
         newPanel.setHeader('Upload Artifact');
         newPanel.setBody("Loading...");
         newPanel.render(document.body);
         newPanel.center();
         newPanel.show();
+        
+        // Register listener for the panel close event
+        newPanel.hideEvent.subscribe(function () {
+            Fisma.AttachArtifacts.cancelPanel.call(Fisma.AttachArtifacts);
+        });
 
         Fisma.AttachArtifacts.yuiPanel = newPanel;
         
@@ -2274,6 +2279,15 @@ Fisma.AttachArtifacts = {
      */
     trackUploadProgress : function () {
 
+        // Verify that a file is selected
+        var fileUploadEl = document.getElementById('fileUpload');
+
+        if ("" == fileUploadEl.value) {
+            alert("Please select a file.");
+            
+            return false;
+        }
+                
         // Disable the upload button
         var uploadButton = document.getElementById('uploadButton');
         uploadButton.disabled = true;
@@ -2404,8 +2418,42 @@ Fisma.AttachArtifacts = {
                 {
                     success : function (asyncResponse) {
 
-                        // Parse server response and update progress bar
-                        var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                        // Parse server response
+                        try {
+                            var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                        } catch (e) {
+                            if (e instanceof SyntaxError) {
+                                // Handle a JSON syntax error by constructing a fake response object with progress=false
+                                response = new Object();
+                                response.progress = false;
+                            } else {
+                                throw e;
+                            }
+                        }
+
+                        // If progress fails for some reason, then revert to the indeterminate bar and cancel polling
+                        if (!response.progress) {
+                                                        
+                            that.yuiProgressBar.destroy();
+                            that.yuiProgressBar = null;
+                            
+                            that.pollingEnabled = false;
+                            
+                            // Re-add original styling
+                            var progressBarContainer = document.getElementById('progressBarContainer');
+                            YAHOO.util.Dom.addClass(progressBarContainer, 'attachArtifactsProgressBar');
+                            
+                            // Re-add indeterminate progress image
+                            var img = document.createElement('img');
+                            img.src = '/images/loading_bar.gif';
+                            progressBarContainer.appendChild(img);
+                            
+                            that.pollingTimeoutId = null;
+                                             
+                            return;
+                        }
+
+                        // Update progress bar
                         var percent = Math.round((response.progress.current / response.progress.total) * 100);
                         that.yuiProgressBar.set('value', percent);
                     
@@ -2436,12 +2484,19 @@ Fisma.AttachArtifacts = {
     handleUploadComplete : function (asyncResponse) {
 
         // Check response status and display error message if necessary
-        var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
-        
-        if (!responseStatus.success) {
-            alert(responseStatus.message);
+        try {
+            var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+        } catch (e) {
+            if (e instanceof SyntaxError) {
+                // Handle a JSON syntax error by constructing a fake response object
+                responseStatus = new Object();
+                responseStatus.success = false;
+                responseStatus.message = "Invalid response from server."
+            } else {
+                throw e;
+            }
         }
-        
+
         // Stop the polling process and cancel the last asynchronous request
         this.pollingEnabled = false;
         clearTimeout(this.pollingTimeoutId);
@@ -2454,8 +2509,23 @@ Fisma.AttachArtifacts = {
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
         progressTextEl.nodeValue = 'Verifying file.';
-                
-        /**
+
+        if (!responseStatus.success) {
+            alert("Upload Failed: " + responseStatus.message);
+            
+            progressTextEl.nodeValue = 'Uploading...';
+            
+            document.getElementById('progressBarContainer').style.display = 'none';
+            document.getElementById('progressTextContainer').style.display = 'none';
+
+            // Re-enable upload button
+            var uploadButton = document.getElementById('uploadButton');
+            uploadButton.disabled = false;
+
+            return;
+        }
+        
+        /*
          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
          * references using array access notation.
          * 
@@ -2476,6 +2546,20 @@ Fisma.AttachArtifacts = {
                  */
                 callbackMethod.call(callbackObject, this.yuiPanel);
             }
+        }
+    },
+    
+    /**
+     * Handle a panel close event by canceling the upload and disabling any oustanding timeouts
+     */
+    cancelPanel : function () {
+        if (this.pollingEnabled) {
+            this.pollingEnabled = false;
+            clearTimeout(this.pollingTimeoutId);
+        }
+        
+        if (this.lastAsyncRequest) {
+            YAHOO.util.Connect.abort(this.lastAsyncRequest);
         }
     }
 };
