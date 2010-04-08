@@ -71,4 +71,45 @@ class DebugController extends Zend_Controller_Action
     {
         echo file_get_contents('../data/logs/php.log');
     }
+    
+    /**
+     * Display APC system cache info
+     */
+    public function apcCacheAction()
+    {
+        $this->_helper->layout()->enableLayout();
+        $this->_helper->viewRenderer->setNoRender(false);
+        $this->_helper->actionStack('header', 'panel');
+        
+        // Cache type can be 'system' or 'user'. Defaults to 'system'.
+        $cacheType = $this->getRequest()->getParam('type');
+        
+        if (!$cacheType) {
+            $cacheType = 'system';
+        }
+
+        switch ($cacheType) {
+            case 'system':
+                $cacheInfo = apc_cache_info();
+                break;
+            case 'user':
+                $cacheInfo = apc_cache_info('user');
+                break;
+            default:
+                throw new Fisma_Exception("Invalid cache type: '$cacheType'");
+                break;
+        }
+
+        // Cache info contains summary data and line item data. Separate these into two view variables for clarity.
+        $cacheItems = $cacheInfo['cache_list'];
+        unset($cacheInfo['cache_list']);
+        
+        $this->view->cacheType = ucfirst(htmlspecialchars($cacheType));
+        $this->view->cacheSummary = $cacheInfo;
+
+        if (count($cacheItems) > 0) {
+            $this->view->cacheItemHeaders = array_keys($cacheItems[0]);
+            $this->view->cacheItems = $cacheItems;
+        }
+    }
 }

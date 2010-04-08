@@ -1,0 +1,56 @@
+<?php
+Fisma_Format_Section::startSection($this->cacheType . ' Cache Summary');
+?>
+
+    <table class="keyValues">
+        <?php
+        foreach ($this->cacheSummary as $key => $value):
+        ?>
+            <tr>
+                <td><?php echo $key; ?></td>
+                <td><?php echo $value; ?></td>
+            </tr>
+        <?php
+        endforeach;
+        ?>
+    </table>
+    
+<?php
+Fisma_Format_Section::stopSection();
+Fisma_Format_Section::startSection($this->cacheType . ' Cache Items');
+
+if (isset($this->cacheItems)):
+?>
+    <table class="keyValues">
+        <tr>
+            <?php
+            foreach ($this->cacheItemHeaders as $header):
+            ?>
+                <th><?php echo $header; ?></th>
+            <?php
+            endforeach;
+            ?>
+        </tr>
+        
+        <?php
+        foreach ($this->cacheItems as $cacheItem):
+        ?>
+            <tr>
+                <?php
+                foreach ($cacheItem as $itemValue):
+                ?>
+                    <td><?php echo $itemValue; ?></td>
+                <?php
+                endforeach;
+                ?>
+            </tr>
+        <?php
+        endforeach;
+        ?>
+    </table>
+    
+<?php
+endif;
+
+Fisma_Format_Section::stopSection();
+?>
