@@ -6,50 +6,77 @@
 Fisma_Format_Section::startSection('Artifacts');
 ?>
 
-<table border="1" class="systemDocuments">
-    <tr>
-        <th>File Name</th>
-        <th>Size</th>
-        <th>Uploaded By</th>
-        <th>Upload Date</th>
-        <th>Comment</th>
-    </tr>
+<div id='artifacts'>
+    <table id='artifactsTable'>
+        <?php
+        foreach ($this->artifacts as $artifact):
+            $downloadUrl = '/incident/download-artifact/id/'
+                         . $this->id
+                         . '/artifactId/'
+                         . $artifact->id;
+        ?>
+            <tr>
+                <td>
+                    <a href='<?php echo $downloadUrl; ?>'>
+                        <img src='<?php echo $artifact->getIconUrl(); ?>'>
+                    </a>
+                </td>
+                <td>
+                    <a href='<?php echo $downloadUrl; ?>'>
+                        <div>
+                            <?php echo $artifact->fileName; ?>
+                        </div>
+                    </a>
+                </td>
+                <td>
+                    <?php echo $artifact->getFileSize(); ?>
+                </td>
+                <td>
+                    <?php echo $artifact->User; ?>
+                </td>
+                <td>
+                    <?php echo $artifact->createdTs; ?>
+                </td>
+                <td>
+                    <?php echo $artifact->comment; ?>
+                </td>
+            </tr>
+        <?php
+        endforeach;
+        ?>
 
-    <?php
-    foreach ($this->artifacts as $artifact):
-        $downloadUrl = '/incident/download-artifact/id/'
-                     . $this->id
-                     . '/artifactId/'
-                     . $artifact->id;
-    ?>
-        <tr>
-            <td>
-                <a href='<?php echo $downloadUrl; ?>'>
-                    <img src='<?php echo $artifact->getIconUrl(); ?>'>
-                    <div>
-                        <?php echo $artifact->fileName; ?>
-                    </div>
-                </a>
-            </td>
-            <td>
-                <?php echo $artifact->getFileSize(); ?>
-            </td>
-            <td>
-                <?php echo $artifact->User; ?>
-            </td>
-            <td>
-                <?php echo $artifact->createdTs; ?>
-            </td>
-            <td>
-                <?php echo $artifact->comment; ?>
-            </td>
-        </tr>
-    <?php
-    endforeach;
-    ?>
-
-</table>
+    </table>
+</div>
 
 <?php
 Fisma_Format_Section::stopSection();
 ?>
+
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('artifacts', function() {
+    var myColumnDefs = [
+        {key:'icon', label:'', sortable:false},
+        {key:'fileName', label:'File Name', sortable:true},
+        {key:'size', label:'Size', sortable:true},
+        {key:'uploadedBy', label:'Uploaded By', sortable:true},
+        {key:'uploadDate', label:'Upload Date', sortable:true},
+        {key:'comment', label:'Comment', sortable:false}        
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("artifactsTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            {key:'icon'},
+            {key:'fileName'},
+            {key:'size'},
+            {key:'uploadedBy'},
+            {key:'uploadDate'},
+            {key:'comment'}
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("artifacts", myColumnDefs, this.myDataSource, {});
+});
+</script>
