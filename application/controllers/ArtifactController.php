@@ -62,7 +62,7 @@ class ArtifactController extends SecurityController
         if (is_null($fileElement) || !($fileElement instanceof Zend_Form_Element_File)) {
             throw new Fisma_Exception('Upload forms require a Zend_Form_Element_File named "file"');
         }
-        
+
         $uploadElement = $form->getElement('uploadButton');
 
         if (is_null($uploadElement) || !($uploadElement instanceof Zend_Form_Element_Submit)) {
@@ -76,6 +76,7 @@ class ArtifactController extends SecurityController
         $form->setAttrib('onsubmit', "return Fisma.AttachArtifacts.trackUploadProgress()");
                         
         $this->view->form = $form;
+        $this->view->maxFileSize = ini_get('upload_max_filesize');
     }
     
     /**
@@ -97,8 +98,7 @@ class ArtifactController extends SecurityController
         
         // If APC exists, then add current progress info into return object
         if (function_exists('apc_fetch') && ini_get('apc.rfc1867')) {
-            //array_merge($progress, Zend_File_Transfer_Adapter_Http::getProgress($apcId));
-            $progress = Zend_File_Transfer_Adapter_Http::getProgress($apcId);
+            $progress = apc_fetch(ini_get('apc.rfc1867_prefix') . $apcId);
         }
 
         $this->view->progress = $progress;
