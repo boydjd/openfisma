@@ -113,6 +113,51 @@ class Fisma_String
     }
 
     /**
+     * A helper for converting HTML to text suitable for use in the PDF generator.
+     * 
+     * This is *NOT* intended to satisfactorily strip malicious content from HTML. This assumes the input is safe 
+     * markup which just needs to be coerced into plain text format.
+     *
+     * This function behaves in a similar manner to htmlToPlainText(), but allows HTML entities as well
+     * as I, B and U formatting tags.
+     * 
+     * @param string $html HTML input
+     * @return string PDF text output
+     */
+    static function htmlToPdfText($html)
+    {
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $html = str_replace(chr(10), ' ', $html);
+        $html = str_replace(chr(13), ' ', $html);
+
+        // Convert <p> and <br> into unix line endings
+        $html = preg_replace('/<p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<\/p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<br[^>]*?>/i', "\n", $html);
+        
+        // Convert list tags into plain text
+        $html = preg_replace('/<[uo]l[^>]>/i', '', $html);
+        $html = preg_replace('/<\/[uo]l[^>]>/i', "\n", $html);
+        $html = preg_replace('/<li[^>]*?>/i', "\n* ", $html);
+        $html = preg_replace('/<\/li>/i', '', $html);
+        
+        // Remove any remaining tags, except for I, B and U
+        $html = strip_tags($html, '<i><b><u>');
+        
+        // Remove excess whitespace
+        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
+        $html = preg_replace('/^\s+/', '', $html);
+        $html = preg_replace('/\s+$/', '', $html);
+        $html = preg_replace('/ +/', ' ', $html);
+
+        // Character set encoding -- input charset is a guess
+        $html = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html);
+
+        return $html;
+    }
+
+    /**
      * Convert plain text into a similar HTML representation 
      * 
      * @param string $plainText The plain text that needs to be marked up
