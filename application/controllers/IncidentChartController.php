@@ -41,6 +41,18 @@ class IncidentChartController extends SecurityController
     }
     
     /**
+     * Verify that this module is enabled
+     */
+    public function preDispatch()
+    {
+        $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+        
+        if (!$module->enabled) {
+            throw new Fisma_Exception('This module is not enabled.');
+        }
+    }
+    
+    /**
      * A bar chart which shows how many incidents were reported/resolved/rejected on a month-by-month basis 
      * in recent history
      */

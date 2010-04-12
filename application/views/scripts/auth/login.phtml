@@ -45,22 +45,28 @@
                 </td>
             </tr>
         </table>
-        <hr>
-        <table>
-            <tr>
-                <td colspan="2">
-                    <?php 
-                    echo new Fisma_Yui_Form_Button_Link(
-                        'reportIncident', 
-                        array(
-                            'value' => 'Report A Security Incident',
-                            'href' => '/incident/report',
-                            'imageSrc' => '/images/report_incident.png'
-                        )
-                    ); 
-                    ?>
-                </td>
-            </tr>
-        </table>
+        <?php
+        if ($this->showReportIncidentButton):
+        ?>
+            <hr>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <?php 
+                        echo new Fisma_Yui_Form_Button_Link(
+                            'reportIncident', 
+                            array(
+                                'value' => 'Report A Security Incident',
+                                'href' => '/incident/report',
+                                'imageSrc' => '/images/report_incident.png'
+                            )
+                        ); 
+                        ?>
+                    </td>
+                </tr>
+            </table>
+        <?php
+        endif;
+        ?>
     </form>
 </div>

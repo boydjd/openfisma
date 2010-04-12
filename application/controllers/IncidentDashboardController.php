@@ -41,7 +41,19 @@ class IncidentDashboardController extends SecurityController
                       ->setActionContext('recent-comments-data', 'json')
                       ->initContext();
     }
-    
+
+    /**
+     * Verify that this module is enabled
+     */
+    public function preDispatch()
+    {
+        $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+        
+        if (!$module->enabled) {
+            throw new Fisma_Exception('This module is not enabled.');
+        }
+    }
+
     /**
      * The default dashboard view, displays a tabview
      */

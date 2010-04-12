@@ -39,6 +39,12 @@ class IrReportController extends SecurityController
     public function preDispatch()
     {
         Fisma_Acl::requireArea('incident_report');
+
+        $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+
+        if (!$module->enabled) {
+            throw new Fisma_Exception('This module is not enabled.');
+        }
     }
     
     /**

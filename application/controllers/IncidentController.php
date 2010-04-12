@@ -95,6 +95,12 @@ class IncidentController extends SecurityController
      */
     function preDispatch()
     {        
+        $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+
+        if (!$module->enabled) {
+            throw new Fisma_Exception('This module is not enabled.');
+        }
+
         if (in_array($this->_request->action, array('totalstatus','totalcategory'))) {
 
             $contextSwitch = $this->_helper->getHelper('contextSwitch');

@@ -80,7 +80,9 @@ class Fisma_Menu
             $mainMenuBar->add($systems);
         }
 
-        if (Fisma_Acl::hasArea('incident')) {
+        $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+
+        if ($incidentModule && $incidentModule->enabled && Fisma_Acl::hasArea('incident')) {
             // Incidents main menu
             $incidentMenu = new Fisma_Yui_Menu('Incidents');
 

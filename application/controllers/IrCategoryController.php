@@ -44,6 +44,13 @@ class IrCategoryController extends SecurityController
     public function preDispatch()
     {
         parent::preDispatch();
+
+        $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+
+        if (!$module->enabled) {
+            throw new Fisma_Exception('This module is not enabled.');
+        }
+
         $req = $this->getRequest();
         $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
