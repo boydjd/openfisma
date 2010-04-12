@@ -1,0 +1,16 @@
+<?php
+Fisma_Format_Section::startSection('Installed Modules');
+?>
+
+<table class="modules">
+    <?php
+    foreach ($this->modules as $module):
+    ?>
+        <tr>
+            <td><?php echo $module['name']; ?></td>
+            <td><?php echo $module['control']; ?></td>
+        </tr>
+    <?php
+    endforeach;
+    ?>
+</table>

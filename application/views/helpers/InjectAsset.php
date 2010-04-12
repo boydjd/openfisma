@@ -50,19 +50,23 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/AttachArtifacts.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Email.js',
-                                      '/javascripts/Fisma/Incident.js',
-                                      '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/FindingSummary.js',
-                                      '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/HtmlPanel.js',
+                                      '/javascripts/Fisma/Incident.js',
+                                      '/javascripts/Fisma/Module.js',
+                                      '/javascripts/Fisma/Remediation.js',
+                                      '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
+                                      '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/AC_RunActiveContent.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
                                       '/stylesheets/AttachArtifacts.css',
-                                      '/stylesheets/FindingSummary.css'
+                                      '/stylesheets/FindingSummary.css',
+                                      '/stylesheets/Modules.css',
+                                      '/stylesheets/SwitchButton.css'
                                 )
                             );
 

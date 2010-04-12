@@ -1,0 +1,3 @@
+div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
+div.switchButton span.border{background-position:left top;margin:0;}
+div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}

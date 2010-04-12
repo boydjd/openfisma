@@ -94,6 +94,7 @@ div.section>div>div.clear{display:none;}
 div.section>div.form_box>form>div.clear{display:none;}
 form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
+div.attachArtifactsProgressBar{width:128px;height:15px;margin:10px auto 0 auto;display:none;}
 table.treeTable{width:100%;}
 table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
 table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
@@ -117,3 +118,9 @@ table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weigh
 .treeTable7{margin-left:7em;}
 .treeTable8{margin-left:8em;}
 .treeTable9{margin-left:9em;}
+table.modules{margin-left:auto;margin-right:auto;}
+table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
+table.modules td:first-child{font-weight:bold;}
+div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
+div.switchButton span.border{background-position:left top;margin:0;}
+div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}

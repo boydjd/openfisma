@@ -1,0 +1,13 @@
+Module:
+    columns:
+        name:
+            type: string(255)
+            comment: Name of module
+        enabled:
+            type: boolean
+            comment: True if the module is enabled, false otherwise
+        canBeDisabled:
+            type: boolean
+            comment: >
+                If true, then this module is permanently enabled, i.e. the enabled column is set to true and 
+                cannot be modified. If false, then enabled column can be modified freely.

@@ -142,6 +142,10 @@ class Fisma_Menu
                 $admin->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
             }
 
+            if (Fisma_Acl::hasArea('configuration')) {
+                $admin->add(new Fisma_Yui_MenuItem('Modules', '/panel/config/sub/modules'));
+            }
+
             if (Fisma_Acl::hasPrivilegeForClass('read', 'Network')) {
                 $admin->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
             }

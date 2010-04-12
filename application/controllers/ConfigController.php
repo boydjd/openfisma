@@ -49,6 +49,7 @@ class ConfigController extends SecurityController
         $contextSwitch = $this->_helper->contextSwitch();
         $contextSwitch->setAutoJsonSerialization(false)
                       ->addActionContext('test-email-config', 'json')
+                      ->addActionContext('set-module', 'json')
                       ->initContext();
     }
     
@@ -304,6 +305,87 @@ class ConfigController extends SecurityController
         }
         $this->_helper->viewRenderer->setNoRender();
 
+    }
+
+    /**
+     * Display module status and controls to change module status
+     */
+    public function modulesAction()
+    {
+        Fisma_Acl::requireArea('configuration');
+
+        $moduleQuery = Doctrine_Query::create()
+                       ->from('Module m')
+                       ->orderBy('m.name')
+                       ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        
+        $modules = $moduleQuery->execute();        
+
+        foreach ($modules as &$module) {
+
+            // If a module can be disabled, then create a switch button to control its ON/OFF state
+            if ($module['canBeDisabled']) {
+
+                // Need a javascript/DOM safe ID to represent this switch
+                $id = preg_replace('/[^A-Za-z0-9]+/', '_', $module['name']);
+                
+                $module['control'] = new Fisma_Js_SwitchButton($id, 
+                                                               $module['enabled'], 
+                                                               'Fisma.Module.handleSwitchButtonStateChange',
+                                                               array('id' => $module['id']));
+            } else {
+                $module['control'] = 'This module cannot be disabled.';
+            }
+        }
+        
+        $this->view->modules = $modules;
+    }
+    
+    /**
+     * Update a module's status.
+     * 
+     * This is called asynchronously and returns a JSON response
+     */
+    public function setModuleAction()
+    {        
+        $response = new Fisma_AsyncResponse();
+
+        try {
+            Fisma_Acl::requireArea('configuration');
+            
+            // Load module object
+            $moduleId = $this->getRequest()->getParam('id');
+            
+            if (empty($moduleId)) {
+                throw new Fisma_Exception('ID parameter is required');
+            }
+            
+            $module = Doctrine::getTable('Module')->find($moduleId);
+            
+            if (!$module) {
+                throw new Fisma_Exception("Module with id '$moduleId' not found");
+            }
+
+            // Handle the 'enabled' parameter, which is a string value either 'true' or 'false'
+            $enabled = $this->getRequest()->getParam('enabled');
+            
+            if ('true' == $enabled) {
+                $module->enabled = true;
+            } elseif ('false' == $enabled) {
+                $module->enabled = false;
+            } else {
+                throw new Fisma_Exception("Invalid enabled state: $enabled");
+            }
+
+            $module->save();
+            
+        } catch (Fisma_User_Exception $userException) {
+            $response->fail($userException->getMessage());
+        } catch (Fisma_Exception_InvalidPrivilege $invalidPrivilege) {
+            $response->fail('User is not authorized to perform this action.');
+        }
+        
+        $this->view->response = $response;
     }
 
     /**
