@@ -267,6 +267,7 @@ Role:
             - areas_dashboard
             - incident_read
             - incident_create
+            - incident_lock
 
     irc_role:
         name: Incident Response Coordinator
