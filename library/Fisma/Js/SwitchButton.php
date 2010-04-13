@@ -85,7 +85,9 @@ class Fisma_Js_SwitchButton
 
         $render = "<div id='$this->_id'></div>
                    <script type='text/javascript'>
-                       var switchButton = new Fisma.SwitchButton($constructorArguments);
+                       YAHOO.util.Event.onDOMReady(function () {
+                           var switchButton = new Fisma.SwitchButton($constructorArguments);
+                       });
                    </script>";
         
         return $render;

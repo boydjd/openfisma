@@ -39,15 +39,17 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
 
     var that = this;
     
-    // element can be an actual element or an ID
-    if (element instanceof HTMLElement) {
+    // element can be an actual element or an ID (notice that 'element instanceof HTMLElement' doesn't work in IE)
+    if (element.nodeType && element.nodeType == document.ELEMENT_NODE) {
         this.element = element;
-    } else {
+    } else if ('string' == typeof element) {
         this.element = document.getElementById(element);
         
         if (!this.element) {
             throw 'Invalid element name "' + name + '"';
         }
+    } else {
+        throw "Invalid element for switch button constructor";
     }
     
     // Set up DOM elements needed for switch button
@@ -115,19 +117,34 @@ Fisma.SwitchButton.prototype = {
 
         this.element.appendChild(spinnerSpan);
         this.spinner = spinnerSpan;
+        
+        // Create a proxy element for animating the background position (see toggleSwitch())
+        this.proxyElement = document.createElement('div');
+        this.proxyElement.style.display = 'none';
+        document.body.appendChild(this.proxyElement);
     },
     
     /**
      * Toggle this switch between its off and on states
+     * 
+     * Requires a bit of a hack. We want to animate the background position's X coordinate, but CSS does not have a 
+     * standard attribute for this. (Although IE and Safari both implement a non-standard attribute.) So we have to
+     * create a proxy element to animate and use the onTween event to copy the proxy element's attributes into the
+     * button itself.
+     * 
+     * Credit for this idea to Dav Glass (http://blog.davglass.com/files/yui/anim2/)
      */
-    toggleSwitch : function () {        
+    toggleSwitch : function () {
+
+        var that = this;
+                      
         var animationAttributes;
-        
+
         if (this.state) {
             
             // Animate from "ON" to "OFF"
             animationAttributes = {
-                backgroundPositionX : {
+                left : {
                     from : 0,
                     to : -54,
                     unit : 'px'
@@ -139,7 +156,7 @@ Fisma.SwitchButton.prototype = {
             
             // Animate from "OFF" to "ON"
             animationAttributes = {
-                backgroundPositionX : {
+                left : {
                     from : -54,
                     to : 0,
                     unit : 'px'
@@ -149,10 +166,23 @@ Fisma.SwitchButton.prototype = {
             this.state = true;
         }        
         
-        var toggleAnimation = new YAHOO.util.Anim(this.element, animationAttributes, .25, YAHOO.util.Easing.easeOut);
+        var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
+                                                  animationAttributes, 
+                                                  .1, 
+                                                  YAHOO.util.Easing.easeOut);
+
+        toggleAnimation.onTween.subscribe(
+            function () {
+                
+                /* The proxy element is animated on the 'left' attribute, so we copy that into the actual button's 
+                 * background position.
+                 */
+                that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
+            }
+        )
 
         toggleAnimation.animate();
-        
+
         if (this.callback) {
             this.callback(this);
         }
