@@ -320,6 +320,10 @@ Privilege:
         resource: incident
         action: close
         description: Close Incident
+    incident_lock:
+        resource: incident
+        action: lock
+        description: Lock Incident
 
     # IRWorkflow CRUD
     ir_workflow_def_create:

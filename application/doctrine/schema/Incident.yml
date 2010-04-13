@@ -351,6 +351,8 @@ Incident:
             foreignAlias: ObserverIncidents
 
     actAs:
+        Fisma_Behavior_Lockable: true
+
         Fisma_Behavior_AttachArtifacts: true
             
         Fisma_Behavior_AuditLoggable:

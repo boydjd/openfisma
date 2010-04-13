@@ -651,8 +651,52 @@ class IncidentController extends SecurityController
                 'label' => 'Save Changes'
             )
         );
+
+        $this->view->unlockButton = new Fisma_Yui_Form_Button_Link(
+            'unlock',
+            array(
+                'value' => 'Unlock Incident',
+                'href' => "/panel/incident/sub/unlock/id/$id"
+            )
+        );
+
+        $this->view->lockButton = new Fisma_Yui_Form_Button_Link(
+            'lock',
+            array(
+                'value' => 'Lock Incident',
+                'href' => "/panel/incident/sub/lock/id/$id"
+            )
+        );
     
         $this->view->formAction = "/incident/update/id/$id";
+    }
+
+    /**
+     * Lock the incident 
+     * 
+     * @return void
+     */
+    public function lockAction()
+    {
+        $id = $this->_request->getParam('id');
+        $incident = Doctrine::getTable('Incident')->find($id);
+        $incident->isLocked = TRUE;
+        $incident->save();
+        $this->_redirect("/panel/incident/sub/view/id/$id");
+    }
+
+    /**
+     * Unlock the incident 
+     * 
+     * @return void
+     */
+    public function unlockAction()
+    {
+        $id = $this->_request->getParam('id');
+        $incident = Doctrine::getTable('Incident')->find($id);
+        $incident->isLocked = FALSE;
+        $incident->save();
+        $this->_redirect("/panel/incident/sub/view/id/$id");
     }
     
     /**
