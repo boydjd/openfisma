@@ -1,15 +1,15 @@
 Module:
     findingModule:
         name: Findings
-        enabled: YES
         canBeDisabled: NO
+        enabled: YES
 
     incidentResponseModule:
         name: Incident Reporting
-        enabled: YES
         canBeDisabled: YES
+        enabled: YES
 
     systemInventoryModule:
         name: System Inventory
-        enabled: YES
         canBeDisabled: NO
+        enabled: YES

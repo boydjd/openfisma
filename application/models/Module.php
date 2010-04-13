@@ -49,10 +49,10 @@ class Module extends BaseModule
      */
     public function setEnabled($enabled)
     {
-        if ($this->canBeDisabled) {
-            $this->_set('enabled', $enabled);
-        } else {
+        if ($enabled === false  && !$this->canBeDisabled) {
             throw new Fisma_Exception("The '$this->name' module cannot be disabled");
+        } else {
+            $this->_set('enabled', $enabled);
         }
     }
 }
