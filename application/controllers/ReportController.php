@@ -37,32 +37,12 @@ class ReportController extends SecurityController
      */
     public function init()
     {
+        /*
+         * initialize context switching before initializing SecurityController.  This has to be done because security
+         * controller starts the php session
+         */
+        $swCtx = $this->_helper->fismaContextSwitch();
         parent::init();
-        $swCtx = $this->_helper->contextSwitch();
-        if (!$swCtx->hasContext('pdf')) {
-            $swCtx->addContext(
-                'pdf', 
-                array(
-                    'suffix' => 'pdf',
-                    'headers' => array(
-                        'Content-Disposition' => 'attachement;filename="export.pdf"',
-                        'Content-Type' => 'application/pdf'
-                    )
-                )
-            );
-        }
-        if (!$swCtx->hasContext('xls')) {
-            $swCtx->addContext(
-                'xls', 
-                array(
-                    'suffix' => 'xls',
-                    'headers' => array(
-                        'Content-type' => 'application/vnd.ms-excel',
-                        'Content-Disposition' => 'filename=Fisma_Report.xls'
-                    )
-                )
-            );
-        }
     }
     
     /**
@@ -75,7 +55,7 @@ class ReportController extends SecurityController
         Fisma_Acl::requireArea('reports');
 
         $this->req = $this->getRequest();
-        $swCtx = $this->_helper->contextSwitch();
+        $swCtx = $this->_helper->fismaContextSwitch();
         $swCtx->addActionContext('overdue', array('pdf', 'xls'))
               ->addActionContext('plugin-report', array('pdf', 'xls'))
               ->addActionContext('fisma-quarterly', 'xls')
