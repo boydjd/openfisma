@@ -17,9 +17,10 @@
  */
 
 /**
- * Fisma_Behavior_Lockable_Exception 
+ * Extended exception specific to the lockable behavior
  * 
- * @package 
+ * @package Fisma
+ * @subpackage FIsma_Behavior_Lockable
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 

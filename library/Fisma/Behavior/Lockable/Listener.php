@@ -21,7 +21,7 @@
  *
  * @TODO See if we can de-couple this from Fisma_Acl at some point.
  * 
- * @package Fisma_Behavior
+ * @package Fisma
  * @subpackage Fisma_Behavior_Lockable
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -49,35 +49,39 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         /**
          * Record fields haven't been modified, nothing to do here. 
          */
-        if (!$event->getInvoker()->isModified())
+        if (!$event->getInvoker()->isModified()) {
             return;
+        }
 
         /**
          * The record is not locked, and the lock isn't being changed, nothing to do here. 
          */
-        if (!$locked && !$lockModified)
+        if (!$locked && !$lockModified) {
             return;
+        }
 
         /**
          * Only the lock is being modified and the user has the credentials to modify the lock, so there's nothing to
          * do here. 
          */
-        if ($lockModified && $numModified == 1 && $hasPrivilege)
+        if ($lockModified && $numModified == 1 && $hasPrivilege) {
             return;
+        }
 
         /**
-         * The user does not have the credentials to modify the lock, throw an exception. 
+         * The user does not have the credentials to modify the lock. 
          */
-        if ($lockModified && !$hasPrivilege)
+        if ($lockModified && !$hasPrivilege) {
             throw new Fisma_Behavior_Lockable_Exception(
                 'You do not have the necessary privileges to lock/unlock this record'
             );
+        }
 
         /**
-         * The record is locked, throw an exception. 
+         * The record is locked and the user does not have the correct privilege to modify a locked record. 
          */
-        if ($locked)
+        if ($locked && !$hasPrivilege) {
             throw new Fisma_Behavior_Lockable_Exception('The record must be unlocked before it can be modified.');
-
+        }
     }
 }

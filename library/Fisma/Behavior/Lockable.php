@@ -18,7 +18,7 @@
 
 /**
  * Generic lockable behavior for records. Allows a record to be locked or unlocked.
- * Throws an exception if the record is modified while it is locked. 
+ * Throws an exception if the record is modified while it is locked if the user does not have the proper privileges.
  * 
  * @package Fisma
  * @subpackage Fisma_Behavior_Lockable
