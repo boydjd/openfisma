@@ -36,7 +36,11 @@ class Fisma_Acl extends Zend_Acl
      */
     static public function hasArea($area)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
+        try {
+            $user = Zend_Auth::getInstance()->getIdentity();
+        } catch (Exception $e) {
+            return false;
+        }
         
         return self::_isAllowed($user, 'area', $area);
     }
@@ -71,7 +75,12 @@ class Fisma_Acl extends Zend_Acl
      */
     static public function hasPrivilegeForObject($privilege, $object)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
+        try {
+            $user = Zend_Auth::getInstance()->getIdentity();
+        } catch (Exception $e) {
+            return false;
+        }
+
         $resourceName = Doctrine_Inflector::tableize(get_class($object));
         $hasPrivilege = false;
 
@@ -133,7 +142,12 @@ class Fisma_Acl extends Zend_Acl
      */
     static public function hasPrivilegeForClass($privilege, $className)
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
+        try {
+            $user = Zend_Auth::getInstance()->getIdentity();
+        } catch (Exception $e) {
+            return false;
+        }
+
         $resourceName = Doctrine_Inflector::tableize($className);
         $hasPrivilege = false;
 

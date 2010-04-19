@@ -39,17 +39,19 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
      */
     public function preSave(Doctrine_Event $event)
     {
-        $modelName = Doctrine_Inflector::tableize(get_class($event->getInvoker()));
-        $modifiedFields = $event->getInvoker()->getModified();
-        $hasPrivilege = Fisma_Acl::hasPrivilegeForObject($modelName . '_lock', $event->getInvoker());
-        $locked = $event->getInvoker()->isLocked;
-        $lockModified = array_key_exists('isLocked', $modifiedFields);
+        $invoker = $event->getInvoker();
+        $modelName = Doctrine_Inflector::tableize(get_class($invoker));
+        $modifiedFields = $invoker->getModified();
+        $hasPrivilege = Fisma_Acl::hasPrivilegeForObject($modelName . '_lock', $invoker);
+        $locked = $invoker->isLocked;
+        $lockModified = (array_key_exists('isLocked', $modifiedFields) && ($modifiedFields['isLocked'] != $locked))
+            ? true : false;
         $numModified = count($modifiedFields);
 
         /**
          * Record fields haven't been modified, nothing to do here. 
          */
-        if (!$event->getInvoker()->isModified()) {
+        if (!$invoker->isModified()) {
             return;
         }
 
