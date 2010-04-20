@@ -188,6 +188,9 @@ class Fisma_Behavior_AttachArtifacts_Generator extends Doctrine_Record_Generator
      */
     public function attach(Doctrine_Record $instance, $file, $comment)
     {
+        // Ensure that the file is not on the black list
+        $this->_checkFileBlackList($file);
+        
         // Create a new record to represent this artifact
         $artifactClass = $this->_options['className'];
 
@@ -216,6 +219,27 @@ class Fisma_Behavior_AttachArtifacts_Generator extends Doctrine_Record_Generator
         // Persist
         $artifact->fileName = $fileName;
         $artifact->save();
+    }
+    
+    /**
+     * Check the specified file against the blacklist to see if it is disallowed
+     * 
+     * @param array $file File information in array format as specified in the $_FILES superglobal
+     * @throw Fisma_Exception_User If the user has specified a file type which is black listed
+     */
+    private function _checkFileBlackList($file)
+    {
+        // Check file extension
+        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        
+        if (in_array($fileExtension, $this->_extensionsBlackList)) {
+            throw new Fisma_Exception_User("This file type (.$fileExtension) is not allowed.");
+        }
+
+        // Check mime type
+        if (in_array($file['type'], $this->_mimeTypeBlackList)) {
+            throw new Fisma_Exception_User("This file type ({$file['type']}) is not allowed.");
+        }
     }
     
     /**
