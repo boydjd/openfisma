@@ -58,10 +58,10 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set parameters
     this.state = initialState;
     this.payload = payload;
-    
+
     if (!this.state) {
         // Button is drawn in "ON" position by default. If initial state is "OFF" then we need to redraw it
-        this.element.style.backgroundPositionX = '-54px';
+        this.element.style.backgroundPosition = '-54px 100%';
     }
  
     // Set click handler

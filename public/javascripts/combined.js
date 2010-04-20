@@ -3741,7 +3741,7 @@ function ms_deny(formname){
         form2.submit();
     }
 }
-Fisma.SwitchButton=function(b,a,g,d){var c=this;if(b instanceof HTMLElement){this.element=b}else{this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPositionX="-54px"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=g){var f=g.split(".");var e=window;for(piece in f){e=e[f[piece]];if(!e){throw"Specified callback does not exist: "+g}}if("function"==typeof e){this.callback=e}else{throw"Specified callback is not a function: "+g}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b},toggleSwitch:function(){var a;if(this.state){a={backgroundPositionX:{from:0,to:-54,unit:"px"}};this.state=false}else{a={backgroundPositionX:{from:-54,to:0,unit:"px"}};this.state=true}var b=new YAHOO.util.Anim(this.element,a,0.25,YAHOO.util.Easing.easeOut);b.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
+Fisma.SwitchButton=function(b,a,g,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPositionX="-54px"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=g){var f=g.split(".");var e=window;for(piece in f){e=e[f[piece]];if(!e){throw"Specified callback does not exist: "+g}}if("function"==typeof e){this.callback=e}else{throw"Specified callback is not a function: "+g}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/
  * 
@@ -3782,15 +3782,17 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
 
     var that = this;
     
-    // element can be an actual element or an ID
-    if (element instanceof HTMLElement) {
+    // element can be an actual element or an ID (notice that 'element instanceof HTMLElement' doesn't work in IE)
+    if (element.nodeType && element.nodeType == document.ELEMENT_NODE) {
         this.element = element;
-    } else {
+    } else if ('string' == typeof element) {
         this.element = document.getElementById(element);
         
         if (!this.element) {
             throw 'Invalid element name "' + name + '"';
         }
+    } else {
+        throw "Invalid element for switch button constructor";
     }
     
     // Set up DOM elements needed for switch button
@@ -3799,10 +3801,10 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set parameters
     this.state = initialState;
     this.payload = payload;
-    
+
     if (!this.state) {
         // Button is drawn in "ON" position by default. If initial state is "OFF" then we need to redraw it
-        this.element.style.backgroundPositionX = '-54px';
+        this.element.style.backgroundPosition = '-54px 100%';
     }
  
     // Set click handler
@@ -3858,19 +3860,34 @@ Fisma.SwitchButton.prototype = {
 
         this.element.appendChild(spinnerSpan);
         this.spinner = spinnerSpan;
+        
+        // Create a proxy element for animating the background position (see toggleSwitch())
+        this.proxyElement = document.createElement('div');
+        this.proxyElement.style.display = 'none';
+        document.body.appendChild(this.proxyElement);
     },
     
     /**
      * Toggle this switch between its off and on states
+     * 
+     * Requires a bit of a hack. We want to animate the background position's X coordinate, but CSS does not have a 
+     * standard attribute for this. (Although IE and Safari both implement a non-standard attribute.) So we have to
+     * create a proxy element to animate and use the onTween event to copy the proxy element's attributes into the
+     * button itself.
+     * 
+     * Credit for this idea to Dav Glass (http://blog.davglass.com/files/yui/anim2/)
      */
-    toggleSwitch : function () {        
+    toggleSwitch : function () {
+
+        var that = this;
+                      
         var animationAttributes;
-        
+
         if (this.state) {
             
             // Animate from "ON" to "OFF"
             animationAttributes = {
-                backgroundPositionX : {
+                left : {
                     from : 0,
                     to : -54,
                     unit : 'px'
@@ -3882,7 +3899,7 @@ Fisma.SwitchButton.prototype = {
             
             // Animate from "OFF" to "ON"
             animationAttributes = {
-                backgroundPositionX : {
+                left : {
                     from : -54,
                     to : 0,
                     unit : 'px'
@@ -3892,10 +3909,23 @@ Fisma.SwitchButton.prototype = {
             this.state = true;
         }        
         
-        var toggleAnimation = new YAHOO.util.Anim(this.element, animationAttributes, .25, YAHOO.util.Easing.easeOut);
+        var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
+                                                  animationAttributes, 
+                                                  .1, 
+                                                  YAHOO.util.Easing.easeOut);
+
+        toggleAnimation.onTween.subscribe(
+            function () {
+                
+                /* The proxy element is animated on the 'left' attribute, so we copy that into the actual button's 
+                 * background position.
+                 */
+                that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
+            }
+        )
 
         toggleAnimation.animate();
-        
+
         if (this.callback) {
             this.callback(this);
         }
