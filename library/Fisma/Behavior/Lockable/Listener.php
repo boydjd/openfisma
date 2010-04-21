@@ -41,10 +41,7 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
     {
         $invoker = $event->getInvoker();
         $modelName = Doctrine_Inflector::tableize(get_class($invoker));
-        $modifiedFields = $invoker->getModified(true);
-        $pendingLinks = $invoker->getPendingLinks();
-        $pendingUnlinks = $invoker->getPendingUnlinks();
-        $noLinkChanges = empty($pendingLinks) && empty($pendingUnlinks);
+        $modifiedFields = $invoker->getModified();
         $hasPrivilege = Fisma_Acl::hasPrivilegeForObject($modelName . '_lock', $invoker);
         $locked = $invoker->isLocked;
         $lockModified = (array_key_exists('isLocked', $modifiedFields) && ($modifiedFields['isLocked'] != $locked))
@@ -54,7 +51,7 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         /**
          * Record fields haven't been modified, nothing to do here. 
          */
-        if (!$invoker->isModified() && $noLinkChanges) {
+        if (!$invoker->isModified()) {
             return;
         }
 
@@ -85,7 +82,7 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         /**
          * The record is locked and the user does not have the correct privilege to modify a locked record. 
          */
-        if ($locked && (!$hasPrivilege || !$noLinkChanges)) {
+        if ($locked && !$hasPrivilege) {
             throw new Fisma_Behavior_Lockable_Exception('The record must be unlocked before it can be modified.');
         }
     }
