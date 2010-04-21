@@ -816,9 +816,11 @@ class IncidentController extends SecurityController
         $type = $this->getRequest()->getParam('type');
 
         if ('actor' == $type) {
-            $incident->link('Actors', array($userId), true);
+            $incident->link('Actors', array($userId));
+            $incident->save();
         } elseif ('observer' == $type) {
-            $incident->link('Observers', array($userId), true);            
+            $incident->link('Observers', array($userId));            
+            $incident->save();
         }
 
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
@@ -839,9 +841,11 @@ class IncidentController extends SecurityController
         $type = $this->getRequest()->getParam('type');
 
         if ('actor' == $type) {
-            $incident->unlink('Actors', array($userId), true);
+            $incident->unlink('Actors', array($userId));
+            $incident->save();
         } elseif ('observer' == $type) {
-            $incident->unlink('Observers', array($userId), true);            
+            $incident->unlink('Observers', array($userId));
+            $incident->save();
         }
 
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
