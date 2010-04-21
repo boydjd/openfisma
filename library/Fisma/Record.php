@@ -72,6 +72,40 @@ class Fisma_Record extends Doctrine_Record
         'unique' => 'An object already exists with the same %f',
         'usstate' => '$f does not contain a valid U.S. state code (%v)'
     );
+
+    /**
+     * Array of pending links in format alias => keys to be executed after save
+     *
+     * @var array $_pendingLinks
+     */
+    protected $_pendingLinks = array();
+
+    /**
+     * override Doctrine_Record->link() so as to store pendingLinks
+     *
+     * @param string $alias     related component alias
+     * @param array $ids        the identifiers of the related records
+     * @param boolean $now      wether or not to execute now or set pending
+     * @return Doctrine_Record  this object (fluent interface)
+     */
+    public function link($alias, $ids, $now = false)
+    {
+        foreach ($ids as $id) {
+            $this->_pendingLinks[$alias][$id] = true;
+        }
+
+        parent::link($alias, $ids, $now);
+    }
+
+    /**
+     * returns Doctrine_Record instances which need to be linked (adding the relation) on save
+     * 
+     * @return array $pendingLinks 
+     */
+    public function getPendingLinks()
+    {
+        return $this->_pendingLinks;
+    }
         
     /**
      * Get an array of modified fields with their original values
