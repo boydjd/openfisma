@@ -142,10 +142,22 @@ class User extends BaseUser
      */
     public function unlockAccount()
     {
+        // If the account is expired, then set lastLoginTs to null so that the user will be able to log in again
+        $expirationPeriod = Fisma::configuration()->getConfig('account_inactivity_period');
+        $accountExpiration = new Zend_Date($this->lastLoginTs, Zend_Date::ISO_8601);
+        $accountExpiration->addDay($expirationPeriod);
+        $now = Zend_Date::now();
+
+        if ($accountExpiration->isEarlier($now)) {
+            $this->lastLoginTs = null;
+        }
+
+        // Update remaining lock fields
         $this->locked = false;
         $this->lockTs = null;
         $this->lockType = null;
         $this->failureCount = 0;
+        
         $this->save();
         
         // If the account is unlocked automatically (such as an expired lock), then there may not be an authenticated
