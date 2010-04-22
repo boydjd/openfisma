@@ -41,13 +41,22 @@ class PanelController extends SecurityController
     }
     
     /** 
-     * Alias of dashboardAction
+     * Redirect user to a suitable dashboard
      * 
      * @return void
+     * @throw Fisma_Exception_User if no suitable dashboard exists
      */
     public function indexAction()
     {
-        $this->_forward('dashboard');
+        if (Fisma_Acl::hasArea('dashboard')) {
+            $this->_helper->actionStack('index', 'dashboard');
+            $this->_helper->actionStack('header');
+        } elseif (Fisma_Acl::hasArea('incident')) {
+            $this->_helper->actionStack('index', 'incident-dashboard');
+        } else {
+            throw new Fisma_Exception_User('Your account does not have access to any dashboards. Please contact the'
+                                         . ' administrator to correct your account privileges.');
+        }
     }
 
     /** 
@@ -73,17 +82,7 @@ class PanelController extends SecurityController
     {
         $this->render('footer', 'footer');           
     }
-
-    /** 
-     * Forward to dashboard Controller
-     * 
-     * @return void
-     */
-    public function dashboardAction()
-    {
-        $this->_helper->actionStack('index', 'Dashboard');
-        $this->_helper->actionStack('header');
-    }
+    
     /** 
      * Forward to finding Controller
      * 

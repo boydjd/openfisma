@@ -264,8 +264,7 @@ Role:
         nickname: OIG
         description:
         Privileges: 
-            - areas_dashboard
-            - incident_read
+            - incident_area
             - incident_create
             - incident_lock
 
@@ -274,7 +273,6 @@ Role:
         nickname: IRC
         description:
         Privileges: 
-            - areas_dashboard
             - incident_area
             - incident_admin_area
             - incident_report_area
@@ -299,8 +297,7 @@ Role:
         nickname: DBR
         description:
         Privileges: 
-            - areas_dashboard
-            - incident_read
+            - incident_area
             - incident_create
    
     pa_role:
@@ -308,8 +305,7 @@ Role:
         nickname: PA
         description:
         Privileges: 
-            - areas_dashboard
-            - incident_read
+            - incident_area
             - incident_create
         
     irs_role:
@@ -317,8 +313,7 @@ Role:
         nickname: IRS
         description:
         Privileges: 
-            - areas_dashboard
-            - incident_read
+            - incident_area
             - incident_create
   
     hdr_role:
@@ -326,6 +321,5 @@ Role:
         nickname: HDR
         description:
         Privileges: 
-            - areas_dashboard
-            - incident_read
+            - incident_area
             - incident_create

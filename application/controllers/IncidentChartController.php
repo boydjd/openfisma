@@ -50,6 +50,8 @@ class IncidentChartController extends SecurityController
         if (!$module->enabled) {
             throw new Fisma_Exception('This module is not enabled.');
         }
+        
+        Fisma_Acl::requireArea('incident');
     }
     
     /**
