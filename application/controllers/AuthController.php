@@ -143,18 +143,18 @@ class AuthController extends Zend_Controller_Action
                     $this->_forward('user', 'Panel', null, array('sub'=>'password'));
                     return;
                 }
+
+                // Check if the user is using the system standard hash function
+                if (Fisma::configuration()->getConfig('hash_type') != $user->hashType) {
+                    $message = 'This version of the application uses an improved password storage scheme.'
+                             . ' You will need to change your password in order to upgrade your account.';
+                    $this->view->priorityMessenger($message, 'warning');
+                    $this->_helper->_actionStack('header', 'Panel');
+                    $this->_forward('password', 'User');
+                    return;
+                }
             }
-            
-            // Check if the user is using the system standard hash function
-            if (Fisma::configuration()->getConfig('hash_type') != $user->hashType) {
-                $message = 'This version of the application uses an improved password storage scheme.'
-                         . ' You will need to change your password in order to upgrade your account.';
-                $this->view->priorityMessenger($message, 'warning');
-                $this->_helper->_actionStack('header', 'Panel');
-                $this->_forward('password', 'User');
-                return;
-            }
-            
+                        
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
