@@ -294,23 +294,32 @@ class SystemController extends BaseController
         $post = $this->_request->getPost();
 
         if ($post) {
-            $organization->merge($post);
-            $system->merge($post);
-            if ($organization->isValid(true) && $system->isValid(true)) {
-                try {
+            try {
+                $organization->merge($post);
+                
+                if ($organization->isValid(true)) {
                     $organization->save();
-                    $system->save();
-                    $msg = "System updated successfully.";
-                    $type = "notice";
-                } catch (Doctrine_Exception $e) {
-                    $msg = "Error while trying to save: ";
-                    $msg .= $e->getMessage();
+                } else {
+                    $msg = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
                     $type = "warning";
                 }
-            } else {
-              $msg = "Error while trying to save: <br />";
-              $msg .= $organization->getErrorStackAsString() . $system->getErrorStackAsString();
-              $type = "warning";
+                
+                $system->merge($post);
+
+                if ($system->isValid(true)) {
+                    $system->save();
+                } else {
+                    $msg = "Error while trying to save: <br />" . $system->getErrorStackAsString();
+                    $type = "warning";
+                }
+            } catch (Doctrine_Exception $e) {
+                $msg = "Error while trying to save: " . $e->getMessage();
+                $type = "warning";
+            }
+            
+            if (empty($msg)) {
+                $msg = "System updated successfully.";
+                $type = "notice";
             }
 
             $this->view->priorityMessenger($msg, $type);
