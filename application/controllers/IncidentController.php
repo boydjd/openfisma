@@ -65,17 +65,6 @@ class IncidentController extends SecurityController
     );
     
     /**
-     * Set up JSON context switch
-     */
-    public function init()
-    {
-        parent::init();
-        
-        $this->_paging['count'] = 10;
-        $this->_paging['startIndex'] = 0;
-    }
-
-    /**
      * A list of the separate parts of the incident report form, in order
      * 
      * @var array
@@ -89,7 +78,18 @@ class IncidentController extends SecurityController
         array('name' => 'incident5PiiDetails', 'title' => 'PII Details'),
         array('name' => 'incident6Shipping', 'title' => 'Shipment Details')
     );
-    
+
+    /**
+     * Set up JSON context switch
+     */
+    public function init()
+    {
+        parent::init();
+        
+        $this->_paging['count'] = 10;
+        $this->_paging['startIndex'] = 0;
+    }
+   
    /**
      * preDispatch() - invoked before each Actions
      */
@@ -186,7 +186,7 @@ class IncidentController extends SecurityController
     public function reportAction() 
     {
         // Unauthenticated users see a different layout that doesn't have a menubar
-        if (!User::currentUser()) {
+        if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
         }
         
@@ -225,9 +225,9 @@ class IncidentController extends SecurityController
         
         // Some business logic to determine if any steps can be skipped based on previous answers:
         // Authenticated users skip step 1 (which is reporter contact information)
-        if (User::currentUser() && 1 == $step) {
+        if ($this->_me && 1 == $step) {
             if ($this->getRequest()->getParam('forwards')) {
-                $incident->ReportingUser = User::currentUser();
+                $incident->ReportingUser = $this->_me;
                 $step++;
             } else {
                 $step--;
@@ -257,7 +257,7 @@ class IncidentController extends SecurityController
         }
         
         // Authenticated users and unauthenticated users have different form actions
-        if (User::currentUser()) {
+        if ($this->_me) {
             $formPart->setAction("/panel/incident/sub/report/step/$step");
         } else {
             $formPart->setAction("/incident/report/step/$step");
@@ -461,7 +461,7 @@ class IncidentController extends SecurityController
         
         $this->view->incidentReview = $incidentReview;
         $this->view->step = count($this->_formParts);
-        $this->view->actionUrlBase = User::currentUser() 
+        $this->view->actionUrlBase = $this->_me 
                                    ? '/panel/incident/sub'
                                    : '/incident';
     }
@@ -474,7 +474,7 @@ class IncidentController extends SecurityController
     public function saveReportAction() 
     {
         // Unauthenticated users see a different layout that doesn't have a menubar
-        if (!User::currentUser()) {
+        if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
         }
         
@@ -487,8 +487,8 @@ class IncidentController extends SecurityController
         }
 
         // Set the reporting user and assign the IRCs as default actors
-        if (User::currentUser()) {
-            $incident->ReportingUser = User::currentUser();
+        if ($this->_me) {
+            $incident->ReportingUser = $this->_me;
         }
         $coordinators = $this->_getIrcs();
         $incident->link('Actors', $coordinators);
@@ -510,7 +510,7 @@ class IncidentController extends SecurityController
     public function cancelReportAction()
     {
         // Unauthenticated users see a different layout that doesn't have a menubar
-        if (!User::currentUser()) {
+        if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
         }
 
@@ -872,7 +872,7 @@ class IncidentController extends SecurityController
         $cloneLink->origIncidentId  = $incidentId;
         $cloneLink->cloneIncidentId = $clone->id;
         $cloneLink->createdTs       = date('Y-d-m H:i:s');
-        $cloneLink->userId          = User::currentUser()->id;
+        $cloneLink->userId          = $this->_me->id;
         $cloneLink->save();
 
         $this->view->priorityMessenger('The incident has been cloned.', 'notice');
@@ -935,32 +935,35 @@ class IncidentController extends SecurityController
      */
     public function completeWorkflowStepAction()
     {
-        $id = $this->getRequest()->getParam('id');
-        $this->view->id = $id;
-        
-        $incident = Doctrine::getTable('Incident')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('update', $incident);
-        
-        $comment = $this->getRequest()->getParam('comment');
-
-        if (!empty($comment)) {
-            $incident->completeStep($comment);
-
-            foreach ($this->_getAssociatedUsers($incidentId) as $userId) {
-                $mail = new Fisma_Mail();
-                $mail->IRStep($userId, $incidentId, $workflowDescription, $workflowCompletedBy);
-            }
-
-            $message = 'Workflow step completed. ';
-            if ('closed' == $incident->status) {
-                $message .= 'All steps have been now completed and the incident has been marked as closed.';
-            }
+        try {
+            $id = $this->getRequest()->getParam('id');
+            $this->view->id = $id;
             
-            $this->view->priorityMessenger($message, 'notice');
-        } else {
-            $this->view->priorityMessenger('Must provide a comment to complete a step.', 'warning');
+            $incident = Doctrine::getTable('Incident')->find($id);
+            Fisma_Acl::requirePrivilegeForObject('update', $incident);
+            
+            $comment = $this->getRequest()->getParam('comment');
+
+            if (!empty($comment)) {
+                $incident->completeStep($comment);
+
+                foreach ($this->_getAssociatedUsers($incidentId) as $userId) {
+                    $mail = new Fisma_Mail();
+                    $mail->IRStep($userId, $incidentId, $workflowDescription, $workflowCompletedBy);
+                }
+
+                $message = 'Workflow step completed. ';
+                if ('closed' == $incident->status) {
+                    $message .= 'All steps have been now completed and the incident has been marked as closed.';
+                }
+                
+                $this->view->priorityMessenger($message, 'notice');
+            } else {
+                $this->view->priorityMessenger('Must provide a comment to complete a step.', 'warning');
+            }
+        } catch (Fisma_Behavior_Lockable_Exception $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
-        
         $this->_redirect("/panel/incident/sub/view/id/$id");
     }
 
@@ -1036,8 +1039,10 @@ class IncidentController extends SecurityController
             }
 
             foreach ($actors as $actor) {
-                $incident->link('Actors', array($actor->id), true);
+                $incident->link('Actors', array($actor->id));
             }            
+
+            $incident->save();
 
             // Success message
             $message = 'This incident has been opened and a workflow has been assigned. ';
@@ -1059,10 +1064,11 @@ class IncidentController extends SecurityController
         
         try {
             $comment = new IrComment();
-            $comment->User = User::currentUser();
+            $comment->User = $this->_me;
             $comment->Incident = $incident;
             $comment->comment = $this->getRequest()->getParam('comment');
-            $comment->save();
+            $incident->Comments[] = $comment;
+            $incident->save();
         } catch (Fisma_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
@@ -1359,18 +1365,19 @@ class IncidentController extends SecurityController
 
         $actor = new IrIncidentActor();
 
-        $user = User::currentUser();
+        $user = $this->_me;
         $actor->userId = $user['id']; 
         
         $actor->incidentId = $subject['id'];
-        $actor->save();
+        $subject->Actors[] = $actor;
         
         $actor = new IrIncidentActor();
 
         $actor->incidentId = $subject['id'];
         $edcirc = $this->_getEDCIRC();
         $actor->userId = $edcirc;
-        $actor->save();
+        $subject->Actors[] = $actor;
+        $subject->save();
 
         $mail = new Fisma_Mail();
         $mail->IRReport($edcirc, $subject['id']);
@@ -1395,12 +1402,12 @@ class IncidentController extends SecurityController
     {
         if (!Fisma_Acl::hasPrivilegeForClass('update', 'Incident')) {
             // Check if this user is an actor
-            $userId = User::currentUser()->id;
+            $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
                  ->from('Incident i')
                  ->innerJoin('i.Actors a')
                  ->where('i.id = ?', $incidentId)
-                 ->andWhere('a.id = ?', User::currentUser()->id)
+                 ->andWhere('a.id = ?', $this->_me->id)
                  ->count();
             
             if (!$actorCount)
@@ -1427,8 +1434,8 @@ class IncidentController extends SecurityController
                  ->leftJoin('i.Actors a')
                  ->leftJoin('i.Observers o')
                  ->where('i.id = ?', $incidentId)
-                 ->andWhere('a.id = ?', User::currentUser()->id)
-                 ->orWhere('o.id = ?', User::currentUser()->id)
+                 ->andWhere('a.id = ?', $this->_me->id)
+                 ->orWhere('o.id = ?', $this->_me->id)
                  ->count();
 
             if (!$observerCount)
@@ -1691,7 +1698,7 @@ class IncidentController extends SecurityController
      */
     private function _getUserIncidentQuery()
     {
-        $user = User::currentUser();
+        $user = $this->_me;
         
         // A user can be associated as an actor or observer, and so both tables need to be joined
         // here to get all of a user's incidents.
@@ -1707,7 +1714,7 @@ class IncidentController extends SecurityController
 
     private function _userIncidents() 
     {
-        $user = User::currentUser();
+        $user = $this->_me;
         $incidents = array();
         
         $q = Doctrine_Query::create()
@@ -1737,7 +1744,7 @@ class IncidentController extends SecurityController
 
     private function _getAssociation($incidentId) 
     {
-        $user = User::currentUser();
+        $user = $this->_me;
         
         $q = Doctrine_Query::create()
              ->select('count(*) as count')

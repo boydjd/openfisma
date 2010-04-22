@@ -153,7 +153,8 @@ class Incident extends BaseIncident
         // Update the completed step first
         $completedStep = $this->CurrentWorkflowStep;
         $completedStep->completeStep($comment);
-        
+        $this->save();
+
         // Log the completed step
         $logMessage = 'Completed workflow step #'
                     . ($completedStep->cardinality + 1)

@@ -31,8 +31,8 @@
 class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
 {
     /**
-     * Throws an exception if the lock is modified by an unprivileged user, or if the record is modified while it is 
-     * locked. 
+     * Throws an exception if the lock is modified by an unprivileged user, or if the record or it's related records 
+     * are modified while it is locked. 
      * 
      * @param Doctrine_Event $event 
      * @return void
@@ -45,11 +45,34 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         $pendingLinks = $invoker->getPendingLinks();
         $pendingUnlinks = $invoker->getPendingUnlinks();
         $noLinkChanges = empty($pendingLinks) && empty($pendingUnlinks);
-        $hasPrivilege = Fisma_Acl::hasPrivilegeForObject($modelName . '_lock', $invoker);
+        $hasPrivilege = Fisma_Acl::hasPrivilegeForObject('lock', $invoker);
         $locked = $invoker->isLocked;
         $lockModified = (array_key_exists('isLocked', $modifiedFields) && ($modifiedFields['isLocked'] != $locked))
             ? true : false;
         $numModified = count($modifiedFields);
+
+        // Check to see if the invoker's references are dirty
+        foreach ($invoker->getReferences() as $alias) {
+            if (
+                method_exists($alias, 'state') && $alias->state() == (
+                    Doctrine_Record::STATE_DIRTY || Doctrine_Record::STATE_TDIRTY
+                )
+            ) {
+                $noLinkChanges = false;
+                break;
+            } elseif (!method_exists($alias, 'state')) {
+                foreach ($alias as $record) {
+                    if (
+                        method_exists($record, 'state') && $record->state() == (
+                            Doctrine_Record::STATE_DIRTY || Doctrine_Record::STATE_TDIRTY
+                        )
+                    ) {
+                        $noLinkChanges = false;
+                        break 2;
+                    }
+                }
+            }
+        }
 
         /**
          * Record fields haven't been modified, nothing to do here. 
@@ -85,8 +108,17 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         /**
          * The record is locked and the user does not have the correct privilege to modify a locked record. 
          */
-        if ($locked && (!$hasPrivilege || !$noLinkChanges)) {
+        if ($locked && !$hasPrivilege) {
             throw new Fisma_Behavior_Lockable_Exception('The record must be unlocked before it can be modified.');
+        }
+
+        /**
+         * The record is locked, related records have been modified, and the user does not have lock privileges. 
+         */
+        if ($locked && !$hasPrivilege && !$noLinkChanges) {
+            throw new Fisma_Behavior_Lockable_Exception(
+                'The record must be unlocked before related records can be modified.'
+            );
         }
     }
 }

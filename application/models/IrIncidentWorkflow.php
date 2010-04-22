@@ -51,7 +51,5 @@ class IrIncidentWorkflow extends BaseIrIncidentWorkflow
         $this->completeTs = date('Y-m-d H:i:s');
         $this->User = User::currentUser();
         $this->comments = $comment;
-                
-        $this->save();
     }
 }
