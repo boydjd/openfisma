@@ -258,7 +258,7 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
                      ->andWhere('o.lft > ?', $this->lft)
                      ->andWhere('o.rgt < ?', $this->rgt)
                      ->andWhere('s.fipsCategory <> ?', 'LOW')
-                     ->groupBy('s.id')
+                     ->groupBy('s.fipsCategory')
                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         // Count the 120+ first.
