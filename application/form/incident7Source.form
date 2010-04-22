@@ -1,0 +1,27 @@
+; This is the form for incident.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
+
+[incident7Source]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>Provide a characterization of the source of this incident: who was involved, where it originated from, etc. The origin can be geographical or virtual, e.g. a street address or an IP address.</p>"
+displayGroups.help.elements.instructions = "instructions"
+
+elements.sourceIp.type="text"
+elements.sourceIp.options.label="Source IP Address"
+elements.sourceIp.options.style="width:125px"
+displayGroups.incident.elements.sourceIp = "sourceIp"
+
+elements.sourceAdditional.type="textarea"
+elements.sourceAdditional.options.label="Additional information about the source"
+elements.sourceAdditional.options.cols = "70%"
+elements.sourceAdditional.options.rows = "7"
+displayGroups.incident.elements.sourceAdditional = "sourceAdditional"

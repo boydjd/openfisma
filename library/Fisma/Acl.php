@@ -212,7 +212,11 @@ class Fisma_Acl extends Zend_Acl
         }
         
         try {
-            return User::currentUser()->acl()->isAllowed($user->username, $resourceName, $privilege);
+            if (User::currentUser()) {
+                return User::currentUser()->acl()->isAllowed($user->username, $resourceName, $privilege);
+            } else {
+                return false;
+            }
         } catch (Zend_Acl_Exception $e) {
             return false;
         }

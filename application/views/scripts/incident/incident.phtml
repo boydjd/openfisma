@@ -359,6 +359,24 @@
             <?php
             endif;
             ?>
+            <tr>    
+                <td>Reported from IP:</td>
+                <td>
+                    <div name="incident[reporterIp]" 
+                         id="reporterIp"
+                         <?php
+                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         ?>
+                             class="editable"
+                             type="text"
+                             target="reporterIp"
+                         <?php
+                         endif;
+                         ?>>
+                         <?php echo $this->incident->reporterIp; ?>&nbsp;
+                    </div>
+                </td>
+            </tr>    
         </table>
         <?php
         Fisma_Format_Section::stopSection();

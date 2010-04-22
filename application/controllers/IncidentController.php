@@ -76,7 +76,8 @@ class IncidentController extends SecurityController
         array('name' => 'incident3Host', 'title' => 'Affected Asset'),
         array('name' => 'incident4PiiQuestion', 'title' => 'Was PII Involved?'),
         array('name' => 'incident5PiiDetails', 'title' => 'PII Details'),
-        array('name' => 'incident6Shipping', 'title' => 'Shipment Details')
+        array('name' => 'incident6Shipping', 'title' => 'Shipment Details'),
+        array('name' => 'incident7Source', 'title' => 'Incident Source')
     );
 
     /**
@@ -204,6 +205,7 @@ class IncidentController extends SecurityController
 
         // Get the current step of the process, defaults to zero
         $step = $this->getRequest()->getParam('step');
+
         if (is_null($step)) {
             $step = 0;
         } else {
@@ -219,6 +221,7 @@ class IncidentController extends SecurityController
                 throw new Fisma_Exception('User must move forwards, backwards, or cancel');
             }
         }
+        
         if ($step < 0) {
             throw new Fisma_Exception("Illegal step number: $step");
         }
@@ -233,16 +236,17 @@ class IncidentController extends SecurityController
                 $step--;
             }
         }
-        // If no PII after step 5, then skip to end
-        if ($step >=5 && 'YES' != $incident->piiInvolved) {
+        
+        // Skip past PII sections if they are not applicable
+        if ($step == 5 && 'YES' != $incident->piiInvolved) {
             if ($this->getRequest()->getParam('forwards')) {
-                $step = count($this->_formParts);
+                $step = 7;
             } else {
                 $step = 4;
             }
-        } elseif ($step >= 6 && 'YES' != $incident->piiShipment) {
+        } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
             if ($this->getRequest()->getParam('forwards')) {
-                $step = count($this->_formParts);
+                $step = 7;
             } else {
                 $step = 5;
             }            

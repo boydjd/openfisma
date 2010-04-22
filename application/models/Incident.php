@@ -38,7 +38,7 @@ class Incident extends BaseIncident
         
             // REMOTE_ADDR may not be set (e.g. command line mode)
             if (isset($_SERVER['REMOTE_ADDR'])) {
-                $this->sourceIp = $_SERVER['REMOTE_ADDR'];
+                $this->reporterIp = $_SERVER['REMOTE_ADDR'];
             }
 
             $this->status = 'new';

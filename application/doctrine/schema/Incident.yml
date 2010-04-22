@@ -89,6 +89,15 @@ Incident:
                 auditLog: true
                 purify: plaintext
                 logicalName: Reporter's E-mail Address
+        reporterIp:
+            type: string(15)
+            Fisma_Validator_Ip: true
+            extra:
+                auditLog: true
+                purify: plaintext
+                logicalName: Reporter's IP Address
+            comment: The IP address of the client which filed this report
+
         
         locationBuilding: 
             type: string(255)
