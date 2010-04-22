@@ -111,8 +111,8 @@ class Fisma_Menu
             // Incident reports submenu
             if (Fisma_Acl::hasArea('incident_report')) {
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incidents By Category', '/panel/irreport/sub/category'));
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incidents By Month', '/panel/irreport/sub/month'));
+                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category'));
+                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident History', '/incident-report/history'));
                 $incidentMenu->add($reportsSubmenu);
             }
 

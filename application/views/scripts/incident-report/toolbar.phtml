@@ -1,0 +1,25 @@
+<div class="searchFilters">
+    <div class="left">
+        <?php
+        echo new Fisma_Yui_Form_Button_Link(
+            'exportXls',
+            array(
+                'value' => 'Export Excel',
+                'href' => Fisma_Url::currentUrl() . '/format/xls',
+                'imageSrc' => '/images/xls.gif'
+            )
+        );
+            
+        echo new Fisma_Yui_Form_Button_Link(
+            'exportPdf',
+            array(
+                'value' => 'Export PDF',
+                'href' => Fisma_Url::currentUrl() . '/format/pdf',
+                'imageSrc' => '/images/pdf.gif'
+            )
+        );
+        ?>
+    </div>
+    <div class="clear">
+    </div>        
+</div>

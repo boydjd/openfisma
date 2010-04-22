@@ -1,0 +1,74 @@
+<?php
+
+echo $this->partial('/incident-report/toolbar.phtml');
+
+Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 Months)');
+?>
+<div id="categories">
+    <table id="categoriesTable">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Sub Category</th>
+                <?php
+                foreach ($this->months as $month):
+                ?>
+                    <th><?php echo $month; ?></th>
+                <?php
+                endforeach;
+                ?>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <?php
+            foreach ($this->categories as $category):
+            ?>
+                <tr>
+                    <td><?php echo $category['c_category']; ?></td>
+                    <td><?php echo $category['sc_name']; ?></td>
+                    <?php
+                    foreach($this->months as $columnName => $monthName):
+                    ?>
+                        <td><?php echo $category['i_' . $columnName]; ?></td>
+                    <?php
+                    endforeach;
+                    ?>
+                </tr>
+            <?php
+            endforeach;
+            ?>
+        </tbody>
+    </table>
+</div>
+<?php
+Fisma_Format_Section::stopSection();
+?>
+
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('categories', function() {
+    var myColumnDefs = [
+        <?php
+        $keys = "{key:'category', label:'Category', sortable: true}, 
+                 {key:'subcategory', label:'Sub Category', sortable: true},";
+        foreach ($this->months as $columnName => $monthName) {
+            $keys .= "{key: '$columnName', label:'{$monthName}', sortable:true},";
+        }
+        echo rtrim($keys, ',');
+        ?>
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("categoriesTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            <?php
+            echo rtrim($keys, ',');
+            ?>
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("categories", myColumnDefs, this.myDataSource, {});
+});
+</script>

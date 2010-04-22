@@ -1,0 +1,74 @@
+<?php
+
+echo $this->partial('/incident-report/toolbar.phtml');
+
+Fisma_Format_Section::startSection($this->title);
+?>
+<div id="history">
+    <table id="historyTable">
+        <thead>
+            <tr>
+                <th>Incidents</th>
+                <?php
+                foreach ($this->months as $month):
+                ?>
+                    <th><?php echo $month; ?></th>
+                <?php
+                endforeach;
+                ?>
+            </tr>
+        </thead>
+    
+        <tbody>
+            <?php
+            foreach ($this->history as $action => $history):
+            ?>
+                <tr>
+                    <td><?php echo $action; ?></td>
+                    
+                    <?php
+                    foreach($this->months as $columnName => $monthName):
+                    ?>
+                        <td><?php echo $history['i_' . $columnName]; ?></td>
+                    <?php
+                    endforeach;
+                    ?>
+                </tr>
+            <?php
+            endforeach;
+            ?>
+        </tbody>
+    </table>
+</div>
+<?php
+Fisma_Format_Section::stopSection();
+?>
+
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('history', function() {
+    var myColumnDefs = [
+        <?php
+        $keys = "{key:'incidents', label:'Incidents', sortable: true},";
+
+        foreach ($this->months as $columnName => $monthName) {
+            $keys .= "{key: '$columnName', label:'{$monthName}', sortable:true},";
+        }
+
+        echo rtrim($keys, ',');
+        ?>
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("historyTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            <?php
+            echo rtrim($keys, ',');
+            ?>
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("history", myColumnDefs, this.myDataSource, {});
+});
+</script>

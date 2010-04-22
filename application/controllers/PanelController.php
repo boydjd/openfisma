@@ -131,17 +131,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * Forward to ir report Controller
-     */
-    public function irreportAction()
-    {
-        $req = $this->getRequest();
-        $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'ir-report');
-        $this->_helper->actionStack('header');
-    }
-
-    /** 
      * Forward to account Controller
      * 
      * @return void
