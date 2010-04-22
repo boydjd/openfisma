@@ -303,7 +303,7 @@ Privilege:
     incident_update:
         resource: incident
         action: update
-        description: Create Incident
+        description: Update Incident
     incident_reject:
         resource: incident
         action: reject
