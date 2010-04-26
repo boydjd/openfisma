@@ -596,13 +596,22 @@ class IncidentController extends SecurityController
         
         $id = $this->_request->getParam('id');
         
-        $incident = Doctrine::getTable('Incident')->find($id);
+        $incidentQuery = Doctrine_Query::create()
+                         ->from('Incident i')
+                         ->leftJoin('i.ClonedFromIncident clone')
+                         ->leftJoin('i.Category category')
+                         ->leftJoin('i.ReportingUser reporter')
+                         ->where('i.id = ?', $id)
+                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $results = $incidentQuery->execute();
+        $incident = $results[0];
+        
         $this->view->incident = $incident;
 
         $this->_assertCurrentUserCanViewIncident($id);
         
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
-        $this->view->lockIncidentPrivilege = Fisma_Acl::hasPrivilegeForObject('lock', $incident);
+        $this->view->lockIncidentPrivilege = Fisma_Acl::hasPrivilegeForClass('lock', 'Incident');
                 
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
@@ -701,8 +710,6 @@ class IncidentController extends SecurityController
         
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-
-        $incident = Doctrine::getTable('Incident')->find($id);
 
         $this->_assertCurrentUserCanViewIncident($id);
         
@@ -894,12 +901,15 @@ class IncidentController extends SecurityController
         
         $this->_assertCurrentUserCanViewIncident($id);
         
-        $incident = Doctrine::getTable('Incident')->find($id);
+        $incident = Doctrine::getTable('Incident')->find($id, Doctrine::HYDRATE_ARRAY);
         $this->view->incident = $incident;
 
         $stepsQuery = Doctrine_Query::create()
                       ->from('IrIncidentWorkflow iw')
-                      ->where('iw.incidentId = ?', $id);
+                      ->leftJoin('iw.User user')
+                      ->leftJoin('iw.Role role')
+                      ->where('iw.incidentId = ?', $id)
+                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $steps = $stepsQuery->execute();
 
@@ -957,7 +967,9 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->find($id);
         $this->view->incident = $incident;
         
-        Fisma_Acl::requirePrivilegeForObject('classify', $incident);        
+        $this->_assertCurrentUserCanViewIncident($id);
+        
+        $this->view->classifyIncidentPrivilege = Fisma_Acl::hasPrivilegeForClass('classify', 'Incident');
         
         $form = Fisma_Form_Manager::loadForm('incident_classify');
 
@@ -985,7 +997,7 @@ class IncidentController extends SecurityController
         $id = $this->_request->getParam('id');        
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('classify', $incident);        
+        Fisma_Acl::requirePrivilegeForObject('classify', $incident);
 
         $comment = $this->_request->getParam('comment');
 
@@ -1118,20 +1130,30 @@ class IncidentController extends SecurityController
             )
         );
 
-        if (!$this->_currentUserCanUpdate($id)) {
+        if (!$this->_currentUserCanUpdateIncident($id)) {
             $uploadPanelButton->readOnly = true;
         }
         
         $this->view->uploadPanelButton = $uploadPanelButton;
 
-        // Artifact data
-        $artifacts = $incident->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);
+        /**
+         * Get artifact data as Doctrine Collection. Loop over to get icon URLs and file size, then convert to array
+         * for view binding.
+         */
+        $artifactCollection = $incident->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);;
+        $artifacts = array();
+        
+        foreach ($artifactCollection as $artifact) {
+            $artifactArray = $artifact->toArray();
+            $artifactArray['iconUrl'] = $artifact->getIconUrl();
+            $artifactArray['fileSize'] = $artifact->getFileSize();
+            
+            $artifacts[] = $artifactArray;
+        }
 
         $this->view->artifacts = $artifacts;
         
-        $form = Fisma_Form_Manager::loadForm('upload_artifact');
-                
-        $this->view->form = $form;
+        $this->view->form = Fisma_Form_Manager::loadForm('upload_artifact');
         
     }
     

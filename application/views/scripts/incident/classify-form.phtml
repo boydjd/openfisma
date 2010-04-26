@@ -6,6 +6,16 @@
     workflow.
 </p>
 
-<?php echo $this->form; ?>
+<?php 
+if ($this->classifyIncidentPrivilege):
+    echo $this->form; 
+else:
+?>
+    <p>
+        <i>You do not have permission to categorize this incident.</i>
+    </p>
+<?php
+endif;
 
-<?php Fisma_Format_Section::stopSection(); ?>
+Fisma_Format_Section::stopSection(); 
+?>

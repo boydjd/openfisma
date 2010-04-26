@@ -13,32 +13,32 @@ Fisma_Format_Section::startSection('Artifacts');
             $downloadUrl = '/incident/download-artifact/id/'
                          . $this->id
                          . '/artifactId/'
-                         . $artifact->id;
+                         . $artifact['id'];
         ?>
             <tr>
                 <td>
                     <a href='<?php echo $downloadUrl; ?>'>
-                        <img src='<?php echo $artifact->getIconUrl(); ?>'>
+                        <img src='<?php echo $artifact['iconUrl']; ?>'>
                     </a>
                 </td>
                 <td>
                     <a href='<?php echo $downloadUrl; ?>'>
                         <div>
-                            <?php echo $artifact->fileName; ?>
+                            <?php echo $artifact['fileName']; ?>
                         </div>
                     </a>
                 </td>
                 <td>
-                    <?php echo $artifact->getFileSize(); ?>
+                    <?php echo $artifact['fileSize']; ?>
                 </td>
                 <td>
-                    <?php echo $artifact->User; ?>
+                    <?php echo $artifact['User']['username']; ?>
                 </td>
                 <td>
-                    <?php echo $artifact->createdTs; ?>
+                    <?php echo $artifact['createdTs']; ?>
                 </td>
                 <td>
-                    <?php echo $artifact->comment; ?>
+                    <?php echo $artifact['comment']; ?>
                 </td>
             </tr>
         <?php
