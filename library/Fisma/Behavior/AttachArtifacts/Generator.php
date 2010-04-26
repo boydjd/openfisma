@@ -218,8 +218,7 @@ class Fisma_Behavior_AttachArtifacts_Generator extends Doctrine_Record_Generator
 
         // Persist
         $artifact->fileName = $fileName;
-        $instance->Artifact[] = $artifact;
-        $instance->save();
+        $artifact->save();
     }
     
     /**

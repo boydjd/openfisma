@@ -1196,7 +1196,7 @@ class IncidentController extends SecurityController
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance()->err($e->getMessage());
+            Fisma::getLogInstance()->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
         $this->view->response = json_encode($response);
@@ -1220,7 +1220,7 @@ class IncidentController extends SecurityController
         // If user can view this artifact's incident, then they can download the artifact itself
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        $this->_assertCurrentUserCanViewIncident($id);
+        $this->_assertCurrentUserCanViewIncident($incidentId);
 
         // Send artifact to browser
         $incident->getArtifacts()->find($artifactId)->send();

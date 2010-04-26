@@ -87,7 +87,7 @@ class Fisma_Behavior_AttachArtifacts_Artifact extends Fisma_Record
         $path = $this->getStoragePath() . $this->fileName;
 
         header("Content-Type: $this->mimeType", true);
-        header('Content-Disposition: attachment; filename=' . basename($this->fileName), true);
+        header('Content-Disposition: attachment; filename="' . basename($this->fileName) . '"', true);
         header('Expires: 0', true);
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0', true);
         header("Content-Length: $this->fileSize", true);
