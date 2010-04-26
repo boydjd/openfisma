@@ -105,8 +105,6 @@ class IncidentController extends SecurityController
                           ->addActionContext('totalcategory', 'xml')
                           ->initContext();
         }
-        
-        Fisma_Acl::requireArea('incident');
     }
 
     /**
@@ -134,6 +132,7 @@ class IncidentController extends SecurityController
 
         // Save the current form into the Incident and save the incident into the sesion
         $incident->merge($this->getRequest()->getPost());
+                
         $session->irDraft = serialize($incident);
 
         // Get the current step of the process, defaults to zero
@@ -141,15 +140,17 @@ class IncidentController extends SecurityController
 
         if (is_null($step)) {
             $step = 0;
+        } elseif ($this->getRequest()->getParam('irReportCancel')) {
+            $this->_forward('cancel-report', 'Incident');
+            return;
+        } elseif (!$incident->isValid()) {
+            $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
         } else {
             // The user can move forwards or backwards
-            if ($this->getRequest()->getParam('forwards')) {
+            if ($this->getRequest()->getParam('irReportForwards')) {
                 $step++;
-            } elseif ($this->getRequest()->getParam('backwards')) {
+            } elseif ($this->getRequest()->getParam('irReportBackwards')) {
                 $step--;
-            } elseif ($this->getRequest()->getParam('cancel')) {
-                $this->_forward('cancel-report', 'Incident');
-                return;
             } else {
                 throw new Fisma_Exception('User must move forwards, backwards, or cancel');
             }
@@ -162,7 +163,7 @@ class IncidentController extends SecurityController
         // Some business logic to determine if any steps can be skipped based on previous answers:
         // Authenticated users skip step 1 (which is reporter contact information)
         if ($this->_me && 1 == $step) {
-            if ($this->getRequest()->getParam('forwards')) {
+            if ($this->getRequest()->getParam('irReportForwards')) {
                 $incident->ReportingUser = $this->_me;
                 $step++;
             } else {
@@ -172,13 +173,13 @@ class IncidentController extends SecurityController
         
         // Skip past PII sections if they are not applicable
         if ($step == 5 && 'YES' != $incident->piiInvolved) {
-            if ($this->getRequest()->getParam('forwards')) {
+            if ($this->getRequest()->getParam('irReportForwards')) {
                 $step = 7;
             } else {
                 $step = 4;
             }
         } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
-            if ($this->getRequest()->getParam('forwards')) {
+            if ($this->getRequest()->getParam('irReportForwards')) {
                 $step = 7;
             } else {
                 $step = 5;
@@ -208,8 +209,6 @@ class IncidentController extends SecurityController
         $this->view->assign('formPart', $formPart);
         $this->view->assign('stepNumber', $step);
         $this->view->assign('stepTitle', $this->_formParts[$step]['title']);
-
-        $this->render('report');
     }
 
     /**
@@ -228,7 +227,7 @@ class IncidentController extends SecurityController
          * CSS.
          */
         $forwardButton = new Fisma_Yui_Form_Button_Submit(
-            'forwards', 
+            'irReportForwards', 
             array(
                 'label' => 'Continue', 
                 'imageSrc' => "/images/right_arrow.png",
@@ -237,7 +236,7 @@ class IncidentController extends SecurityController
         $formPart->addElement($forwardButton);
 
         $cancelButton = new Fisma_Yui_Form_Button_Submit(
-            'cancel', 
+            'irReportCancel', 
             array(
                 'label' => 'Cancel Report', 
                 'imageSrc' => "/images/del.png",
@@ -247,7 +246,7 @@ class IncidentController extends SecurityController
 
         if ($step > 0) {
             $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'backwards', 
+                'irReportBackwards', 
                 array(
                     'label' => 'Go Back', 
                     'imageSrc' => "/images/left_arrow.png",
@@ -433,15 +432,17 @@ class IncidentController extends SecurityController
             throw new Fisma_Exception('No incident report found in session');
         }
 
-        // Set the reporting user and assign the IRCs as default actors
+        $incident->save();
+        
+        // Set the reporting user
         if ($this->_me) {
             $incident->ReportingUser = $this->_me;
+            $incident->link('Actors', array($this->_me->id));
+            $incident->save();
         }
-        $coordinators = $this->_getIrcs();
-        $incident->link('Actors', $coordinators);
-        $incident->save();
 
-        // Send an email
+        // Send emails to IRCs
+        $coordinators = $this->_getIrcs();
         foreach ($coordinators as $coordinator) {
             $mail = new Fisma_Mail();
             $mail->IRReport($coordinator, $incident->id);
@@ -776,7 +777,7 @@ class IncidentController extends SecurityController
         $incidentId = $this->getRequest()->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        $this->_assertCurrentUserCanUpdateIncident($id);
+        $this->_assertCurrentUserCanUpdateIncident($incidentId);
 
         // userId is supplied by an autocomplete. If the user did not use autocomplete, show a helpful message
         $userId = $this->getRequest()->getParam('userId');

@@ -60,6 +60,7 @@ class Incident extends BaseIncident
         $this->hasMutator('hostIp', 'setHostIp');
         $this->hasMutator('reporterEmail', 'setReporterEmail');
         $this->hasMutator('ReportingUser', 'setReportingUser');
+        $this->hasMutator('sourceIp', 'setSourceIp');
     }
 
     /**
@@ -210,6 +211,20 @@ class Incident extends BaseIncident
             $this->_set('hostIp', null);
         } else {
             $this->_set('hostIp', $value);
+        }
+    }
+    
+    /**
+     * Mutator for sourceIp to convert blank values to null for validation purposes
+     * 
+     * @param string $value
+     */
+    public function setSourceIp($value)
+    {
+        if (empty($value)) {
+            $this->_set('sourceIp', null);
+        } else {
+            $this->_set('sourceIp', $value);
         }
     }
     

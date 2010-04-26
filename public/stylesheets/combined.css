@@ -762,22 +762,22 @@ table.treeTable td.overdue {
  * so we use CSS to display them in a more logical order.
  */
 
-span#forwardsContainer {
+span#irReportForwardsContainer {
 	position: relative;
 	left: 245px;
 }
 
-span#saveContainer {
+span#irReportSaveContainer {
     position: relative;
     left: 260px;
 }
 
-span#backwardsContainer {
+span#irReportBackwardsContainer {
 	position: relative;
 	left: -110px;
 }
 
-span#cancelContainer {
+span#irReportCancelContainer {
 	position: relative;
 	left: -110px;
 }

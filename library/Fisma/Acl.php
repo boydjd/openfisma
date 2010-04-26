@@ -206,6 +206,10 @@ class Fisma_Acl extends Zend_Acl
      */
     static private function _isAllowed($user, $resourceName, $privilege)
     {
+        if (!is_object($user)) {
+            return false;
+        }
+        
         // Root can do anything
         if ('root' == $user->username) {
             return true;

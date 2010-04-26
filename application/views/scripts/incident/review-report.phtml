@@ -31,7 +31,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
     <form method="post" action="<?php echo $this->actionUrlBase; ?>/save-report" style="display: inline">
         <?php
         $saveReportButton = new Fisma_Yui_Form_Button_Submit(
-                'save', 
+                'irReportSave', 
                 array(
                     'label' => 'Submit Report', 
                     'imageSrc' => '/images/add.png',
@@ -45,7 +45,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
     
     <?php
     echo new Fisma_Yui_Form_Button_Submit(
-        'cancel', 
+        'irReportCancel', 
         array(
             'label' => 'Cancel Report', 
             'imageSrc' => "/images/del.png",
@@ -58,7 +58,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
           style="display: inline;">
         <?php
         $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'backwards', 
+                'irReportBackwards', 
                 array(
                     'label' => 'Go Back', 
                     'imageSrc' => '/images/left_arrow.png',
@@ -72,11 +72,3 @@ Fisma_Format_Section::startSection("Review Incident Report");
 <?php
 Fisma_Format_Section::stopSection();
 ?>
-
-<script type="text/javascript">
-    function confirmIrSubmit()
-    {
-        alert('are you sure?');
-        return false;
-    }
-</script>

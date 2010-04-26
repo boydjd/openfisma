@@ -1,7 +1,7 @@
-span#forwardsContainer{position:relative;left:245px;}
-span#saveContainer{position:relative;left:260px;}
-span#backwardsContainer{position:relative;left:-110px;}
-span#cancelContainer{position:relative;left:-110px;}
+span#irReportForwardsContainer{position:relative;left:245px;}
+span#irReportSaveContainer{position:relative;left:260px;}
+span#irReportBackwardsContainer{position:relative;left:-110px;}
+span#irReportCancelContainer{position:relative;left:-110px;}
 div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
 div.incidentStep td{padding:5px;}
 div.incidentStep td:first-child{font-weight:bold;text-align:right;}
