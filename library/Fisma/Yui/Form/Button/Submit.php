@@ -51,24 +51,29 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
             }
             $onClickRender .= "}";
         }
+        
+        $image = $this->getAttrib('imageSrc');
+        $imageRender = '';
+        if (isset($image)) {
+           $imageRender .= "{$this->getName()}._button.style.background = 'url($image) 10% 50% no-repeat';\n";
+           $imageRender .= "{$this->getName()}._button.style.paddingLeft = '3em';\n";
+        }
+
         $render = "<span id=\"{$this->getName()}Container\"></span>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
                            var {$this->getName()} = new YAHOO.widget.Button({
-                           type: \"submit\",
-                           label: \"{$this->getLabel()}\",
-                           id: \"{$this->getName()}\",
-                           name: \"{$this->getName()}\",
-                           value: \"{$this->getLabel()}\",
-                           container: \"{$this->getName()}Container\",
-                           disabled: $disabled
-                           $onClickRender
-                       })});";
-        $image = $this->getAttrib('imageSrc');
-        if (isset($image)) {
-           $render .= "{$this->getName()}._button.style.background = 'url($image) 10% 50% no-repeat';\n";
-           $render .= "{$this->getName()}._button.style.paddingLeft = '3em';\n";
-        }
+                               type: \"submit\",
+                               label: \"{$this->getLabel()}\",
+                               id: \"{$this->getName()}\",
+                               name: \"{$this->getName()}\",
+                               value: \"{$this->getLabel()}\",
+                               container: \"{$this->getName()}Container\",
+                               disabled: $disabled
+                               $onClickRender
+                           });
+                           $imageRender
+                       });";
         $render .= "</script>";
         return $render;
     }

@@ -288,34 +288,40 @@ class IncidentController extends SecurityController
     public function getFormPart($step)
     {
         $formPart = Fisma_Form_Manager::loadForm($this->_formParts[$step]['name']);
+        
+        /**
+         * Add buttons to the form. The continue button is added first so that it is the default submit button if
+         * the user presses the "enter" key. The buttons are re-arranged into a more logical order on the screen with
+         * CSS.
+         */
+        $forwardButton = new Fisma_Yui_Form_Button_Submit(
+            'forwards', 
+            array(
+                'label' => 'Continue', 
+                'imageSrc' => "/images/right_arrow.png",
+            )
+        );
+        $formPart->addElement($forwardButton);
 
-        // Add buttons to the form
         $cancelButton = new Fisma_Yui_Form_Button_Submit(
             'cancel', 
             array(
                 'label' => 'Cancel Report', 
-                'imageSrc' => '/images/del.png',
+                'imageSrc' => "/images/del.png",
             )
         );
         $formPart->addElement($cancelButton);
+
         if ($step > 0) {
             $backwardButton = new Fisma_Yui_Form_Button_Submit(
                 'backwards', 
                 array(
                     'label' => 'Go Back', 
-                    'imageSrc' => '/images/left_arrow.png',
+                    'imageSrc' => "/images/left_arrow.png",
                 )
             );
             $formPart->addElement($backwardButton);
         }
-        $forwardButton = new Fisma_Yui_Form_Button_Submit(
-            'forwards', 
-            array(
-                'label' => 'Continue', 
-                'imageSrc' => '/images/right_arrow.png',
-            )
-        );
-        $formPart->addElement($forwardButton);
 
         // Assign decorators
         $formPart->setDisplayGroupDecorators(
@@ -375,7 +381,7 @@ class IncidentController extends SecurityController
                 $this->_createBoolean($formPart, array('piiShipmentSenderContacted'));
                 break;
         }
-
+        
         return $formPart;
     }
 

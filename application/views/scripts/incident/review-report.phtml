@@ -28,12 +28,29 @@ Fisma_Format_Section::startSection("Review Incident Report");
     </table>
 </div>
 
-<div class="toolbar">
+    <form method="post" action="<?php echo $this->actionUrlBase; ?>/save-report" style="display: inline">
+        <?php
+        $saveReportButton = new Fisma_Yui_Form_Button_Submit(
+                'save', 
+                array(
+                    'label' => 'Submit Report', 
+                    'imageSrc' => '/images/add.png',
+                    'class' => 'left',
+                    'onClick' => 'confirmIrSubmit'
+                )
+            );
+        echo $saveReportButton;
+        ?>
+    </form>
+    
     <?php
-    echo new Fisma_Yui_Form_Button_Link('cancelt',
-                                  array('value' => 'Cancel Report', 
-                                        'href' => "/incident/cancel-report", 
-                                        'imageSrc' => '/images/del.png'));
+    echo new Fisma_Yui_Form_Button_Submit(
+        'cancel', 
+        array(
+            'label' => 'Cancel Report', 
+            'imageSrc' => "/images/del.png",
+        )
+    );
     ?>
     
     <form method="post" 
@@ -51,22 +68,6 @@ Fisma_Format_Section::startSection("Review Incident Report");
         echo $backwardButton;
         ?>
     </form>
-    
-    <form method="post" action="<?php echo $this->actionUrlBase; ?>/save-report" style="display: inline">
-        <?php
-        $saveReportButton = new Fisma_Yui_Form_Button_Submit(
-                'save', 
-                array(
-                    'label' => 'Submit Report', 
-                    'imageSrc' => '/images/add.png',
-                    'class' => 'left',
-                    'onClick' => 'confirmIrSubmit'
-                )
-            );
-        echo $saveReportButton;
-        ?>
-    </form>
-</div>
 
 <?php
 Fisma_Format_Section::stopSection();

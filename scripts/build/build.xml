@@ -18,7 +18,7 @@
     <target name="-css.concat">
         <echo message="Concatenating stylesheets..."/>
         <concat destfile="${location.css}/combined.css" force="no">
-            <filelist dir="${location.css}" files="main.css,AttachArtifacts.css,FindingSummary.css,Modules.css,SwitchButton.css"/>
+            <filelist dir="${location.css}" files="main.css,AttachArtifacts.css,FindingSummary.css,Incident.css,Modules.css,SwitchButton.css"/>
         </concat>
         <echo message="Stylesheets concatenated."/>
     </target>

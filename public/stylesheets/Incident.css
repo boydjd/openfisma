@@ -1,0 +1,117 @@
+/*******************************************************************************
+ *
+ * Incident.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * CSS for incident pages
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+
+/* 
+ * RE-arrange buttons on the incident report wizard. The first button in the source will be the default submit button,
+ * so we use CSS to display them in a more logical order.
+ */
+
+span#forwardsContainer {
+	position: relative;
+	left: 245px;
+}
+
+span#saveContainer {
+    position: relative;
+    left: 260px;
+}
+
+span#backwardsContainer {
+	position: relative;
+	left: -110px;
+}
+
+span#cancelContainer {
+	position: relative;
+	left: -110px;
+}
+
+/*
+ * Styles used for displaying the incident workflow
+ */
+
+div.incidentStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    position: relative;
+}
+
+div.incidentStep td {
+	padding: 5px;
+}
+
+div.incidentStep td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.incidentCardinality {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    padding: 5px 10px;
+    font-size: x-large;
+}
+
+div.completedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.completedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
+}
+
+div.currentIncidentStep {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
+}
+
+div.currentIncidentStep div.incidentCardinality {
+    border: 2px solid #416ed7;
+    border-bottom: none;    
+    color: #416ed7;
+}
+
+div.queuedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.queuedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
+}

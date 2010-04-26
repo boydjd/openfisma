@@ -65,6 +65,7 @@ class View_Helper_InjectAsset
                                 array('/stylesheets/main.css',
                                       '/stylesheets/AttachArtifacts.css',
                                       '/stylesheets/FindingSummary.css',
+                                      '/stylesheets/Incident.css',
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/SwitchButton.css'
                                 )

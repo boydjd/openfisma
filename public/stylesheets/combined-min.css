@@ -78,16 +78,6 @@ div#product_ac_container{position:relative;top:0;width:234px;}
 div.yui-ac-content[style]{height:auto!important;width:auto!important;margin-top:5px;}
 div.yui-ac-bd{overflow:auto;overflow-x:hidden;height:auto!important;max-height:200px;}
 .yui-ac-content ul{margin-right:20px!important;}
-div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;}
-div.incidentStep td:first-child{font-weight:bold;text-align:right;}
-div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
-div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
-div.completedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
-div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
-div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
-div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
-div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
 ul.treelist li{list-style:none;}
 div#TabView_UserView_TabViewContainer{float:left;margin-top:14px;max-width:60%;}
 div.section>div>div.clear{display:none;}
@@ -118,6 +108,20 @@ table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weigh
 .treeTable7{margin-left:7em;}
 .treeTable8{margin-left:8em;}
 .treeTable9{margin-left:9em;}
+span#forwardsContainer{position:relative;left:245px;}
+span#saveContainer{position:relative;left:260px;}
+span#backwardsContainer{position:relative;left:-110px;}
+span#cancelContainer{position:relative;left:-110px;}
+div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
+div.incidentStep td{padding:5px;}
+div.incidentStep td:first-child{font-weight:bold;text-align:right;}
+div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
+div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.completedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
+div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
+div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
 table.modules{margin-left:auto;margin-right:auto;}
 table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
 table.modules td:first-child{font-weight:bold;}
