@@ -1,23 +1,24 @@
 <form method="post" action="<?php echo $this->formAction; ?>">
     <div class="toolbar">
     <?php
-    if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+    if ($this->updateIncidentPrivilege):
         echo $this->discardChangesButton;
         echo $this->saveChangesButton;
     endif;
     
-    if (Fisma_Acl::hasPrivilegeForObject('lock', $this->incident)):
-        if ($this->incident->isLocked)
+    if ($this->lockIncidentPrivilege):
+        if ($this->incident->isLocked):
             echo $this->unlockButton;
-        else
+        else:
             echo $this->lockButton;
+        endif;
     endif;
     ?>
     </div>
 
     <div class="column left">
         <?php
-        Fisma_Format_Section::startSection('Incident Details')
+        Fisma_Format_Section::startSection('Incident Details');
         ?>
         <table class="keyValues">
             <?php 
@@ -98,7 +99,7 @@
                     <div name="incident[additionalInfo]" 
                          id="additionalInfo"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="textarea"
@@ -116,7 +117,7 @@
                     <div name="incident[actionsTaken]" 
                          id="actionsTaken"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="textarea"
@@ -140,7 +141,7 @@
                     <div name="incident[hostName]" 
                          id="hostName"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -158,7 +159,7 @@
                     <div name="incident[hostIp]" 
                          id="hostIp"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -176,7 +177,7 @@
                     <div name="incident[hostOs]" 
                          id="hostOs"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="select"
@@ -195,7 +196,7 @@
                     <div name="incident[hostAdditional]" 
                          id="hostAdditional"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="textarea"
@@ -247,7 +248,7 @@
                         <div name="incident[reporterOrganization]" 
                              id="reporterOrganization"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -265,7 +266,7 @@
                         <div name="incident[reporterAddress1]" 
                              id="reporterAddress1"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -283,7 +284,7 @@
                         <div name="incident[reporterAddress2]" 
                              id="reporterAddress2"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -309,7 +310,7 @@
                         <div name="incident[reporterPhone]" 
                              id="reporterPhone"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -326,7 +327,7 @@
                         <div name="incident[reporterFax]" 
                              id="reporterFax"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -344,7 +345,7 @@
                         <div name="incident[reporterEmail]" 
                              id="reporterEmail"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -365,7 +366,7 @@
                     <div name="incident[reporterIp]" 
                          id="reporterIp"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -389,7 +390,7 @@
                     <div name="incident[locationBuilding]" 
                          id="locationBuilding"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -407,7 +408,7 @@
                     <div name="incident[locationRoom]" 
                          id="locationRoom"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -425,7 +426,7 @@
                     <div name="incident[sourceIp]" 
                          id="sourceIp"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="text"
@@ -443,7 +444,7 @@
                     <div name="incident[sourceAdditional]" 
                          id="sourceAdditional"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="textarea"
@@ -476,7 +477,7 @@
                     <div name="incident[piiInvolved]" 
                          id="piiInvolved"
                          <?php
-                         if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                         if ($this->updateIncidentPrivilege):
                          ?>
                              class="editable"
                              type="select"
@@ -498,7 +499,7 @@
                         <div name="incident[piiAdditional]" 
                              id="piiAdditional"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="textarea"
@@ -516,7 +517,7 @@
                         <div name="incident[piiMobileMedia]" 
                              id="piiMobileMedia"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -535,7 +536,7 @@
                         <div name="incident[piiMobileMediaType]" 
                              id="piiMobileMediaType"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -554,7 +555,7 @@
                         <div name="incident[piiEncrypted]" 
                              id="piiEncrypted"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -573,7 +574,7 @@
                         <div name="incident[piiAuthoritiesContacted]" 
                              id="piiAuthoritiesContacted"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -592,7 +593,7 @@
                         <div name="incident[piiPoliceReport]" 
                              id="piiPoliceReport"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -611,7 +612,7 @@
                         <div name="incident[piiIndividualsCount]" 
                              id="piiIndividualsCount"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -629,7 +630,7 @@
                         <div name="incident[piiIndividualsNotified]" 
                              id="piiIndividualsNotified"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -648,7 +649,7 @@
                         <div name="incident[piiShipment]" 
                              id="piiShipment"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -667,7 +668,7 @@
                         <div name="incident[piiShipmentSenderCompany]" 
                              id="piiShipmentSenderCompany"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="text"
@@ -685,7 +686,7 @@
                         <div name="incident[piiShipmentSenderContacted]" 
                              id="piiShipmentSenderContacted"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="select"
@@ -704,7 +705,7 @@
                         <div name="incident[piiShipmentTimeline]" 
                              id="piiShipmentTimeline"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="textarea"
@@ -722,7 +723,7 @@
                         <div name="incident[piiShipmentTrackingNumbers]" 
                              id="piiShipmentTrackingNumbers"
                              <?php
-                             if (Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                             if ($this->updateIncidentPrivilege):
                              ?>
                                  class="editable"
                                  type="textarea"

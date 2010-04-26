@@ -87,7 +87,7 @@ foreach ($this->steps as $step):
                 <?php
                 endif;
 
-                if ('current' == $step->status && Fisma_Acl::hasPrivilegeForObject('update', $this->incident)):
+                if ('current' == $step->status && $this->updateIncidentPrivilege):
                 ?>
                     <tr>
                         <td>*Comments:</td>

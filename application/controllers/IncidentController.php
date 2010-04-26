@@ -491,6 +491,8 @@ class IncidentController extends SecurityController
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         
+        $this->view->readIncidentPrivilege = $this->_currentUserCanViewIncident($id);
+        
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
         $this->view->allIncidentsUrl = $link
@@ -598,6 +600,9 @@ class IncidentController extends SecurityController
         $this->view->incident = $incident;
 
         $this->_assertCurrentUserCanViewIncident($id);
+        
+        $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
+        $this->view->lockIncidentPrivilege = Fisma_Acl::hasPrivilegeForObject('lock', $incident);
                 
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
@@ -724,6 +729,7 @@ class IncidentController extends SecurityController
         $observers = $observerQuery->execute();
                 
         $this->view->assign('observers', $observers);
+        $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         
         // Create autocomplete for actors
         $this->view->actorAutocomplete = new Fisma_Yui_Form_AutoComplete(
@@ -900,6 +906,7 @@ class IncidentController extends SecurityController
         // Load related so we can efficiently access related records in the view
         $steps->loadRelated();
         
+        $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->steps = $steps;
     }
 

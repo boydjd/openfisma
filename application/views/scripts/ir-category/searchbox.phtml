@@ -17,7 +17,7 @@
         ?>
 
         <?php 
-        if (Fisma_Acl::hasPrivilegeForClass('create', 'IrCategory')):
+        if ($this->createIrCategoryPrivilege):
             $createButton = new Fisma_Yui_Form_Button_Link('createSubcategoryButton', 
                                                    array('value' => 'Add IR Sub Category', 
                                                          'imageSrc' => '/images/add.png',
