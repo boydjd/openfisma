@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author    Nathan Harris <nathan.harris@endeavorsystems.com>
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
  * @version   $Id$
@@ -112,70 +112,8 @@ class IncidentController extends SecurityController
                           ->addActionContext('totalcategory', 'xml')
                           ->initContext();
         }
-    }
-
-   /**
-     * statistics per status 
-     */
-    public function totalstatusAction()
-    {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         
-        $arrTotal = array (
-                        'new'      => 0,
-                        'open'     => 0,
-                        'resolved' => 0,
-                        'rejected' => 0,
-                    );
-
-        $q = Doctrine_Query::create() 
-             ->select('count(*) as count, i.status ')
-             ->from('Incident i')
-             ->groupBy('i.status');       
-
-        $data = $q->execute()->toArray();
-        foreach ($data as $key => $item) {
-            if (isset($arrTotal[$item['status']])) {
-                $arrTotal[$item['status']] = $item['count'];
-            }
-        }
-
-        $this->view->summary = $arrTotal;
-    }
-
-   /**
-     * statistics per status 
-     * 
-     * @todo this has horrendous performance
-     */
-    public function totalcategoryAction()
-    {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
-        
-        $arrTotal = array (
-                        'CAT0'      => 0,
-                        'CAT1'      => 0,
-                        'CAT2'      => 0,
-                        'CAT3'      => 0,
-                        'CAT4'      => 0,
-                        'CAT5'      => 0,
-                        'CAT6'      => 0,
-                    );
-
-        $cats = $this->_getCategoriesArr();
-
-        foreach ($cats as $cat => $ids) {
-            $q = Doctrine_Query::create() 
-                 ->select('count(*) as count')
-                 ->from('Incident i')
-                 ->whereIn('i.categoryId', $ids)
-                 ->andWhere('i.status <> ?', array('closed'));
-
-            $data = $q->execute()->toArray();
-            $arrTotal[$cat] = $data[0]['count'];
-        }
-
-        $this->view->summary = $arrTotal;
+        Fisma_Acl::requireArea('incident');
     }
 
     /**
@@ -183,6 +121,8 @@ class IncidentController extends SecurityController
      * 
      * This is organized like a wizard which has several, successive screens to make the process simpler for 
      * the user.
+     * 
+     * Notice that this method is allowed for unauthenticated users
      */
     public function reportAction() 
     {
@@ -438,6 +378,8 @@ class IncidentController extends SecurityController
 
     /**
      * Lets a user review the incident report in its entirety before submitting it.
+     * 
+     * This action is available to unauthenticated users.
      */
     public function reviewReportAction() 
     {
@@ -478,6 +420,8 @@ class IncidentController extends SecurityController
 
     /**
      * Inserts an incident record and forwards to the success page
+     * 
+     * This action is available to unauthenticated users
      *
      * @return string the rendered page
      */
@@ -516,6 +460,8 @@ class IncidentController extends SecurityController
     
     /**
      * Remove the serialized incident object from the session object.
+     * 
+     * This action is available to unauthenticated users
      */
     public function cancelReportAction()
     {
@@ -533,11 +479,13 @@ class IncidentController extends SecurityController
 
     /**
      * Displays the incident search page
+     * 
+     * No access control required here, because this doesn't display any incident data
      *
      * @return string the rendered page
      */
     public function listAction() 
-    {
+    {        
         $this->searchboxAction();
         
         $value = trim($this->_request->getParam('keywords'));
@@ -557,8 +505,11 @@ class IncidentController extends SecurityController
         $this->render('list');
     }
 
+    /**
+     * This action does not require access control; it doesn't display any data
+     */
     public function searchboxAction() 
-    {
+    {        
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
         $this->view->assign('status', $status);
         
@@ -580,7 +531,9 @@ class IncidentController extends SecurityController
     {
         $this->_helper->layout->disableLayout();
         $incidentId = $this->_request->getParam('id');
+        
         $this->_assertCurrentUserCanViewIncident($incidentId);
+        
         $this->view->assign('id', $incidentId);
        
         $this->view->assign('cloneId', $this->_getClone($incidentId));
@@ -610,8 +563,8 @@ class IncidentController extends SecurityController
             throw new Fisma_Exception("Invalid incident ID ($id)");
         }
         
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
-        
+        $this->_assertCurrentUserCanViewIncident($id);
+                
         $this->view->id = $id;
         $this->view->incident = $incident;
         
@@ -644,7 +597,7 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->find($id);
         $this->view->incident = $incident;
 
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+        $this->_assertCurrentUserCanViewIncident($id);
                 
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
@@ -684,6 +637,8 @@ class IncidentController extends SecurityController
     /**
      * Lock the incident 
      * 
+     * The access control for these actions is handled inside the Lockable behavior
+     * 
      * @return void
      */
     public function lockAction()
@@ -697,6 +652,8 @@ class IncidentController extends SecurityController
 
     /**
      * Unlock the incident 
+     * 
+     * The access control for these actions is handled inside the Lockable behavior
      * 
      * @return void
      */
@@ -716,6 +673,8 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         
+        $this->_assertCurrentUserCanViewIncident($id);
+
         $incident = Doctrine::getTable('Incident')->find($id);
         
         $logs = $incident->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
@@ -740,7 +699,7 @@ class IncidentController extends SecurityController
 
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+        $this->_assertCurrentUserCanViewIncident($id);
         
         // Get list of actors
         $actorQuery = Doctrine_Query::create()
@@ -811,7 +770,7 @@ class IncidentController extends SecurityController
         $incidentId = $this->getRequest()->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        Fisma_Acl::requirePrivilegeForObject('update', $incident);
+        $this->_assertCurrentUserCanUpdateIncident($id);
 
         // userId is supplied by an autocomplete. If the user did not use autocomplete, show a helpful message
         $userId = $this->getRequest()->getParam('userId');
@@ -844,8 +803,8 @@ class IncidentController extends SecurityController
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        Fisma_Acl::requirePrivilegeForObject('update', $incident);
-        
+        $this->_assertCurrentUserCanUpdateIncident($id);
+                
         // Remove the specified link
         $userId = $this->getRequest()->getParam('userId');
         $type = $this->getRequest()->getParam('type');
@@ -868,6 +827,8 @@ class IncidentController extends SecurityController
      */
     public function cloneAction() 
     {
+        Fisma_Acl::requirePrivilegeForClass('create', 'Incident');
+        
         $incidentId = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
@@ -902,8 +863,8 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->find($id);
         $this->view->incident = $incident;
         
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
-
+        $this->_assertCurrentUserCanViewIncident($id);
+        
         switch ($incident->status) {
             case 'new':
                 $this->_forward('classify-form');
@@ -924,6 +885,8 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $this->view->id = $id;
+        
+        $this->_assertCurrentUserCanViewIncident($id);
         
         $incident = Doctrine::getTable('Incident')->find($id);
         $this->view->incident = $incident;
@@ -950,7 +913,8 @@ class IncidentController extends SecurityController
             $this->view->id = $id;
             
             $incident = Doctrine::getTable('Incident')->find($id);
-            Fisma_Acl::requirePrivilegeForObject('update', $incident);
+
+            $this->_assertCurrentUserCanUpdateIncident($id);
             
             $comment = $this->getRequest()->getParam('comment');
 
@@ -1011,8 +975,10 @@ class IncidentController extends SecurityController
      */
     public function classifyAction() 
     {
-        $id = $this->_request->getParam('id');
+        $id = $this->_request->getParam('id');        
         $incident = Doctrine::getTable('Incident')->find($id);
+
+        Fisma_Acl::requirePrivilegeForObject('classify', $incident);        
 
         $comment = $this->_request->getParam('comment');
 
@@ -1070,7 +1036,7 @@ class IncidentController extends SecurityController
         $id = $this->getRequest()->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('update', $incident);
+        $this->_assertCurrentUserCanUpdateIncident($id);
         
         try {
             $comment = new IrComment();
@@ -1097,7 +1063,7 @@ class IncidentController extends SecurityController
         $this->view->assign('id', $id);
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+        $this->_assertCurrentUserCanViewIncident($id);
 
         $commentQuery = Doctrine_Query::create()
                         ->select('c.createdTs, c.comment, u.nameFirst, u.nameLast, u.username')
@@ -1109,7 +1075,7 @@ class IncidentController extends SecurityController
 
         $comments = $commentQuery->execute();
 
-        $this->view->showAddCommentForm = Fisma_Acl::hasPrivilegeForObject('update', $incident);
+        $this->view->showAddCommentForm = $this->_currentUserCanUpdateIncident($id);
 
         $this->view->assign('comments', $comments);
     }
@@ -1123,7 +1089,7 @@ class IncidentController extends SecurityController
         $this->view->assign('id', $id);
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+        $this->_assertCurrentUserCanViewIncident($id);
 
         // Upload button
         $uploadPanelButton = new Fisma_Yui_Form_Button(
@@ -1145,7 +1111,7 @@ class IncidentController extends SecurityController
             )
         );
 
-        if (!Fisma_Acl::hasPrivilegeForObject('update', $incident)) {
+        if (!$this->_currentUserCanUpdate($id)) {
             $uploadPanelButton->readOnly = true;
         }
         
@@ -1184,7 +1150,7 @@ class IncidentController extends SecurityController
             
             $incident = Doctrine::getTable('Incident')->find($id);
 
-            Fisma_Acl::requirePrivilegeForObject('update', $incident);
+            $this->_assertCurrentUserCanUpdateIncident($id);
 
             // If file upload is too large, then $_FILES will be empty (thanks for the helpful behavior, PHP!)
             if (0 == count($_FILES)) {
@@ -1231,19 +1197,21 @@ class IncidentController extends SecurityController
         // If user can view this artifact's incident, then they can download the artifact itself
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $incident);
+        $this->_assertCurrentUserCanViewIncident($id);
 
         // Send artifact to browser
         $incident->getArtifacts()->find($artifactId)->send();
     }
     
     /**
-     * list the incidents from the search, 
-     * if search none, list all incidents
+     * Send search results in JSON format.
+     * 
+     * If no search parameters, then lists all incidents visible to the current user
+     * 
+     * Access control is handled in the query itself, which is returned from getUserIncidentQuery
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Incident');
         $keywords = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
@@ -1266,7 +1234,7 @@ class IncidentController extends SecurityController
             $order = 'ASC'; //ignore other values
         }
         
-        $q = $this->_getUserIncidentQuery()
+        $q = self::getUserIncidentQuery()
              ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
              ->leftJoin('i.Category c')
              ->orderBy("i.$sortBy $order")
@@ -1395,10 +1363,41 @@ class IncidentController extends SecurityController
         $mail = new Fisma_Mail();
         $mail->IRReport($user['id'], $subject['id']);
         
-        /* Not sure what is happening here.. if the method is called the dashboard renders twice */
         $this->_forward('dashboard');
     }
 
+    /**
+     * Check whether the current user can update the specified incident
+     * 
+     * This is an expensive operation. DO NOT CALL IT IN A TIGHT LOOP.
+     * 
+     * @param int $incidentId The ID of the incident
+     * @return bool
+     */
+    public function _currentUserCanUpdateIncident($incidentId)
+    {
+        $userCanUpdate = false;
+        
+        if (!Fisma_Acl::hasPrivilegeForClass('update', 'Incident')) {
+            // Check if this user is an actor
+            $userId = $this->_me->id;
+            $actorCount = Doctrine_Query::create()
+                 ->from('Incident i')
+                 ->innerJoin('i.Actors a')
+                 ->where('i.id = ?', $incidentId)
+                 ->andWhere('a.id = ?', $this->_me->id)
+                 ->count();
+            
+            if ($actorCount > 0) {
+                $userCanUpdate = true;
+            }
+        } else {
+            $userCanUpdate = true;
+        }
+        
+        return $userCanUpdate;
+    }
+    
     /**
      * Assert that the current user is allowed to modify the specified incident.
      * 
@@ -1410,19 +1409,44 @@ class IncidentController extends SecurityController
      */
     private function _assertCurrentUserCanUpdateIncident($incidentId)
     {
-        if (!Fisma_Acl::hasPrivilegeForClass('update', 'Incident')) {
-            // Check if this user is an actor
-            $userId = $this->_me->id;
-            $actorCount = Doctrine_Query::create()
+        if (!$this->_currentUserCanUpdateIncident($incidentId)) {
+            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to edit this incident.');
+        }
+    }
+
+    /**
+     * Check whether the current user can view the specified incident
+     * 
+     * This is an expensive operation. DO NOT CALL IT IN A TIGHT LOOP.
+     * 
+     * @param int $incidentId The ID of the incident
+     * @return bool
+     */
+    public function _currentUserCanViewIncident($incidentId) 
+    {
+        $userCanView = false;
+        
+        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
+            // Check if this user is an observer or actor
+            $observerCount = Doctrine_Query::create()
+                 ->select('i.id')
                  ->from('Incident i')
-                 ->innerJoin('i.Actors a')
+                 ->leftJoin('i.Actors a')
+                 ->leftJoin('i.Observers o')
                  ->where('i.id = ?', $incidentId)
                  ->andWhere('a.id = ?', $this->_me->id)
+                 ->orWhere('o.id = ?', $this->_me->id)
                  ->count();
+
+            if ($observerCount > 0) {
+                $userCanView = true;
+            }
             
-            if (!$actorCount)
-                throw new Fisma_Exception_InvalidPrivilege('You are not allowed to edit this incident.');
+        } else {
+            $userCanView = true;
         }
+        
+        return $userCanView;
     }
 
     /**
@@ -1436,21 +1460,8 @@ class IncidentController extends SecurityController
      */
     private function _assertCurrentUserCanViewIncident($incidentId)
     {
-        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
-            // Check if this user is an observer or actor
-            $observerCount = Doctrine_Query::create()
-                 ->select('i.id')
-                 ->from('Incident i')
-                 ->leftJoin('i.Actors a')
-                 ->leftJoin('i.Observers o')
-                 ->where('i.id = ?', $incidentId)
-                 ->andWhere('a.id = ?', $this->_me->id)
-                 ->orWhere('o.id = ?', $this->_me->id)
-                 ->count();
-
-            if (!$observerCount)
-                throw new Fisma_Exception_InvalidPrivilege('You are not allowed to view this incident.');
-            
+        if (!$this->_currentUserCanViewIncident($incidentId)) {
+            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to view this incident.');
         }
     }
 
@@ -1605,44 +1616,6 @@ class IncidentController extends SecurityController
         return $retVal;
     }
 
-    private function _getUser($id) 
-    {
-        $q = Doctrine_Query::create()
-             ->select('u.*')
-             ->from('User u')
-             ->where("u.id = ?", $id);
-
-        $user = $q->execute();
-        
-        $user = $user->toArray();
-
-        $q = Doctrine_Query::create()
-             ->select('r.*')
-             ->from('Role r')
-             ->innerJoin('r.UserRole ur')
-             ->where('ur.userId = ?', $user[0]['id']);   
-        
-        $role = $q->execute()->toArray();
-
-        $user[0]['role'] = $role[0]['nickname'];
-
-        return $user[0];
-    }
-
-    private function _getRole($id) 
-    {
-        $q = Doctrine_Query::create()
-             ->select('r.name, r.nickname')
-             ->from('Role r')
-             ->where("r.id = ?", $id);
-
-        $role = $q->execute();
-        
-        $role = $role->toArray();
-
-        return $role[0];
-    }
-
     /**
      * Get the user ids of all IRCs
      * 
@@ -1702,24 +1675,28 @@ class IncidentController extends SecurityController
     }
 
     /**
-     * Returns a query which matches all of the users current incidents
+     * Returns a query which matches all of the users currently viewable incidents
      * 
      * @return Doctrine_Query
      */
-    private function _getUserIncidentQuery()
+    public static function getUserIncidentQuery()
     {
-        $user = $this->_me;
+        $user = User::currentUser();
         
-        // A user can be associated as an actor or observer, and so both tables need to be joined
-        // here to get all of a user's incidents.
-        $q = Doctrine_Query::create()
-             ->select('i.id')
-             ->from('Incident i')
-             ->leftJoin('i.Actors a')
-             ->leftJoin('i.Observers o')
-             ->where('a.id = ? OR o.id = ?', array($user->id, $user->id));
+        /*
+         * A user can read *all* incidents if he has the (read, Incident) privilege. Otherwise, he is only allowed to 
+         * view those incidents for which he is an actor or an observer.
+         */
+        $incidentQuery = Doctrine_Query::create()
+                         ->from('Incident i');
+        
+        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
+            $incidentQuery->leftJoin('i.Actors a')
+                          ->leftJoin('i.Observers o')
+                          ->where('a.id = ? OR o.id = ?', array($user->id, $user->id));
+        }
 
-        return $q;
+        return $incidentQuery;
     }
 
     private function _userIncidents() 

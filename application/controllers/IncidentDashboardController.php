@@ -107,10 +107,9 @@ class IncidentDashboardController extends SecurityController
         $limit = $this->getRequest()->getParam('limit', 10);
         $offset = $this->getRequest()->getParam('offset', 0);
             
-        $newIncidentsQuery = Doctrine_Query::create()
+        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
                              ->select('i.id, i.reportTs, i.additionalInfo, i.piiInvolved')
-                             ->from('Incident i')
-                             ->where('i.status = ?', "new")
+                             ->andWhere('i.status = ?', "new")
                              ->orderBy("i.$sortBy $order")
                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -148,10 +147,9 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = Doctrine_Query::create()
+        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
                              ->select('i.id, i.additionalInfo, i.modifiedTs')
-                             ->from('Incident i')
-                             ->where('i.modifiedTs > ?', $cutoffTime)
+                             ->andWhere('i.modifiedTs > ?', $cutoffTime)
                              ->orderBy("i.$sortBy $order")
                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -189,10 +187,9 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(5, Zend_Date::DAY)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = Doctrine_Query::create()
+        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
                              ->select('i.id, i.additionalInfo, i.closedTs, i.resolution')
-                             ->from('Incident i')
-                             ->where('i.status = ?', 'closed')
+                             ->andWhere('i.status = ?', 'closed')
                              ->andWhere('i.closedTs > ?', $cutoffTime)
                              ->orderBy("i.$sortBy $order")
                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -231,11 +228,10 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = Doctrine_Query::create()
+        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
                              ->select('i.id, i.additionalInfo, count(c.id) AS count')
-                             ->from('Incident i')
                              ->innerJoin('i.Comments c')
-                             ->where('c.createdTs > ?', $cutoffTime)
+                             ->andWhere('c.createdTs > ?', $cutoffTime)
                              ->groupBy('i.id')
                              ->orderBy("i.$sortBy $order")
                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);

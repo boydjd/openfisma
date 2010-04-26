@@ -154,6 +154,8 @@ class IRWorkflowController extends SecurityController
      */
     public function treeAction() 
     {
+        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+
         $this->searchbox();
         $this->render('tree');        
     }
