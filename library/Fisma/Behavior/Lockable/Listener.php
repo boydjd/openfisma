@@ -54,16 +54,16 @@ class Fisma_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         // Check to see if the invoker's references are dirty
         foreach ($invoker->getReferences() as $alias) {
             if (
-                method_exists($alias, 'state') && $alias->state() == (
+                $alias instanceof Doctrine_Record && $alias->state() == (
                     Doctrine_Record::STATE_DIRTY || Doctrine_Record::STATE_TDIRTY
                 )
             ) {
                 $noLinkChanges = false;
                 break;
-            } elseif (!method_exists($alias, 'state')) {
+            } else {
                 foreach ($alias as $record) {
                     if (
-                        method_exists($record, 'state') && $record->state() == (
+                        $record instanceof Doctrine_Record && $record->state() == (
                             Doctrine_Record::STATE_DIRTY || Doctrine_Record::STATE_TDIRTY
                         )
                     ) {
