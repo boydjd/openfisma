@@ -69,6 +69,13 @@ class ArtifactController extends SecurityController
             throw new Fisma_Exception('Upload forms require a Zend_Form_Element_Submit named "uploadButton"');
         }
         
+        // Select elements can be loaded from a table
+        foreach ($form->getElements() as $element) {
+            if ($element instanceof Zend_Form_Element_Select && $element->sourceTable) {
+                $this->_loadSelectElementFromTable($element);
+            }
+        }
+        
         // Set additional form attributes
         $form->setMethod("post");
         $form->setName("uploadArtifactForm");
@@ -77,6 +84,33 @@ class ArtifactController extends SecurityController
                         
         $this->view->form = $form;
         $this->view->maxFileSize = ini_get('upload_max_filesize');
+    }
+    
+    /**
+     * Load a zend select element from a source table
+     */
+    private function _loadSelectElementFromTable(Zend_Form_Element_Select $select)
+    {
+        $table = $select->sourceTable;
+        $indexField = $select->indexField;
+        $labelField = $select->labelField;
+        
+        /*
+         * This query uses interpolated parameters because there is no parameter binding in the select() or
+         * from() methods. These parameters are safe because they are loaded from a form definition file which
+         * is stored outside of the webroot.
+         */
+        $query = Doctrine_Query::create()
+                 ->from("$table t INDEXBY $indexField")
+                 ->select("$labelField")
+                 ->orderBy("$labelField")
+                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        $selectOptions = $query->execute();
+        
+        foreach ($selectOptions as $id => $selectOption) {
+            $select->addMultiOption($id, $selectOption['name']);
+        }
     }
     
     /**

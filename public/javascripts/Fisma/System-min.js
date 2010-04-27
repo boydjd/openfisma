@@ -1,0 +1,1 @@
+Fisma.System={uploadDocumentCallback:function(a){window.location.href=window.location.href}};

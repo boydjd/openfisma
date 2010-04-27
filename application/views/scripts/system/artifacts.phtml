@@ -1,11 +1,5 @@
 <?php
-$uploadPanelButton = new Fisma_Yui_Form_Button('uploadPanelButton', 
-                                               array('label' => 'Upload Document', 
-                                                     'onClickFunction' => 'showUploadPanel'));
-if (!Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
-    $uploadPanelButton->readOnly = true;
-}
-print $uploadPanelButton;
+echo $this->uploadPanelButton;
 
 Fisma_Format_Section::startSection('System Documentation');
 ?>

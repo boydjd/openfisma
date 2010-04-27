@@ -266,6 +266,33 @@ class SystemController extends BaseController
         $this->view->organization = $organization;
         $this->view->system = $system;
         
+        // Use the attach artifacts uploader, even though we're not using the behavior
+        $uploadPanelButton = new Fisma_Yui_Form_Button(
+            'uploadPanelButton', 
+            array(
+                'label' => 'Upload Document', 
+                'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'form' => 'upload_system_document',
+                    'server' => array(
+                        'controller' => 'system',
+                        'action' => 'upload-document'                        
+                    ),
+                    'callback' => array(
+                        'object' => 'System',
+                        'method' => 'uploadDocumentCallback'
+                    )
+                )
+            )
+        );
+
+        if (!Fisma_Acl::hasPrivilegeForObject('update', $organization)) {
+            $uploadPanelButton->readOnly = true;
+        }
+        
+        $this->view->uploadPanelButton = $uploadPanelButton;
+
         // Get all documents for current system, sorted alphabetically on the document type name
         $documentQuery = Doctrine_Query::create()
                          ->from('SystemDocument d INNER JOIN d.DocumentType t')
@@ -329,22 +356,6 @@ class SystemController extends BaseController
     }
 
     /**
-     * Upload file artifacts for a system
-     * 
-     * @return void
-     */
-    public function attachFileAction() 
-    {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('update', $organization);
-        $this->_helper->layout()->disableLayout();
-
-        $this->view->organization = Doctrine::getTable('Organization')->find($id);
-        $this->view->system = $this->view->organization->System;
-    }
-
-    /**
      * Override the base class to handle the saving of attributes into the Organization AND System models
      *
      * @param Zend_Form $form
@@ -394,37 +405,26 @@ class SystemController extends BaseController
     /**
      * Display a form inside a panel for uploading a document
      * 
-     * Notice that IE has its own method, since it does not support the flash uploader
-     * 
-     * @return void
-     */
-    public function uploadDocumentFormAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('update', $organization);
-        $this->_helper->layout()->disableLayout();
-
-        $this->view->organizationId = $id;        
-        $this->view->documentTypes  = Doctrine_Query::create()->from('DocumentType')->orderBy('name')->execute();
-    }
-  
-    /**
-     * Display a form inside a panel for uploading a document
-     * 
      * @return void
      */
     public function uploadDocumentAction()
     {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $this->_helper->layout->disableLayout();
+
+        $organizationId = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->find($organizationId);
         Fisma_Acl::requirePrivilegeForObject('update', $organization);
                 
-        $organization = Doctrine::getTable('Organization')->find($id);
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
-        $description = $this->getRequest()->getParam('description');
+        $versionNotes = $this->getRequest()->getParam('versionNotes');
+
+        $response = new Fisma_AsyncResponse();
 
         try {
+            if (empty($documentTypeId)) {
+                throw new Fisma_Exception_User('Select a Document Type');
+            }
+            
             // Get the existing document
             $documentQuery = Doctrine_Query::create()
                              ->from('SystemDocument sd')
@@ -433,8 +433,9 @@ class SystemController extends BaseController
                                  array($organization->System->id, $documentTypeId)
                              )
                              ->limit(1);
+
             $documents = $documentQuery->execute();
-    
+
             // If no existing document, then create a new one
             if (count($documents) == 0) {
                 $document = new SystemDocument();
@@ -447,11 +448,11 @@ class SystemController extends BaseController
 
             // Move file into its correct place
             $error = '';
-            if (empty($_FILES['systemdoc']['name'])) {
-                throw new Fisma_Exception("You did not specify a file to upload.");
+            if (empty($_FILES['file']['name'])) {
+                throw new Fisma_Exception_User("You did not specify a file to upload.");
             }
-            $file = $_FILES['systemdoc'];
-            $destinationPath = Fisma::getPath('systemDocument') . "/$id";
+            $file = $_FILES['file'];
+            $destinationPath = Fisma::getPath('systemDocument') . "/$organizationId";
             if (!is_dir($destinationPath)) {
                 mkdir($destinationPath);
             }
@@ -463,33 +464,31 @@ class SystemController extends BaseController
             }
     
             // Update the document object and save
-            if (empty($description)) {
-                throw new Fisma_Exception("You did not enter the version notes.");
+            if (empty($versionNotes)) {
+                throw new Fisma_Exception_User("Version notes are required.");
             }
-            $document->description = $description;
+            
+            $document->description = $versionNotes;
             $document->fileName = $fileName;
             $document->mimeType = $file['type'];
             $document->size = $file['size'];
             $document->save();
+        } catch (Fisma_Exception_User $e) {
+            $response->fail($e->getMessage());
         } catch (Fisma_Exception $e) {
-            $error = "Upload failed: " . $e->getMessage();
+            if (Fisma::debug()) {
+                $response->fail("Failure (debug mode): " . $e->getMessage());
+            } else {
+                $response->fail("Internal system error. File not uploaded.");
+            }
+
+            Fisma::getLogInstance()->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
-        if ('ie' == $this->getRequest()->getParam('browser')) {
-            // Special handling for IE
-            if (!empty($error)) {
-                $this->view->priorityMessenger($error, 'warning');
-                $this->_forward('system', 'Panel', null, array('sub' => 'upload-for-ie', 'error' => $error));
-            } else {
-                $this->_redirect("/panel/system/sub/view/id/$id");
-            }
-        } else {
-            // For all other browsers, send back a JSON status
-            $this->_helper->layout()->disableLayout();
-            $this->_helper->viewRenderer->setNoRender(true);
-            
-            $success = empty($error) ? true : false;
-            echo(json_encode(array('success' => $success, 'error' => $error)));
+        $this->view->response = json_encode($response);
+        
+        if ($response->success) {
+            $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
         }
     }  
     
@@ -530,27 +529,5 @@ class SystemController extends BaseController
              ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
          $path = $document->getPath();
          readfile($path);
-    }
-    
-    /**
-     * A special upload page just for IE.
-     * 
-     * IE doesn't work with the flash uploader, so it uses a static upload page.
-     * 
-     * @return void
-     */
-    public function uploadForIeAction() 
-    {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('update', $organization);
-
-        $error = $this->getRequest()->getParam('error');
-        if (!empty($error)) {
-            $this->view->priorityMessenger($error, 'warning');
-        }
-
-        $this->view->organizationId = $id;        
-        $this->view->documentTypes  = Doctrine_Query::create()->from('DocumentType')->orderBy('name')->execute();
     }
 }

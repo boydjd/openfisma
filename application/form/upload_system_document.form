@@ -9,28 +9,26 @@
 ; Version   $Id$
 
 [upload_system_document]
-method = "post"
-elementFilters.trim = "StringTrim"
-elementFilters.tags = "StripTags"
 
-elements.description.type = "text"
-elements.description.options.label = "Comments"
-elements.description.options.required = true
-displayGroups.upload.elements.description = "description"
+elements.documentTypeId.type = "select"
+elements.documentTypeId.options.label = "*Document Type"
+elements.documentTypeId.options.sourceTable = "DocumentType"
+elements.documentTypeId.options.indexField = "id"
+elements.documentTypeId.options.labelField = "name"
+elements.documentTypeId.options.required = true
 
-;elements.nickname.type = "text"
-;elements.nickname.options.label = "Source Nickname"
-;elements.nickname.options.validators.alnum.validator = "NotEmpty"
-;elements.nickname.options.required = true
-;displayGroups.upload.elements.nickname = "nickname"
+elements.versionNotes.type = "textarea"
+elements.versionNotes.options.label = "*Version Notes"
+elements.versionNotes.options.attribs.rows = "6"
+elements.versionNotes.options.attribs.cols = "60"
+elements.versionNotes.options.required = true
 
-elements.uploadButton.type = "Form_Button_Submit"
+elements.file.type = "File"
+elements.file.options.id = "fileUpload"
+elements.file.options.label = "Select File"
+elements.file.options.required = true
+elements.file.options.decorators.file.decorator = "File"
+elements.file.options.decorators.definitionList.decorator = "DtDdWrapper"
+
+elements.uploadButton.type = "submit"
 elements.uploadButton.options.label = "Upload"
-displayGroups.source.elements.uploadButton = "uploadButton"
-
-; I'm disabling this temporarily because it doesn't work quite right...
-; After you click submit, the value of this input is changed to "Reset" so the
-; name changes...
-;elements.reset.type = "reset"
-;elements.reset.options.value = "Clear Changes"
-;displayGroups.source.elements.reset = "reset"
