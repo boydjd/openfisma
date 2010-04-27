@@ -110,7 +110,7 @@ Privilege:
         resource: finding
         action: mitigation_strategy_revise
         description: Revise Mitigation Strategy
-    finding_comments:
+    findings_comment:
         resource: finding
         action: comment
         description: Comment on Finding
