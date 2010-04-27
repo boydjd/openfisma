@@ -657,10 +657,50 @@ class RemediationController extends SecurityController
         $tabView->addTab("Mitigation Strategy", "/remediation/mitigation-strategy/id/$id");
         $tabView->addTab("Risk Analysis", "/remediation/risk-analysis/id/$id");
         $tabView->addTab("Security Control", "/remediation/security-control/id/$id");
+        $tabView->addTab("Comments (" . $finding->getComments()->count() . ")", "/remediation/comments/id/$id");
         $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/remediation/artifacts/id/$id");
         $tabView->addTab("Audit Log", "/remediation/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
+    }
+
+    /**
+     * Add a comment to a specified finding
+     */
+    public function addCommentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $finding = Doctrine::getTable('Finding')->find($id);
+
+        Fisma_Acl::requirePrivilegeForObject('comment', $finding);
+        
+        $comment = $this->getRequest()->getParam('comment');
+        
+        if ('' != trim(strip_tags($comment))) {
+            $finding->getComments()->addComment($comment);
+        } else {
+            $this->view->priorityMessenger('Comment field is blank', 'warning');
+        }
+        
+        $this->_redirect("/panel/remediation/sub/view/id/$id");
+    }
+
+    /**
+     * Display comments for this finding
+     */
+    public function commentsAction()
+    {
+        $id = $this->_request->getParam('id');
+        $this->view->assign('id', $id);
+        $finding = Doctrine::getTable('Finding')->find($id);
+
+        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+
+        $comments = $finding->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+
+        $this->view->showAddCommentForm = Fisma_Acl::hasPrivilegeForObject('comment', $finding);
+
+        $this->view->assign('comments', $comments);
     }
     
     /**

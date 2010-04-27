@@ -110,6 +110,10 @@ Privilege:
         resource: finding
         action: mitigation_strategy_revise
         description: Revise Mitigation Strategy
+    finding_comments:
+        resource: finding
+        action: comment
+        description: Comment on Finding
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:

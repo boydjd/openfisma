@@ -15,6 +15,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_upload_evidence
+            - findings_comment
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - finding_mitigation_isso
@@ -61,6 +62,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_upload_evidence
+            - findings_comment
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - finding_mitigation_ivv
@@ -96,6 +98,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_upload_evidence
+            - findings_comment            
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - asset_create
@@ -133,6 +136,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_upload_evidence
+            - findings_comment
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - finding_mitigation_isso
@@ -202,6 +206,7 @@ Role:
             - findings_update_description
             - findings_update_threat
             - findings_update_finding_recommendation
+            - findings_comment
             - notification_finding      
 
     iso_role:
@@ -221,6 +226,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_upload_evidence
+            - findings_comment
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - organization_read
@@ -235,6 +241,7 @@ Role:
             - areas_dashboard
             - areas_reports
             - findings_read
+            - findings_comment
             - organization_read
             - notification_asset
             - notification_finding
@@ -253,6 +260,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_upload_evidence
+            - findings_comment
             - findings_mitigation_strategy_submit
             - findings_mitigation_strategy_revise
             - asset_read

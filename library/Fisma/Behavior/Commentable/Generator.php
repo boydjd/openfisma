@@ -182,7 +182,20 @@ class Fisma_Behavior_Commentable_Generator extends Doctrine_Record_Generator
         
         return $results;
     }
-    
+
+    /**
+     * Count the number of comments associated with this object
+     * 
+     * @param Doctrine_Record $instance
+     * @return int
+     */
+    public function count($instance)
+    {
+        $query = $this->query($instance);
+        
+        return $query->count();
+    }
+        
     /**
      * Get a base query which will return all comments for the current object
      * 
