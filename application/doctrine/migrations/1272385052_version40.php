@@ -17,7 +17,7 @@
  */
 
 /**
- * Add finding comment table and finding comment privilege
+ * Add incident artifact table
  * 
  * This file contains generated code... skip standards check.
  * @codingStandardsIgnoreFile
@@ -28,12 +28,11 @@
  * @author Mark E. Haase <mhaase@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version38 extends Doctrine_Migration_Base
+class Version40 extends Doctrine_Migration_Base
 {
     public function up()
     {
-        // Comment table
-		$this->createTable('finding_comment', array(
+		$this->createTable('incident_artifact', array(
              'id' => 
              array(
               'primary' => true,
@@ -43,25 +42,43 @@ class Version38 extends Doctrine_Migration_Base
              ),
              'createdts' => 
              array(
-              'comment' => 'The timestamp when this entry was created',
+              'comment' => 'The timestamp when this artifact was uploaded',
               'type' => 'timestamp',
               'length' => 25,
              ),
+             'filename' => 
+             array(
+              'comment' => 'The file name for this artifact',
+              'type' => 'string',
+              'length' => 255,
+             ),
+             'mimetype' => 
+             array(
+              'comment' => 'The MIME type for this artifact',
+              'type' => 'string',
+              'length' => 255,
+             ),
+             'filesize' => 
+             array(
+              'comment' => 'File size in bytes',
+              'type' => 'string',
+              'length' => NULL,
+             ),
              'comment' => 
              array(
-              'comment' => 'The text of the comment',
+              'comment' => 'Comment associated with this artifact',
               'type' => 'string',
               'length' => NULL,
              ),
              'objectid' => 
              array(
-              'comment' => 'The parent object to which this comment belongs',
+              'comment' => 'The parent object to which this artifact belongs',
               'type' => 'integer',
               'length' => 8,
              ),
              'userid' => 
              array(
-              'comment' => 'The user who created comment',
+              'comment' => 'The user who uploaded this artifact',
               'type' => 'integer',
               'length' => 8,
              ),
@@ -74,50 +91,10 @@ class Version38 extends Doctrine_Migration_Base
               0 => 'id',
              ),
              ));
-
-        // Foreign keys
-		$this->createForeignKey('finding_comment', 'finding_comment_objectid_finding_id', array(
-             'name' => 'finding_comment_objectid_finding_id',
-             'local' => 'objectid',
-             'foreign' => 'id',
-             'foreignTable' => 'finding',
-             ));
-		$this->createForeignKey('finding_comment', 'finding_comment_userid_user_id', array(
-             'name' => 'finding_comment_userid_user_id',
-             'local' => 'userid',
-             'foreign' => 'id',
-             'foreignTable' => 'user',
-             ));
-
-
-        // Comment privilege
-        $commentPrivilege = new Privilege();
-
-        $commentPrivilege->resource = 'finding';
-        $commentPrivilege->action = 'comment';
-        $commentPrivilege->description = 'Comment on Finding';
-
-        $commentPrivilege->save();
     }
 
     public function down()
     {
-        // Drop foreign keys
-        $this->dropForeignKey('finding_comment', 'finding_comment_objectid_finding_id');
-        $this->dropForeignKey('finding_comment', 'finding_comment_userid_user_id');
-                
-        // Drop comment table
-		$this->dropTable('finding_comment');
-		
-		// Delete comment privilege
-		$query = Doctrine_Query::create()
-		         ->from('Privilege p')
-		         ->where('p.resource = ? AND p.action = ?', array('finding', 'comment'));
-		
-		$commentPrivilege = $query->execute();
-
-        if ($commentPrivilege) {
-		    $commentPrivilege->delete();
-		}
+		$this->dropTable('incident_artifact');
     }
 }
