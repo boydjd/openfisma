@@ -532,8 +532,6 @@ class IncidentController extends SecurityController
         
         $this->view->assign('id', $incidentId);
        
-        $this->view->assign('cloneId', $this->_getClone($incidentId));
-
         $closed = $this->_request->getParam('closed');
         $this->view->assign('closed', $closed);
 
@@ -592,7 +590,6 @@ class IncidentController extends SecurityController
         
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i')
-                         ->leftJoin('i.ClonedFromIncident clone')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
                          ->where('i.id = ?', $id)
@@ -828,37 +825,7 @@ class IncidentController extends SecurityController
 
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
     }
-    
-    /**
-     * Clones a closed incident, assigns it to the EDCIRC, and returns the user to the dashboard
-     *
-     * @return string the rendered dashboard page
-     */
-    public function cloneAction() 
-    {
-        Fisma_Acl::requirePrivilegeForClass('create', 'Incident');
-        
-        $incidentId = $this->_request->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($incidentId);
-
-        // create a clone of the incident object
-        $clone = $incident->copy(false);
-        $clone->status = 'new';
-        $clone->link('Actors', $this->_getIrcs());
-        $clone->save();
-
-        // add relationship to the cloned incident table
-        $cloneLink = new IrClonedIncident();
-        $cloneLink->origIncidentId  = $incidentId;
-        $cloneLink->cloneIncidentId = $clone->id;
-        $cloneLink->createdTs       = date('Y-d-m H:i:s');
-        $cloneLink->userId          = $this->_me->id;
-        $cloneLink->save();
-
-        $this->view->priorityMessenger('The incident has been cloned.', 'notice');
-        $this->_redirect('/panel/incident/sub/dashboard');
-    }
-        
+            
     /**
      * Displays the incident workflow interface
      * 
@@ -1757,24 +1724,6 @@ class IncidentController extends SecurityController
 
         return ($actor[0]['count'] >= 1) ? 'actor' : 'viewer';
     }   
-
-    private function _getClone($incidentId = null) 
-    {
-        $q = Doctrine_Query::create()
-             ->select('i.origincidentid')
-             ->from('IrClonedIncident i')
-             ->where('i.cloneincidentid = ?', $incidentId);
-
-        $data = $q->execute()->toArray();        
-       
-        if ($data) { 
-            if ($data[0]['origIncidentId']) {
-                return $data[0]['origIncidentId'];
-            } 
-        }
-            
-        return false;
-    }
 
     private function _getAssociatedUsers($incidentId) 
     {

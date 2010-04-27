@@ -331,11 +331,6 @@ Incident:
             class: IrIncidentWorkflow
             local: currentWorkflowStepId
             foreign: id
-        ClonedFromIncident:
-            class: Incident
-            local: origIncidentId
-            foreign: cloneIncidentId
-            refClass: IrClonedIncident
         ReportingUser:
             class: User
             local: reportingUserId

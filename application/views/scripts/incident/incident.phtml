@@ -21,20 +21,6 @@
         Fisma_Format_Section::startSection('Incident Details');
         ?>
         <table class="keyValues">
-            <?php 
-            if (count($this->incident['ClonedFromIncident']) > 0):
-            ?>
-            <tr>
-                <td>Cloned From Incident:</td>
-                <td>
-                    <a href="/panel/incident/view/id/<?php echo $this->incident['ClonedFromIncident']['id']; ?>">
-                        Incident <?php echo $this->incident['ClonedFromIncident']['id']; ?>
-                    </a>
-                </td>
-            </tr>
-            <?php
-            endif;
-            ?>
             <tr>
                 <td>Incident ID:</td>
                 <td><?php echo $this->incident['id']; ?></td>

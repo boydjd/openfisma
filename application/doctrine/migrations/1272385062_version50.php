@@ -65,12 +65,6 @@ class Version50 extends Doctrine_Migration_Base
              'foreign' => 'id',
              'foreignTable' => 'user',
              ));
-		$this->createForeignKey('ir_cloned_incident', 'ir_cloned_incident_origincidentid_incident_id', array(
-             'name' => 'ir_cloned_incident_origincidentid_incident_id',
-             'local' => 'origincidentid',
-             'foreign' => 'id',
-             'foreignTable' => 'incident',
-             ));
 		$this->createForeignKey('ir_history', 'ir_history_userid_user_id', array(
              'name' => 'ir_history_userid_user_id',
              'local' => 'userid',
@@ -185,7 +179,6 @@ class Version50 extends Doctrine_Migration_Base
 		$this->dropForeignKey('incident', 'incident_categoryid_ir_sub_category_id');
 		$this->dropForeignKey('ir_audit_log', 'ir_audit_log_incidentid_incident_id');
 		$this->dropForeignKey('ir_audit_log', 'ir_audit_log_userid_user_id');
-		$this->dropForeignKey('ir_cloned_incident', 'ir_cloned_incident_origincidentid_incident_id');
 		$this->dropForeignKey('ir_history', 'ir_history_userid_user_id');
 		$this->dropForeignKey('ir_history', 'ir_history_incidentid_incident_id');
 		$this->dropForeignKey('ir_incident_actor', 'ir_incident_actor_incidentid_incident_id');
