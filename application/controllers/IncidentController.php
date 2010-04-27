@@ -1051,15 +1051,12 @@ class IncidentController extends SecurityController
 
         $this->_assertCurrentUserCanUpdateIncident($id);
         
-        try {
-            $comment = new IrComment();
-            $comment->User = $this->_me;
-            $comment->Incident = $incident;
-            $comment->comment = $this->getRequest()->getParam('comment');
-            $incident->Comments[] = $comment;
-            $incident->save();
-        } catch (Fisma_Exception $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        $comment = $this->getRequest()->getParam('comment');
+        
+        if ('' != trim(strip_tags($comment))) {
+            $incident->getComments()->addComment($comment);
+        } else {
+            $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
         
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -1078,15 +1075,7 @@ class IncidentController extends SecurityController
 
         $this->_assertCurrentUserCanViewIncident($id);
 
-        $commentQuery = Doctrine_Query::create()
-                        ->select('c.createdTs, c.comment, u.nameFirst, u.nameLast, u.username')
-                        ->from('IrComment c')
-                        ->innerJoin('c.User u')
-                        ->where('c.incidentId = ?', $id)
-                        ->orderBy('createdTs DESC')
-                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        $comments = $commentQuery->execute();
+        $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
         $this->view->showAddCommentForm = $this->_currentUserCanUpdateIncident($id);
 

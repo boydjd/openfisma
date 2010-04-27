@@ -360,6 +360,8 @@ Incident:
             foreignAlias: ObserverIncidents
 
     actAs:
+        Fisma_Behavior_Commentable: true
+        
         Fisma_Behavior_Lockable: true
 
         Fisma_Behavior_AttachArtifacts: true
