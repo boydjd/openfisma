@@ -75,6 +75,21 @@ class Version38 extends Doctrine_Migration_Base
              ),
              ));
 
+        // Foreign keys
+		$this->createForeignKey('finding_comment', 'finding_comment_objectid_finding_id', array(
+             'name' => 'finding_comment_objectid_finding_id',
+             'local' => 'objectid',
+             'foreign' => 'id',
+             'foreignTable' => 'finding',
+             ));
+		$this->createForeignKey('finding_comment', 'finding_comment_userid_user_id', array(
+             'name' => 'finding_comment_userid_user_id',
+             'local' => 'userid',
+             'foreign' => 'id',
+             'foreignTable' => 'user',
+             ));
+
+
         // Comment privilege
         $commentPrivilege = new Privilege();
 
