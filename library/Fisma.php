@@ -228,6 +228,7 @@ class Fisma
             'schema' => 'application/doctrine/schema',
             'scripts' => 'scripts',
             'systemDocument' => 'data/uploads/system-document',
+            'temp' => 'data/temp',
             'test' => 'tests',
             'uploads' => 'data/uploads',
             'viewHelper' => 'application/views/helpers',
