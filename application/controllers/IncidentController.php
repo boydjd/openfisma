@@ -653,6 +653,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
+        Fisma_Acl::requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = TRUE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -669,6 +670,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
+        Fisma_Acl::requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = FALSE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
