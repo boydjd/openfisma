@@ -231,7 +231,10 @@ class ReportController extends SecurityController
         }
 
         $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign('systemList', $this->_me->getOrganizations()->toKeyValueArray('id', 'name'));
+        $this->view->assign(
+            'systemList', 
+            $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'name')
+        );
         $this->view->assign('networkList', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('params', $params);
         $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
@@ -260,7 +263,8 @@ class ReportController extends SecurityController
             if (!empty($params['orgSystemId'])) {
                 $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
             } else {
-                $organizations = $this->_me->getOrganizations()->toKeyValueArray('id', 'id');
+                $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')
+                    ->toKeyValueArray('id', 'id');
                 $q->whereIn('f.responsibleOrganizationId', $organizations);    
             }
 
@@ -303,7 +307,7 @@ class ReportController extends SecurityController
     public function rafsAction()
     {
         $sid = $this->getRequest()->getParam('system_id', 0);
-        $organizations = User::currentUser()->getOrganizations();
+        $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
         $this->view->assign('organizations', $organizations->toKeyValueArray('id', 'name'));
         if (!empty($sid)) {
             $query = Doctrine_Query::create()
@@ -448,7 +452,7 @@ class ReportController extends SecurityController
             $reportScript .= fgets($reportScriptFileHandle);
         }
         $myOrganizations = array();
-        foreach ($this->_me->getOrganizations() as $organization) {
+        foreach ($this->_me->getOrganizationsByPrivilege('finding', 'read') as $organization) {
             $myOrganizations[] = $organization->id;
         }
         if (empty($myOrganizations)) {

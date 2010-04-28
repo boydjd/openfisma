@@ -38,44 +38,12 @@ class FindingController extends BaseController
     protected $_modelName = 'Finding';
 
     /**
-     * My OrgSystems
-     *
-     * @var array
-     */
-    private $_myOrgSystems = null;
-    
-    /**
-     * My OrgSystem ids
-     *
-     * @var array
-     */
-    private $_myOrgSystemIds = null;
-    
-    /**
      * Invokes a contract with BaseController regarding privileges
      * 
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
-    
-    /**
-     * Initialize the basic information, my orgSystems
-     * 
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-        $orgSystems = $this->_me->getOrganizations()->toArray();
-        $this->_myOrgSystems = $orgSystems;
-        
-        $orgSystemIds = array(0);
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemIds[] = $orgSystem['id'];
-        }
-        $this->_myOrgSystemIds = $orgSystemIds;
-    }
     
     /**
      * Returns the standard form for creating finding
@@ -105,7 +73,7 @@ class FindingController extends BaseController
                  ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
-        $systems = $this->_me->getOrganizations();
+        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
@@ -276,9 +244,8 @@ class FindingController extends BaseController
          * the spreadsheet isn't available.
          */
         try {
-            $this->_myOrgSystems;
             $systems = array();
-            foreach ($this->_myOrgSystems as $orgSystem) {
+            foreach ($this->_me->getOrganizationsByPrivilege('finding', 'inject') as $orgSystem) {
                 $systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
             if (count($systems) == 0) {
@@ -370,7 +337,7 @@ class FindingController extends BaseController
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);
         
-        $systems = $this->_me->getOrganizations();
+        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'inject');
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $uploadForm->system->addMultiOptions(array('' => ''));
         $uploadForm->system->addMultiOptions($selectArray);

@@ -51,7 +51,7 @@ class SystemController extends BaseController
     {
         $form = Fisma_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = User::currentUser()->getOrganizationsQuery();
+        $q = User::currentUser()->getOrganizationsByPrivilegeQuery('system', 'read');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
         if (!empty($organizationTree)) {
@@ -101,7 +101,7 @@ class SystemController extends BaseController
         }
         
         $q = User::currentUser()
-             ->getOrganizationsQuery()
+             ->getOrganizationsByPrivilegeQuery('system', 'read')
              ->select(
                  'o.id, 
                   o.name, 

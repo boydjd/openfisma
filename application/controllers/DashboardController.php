@@ -44,7 +44,7 @@ class DashboardController extends SecurityController
     public function init()
     {
         parent::init();
-        $orgSystems = $this->_me->getOrganizations()->toArray();
+        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
         $orgSystemIds = array(0);
         foreach ($orgSystems as $orgSystem) {
             $orgSystemIds[] = $orgSystem['id'];

@@ -92,7 +92,7 @@ class OrganizationController extends SecurityController
         $form = Fisma_Form_Manager::loadForm('organization');
         
         // build base query
-        $q = User::currentUser()->getOrganizationsQuery();
+        $q = User::currentUser()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
         if ($currOrg == null) {
             $currOrg = new Organization();
@@ -190,7 +190,7 @@ class OrganizationController extends SecurityController
             $order = 'ASC'; //ignore other values
         }
         
-        $userOrgQuery = $this->_me->getOrganizationsQuery();
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
         $userOrgQuery->andWhere("o.orgType IS NULL")
                      ->orWhere("o.orgType != 'system'")
                      ->orderBy("o.$sortBy $order")
@@ -435,7 +435,7 @@ class OrganizationController extends SecurityController
      */
     public function getOrganizationTree() 
     {
-        $userOrgQuery = $this->_me->getOrganizationsQuery();
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
         $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
             ->leftJoin('o.System s');
         $orgTree = Doctrine::getTable('Organization')->getTree();

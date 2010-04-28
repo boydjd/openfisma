@@ -111,7 +111,7 @@ class AssetController extends BaseController
     public function getForm($formName=null)
     {
         $form = parent::getForm($formName);
-        $systems = $this->_me->getOrganizations();
+        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
         
@@ -234,7 +234,7 @@ class AssetController extends BaseController
         Fisma_Acl::requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
-        $systems = $this->_me->getOrganizations();
+        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
@@ -284,7 +284,7 @@ class AssetController extends BaseController
             $q->andWhere('p.version LIKE ?', $params['version'] . '%');
         }
         // get the assets whitch are belongs to current user's systems
-        $orgSystems = $this->_me->getOrganizations()->toArray();
+        $orgSystems = $this->_me->getOrganizationsByPrivilege('asset', 'read')->toArray();
         $orgSystemIds = array();
         foreach ($orgSystems as $orgSystem) {
             $orgSystemIds[] = $orgSystem['id'];

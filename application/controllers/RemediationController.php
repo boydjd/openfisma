@@ -119,7 +119,7 @@ class RemediationController extends SecurityController
         }
         
         $this->_helper->contextSwitch()->initContext();
-        $this->_organizations = $this->_me->getOrganizations();
+        $this->_organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
     }
     
     /**
@@ -177,7 +177,7 @@ class RemediationController extends SecurityController
         // Prepare summary data
 
         // Get user organizations
-        $organizationsQuery = User::currentUser()->getOrganizationsQuery();
+        $organizationsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read');
         $organizationsQuery->select('o.id');
         $organizationsQuery->setHydrationMode(Doctrine::HYDRATE_NONE);
         $organizations = $organizationsQuery->execute();
@@ -1215,15 +1215,18 @@ class RemediationController extends SecurityController
     {
         $list = array();
         $q = Doctrine_Query::create()
-             ->select()
-             ->from('Finding f')
-             ->leftJoin('f.ResponsibleOrganization ro')
-             ->leftJoin('f.Source s')
-             ->leftJoin('f.Asset a')
-             ->leftJoin('f.SecurityControl sc')
-             ->leftJoin('f.CurrentEvaluation ce')
-             ->whereIn('f.responsibleOrganizationId', $this->_me->getOrganizations()->toKeyValueArray('id', 'id'))
-             ->orderBy($params['sortby'] . ' ' . $params['dir']);
+            ->select()
+            ->from('Finding f')
+            ->leftJoin('f.ResponsibleOrganization ro')
+            ->leftJoin('f.Source s')
+            ->leftJoin('f.Asset a')
+            ->leftJoin('f.SecurityControl sc')
+            ->leftJoin('f.CurrentEvaluation ce')
+            ->whereIn(
+                'f.responsibleOrganizationId', 
+                $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
+            )
+            ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {
             if ($v) {
