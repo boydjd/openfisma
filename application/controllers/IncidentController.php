@@ -485,8 +485,6 @@ class IncidentController extends SecurityController
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         
-        $this->view->readIncidentPrivilege = $this->_currentUserCanViewIncident($id);
-        
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
         $this->view->allIncidentsUrl = $link
@@ -809,7 +807,7 @@ class IncidentController extends SecurityController
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
-        $this->_assertCurrentUserCanUpdateIncident($id);
+        $this->_assertCurrentUserCanUpdateIncident($incidentId);
                 
         // Remove the specified link
         $userId = $this->getRequest()->getParam('userId');
@@ -932,7 +930,7 @@ class IncidentController extends SecurityController
         
         $this->_assertCurrentUserCanViewIncident($id);
         
-        $this->view->classifyIncidentPrivilege = Fisma_Acl::hasPrivilegeForClass('classify', 'Incident');
+        $this->view->classifyIncidentPrivilege = $this->_currentUserCanClassifyIncident($id);
         
         $form = Fisma_Form_Manager::loadForm('incident_classify');
 
@@ -1358,8 +1356,15 @@ class IncidentController extends SecurityController
     public function _currentUserCanUpdateIncident($incidentId)
     {
         $userCanUpdate = false;
-        
-        if (!Fisma_Acl::hasPrivilegeForClass('update', 'Incident')) {
+        $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
+
+        if (
+            Fisma_Acl::hasPrivilegeForObject('update', $incident) && 
+            ((!$incident->isLocked) || 
+            ($incident->isLocked && Fisma_Acl::hasPrivilegeForObject('lock', $incident)))
+        ) {
+            $userCanUpdate = true;
+        } elseif (!Fisma_Acl::hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
             // Check if this user is an actor
             $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
@@ -1372,10 +1377,8 @@ class IncidentController extends SecurityController
             if ($actorCount > 0) {
                 $userCanUpdate = true;
             }
-        } else {
-            $userCanUpdate = true;
         }
-        
+
         return $userCanUpdate;
     }
     
@@ -1428,6 +1431,29 @@ class IncidentController extends SecurityController
         }
         
         return $userCanView;
+    }
+
+    /**
+     * Check whether the current user can classify the specified incident 
+     * 
+     * @param int $incidentId The ID of the incident
+     * @return boolean
+     */
+    private function _currentUserCanClassifyIncident($incidentId)
+    {
+        $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
+
+        if (Fisma_Acl::hasPrivilegeForObject('classify', $incident)) {
+            if ($incident->isLocked) {
+                if (Fisma_Acl::hasPrivilegeForObject('lock', $incident)) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

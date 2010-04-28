@@ -7,7 +7,7 @@
     endif;
     
     if ($this->lockIncidentPrivilege):
-        if ($this->incident->isLocked):
+        if ($this->incident['isLocked']):
             echo $this->unlockButton;
         else:
             echo $this->lockButton;
