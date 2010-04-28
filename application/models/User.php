@@ -530,6 +530,20 @@ class User extends BaseUser
 
         return $query->execute();
     }
+
+    /**
+     * Get the user's organizations for a specific privilege resource and action
+     * If the user is root, then this ends up returning all of the organizations
+     * 
+     * @param string $resource 
+     * @param string $action 
+     * @return Doctrine_Collection The collection of organizations 
+     */
+    public function getOrganizationsByPrivilege($resource, $action)
+    {
+        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action);
+        return $query->execute();
+    }
     
     /**
      * Get a query which will select this user's organizations.
@@ -557,6 +571,28 @@ class User extends BaseUser
                 ->orderBy('o.lft');
         }
         
+        return $query;
+    }
+
+    /**
+     * Get a query which will select this user's organizations by privilege resource and action 
+     * 
+     * @param string $resource 
+     * @param string $action 
+     * @return Doctrine_Query 
+     */
+    public function getOrganizationsByPrivilegeQuery($resource, $action)
+    {
+        $query = $this->getOrganizationsQuery();
+
+        if ($this->username != 'root') {
+            $query->leftJoin('ur.Role r')
+                ->leftJoin('r.Privileges p')
+                ->where('p.resource = ?', $resource)
+                ->andWhere('p.action = ?', $action)
+                ->groupBy('o.id');
+        }
+
         return $query;
     }
     

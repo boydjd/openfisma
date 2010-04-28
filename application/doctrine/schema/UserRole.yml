@@ -11,6 +11,9 @@ UserRole:
             type: integer
             notnull: true
     relations:
+        Role:
+            local: roleId
+            foreign: id
         Organizations:
             class: Organization
             refClass: UserRoleOrganization
