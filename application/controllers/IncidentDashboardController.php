@@ -230,7 +230,7 @@ class IncidentDashboardController extends SecurityController
             
         $newIncidentsQuery = IncidentController::getUserIncidentQuery()
                              ->select('i.id, i.additionalInfo, count(c.id) AS count')
-                             ->innerJoin('i.Comments c')
+                             ->innerJoin('i.IncidentComment c')
                              ->andWhere('c.createdTs > ?', $cutoffTime)
                              ->groupBy('i.id')
                              ->orderBy("i.$sortBy $order")
@@ -238,7 +238,7 @@ class IncidentDashboardController extends SecurityController
 
         // Get total count of results
         $this->view->count = $newIncidentsQuery->count();
-        
+
         // Add limit/offset and execute
         $newIncidentsQuery->limit($limit)
                           ->offset($offset);
