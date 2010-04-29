@@ -1,0 +1,23 @@
+; This is the standard form for adding a comment to an object
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license GPLv3
+; Version   $Id$
+
+[add_comment]
+
+name = "addCommentForm"
+attribs.onsubmit = "return Fisma.Commentable.postComment();"
+
+elements.comment.type = "textarea"
+elements.comment.options.label = "Comment"
+elements.comment.options.cols = 50
+elements.comment.options.rows = 6
+elements.comment.options.required = true
+
+elements.submitButton.type = "submit"
+elements.submitButton.options.label = "Add Comment"

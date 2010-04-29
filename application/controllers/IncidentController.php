@@ -1044,9 +1044,28 @@ class IncidentController extends SecurityController
 
         $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
-        $this->view->showAddCommentForm = $this->_currentUserCanUpdateIncident($id);
+        $commentButton = new Fisma_Yui_Form_Button(
+            'commentButton', 
+            array(
+                'label' => 'Add Comment', 
+                'onClickFunction' => 'Fisma.Commentable.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'type' => 'Incident',
+                    'callback' => array(
+                        'object' => 'Incident',
+                        'method' => 'commentCallback'
+                    )
+                )
+            )
+        );
 
-        $this->view->assign('comments', $comments);
+        if (!$this->_currentUserCanUpdateIncident($id)) {
+            $commentButton->readOnly = true;
+        }
+
+        $this->view->commentButton = $commentButton;
+        $this->view->comments = $comments;
     }
     
     /**

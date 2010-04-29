@@ -133,14 +133,10 @@ class Fisma_Behavior_Commentable_Generator extends Doctrine_Record_Generator
      * 
      * @param Doctrine_Record $instance The instance to be logged
      * @param string $message The comment to be written
+     * @return Doctrine_Record Return the added comment
      */
     public function addComment(Doctrine_Record $instance, $comment)
     {
-        // Normally logs are written by the current user, but current user can be null if the session is 
-        // unauthenticated (for example, failed login attempt)
-        $user = User::currentUser();
-        $userId = $user ? $user->id : null;
-        
         // Create a new comment
         $commentClass = $this->_options['className'];
         $instanceClass = $this->getOption('table')->getComponentName();
@@ -148,10 +144,12 @@ class Fisma_Behavior_Commentable_Generator extends Doctrine_Record_Generator
         $commentEntry = new $commentClass;
         $commentEntry->createdTs = Fisma::now();
         $commentEntry->comment = $comment;
-        $commentEntry->userId = $userId;
+        $commentEntry->userId = User::currentUser()->id;
         $commentEntry->objectId = $instance->id;
 
         $commentEntry->save();
+        
+        return $commentEntry;
     }
     
     /**

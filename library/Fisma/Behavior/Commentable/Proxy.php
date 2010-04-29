@@ -63,10 +63,11 @@ class Fisma_Behavior_Commentable_Proxy
      * Proxy method for adding a comment
      * 
      * @param string $comment
+     * @return Doctrine_Record Return the comment object which was created
      */
     public function addComment($comment)
     {
-        $this->_generator->addComment($this->_instance, $comment);
+        return $this->_generator->addComment($this->_instance, $comment);
     }
     
     /**

@@ -2638,6 +2638,278 @@ Fisma.AutoComplete = function() {
         }
     };
 }();
+Fisma.Blinker=function(a,c,b,d){this.interval=a;this.cycles=c;this.cyclesRemaining=c;this.onFunction=b;this.offFunction=d;this.state=0};Fisma.Blinker.prototype.start=function(){this.cycle()};Fisma.Blinker.prototype.cycle=function(){var a=this;if(1===this.state){this.offFunction()}else{this.onFunction()}this.state=1-this.state;this.cyclesRemaining--;if(this.cyclesRemaining>0){setTimeout(function(){a.cycle.call(a)},this.interval)}};/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview A simple class that implements blink behavior
+ * 
+ * Blink behavior is defined as a system with two states that oscillates at some fixed frequency, such as a blinking
+ * light.
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+/**
+ * The constructor for a blink object
+ * 
+ * @param int interval The interval (in milliseconds) between state changes
+ * @param int cycles The number of cycles (ON->OFF or OFF->ON) to repeat before stopping
+ * @param function onFunction The function called when the state goes to ON
+ * @param function offFunction The function called when the state goes to OFF
+ */
+Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
+    this.interval = interval;
+
+    this.cycles = cycles;
+    this.cyclesRemaining = cycles;
+
+    this.onFunction = onFunction;
+    this.offFunction = offFunction;
+    
+    // State definition: 1 => ON, 0 => OFF. Defaults to OFF.
+    this.state = 0;
+};
+
+/**
+ * Start blinking
+ */
+Fisma.Blinker.prototype.start = function () {
+    this.cycle();
+}
+
+/**
+ * The state transition method
+ */
+Fisma.Blinker.prototype.cycle = function () {
+    var that = this;
+    
+    if (1 === this.state) {
+        this.offFunction();
+    } else {
+        this.onFunction();        
+    }
+
+    // Toggle state
+    this.state = 1 - this.state;
+    
+    this.cyclesRemaining--;
+
+    if (this.cyclesRemaining > 0) {
+        setTimeout(
+            function () {
+                that.cycle.call(that);
+            },
+            this.interval
+        );
+    }
+}
+Fisma.Commentable={asyncRequest:null,config:null,yuiPanel:null,showPanel:function(c,b){Fisma.Commentable.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Add Comment");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.Commentable.closePanel.call(Fisma.Commentable)});Fisma.Commentable.yuiPanel=a;YAHOO.util.Connect.asyncRequest("GET","/comment/form",{success:function(d){d.argument.setBody(d.responseText);d.argument.center()},failure:function(d){d.argument.setBody("The content for this panel could not be loaded.");d.argument.center()},argument:a},null);return false},postComment:function(){var a="/comment/add/id/"+encodeURIComponent(Fisma.Commentable.config.id)+"/type/"+encodeURIComponent(Fisma.Commentable.config.type)+"/format/json";YAHOO.util.Connect.setForm("addCommentForm");Fisma.Commentable.asyncRequest=YAHOO.util.Connect.asyncRequest("POST",a,{success:function(b){Fisma.Commentable.commentCallback.call(Fisma.Commentable,b)},failure:function(b){alert("Document upload failed.")}},null);return false},commentCallback:function(d){var c;try{var b=YAHOO.lang.JSON.parse(d.responseText);c=b.response}catch(g){if(g instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw g}}if(!c.success){alert("Error: "+c.message);return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,c.comment,this.yuiPanel)}}},closePanel:function(){if(this.asyncRequest){YAHOO.util.Connect.abort(this.asyncRequest)}}};/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.Commentable = {
+    /**
+     * Reference to the asynchonrous request dispatched by this object
+     */
+    asyncRequest : null,
+    
+    /**
+     * A configuration object specified by the invoker of showPanel
+     * 
+     * See technical specification for Commentable behavior for the structure of this object
+     */
+    config : null,
+    
+    /**
+     * Reference to the YUI panel which is displayed to input the comment
+     */
+     yuiPanel : null,
+    
+     /**
+      * Show the file upload panel
+      * 
+      * This is an event handler, so 'this' will not refer to the local object
+      * 
+      * @param event Required to implement an event handler but not used
+      * @param config Contains the callback information for this file upload (See definition of config member)
+      */
+     showPanel : function (event, config) {
+         Fisma.Commentable.config = config;
+
+         // Create a new panel
+         var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
+         newPanel.setHeader('Add Comment');
+         newPanel.setBody("Loading...");
+         newPanel.render(document.body);
+         newPanel.center();
+         newPanel.show();
+
+         // Register listener for the panel close event
+         newPanel.hideEvent.subscribe(function () {
+             Fisma.Commentable.closePanel.call(Fisma.Commentable);
+         });
+
+         Fisma.Commentable.yuiPanel = newPanel;
+
+         // Get panel content from comment controller
+         YAHOO.util.Connect.asyncRequest(
+             'GET', 
+             '/comment/form',
+             {
+                 success: function(o) {
+                     o.argument.setBody(o.responseText);
+                     o.argument.center();
+                 },
+
+                 failure: function(o) {
+                     o.argument.setBody('The content for this panel could not be loaded.');
+                     o.argument.center();
+                 },
+
+                 argument: newPanel
+             }, 
+             null
+         );
+         
+         // Prevent form submission
+         return false;
+     },
+     
+     /**
+      * Posts the artifact attachment form asynchronously
+      * 
+      * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
+      * requests -- which would totally defeat the purpose of upload progress tracking.
+      * 
+      * @param arg The AttachArtifacts object
+      */
+     postComment : function() {
+         
+         var postUrl = "/comment/add/id/"
+                     + encodeURIComponent(Fisma.Commentable.config.id)
+                     + "/type/"
+                     + encodeURIComponent(Fisma.Commentable.config.type)
+                     + "/format/json";
+
+         YAHOO.util.Connect.setForm('addCommentForm');
+         Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
+             'POST', 
+             postUrl, 
+             {
+                 success : function (asyncResponse) {
+                     Fisma.Commentable.commentCallback.call(Fisma.Commentable, asyncResponse);
+                 },
+
+                 failure : function (o) {
+                     alert('Document upload failed.');
+                 }
+             }, 
+             null
+         );
+                  
+         // Prevent form submission
+         return false;
+     },
+     
+     /**
+      * Handle the server response after a comment is added
+      * 
+      * @param asyncResponse Response object from YUI connection
+      */
+     commentCallback : function (asyncResponse) {
+
+         var responseStatus;
+         
+         // Check response status and display error message if necessary
+         try {
+             var responseObject = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+             responseStatus = responseObject.response;
+         } catch (e) {
+             if (e instanceof SyntaxError) {
+                 // Handle a JSON syntax error by constructing a fake response object
+                 responseStatus = new Object();
+                 responseStatus.success = false;
+                 responseStatus.message = "Invalid response from server."
+             } else {
+                 throw e;
+             }
+         }
+
+         if (!responseStatus.success) {
+             alert("Error: " + responseStatus.message);
+
+             return;
+         }
+
+         /*
+          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
+          * references using array access notation.
+          * 
+          * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
+          * realize if these callbacks are invalid.
+          */
+         var callbackObject = Fisma[this.config.callback.object];
+
+         if (typeof callbackObject != "Undefined") {
+
+             var callbackMethod = callbackObject[this.config.callback.method];
+
+             if (typeof callbackMethod == "function") {
+
+                 /**
+                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
+                  * its expected meaning.
+                  */
+                 callbackMethod.call(callbackObject, responseStatus.comment, this.yuiPanel);
+             }
+         }
+     },
+
+     /**
+      * Handle a panel close event by canceling the POST request
+      */
+     closePanel : function () {
+         if (this.asyncRequest) {
+             YAHOO.util.Connect.abort(this.asyncRequest);
+         }
+     }
+};
 Fisma.Email=function(){return{panelElement:null,showRecipientDialog:function(){if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}var c=document.createElement("div");var f=document.createElement("p");var b=document.createTextNode("* Target E-mail Address:");f.appendChild(b);c.appendChild(f);var d=document.createElement("input");d.id="testEmailRecipient";d.name="recipient";c.appendChild(d);var e=document.createElement("div");e.style.height="10px";c.appendChild(e);var a=document.createElement("input");a.type="button";a.id="dialogRecipientSendBtn";a.style.marginLeft="10px";a.value="Send";c.appendChild(a);Fisma.Email.panelElement=Fisma.HtmlPanel.showPanel("Test E-mail Configuration",c.innerHTML);document.getElementById("dialogRecipientSendBtn").onclick=Fisma.Email.sendTestEmail},sendTestEmail:function(){if(document.getElementById("testEmailRecipient").value==""){alert("Recipient is required.");document.getElementById("testEmailRecipient").focus();return false}var b=document.getElementById("testEmailRecipient").value;var a=document.getElementById("email_config");a.elements.recipient.value=b;YAHOO.util.Connect.setForm(a);YAHOO.util.Connect.asyncRequest("POST","/config/test-email-config/format/json",{success:function(d){var c=YAHOO.lang.JSON.parse(d.responseText);message(c.msg,c.type)},failure:function(c){alert("Failed to send mail: "+c.statusText)}},null);if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -2756,6 +3028,81 @@ Fisma.Email = function() {
         }
     };
 }();
+Fisma.Finding={commentTable:null,commentCallback:function(e,b){var d=this;var c={timestamp:e.createdTs,username:e.username,comment:e.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();b.hide();b.destroy()}};/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Client-side behavior related to the Finding module
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.Finding = {
+    /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+    
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+                
+        var that = this;
+        
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+
+        this.commentTable.addRow(commentRow);
+        
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }            
+        );
+        
+        rowBlinker.start();
+                
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
+    }
+}
 Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(var r in o){count=o[r];cell=a.insertCell(m++);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.id,r,"ontime",l.expanded)}for(var r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.id,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){var d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";var d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname==e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!=false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,d,b,h,e){if(!a.hasChildNodes()){if(g>0){var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(d,b,h,e)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(f,g,j,i){var e="";if(!(g=="CLOSED"||g=="TOTAL")){var e="/ontime/"+j}var h="";if(g!=""){h="/status/"+escape(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!=""){a="/type/"+this.filterType}var b="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!=""){b="/sourceId/"+this.filterSource}var d="/panel/remediation/sub/search"+e+h+"/responsibleOrganizationId/"+f+"/expanded/"+i+a+b;return d},exportTable:function(b){var a="/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -3376,7 +3723,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={attachArtifactCallback:function(a){window.location.href=window.location.href}};/**
+Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(e,b){var d=this;var c={timestamp:e.createdTs,username:e.username,comment:e.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();b.hide();b.destroy()}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3402,6 +3749,13 @@ Fisma.Incident={attachArtifactCallback:function(a){window.location.href=window.l
  
 Fisma.Incident = {
     /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+
+    /**
      * This is called after an artifact has been uploaded successfully. We could do something nifty here like
      * dynamically update the page, but at the moment I'm going to be lazy and just refresh the entire page.
      * 
@@ -3409,6 +3763,49 @@ Fisma.Incident = {
      */
     attachArtifactCallback : function (yuiPanel) {
         window.location.href = window.location.href;
+    },
+    
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+                
+        var that = this;
+        
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+        
+        this.commentTable.addRow(commentRow);
+        
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }            
+        );
+        
+        rowBlinker.start();
+                
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
     }
 };
 Fisma.Module={handleSwitchButtonStateChange:function(a){a.setBusy(true);var b=a.state?"true":"false";var c="/config/set-module/id/"+a.payload.id+"/enabled/"+b+"/format/json/";YAHOO.util.Connect.asyncRequest("GET",c,{success:Fisma.Module.handleAsyncResponse,failure:Fisma.Module.handleAsyncResponse,argument:a},null)},handleAsyncResponse:function(b){try{var c=YAHOO.lang.JSON.parse(b.responseText)}catch(d){if(d instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw d}}if(!c.success){alert("Error: Not able to change module status. Reason: "+c.message)}var a=b.argument;a.setBusy(false)}};/**

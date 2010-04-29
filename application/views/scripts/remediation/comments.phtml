@@ -1,21 +1,10 @@
 <?php
 Fisma_Format_Section::startSection('Comments');
-    if ($this->showAddCommentForm):
 ?>
-    <form action="/remediation/add-comment/id/<?php echo $this->id; ?>" method="post">
-        <p>
-            <b>Add a comment:</b>
-        </p>
-        <p>
-            <textarea name="comment" rows="5" cols="60"></textarea>
-        </p>
-        <p>
-            <?php echo new Fisma_Yui_Form_Button_Submit('addComment', array('label' => 'Add Comment')); ?>
-        </p>
-    </form>
-    <?php
-    endif;
-    ?>
+    <div class="toolbar">
+        <?php echo $this->commentButton; ?>
+    </div>
+    
     <div id="comments">
         <table id="commentsTable">
             <thead>
@@ -57,9 +46,9 @@ YAHOO.util.Event.onContentReady('comments', function() {
         {key:'comment', label:'Comment', sortable:false}
     ];
 
-    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("commentsTable"));
-    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-    this.myDataSource.responseSchema = {
+    var myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("commentsTable"));
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    myDataSource.responseSchema = {
         fields: [
             {key:'timestamp'},
             {key:'username'},
@@ -67,6 +56,8 @@ YAHOO.util.Event.onContentReady('comments', function() {
         ]
     };
 
-    this.myDataTable = new YAHOO.widget.DataTable("comments", myColumnDefs, this.myDataSource, {});
+    var commentTable = new YAHOO.widget.DataTable("comments", myColumnDefs, myDataSource, {});
+    
+    Fisma.Finding.commentTable = commentTable;
 });
 </script>

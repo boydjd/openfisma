@@ -698,9 +698,28 @@ class RemediationController extends SecurityController
 
         $comments = $finding->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
-        $this->view->showAddCommentForm = Fisma_Acl::hasPrivilegeForObject('comment', $finding);
+        $commentButton = new Fisma_Yui_Form_Button(
+            'commentButton', 
+            array(
+                'label' => 'Add Comment', 
+                'onClickFunction' => 'Fisma.Commentable.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'type' => 'Finding',
+                    'callback' => array(
+                        'object' => 'Finding',
+                        'method' => 'commentCallback'
+                    )
+                )
+            )
+        );
 
-        $this->view->assign('comments', $comments);
+        if (!Fisma_Acl::hasPrivilegeForObject('comment', $finding)) {
+            $commentButton->readOnly = true;
+        }
+
+        $this->view->commentButton = $commentButton;
+        $this->view->comments = $comments;
     }
     
     /**
