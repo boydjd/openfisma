@@ -82,7 +82,18 @@ class PanelController extends SecurityController
     {
         $this->render('footer', 'footer');           
     }
-    
+
+    /** 
+     * Forward to dashboard Controller
+     * 
+     * @return void
+     */
+    public function dashboardAction()
+    {
+        $this->_helper->actionStack('index', 'Dashboard');
+        $this->_helper->actionStack('header');
+    }
+
     /** 
      * Forward to finding Controller
      * 
