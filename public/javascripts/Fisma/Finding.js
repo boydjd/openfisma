@@ -67,6 +67,10 @@ Fisma.Finding = {
         );
         
         rowBlinker.start();
+        
+        // Update the comment count in the tab UI
+        var commentCountEl = document.getElementById('findingCommentsCount').firstChild;
+        commentCountEl.nodeValue++;
                 
         // Hide YUI dialog
         yuiPanel.hide();

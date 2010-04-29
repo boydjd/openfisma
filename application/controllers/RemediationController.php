@@ -650,6 +650,9 @@ class RemediationController extends SecurityController
         $this->view->finding = $finding;
         
         Fisma_Acl::requirePrivilegeForObject('read', $finding);
+        
+        // Put a span around the comment count so that it can be updated from Javascript
+        $commentCount = '<span id=\'findingCommentsCount\'>' . $finding->getComments()->count() . '</span>';
 
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
@@ -657,7 +660,7 @@ class RemediationController extends SecurityController
         $tabView->addTab("Mitigation Strategy", "/remediation/mitigation-strategy/id/$id");
         $tabView->addTab("Risk Analysis", "/remediation/risk-analysis/id/$id");
         $tabView->addTab("Security Control", "/remediation/security-control/id/$id");
-        $tabView->addTab("Comments (" . $finding->getComments()->count() . ")", "/remediation/comments/id/$id");
+        $tabView->addTab("Comments ($commentCount)", "/remediation/comments/id/$id");
         $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/remediation/artifacts/id/$id");
         $tabView->addTab("Audit Log", "/remediation/audit-log/id/$id");
 

@@ -559,6 +559,9 @@ class IncidentController extends SecurityController
                 
         $this->view->id = $id;
         $this->view->incident = $incident;
+
+        // Put a span around the comment count so that it can be updated from Javascript
+        $commentCount = '<span id=\'incidentCommentsCount\'>' . $incident->getComments()->count() . '</span>';
         
         $artifactCount = $incident->getArtifacts()->count();
 
@@ -568,7 +571,7 @@ class IncidentController extends SecurityController
         $tabView->addTab("Incident #$id", "/incident/incident/id/$id");
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/actors/id/$id");
-        $tabView->addTab('Comments', "/incident/comments/id/$id");
+        $tabView->addTab("Comments ($commentCount)", "/incident/comments/id/$id");
         $tabView->addTab("Artifacts ($artifactCount)", "/incident/artifacts/id/$id");
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
