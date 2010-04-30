@@ -173,37 +173,19 @@ Privilege:
     organization_create:
         resource: organization
         action: create
-        description: Create Organizations
+        description: Create Organizations/Systems
     organization_read:
         resource: organization
         action: read
-        description: View Organizations
+        description: View Organizations/Systems
     organization_update:
         resource: organization
         action: update
-        description: Edit Organizations
+        description: Edit Organizations/Systems
     organization_delete:
         resource: organization
         action: delete
-        description: Delete Organizations
-
-    # Systems CRUD
-    system_create:
-        resource: system
-        action: create
-        description: Create Systems
-    system_read:
-        resource: system
-        action: read
-        description: View Systems
-    system_update:
-        resource: system
-        action: update
-        description: Edit Systems
-    system_delete:
-        resource: system
-        action: delete
-        description: Delete Systems
+        description: Delete Organizations/Systems
 
     # Products CRUD
     product_create:
