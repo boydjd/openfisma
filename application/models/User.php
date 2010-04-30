@@ -544,7 +544,30 @@ class User extends BaseUser
         $query = $this->getOrganizationsByPrivilegeQuery($resource, $action);
         return $query->execute();
     }
-    
+   
+    /**
+     * Get the roles associated with a user for a specific privilege resource and action. 
+     * 
+     * @param string $resource 
+     * @param string $action 
+     * @return Doctrine_Collection The collection of user roles 
+     */
+    public function getRolesByPrivilege($resource, $action)
+    {
+        $roles = new Doctrine_Collection('UserRole');
+
+        foreach ($this->UserRole as $userRole) {
+            foreach ($userRole->Role->Privileges as $privilege) {
+                if ($privilege->resource == $resource && $privilege->action == $action) {
+                    $roles->add($userRole);
+                    break;
+                }
+            }
+        }
+
+        return $roles;
+    }
+   
     /**
      * Get a query which will select this user's organizations.
      * 
@@ -595,7 +618,7 @@ class User extends BaseUser
 
         return $query;
     }
-    
+
     /**
      * Doctrine hook for post-insert
      * 
