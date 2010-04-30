@@ -877,9 +877,6 @@ class IncidentController extends SecurityController
 
         $steps = $stepsQuery->execute();
 
-        // Load related so we can efficiently access related records in the view
-        $steps->loadRelated();
-        
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->steps = $steps;
     }

@@ -55,16 +55,16 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Completed By:</td>
-                        <td><?php echo $step['user']['username']; ?></td>
+                        <td><?php echo $step['User']['username']; ?></td>
                     </tr>
                 <?php
                 endif;
 
-                if (isset($step['role'])):
+                if (isset($step['Role'])):
                 ?>
                     <tr>
                         <td>Role Required:</td>
-                        <td><?php echo "({$step['role']['nickname']}) {$step['role']['name']}"; ?></td>
+                        <td><?php echo "({$step['Role']['nickname']}) {$step['Role']['name']}"; ?></td>
                     </tr>
                 <?php
                 endif;
