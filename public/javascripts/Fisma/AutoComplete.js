@@ -48,6 +48,7 @@ Fisma.AutoComplete = function() {
 
             ac.maxResultsDisplayed = 20;
             ac.forceSelection = true;
+            ac.autoSnapContainer = false;
 
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete

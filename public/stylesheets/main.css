@@ -538,6 +538,7 @@ div#product_ac_container {
 }
 
 div.yui-ac-content[style] {
+    top: 15px;
     height: auto !important;
     width: auto !important;
     margin-top: 5px;
