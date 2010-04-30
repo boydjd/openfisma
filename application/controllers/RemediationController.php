@@ -743,11 +743,11 @@ class RemediationController extends SecurityController
         if (isset($findingData['currentEcd'])) {
             if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
                 $date = new Zend_Date();
-                $ecd  = new Zend_Date($findingData['currentEcd']);
+                $ecd  = new Zend_Date($findingData['currentEcd'], 'Y-m-d');
 
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
-                             . 'Make sure that this is correct.';
+                           . ' Make sure that this is correct.';
                     $this->view->priorityMessenger($error, 'notice');
                 }
             } else {
@@ -764,7 +764,9 @@ class RemediationController extends SecurityController
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
-        } catch (Doctrine_Exception $e) {
+        } catch (Fisma_Exception_User $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();
             $message = "Error: Unable to update finding. ";
             if (Fisma::debug()) {

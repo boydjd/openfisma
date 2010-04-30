@@ -458,10 +458,10 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                         }
                         break;
                     case 'currentEcd':
-                        if ($this->ecdLocked && empty($this->ecdChangeDescription)) {
-                            $error = 'When the ECD is locked, the user must provide a change description'
-                                   . ' in order to modify the ECD.';
-                            throw new Fisma_Exception($error);
+                        if ($this->ecdLocked && '' == trim($this->ecdChangeDescription)) {
+                            $error = 'The ECD was previously approved and cannot be changed without'
+                                   . ' providing a justification.';
+                            throw new Fisma_Exception_User($error);
                         }
                         if ($this->ecdLocked) {
                             Fisma_Acl::requirePrivilegeForObject('update_ecd', $this);
