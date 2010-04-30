@@ -464,7 +464,7 @@ class SystemController extends BaseController
             }
     
             // Update the document object and save
-            if (empty($versionNotes)) {
+            if ('' == trim($versionNotes)) {
                 throw new Fisma_Exception_User("Version notes are required.");
             }
             
