@@ -75,7 +75,7 @@ table.systemDocuments td img{float:left;margin-right:10px;}
 #testEmailRecipient{height:20px;width:220px;margin-left:10px;}
 input#product.yui-ac-input{position:relative;}
 div#product_ac_container{position:relative;top:0;width:234px;}
-div.yui-ac-content[style]{top:15px;height:auto!important;width:auto!important;margin-top:5px;}
+div.yui-ac-content[style]{height:auto!important;width:auto!important;margin-top:5px;}
 div.yui-ac-bd{overflow:auto;overflow-x:hidden;height:auto!important;max-height:200px;}
 .yui-ac-content ul{margin-right:20px!important;}
 ul.treelist li{list-style:none;}
