@@ -91,7 +91,11 @@
 <div class="column right">
     <?php 
         Fisma_Format_Section::startSection("Asset");
-        if (Fisma_Acl::hasPrivilegeForObject('read', $finding->Asset)):
+        if (is_null($finding->assetId)):
+    ?>
+        <p><i>No asset associated with this finding.</i></p>
+    <?php
+        elseif (Fisma_Acl::hasPrivilegeForObject('read', $finding->Asset)):
     ?>
     <table class="keyValues">
         <tr>
