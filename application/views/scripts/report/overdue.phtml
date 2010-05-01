@@ -118,33 +118,7 @@ unset($i);
 echo '];';
 
     echo 'var dataSource = { rows: [';
-    foreach ($this->poamList as $row) { 
-        if (!isset($i)) {
-            $i = true;
-        } else {
-            echo ',';
-        }
-        
-        echo '{';
- 
-        foreach ($this->columns as $key => $val) { 
-            if (!isset($n)) {
-                $n = true;
-            } else {
-                echo ',';
-            }
-            
-            if ($key != 'orgSystemName' && $key != 'type') {
-                echo $key . ':' . $row[$key];
-            } else {
-                echo $key . ":'" . $row[$key] . "'";
-            }
-        }
-        
-        unset($n); 
-        echo '}';
-    }
-    unset($i);
+    echo Zend_Json::encode($this->poamList);
     echo ']};';
     ?>
     

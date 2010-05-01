@@ -12,7 +12,7 @@ define('FONTS', Fisma::getPath('library') . '/pdf/fonts');
 
 require_once('pdf/class.ezpdf.php');
 
-$pdf =& new Cezpdf(PAPER_SIZE, ORIENTATION);
+$pdf = new Cezpdf(PAPER_SIZE, ORIENTATION);
 $pdf->selectFont(FONTS . "/Helvetica.afm");
 
 /**
@@ -76,6 +76,9 @@ $pdf->ezText($this->title, 16, array('justification'=>'center'));
 // here:
 foreach ($this->rows as &$row) {
     $row = array_values($row);
+    foreach ($row as &$column) {
+        $column = Fisma_String::htmltoPdfText($column);
+    }
 }
 
 $pdf->ezTable($this->rows,

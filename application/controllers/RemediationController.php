@@ -358,9 +358,9 @@ class RemediationController extends SecurityController
         else
             $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
 
-        $summary->leftJoin('node.System system')
-            ->leftJoin('finding.CurrentEvaluation evaluation')
+        $summary->leftJoin('finding.CurrentEvaluation evaluation')
             ->leftJoin('Organization parent')
+            ->leftJoin('parent.System system')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
