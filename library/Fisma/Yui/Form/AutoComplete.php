@@ -52,9 +52,9 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
             $disabled = "disabled=\"true\"";
         }
 
-        $render  = "
-        <div id=\"{$this->getAttrib('containerId')}\">
+        $render  = "<div>
         <input type=\"text\" id=\"{$this->getName()}\" {$disabled} value=\"{$this->getValue()}\"/>
+        <div id=\"{$this->getAttrib('containerId')}\"></div>
         </div>";
 
         if (!$this->getAttrib('readonly')) {
