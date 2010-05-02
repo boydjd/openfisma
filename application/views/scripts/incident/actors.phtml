@@ -105,9 +105,9 @@ YAHOO.util.Event.onContentReady('actors', function() {
     var myColumnDefs = [
         {key:'username', label:'Username', sortable:true},
         {key:'nameFirst', label:'First Name', sortable:true},
-        {key:'nameLast', label:'Last Name', sortable:true},
+        {key:'nameLast', label:'Last Name', sortable:true}
 <?php if ($this->updateIncidentPrivilege): ?>
-        {key:'remove', label:'Remove', sortable:false}
+        ,{key:'remove', label:'Remove', sortable:false}
 <?php endif; ?>
     ];
 
@@ -117,9 +117,9 @@ YAHOO.util.Event.onContentReady('actors', function() {
         fields: [
             {key:'username'},
             {key:'nameFirst'},
-            {key:'nameLast'},
+            {key:'nameLast'}
 <?php if ($this->updateIncidentPrivilege): ?>
-            {key: 'remove'}
+            ,{key: 'remove'}
 <?php endif; ?>
         ]
     };
