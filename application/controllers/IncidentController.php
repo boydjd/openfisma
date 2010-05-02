@@ -1265,13 +1265,6 @@ class IncidentController extends SecurityController
 
         foreach ($incidents as $key => $val) {
             $incidents[$key]['category'] = $incidents[$key]['Category']['name'];
-
-            if ('YES' == $incidents[$key]['piiInvolved']) {
-                $incidents[$key]['piiInvolved'] = '&#10004;';
-            } else {
-                $incidents[$key]['piiInvolved'] = '&#10007;';
-            }
-
         }
  
         $tableData = array('table' => array(
