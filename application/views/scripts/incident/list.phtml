@@ -70,19 +70,13 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-    <?php 
-    if ($this->readIncidentPrivilege):
-    ?>
-        myDataTable.subscribe("rowClickEvent", 
-            function (oArgs) {
-                var elTarget = oArgs.target;
-                var oRecord = this.getRecord(elTarget);
-                document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
-            }
-        );
-    <?php 
-    endif; 
-    ?>
+    myDataTable.subscribe("rowClickEvent", 
+        function (oArgs) {
+            var elTarget = oArgs.target;
+            var oRecord = this.getRecord(elTarget);
+            document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+        }
+    );
     
     var contextMenuItems = ["View"];
     var contextMenu = new YAHOO.widget.ContextMenu( 
