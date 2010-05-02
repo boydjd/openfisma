@@ -22,7 +22,13 @@
                     <th>Username</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Remove</th>
+                    <?php 
+                    if ($this->updateIncidentPrivilege): 
+                    ?>
+                        <th>Remove</th>
+                    <?php
+                    endif;
+                    ?>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +39,9 @@
                         <td><?php echo $actor['a_username']; ?></td>
                         <td><?php echo $actor['a_nameFirst']; ?></td>
                         <td><?php echo $actor['a_nameLast']; ?></td>
+                        <?php 
+                        if ($this->updateIncidentPrivilege): 
+                        ?>
                         <td>
                             <?php
                             echo "<a href=\"/incident/remove-actor/type/actor"
@@ -41,6 +50,9 @@
                                 Remove
                             </a>
                         </td>
+                        <?php
+                        endif;
+                        ?>
                     </tr>                
                 <?php
                 endforeach;
@@ -77,6 +89,13 @@
                     <th>Username</th>
                     <th>First Name</th>
                     <th>Last Name</th>
+                    <?php 
+                    if ($this->updateIncidentPrivilege): 
+                    ?>
+                        <th>Remove</th>
+                    <?php
+                    endif;
+                    ?>
                 </tr>
             </thead>
             <tbody>
@@ -87,6 +106,20 @@
                         <td><?php echo $observer['o_username']; ?></td>
                         <td><?php echo $observer['o_nameFirst']; ?></td>
                         <td><?php echo $observer['o_nameLast']; ?></td>
+                        <?php 
+                        if ($this->updateIncidentPrivilege): 
+                        ?>
+                            <td>
+                                <?php
+                                echo "<a href=\"/incident/remove-actor/type/observer"
+                                   . "/incidentId/{$this->id}/userId/{$observer['o_id']}\">";
+                                ?>
+                                    Remove
+                                </a>
+                            </td>
+                        <?php
+                        endif;
+                        ?>
                     </tr>                
                 <?php
                 endforeach;
@@ -133,6 +166,9 @@ YAHOO.util.Event.onContentReady('observers', function() {
         {key:'username', label:'Username', sortable:true},
         {key:'nameFirst', label:'First Name', sortable:true},
         {key:'nameLast', label:'Last Name', sortable:true}
+        <?php if ($this->updateIncidentPrivilege): ?>
+            ,{key:'remove', label:'Remove', sortable:false}
+        <?php endif; ?>        
     ];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("observersTable"));
@@ -142,6 +178,9 @@ YAHOO.util.Event.onContentReady('observers', function() {
             {key:'username'},
             {key:'nameFirst'},
             {key:'nameLast'}
+            <?php if ($this->updateIncidentPrivilege): ?>
+                ,{key: 'remove'}
+            <?php endif; ?>
         ]
     };
 
