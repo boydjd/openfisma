@@ -799,6 +799,10 @@ class IncidentController extends SecurityController
             $incident->save();
         }
 
+        // Send e-mail
+        $mail = new Fisma_Mail();
+        $mail->IRAssign($userId, $incidentId);
+
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
     }
     
@@ -897,11 +901,14 @@ class IncidentController extends SecurityController
             $comment = $this->getRequest()->getParam('comment');
 
             if (!empty($comment)) {
+                // Get reference to current step before marking it complete
+                $currentStep = $incident->CurrentWorkflowStep;
+                
                 $incident->completeStep($comment);
 
-                foreach ($this->_getAssociatedUsers($incidentId) as $userId) {
+                foreach ($this->_getAssociatedUsers($id) as $userId) {
                     $mail = new Fisma_Mail();
-                    $mail->IRStep($userId, $incidentId, $workflowDescription, $workflowCompletedBy);
+                    $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
                 }
 
                 $message = 'Workflow step completed. ';
@@ -1769,25 +1776,27 @@ class IncidentController extends SecurityController
              ->select('u.userId')
              ->from('IrIncidentActor u')   
              ->where('u.incidentId = ?', $incidentId)
-             ->groupBy('u.userId');
+             ->groupBy('u.userId')
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        $data = $q->execute()->toArray();
-        
+        $data = $q->execute();
+
         $users = array();
-        foreach ($data as $key => $val) {
-            $users[] = $val['userId'];
+        foreach ($data as $val) {
+            $users[] = $val['u_userId'];
         }
     
         $q = Doctrine_Query::create()
              ->select('u.userId')
              ->from('IrIncidentObserver u')   
              ->where('u.incidentId = ?', $incidentId)
-             ->groupBy('u.userId');
+             ->groupBy('u.userId')
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        $data = $q->execute()->toArray();
-        
+        $data = $q->execute();
+
         foreach ($data as $key => $val) {
-            $users[] = $val['userId'];
+            $users[] = $val['u_userId'];
         }    
 
         return $users;
