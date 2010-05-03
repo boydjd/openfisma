@@ -40,17 +40,6 @@ class Version37 extends Doctrine_Migration_Base
         $privilege->action = 'lock';
         $privilege->description = 'Lock Incident';
         $privilege->save();
-
-        $role = Doctrine_Query::create()
-            ->from('Role r')
-            ->where('r.nickname = ?', 'OIG')
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-            ->execute();
-
-        $rolePrivilege = new RolePrivilege();
-        $rolePrivilege->roleId = $role[0]['id'];
-        $rolePrivilege->privilegeId = $privilege->id;
-        $rolePrivilege->save();
     }
 
     /**
