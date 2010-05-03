@@ -86,6 +86,25 @@ class Version33 extends Doctrine_Migration_Base
              'foreignTable' => 'user_role',
              )
         );
+
+        $this->createForeignKey(
+            'user_role', 'user_role_userid_user_id', array(
+             'name' => 'user_role_userid_user_id',
+             'local' => 'userid',
+             'foreign' => 'id',
+             'foreignTable' => 'user',
+             )
+        );
+
+        $this->createForeignKey(
+            'user_role', 'user_role_roleid_user_id', array(
+             'name' => 'user_role_roleid_user_id',
+             'local' => 'roleid',
+             'foreign' => 'id',
+             'foreignTable' => 'role',
+             )
+        );
+        
         $this->addIndex(
             'user_role', 'userRoleIndexUnique', array(
              'fields' => 
