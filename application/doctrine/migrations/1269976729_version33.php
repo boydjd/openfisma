@@ -19,6 +19,9 @@
 /**
  * Foreign keys/indexes for user_role_organization and user_Role 
  * 
+ * This file contains generated code... skip standards check.
+ * @codingStandardsIgnoreFile
+ * 
  * @package Migration
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -30,10 +33,43 @@ class Version33 extends Doctrine_Migration_Base
     /**
      * Create keys/indexes
      * 
+     * The userroleid column was created and populated with a sequence in version 32, and is converted to a primary key
+     * in version 33.
+     * 
      * @return void
      */
     public function up()
     {
+        $this->dropForeignKey('user_role', 'user_role_roleid_role_id');
+        $this->dropForeignKey('user_role', 'user_role_userid_user_id');
+
+        $this->dropConstraint('user_role', NULL, TRUE);
+
+        $this->changeColumn(
+            'user_role', 'userid', '8', 'integer', array(
+             'notnull' => TRUE,
+             'primary' => FALSE,
+             )
+        );
+        $this->changeColumn(
+            'user_role', 'roleid', '8', 'integer', array(
+             'notnull' => TRUE,
+             'primary' => FALSE,
+             )
+        );
+
+        $this->createConstraint(
+            'user_role', NULL, array(
+            'primary' => TRUE,
+            'fields' => array('userroleid' => array()),
+        )
+        );
+        $this->changeColumn(
+            'user_role', 'userroleid', '8', 'integer', array(
+            'autoincrement' => TRUE,
+        )
+        );
+
         $this->createForeignKey(
             'user_role_organization', 'user_role_organization_organizationid_organization_id', array(
              'name' => 'user_role_organization_organizationid_organization_id',
