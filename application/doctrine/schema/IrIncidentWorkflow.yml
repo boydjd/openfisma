@@ -4,8 +4,6 @@ IrIncidentWorkflow:
     columns:
         name: 
             type: string(255)
-            extra:
-                purify: plaintext
         description:
             type: string
             extra:

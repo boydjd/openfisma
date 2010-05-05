@@ -9,13 +9,11 @@ Incident:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Title
         reporterFirstName: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's First Name
                 searchIndex: unstored
             comment: >
@@ -26,14 +24,12 @@ Incident:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Last Name
                 searchIndex: unstored
         reporterOrganization: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Organization
                 searchIndex: unstored
 
@@ -41,44 +37,37 @@ Incident:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Street Address Line 1
         reporterAddress2: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Street Address Line 2
         reporterCity: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's City
         reporterState: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's State
         reporterZip: 
             type: string(10)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Zip Code
         reporterPhone: 
             type: string(15)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Phone Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterFax: 
             type: string(15)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's Fax Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterEmail: 
@@ -87,14 +76,12 @@ Incident:
                 check_mx: false
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's E-mail Address
         reporterIp:
             type: string(15)
             Fisma_Validator_Ip: true
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Reporter's IP Address
             comment: The IP address of the client which filed this report
 
@@ -103,14 +90,12 @@ Incident:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Building
             comment: The building in which the incident is believed to have occurred
         locationRoom: 
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Room
             comment: The room in which the incident is believed to have occurred
 
@@ -234,7 +219,6 @@ Incident:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Name Of Shipping Company
         piiShipmentTimeline:
             type: string
@@ -254,14 +238,12 @@ Incident:
             Fisma_Validator_Ip: true
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Host IP Address
             comment: The IP address of the affected host
         hostName:
             type: string(255)
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Host Name
         hostOs:
             type: enum
@@ -281,7 +263,6 @@ Incident:
             Fisma_Validator_Ip: true
             extra:
                 auditLog: true
-                purify: plaintext
                 logicalName: Source IP Address
             comment: The IP address from which the incident is believed to have originated
         sourceAdditional:

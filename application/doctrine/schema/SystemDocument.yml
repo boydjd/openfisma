@@ -1,5 +1,5 @@
 SystemDocument:
-    listeners: [XssListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
     
     indexes: 
         uniqueTypePerSystem:
@@ -12,14 +12,11 @@ SystemDocument:
         createdTs: timestamp
         mimeType:
             type: string(255)
-            extra:
-                purify: plaintext
             comment: Store the MIME type of this uploaded file
         fileName:
             type: string(255)
             extra:
                 notify: true
-                purify: plaintext
                 searchIndex: unstored
                 searchAlias: file
             comment: Name of the uploaded file
@@ -31,7 +28,6 @@ SystemDocument:
         description:
             type: string
             extra:
-                purify: plaintext
                 searchIndex: unstored
             comment: A place for the user to enter version comments
 

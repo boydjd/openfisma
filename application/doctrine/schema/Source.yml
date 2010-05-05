@@ -6,7 +6,6 @@ Source:
             type: string(255)
             extra:
                 logicalName: Source Name
-                purify: plaintext
                 searchIndex: unstored
                 notify: true
         nickname: 
@@ -14,7 +13,6 @@ Source:
             unique: true
             extra:
                 logicalName: Source Nickname
-                purify: plaintext
                 searchIndex: unstored
                 notify: true    
         description: 

@@ -25,7 +25,6 @@ Finding:
             type: string(255)
             unique: true
             extra: 
-                purify: plaintext
                 auditLog: true
                 logicalName: Legacy Finding ID
                 searchIndex: unstored
@@ -105,7 +104,6 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: Justification for modifying ECD
-                purify: plaintext
             comment: If the current ECD needs to be changed, then this field holds the user\'s justification for changing it
         actualCompletionDate:
             type: date                              

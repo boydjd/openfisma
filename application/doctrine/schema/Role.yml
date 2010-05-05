@@ -9,7 +9,6 @@ Role:
             type: string(255)
             extra:
                 logicalName: Role Name
-                purify: plaintext
                 searchIndex: unstored
                 notify: true
         nickname: 
@@ -17,7 +16,6 @@ Role:
             unique: true
             extra:
                 logicalName: Role Nickname
-                purify: plaintext        
                 searchIndex: unstored  
                 notify: true      
             unique: true;

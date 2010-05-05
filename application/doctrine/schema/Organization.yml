@@ -9,7 +9,6 @@ Organization:
             notblank: true
             notnull: true
             extra:
-                purify: plaintext
                 searchIndex: unstored
         nickname:
             type: string(255)
@@ -19,7 +18,6 @@ Organization:
             unique: true
             extra:
                 logicalName: Nickname
-                purify: plaintext
                 searchIndex: unstored
         orgType:
             type: enum

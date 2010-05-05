@@ -85,8 +85,6 @@ System:
         piaUrl:
             type: string(255)
             Fisma_Validator_Url: true
-            extra:
-                purify: plaintext
             comment: A URL pointing to the Privacy Impact Analysis
         sornRequired:
             type: enum
@@ -97,13 +95,10 @@ System:
         sornUrl:
             type: string(255)
             Fisma_Validator_Url: true
-            extra:
-                purify: plaintext
             comment: A URL pointing to the System Of Record Notice
         uniqueProjectId:
             type: string(23)
             extra:
-                purify: plaintext
                 searchIndex: unstored
                 searchAlias: upi
             comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        

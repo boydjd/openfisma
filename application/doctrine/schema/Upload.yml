@@ -1,12 +1,8 @@
 Upload:
-    listeners: [XssListener]
-    
     columns:
         createdTs: timestamp
         fileName:
             type: string(255)
-            extra:
-                purify: plaintext
             comment: Name of the uploaded file
         userId:
             type: integer

@@ -1,6 +1,4 @@
 FindingEvaluation:
-    listeners: [XssListener]
-    
     columns:
         createdTs: timestamp
         findingId:
@@ -21,8 +19,6 @@ FindingEvaluation:
             comment: Foreign key to the user who completed this evaluation
         comment: 
             type: string
-            extra:
-                purify: plaintext
             comment: A comment explaining the reason for denial (its not required when approving)
     
     relations:
