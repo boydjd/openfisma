@@ -40,9 +40,6 @@ class Version33 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $this->dropForeignKey('user_role', 'user_role_roleid_role_id');
-        $this->dropForeignKey('user_role', 'user_role_userid_user_id');
-
         $this->dropConstraint('user_role', NULL, TRUE);
 
         $this->changeColumn(
