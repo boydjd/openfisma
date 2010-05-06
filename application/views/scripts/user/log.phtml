@@ -1,5 +1,5 @@
 <?php 
-echo $this->partial('user/searchbox.phtml');
+echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 $operation = "[<a href='{$this->viewLink}'>View</a>]";
 Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"); 
 ?>
@@ -9,16 +9,16 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?php echo $column; ?></th>
+                <th class="tdc"><?php echo $this->escape($column); ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?php echo $row['o_createdTs']; ?></td>
-            <td><?php echo $row['u_username']; ?></td>
-            <td><?php echo $row['o_message']; ?></td>
+            <td><?php echo $this->escape($row['o_createdTs']); ?></td>
+            <td><?php echo $this->escape($row['u_username']); ?></td>
+            <td><?php echo $this->escape($row['o_message']); ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -36,7 +36,7 @@ YAHOO.util.Event.onContentReady('container', function() {
         foreach ($this->columns as $column) {
             $keys .= "{key:'$column', label:'$column', sortable:true},";
         }
-        echo rtrim($keys, ',');
+        echo $this->escape(rtrim($keys, ','), 'none');
         ?>
     ];
 
@@ -49,7 +49,7 @@ YAHOO.util.Event.onContentReady('container', function() {
             foreach ($this->columns as $column) {
                 $keys .= "{key:'$column'},";
             }
-            echo rtrim($keys, ',');
+            echo $this->escape(rtrim($keys, ','), 'none');
             ?>
         ]
     };

@@ -1,6 +1,6 @@
 <script type="text/javascript" src="/javascripts/account.js"></script>
 <?php
-echo $this->partial('user/searchbox.phtml');
+echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 Fisma_Format_Section::startSection('User Account Information'); ?>
 
 <?php 
@@ -8,11 +8,11 @@ if (!empty($this->requirements)) {
 ?>
     <p>The password must meet the following complexity criteria:</p>
     <ul>
-        <?php
-        foreach ($this->requirements as $requirement) {
-            echo "<li>$requirement";
-        }
-        ?>
+        <?php foreach ($this->requirements as $requirement): ?>
+            <li>
+                 <?php echo $this->escape($requirement); ?>
+            </li>
+        <?php endforeach; ?>
     </ul>
 <?php 
 } 
@@ -21,13 +21,14 @@ if (!empty($this->requirements)) {
 <div class="form_box">
     <form method="post" action="/panel/User/sub/create">
         <?php 
-        echo $this->form;
-        echo $this->tabView;
+        echo $this->escape($this->form, 'none');
+        echo $this->escape($this->tabView, 'none');
         ?>
     </form>
 </div>
 
 <?php 
 Fisma_Format_Section::stopSection();
-echo $this->partial('tab-view/roles.phtml', array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0));
-?>
+$part = $this->partial('tab-view/roles.phtml', array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0));
+echo $this->escape($part, 'none');
+unset($part);
