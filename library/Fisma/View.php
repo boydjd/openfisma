@@ -111,8 +111,14 @@ class Fisma_View extends Zend_View
                 }
                 return $return;
 
-            default:
+            case 'none':
+                if (Fisma::debug()) {
+                    trigger_error('Make sure that you really want to echo the raw string.', E_USER_NOTICE);
+                }
                 return $string;
+
+            default:
+                throw new Fisma_Exception('Requested escaping type is not available!');
         }
     }
 }
