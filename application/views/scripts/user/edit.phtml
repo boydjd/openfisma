@@ -27,8 +27,9 @@ if (!empty($this->requirements)) {
 <div class="form_box">
     <form method="post" action="/panel/User/sub/edit/id/<?php echo $this->escape($this->id); ?>">
     <?php 
-    echo $this->escape($this->form, 'none');
-    echo $this->escape($this->tabView, 'none'); ?>
+        echo $this->escape($this->form, 'none');
+        echo $this->escape($this->tabView, 'none');
+    ?>
     </form>
 </div>
 <?php 
@@ -36,4 +37,3 @@ Fisma_Format_Section::stopSection();
 $opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
 echo $this->escape($this->partial('tab-view/roles.phtml', $opts), 'none');
 unset($opts);
-?>

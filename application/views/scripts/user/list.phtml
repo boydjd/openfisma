@@ -25,7 +25,7 @@ var myColumnDefs = [
         var count = oState.pagination.rowsPerPage;
 
         // Build custom request
-        var request = "<?php echo $this->escape($this->link, 'none'); ?>" + 
+        var request = "<?= $this->escape($this->link, 'none') ?>" + 
                       "/sortby/" + sort +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
@@ -44,14 +44,14 @@ var myColumnDefs = [
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?php echo $this->escape($this->link, 'none'); ?>"
+        initialRequest: "<?=$this->escape($this->link, 'none')?>"
                       + "/sortby/username/dir/asc/startIndex/0/count/"
-                      + "<?php echo $this->escape($this->pageInfo['count'], 'none'); ?>",
+                      + "<?=$this->escape($this->pageInfo['count'], 'none')?>",
         dynamicData: true, 
         sortedBy : {key:"username", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
             {
-                rowsPerPage:<?php echo $this->escape($this->pageInfo['count'], 'none'); ?>,
+                rowsPerPage:<?=$this->escape($this->pageInfo['count'], 'none')?>,
                 template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
         ),

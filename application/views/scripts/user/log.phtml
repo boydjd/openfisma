@@ -9,49 +9,42 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?php echo $this->escape($column); ?></th>
+                <th class="tdc"><?=$this->escape($column)?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?php echo $this->escape($row['o_createdTs']); ?></td>
-            <td><?php echo $this->escape($row['u_username']); ?></td>
-            <td><?php echo $this->escape($row['o_message']); ?></td>
+            <td><?=$this->escape($row['o_createdTs']) ?></td>
+            <td><?=$this->escape($row['u_username']) ?></td>
+            <td><?=$this->escape($row['o_message']) ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
 </div>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+<?php
+    Fisma_Format_Section::stopSection();
 
+    $defKeys = array();
+    $responseKeys = array();
+    foreach ($this->columns as $column) {
+        $defKeys[] = "{key:'$column', label:'$column', sortable:true}";
+        $responseKeys[] = "{key:'$column'}";
+    }
+    $defKeys = implode(',', $defKeys);
+    $responseKeys = implode(',', $responseKeys);
+?>
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('container', function() {
-    var myColumnDefs = [
-        <?php
-        $keys = "";
-        foreach ($this->columns as $column) {
-            $keys .= "{key:'$column', label:'$column', sortable:true},";
-        }
-        echo $this->escape(rtrim($keys, ','), 'none');
-        ?>
-    ];
-
+    var myColumnDefs = [<?=$this->escape($keys, 'none')?>];
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [
-            <?php
-            $keys = "";
-            foreach ($this->columns as $column) {
-                $keys .= "{key:'$column'},";
-            }
-            echo $this->escape(rtrim($keys, ','), 'none');
-            ?>
-        ]
+        fields: [<?=$this->escape($responseKeys, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});
