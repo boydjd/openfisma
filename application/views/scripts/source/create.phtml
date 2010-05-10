@@ -1,10 +1,10 @@
 <?php 
-echo $this->partial('source/searchbox.phtml');
+echo $this->escape($this->partial('source/searchbox.phtml'), 'none');
 Fisma_Format_Section::startSection("Create Finding Source"); ?>
 
 <div class="form_box">
     <font color="blue">*</font> = Required Field 
-    <?php echo $this->form ;?>
+    <?php echo $this->escape($this->form, 'none');?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

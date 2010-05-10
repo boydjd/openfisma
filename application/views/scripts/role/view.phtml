@@ -1,5 +1,5 @@
 <?php
-echo $this->partial('role/searchbox.phtml');
+echo $this->escape($this->partial('role/searchbox.phtml'), 'none');
 $operation = '';
 
 if (Fisma_Acl::hasPrivilegeForObject('assignPrivileges', $this->subject)) {
@@ -18,7 +18,7 @@ Fisma_Format_Section::startSection("Role Information $operation");
 ?>
 
 <div>
-    <?php echo $this->form ?>
+    <?php echo $this->escape($this->form, 'none'); ?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

@@ -4,7 +4,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'List All Documents', 
                                                      'href' => '/panel/system-document/sub/list'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
     </div>
         <div class="right">
@@ -13,7 +13,7 @@
                 <b><label for="keywords">Search:</label>&nbsp;</b>
                 <input id="keywords" 
                        name="keywords" 
-                       value="<?php echo $this->keywords;?>" 
+                       value="<?=$this->escape($this->keywords);?>" 
                        title="Input your query value" 
                        size="20" 
                        maxlength="40" 

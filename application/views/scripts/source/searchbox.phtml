@@ -4,7 +4,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Source List', 
                                                      'href' => '/panel/source/sub/list'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
 
         <?php 
@@ -12,7 +12,7 @@
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Source', 
                                                          'href' => '/panel/source/sub/create'));
-            echo $createButton;
+            echo $this->escape($createButton, 'none');
         }
         ?>
     </div>
@@ -22,7 +22,7 @@
                     <b><label for="keywords">Search:</label>&nbsp;</b>
                     <input id="keywords" 
                            name="keywords" 
-                           value="<?php echo $this->keywords;?>" 
+                           value="<?=$this->escape($this->keywords)?>" 
                            title="Input your query value" 
                            size="20" 
                            maxlength="40" 
