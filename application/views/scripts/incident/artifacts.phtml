@@ -1,5 +1,5 @@
 <div class="toolbar">
-    <?php echo $this->uploadPanelButton; ?>
+    <?php echo $this->escape($this->uploadPanelButton, 'none'); ?>
 </div>
 
 <?php
@@ -17,28 +17,28 @@ Fisma_Format_Section::startSection('Artifacts');
         ?>
             <tr>
                 <td>
-                    <a href='<?php echo $downloadUrl; ?>'>
-                        <img src='<?php echo $artifact['iconUrl']; ?>'>
+                    <a href='<?=$this->escape($downloadUrl, 'none'); ?>'>
+                        <img src='<?=$this->escape($artifact['iconUrl']) ?>'>
                     </a>
                 </td>
                 <td>
-                    <a href='<?php echo $downloadUrl; ?>'>
+                    <a href='<?=$this->escape($downloadUrl) ?>'>
                         <div>
-                            <?php echo $artifact['fileName']; ?>
+                            <?php echo $this->escape($artifact['fileName']); ?>
                         </div>
                     </a>
                 </td>
                 <td>
-                    <?php echo $artifact['fileSize']; ?>
+                    <?php echo $this->escape($artifact['fileSize']); ?>
                 </td>
                 <td>
-                    <?php echo $artifact['User']['username']; ?>
+                    <?php echo $this->escape($artifact['User']['username']); ?>
                 </td>
                 <td>
-                    <?php echo $artifact['createdTs']; ?>
+                    <?php echo $this->escape($artifact['createdTs']); ?>
                 </td>
                 <td>
-                    <?php echo $artifact['comment']; ?>
+                    <?php echo $this->escape($artifact['comment']); ?>
                 </td>
             </tr>
         <?php

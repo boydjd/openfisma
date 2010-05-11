@@ -19,8 +19,8 @@ Fisma_Format_Section::startSection("Review Incident Report");
         foreach ($this->incidentReview as $key => $value):
         ?>    
             <tr>
-                <td><?php echo $key; ?>:</td>
-                <td><?php echo $value; ?></td>
+                <td><?php echo $this->escape($key); ?>:</td>
+                <td><?php echo $this->escape($value); ?></td>
             </tr>
         <?php
         endforeach;
@@ -28,7 +28,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
     </table>
 </div>
 
-    <form method="post" action="<?php echo $this->actionUrlBase; ?>/save-report" style="display: inline">
+    <form method="post" action="<?=$this->escape($this->actionUrlBase, 'none'); ?>/save-report" style="display: inline">
         <?php
         $saveReportButton = new Fisma_Yui_Form_Button_Submit(
                 'irReportSave', 
@@ -39,22 +39,23 @@ Fisma_Format_Section::startSection("Review Incident Report");
                     'onClick' => 'confirmIrSubmit'
                 )
             );
-        echo $saveReportButton;
+        echo $this->escape($saveReportButton, 'none');
         ?>
     </form>
     
     <?php
-    echo new Fisma_Yui_Form_Button_Submit(
+    $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
         'irReportCancel', 
         array(
             'label' => 'Cancel Report', 
             'imageSrc' => "/images/del.png",
         )
     );
+    echo $this->escape($irReportCancelButton, 'none');
     ?>
     
     <form method="post" 
-          action="<?php echo $this->actionUrlBase; ?>/report/step/<?php echo $this->step; ?>" 
+          action="<?=$this->escape($this->actionUrlBase, 'none'); ?>/report/step/<?=$this->escape($this->step); ?>" 
           style="display: inline;">
         <?php
         $backwardButton = new Fisma_Yui_Form_Button_Submit(
@@ -65,7 +66,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
                     'class' => 'left'
                 )
             );
-        echo $backwardButton;
+        echo $this->escape($backwardButton, 'none');
         ?>
     </form>
 

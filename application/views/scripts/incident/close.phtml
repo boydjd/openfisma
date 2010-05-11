@@ -19,7 +19,7 @@ var incidentCallback = {
                                    });
             var editDetailsButton = new YAHOO.widget.Button({
                                        type: "link",
-                                       href: "/panel/incident/sub/edit/id/<?php print $this->id; ?>", 
+                                       href: "/panel/incident/sub/edit/id/<?=$this->escape($this->id)?>", 
                                        label: "Edit",
                                        id: "editDetailsButton",
                                        name: "editDetailsButton",
@@ -33,7 +33,7 @@ var incidentCallback = {
         }
     } 
 
-var transactionUrl = '/incident/incidentdata/id/<?php print $this->id; ?>';
+var transactionUrl = '/incident/incidentdata/id/<?=$this->escape($this->id); ?>';
 var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
@@ -51,7 +51,7 @@ function onViewButtonClick() {
 
 <?php Fisma_Format_Section::startSection("Close Incident"); ?>
 
-<?php echo $this->form; ?>
+<?php echo $this->escape($this->form, 'none'); ?>
 
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -59,20 +59,34 @@ function onViewButtonClick() {
 
 <?php 
 foreach ($this->steps as $key => $step):
-    print "<table width='50%' class='fisma_crud' style='margin-bottom: 10px;'>"
-        . "<tr><td width='15%'>Workflow Step:</td><td width='35%'><h2>{$step['name']}</h2></td></tr>"
-        . "<tr><td>Completed By:</td>";
-
-    if ('completed' == $step['status']):
-        print "<td>{$step['user']['nameFirst']} {$step['user']['nameLast']} ({$step['user']['username']})</td></tr>"
-            . "<tr><td>Completed On:</td> <td>{$step['completeTs']}</td></tr>"
-            . "<tr><td>Comments:</td>     <td>{$step['comments']}</td></tr>";
-        
-    else:
-        print "<td>&lt;not completed&gt;</td></tr>";
-    endif;
-
-    print "</table>";
+?>
+    <table width='50%' class='fisma_crud' style='margin-bottom: 10px;'>
+        <tr>
+            <td width='15%'>Workflow Step:</td>
+            <td width='35%'><h2><?=$this->escape($step['name'])?></h2></td>
+        </tr>
+        <tr>
+            <td>Completed By:</td>
+    <?php if ('completed' == $step['status']): ?>
+            <td>
+                <?=$this->escape($step['user']['nameFirst'])?>
+                <?=$this->escape($step['user']['nameLast'])?>
+                (<?=$this->escape($step['user']['username'])?>)
+            </td>
+        </tr>
+        <tr>
+            <td>Completed On:</td>
+            <td><?=$this->escape($step['completeTs'])?></td>
+        </tr>
+        <tr>
+            <td>Comments:</td>
+            <td><?=$this->escape($step['comments'])?></td>
+    <?php else: ?>
+            <td>&lt;not completed&gt;</td>
+    <?php endif; ?>
+        </tr>
+    </table>
+<?php
 endforeach;
 ?>  
 

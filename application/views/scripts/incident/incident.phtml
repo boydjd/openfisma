@@ -1,16 +1,16 @@
-<form method="post" action="<?php echo $this->formAction; ?>">
+<form method="post" action="<?=$this->escape($this->formAction, 'none'); ?>">
     <div class="toolbar">
     <?php
     if ($this->updateIncidentPrivilege):
-        echo $this->discardChangesButton;
-        echo $this->saveChangesButton;
+        echo $this->escape($this->discardChangesButton, 'none');
+        echo $this->escape($this->saveChangesButton, 'none');
     endif;
     
     if ($this->lockIncidentPrivilege):
         if ($this->incident['isLocked']):
-            echo $this->unlockButton;
+            echo $this->escape($this->unlockButton, 'none');
         else:
-            echo $this->lockButton;
+            echo $this->escape($this->lockButton, 'none');
         endif;
     endif;
     ?>
@@ -23,13 +23,13 @@
         <table class="keyValues">
             <tr>
                 <td>Incident ID:</td>
-                <td><?php echo $this->incident['id']; ?></td>
+                <td><?php echo $this->escape($this->incident['id']); ?></td>
             </tr>
             <tr>
                 <td>
                     Status:
                 </td>
-                <td><?php echo $this->incident['status']; ?></td>
+                <td><?php echo $this->escape($this->incident['status']); ?></td>
             </tr>
             <tr>
                 <td>
@@ -38,9 +38,9 @@
                 <td>
                     <?php
                     if (!empty($this->incident['resolution'])):
-                        echo $this->incident['resolution'];
+                        echo $this->escape($this->incident['resolution'], 'none');
                     else:
-                        echo "n/a";
+                        echo $this->escape('n/a', 'none');
                     endif;
                     ?>
                 </td>
@@ -53,7 +53,7 @@
                     Closed Timestamp:
                 </td>
                 <td>
-                    <?php echo $this->incident['closedTs']; ?>
+                    <?php echo $this->escape($this->incident['closedTs']); ?>
                 </td>
             </tr>
             <?php
@@ -64,9 +64,9 @@
                 <td>
                     <?php 
                     if (!empty($this->incident['Category']['name'])):
-                        echo $this->incident['Category']['name'];
+                        echo $this->escape($this->incident['Category']['name']);
                     else:
-                        echo '<i>No Category Assigned</i>';
+                        echo $this->escape('<i>No Category Assigned</i>', 'none');
                     endif;
                     ?>
                 </td>
@@ -74,14 +74,14 @@
             <tr>    
                 <td>Incident Occured:</td>
                 <td>
-                    <?php echo "{$this->incident['incidentDate']} 
-                                {$this->incident['incidentTime']} 
-                                {$this->incident['incidentTimezone']}"; ?>
+                    <?=$this->escape($this->incident['incidentDate'])?>
+                    <?=$this->escape($this->incident['incidentTime'])?>
+                    <?=$this->escape($this->incident['incidentTimezone'])?>
                 </td>
             </tr>    
             <tr>    
                 <td>Report Created:</td>
-                <td><?php echo $this->incident['reportTs']; ?> <?php echo $this->incident['reportTz']; ?></td>
+                <td><?=$this->escape($this->incident['reportTs'])?> <?=$this->escape($this->incident['reportTz'])?></td>
             </tr>    
             <tr>
                 <td>Description:</td>
@@ -97,7 +97,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['additionalInfo']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['additionalInfo'], 'none'); ?>&nbsp;
                     </div>
                 </td>
             </tr>
@@ -115,7 +115,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['actionsTaken']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['actionsTaken'], 'none'); ?>&nbsp;
                     </div>
                 </td>
             </tr>
@@ -139,7 +139,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['hostName']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['hostName']); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -157,7 +157,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['hostIp']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['hostIp']); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -176,7 +176,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['hostOs']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['hostOs']); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -194,7 +194,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['hostAdditional']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['hostAdditional'], 'none'); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -216,7 +216,7 @@
                 </tr>
                 <tr>
                     <td>User:</td>
-                    <td><?php echo $this->incident['ReportingUser']['username']; ?></td>
+                    <td><?php echo $this->escape($this->incident['ReportingUser']['username']); ?></td>
                 </tr>
             <?php
             else:
@@ -227,9 +227,9 @@
                 <tr>    
                     <td>Name:</td>
                     <td>
-                        <?php echo $this->incident['reporterTitle']; ?> 
-                        <?php echo $this->incident['reporterFirstName']; ?> 
-                        <?php echo $this->incident['reporterLastName']; ?>
+                        <?php echo $this->escape($this->incident['reporterTitle']); ?> 
+                        <?php echo $this->escape($this->incident['reporterFirstName']); ?> 
+                        <?php echo $this->escape($this->incident['reporterLastName']); ?>
                     </td>
                 </tr>    
                 <tr>    
@@ -246,7 +246,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterOrganization']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterOrganization']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -264,7 +264,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterAddress1']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterAddress1']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -282,16 +282,16 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterAddress2']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterAddress2']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
                 <tr>    
                     <td>City/State/Zip:</td>
                     <td>
-                        <?php echo $this->incident['reporterCity']; ?> 
-                        <?php echo $this->incident['reporterState']; ?> 
-                        <?php echo $this->incident['reporterZip']; ?>
+                        <?php echo $this->escape($this->incident['reporterCity']); ?> 
+                        <?php echo $this->escape($this->incident['reporterState']); ?> 
+                        <?php echo $this->escape($this->incident['reporterZip']); ?>
                     </td>
                 </tr>    
                 <tr>    
@@ -308,7 +308,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterPhone']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterPhone']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -325,7 +325,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterFax']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterFax']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -343,7 +343,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['reporterEmail']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['reporterEmail']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -364,7 +364,7 @@
                          <?php
                          endif;
                          ?>>
-                         <?php echo $this->incident['reporterIp']; ?>&nbsp;
+                         <?php echo $this->escape($this->incident['reporterIp']); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -388,7 +388,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['locationBuilding']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['locationBuilding']); ?>&nbsp;
                     </div>
                 </td>
             </tr>
@@ -406,7 +406,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['locationRoom']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['locationRoom']); ?>&nbsp;
                     </div>
                 </td>
             </tr>
@@ -424,7 +424,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['sourceIp']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['sourceIp']); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -442,7 +442,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['sourceAdditional']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['sourceAdditional'], 'none'); ?>&nbsp;
                     </div>
                 </td>
             </tr>    
@@ -476,7 +476,7 @@
                          <?php
                          endif;
                          ?>>
-                        <?php echo $this->incident['piiInvolved']; ?>&nbsp;
+                        <?php echo $this->escape($this->incident['piiInvolved']); ?>&nbsp;
                     </div>
                 </td>
             </tr>
@@ -497,7 +497,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiAdditional']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiAdditional'], 'none'); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -516,7 +516,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiMobileMedia']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiMobileMedia']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -535,7 +535,7 @@
                              <?php
                              endif;
                              ?>>
-                            <?php echo $this->incident['piiMobileMediaType']; ?>&nbsp;
+                            <?php echo $this->escape($this->incident['piiMobileMediaType']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -554,7 +554,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiEncrypted']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiEncrypted']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -573,7 +573,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiAuthoritiesContacted']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiAuthoritiesContacted']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -592,7 +592,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiPoliceReport']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiPoliceReport']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -610,7 +610,7 @@
                              <?php
                              endif;
                              ?>>
-                            <?php echo $this->incident['piiIndividualsCount']; ?>&nbsp;
+                            <?php echo $this->escape($this->incident['piiIndividualsCount']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -629,7 +629,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiIndividualsNotified']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiIndividualsNotified']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -648,7 +648,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiShipment']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiShipment']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -666,7 +666,7 @@
                              <?php
                              endif;
                              ?>>
-                            <?php echo $this->incident['piiShipmentSenderCompany']; ?>&nbsp;
+                            <?php echo $this->escape($this->incident['piiShipmentSenderCompany']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -685,7 +685,7 @@
                              <?php
                              endif;
                              ?>>
-                             <?php echo $this->incident['piiShipmentSenderContacted']; ?>&nbsp;
+                             <?php echo $this->escape($this->incident['piiShipmentSenderContacted']); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -703,7 +703,7 @@
                              <?php
                              endif;
                              ?>>
-                            <?php echo $this->incident['piiShipmentTimeline']; ?>&nbsp;
+                            <?php echo $this->escape($this->incident['piiShipmentTimeline'], 'none'); ?>&nbsp;
                         </div>
                     </td>
                 </tr>    
@@ -721,7 +721,7 @@
                              <?php
                              endif;
                              ?>>
-                            <?php echo $this->incident['piiShipmentTrackingNumbers']; ?>&nbsp;
+                            <?php echo $this->escape($this->incident['piiShipmentTrackingNumbers'], 'none'); ?>&nbsp;
                         </div>
                     </td>
                 </tr>

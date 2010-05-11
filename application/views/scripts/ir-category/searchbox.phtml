@@ -5,7 +5,7 @@
                                                array('value' => 'IR Category List', 
                                                      'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/ircategory/sub/list'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
     
         <?php 
@@ -13,7 +13,7 @@
                                                array('value' => 'IR Category Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
                                                      'href' => '/panel/ircategory/sub/tree'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
 
         <?php 
@@ -22,7 +22,7 @@
                                                    array('value' => 'Add IR Sub Category', 
                                                          'imageSrc' => '/images/add.png',
                                                          'href' => '/panel/ircategory/sub/sub_create'));
-            echo $createButton;
+            echo $this->escape($createButton, 'none');
         endif;
         ?>
     </div>

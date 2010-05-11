@@ -1,8 +1,9 @@
 <?php 
 Fisma_Format_Section::startSection("Report A Security Incident");
+?>
+<h1><?=$this->escape($this->stepTitle)?></h1>
 
-echo "<h1>$this->stepTitle</h1>";
-
-echo $this->formPart;
+<?php
+echo $this->escape($this->formPart, 'none');
 
 Fisma_Format_Section::stopSection();
