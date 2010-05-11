@@ -1,5 +1,5 @@
 <?php
-echo $this->partial('network/searchbox.phtml', array('keywords' => $this->keywords));
+echo $this->escape($this->partial('network/searchbox.phtml', array('keywords' => $this->keywords)), 'none');
 Fisma_Format_Section::startSection("Network List <span id='searchResultsTotalFound'></span>"); 
 ?>
 <div id="list"></div>
@@ -22,7 +22,7 @@ var myColumnDefs = [
         var count = oState.pagination.rowsPerPage;
 
         // Build custom request
-        var request = "<?php echo $this->link; ?>" + 
+        var request = "<?=$this->escape($this->link, 'none'); ?>" + 
                       "/sortby/" + sort +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
@@ -41,14 +41,14 @@ var myColumnDefs = [
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?php echo $this->link; ?>"
+        initialRequest: "<?=$this->escape($this->link, 'none'); ?>"
                       + "/sortby/name/dir/asc/startIndex/0/count/"
-                      + "<?php echo $this->pageInfo['count']?>",
+                      + "<?=$this->escape($this->pageInfo['count'])?>",
         dynamicData: true, 
         sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
             {
-                rowsPerPage:<?php echo $this->pageInfo['count']?>,
+                rowsPerPage:<?=$this->escape($this->pageInfo['count'])?>,
                 template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
         ),

@@ -6,7 +6,7 @@
 <?php Fisma_Format_Section::startSection('General Policies'); ?>
 
 <div class="block">
-    <?php echo $this->generalConfig; ?>
+    <?php echo $this->escape($this->generalConfig, 'none'); ?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

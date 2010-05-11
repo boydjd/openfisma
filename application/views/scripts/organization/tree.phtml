@@ -6,7 +6,7 @@ $expandAll = new Fisma_Yui_Form_Button('expandAll',
                                        array('label' => 'Expand All', 
                                              'imageSrc' => '/images/expand.png',
                                              'onClickFunction' => 'expandAll'));
-print $expandAll;
+echo $this->escape($expandAll, 'none');
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
                                          array('label' => 'Collapse All', 

@@ -5,7 +5,7 @@
                                                array('value' => 'Organization List', 
                                                      'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/organization/sub/list'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
     
         <?php 
@@ -13,7 +13,7 @@
                                                array('value' => 'Organization Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
                                                      'href' => '/panel/organization/sub/tree'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
 
         <?php 
@@ -22,7 +22,7 @@
                                                    array('value' => 'Add Organization', 
                                                          'imageSrc' => '/images/add.png',
                                                          'href' => '/panel/organization/sub/create'));
-            echo $createButton;
+            echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
@@ -32,7 +32,7 @@
             <b><label for="keywords">Search:</label>&nbsp;</b>
             <input id="keywords" 
                    name="keywords" 
-                   value="<?php echo $this->keywords;?>" 
+                   value="<?=$this->escape($this->keywords);?>" 
                    title="Input your query value" 
                    size="20" 
                    maxlength="40" 

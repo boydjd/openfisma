@@ -19,7 +19,8 @@
     <tr>
         <td width="161"><b> <label for="prodName">Product:</label></b></td>
         <td width="167">
-            <input type="text" class="product" name="prodName" id="prodName" value="<?php echo $this->prodName; ?>" 
+            <input type="text" class="product" name="prodName" id="prodName"
+                value="<?=$this->escape($this->prodName); ?>" 
                 size="20" />
         </td>
         <td colspan="2" rowspan="4">
@@ -27,17 +28,12 @@
                 <select name="prodList" size="8" style="width: 100%;">
                 <?php 
                 foreach ($this->prodList as $key) {
-                    echo '<option value='
-                       . $key['id']
-                       . '>'
-                       . $key['id']
-                       . ' | '
-                       . $key['name'] 
-                       . ' | '
-                       . $key['vendor']
-                       . ' | '
-                       . $key['version']
-                       . '</option>';
+                    echo $this->escape('<option value=', 'none');
+                    echo $this->escape($key['id']);
+                    echo $this->escape('>', 'none');
+                    $label = implode(' | ', array($key['id'], $key['name'], $key['vendor'], $key['version']));
+                    echo $this->escape($label);
+                    echo $this->escape('</option>', 'none');
                 } 
                 ?>
                 </select>
@@ -47,7 +43,8 @@
     <tr>
         <td><b><label for="prodVendor">Vendor:</label></b></td>
         <td>
-            <input type="text" class="product" name="prodVendor" id="prodVendor" value="<?php echo $this->prodVendor?>"
+            <input type="text" class="product" name="prodVendor" id="prodVendor"
+                value="<?=$this->escape($this->prodVendor)?>"
                 size="20" />
         </td>
     </tr>
@@ -55,7 +52,7 @@
         <td><b><label for="prodVersion">Version:</label></b></td>
         <td>
             <input type="text" class="product" name="prodVersion" id="prodVersion" 
-                value="<?php echo $this->prodVersion?>" size="20" />
+                value="<?=$this->escape($this->prodVersion)?>" size="20" />
         </td>
     </tr>
     <tr>
