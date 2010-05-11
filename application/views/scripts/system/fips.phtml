@@ -14,13 +14,13 @@ Fisma_Format_Section::startSection('Confidentiality');
                   name="confidentiality" 
                   type="select" 
                   href="/metainfo/list/o/confidentiality/format/html/">
-                <?php echo $this->system->confidentiality; ?>&nbsp;
+                <?php echo $this->escape($this->system->confidentiality); ?>&nbsp;
             </span>
             <?php
             } else {
             ?>
             <span>
-                <?php echo $this->system->confidentiality; ?>&nbsp;
+                <?php echo $this->escape($this->system->confidentiality); ?>&nbsp;
             </span>
             <?php
             }
@@ -40,13 +40,13 @@ Fisma_Format_Section::startSection('Confidentiality');
                   type="textarea" 
                   rows="4"
                   cols="80">
-                <?php echo $this->system->confidentialityDescription; ?>&nbsp;
+                <?php echo $this->escape($this->system->confidentialityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             } else {
             ?>
             <div>
-                <?php echo $this->system->confidentialityDescription; ?>&nbsp;
+                <?php echo $this->escape($this->system->confidentialityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             }
@@ -71,13 +71,13 @@ Fisma_Format_Section::startSection('Integrity');
                   name="integrity" 
                   type="select" 
                   href="/metainfo/list/o/integrity/format/html/">
-                  <?php echo $this->system->integrity; ?>&nbsp;
+                  <?php echo $this->escape($this->system->integrity); ?>&nbsp;
             </span>
             <?php
             } else {
             ?>
             <span>
-                  <?php echo $this->system->integrity; ?>&nbsp;
+                  <?php echo $this->escape($this->system->integrity); ?>&nbsp;
             </span>
             <?php
             }
@@ -97,13 +97,13 @@ Fisma_Format_Section::startSection('Integrity');
                   type="textarea" 
                   rows="4"
                   cols="80">
-                  <?php echo $this->system->integrityDescription; ?>&nbsp;
+                  <?php echo $this->escape($this->system->integrityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             } else {
             ?>
             <div>
-                  <?php echo $this->system->integrityDescription; ?>&nbsp;
+                  <?php echo $this->escape($this->system->integrityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             }
@@ -128,13 +128,13 @@ Fisma_Format_Section::startSection('Availability');
                   name="availability" 
                   type="select" 
                   href="/metainfo/list/o/availability/format/html/">        
-            <?php echo $this->system->availability; ?>&nbsp;
+            <?php echo $this->escape($this->system->availability); ?>&nbsp;
             </span>
             <?php
             } else {
             ?>
             <span>        
-            <?php echo $this->system->availability; ?>&nbsp;
+            <?php echo $this->escape($this->system->availability); ?>&nbsp;
             </span>
             <?php
             }
@@ -154,13 +154,13 @@ Fisma_Format_Section::startSection('Availability');
                   type="textarea" 
                   rows="4"
                   cols="80">
-                  <?php echo $this->system->availabilityDescription; ?>&nbsp;
+                  <?php echo $this->escape($this->system->availabilityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             } else {
             ?>
             <div>
-                  <?php echo $this->system->availabilityDescription; ?>&nbsp;
+                  <?php echo $this->escape($this->system->availabilityDescription, 'none'); ?>&nbsp;
             </div>
             <?php
             }
@@ -175,8 +175,8 @@ Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
 <table class="keyValues">
     <tr>
         <td>FIPS-199 Categorization: </td>
-        <td>
-            <?php echo $this->system->fipsCategory; ?>
+        <td>A
+            <?php echo $this->escape($this->system->fipsCategory); ?>
         </td>
     </tr>
 </table>

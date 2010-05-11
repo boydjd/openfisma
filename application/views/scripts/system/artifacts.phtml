@@ -1,5 +1,5 @@
 <?php
-echo $this->uploadPanelButton;
+echo $this->escape($this->uploadPanelButton, 'none');
 
 Fisma_Format_Section::startSection('System Documentation');
 ?>
@@ -17,17 +17,22 @@ Fisma_Format_Section::startSection('System Documentation');
 
 <?php
 foreach ($this->documents as $document) {
-    print "<tr>"
-        . "<td><a href='/system/download-document/id/{$document->id}'>"
-        . "<img src='{$document->getIconUrl()}'>"
-        . "<div>{$document->DocumentType->name}</div></a></td>"
-        . "<td>{$document->getSizeKb()}</td>"
-        . "<td align='center'>{$document->version}</td>"
-        . "<td>{$document->description}</td>"
-        . "<td>{$document->User->username}</td>"
-        . "<td>{$document->updated_at}</td>"
-        . "<td><a href='/panel/system-document/sub/view/id/$document->id'>Version History</a></td>"
-        . "</tr>";
+?>
+    <tr>
+        <td>
+            <a href="/system/download-document/id/<?=$this->escape($document->id)?>">
+                <img src="<?=$this->escape($document->getIconUrl())?>">
+                <div><?=$this->escape($document->DocumentType->name)?></div>
+            </a>
+        </td>
+        <td><?=$this->escape($document->getSizeKb())?></td>
+        <td align='center'><?=$this->escape($document->version)?></td>
+        <td><?=$this->escape($document->description, 'none')?></td>
+        <td><?=$this->escape($document->User->username)?></td>
+        <td><?=$this->escape($document['updated_at'])?></td>
+        <td><a href='/panel/system-document/sub/view/id/<?=$this->escape($document->id)?>'>Version History</a></td>
+    </tr>
+<?php
 }
 ?>
 

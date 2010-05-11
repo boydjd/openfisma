@@ -9,13 +9,13 @@ Fisma_Format_Section::startSection('Details');
             if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="name" class="editable" target="name" name="name" type="text">
-                <?php echo $this->organization->name; ?>
+                <?php echo $this->escape($this->organization->name); ?>
             </span>
             <?php
             } else {
             ?>
             <span>
-                <?php echo $this->organization->name; ?>
+                <?php echo $this->escape($this->organization->name); ?>
             </span>
             <?php
             }
@@ -29,13 +29,13 @@ Fisma_Format_Section::startSection('Details');
             if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
-                <?php echo $this->organization->nickname; ?>
+                <?php echo $this->escape($this->organization->nickname); ?>
             </span>
             <?php
             } else {
             ?>
             <span>
-                <?php echo $this->organization->nickname; ?>
+                <?php echo $this->escape($this->organization->nickname); ?>
             </span>
             <?php
             }
@@ -54,13 +54,13 @@ Fisma_Format_Section::startSection('Details');
                       name="type" 
                       type="select" 
                       href="/metainfo/list/o/systemType/format/html/">
-                    <?php echo $this->organization->getOrgTypeLabel(); ?>
+                    <?php echo $this->escape($this->organization->getOrgTypeLabel()); ?>
                 </span>
             <?php
             } else {
             ?>
             <span>
-                <?php echo $this->organization->getOrgTypeLabel(); ?>
+                <?php echo $this->escape($this->organization->getOrgTypeLabel()); ?>
             </span>
             <?php
             }
@@ -70,7 +70,26 @@ Fisma_Format_Section::startSection('Details');
     <tr>
         <td>Parent Organization: </td>
         <td>
-            <?php echo $this->parentOrganization; ?>
+        <?php
+            $parentOrganization = $this->organization->getNode()->getParent();
+
+            if (isset($parentOrganization)) {
+                $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
+                if (Fisma_Acl::hasPrivilegeForObject('read', $parentOrganization)) {
+                    $parentOrgType = 'system' == $parentOrganization->orgType ? 'system' : 'organization';
+                    echo $this->escape('<a href="/panel/' . $parentOrgType . '/sub/view/id/', 'none');
+                    echo $this->escape($parentOrganization->id, 'url');
+                    echo $this->escape('">', 'none');
+                    echo $this->escape($parentOrganizationName);
+                    echo $this->escape('</a>', 'none');
+                } else {
+                    echo $this->escape($parentOrganizationName);
+                }
+            } else {
+                echo $this->escape('<i>None</i>', 'none');
+            }
+
+        ?>
         </td>
     </tr>
 </table>
@@ -84,6 +103,6 @@ if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
 }
 ?>
 <div name="description" id="system_description" type="textarea" rows="3" cols="120"> 
-    <?php echo $this->organization->description; ?>
+    <?php echo $this->escape($this->organization->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
