@@ -1,19 +1,21 @@
 <?php Fisma_Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="toolbar">
         <?php 
-            echo new Fisma_Yui_Form_Button_Link('exportPdf',
+            $exportPdfButton = new Fisma_Yui_Form_Button_Link('exportPdf',
                                           array('value' => 'Export PDF', 
                                                 'href' => "{$this->attachUrl}/format/pdf", 
                                                 'imageSrc' => '/images/pdf.gif'));
-            echo new Fisma_Yui_Form_Button_Link('exportExcel',
+            echo $this->escape($exportPdfButton, 'none');
+            $exportExcelButton = new Fisma_Yui_Form_Button_Link('exportExcel',
                                           array('value' => 'Export Excel', 
                                                 'href' => "{$this->attachUrl}/format/xls", 
                                                 'imageSrc' => '/images/xls.gif'));
+            echo $this->escape($exportExcelButton, 'none');
             $columnOptionsButton = new Fisma_Yui_Form_Button('columnOptions',
                                                        array('label' => 'Options', 
                                                              'onClickFunction' => 'showColumnOptions',
                                                              'imageSrc' => '/images/options.png'));
-            echo $columnOptionsButton;
+            echo $this->escape(columnOptionsButton, 'none');
         ?>
     </div>
     <div id="dynamicdata"></div> 
@@ -29,14 +31,15 @@
 var myColumnDefs = [
     <?php 
     // PHP is used to populate this javascript array with the column values defined in the controller
-    $text = '';
+    $defs = array();
     foreach ($this->columns as $columnName => $columnDef) {
-        $text .= "{key:\"$columnName\", label:\"{$columnDef['label']}\", "
+        $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
+               . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
                . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
-               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . "},";
+               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . '}';
     }
-    $text = substr($text, 0, -1); // remove trailing comma, otherwise IE would throw an exception
-    echo $text;
+    $defs = implode(',', $defs);
+    echo $this->escape($defs, 'none');
     ?>
 ];
 
@@ -68,7 +71,7 @@ var myRequestBuilder = function(oState, oSelf) {
     var count = oState.pagination.rowsPerPage;
 
     // Build custom request
-    var request = "<?php echo $this->link; ?>" + 
+    var request = "<?=$this->escape($this->link, 'none') ?>" + 
                   "/sortby/" + sort +
                   "/dir/" + dir +
                   "/startIndex/" + startIndex +
@@ -78,14 +81,14 @@ var myRequestBuilder = function(oState, oSelf) {
 
 // DataTable configuration
 var myConfigs = {
-    initialRequest: "<?php echo $this->link; ?>"
+    initialRequest: "<?=$this->escape($this->link, 'none'); ?>"
                   + "/sortby/id/dir/asc/startIndex/0/count/"
-                  + "<?php echo $this->pageInfo['count']; ?>",
+                  + "<?=$this->escape($this->pageInfo['count']) ?>",
     dynamicData: true, 
     sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
     paginator: new YAHOO.widget.Paginator(
         { 
-            rowsPerPage:<?php echo $this->pageInfo['count']; ?>,
+            rowsPerPage:<?=$this->escape($this->pageInfo['count']) ?>,
             template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
         }
     ), 
@@ -131,7 +134,7 @@ myDataTable.subscribe("rowClickEvent",
     function (oArgs) {
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
-        var keywords = "<?php echo (isset($this->keywords)) ? "/keywords/{$this->keywords}" : ''; ?>";
+        var keywords = "<?=$this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
         document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
     }
 );

@@ -109,8 +109,8 @@ function menuHandler(source) {
     reloadTable(url);
 
     <?php foreach ($statusArray as $status): ?>
-    document.getElementById('finding_summary_search_<?php echo urlencode($status);?>').href = 
-        '/panel/remediation/sub/searchbox/status/<?php echo urlencode($status);?>' 
+    document.getElementById('finding_summary_search_<?=$this->escape($status, 'url')?>').href = 
+        '/panel/remediation/sub/searchbox/status/<?=$this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
         + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
@@ -129,7 +129,9 @@ function menuHandler(source) {
     <select id='sources' onchange='menuHandler(this);' disabled="true">
         <option value="ALL_SOURCES">All Sources</option>
         <?php foreach ($this->findingSources as $source): ?>
-        <option value='<?php echo $source->id; ?>'><?php echo $source->nickname . '-' . $source->name; ?></option>";
+        <option value='<?=$this->escape($source->id) ?>'>
+            <?php echo $this->escape($source->nickname);?>-<?php echo $this->escape($source->name); ?>
+        </option>
         <?php endforeach; ?>
     </select>
 </div>
@@ -172,12 +174,14 @@ print $exportPdf;
                                . "<p>Green rows represent findings which are not overdue. If any overdue "
                                . "items exist, then a red row containing the overdue items will be displayed "
                                . "directly under the green row.</p>";
-                echo new Fisma_Yui_Tooltip('agencyTip', 
+                $tooltip = new Fisma_Yui_Tooltip('agencyTip', 
                                            'Agency Organizations &amp; Information Systems', 
                                            $agencyTooltip);
+                echo $this->escape($tooltip, 'none');
             ?>
         </th>
-        <th style="border-bottom: none;" colspan="<?php echo 2 + count($this->mitigationEvaluations); ?>">
+        <?php $colspan = 2 + count($this->mitigationEvaluations); ?>
+        <th style="border-bottom: none;" colspan="<?=$this->escape($colspan) ?>">
             <?php 
                 $msaTooltip = "<p><b>NEW:</b> Findings which have just been entered into the system "
                             . "are in NEW status.</p><p><b>DRAFT:</b> Once the mitigation strategy type is set, "
@@ -187,33 +191,36 @@ print $exportPdf;
                 foreach ($this->mitigationEvaluations as $evaluation) {
                     $msaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
                 }
-                echo new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
+                $tooltip = new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
+                echo $this->escape($tooltip, 'none');
             ?>
         </th>
-        <th style="border-bottom: none;" colspan="<?php echo 1 + count($this->evidenceEvaluations); ?>">
+        <?php $colspan = count($this->evidenceEvaluations) + 1; ?>
+        <th style="border-bottom: none;" colspan="<?=$this->escape($colspan) ?>">
             <?php 
                 $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
                            . "uploaded documentation that the course of action has been completed.</p>";
                 foreach ($this->evidenceEvaluations as $evaluation) {
                     $eaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
                 }
-                echo new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
+                $tooltip = new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
+                echo $this->escape($tooltip, 'none');
             ?>
         </th>
         <th colspan="2" rowspan="2">&nbsp;</th>
     </tr>
     <tr>
         <th style="border-top: none;" colspan="2">&nbsp;</th>
-        <th colspan="<?php echo count($this->mitigationEvaluations); ?>">Approval</th>
+        <th colspan="<?=$this->escape(count($this->mitigationEvaluations)) ?>">Approval</th>
         <th style="border-top: none;">&nbsp;</th>
-        <th colspan="<?php echo count($this->evidenceEvaluations); ?>">Approval</th>
+        <th colspan="<?=$this->escape(count($this->evidenceEvaluations)) ?>">Approval</th>
     </tr>
     <tr>
     <?php foreach ($statusArray as $status):
         $url = Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/' . urlencode($status));?>
         <th>
-            <a id="finding_summary_search_<?php echo urlencode($status); ?>" href="<?php echo $url; ?>">
-            <?php echo $status; ?></a>
+            <a id="finding_summary_search_<?=$this->escape($status, 'url') ?>" href="<?=$this->escape($url, 'none') ?>">
+            <?php echo $this->escape($status); ?></a>
         </th>
     <?php endforeach; ?>
     </tr>

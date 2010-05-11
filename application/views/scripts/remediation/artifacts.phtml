@@ -8,54 +8,57 @@
 ?>
         <div class="approvalHeader">
             <b>File: </b>
-            <a href='/remediation/downloadevidence/id/<?php echo $evidence->id;?>' target='_blank'>
-                <?php echo $evidence->filename; ?>
-                </a>
+            <a href='/remediation/downloadevidence/id/<?=$this->escape($evidence->id)?>' target='_blank'>
+                <?php echo $this->escape($evidence->filename); ?>
+            </a>
             (submitted by 
-            <?php echo $evidence->User->nameFirst . ' ' . $evidence->User->nameLast; ?> 
+            <?php echo $this->escape($evidence->User->nameFirst) . ' ' . $this->escape($evidence->User->nameLast); ?> 
             on 
-            <?php echo $evidence->createdTs; ?>)
+            <?php echo $this->escape($evidence->createdTs); ?>)
         </div>
         <div class="approval">
         <?php
         foreach ($evidence->FindingEvaluations as $findingEvaluation) {
             $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
             $decision = $findingEvaluation->decision;
-            echo '<div class="approvalStep"><p><b>' 
-               . html_entity_decode($findingEvaluation->Evaluation->name) 
-               . ':</b>';
-            if ('APPROVED' == $decision) {
-                echo "<span class=\"approved\"><b>$decision</b>"
-                   . " ($userName at $findingEvaluation->createdTs)</span></p>";
+            $spanClass = strtolower($decision);
+        ?>
+            <div class="approvalStep"><p>
+                <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?>:</b>
+                <span class="<?=$this->escape($spanClass)?>">
+                    <b><?=$this->escape($decision)?></b>
+                    (<?=$this->escape($userName)?> at <?=$this->escape($findingEvaluation->createdTs)?>)
+                </span>
+            </p>
+            <?php 
                 if (!empty($findingEvaluation->comment)) {
-                    echo $this->textToHtml($findingEvaluation->comment);
+                        echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
                 }
-            } elseif ('DENIED' == $decision) {
-                echo "<span class=\"denied\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
-                if (!empty($findingEvaluation->comment)) {
-                    echo $this->textToHtml($findingEvaluation->comment);
-                }
-            }
-            echo "</div>";
-        }
-        //control the div box
-        if ($key != $this->finding->Evidence->count()-1) {
-            echo "</div>";
+            ?>
+            </div>
+        <?php
         }
     }
+    ?>
+    </div>
+    <?php
     $activeEvaluation = $this->finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'evidence') {
-        echo '<div class="approvalStep"><p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
-        if (Fisma_Acl::hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)) {
-            echo '<input type="hidden" name="comment" value="" />';
-            echo '<input type="hidden" name="decision" value="APPROVED" />';
-            echo '<input name="submit_ea" type="button" value="APPROVED"
-                onclick="ev_approve(document.finding_detail);"/>&nbsp;';
-            echo '<input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />';
-        } else {
-            echo "PENDING";
-        }
-        echo '</div>';
+    ?>
+    <div class="approvalStep">
+    <p>
+        <b><?=$this->escape($activeEvaluation->name)?></b>
+        <?php if (Fisma_Acl::hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)): ?>
+            <input type="hidden" name="comment" value="" />
+            <input type="hidden" name="decision" value="APPROVED" />
+            <input name="submit_ea" type="button" value="APPROVED"
+                onclick="ev_approve(document.finding_detail);"/>&nbsp;
+            <input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />
+        <?php else: ?>
+            PENDING
+        <?php endif; ?>
+    </div>
+    <?php
     }
 
     $disableEvaluations = array();
@@ -68,15 +71,24 @@
     }
 
     foreach ($disableEvaluations as $evaluation) {
-        echo "<div class='approvalStep'><p><b>{$evaluation->name}</b>N/A</div>";
+?>
+        <div class='approvalStep'>
+           <p><b>{<?=$this->escape($evaluation->name)?>}</b>
+           N/A
+        </div>
+<?php
     }
-    echo "</div>";
+?>
+    </div>
+<?php
     $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                                 array('label' => 'Upload Evidence', 
                                                       'onClickFunction' => 'upload_evidence'));
     if ('EN' != $this->finding->status || !Fisma_Acl::hasPrivilegeForObject('upload_evidence', $this->finding)) {
         $uploadEvidenceButton->readOnly = true;
     }
-    echo "<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
-          <div class='toolbar'>$uploadEvidenceButton</div>";
 ?>
+    <p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+    <div class='toolbar'>
+        <?php echo $this->escape($uploadEvidenceButton, 'none');?>
+    </div>

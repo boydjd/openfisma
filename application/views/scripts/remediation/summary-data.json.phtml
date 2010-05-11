@@ -6,4 +6,4 @@ if ($this->gzipEncode) {
     $json = gzencode($json);
 }
 
-echo $json;
+echo $this->escape($json, 'none');

@@ -52,10 +52,10 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php 
         if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
             && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-            echo ' class="editable" target="threat_level"';
+            echo $this->escape(' class="editable" target="threat_level"', 'none');
         }
         ?>>
-        <?php echo $finding->threatLevel; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <?php echo $this->escape($finding->threatLevel); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span>
 </p>
 
@@ -64,13 +64,13 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php
         if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
-            echo 'class="editable"';
+            echo $this->escape('class="editable"', 'none');
         } 
         ?>>Threat Description:</b>
 </p>
 
 <div type="textarea" id="threat" name="finding[threat]" rows="5" cols="160">
-    <?php echo $finding->threat; ?>
+    <?php echo $this->escape($finding->threat, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -98,10 +98,10 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php
         if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-            echo 'class="editable" target="effectiveness"';
+            echo $this->escape('class="editable" target="effectiveness"', 'none');
         }
         ?>>
-        <?php echo $finding->countermeasuresEffectiveness; ?>&nbsp;&nbsp;
+        <?php echo $this->escape($finding->countermeasuresEffectiveness); ?>&nbsp;&nbsp;
     </span>
 </p>
 
@@ -110,13 +110,13 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php 
             if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
                && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-                echo 'class="editable"';
+                echo $this->escape('class="editable"', 'none');
             } 
         ?>>
         Description of Countermeasures:</b>
 </p>
 
 <div type="textarea" id="countermeasures" name="finding[countermeasures]" rows="5" cols="160">
-    <?php echo $finding->countermeasures; ?>
+    <?php echo $this->escape($finding->countermeasures, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
