@@ -2,9 +2,8 @@
 <script type="text/javascript">
 <?php foreach ($this->messages as $severity=>$messages):
         if (count($messages)) :
-            foreach ($messages as $message) :
-                $message = addslashes($message); ?>
-    message('<?php echo $message; ?>', '<?php echo $severity; ?>');
+            foreach ($messages as $message) : ?>
+    message('<?=$this->escape($message, 'javascript') ?>', '<?=$this->escape($severity, 'javascript') ?>');
 <?php       endforeach;
         endif;
     endforeach;?>

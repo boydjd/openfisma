@@ -10,7 +10,7 @@
 </p>
 
 <p>
-    <a href="<?php echo $this->url; ?>">Click Here To Continue To External Website</a>
+    <a href="<?php echo $this->escape($this->url, 'none');; ?>">Click Here To Continue To External Website</a>
 </p>
 
 <?php Fisma_Format_Section::stopSection(); ?>
