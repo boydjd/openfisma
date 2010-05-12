@@ -119,6 +119,11 @@ class User extends BaseUser
         $this->lockType = $lockType;
         $this->save();
 
+        // If the user was locked then the Acl should be invalidated
+        if ($this->locked) {
+            $this->invalidateAcl();
+        }
+
         // If the account is locked due to password failure, etc., then there is no current user. In that case, we log
         // with a null user and include the remote IP address in the log entry instead.
         if (User::currentUser()) {
@@ -682,11 +687,6 @@ class User extends BaseUser
         // Ensure that any user can not change root username
         if (isset($modified['username']) && 'root' == $modified['username']) {
             throw new Fisma_Exception_User('The root user\'s username cannot be modified.');
-        }
-        
-        // If the user was locked then the Acl should be invalidated
-        if ($this->locked) {
-            $this->invalidateAcl();
         }
     }
 
