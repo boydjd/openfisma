@@ -302,6 +302,13 @@ class User extends BaseUser
     public function acl()
     {
         if (!Zend_Registry::isRegistered('acl')) {
+            // Refresh internal data from the database
+            $this->refresh();
+            if ($this->locked) {
+                $reason = $this->getLockReason();
+                throw new Fisma_Exception_InvalidAuthentication("Account is locked ($reason)");
+            }
+            
             // Temporarily disable class loading warnings
             $classLoader = Zend_Loader_Autoloader::getInstance();
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
@@ -675,6 +682,11 @@ class User extends BaseUser
         // Ensure that any user can not change root username
         if (isset($modified['username']) && 'root' == $modified['username']) {
             throw new Fisma_Exception_User('The root user\'s username cannot be modified.');
+        }
+        
+        // If the user was locked then the Acl should be invalidated
+        if ($this->locked) {
+            $this->invalidateAcl();
         }
     }
 
