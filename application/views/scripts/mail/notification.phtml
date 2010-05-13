@@ -7,8 +7,10 @@ to modify your notification preferences, please log in to the system and select
 foreach ( $this->notifyData as $row ) { 
 ?>
 ---------------------------------------
-Event: <?php echo "{$row->eventText}\n"; ?>
-Time:  <?php echo "{$row->createdTs}\n"; ?>
+Event: <?=$this->escape($row->eventText)?>
+
+Time:  <?=$this->escape($row->createdTs)?>
+
 <?php 
 } 
 ?>

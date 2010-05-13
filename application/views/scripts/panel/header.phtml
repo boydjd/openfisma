@@ -3,7 +3,7 @@
 </div>
 <div id="logout">
     <?php 
-    echo new Fisma_Yui_Form_Button_Link(
+    $logoutButton = new Fisma_Yui_Form_Button_Link(
         'logoutButton', 
         array(
             'value' => 'Log Out',
@@ -11,10 +11,11 @@
             'href' => '/auth/logout'
         )
     ); 
+    echo $this->escape($logoutButton, 'none');
     ?>
     <p>
         <b>
-            <?php echo User::currentUser()->nameFirst . ' ' . User::currentUser()->nameLast; ?>
+            <?php echo $this->escape(User::currentUser()->nameFirst . ' ' . User::currentUser()->nameLast); ?>
         </b>
         is currently logged in
     </p>
@@ -23,7 +24,7 @@
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>
 <script type="text/javascript">
 //Constructs the YUI menu bar for OpenFISMA
-var jsonMenuData = '<?php echo Zend_Json_Encoder::encode($this->mainMenuBar->getMenus()); ?>';
+var jsonMenuData = '<?=$this->escape(Zend_Json_Encoder::encode($this->mainMenuBar->getMenus()), 'none') ?>';
 var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
 var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
 YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");

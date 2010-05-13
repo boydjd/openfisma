@@ -1,7 +1,7 @@
 <div class="searchFilters">
     <div class="left">
         <?php
-        echo new Fisma_Yui_Form_Button_Link(
+        $exportXlsButton = new Fisma_Yui_Form_Button_Link(
             'exportXls',
             array(
                 'value' => 'Export Excel',
@@ -9,8 +9,9 @@
                 'imageSrc' => '/images/xls.gif'
             )
         );
+        echo $this->escape($exportXlsButton, 'none');
             
-        echo new Fisma_Yui_Form_Button_Link(
+        $exportPdfButton = new Fisma_Yui_Form_Button_Link(
             'exportPdf',
             array(
                 'value' => 'Export PDF',
@@ -18,6 +19,7 @@
                 'imageSrc' => '/images/pdf.gif'
             )
         );
+        echo $this->escape($exportPdfButton, 'none');
         ?>
     </div>
     <div class="clear">

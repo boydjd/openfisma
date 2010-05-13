@@ -1,6 +1,6 @@
 <?php
 
-echo $this->partial('/incident-report/toolbar.phtml');
+echo $this->escape($this->partial('/incident-report/toolbar.phtml'), 'none');
 
 Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 Months)');
 ?>
@@ -13,7 +13,7 @@ Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 
                 <?php
                 foreach ($this->months as $month):
                 ?>
-                    <th><?php echo $month; ?></th>
+                    <th><?=$this->escape($month) ?></th>
                 <?php
                 endforeach;
                 ?>
@@ -25,12 +25,12 @@ Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 
             foreach ($this->categories as $category):
             ?>
                 <tr>
-                    <td><?php echo $category['c_category']; ?></td>
-                    <td><?php echo $category['sc_name']; ?></td>
+                    <td><?=$this->escape($category['c_category']) ?></td>
+                    <td><?=$this->escape($category['sc_name']) ?></td>
                     <?php
                     foreach($this->months as $columnName => $monthName):
                     ?>
-                        <td><?php echo $category['i_' . $columnName]; ?></td>
+                        <td><?=$this->escape($category['i_' . $columnName]) ?></td>
                     <?php
                     endforeach;
                     ?>
@@ -48,25 +48,24 @@ Fisma_Format_Section::stopSection();
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('categories', function() {
-    var myColumnDefs = [
-        <?php
+    <?php
         $keys = "{key:'category', label:'Category', sortable: true}, 
                  {key:'subcategory', label:'Sub Category', sortable: true},";
         foreach ($this->months as $columnName => $monthName) {
-            $keys .= "{key: '$columnName', label:'{$monthName}', sortable:true},";
+            $keys .= "{key: '"
+                   . $this->escape($columnName, 'javascript')
+                   . "', label:'"
+                   . $this->escape($monthName, 'javascript')
+                   . "', sortable:true},";
         }
-        echo rtrim($keys, ',');
-        ?>
-    ];
+        $keys = rtrim($keys, ',');
+    ?>
+    var myColumnDefs = [<?=$this->escape($keys, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("categoriesTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [
-            <?php
-            echo rtrim($keys, ',');
-            ?>
-        ]
+        fields: [<?=$this->escape($keys, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("categories", myColumnDefs, this.myDataSource, {});

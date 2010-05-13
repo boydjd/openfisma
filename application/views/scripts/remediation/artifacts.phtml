@@ -2,7 +2,7 @@
     Fisma_Format_Section::startSection('Artifacts (' . $this->finding->Evidence->count() . ')');
     $organization = $this->finding->ResponsibleOrganization->nickname;
     if (count($this->finding->Evidence) == 0) {
-        print "<p><i>There are no artifacts for this finding.</i></p>";
+        echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
     }
     foreach ($this->finding->Evidence as $key=>$evidence) {
 ?>

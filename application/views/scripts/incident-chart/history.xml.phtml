@@ -5,22 +5,20 @@
     <chart_data>
         <row>
             <null />
-            <?php
-            foreach ($this->months as $monthNumber => $monthData):
-                print "<string>{$monthData['monthName']}</string>";
-            endforeach;
-            ?>
+            <?php foreach ($this->months as $monthNumber => $monthData): ?>
+                <string><?=$this->escape($monthData['monthName'])?></string>
+            <?php endforeach; ?>
     	</row>
 	    <?php
         foreach (array('reported', 'resolved', 'rejected') as $series):
         ?>
         	<row>
-        	    <string>Incidents <?php echo $series; ?></string>
+        	    <string>Incidents <?=$this->escape($series)?></string>
         	    <?php
                 foreach ($this->months as $monthNumber => $monthData):
                 ?>
-                    <number tooltip='<?php echo $monthData[$series] . ' Incidents ' . $series; ?>'>
-                        <?php echo $monthData[$series]; ?></number>
+                    <number tooltip='<?=$this->escape($monthData[$series])?> Incidents <?=$this->escape($series) ?>'>
+                        <?php echo $this->escape($monthData[$series]); ?></number>
                 <?php
                 endforeach;
                 ?>	    

@@ -3,7 +3,7 @@
         <?php
         Fisma_Format_Section::startSection('Incident History');
 
-        echo $this->statusChart;
+        echo $this->escape($this->statusChart, 'none');
         ?>
         
         <em>
@@ -21,7 +21,7 @@
         <?php
         Fisma_Format_Section::startSection('Incident Categories');
 
-        echo $this->categoryChart;
+        echo $this->escape($this->categoryChart, 'none');
         ?>
         
         <em>

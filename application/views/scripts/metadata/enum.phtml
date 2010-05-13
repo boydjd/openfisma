@@ -7,8 +7,8 @@ foreach ($this->enumValues as $value):
         $selected = '';
     endif;
 ?>
-    <option value="<?php echo $value; ?>" <?php echo $selected; ?>>
-        <?php echo $value; ?>
+    <option value="<?=$this->escape($value) ?>" <?=$this->escape($selected, 'none') ?>>
+        <?php echo $this->escape($value); ?>
     </option>
 <?php
 endforeach;

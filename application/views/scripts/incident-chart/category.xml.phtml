@@ -8,7 +8,7 @@
             <?php
             foreach (array_keys($this->categoryCounts) as $categoryName):
             ?>
-                <string><?php echo $categoryName; ?></string>
+                <string><?=$this->escape($categoryName)?></string>
             <?php
             endforeach;
             ?>
@@ -17,9 +17,10 @@
             <string>count</string>
             <?php
             foreach ($this->categoryCounts as $category => $info):
+                $tooltip = $category . ' - ' . $info['name'] . ': ' . $info['count'] . ' Incidents';
             ?>
-            <number tooltip='<?php echo "$category - {$info['name']}: {$info['count']} Incidents"; ?>'>
-                <?php echo $info['count']; ?></number>
+            <number tooltip="<?=$this->escape($tooltip)?>">
+                <?php echo $this->escape($info['count']); ?></number>
             <?php
             endforeach;
             ?>

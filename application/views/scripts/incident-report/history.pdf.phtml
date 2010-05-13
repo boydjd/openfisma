@@ -89,4 +89,4 @@ $pdf->ezTable($this->history,
 
 header('Pragma: private');
 header('Cache-control: private');
-echo $pdf->ezOutput();
+echo $this->escape($pdf->ezOutput(), 'none');

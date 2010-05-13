@@ -1,7 +1,8 @@
 <?php 
 // @codingStandardsIgnoreFile - not checking XLS template files
-echo '<?xml version="1.0"?>'.
-     '<?mso-application progid="Excel.Sheet"?>';
+$xmltag = '<?xml version="1.0"?>'.
+          '<?mso-application progid="Excel.Sheet"?>';
+echo $this->escape($xmltag, 'none');
 ?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -16,7 +17,7 @@ echo '<?xml version="1.0"?>'.
   <Version>11.9999</Version>
  </DocumentProperties>
  <CustomDocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-  <FismaTemplateVersion dt:dt="float"><?php echo $this->templateVersion; ?></FismaTemplateVersion>
+  <FismaTemplateVersion dt:dt="float"><?=$this->escape($this->templateVersion) ?></FismaTemplateVersion>
  </CustomDocumentProperties>
  <Styles>
   <Style ss:ID="Default" ss:Name="Normal">
@@ -163,10 +164,10 @@ echo '<?xml version="1.0"?>'.
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="126.75"/>
    <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
-    <Cell ss:MergeAcross="20" ss:StyleID="s29"><Data ss:Type="String"><?php echo Fisma::configuration()->getConfig('system_name');?> - Injection Template</Data></Cell>
+    <Cell ss:MergeAcross="20" ss:StyleID="s29"><Data ss:Type="String"><?=$this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="110.25" ss:StyleID="s27">
-    <Cell ss:MergeAcross="20" ss:StyleID="m43958186"><Data ss:Type="String">Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo Fisma::configuration()->getConfig('system_name');?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
+    <Cell ss:MergeAcross="20" ss:StyleID="m43958186"><Data ss:Type="String">Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?=$this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="38.25">
     <Cell ss:StyleID="s39"><Data ss:Type="String">System*</Data><Comment
@@ -255,7 +256,7 @@ echo '<?xml version="1.0"?>'.
    <Range>R4C17:R65536C17,R4C19:R65536C19</Range>
    <Type>List</Type>
    <CellRangeList/>
-   <Value>&quot;<?php echo implode(',', $this->risk) ;?>&quot;</Value>
+   <Value>&quot;<?=$this->escape(implode(',', $this->risk))?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C10:R65536C10</Range>
@@ -301,7 +302,7 @@ echo '<?xml version="1.0"?>'.
 ?>
 <Row>
 <Cell>
-<Data ss:Type="String"><?php echo $securityControl; ?></Data>
+<Data ss:Type="String"><?=$this->escape($securityControl) ?></Data>
 <NamedCell ss:Name="controls"/>
 <NamedCell ss:Name="_FilterDatabase"/>
 </Cell>
@@ -333,7 +334,7 @@ echo '<?xml version="1.0"?>'.
 ?>
 <Row>
 <Cell>
-<Data ss:Type="String"><?php echo $system; ?></Data>
+<Data ss:Type="String"><?=$this->escape($system) ?></Data>
 <NamedCell ss:Name="systems"/>
 </Cell>
 </Row>
@@ -364,7 +365,7 @@ echo '<?xml version="1.0"?>'.
 ?>
    <Row>
     <Cell>
-     <Data ss:Type="String"><?php echo $source; ?></Data>
+     <Data ss:Type="String"><?=$this->escape($source) ?></Data>
      <NamedCell ss:Name="sources"/>
     </Cell>
    </Row>
@@ -395,7 +396,7 @@ echo '<?xml version="1.0"?>'.
 ?>
    <Row>
     <Cell>
-     <Data ss:Type="String"><?php echo $network; ?></Data>
+     <Data ss:Type="String"><?=$this->escape($network) ?></Data>
      <NamedCell ss:Name="networks"/>
     </Cell>
    </Row>

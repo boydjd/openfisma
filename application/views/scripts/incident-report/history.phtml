@@ -1,6 +1,6 @@
 <?php
 
-echo $this->partial('/incident-report/toolbar.phtml');
+echo $this->escape($this->partial('/incident-report/toolbar.phtml'), 'none');
 
 Fisma_Format_Section::startSection($this->title);
 ?>
@@ -12,7 +12,7 @@ Fisma_Format_Section::startSection($this->title);
                 <?php
                 foreach ($this->months as $month):
                 ?>
-                    <th><?php echo $month; ?></th>
+                    <th><?=$this->escape($month) ?></th>
                 <?php
                 endforeach;
                 ?>
@@ -24,12 +24,12 @@ Fisma_Format_Section::startSection($this->title);
             foreach ($this->history as $action => $history):
             ?>
                 <tr>
-                    <td><?php echo $action; ?></td>
+                    <td><?=$this->escape($action) ?></td>
                     
                     <?php
                     foreach($this->months as $columnName => $monthName):
                     ?>
-                        <td><?php echo $history['i_' . $columnName]; ?></td>
+                        <td><?=$this->escape($history['i_' . $columnName]) ?></td>
                     <?php
                     endforeach;
                     ?>
@@ -47,26 +47,22 @@ Fisma_Format_Section::stopSection();
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('history', function() {
-    var myColumnDefs = [
-        <?php
+    <?php
         $keys = "{key:'incidents', label:'Incidents', sortable: true},";
 
         foreach ($this->months as $columnName => $monthName) {
-            $keys .= "{key: '$columnName', label:'{$monthName}', sortable:true},";
+            $keys .= "{key: '" . $this->escape($columnName)
+                   . "', label:'" . $this->escape($monthName)
+                   . "', sortable:true},";
         }
-
-        echo rtrim($keys, ',');
-        ?>
-    ];
+        $keys = rtrim($keys, ',');
+    ?>
+    var myColumnDefs = [<?=$this->escape($keys, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("historyTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [
-            <?php
-            echo rtrim($keys, ',');
-            ?>
-        ]
+        fields: [<?=$this->escape($keys, 'none') ?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("history", myColumnDefs, this.myDataSource, {});

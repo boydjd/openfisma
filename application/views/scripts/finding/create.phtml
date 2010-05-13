@@ -3,7 +3,7 @@
                               "LOW" => "LOW",
                               "MODERATE" => "MODERATE",
                               "HIGH" => "HIGH");
-?>
-<?php Fisma_Format_Section::startSection("Create A Finding"); ?>
-<?php echo $this->form;?>
-<?php Fisma_Format_Section::stopSection(); ?>
+
+Fisma_Format_Section::startSection("Create A Finding");
+echo $this->escape($this->form, 'none');
+Fisma_Format_Section::stopSection();

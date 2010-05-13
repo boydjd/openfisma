@@ -20,12 +20,16 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
             || empty($finding->threatLevel) 
             || empty($finding->countermeasures) 
             || empty($finding->countermeasuresEffectiveness)) {
-            print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
+            echo $this->escape(
+                '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>',
+                'none'
+            );
         } else {
-            print new Fisma_Yui_Form_Button_Link('viewRaf',
+            $viewRafButton = new Fisma_Yui_Form_Button_Link('viewRaf',
                                    array('value' => 'View Risk Analysis Form', 
                                          'href' => "/panel/remediation/sub/raf/format/pdf/id/{$finding->id}", 
                                          'imageSrc' => '/images/pdf.gif'));
+            echo $this->escape($viewRafButton, 'none');
         }
         ?>
     </p>

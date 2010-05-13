@@ -12,7 +12,7 @@ $collapseAll = new Fisma_Yui_Form_Button('collapseAll',
                                          array('label' => 'Collapse All', 
                                              'imageSrc' => '/images/collapse.png',
                                              'onClickFunction' => 'collapseAll'));
-print $collapseAll;
+echo $this->escape($collapseAll, 'none');
 ?>
 </div>
 
