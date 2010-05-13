@@ -10,40 +10,43 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
 <div class="toolbar">
     <?php
         if (Fisma_Acl::hasPrivilegeForClass('create', 'Asset')) {
-            echo new Fisma_Yui_Form_Button_Link('import',
+            $importButton = new Fisma_Yui_Form_Button_Link('import',
                                                 array('value' => 'Import Assets',
                                                       'href' => '/panel/asset/sub/import'));
+            echo $this->escape($importButton, 'none');
         }
 
-        echo new Fisma_Yui_Form_Button_Link('pdf', 
+        $pdfButton = new Fisma_Yui_Form_Button_Link('pdf', 
                                       array('value' => 'Export PDF', 
                                             'href' => "/asset/search$this->url/format/pdf",
                                             'imageSrc' => '/images/pdf.gif'));
+        echo $this->escape($pdfButton, 'none');
 
         if (Fisma_Acl::hasPrivilegeForClass('delete', 'Asset')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
-            echo $selectAllButton;
+            echo $this->escape($selectAllButton, 'none');
 
             $selectNoneButton = new Fisma_Yui_Form_Button('selectNone',
                                                     array('label' => 'Select None', 
                                                           'onClickFunction' => 'selectNoneUnsafe'));
-            echo $selectNoneButton;
+            echo $this->escape($selectNoneButton, 'none');
 
             $deleteButton = new Fisma_Yui_Form_Button('deleteSelected',
                                                 array('label' => 'Delete Selected', 
                                                       'onClickFunction' => 'deleteSelectedAssets'));
-            echo $deleteButton;
+            echo $this->escape($deleteButton, 'none');
         }
         if (Fisma_Acl::hasPrivilegeForClass('create', 'Asset')) {
-            echo new Fisma_Yui_Form_Button_Link(
+            $createAssetButton = new Fisma_Yui_Form_Button_Link(
                 'createAsset', 
                 array(
                     'value' => 'Create Asset', 
                     'href' => '/panel/asset/sub/create'
                 )
             );
+            echo $this->escape($createAssetButton, 'none');
         }
     ?>
 </div>
@@ -60,10 +63,13 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList}
     <?php
     foreach ($this->columns as $k => $v) {
-        echo ',{key:"' . $k . '", label:"' . $v . '"}';
+        echo $this->escape(',{key:"', 'none');
+        echo $this->escape($k, 'javascript');
+        echo $this->escape('", label:"', 'none');
+        echo $this->escape($v, 'javascript');
+        echo $this->escape('"}', 'none');
     }
-    echo ", {key: 'id', label:'View', formatter: operation}];";
-    ?>
+    ?>, {key: 'id', label:'View', formatter: operation}];
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {
@@ -73,7 +79,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         var count = oState.pagination.rowsPerPage;
     
         // Build custom request
-        var request = "<?php echo $this->url; ?>" + 
+        var request = "<?=$this->escape($this->url, 'none') ?>" + 
                       "/startIndex/" + startIndex +
                       "/count/" + count;
         return request;
@@ -90,7 +96,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?php echo $this->url ?>/startIndex/0/count/10",
+        initialRequest: "<?=$this->escape($this->url, 'none')?>/startIndex/0/count/10",
         dynamicData: true, 
         paginator: new YAHOO.widget.Paginator(
             {

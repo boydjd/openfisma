@@ -2,14 +2,16 @@
 
 <div class="toolbar">
     <?php
-    echo new Fisma_Yui_Form_Button_Link('exportPdf',
+    $exportPdfButton = new Fisma_Yui_Form_Button_Link('exportPdf',
                                   array('value' => 'Export PDF',
                                         'href' => "$this->url/format/pdf",
                                         'imageSrc' => '/images/pdf.gif'));
-    echo new Fisma_Yui_Form_Button_Link('exportExcel',
+    echo $this->escape($exportPdfButton, 'none');
+    $exportExcelButton = new Fisma_Yui_Form_Button_Link('exportExcel',
                                   array('value' => 'Export Excel',
                                         'href' => "$this->url/format/xls",
                                         'imageSrc' => '/images/xls.gif'));
+    echo $this->escape($exportExcelButton, 'none');
     ?>
 </div>
 
@@ -18,7 +20,7 @@
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?php echo $column; ?></th>
+                <th class="tdc"><?=$this->escape($column)?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
@@ -26,7 +28,7 @@
         <?php foreach ($this->rows as $row) : ?>
         <tr>
             <?php foreach($row as $cell) : ?>
-                <td><?php echo $cell; ?></td>
+                <td><?=$this->escape($cell)?></td>
             <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>
@@ -39,28 +41,24 @@
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('container', function() {
-    var myColumnDefs = [
-        <?php
-        $keys = "";
+    <?php
+        $defs = array();
+        $fields = array();
         foreach ($this->columns as $column) {
-            $keys .= "{key:'$column', label:'$column', sortable:true},";
+            $defs[] = "{key:'" . $this->escape($column, 'javascript')
+                      . "', label:'" . $this->escape($column, 'javascript')
+                      . "', sortable:true}";
+            $fields[] = "{key:'" . $this->escape($column, 'javascript') . "'}";
         }
-        echo rtrim($keys, ',');
-        ?>
-    ];
+        $defs = implode(',', $defs);
+        $fields = implode(',', $fields);
+    ?>
+    var myColumnDefs = [<?=$this->escape($defs, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [
-            <?php
-            $keys = "";
-            foreach ($this->columns as $column) {
-                $keys .= "{key:'$column'},";
-            }
-            echo rtrim($keys, ',');
-            ?>
-        ]
+        fields: [<?=$this->escape($fields, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});

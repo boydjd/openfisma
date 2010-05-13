@@ -7,8 +7,8 @@ Fisma_Format_Section::startSection($this->cacheType . ' Cache Summary');
         foreach ($this->cacheSummary as $key => $value):
         ?>
             <tr>
-                <td><?php echo $key; ?></td>
-                <td><?php echo $value; ?></td>
+                <td><?=$this->escape($key)?></td>
+                <td><?=$this->escape($value)?></td>
             </tr>
         <?php
         endforeach;
@@ -26,7 +26,7 @@ if (isset($this->cacheItems)):
             <?php
             foreach ($this->cacheItemHeaders as $header):
             ?>
-                <th><?php echo $header; ?></th>
+                <th><?=$this->escape($header)?></th>
             <?php
             endforeach;
             ?>
@@ -39,7 +39,7 @@ if (isset($this->cacheItems)):
                 <?php
                 foreach ($cacheItem as $itemValue):
                 ?>
-                    <td><?php echo $itemValue; ?></td>
+                    <td><?=$this->escape($itemValue) ?></td>
                 <?php
                 endforeach;
                 ?>

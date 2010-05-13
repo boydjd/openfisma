@@ -10,8 +10,8 @@
         foreach ($this->summary AS $status=>$statusCount) { 
         ?>
         <row>
-            <string><?php echo $status; ?></string>
-            <number tooltip='<?php echo "$statusCount $status"; ?>'><?php echo $statusCount; ?></number>
+            <string><?=$this->escape($status)?></string>
+            <number tooltip='<?=$this->escape("$statusCount $status")?>'><?=$this->escape($statusCount)?></number>
         </row>
         <?php 
         } 
@@ -73,8 +73,8 @@
     }
     
     // Colors for NEW & DRAFT
-    print '<color>cccccc</color>';
-    print '<color>66ff66</color>';
+    echo $this->escape('<color>cccccc</color>', 'none');
+    echo $this->escape('<color>66ff66</color>', 'none');
     
     // Colors for MSA
     define('START_COLOR', 200); // These constants are used for creating a gradient
@@ -86,11 +86,11 @@
     }
     for ($i = 0; $i < count($msaColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
-        print "<color>ff{$hex}{$hex}</color>";
+        echo $this->escape("<color>ff{$hex}{$hex}</color>", 'none');
     }
     
     // Color for EN
-    print '<color>ff9933</color>';
+    echo $this->escape('<color>ff9933</color>', 'none');
     
     // Colors for EA
     if (count($epColors) > 1) {
@@ -100,7 +100,7 @@
     }
     for ($i = 0; $i < count($epColors); $i++) {
         $hex = dechex(START_COLOR + ($colorStep * $i));
-        print "<color>{$hex}{$hex}ff</color>";
+        echo $this->escape("<color>{$hex}{$hex}ff</color>", 'none');
     }
 ?>
     </series_color>

@@ -8,7 +8,7 @@
                 'href' => '/panel/asset/sub/list'
             )
         );
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
 
         <?php 
@@ -20,7 +20,7 @@
                     'href' => '/panel/asset/sub/create'
                 )
             );
-            echo $createButton;
+            echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>

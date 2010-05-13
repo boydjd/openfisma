@@ -5,23 +5,31 @@
                 <ul class="nolist">
                     <?php
                         foreach ($this->writables as $f) {
-                            echo '<li class="ok">', $f ,' is writable</li>';
+                            echo $this->escape('<li class="ok">', 'none');
+                            echo $this->escape($f);
+                            echo $this->escape(' is writable</li>', 'none');
                         }
                         foreach ($this->notwritables as $f) {
-                            echo '<li class="failure">', $f ,' is not writable</li>';
+                            echo $this->escape('<li class="failure">', 'none');
+                            echo $this->escape($f);
+                            echo $this->escape(' is not writable</li>', 'none');
                         }
               ?>
                 </ul>
             </div></td>
     </tr>
     <tr>
-        <td width='50%' ><div class="back"><a class="button" href="<?php echo $this->back; ?>">Back</a></div></td>
+        <td width='50%'>
+            <div class="back"><a class="button" href="<?=$this->escape($this->back, 'none')?>">Back</a></div>
+        </td>
         <td width='50%' ><div class="next">
             <?php 
             if ( empty( $this->next ) ) {
-                echo '<button onclick="javascript:location.reload();">Refresh</button>';
+                echo $this->escape('<button onclick="javascript:location.reload();">Refresh</button>', 'none');
             } else {
-                echo "<a class='button' href=".$this->next." >Next</a>";
+                echo $this->escape('<a class="button" href="', 'none');
+                echo $this->escape($this->next, 'none');
+                echo $this->escape('">Next</a>', 'none');
             }
             ?>
         </div></td>

@@ -4,26 +4,31 @@
     <p><em>Alerts</em></p>
     <ul>
         <li>
-            There are <b><a href="<?php echo $this->url ?>NEW"><?PHP echo $this->alert['NEW'];?></a></b>
-            NEW findings (findings that do not have a mitigation strategy).
+            There are <b>
+            <a href="<?=$this->escape($this->url, 'none')?>NEW"><?=$this->escape($this->alert['NEW'])?></a>
+            </b> NEW findings (findings that do not have a mitigation strategy).
         </li>
         <li>
-            There are <b><a href="<?php echo $this->url;?>DRAFT"><?PHP echo $this->alert['DRAFT'];?></a></b>
-            DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
+            There are <b>
+            <a href="<?=$this->escape($this->url, 'none')?>DRAFT"><?=$this->escape($this->alert['DRAFT'])?></a>
+            </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
         </li>
 <?php if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) : ?>
         <li>
-            There are <b><a href="<?php echo $this->pendingUrl ?>"><?php echo $this->alert['PEND'];?></a></b>
-            PENDING findings awaiting approval.
+            There are <b>
+            <a href="<?=$this->escape($this->pendingUrl, 'none')?>"><?=$this->escape($this->alert['PEND'])?></a>
+            </b> PENDING findings awaiting approval.
         </li>
 <?php endif; ?>
         <li>
-            There are <b><a href="<?php echo $this->url ?>EN/ontime/ontime"><?PHP echo $this->alert['EN'];?></a></b>
-            findings awaiting evidence.
+            There are <b>
+            <a href="<?=$this->escape($this->url, 'none')?>EN/ontime/ontime"><?=$this->escape($this->alert['EN'])?></a>
+            </b> findings awaiting evidence.
         </li>
         <li>
-            There are <b><a href="<?php echo $this->url ?>EN/ontime/overdue"><?PHP echo $this->alert['EO'];?></a></b>
-            overdue findings awaiting evidence.    
+            There are <b>
+            <a href="<?=$this->escape($this->url, 'none')?>EN/ontime/overdue"><?=$this->escape($this->alert['EO'])?></a>
+            </b> overdue findings awaiting evidence.    
         </li>
     </ul>
 </div>
@@ -33,12 +38,12 @@
     if (!empty($this->lastLoginIp)) { 
     ?>
         <ul>
-            <li>Last Logged in at <b><?php echo $this->lastLoginTs; ?></b></li>
-            <li>From IP address <b><?php echo $this->lastLoginIp; ?></b></li>
+            <li>Last Logged in at <b><?=$this->escape($this->lastLoginTs)?></b></li>
+            <li>From IP address <b><?=$this->escape($this->lastLoginIp)?></b></li>
             <?php if ('database' == Fisma::configuration()->getConfig('auth_type')): ?>
                 <li>
                     There were 
-                    <b><?php echo $this->failureCount; ?></b>
+                    <b><?=$this->escape($this->failureCount)?></b>
                     bad login attempts since your last login.
                 </li>
             <?php endif; ?>
@@ -47,7 +52,8 @@
     } else { 
     ?>
         <p>
-            This is the first time you have logged into <?php echo Fisma::configuration()->getConfig('system_name') ?>. 
+            This is the first time you have logged into
+            <?=$this->escape(Fisma::configuration()->getConfig('system_name'))?>. 
             We will begin tracking your login attempts moving forward.
         </p>
     <?php 
@@ -62,7 +68,7 @@ if (isset($this->notifications)) {
         <p><em>Notifications</em></p>
         <p>
             You have new notifications that you have not received in e-mail yet.
-            Click <a href="<?php echo $this->dismissUrl; ?>">here</a> to dismiss these notifications.
+            Click <a href="<?=$this->escape($this->dismissUrl, 'none')?>">here</a> to dismiss these notifications.
         </p>
         <ol>
             <?php
@@ -71,7 +77,9 @@ if (isset($this->notifications)) {
                 <li>
                     <b>
                         <?php 
-                        echo $notification['eventText']; ?></b>&nbsp;at&nbsp;<b><?php echo $notification['createdTs'];
+                        echo $this->escape($notification['eventText'], 'none');
+                        ?></b>&nbsp;at&nbsp;<b><?php
+                        echo $this->escape($notification['createdTs']);
                         ?>
                     </b>
                 </li>
@@ -103,10 +111,10 @@ if ( !empty( $this->alert['TOTAL'] ) ) {
             <tr><td colspan="2"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
             <tr>
                 <td align="center">
-                <?php echo $this->statusChart; ?>
+                <?php echo $this->escape($this->statusChart, 'none'); ?>
                 </td>
                 <td align="center">
-                <?php echo $this->typeChart; ?>
+                <?php echo $this->escape($this->typeChart, 'none'); ?>
                 </td>
             </tr>
             <tr>

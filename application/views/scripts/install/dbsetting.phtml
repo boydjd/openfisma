@@ -1,5 +1,5 @@
 
-<form method="post" action="<?php echo $this->next;?>">
+<form method="post" action="<?=$this->escape($this->next, 'none')?>">
     <table align="center" cellspacing="0" cellpadding="0">
         <tr>
             <td colspan="2"><div class="installer">
@@ -23,19 +23,17 @@
 
                         <tr valign='top' align='left' id="encryptKey" style="display:none">
                             <td class='head'><b><label for="dsn[encryptKey]">Encrypt Key</label></b></td>
+                            <?php $encKeyValue = isset($this->dsn['encryptKey']) ? $this->dsn['encryptKey'] : ''; ?>
                             <td class='even'>
                                 <input type='text' 
                                        name='dsn[encryptKey]' 
                                        id='dsn[encryptKey]'
                                        size='30' 
                                        maxlength='100' 
-                                       value="
-                                           <?php
-                                           echo isset($this->dsn['encryptKey']) ? $this->dsn['encryptKey'] : ''
-                                           ?>"/> 
+                                       value="<?=$this->escape($encKeyValue)?>"/>
                                 <?php 
                                 if (isset($this->message['encryptKey'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(' <span class="notice">*</span>', 'none');
                                 }
                                 ?>
                             </td>
@@ -55,10 +53,10 @@
                                        id='host'
                                        size='30' 
                                        maxlength='100' 
-                                       value="<?php echo $this->dsn['host']?>" />
+                                       value="<?=$this->escape($this->dsn['host'])?>" />
                                 <?php 
                                 if (isset($this->message['host'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(' <span class="notice">*</span>', 'none');
                                 }
                                 ?>
                             </td>
@@ -71,10 +69,10 @@
                                        id='port' 
                                        size='30' 
                                        maxlength='100' 
-                                       value="<?php echo $this->dsn['port']?>" /> 
+                                       value="<?=$this->escape($this->dsn['port'])?>" /> 
                                 <?php 
                                 if (isset($this->message['port'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(' <span class="notice">*</span>', 'none');
                                 }
                                 ?>
                             </td>
@@ -83,15 +81,16 @@
                             <td class='head'><b><label for="uname">Database Username</label></b><br />
                                 <span style='font-size:85%;'>User account must be able to create databases.</span> </td>
                                 <td class='even'>
+                                    <?php $unameValue = isset($this->dsn['uname'])? $this->dsn['uname']:''?>
                                     <input type='text' 
                                            name='dsn[uname]' 
                                            id='uname' 
                                            size='30' 
                                            maxlength='100' 
-                                           value="<?php echo isset($this->dsn['uname'])? $this->dsn['uname']:''?>" />
+                                           value="<?=$this->escape($unameValue)?>" />
                                 <?php 
                                 if (isset($this->message['uname'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(" <span class='notice'>*</span>", 'none');
                                 }
                                 ?>
                             </td>
@@ -100,15 +99,16 @@
                             <td class='head'><b><label for="upass">Database Password</label></b><br />
                                 <span style='font-size:85%;'>Password for user account above.</span> </td>
                             <td class='even'>
+                                <?php $upassValue = isset($this->dsn['upass'])? $this->dsn['upass']:'';?>
                                 <input type='password' 
                                        name='dsn[upass]' 
                                        id='upass' 
                                        size='30' 
                                        maxlength='100'  
-                                       value="<?php echo isset($this->dsn['upass'])? $this->dsn['upass']:''?>"/>
+                                       value="<?=$this->escape($upassValue)?>"/>
                                 <?php 
                                 if (isset($this->message['upass'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(" <span class='notice'>*</span>", 'none');
                                 }
                                 ?>
                             </td>
@@ -118,15 +118,16 @@
                                 <span style='font-size:85%;'> Name of database, the installer will
                                 attempt to create the database if it does not exist</span> </td>
                             <td class='even'>
+                                <?php $dbnameValue = isset($this->dsn['dbname'])?$this->dsn['dbname']:''; ?>
                                 <input type='text' 
                                        name='dsn[dbname]' 
                                        id='dbname' 
                                        size='30' 
                                        maxlength='100'  
-                                       value="<?php echo isset($this->dsn['dbname'])?$this->dsn['dbname']:'';?>" />
+                                       value="<?=$this->escape($dbnameValue)?>" />
                                 <?php 
                                 if (isset($this->message['dbname'])) {
-                                    echo " <span class='notice'>*</span>";
+                                    echo $this->escape(" <span class='notice'>*</span>", 'none');
                                 }
                                 ?>                            
                             </td>
@@ -147,7 +148,9 @@
                 </div>
         </tr>
         <tr>
-            <td width='50%'><div class="back"><a class="button" href="<?php echo $this->back; ?>">Back</a></div></td>
+            <td width='50%'>
+                <div class="back"><a class="button" href="<?=$this->escape($this->back, 'none')?>">Back</a></div>
+            </td>
             <td width="50%"><div class="next">
                     <input class="button" type='submit' name='submit' value='Next' />
                 </div></td>

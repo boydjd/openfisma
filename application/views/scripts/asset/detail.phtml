@@ -13,21 +13,21 @@
     <table border="0"cellpadding="3" cellspacing="1" id="product_info">
     <tr>
         <td><b>System:</b></td>
-        <td colspan="5" class="value"> <?php echo $this->asset['systemName']; ?> </td>
+        <td colspan="5" class="value"> <?=$this->escape($this->asset['systemName']); ?> </td>
     </tr>
     <tr>
         <td><b>IP Address:</b></td>
         <td colspan="5" class="value">
-        <?PHP echo $this->asset['addressIp'];?>
+        <?=$this->escape($this->asset['addressIp']);?>
         </td>
     </tr>
     <tr>
         <td><b>Product:</b></td>
-        <td><?php echo $this->asset['productName']; ?></td>
+        <td><?=$this->escape($this->asset['productName']) ?></td>
         <td><b>Vendor:</b></td>
-        <td><?php echo $this->asset['vendor']; ?></td>
+        <td><?=$this->escape($this->asset['vendor']) ?></td>
         <td><b>Version:</b></td>
-        <td><?php echo $this->asset['version']; ?></td>
+        <td><?=$this->escape($this->asset['version']) ?></td>
     </tr>
     </table>
     </td>
