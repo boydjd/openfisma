@@ -56,7 +56,7 @@ class Fisma_View extends Zend_View
 
             case 'quotes':
                 // escape unescaped single quotes
-                return preg_replace("%)?<!\\\\)'%", "\\'", $string);
+                return preg_replace("%(?<!\\\\)'%", "\\'", $string);
 
             case 'hex':
                 // escape every character into hex
