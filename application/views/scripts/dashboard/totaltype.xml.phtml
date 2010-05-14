@@ -11,13 +11,13 @@
         </row>
         <row>
             <string>count</string>
-            <number tooltip='<?=$this->escape($this->summary['NONE'])?> findings without a mitigation strategy'>
+            <number tooltip='<?php echo $this->escape($this->summary['NONE'])?> findings without a mitigation strategy'>
                 <?php echo $this->escape($this->summary['NONE']); ?></number>
-            <number tooltip='<?=$this->escape($this->summary['CAP'])?> CAP findings'>
+            <number tooltip='<?php echo $this->escape($this->summary['CAP'])?> CAP findings'>
                 <?php echo $this->escape($this->summary['CAP']); ?></number>
-            <number tooltip='<?=$this->escape($this->summary['FP'])?> FP findings'>
+            <number tooltip='<?php echo $this->escape($this->summary['FP'])?> FP findings'>
                 <?php echo $this->escape($this->summary['FP']); ?></number>
-            <number tooltip='<?=$this->escape($this->summary['AR'])?> AR findings'>
+            <number tooltip='<?php echo $this->escape($this->summary['AR'])?> AR findings'>
                 <?php echo $this->escape($this->summary['AR']); ?></number>
         </row>
     </chart_data>

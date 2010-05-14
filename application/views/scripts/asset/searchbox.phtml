@@ -12,25 +12,32 @@
                 ?>
             </td>
             <td><b><label for="vendor">Vendor:</label></b></td>
-            <td><input name="vendor" type="text" id="vendor" value="<?=$this->escape($this->criteria['vendor'])?>"></td>
+            <td>
+                <input name="vendor" type="text" id="vendor"
+                       value="<?php echo $this->escape($this->criteria['vendor'])?>">
+            </td>
             <td><b><label for="product">Product Name:</label></b></td>
             <td>
-                <input type="text" name="product" id="product" value="<?=$this->escape($this->criteria['product'])?>">
+                <input type="text" name="product" id="product"
+                       value="<?php echo $this->escape($this->criteria['product'])?>">
             </td>
             <td>&nbsp;</td>
         </tr>
         <tr>
             <td><b><label for="ip">IP Address:</label></b></td>
             <td>
-                <input type="text" name="ip" id="ip" value="<?=$this->escape($this->criteria['ip'])?>" maxlength="23">
+                <input type="text" name="ip" id="ip"
+                       value="<?php echo $this->escape($this->criteria['ip'])?>" maxlength="23">
             </td>
             <td><b><label for="port">Port:</label></b></td>
             <td>
-                <input type="text" name="port" id="port" value="<?=$this->escape($this->criteria['port'])?>" size="10">
+                <input type="text" name="port" id="port"
+                       value="<?php echo $this->escape($this->criteria['port'])?>" size="10">
             </td>
             <td><b><label for="version">Version:</label></b></td>
             <td>
-                <input type="text" id="version" name="version" value="<?=$this->escape($this->criteria['version'])?>"/>
+                <input type="text" id="version" name="version"
+                       value="<?php echo $this->escape($this->criteria['version'])?>"/>
             </td>
             <td>
             <?php

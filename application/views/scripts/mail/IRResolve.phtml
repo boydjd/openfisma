@@ -1,7 +1,10 @@
+<?php
+    $incidentUrl = Fisma_Url::baseUrl() . '/panel/incident/sub/view/id/' . $this->escape($this->incidentId);
+?>
 This is an automatically generated message, please do not reply to this address.
 
-Incident #<?=$this->escape($this->incidentId) ?> has been resolved.  
+Incident #<?php echo $this->escape($this->incidentId) ?> has been resolved.  
 
 You can view the incident at:
 
-<?=$this->escape(Fisma_Url::baseUrl(), 'none') ?>/panel/incident/sub/view/id/<?=$this->escape($this->incidentId) ?>
+<?php echo $this->escape($incidentUrl, 'none'); ?>

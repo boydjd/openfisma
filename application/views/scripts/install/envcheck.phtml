@@ -3,13 +3,17 @@
         <td colspan="2"><div class="installer">
                 <h4>Software Requirement Check</h4>
                 <ul class="nolist">
-                    <li class="<?=$this->escape($this->checklist['version'])?>"> Currently
-                        PHP version is <?=$this->escape(phpversion())?></li>
+                    <li class="<?php echo $this->escape($this->checklist['version'])?>"> Currently
+                        PHP version is <?php echo $this->escape(phpversion())?></li>
                 </ul>
             </div></td>
     </tr>
     <tr>
-        <td width='50%'><div class="back"><a class="button" href="<?=$this->escape($this->back, 'none')?>" >Back</a></div></td>
-        <td width='50%'><div class="next"><a class="button" href="<?=$this->escape($this->next, 'none')?>" >Next</a></div></td>
+        <td width='50%'>
+            <div class="back"><a class="button" href="<?php echo $this->escape($this->back, 'none')?>" >Back</a></div>
+        </td>
+        <td width='50%'>
+            <div class="next"><a class="button" href="<?php echo $this->escape($this->next, 'none')?>" >Next</a></div>
+        </td>
     </tr>
 </table>

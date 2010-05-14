@@ -9,16 +9,16 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?=$this->escape($column)?></th>
+                <th class="tdc"><?php echo $this->escape($column)?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?=$this->escape($row['o_createdTs']) ?></td>
-            <td><?=$this->escape($row['u_username']) ?></td>
-            <td><?=$this->escape($row['o_message']) ?></td>
+            <td><?php echo $this->escape($row['o_createdTs']) ?></td>
+            <td><?php echo $this->escape($row['u_username']) ?></td>
+            <td><?php echo $this->escape($row['o_message']) ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -40,11 +40,11 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('container', function() {
-    var myColumnDefs = [<?=$this->escape($keys, 'none')?>];
+    var myColumnDefs = [<?php echo $this->escape($keys, 'none')?>];
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [<?=$this->escape($responseKeys, 'none')?>]
+        fields: [<?php echo $this->escape($responseKeys, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});

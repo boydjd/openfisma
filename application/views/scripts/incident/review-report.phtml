@@ -28,7 +28,9 @@ Fisma_Format_Section::startSection("Review Incident Report");
     </table>
 </div>
 
-    <form method="post" action="<?=$this->escape($this->actionUrlBase, 'none'); ?>/save-report" style="display: inline">
+    <form method="post"
+          action="<?php echo $this->escape($this->actionUrlBase, 'none'); ?>/save-report"
+          style="display: inline">
         <?php
         $saveReportButton = new Fisma_Yui_Form_Button_Submit(
                 'irReportSave', 
@@ -52,10 +54,12 @@ Fisma_Format_Section::startSection("Review Incident Report");
         )
     );
     echo $this->escape($irReportCancelButton, 'none');
+
+    $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
     ?>
     
     <form method="post" 
-          action="<?=$this->escape($this->actionUrlBase, 'none'); ?>/report/step/<?=$this->escape($this->step); ?>" 
+          action="<?php echo $this->escape($formAction, 'none'); ?>" 
           style="display: inline;">
         <?php
         $backwardButton = new Fisma_Yui_Form_Button_Submit(

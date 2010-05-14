@@ -5,29 +5,39 @@
     <ul>
         <li>
             There are <b>
-            <a href="<?=$this->escape($this->url, 'none')?>NEW"><?=$this->escape($this->alert['NEW'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>NEW">
+                <?php echo $this->escape($this->alert['NEW'])?>
+            </a>
             </b> NEW findings (findings that do not have a mitigation strategy).
         </li>
         <li>
             There are <b>
-            <a href="<?=$this->escape($this->url, 'none')?>DRAFT"><?=$this->escape($this->alert['DRAFT'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>DRAFT">
+                <?php echo $this->escape($this->alert['DRAFT'])?>
+            </a>
             </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
         </li>
 <?php if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) : ?>
         <li>
             There are <b>
-            <a href="<?=$this->escape($this->pendingUrl, 'none')?>"><?=$this->escape($this->alert['PEND'])?></a>
+            <a href="<?php echo $this->escape($this->pendingUrl, 'none')?>">
+                <?php echo $this->escape($this->alert['PEND'])?>
+            </a>
             </b> PENDING findings awaiting approval.
         </li>
 <?php endif; ?>
         <li>
             There are <b>
-            <a href="<?=$this->escape($this->url, 'none')?>EN/ontime/ontime"><?=$this->escape($this->alert['EN'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>EN/ontime/ontime">
+                <?php echo $this->escape($this->alert['EN'])?>
+            </a>
             </b> findings awaiting evidence.
         </li>
         <li>
             There are <b>
-            <a href="<?=$this->escape($this->url, 'none')?>EN/ontime/overdue"><?=$this->escape($this->alert['EO'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>EN/ontime/overdue">
+                <?php echo $this->escape($this->alert['EO'])?>
+            </a>
             </b> overdue findings awaiting evidence.    
         </li>
     </ul>
@@ -38,12 +48,12 @@
     if (!empty($this->lastLoginIp)) { 
     ?>
         <ul>
-            <li>Last Logged in at <b><?=$this->escape($this->lastLoginTs)?></b></li>
-            <li>From IP address <b><?=$this->escape($this->lastLoginIp)?></b></li>
+            <li>Last Logged in at <b><?php echo $this->escape($this->lastLoginTs)?></b></li>
+            <li>From IP address <b><?php echo $this->escape($this->lastLoginIp)?></b></li>
             <?php if ('database' == Fisma::configuration()->getConfig('auth_type')): ?>
                 <li>
                     There were 
-                    <b><?=$this->escape($this->failureCount)?></b>
+                    <b><?php echo $this->escape($this->failureCount)?></b>
                     bad login attempts since your last login.
                 </li>
             <?php endif; ?>
@@ -53,7 +63,7 @@
     ?>
         <p>
             This is the first time you have logged into
-            <?=$this->escape(Fisma::configuration()->getConfig('system_name'))?>. 
+            <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'))?>. 
             We will begin tracking your login attempts moving forward.
         </p>
     <?php 
@@ -68,7 +78,8 @@ if (isset($this->notifications)) {
         <p><em>Notifications</em></p>
         <p>
             You have new notifications that you have not received in e-mail yet.
-            Click <a href="<?=$this->escape($this->dismissUrl, 'none')?>">here</a> to dismiss these notifications.
+            Click <a href="<?php echo $this->escape($this->dismissUrl, 'none')?>">here</a>
+            to dismiss these notifications.
         </p>
         <ol>
             <?php

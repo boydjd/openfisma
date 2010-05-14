@@ -24,20 +24,20 @@ foreach ($this->steps as $step):
             break;
     endswitch;
 ?>
-    <form method="post" action="/incident/complete-workflow-step/id/<?=$this->escape($this->id)?>">
+    <form method="post" action="/incident/complete-workflow-step/id/<?php echo $this->escape($this->id)?>">
         <input type="hidden" name="stepId" value="<?php ; ?>">
-        <div class="incidentStep <?=$this->escape($class)?>">
+        <div class="incidentStep <?php echo $this->escape($class)?>">
             <div class="incidentCardinality">
                 <?php echo $this->escape($step['cardinality'] + 1); ?>
             </div>
             <table>
                 <tr>
                     <td>Step:</td>
-                    <td><?=$this->escape($step['name']) ?></td>
+                    <td><?php echo $this->escape($step['name']) ?></td>
                 </tr>
                 <tr>
                     <td>Status:</td>
-                    <td><?=$this->escape(ucfirst($step['status']))?></td>
+                    <td><?php echo $this->escape(ucfirst($step['status']))?></td>
                 </tr>
                 <?php
                 if (!is_null($step['userId'])):
@@ -55,7 +55,7 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Completed By:</td>
-                        <td><?=$this->escape($step['User']['username'])?></td>
+                        <td><?php echo $this->escape($step['User']['username'])?></td>
                     </tr>
                 <?php
                 endif;
@@ -65,7 +65,8 @@ foreach ($this->steps as $step):
                     <tr>
                         <td>Role Required:</td>
                         <td>
-                            (<?=$this->escape($step['Role']['nickname'])?>) <?=$this->escape($step['Role']['name'])?>
+                            (<?php echo $this->escape($step['Role']['nickname'])?>)
+                            <?php echo $this->escape($step['Role']['name'])?>
                         </td>
                     </tr>
                 <?php
@@ -75,7 +76,7 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Description:</td>
-                        <td><?=$this->escape($step['description'], 'none') ?></td>
+                        <td><?php echo $this->escape($step['description'], 'none') ?></td>
                     </tr>
                 <?php
                 endif;
@@ -84,7 +85,7 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Comments:</td>
-                        <td><?=$this->escape(Fisma_String::textToHtml($step['comments']), 'none') ?></td>
+                        <td><?php echo $this->escape(Fisma_String::textToHtml($step['comments']), 'none') ?></td>
                     </tr>
                 <?php
                 endif;

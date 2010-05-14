@@ -1,8 +1,8 @@
 <div>
     <i>
         System policy states that you must review and accept the Rules of Behavior
-        for <?=$this->escape(Fisma::configuration()->getConfig('system_name'))?> every
-        <?=$this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days. If you do not accept these
+        for <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'))?> every
+        <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days. If you do not accept these
         rules then you will be logged off.
     </i>
 </div>

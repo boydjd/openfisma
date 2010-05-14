@@ -1,7 +1,7 @@
 <div class="searchFilters">
     <p>
         <span class="searchField">
-            <b>The next quarterly FISMA report is due on: <?=$this->escape($this->nextQuarterlyReportDate)?></b>
+            <b>The next quarterly FISMA report is due on: <?php echo $this->escape($this->nextQuarterlyReportDate)?></b>
         </span>
         <?php
             $quarterlyButton = new Fisma_Yui_Form_Button_Link('quarterly',
@@ -13,7 +13,7 @@
     
     <p>
         <span class="searchField">
-            <b>The next annual FISMA report is due on: <?=$this->escape($this->nextAnnualReportDate) ?></b>
+            <b>The next annual FISMA report is due on: <?php echo $this->escape($this->nextAnnualReportDate) ?></b>
         </span>
         <?php
             $annualButton = new Fisma_Yui_Form_Button_Link('annual',

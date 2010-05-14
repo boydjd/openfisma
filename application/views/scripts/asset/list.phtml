@@ -79,7 +79,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         var count = oState.pagination.rowsPerPage;
     
         // Build custom request
-        var request = "<?=$this->escape($this->url, 'none') ?>" + 
+        var request = "<?php echo $this->escape($this->url, 'none') ?>" + 
                       "/startIndex/" + startIndex +
                       "/count/" + count;
         return request;
@@ -96,7 +96,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?=$this->escape($this->url, 'none')?>/startIndex/0/count/10",
+        initialRequest: "<?php echo $this->escape($this->url, 'none')?>/startIndex/0/count/10",
         dynamicData: true, 
         paginator: new YAHOO.widget.Paginator(
             {

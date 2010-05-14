@@ -13,7 +13,7 @@
                 echo $this->escape('class="editable" target="type"', 'none');
             }
         ?>>
-        <?=$this->escape($finding->type)?>&nbsp;&nbsp;
+        <?php echo $this->escape($finding->type)?>&nbsp;&nbsp;
     </span>
 </p>
             
@@ -88,7 +88,7 @@ if ($finding->originalEcd == $finding->currentEcd) {
 </p>
 <p>
     <b>Original ECD:</b>
-    <span><?=$this->escape($finding->originalEcd); ?></span>
+    <span><?php echo $this->escape($finding->originalEcd); ?></span>
 </p>
 <p>
     <b>Current ECD:</b>
@@ -104,21 +104,21 @@ if ($finding->originalEcd == $finding->currentEcd) {
                     echo $this->escape('"', 'none');
                 }
             }
-            $this->escape('>', 'none');
+            echo $this->escape('>', 'none');
             echo $this->escape((empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd));
         ?>
     </span>
     <input type="text" style="display:none" 
            name="finding[ecdChangeDescription]"
-           value="<?=$this->escape($finding->ecdChangeDescription, 'none') ?>">
+           value="<?php echo $this->escape($finding->ecdChangeDescription, 'none') ?>">
 </p>
 <p>
     <b><label for="finding[ecdChangeDescription]">Justification for changing the ECD:</label> </b>
-    <span id="currentChangeDescription"><?=$this->escape($finding->ecdChangeDescription, 'none'); ?></span>
+    <span id="currentChangeDescription"><?php echo $this->escape($finding->ecdChangeDescription, 'none'); ?></span>
     <input type="text" style="display:none" 
            id='finding[ecdChangeDescription]'
            name="finding[ecdChangeDescription]"
-           value="<?=$this->escape($finding->ecdChangeDescription, 'none'); ?>">
+           value="<?php echo $this->escape($finding->ecdChangeDescription, 'none'); ?>">
     
 </p>
 <?php
@@ -172,14 +172,14 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     <script type="text/javascript">
         function submitMitigationStrategy(event, obj) {
             if (form_confirm(document.finding_detail, "Submit Mitigation Strategy")) {
-                document.location = "<?=$this->escape($postAction, 'javascript')?>/do/submitmitigation";
+                document.location = "<?php echo $this->escape($postAction, 'javascript')?>/do/submitmitigation";
             }
         }
     </script>
     <p><i>The mitigation strategy, security control, and risk analysis sections must
           be fully completed before this can be submitted for approval.</i></p>
 
-    <div class='toolbar'><?=$this->escape($submitMitigationButton, 'none')?></div>
+    <div class='toolbar'><?php echo $this->escape($submitMitigationButton, 'none')?></div>
 <?php
 }
 
@@ -193,14 +193,14 @@ if ('EN' == $finding->status && Fisma_Acl::hasPrivilegeForObject('mitigation_str
     <script language="javascript">
         function reviseMitigationStrategy()
         {
-            var str = "<?=$this->escape($message, 'javascript')?>";
+            var str = "<?php echo $this->escape($message, 'javascript')?>";
             if(confirm(str) == true){
-                location.href = "<?=$this->escape($postAction, 'javascript')?>/do/revisemitigation";
+                location.href = "<?php echo $this->escape($postAction, 'javascript')?>/do/revisemitigation";
             }
             return false;
         }
     </script>
-    <div class='toolbar'><?=$this->escape($reviseMitigationButton, 'none')?></div>
+    <div class='toolbar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
 <?php
 }  
 

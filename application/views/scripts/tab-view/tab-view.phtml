@@ -1,14 +1,14 @@
-<div id="<?= $this->escape($this->tabViewContainer, 'none') ?>">
+<div id="<?php echo  $this->escape($this->tabViewContainer, 'none') ?>">
     <!-- YUI will load the tabview into this div -->
 </div>
 
 <script type="text/javascript">
     YAHOO.util.Event.onDOMReady(function () {
         var tabView = new YAHOO.widget.TabView();
-        var tabViewContainerId = "<?=$this->escape($this->tabViewContainer, 'javascript') ?>";
-        var selectedTabCookie = "<?=$this->escape($this->selectedTabCookie, 'javascript') ?>";
-        var objectIdCookie = "<?=$this->escape($this->objectIdCookie, 'javascript') ?>";
-        var objectId = <?=$this->escape($this->objectId, 'none') ?>;
+        var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
+        var selectedTabCookie = "<?php echo $this->escape($this->selectedTabCookie, 'javascript') ?>";
+        var objectIdCookie = "<?php echo $this->escape($this->objectIdCookie, 'javascript') ?>";
+        var objectId = <?php echo $this->escape($this->objectId, 'none') ?>;
     
         var prepareTab = function(args) {
             // Adds the style and event handlers required for editable fields
@@ -44,11 +44,11 @@
         foreach ($this->tabs as $tab):
         ?>
             var newTab = new YAHOO.widget.Tab({
-                id : "<?= $this->escape($tab['id'], 'javascript') ?>",
-                label : "<?= $this->escape($tab['name'], 'javascript') ?>",
-                dataSrc : "<?=$this->escape($tab['url'], 'javascript') ?>",
+                id : "<?php echo  $this->escape($tab['id'], 'javascript') ?>",
+                label : "<?php echo  $this->escape($tab['name'], 'javascript') ?>",
+                dataSrc : "<?php echo $this->escape($tab['url'], 'javascript') ?>",
                 cacheData : true,
-                active: <?= $this->escape($tab['active'], 'javascript') ?>
+                active: <?php echo  $this->escape($tab['active'], 'javascript') ?>
             });
             
             newTab.subscribe("dataLoadedChange", prepareTab);
@@ -64,7 +64,7 @@
         // then by the cookie.
         var tab = location.hash.substring(1); // Strip the "#" off of the hash
 
-        if (!tab || tab < 0 || tab >= <?=$this->escape(count($this->tabs), 'none') ?>) {
+        if (!tab || tab < 0 || tab >= <?php echo $this->escape(count($this->tabs), 'none') ?>) {
             if (YAHOO.util.Cookie.get(objectIdCookie) == objectId) {
                 tab = YAHOO.util.Cookie.get(selectedTabCookie);
             } else {

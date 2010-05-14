@@ -19,7 +19,7 @@ var incidentCallback = {
                                    });
             var editDetailsButton = new YAHOO.widget.Button({
                                        type: "link",
-                                       href: "/panel/incident/sub/edit/id/<?=$this->escape($this->id)?>", 
+                                       href: "/panel/incident/sub/edit/id/<?php echo $this->escape($this->id)?>", 
                                        label: "Edit",
                                        id: "editDetailsButton",
                                        name: "editDetailsButton",
@@ -33,7 +33,7 @@ var incidentCallback = {
         }
     } 
 
-var transactionUrl = '/incident/incidentdata/id/<?=$this->escape($this->id); ?>';
+var transactionUrl = '/incident/incidentdata/id/<?php echo $this->escape($this->id); ?>';
 var transaction = YAHOO.util.Connect.asyncRequest('GET', transactionUrl, incidentCallback, null);
 
 function onViewButtonClick() {
@@ -63,24 +63,24 @@ foreach ($this->steps as $key => $step):
     <table width='50%' class='fisma_crud' style='margin-bottom: 10px;'>
         <tr>
             <td width='15%'>Workflow Step:</td>
-            <td width='35%'><h2><?=$this->escape($step['name'])?></h2></td>
+            <td width='35%'><h2><?php echo $this->escape($step['name'])?></h2></td>
         </tr>
         <tr>
             <td>Completed By:</td>
     <?php if ('completed' == $step['status']): ?>
             <td>
-                <?=$this->escape($step['user']['nameFirst'])?>
-                <?=$this->escape($step['user']['nameLast'])?>
-                (<?=$this->escape($step['user']['username'])?>)
+                <?php echo $this->escape($step['user']['nameFirst'])?>
+                <?php echo $this->escape($step['user']['nameLast'])?>
+                (<?php echo $this->escape($step['user']['username'])?>)
             </td>
         </tr>
         <tr>
             <td>Completed On:</td>
-            <td><?=$this->escape($step['completeTs'])?></td>
+            <td><?php echo $this->escape($step['completeTs'])?></td>
         </tr>
         <tr>
             <td>Comments:</td>
-            <td><?=$this->escape($step['comments'])?></td>
+            <td><?php echo $this->escape($step['comments'])?></td>
     <?php else: ?>
             <td>&lt;not completed&gt;</td>
     <?php endif; ?>

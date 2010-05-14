@@ -6,6 +6,8 @@ foreach ($this->list as $k=>$s) {
         $select = '';
     }
 ?>
-    <option value="<?=$this->escape($k)?>" <?=$this->escape($select)?>><?=$this->escape($s)?></option>
+    <option value="<?php echo $this->escape($k)?>" <?php echo $this->escape($select)?>>
+        <?php echo $this->escape($s)?>
+    </option>
 <?php
 }

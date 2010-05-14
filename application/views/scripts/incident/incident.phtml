@@ -1,4 +1,4 @@
-<form method="post" action="<?=$this->escape($this->formAction, 'none'); ?>">
+<form method="post" action="<?php echo $this->escape($this->formAction, 'none'); ?>">
     <div class="toolbar">
     <?php
     if ($this->updateIncidentPrivilege):
@@ -74,14 +74,17 @@
             <tr>    
                 <td>Incident Occured:</td>
                 <td>
-                    <?=$this->escape($this->incident['incidentDate'])?>
-                    <?=$this->escape($this->incident['incidentTime'])?>
-                    <?=$this->escape($this->incident['incidentTimezone'])?>
+                    <?php echo $this->escape($this->incident['incidentDate'])?>
+                    <?php echo $this->escape($this->incident['incidentTime'])?>
+                    <?php echo $this->escape($this->incident['incidentTimezone'])?>
                 </td>
             </tr>    
             <tr>    
                 <td>Report Created:</td>
-                <td><?=$this->escape($this->incident['reportTs'])?> <?=$this->escape($this->incident['reportTz'])?></td>
+                <td>
+                    <?php echo $this->escape($this->incident['reportTs'])?>
+                    <?php echo $this->escape($this->incident['reportTz'])?>
+                </td>
             </tr>    
             <tr>
                 <td>Description:</td>

@@ -3,16 +3,16 @@
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?=$this->escape($column) ?></th>
+                <th class="tdc"><?php echo $this->escape($column) ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?=$this->escape($row['o_createdTs']) ?></td>
-            <td><?=$this->escape($row['u_username']) ?></td>
-            <td><?=$this->escape($row['o_message'], 'none') ?></td>
+            <td><?php echo $this->escape($row['o_createdTs']) ?></td>
+            <td><?php echo $this->escape($row['u_username']) ?></td>
+            <td><?php echo $this->escape($row['o_message'], 'none') ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -32,12 +32,12 @@
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('findingAuditLog', function() {
-    var myColumnDefs = [<?=$this->escape($defs, 'none')?>];
+    var myColumnDefs = [<?php echo $this->escape($defs, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("findingAuditLogTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [<?=$this->escape($fields, 'none')?>]
+        fields: [<?php echo $this->escape($fields, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("findingAuditLog", myColumnDefs, this.myDataSource, {});

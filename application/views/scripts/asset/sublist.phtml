@@ -41,7 +41,7 @@
             echo $this->escape($createButton, 'none');
         }
     ?>
-    <b>Page:&nbsp;</b><?=$this->escape($this->links['all'])?>
+    <b>Page:&nbsp;</b><?php echo $this->escape($this->links['all'])?>
 </div>
 <?php Fisma_Format_Section::startSection("Assets List <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>

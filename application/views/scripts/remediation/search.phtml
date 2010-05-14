@@ -71,7 +71,7 @@ var myRequestBuilder = function(oState, oSelf) {
     var count = oState.pagination.rowsPerPage;
 
     // Build custom request
-    var request = "<?=$this->escape($this->link, 'none') ?>" + 
+    var request = "<?php echo $this->escape($this->link, 'none') ?>" + 
                   "/sortby/" + sort +
                   "/dir/" + dir +
                   "/startIndex/" + startIndex +
@@ -81,14 +81,14 @@ var myRequestBuilder = function(oState, oSelf) {
 
 // DataTable configuration
 var myConfigs = {
-    initialRequest: "<?=$this->escape($this->link, 'none'); ?>"
+    initialRequest: "<?php echo $this->escape($this->link, 'none'); ?>"
                   + "/sortby/id/dir/asc/startIndex/0/count/"
-                  + "<?=$this->escape($this->pageInfo['count']) ?>",
+                  + "<?php echo $this->escape($this->pageInfo['count']) ?>",
     dynamicData: true, 
     sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
     paginator: new YAHOO.widget.Paginator(
         { 
-            rowsPerPage:<?=$this->escape($this->pageInfo['count']) ?>,
+            rowsPerPage:<?php echo $this->escape($this->pageInfo['count']) ?>,
             template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
         }
     ), 
@@ -134,7 +134,7 @@ myDataTable.subscribe("rowClickEvent",
     function (oArgs) {
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
-        var keywords = "<?=$this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
+        var keywords = "<?php echo $this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
         document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
     }
 );

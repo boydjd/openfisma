@@ -3,7 +3,7 @@
     Fisma_Format_Section::startSection("Actors");
     if ($this->updateIncidentPrivilege):
     ?>
-        <form method="post" action="/incident/add-actor/type/actor/id/<?=$this->escape($this->id); ?>">
+        <form method="post" action="/incident/add-actor/type/actor/id/<?php echo $this->escape($this->id); ?>">
             <input type="hidden" id="actorId" name="userId" value="">
             <div style="position: relative; top: 0px; width: 200px;">&nbsp;
                 <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
@@ -36,16 +36,16 @@
                 foreach ($this->actors as $actor):
                 ?>
                     <tr>
-                        <td><?=$this->escape($actor['a_username']); ?></td>
-                        <td><?=$this->escape($actor['a_nameFirst']); ?></td>
-                        <td><?=$this->escape($actor['a_nameLast']); ?></td>
+                        <td><?php echo $this->escape($actor['a_username']); ?></td>
+                        <td><?php echo $this->escape($actor['a_nameFirst']); ?></td>
+                        <td><?php echo $this->escape($actor['a_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
                             $removeLink  = '/incident/remove-actor/type/actor'
                                          . '/incidentId/' . $this->id
                                          . '/userId/' . $actor['a_id'];
                         ?>
-                        <td><a href="<?=$this->escape($removeLink, 'none')?>">Remove</a></td>
+                        <td><a href="<?php echo $this->escape($removeLink, 'none')?>">Remove</a></td>
                         <?php
                         endif;
                         ?>
@@ -66,7 +66,7 @@
     Fisma_Format_Section::startSection("Observers");
     if ($this->updateIncidentPrivilege):
     ?>
-    <form method="post" action="/incident/add-actor/type/observer/id/<?=$this->escape($this->id); ?>">
+    <form method="post" action="/incident/add-actor/type/observer/id/<?php echo $this->escape($this->id); ?>">
         <input type="hidden" id="observerId" name="userId" value="">
         <div style="position: relative; top: 0px; width: 200px;">&nbsp;
             <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
@@ -99,16 +99,16 @@
                 foreach ($this->observers as $observer):
                 ?>
                     <tr>
-                        <td><?=$this->escape($observer['o_username']); ?></td>
-                        <td><?=$this->escape($observer['o_nameFirst']); ?></td>
-                        <td><?=$this->escape($observer['o_nameLast']); ?></td>
+                        <td><?php echo $this->escape($observer['o_username']); ?></td>
+                        <td><?php echo $this->escape($observer['o_nameFirst']); ?></td>
+                        <td><?php echo $this->escape($observer['o_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
                             $removeLink = '/incident/remove-actor/type/observer'
                                         . '/incidentId/' . $this->id
                                         . '/userId/' . $observer['o_id'];
                         ?>
-                             <td><a href="<?=$this->escape($removeLink, 'none')?>">Remove</a></td>
+                             <td><a href="<?php echo $this->escape($removeLink, 'none')?>">Remove</a></td>
                         <?php
                         endif;
                         ?>

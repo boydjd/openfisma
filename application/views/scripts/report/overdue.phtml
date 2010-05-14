@@ -57,7 +57,7 @@
                        : '';
         ?>
         <p id="advanced_searchbox" 
-           style="<?=$this->escape($advancedStyle, 'none')?>">
+           style="<?php echo $this->escape($advancedStyle, 'none')?>">
             <b>Overdue type</b>
             <?php 
             $overdueTypeSelect = $this->formSelect(

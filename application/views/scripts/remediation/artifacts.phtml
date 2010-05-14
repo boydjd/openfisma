@@ -8,7 +8,7 @@
 ?>
         <div class="approvalHeader">
             <b>File: </b>
-            <a href='/remediation/downloadevidence/id/<?=$this->escape($evidence->id)?>' target='_blank'>
+            <a href='/remediation/downloadevidence/id/<?php echo $this->escape($evidence->id)?>' target='_blank'>
                 <?php echo $this->escape($evidence->filename); ?>
             </a>
             (submitted by 
@@ -25,9 +25,9 @@
         ?>
             <div class="approvalStep"><p>
                 <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?>:</b>
-                <span class="<?=$this->escape($spanClass)?>">
-                    <b><?=$this->escape($decision)?></b>
-                    (<?=$this->escape($userName)?> at <?=$this->escape($findingEvaluation->createdTs)?>)
+                <span class="<?php echo $this->escape($spanClass)?>">
+                    <b><?php echo $this->escape($decision)?></b>
+                    (<?php echo $this->escape($userName)?> at <?php echo $this->escape($findingEvaluation->createdTs)?>)
                 </span>
             </p>
             <?php 
@@ -47,7 +47,7 @@
     ?>
     <div class="approvalStep">
     <p>
-        <b><?=$this->escape($activeEvaluation->name)?></b>
+        <b><?php echo $this->escape($activeEvaluation->name)?></b>
         <?php if (Fisma_Acl::hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)): ?>
             <input type="hidden" name="comment" value="" />
             <input type="hidden" name="decision" value="APPROVED" />
@@ -73,7 +73,7 @@
     foreach ($disableEvaluations as $evaluation) {
 ?>
         <div class='approvalStep'>
-           <p><b>{<?=$this->escape($evaluation->name)?>}</b>
+           <p><b>{<?php echo $this->escape($evaluation->name)?>}</b>
            N/A
         </div>
 <?php

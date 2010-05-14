@@ -13,7 +13,7 @@ Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 
                 <?php
                 foreach ($this->months as $month):
                 ?>
-                    <th><?=$this->escape($month) ?></th>
+                    <th><?php echo $this->escape($month) ?></th>
                 <?php
                 endforeach;
                 ?>
@@ -25,12 +25,12 @@ Fisma_Format_Section::startSection('Incidents Reported By Category (Previous 12 
             foreach ($this->categories as $category):
             ?>
                 <tr>
-                    <td><?=$this->escape($category['c_category']) ?></td>
-                    <td><?=$this->escape($category['sc_name']) ?></td>
+                    <td><?php echo $this->escape($category['c_category']) ?></td>
+                    <td><?php echo $this->escape($category['sc_name']) ?></td>
                     <?php
                     foreach($this->months as $columnName => $monthName):
                     ?>
-                        <td><?=$this->escape($category['i_' . $columnName]) ?></td>
+                        <td><?php echo $this->escape($category['i_' . $columnName]) ?></td>
                     <?php
                     endforeach;
                     ?>
@@ -60,12 +60,12 @@ YAHOO.util.Event.onContentReady('categories', function() {
         }
         $keys = rtrim($keys, ',');
     ?>
-    var myColumnDefs = [<?=$this->escape($keys, 'none')?>];
+    var myColumnDefs = [<?php echo $this->escape($keys, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("categoriesTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [<?=$this->escape($keys, 'none')?>]
+        fields: [<?php echo $this->escape($keys, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("categories", myColumnDefs, this.myDataSource, {});

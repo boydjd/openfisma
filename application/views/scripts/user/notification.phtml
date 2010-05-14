@@ -53,7 +53,7 @@
             <td><b><label for="notify_frequency">Notify Frequency (hours):</label></b></td>
             <td>
                 <input name="notify_frequency" id="notify_frequency" type="text" 
-                    value="<?=$this->escape(round($this->me->notifyFrequency, 2), 'none')?>" size="30"/>
+                    value="<?php echo $this->escape(round($this->me->notifyFrequency, 2), 'none')?>" size="30"/>
             </td>
         </tr>
         <tr>
@@ -83,7 +83,7 @@
                 ), 
                 $this->me->getAvailableEvents()
             );
-            $this->escape($formSelect, 'none');
+            echo $this->escape($formSelect, 'none');
             unset($formSelect);
             ?>
         </div>

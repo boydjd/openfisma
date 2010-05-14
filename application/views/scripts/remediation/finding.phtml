@@ -8,15 +8,15 @@
     <table class="keyValues">
         <tr>
             <td>Finding ID:</td>
-            <td><?=$this->escape($finding->id)?></td>
+            <td><?php echo $this->escape($finding->id)?></td>
         </tr>
         <tr>
             <td>Date Discovered:</td>
-            <td><?=$this->escape($finding->discoveredDate)?></td>
+            <td><?php echo $this->escape($finding->discoveredDate)?></td>
         </tr>
         <tr>
             <td>Date Opened:</td>
-            <td><?=$this->escape($finding->createdTs)?></td>
+            <td><?php echo $this->escape($finding->createdTs)?></td>
         </tr>
         <tr>
             <td>Date Closed:</td>
@@ -32,15 +32,17 @@
         </tr>
         <tr>
             <td>Source:</td>
-            <td>(<?=$this->escape($finding->Source->nickname)?>) <?=$this->escape($finding->Source->name)?>
+            <td>
+                (<?php echo $this->escape($finding->Source->nickname)?>)
+                <?php echo $this->escape($finding->Source->name)?>
             <?php if ($finding->uploadId): ?>
-                <br><?=$this->escape($finding->Upload->fileName)?>
+                <br><?php echo $this->escape($finding->Upload->fileName)?>
             <?php endif; ?>
             </td>
         </tr>
         <tr>
             <td>Status:</td>
-            <td><?=$this->escape($status)?></td>
+            <td><?php echo $this->escape($status)?></td>
         </tr>
         <?php 
         if ($status != 'CLOSED') { 

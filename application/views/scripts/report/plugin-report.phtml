@@ -20,7 +20,7 @@
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?=$this->escape($column)?></th>
+                <th class="tdc"><?php echo $this->escape($column)?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
@@ -28,7 +28,7 @@
         <?php foreach ($this->rows as $row) : ?>
         <tr>
             <?php foreach($row as $cell) : ?>
-                <td><?=$this->escape($cell)?></td>
+                <td><?php echo $this->escape($cell)?></td>
             <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>
@@ -53,12 +53,12 @@ YAHOO.util.Event.onContentReady('container', function() {
         $defs = implode(',', $defs);
         $fields = implode(',', $fields);
     ?>
-    var myColumnDefs = [<?=$this->escape($defs, 'none')?>];
+    var myColumnDefs = [<?php echo $this->escape($defs, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [<?=$this->escape($fields, 'none')?>]
+        fields: [<?php echo $this->escape($fields, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});

@@ -2,9 +2,13 @@
 <script type="text/javascript">
 <?php foreach ($this->messages as $severity=>$messages):
         if (count($messages)) :
-            foreach ($messages as $message) : ?>
-    message('<?=$this->escape($message, 'javascript') ?>', '<?=$this->escape($severity, 'javascript') ?>');
-<?php       endforeach;
+            foreach ($messages as $message) :
+                echo $this->escape('message("', 'none');
+                echo $this->escape($message, 'javascript');
+                echo $this->escape('", "', 'none');
+                echo $this->escape($severity, 'javascript');
+                echo $this->escape("\");\n", 'none');
+            endforeach;
         endif;
     endforeach;?>
 </script>

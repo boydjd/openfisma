@@ -1,7 +1,7 @@
 <?php 
 foreach ($this->functions as $row) { 
 ?>
-    <option value="<?=$this->escape($row['id'])?>" title="<?=$this->escape($row['action'])?>">
+    <option value="<?php echo $this->escape($row['id'])?>" title="<?php echo $this->escape($row['action'])?>">
         <?php echo $this->escape($row['description'], 'none');?>
     </option>
 <?php 

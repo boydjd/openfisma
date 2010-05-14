@@ -24,7 +24,7 @@
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>
 <script type="text/javascript">
 //Constructs the YUI menu bar for OpenFISMA
-var jsonMenuData = '<?=$this->escape(Zend_Json_Encoder::encode($this->mainMenuBar->getMenus()), 'none') ?>';
+var jsonMenuData = '<?php echo $this->escape(Zend_Json_Encoder::encode($this->mainMenuBar->getMenus()), 'none') ?>';
 var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
 var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
 YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");

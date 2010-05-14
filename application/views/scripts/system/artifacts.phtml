@@ -20,17 +20,21 @@ foreach ($this->documents as $document) {
 ?>
     <tr>
         <td>
-            <a href="/system/download-document/id/<?=$this->escape($document->id)?>">
-                <img src="<?=$this->escape($document->getIconUrl())?>">
-                <div><?=$this->escape($document->DocumentType->name)?></div>
+            <a href="/system/download-document/id/<?php echo $this->escape($document->id)?>">
+                <img src="<?php echo $this->escape($document->getIconUrl())?>">
+                <div><?php echo $this->escape($document->DocumentType->name)?></div>
             </a>
         </td>
-        <td><?=$this->escape($document->getSizeKb())?></td>
-        <td align='center'><?=$this->escape($document->version)?></td>
-        <td><?=$this->escape($document->description, 'none')?></td>
-        <td><?=$this->escape($document->User->username)?></td>
-        <td><?=$this->escape($document['updated_at'])?></td>
-        <td><a href='/panel/system-document/sub/view/id/<?=$this->escape($document->id)?>'>Version History</a></td>
+        <td><?php echo $this->escape($document->getSizeKb())?></td>
+        <td align='center'><?php echo $this->escape($document->version)?></td>
+        <td><?php echo $this->escape($document->description, 'none')?></td>
+        <td><?php echo $this->escape($document->User->username)?></td>
+        <td><?php echo $this->escape($document['updated_at'])?></td>
+        <td>
+            <a href='/panel/system-document/sub/view/id/<?php echo $this->escape($document->id)?>'>
+                Version History
+            </a>
+        </td>
     </tr>
 <?php
 }

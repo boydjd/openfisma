@@ -1,14 +1,14 @@
 This is an automatically generated message, please do not reply to this address.
 
-Your <?=$this->escape(Fisma::configuration()->getConfig('system_name')) ?> account has been created.
+Your <?php echo $this->escape(Fisma::configuration()->getConfig('system_name')) ?> account has been created.
 
-Login: <?=$this->escape($this->user->username)?>
+Login: <?php echo $this->escape($this->user->username)?>
 
 <?php if (Fisma::configuration()->getConfig('auth_type') == 'ldap'): ?>
 Password: <Same as your network password>
 <?php else: ?>
-Temporary Password: <?=$this->escape($this->user->plainTextPassword)?>
+Temporary Password: <?php echo $this->escape($this->user->plainTextPassword)?>
 
 <?php endif; ?>
 
-Please click here to confirm this e-mail address: <?=$this->escape($this->validationLink, 'none')?>
+Please click here to confirm this e-mail address: <?php echo $this->escape($this->validationLink, 'none')?>

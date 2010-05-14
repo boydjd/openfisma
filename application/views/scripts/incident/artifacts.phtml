@@ -17,12 +17,12 @@ Fisma_Format_Section::startSection('Artifacts');
         ?>
             <tr>
                 <td>
-                    <a href='<?=$this->escape($downloadUrl, 'none'); ?>'>
-                        <img src='<?=$this->escape($artifact['iconUrl']) ?>'>
+                    <a href='<?php echo $this->escape($downloadUrl, 'none'); ?>'>
+                        <img src='<?php echo $this->escape($artifact['iconUrl']) ?>'>
                     </a>
                 </td>
                 <td>
-                    <a href='<?=$this->escape($downloadUrl) ?>'>
+                    <a href='<?php echo $this->escape($downloadUrl) ?>'>
                         <div>
                             <?php echo $this->escape($artifact['fileName']); ?>
                         </div>

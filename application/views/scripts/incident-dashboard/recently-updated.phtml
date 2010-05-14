@@ -30,7 +30,7 @@ Fisma_Format_Section::startSection("Incidents Updated In Last 48 Hours <span id=
     };
 
     // DataSource instance
-    var myDataSource = new YAHOO.util.DataSource("<?=$this->escape($this->baseUrl, 'none') ?>");
+    var myDataSource = new YAHOO.util.DataSource("<?php echo $this->escape($this->baseUrl, 'none') ?>");
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "newIncidents",
@@ -46,7 +46,7 @@ Fisma_Format_Section::startSection("Incidents Updated In Last 48 Hours <span id=
         sortedBy : {key:"modifiedTs", dir:YAHOO.widget.DataTable.CLASS_DESC},
         paginator: new YAHOO.widget.Paginator(
             {
-                rowsPerPage: <?=$this->escape($this->rowsPerPage) ?>,
+                rowsPerPage: <?php echo $this->escape($this->rowsPerPage) ?>,
                 template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
         ), 

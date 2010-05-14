@@ -9,7 +9,7 @@ Fisma_Format_Section::startSection($sectionName);
     <tr>
         <td>File Name:</td>
         <td>
-            <a href="/system/download-document/id/<?=$this->escape($this->document->id) ?>">
+            <a href="/system/download-document/id/<?php echo $this->escape($this->document->id) ?>">
                 <?php echo $this->escape($this->document->fileName); ?>
             </a>
         </td>
@@ -33,18 +33,18 @@ Fisma_Format_Section::startSection($sectionName);
     <tr>
         <td>System:</td>
         <td>
-            <a href="/panel/system/sub/view/id/<?=$this->escape($this->document->System->Organization->id) ?>">
+            <a href="/panel/system/sub/view/id/<?php echo $this->escape($this->document->System->Organization->id) ?>">
                 <?php echo $this->escape($this->document->System->Organization->name); ?>
             </a>
         </td>
     </tr>
     <tr>
         <td>Version:</td>
-        <td><?=$this->escape($this->document->version); ?></td>
+        <td><?php echo $this->escape($this->document->version); ?></td>
     </tr>
     <tr>
         <td>Version Notes:</td>
-        <td><?=$this->escape($this->document->description, 'none'); ?></td>
+        <td><?php echo $this->escape($this->document->description, 'none'); ?></td>
     </tr>
 </table>
 
@@ -63,7 +63,7 @@ Fisma_Format_Section::startSection($sectionName);
         $url = '/system/download-document/id/' . $history->id . '/version/' . $history->version;
 ?>
     <tr><td>
-        <a href="<?=$this->escape($url)?>">
+        <a href="<?php echo $this->escape($url)?>">
             <?php echo $this->escape($history->fileName); ?>
         </a>
     </td>

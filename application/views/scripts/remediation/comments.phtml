@@ -19,10 +19,15 @@ Fisma_Format_Section::startSection('Comments');
                 foreach ($this->comments as $comment):
                 ?>
                     <tr>
-                        <td><?=$this->escape($comment['createdTs']) ?></td>
-                        <td><?=$this->escape($comment['User']['username']) ?></td>
+                        <td><?php echo $this->escape($comment['createdTs']) ?></td>
+                        <td><?php echo $this->escape($comment['User']['username']) ?></td>
                         <td>
-                            <?=$this->escape(Fisma_String::textToHtml($this->escape($comment['comment'])), 'none') ?>
+                            <?php 
+                                echo $this->escape(
+                                    Fisma_String::textToHtml($this->escape($comment['comment'])),
+                                    'none'
+                                )
+                            ?>
                         </td>
                     </tr>                
                 <?php

@@ -50,7 +50,7 @@
 
     $records = json_encode($records);
 ?>
-    var dataSource = { rows: <?=$this->escape($records, 'none'); ?> }; 
+    var dataSource = { rows: <?php echo $this->escape($records, 'none'); ?> }; 
      
     var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
     

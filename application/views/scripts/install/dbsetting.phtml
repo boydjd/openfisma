@@ -1,5 +1,5 @@
 
-<form method="post" action="<?=$this->escape($this->next, 'none')?>">
+<form method="post" action="<?php echo $this->escape($this->next, 'none')?>">
     <table align="center" cellspacing="0" cellpadding="0">
         <tr>
             <td colspan="2"><div class="installer">
@@ -30,7 +30,7 @@
                                        id='dsn[encryptKey]'
                                        size='30' 
                                        maxlength='100' 
-                                       value="<?=$this->escape($encKeyValue)?>"/>
+                                       value="<?php echo $this->escape($encKeyValue)?>"/>
                                 <?php 
                                 if (isset($this->message['encryptKey'])) {
                                     echo $this->escape(' <span class="notice">*</span>', 'none');
@@ -53,7 +53,7 @@
                                        id='host'
                                        size='30' 
                                        maxlength='100' 
-                                       value="<?=$this->escape($this->dsn['host'])?>" />
+                                       value="<?php echo $this->escape($this->dsn['host'])?>" />
                                 <?php 
                                 if (isset($this->message['host'])) {
                                     echo $this->escape(' <span class="notice">*</span>', 'none');
@@ -69,7 +69,7 @@
                                        id='port' 
                                        size='30' 
                                        maxlength='100' 
-                                       value="<?=$this->escape($this->dsn['port'])?>" /> 
+                                       value="<?php echo $this->escape($this->dsn['port'])?>" /> 
                                 <?php 
                                 if (isset($this->message['port'])) {
                                     echo $this->escape(' <span class="notice">*</span>', 'none');
@@ -87,7 +87,7 @@
                                            id='uname' 
                                            size='30' 
                                            maxlength='100' 
-                                           value="<?=$this->escape($unameValue)?>" />
+                                           value="<?php echo $this->escape($unameValue)?>" />
                                 <?php 
                                 if (isset($this->message['uname'])) {
                                     echo $this->escape(" <span class='notice'>*</span>", 'none');
@@ -105,7 +105,7 @@
                                        id='upass' 
                                        size='30' 
                                        maxlength='100'  
-                                       value="<?=$this->escape($upassValue)?>"/>
+                                       value="<?php echo $this->escape($upassValue)?>"/>
                                 <?php 
                                 if (isset($this->message['upass'])) {
                                     echo $this->escape(" <span class='notice'>*</span>", 'none');
@@ -124,7 +124,7 @@
                                        id='dbname' 
                                        size='30' 
                                        maxlength='100'  
-                                       value="<?=$this->escape($dbnameValue)?>" />
+                                       value="<?php echo $this->escape($dbnameValue)?>" />
                                 <?php 
                                 if (isset($this->message['dbname'])) {
                                     echo $this->escape(" <span class='notice'>*</span>", 'none');
@@ -149,7 +149,9 @@
         </tr>
         <tr>
             <td width='50%'>
-                <div class="back"><a class="button" href="<?=$this->escape($this->back, 'none')?>">Back</a></div>
+                <div class="back">
+                    <a class="button" href="<?php echo $this->escape($this->back, 'none')?>">Back</a>
+                </div>
             </td>
             <td width="50%"><div class="next">
                     <input class="button" type='submit' name='submit' value='Next' />

@@ -7,9 +7,9 @@
 YAHOO.util.Event.onDOMReady(
     function() { 
         Fisma.TabView.Roles.init(
-            <?=$this->escape($roles) ?>, 
-            <?=$this->escape($id) ?>, 
-            <?=$this->escape($readOnly) ?>
+            <?php echo $this->escape($roles) ?>, 
+            <?php echo $this->escape($id) ?>, 
+            <?php echo $this->escape($readOnly) ?>
         )
     }
 );

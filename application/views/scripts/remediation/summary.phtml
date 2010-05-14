@@ -109,8 +109,8 @@ function menuHandler(source) {
     reloadTable(url);
 
     <?php foreach ($statusArray as $status): ?>
-    document.getElementById('finding_summary_search_<?=$this->escape($status, 'url')?>').href = 
-        '/panel/remediation/sub/searchbox/status/<?=$this->escape($status, 'url')?>' 
+    document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
+        '/panel/remediation/sub/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
         + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
@@ -129,7 +129,7 @@ function menuHandler(source) {
     <select id='sources' onchange='menuHandler(this);' disabled="true">
         <option value="ALL_SOURCES">All Sources</option>
         <?php foreach ($this->findingSources as $source): ?>
-        <option value='<?=$this->escape($source->id) ?>'>
+        <option value='<?php echo $this->escape($source->id) ?>'>
             <?php echo $this->escape($source->nickname);?>-<?php echo $this->escape($source->name); ?>
         </option>
         <?php endforeach; ?>
@@ -181,7 +181,7 @@ echo $this->escape($exportPdf, 'none');
             ?>
         </th>
         <?php $colspan = 2 + count($this->mitigationEvaluations); ?>
-        <th style="border-bottom: none;" colspan="<?=$this->escape($colspan) ?>">
+        <th style="border-bottom: none;" colspan="<?php echo $this->escape($colspan) ?>">
             <?php 
                 $msaTooltip = "<p><b>NEW:</b> Findings which have just been entered into the system "
                             . "are in NEW status.</p><p><b>DRAFT:</b> Once the mitigation strategy type is set, "
@@ -196,7 +196,7 @@ echo $this->escape($exportPdf, 'none');
             ?>
         </th>
         <?php $colspan = count($this->evidenceEvaluations) + 1; ?>
-        <th style="border-bottom: none;" colspan="<?=$this->escape($colspan) ?>">
+        <th style="border-bottom: none;" colspan="<?php echo $this->escape($colspan) ?>">
             <?php 
                 $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
                            . "uploaded documentation that the course of action has been completed.</p>";
@@ -211,16 +211,18 @@ echo $this->escape($exportPdf, 'none');
     </tr>
     <tr>
         <th style="border-top: none;" colspan="2">&nbsp;</th>
-        <th colspan="<?=$this->escape(count($this->mitigationEvaluations)) ?>">Approval</th>
+        <th colspan="<?php echo $this->escape(count($this->mitigationEvaluations)) ?>">Approval</th>
         <th style="border-top: none;">&nbsp;</th>
-        <th colspan="<?=$this->escape(count($this->evidenceEvaluations)) ?>">Approval</th>
+        <th colspan="<?php echo $this->escape(count($this->evidenceEvaluations)) ?>">Approval</th>
     </tr>
     <tr>
     <?php foreach ($statusArray as $status):
         $url = Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/' . urlencode($status));?>
         <th>
-            <a id="finding_summary_search_<?=$this->escape($status, 'url') ?>" href="<?=$this->escape($url, 'none') ?>">
-            <?php echo $this->escape($status); ?></a>
+            <a id="finding_summary_search_<?php echo $this->escape($status, 'url') ?>"
+               href="<?php echo $this->escape($url, 'none') ?>">
+                <?php echo $this->escape($status); ?>
+            </a>
         </th>
     <?php endforeach; ?>
     </tr>

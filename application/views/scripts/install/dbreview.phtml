@@ -1,21 +1,21 @@
-<form method="post" action="<?=$this->escape($this->next, 'none')?>">
-    <input type='hidden' name='dsn[encrypt]' value="<?=$this->escape($this->dsn['encrypt'])?>" />
+<form method="post" action="<?php echo $this->escape($this->next, 'none')?>">
+    <input type='hidden' name='dsn[encrypt]' value="<?php echo $this->escape($this->dsn['encrypt'])?>" />
     <?php 
     if (!empty($this->dsn['encryptKey'])) { 
     ?>
-        <input type='hidden' name='dsn[encryptKey]' value="<?=$this->escape($this->dsn['encryptKey'])?>" />
+        <input type='hidden' name='dsn[encryptKey]' value="<?php echo $this->escape($this->dsn['encryptKey'])?>" />
     <?php 
     } 
     ?>
-    <input type='hidden' name='dsn[type]' value="<?=$this->escape($this->dsn['type'])?>" />
-    <input type='hidden' name='dsn[host]' value="<?=$this->escape($this->dsn['host'])?>" />
-    <input type='hidden' name='dsn[port]' value="<?=$this->escape($this->dsn['port'])?>" />
-    <input type='hidden' name='dsn[uname]' value="<?=$this->escape($this->dsn['uname'])?>" />
-    <input type='hidden' name='dsn[upass]' value="<?=$this->escape($this->dsn['upass'])?>" />
-    <input type='hidden' name='dsn[dbname]' value="<?=$this->escape($this->dsn['dbname'])?>" />
-    <input type='hidden' name='dsn[adminpwd]' value="<?=$this->escape($this->dsn['adminpwd'])?>" />
-    <input type='hidden' name='dsn[name_c]' value="<?=$this->escape($this->dsn['name_c'])?>" />
-    <input type='hidden' name='dsn[pass_c]' value="<?=$this->escape($this->dsn['pass_c'])?>" />
+    <input type='hidden' name='dsn[type]' value="<?php echo $this->escape($this->dsn['type'])?>" />
+    <input type='hidden' name='dsn[host]' value="<?php echo $this->escape($this->dsn['host'])?>" />
+    <input type='hidden' name='dsn[port]' value="<?php echo $this->escape($this->dsn['port'])?>" />
+    <input type='hidden' name='dsn[uname]' value="<?php echo $this->escape($this->dsn['uname'])?>" />
+    <input type='hidden' name='dsn[upass]' value="<?php echo $this->escape($this->dsn['upass'])?>" />
+    <input type='hidden' name='dsn[dbname]' value="<?php echo $this->escape($this->dsn['dbname'])?>" />
+    <input type='hidden' name='dsn[adminpwd]' value="<?php echo $this->escape($this->dsn['adminpwd'])?>" />
+    <input type='hidden' name='dsn[name_c]' value="<?php echo $this->escape($this->dsn['name_c'])?>" />
+    <input type='hidden' name='dsn[pass_c]' value="<?php echo $this->escape($this->dsn['pass_c'])?>" />
     <table width="100%" align="center" cellspacing="0" cellpadding="0">
         <tr>
             <td colspan="2"><div class="installer">
@@ -30,7 +30,9 @@
                                        style="TABLE-LAYOUT:fixed;word-break:break-all;word-wrap:break-word;">
                                     <tr>
                                         <td width="50%" class='bg3'><b>Encrypt Type</b></td>
-                                        <td width="50%" class='bg1'><?=$this->escape($this->dsn['encrypt'])?></td>
+                                        <td width="50%" class='bg1'>
+                                            <?php echo $this->escape($this->dsn['encrypt'])?>
+                                        </td>
                                     </tr>
                                     <?php 
                                     if (!empty($this->dsn['encryptKey'])) { 
@@ -46,7 +48,7 @@
                                     ?>
                                     <tr>
                                         <td width="50%" class='bg3'><b>Database</b></td>
-                                        <td width="50%" class='bg1'><?=$this->escape($this->dsn['type'])?></td>
+                                        <td width="50%" class='bg1'><?php echo $this->escape($this->dsn['type'])?></td>
                                     </tr>
                                     <tr>
                                         <td class='bg3'><b>Database Hostname</b></td>
@@ -90,7 +92,9 @@
         </tr>
         <tr>
             <td width='50%'>
-                <div class="back"><a class="button" href="<?=$this->escape($this->back, 'none')?>" >Back</a></div>
+                <div class="back">
+                    <a class="button" href="<?php echo $this->escape($this->back, 'none')?>" >Back</a>
+                </div>
             </td>
             <td width='50%'><div class="next"><input class="button" type='submit' name='submit' value='Next' />
                 </div></td>

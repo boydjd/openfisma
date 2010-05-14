@@ -25,7 +25,7 @@
                            name="username" 
                            id="username"
                            autocomplete="off"
-                           value="<?=$this->escape(isset($this->username) ? $this->username : '')?>">
+                           value="<?php echo $this->escape(isset($this->username) ? $this->username : '')?>">
                 </td>
             </tr>
             <tr>
@@ -35,7 +35,7 @@
                            name="userpass" 
                            id="userpass"
                            autocomplete="off"
-                           value="<?=$this->escape(isset($this->password)?$this->password:'')?>">
+                           value="<?php echo $this->escape(isset($this->password)?$this->password:'')?>">
                 </td>
             </tr>
             <tr>

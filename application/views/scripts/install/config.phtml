@@ -1,15 +1,15 @@
 [database]
 adapter=mysqli 
-params.host=<?=$this->escape($this->dsn['host'], 'none')?> 
-params.port=<?=$this->escape($this->dsn['port'], 'none')?> 
-params.username=<?=$this->escape($this->dsn['name_c'], 'none')?> 
-params.password=<?=$this->escape($this->dsn['pass_c'], 'none')?> 
-params.dbname=<?=$this->escape($this->dsn['dbname'], 'none')?> 
+params.host=<?php echo $this->escape($this->dsn['host'], 'none')?> 
+params.port=<?php echo $this->escape($this->dsn['port'], 'none')?> 
+params.username=<?php echo $this->escape($this->dsn['name_c'], 'none')?> 
+params.password=<?php echo $this->escape($this->dsn['pass_c'], 'none')?> 
+params.dbname=<?php echo $this->escape($this->dsn['dbname'], 'none')?> 
 
 [general]
-hostUrl=<?=$this->escape($this->hostUrl, 'none')?>
-encrypt=<?=$this->escape($this->encrypt, 'none')?>
+hostUrl=<?php echo $this->escape($this->hostUrl, 'none')?>
+encrypt=<?php echo $this->escape($this->encrypt, 'none')?>
 <?php if (isset($this->encryptKey)): ?>
-encryptKey=<?=$this->escape($this->encryptKey, 'none')?>
+encryptKey=<?php echo $this->escape($this->encryptKey, 'none')?>
 <?php endif; ?>
 

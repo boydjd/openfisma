@@ -8,7 +8,8 @@ function backToSearch(event) {
     }
 }
 </script>
-<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?=$this->escape($this->finding->id)?>" 
+<form enctype="multipart/form-data"
+      action="/panel/remediation/sub/modify/id/<?php echo $this->escape($this->finding->id)?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
