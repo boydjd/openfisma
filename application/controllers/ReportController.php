@@ -235,8 +235,8 @@ class ReportController extends SecurityController
                  ->select('f.id') // unused, but Doctrine requires a field to be selected from the parent object
                  ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
                  ->addSelect(
-                     "QUOTE(IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 'Mitigation Strategy', IF(f.status IN ('EN', 'EA'),
-                     'Corrective Action', NULL))) actionType"
+                     "IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 'Mitigation Strategy', IF(f.status IN ('EN', 'EA'),
+                     'Corrective Action', NULL)) actionType"
                  )
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) lessThan30')
                  ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) moreThan30')

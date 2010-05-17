@@ -103,26 +103,19 @@
 <div id="overdue_report"></div>
 <script type="text/javascript">
 // Column definitions
-var myColumnDefs = [
 <?php 
+$columnString = '';
 foreach ($this->columns as $key => $val) { 
-    if (!isset($i)) {
-        $i = true;
-    } else {
-        echo ','; 
-    }
-    
-    echo "{key:'$key', label:'$val', sortable: true, hidden: false}";
-} 
-unset($i); 
-echo '];';
+    $columnString .= "{key:'$key', label:'$val', sortable: true, hidden: false}, ";
+}
+$columnString = rtrim($columnString, ',');
+?>
 
-    echo 'var dataSource = { rows: [';
-    echo Zend_Json::encode($this->poamList);
-    echo ']};';
-    ?>
+    var myColumnDefs = [<?php echo $columnString; ?>];
     
-    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    var dataSource = <?php echo Zend_Json::encode($this->poamList); ?>;
+    
+    var myDataSource = new YAHOO.util.LocalDataSource(dataSource);
     
     // DataTable configuration
     var myConfigs = {
