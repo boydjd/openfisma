@@ -119,7 +119,8 @@ class User extends BaseUser
         $this->lockType = $lockType;
         $this->save();
 
-        // If the user was locked then the Acl should be invalidated
+        // Invalidating the ACL will make the lock effective on the next page refresh. Otherwise the user 
+        // would be able to continue using the app for the rest of his session.
         if ($this->locked) {
             $this->invalidateAcl();
         }
@@ -307,7 +308,8 @@ class User extends BaseUser
     public function acl()
     {
         if (!Zend_Registry::isRegistered('acl')) {
-            // Refresh internal data from the database
+            // Refresh the user object to ensure latest user's data is reloaded from database since there are probably
+            // differences between the user object in session and database after the user is updated.
             $this->refresh();
             if ($this->locked) {
                 $reason = $this->getLockReason();
