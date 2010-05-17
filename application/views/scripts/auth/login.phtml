@@ -1,15 +1,17 @@
 <div class="hd">
-    <?php echo Fisma::configuration()->getConfig('system_name');?>
+    <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>
 </div>
 
 <div class="bd">
-    <?php echo Fisma::configuration()->getConfig('use_notification');?>
+    <?php echo $this->escape(Fisma::configuration()->getConfig('use_notification'), 'none');?>
         
     <p class="message">
         <?php 
             if (isset($this->error)) {
                 $dateString = date('H:i:s');
-                echo "$dateString $this->error"; 
+                echo $this->escape($dateString);
+                echo $this->escape(' ', 'none');
+                echo $this->escape($this->error); 
             }
         ?>
     </p>
@@ -23,7 +25,7 @@
                            name="username" 
                            id="username"
                            autocomplete="off"
-                           value="<?php echo isset($this->username) ? $this->username : ''; ?>">
+                           value="<?php echo $this->escape(isset($this->username) ? $this->username : '')?>">
                 </td>
             </tr>
             <tr>
@@ -33,14 +35,15 @@
                            name="userpass" 
                            id="userpass"
                            autocomplete="off"
-                           value="<?php echo isset($this->password)?$this->password:'';?>">
+                           value="<?php echo $this->escape(isset($this->password)?$this->password:'')?>">
                 </td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
                 <td>
                     <?php 
-                    echo new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); 
+                    $loginButton = new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); 
+                    echo $this->escape($loginButton, 'none');
                     ?>
                 </td>
             </tr>
@@ -53,7 +56,7 @@
                 <tr>
                     <td colspan="2">
                         <?php 
-                        echo new Fisma_Yui_Form_Button_Link(
+                        $reportIncidentButton = new Fisma_Yui_Form_Button_Link(
                             'reportIncident', 
                             array(
                                 'value' => 'Report A Security Incident',
@@ -61,6 +64,7 @@
                                 'imageSrc' => '/images/report_incident.png'
                             )
                         ); 
+                        echo $this->escape($reportIncidentButton, 'none');
                         ?>
                     </td>
                 </tr>

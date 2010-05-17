@@ -1,5 +1,5 @@
 <?php
-echo $this->partial('user/searchbox.phtml');
+echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 $operation = '';
 if (Fisma_Acl::hasPrivilegeForObject('update', $this->subject)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
@@ -13,8 +13,8 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $this->subject)) {
 Fisma_Format_Section::startSection("User Account Information $operation"); ?>
 
 <div>
-    <?php echo $this->form; ?>
-    <?php echo $this->tabView; ?>
+    <?php echo $this->escape($this->form, 'none'); ?>
+    <?php echo $this->escape($this->tabView, 'none'); ?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

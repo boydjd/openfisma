@@ -2,11 +2,14 @@
     <div class="searchFilters" >
         <div class="right">
             <input type="text" 
-                   value="<?php print $this->keywords; ?>" 
+                   value="<?php echo $this->escape($this->keywords) ?>" 
                    name="keywords" 
                    id="keywords" 
                    helper="formText" />
-            <?php echo new Fisma_Yui_Form_Button_Submit('incidentSearchSubmit', array('label' => 'Search')); ?>
+            <?php
+                $submitButton = new Fisma_Yui_Form_Button_Submit('incidentSearchSubmit', array('label' => 'Search'));
+                echo $this->escape($submitButton, 'none');
+            ?>
         </div>
         
         <div class="clear"></div>

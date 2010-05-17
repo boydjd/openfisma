@@ -1,8 +1,8 @@
 <?php 
 foreach ($this->functions as $row) { 
 ?>
-    <option value="<?php echo $row['id'];?>" title="<?php echo $row['action'];?>">
-        <?php echo $row['description'];?>
+    <option value="<?php echo $this->escape($row['id'])?>" title="<?php echo $this->escape($row['action'])?>">
+        <?php echo $this->escape($row['description'], 'none');?>
     </option>
 <?php 
 } 

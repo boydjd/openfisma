@@ -6,27 +6,28 @@ $class = ($this->checklist['connection']=='ok' || $this->checklist['creation']==
         <td colspan="2"><div class="installer">
                 <h4> Initial Database </h4>
                 <ul class="nolist">
-                    <li class="<?php echo $class; ?>"> 
-                        Database <?php echo $this->dbname; ?>'s <?php echo $this->method; ?> 
+                    <li class="<?php echo $this->escape($class, 'none') ?>"> 
+                        Database <?php echo $this->escape($this->dbname) ?>'s
+                        <?php echo $this->escape($this->method) ?> 
                     </li>
                     <?php 
                     if ( $this->dsn['name_c'] != $this->dsn['uname'] ) { 
                     ?>
-                    <li class="<?php echo $this->checklist['grant']?>"> 
-                        Create account <?php echo $this->dsn['name_c']; ?> and grant all privilege
-                        of <?php echo $this->dsn['dbname'];?> to it </li>
+                    <li class="<?php echo $this->escape($this->checklist['grant'], 'none')?>"> 
+                        Create account <?php echo $this->escape($this->dsn['name_c']) ?> and grant all privilege
+                        of <?php echo $this->escape($this->dsn['dbname'])?> to it </li>
                     <?php 
                     } 
                     ?>
-                    <li class="<?php echo $this->checklist['schema'];?>"> Creating
+                    <li class="<?php echo $this->escape($this->checklist['schema'], 'none')?>"> Creating
                         tables and populating initial data</li> 
-                    <li class="<?php echo $this->checklist['savingconfig'];?>"> Creating
+                    <li class="<?php echo $this->escape($this->checklist['savingconfig'], 'none')?>"> Creating
                         config file </li>
                 </ul>
                 <?php 
                 if (!empty($this->message)) { 
                 ?>
-                    <div class="errorbox"><?php echo $this->message ; ?></div>
+                    <div class="errorbox"><?php echo $this->escape($this->message) ?></div>
                 <?php 
                 } 
                 ?>
@@ -34,7 +35,11 @@ $class = ($this->checklist['connection']=='ok' || $this->checklist['creation']==
         </td>
     </tr>
     <tr>
-        <td width='50%' ><div class="back"><a class="button" href="<?php echo $this->back ; ?>">Back</a></div></td>
-        <td width='50%' ><div class="next"><a class="button" href="<?php echo $this->next ; ?>">Next</a></div></td>
+        <td width='50%'>
+            <div class="back"><a class="button" href="<?php echo $this->escape($this->back, 'none')?>">Back</a></div>
+        </td>
+        <td width='50%'>
+            <div class="next"><a class="button" href="<?php echo $this->escape($this->next, 'none')?>">Next</a></div>
+        </td>
     </tr>
 </table>

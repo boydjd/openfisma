@@ -31,7 +31,7 @@ Fisma_Format_Section::startSection($sectionHeader);
     };
 
     // DataSource instance
-    var myDataSource = new YAHOO.util.DataSource("<?php echo $this->baseUrl; ?>");
+    var myDataSource = new YAHOO.util.DataSource("<?php echo $this->escape($this->baseUrl, 'none') ?>");
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "newIncidents",
@@ -47,7 +47,7 @@ Fisma_Format_Section::startSection($sectionHeader);
         sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
             {
-                rowsPerPage: <?php echo $this->rowsPerPage; ?>,
+                rowsPerPage: <?php echo $this->escape($this->rowsPerPage) ?>,
                 template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
         ), 

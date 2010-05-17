@@ -1,4 +1,4 @@
 <?php
 
 $json = Zend_Json::encode($this->treeData);
-echo $json;
+echo $this->escape($json, 'none');

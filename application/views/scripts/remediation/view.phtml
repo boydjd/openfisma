@@ -8,7 +8,8 @@ function backToSearch(event) {
     }
 }
 </script>
-<form enctype="multipart/form-data" action="/panel/remediation/sub/modify/id/<?php echo $this->finding->id;?>" 
+<form enctype="multipart/form-data"
+      action="/panel/remediation/sub/modify/id/<?php echo $this->escape($this->finding->id)?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
@@ -17,7 +18,7 @@ function backToSearch(event) {
             $backToSearchButton = new Fisma_Yui_Form_Button('backToSearch',
                                                       array('label' => 'Back To Search Results', 
                                                             'onClickFunction' => 'backToSearch'));
-            echo $backToSearchButton;
+            echo $this->escape($backToSearchButton, 'none');
             
             // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
             if (Fisma_Acl::hasPrivilegeForObject('update_*', $this->finding)) {
@@ -26,12 +27,14 @@ function backToSearch(event) {
                     'href' => '/panel/remediation/sub/view/id/' . $this->finding->id
                 );
                 
-                echo new Fisma_Yui_Form_Button_Link('discardChanges', $discardChangesButtonConfig);
+                $discardChangesButton = new Fisma_Yui_Form_Button_Link('discardChanges', $discardChangesButtonConfig);
+                echo $this->escape($discardChangesButton, 'none');
             
-                echo new Fisma_Yui_Form_Button_Submit('saveChanges', array('label' => 'Save Changes'));
+                $saveChangesButton = new Fisma_Yui_Form_Button_Submit('saveChanges', array('label' => 'Save Changes'));
+                echo $this->escape($saveChangesButton, 'none');
             }
         ?>
     </div>
     
-    <?php echo $this->tabView; ?>
+    <?php echo $this->escape($this->tabView, 'none'); ?>
 </form>

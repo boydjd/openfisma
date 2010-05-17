@@ -4,20 +4,23 @@ function discardChanges(event) {
 }
 </script>
 
-<form enctype="multipart/form-data" action="/panel/system/sub/edit/id/<?php echo $this->organization->id; ?>" 
+<form enctype="multipart/form-data"
+      action="/panel/system/sub/edit/id/<?php echo $this->escape($this->organization->id, 'none') ?>" 
       method="post">
     <div class="toolbar">
         <?php            
             if (Fisma_Acl::hasPrivilegeForObject('update', $this->organization)) {
-                echo new Fisma_Yui_Form_Button('discardChanges',
+                $discardButton = new Fisma_Yui_Form_Button('discardChanges',
                                                 array('label' => 'Discard Changes', 
                                                       'onClickFunction' => 'discardChanges'));
+                echo $this->escape($discardButton, 'none');
             
-                echo new Fisma_Yui_Form_Button_Submit('saveChanges', 
+                $submitButton = new Fisma_Yui_Form_Button_Submit('saveChanges', 
                                                 array('label' => 'Save Changes'));
+                echo $this->escape($submitButton, 'none');
             }
         ?>
     </div>
     
-    <?php echo $this->tabView; ?>
+    <?php echo $this->escape($this->tabView, 'none'); ?>
 </form>

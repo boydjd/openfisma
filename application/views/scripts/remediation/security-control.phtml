@@ -17,16 +17,16 @@
                     <?php
                     if (Fisma_Acl::hasPrivilegeForObject('update_control_assignment', $this->finding)
                         && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
-                        echo "class='editable' target='security_control'";
+                        echo $this->escape('class="editable" target="security_control"', 'none');
                     }
                     ?>>
 
                 <?php
                 if (!empty($this->finding->securityControlId)) {
-                    echo "{$this->finding->SecurityControl->code}";
+                    echo $this->escape($this->finding->SecurityControl->code);
                 } else {
                     // nbsp is a hack to make the pencil appear in the right place
-                    echo 'NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                    echo $this->escape('NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', 'none');
                 }
                 ?>
             </span>
@@ -38,64 +38,66 @@
     ?>
         <tr>
             <td>Class:</td>
-            <td><?php echo $securityControl->class;?></td>
+            <td><?php echo $this->escape($securityControl->class)?></td>
         </tr>
         <tr>
             <td>Family:</td>
-            <td><?php echo $securityControl->family;?></td>
+            <td><?php echo $this->escape($securityControl->family)?></td>
         </tr>
         <tr>
             <td>Subclass:</td>
-            <td><?php echo $securityControl->subclass;?></td>
+            <td><?php echo $this->escape($securityControl->subclass)?></td>
         </tr>
         <tr>
             <td>Low Impact System:</td>
             <td>
-                <?php 
-                echo 'LOW' == $securityControl->controlLevel ? 'Control Required' : 'Control Not Required'; 
-                ?>
+                <?php if ('LOW' == $securityControl->controlLevel): ?>
+                    Control Required
+                <?php else: ?>
+                    Control Not Required 
+                <?php endif; ?>
             </td>
         </tr>
         <tr>
             <td>Moderate Impact System:</td>
             <td>
-                <?php
-                echo 'LOW'      == $securityControl->controlLevel || 
-                     'MODERATE' == $securityControl->controlLevel ? 
-                     'Control Required' : 
-                     'Control Not Required';
-                ?>
+                <?php if ('LOW' == $securityControl->controlLevel || 
+                     'MODERATE' == $securityControl->controlLevel): ?>
+                     Control Required
+                <?php else: ?>
+                     Control Not Required
+                <?php endif; ?>
             </td>
         </tr>
         <tr>
             <td>High Impact System:</td>
             <td>
-                <?php
-                echo 'LOW'      == $securityControl->controlLevel || 
+                <?php if ('LOW' == $securityControl->controlLevel || 
                      'MODERATE' == $securityControl->controlLevel || 
-                     'HIGH'     == $securityControl->controlLevel ? 
-                     'Control Required' : 
-                     'Control Not Required';
-                ?>
+                     'HIGH'     == $securityControl->controlLevel): ?>
+                     Control Required
+                <?php else: ?>
+                     Control Not Required
+                <?php endif; ?>
             </td>
         </tr>
         <tr>
             <td>Control:</td>
-            <td><?php echo $securityControl->control;?></td>
+            <td><?php echo $this->escape($securityControl->control)?></td>
         </tr>
         <tr>
             <td>Guidance:</td>
-            <td><?php echo $securityControl->guidance;?></td></tr>
+            <td><?php echo $this->escape($securityControl->guidance)?></td></tr>
         <tr>
             <td>Enhancements:</td>
             <td>
-                <?php echo str_replace("\\n", "<br>", $securityControl->enhancements); ?>
+                <?php echo $this->escape(str_replace("\\n", "<br>", $securityControl->enhancements), 'none'); ?>
             </td>
         </tr>
         <tr>
             <td>Supplement:</td>
             <td>
-                <?php echo $securityControl->supplement; ?>
+                <?php echo $this->escape($securityControl->supplement); ?>
             </td>
         </tr>
     <?php 

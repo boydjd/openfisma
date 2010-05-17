@@ -3,47 +3,41 @@
         <thead>
             <tr>
                 <?php foreach ($this->columns as $column) : ?>
-                <th class="tdc"><?php echo $column; ?></th>
+                <th class="tdc"><?php echo $this->escape($column) ?></th>
                 <?php endforeach; ?>
             </tr>
         </thead>
         <tbody>
         <?php foreach ($this->rows as $row) : ?>
         <tr>
-            <td><?php echo $row['o_createdTs']; ?></td>
-            <td><?php echo $row['u_username']; ?></td>
-            <td><?php echo $row['o_message']; ?></td>
+            <td><?php echo $this->escape($row['o_createdTs']) ?></td>
+            <td><?php echo $this->escape($row['u_username']) ?></td>
+            <td><?php echo $this->escape($row['o_message'], 'none') ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
 </div>
 
+<?php
+    $defs = array();
+    $fields = array();
+    foreach ($this->columns as $column) {
+        $defs[] = "{key:'$column', label:'$column', sortable:true}";
+        $fields[] = "{key:'$column'}";
+    }
+    $defs = implode(',', $defs);
+    $fields = implode(',', $fields);
+?>
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('findingAuditLog', function() {
-    var myColumnDefs = [
-        <?php
-        $keys = "";
-        foreach ($this->columns as $column) {
-            $keys .= "{key:'$column', label:'$column', sortable:true},";
-        }
-        echo rtrim($keys, ',');
-        ?>
-    ];
+    var myColumnDefs = [<?php echo $this->escape($defs, 'none')?>];
 
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("findingAuditLogTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
-        fields: [
-            <?php
-            $keys = "";
-            foreach ($this->columns as $column) {
-                $keys .= "{key:'$column'},";
-            }
-            echo rtrim($keys, ',');
-            ?>
-        ]
+        fields: [<?php echo $this->escape($fields, 'none')?>]
     };
 
     this.myDataTable = new YAHOO.widget.DataTable("findingAuditLog", myColumnDefs, this.myDataSource, {});

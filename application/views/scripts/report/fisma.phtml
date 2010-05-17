@@ -1,23 +1,25 @@
 <div class="searchFilters">
     <p>
         <span class="searchField">
-            <b>The next quarterly FISMA report is due on: <?php echo $this->nextQuarterlyReportDate; ?></b>
+            <b>The next quarterly FISMA report is due on: <?php echo $this->escape($this->nextQuarterlyReportDate)?></b>
         </span>
         <?php
-            echo new Fisma_Yui_Form_Button_Link('quarterly',
+            $quarterlyButton = new Fisma_Yui_Form_Button_Link('quarterly',
                                                 array('value' => 'Generate Quarterly Report',
                                                       'href' => "/report/fisma-quarterly/format/xls"));
+            echo $this->escape($quarterlyButton, 'none');
         ?>
     </p>
     
     <p>
         <span class="searchField">
-            <b>The next annual FISMA report is due on: <?php echo $this->nextAnnualReportDate; ?></b>
+            <b>The next annual FISMA report is due on: <?php echo $this->escape($this->nextAnnualReportDate) ?></b>
         </span>
         <?php
-            echo new Fisma_Yui_Form_Button_Link('annual',
+            $annualButton = new Fisma_Yui_Form_Button_Link('annual',
                                                 array('value' => 'Generate Annual Report',
                                                       'href' => "/report/fisma-annual/format/xls"));
+            echo $this->escape($annualButton, 'none');
         ?>
     </p>
 </div>

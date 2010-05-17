@@ -183,31 +183,6 @@ class SystemController extends BaseController
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
 
-        // Assign the parent organization link
-        $parentOrganization = $this->view->organization->getNode()->getParent();
-        if (isset($parentOrganization)) {
-            if (Fisma_Acl::hasPrivilegeForObject('read', $parentOrganization)) {
-                if ('system' == $parentOrganization->orgType) {
-                    $this->view->parentOrganization = "<a href='/panel/system/sub/view/id/"
-                                                    . $parentOrganization->id
-                                                    . "'>"
-                                                    . "$parentOrganization->nickname - $parentOrganization->name"
-                                                    . "</a>";
-                } else {
-                    $this->view->parentOrganization = "<a href='/panel/organization/sub/view/id/"
-                                                    . $parentOrganization->id
-                                                    . "'>"
-                                                    . "$parentOrganization->nickname - $parentOrganization->name"
-                                                    . "</a>";
-                
-                }
-            } else {
-                $this->view->parentOrganization = "$parentOrganization->nickname - $parentOrganization->name";
-            }
-        } else {
-            $this->view->parentOrganization = "<i>None</i>";
-        }
-
         $this->render();
     }
     

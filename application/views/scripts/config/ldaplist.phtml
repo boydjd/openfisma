@@ -13,24 +13,25 @@ Fisma_Format_Section::startSection('LDAP Configurations</b>&nbsp;[<a href="/pane
     <th>Del</th>
 </tr>
 <?php 
-
 foreach ($this->ldaps as $opt) { 
-    echo '<tr>
-           <td class="tdc">', $opt['url'], '</td>';
-    echo '<td class="tdc">', $opt['accountDomainName'], '</td>';
-    echo '<td class="tdc">', $opt['bindRequiresDn']?'yes':'no', '</td>';
-    echo '<td class="tdc">', $opt['accountFilterFormat'], '</td>';
-    echo '<td class="tdc" >
-        <a href="/panel/config/sub/ldapupdate/id/'.$opt['id'].'" title="edit the LDAP configuration">
+?>
+    <tr>
+      <td class="tdc"><?php echo $this->escape($opt['url'])?></td>
+      <td class="tdc"><?php echo $this->escape($opt['accountDomainName'])?></td>
+      <td class="tdc"><?php echo $this->escape($opt['bindRequiresDn']?'yes':'no', 'none')?></td>
+      <td class="tdc"><?php echo $this->escape($opt['accountFilterFormat'])?></td>
+      <td class="tdc">
+        <a href="/panel/config/sub/ldapupdate/id/<?php echo $this->escape($opt['id'])?>"
+           title="edit the LDAP configuration">
         <img src="/images/edit.png" border="0"></a>
-    </td>';
-    echo '<td class="tdc">
-        <a href="/panel/config/sub/ldapdel/id/' .$opt['id']. '" class="confirm";">
+    </td>
+    <td class="tdc">
+        <a href="/panel/config/sub/ldapdel/id/<?php echo $this->escape($opt['id'])?>" class="confirm">
         <img src="/images/del.png" border="0"></a>
-    </td>';
-    echo '</tr>';
+    </td>
+  </tr>
+<?php
 }
-
 ?>
 </table>
 </div>

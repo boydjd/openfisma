@@ -20,12 +20,16 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
             || empty($finding->threatLevel) 
             || empty($finding->countermeasures) 
             || empty($finding->countermeasuresEffectiveness)) {
-            print '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>';
+            echo $this->escape(
+                '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>',
+                'none'
+            );
         } else {
-            print new Fisma_Yui_Form_Button_Link('viewRaf',
+            $viewRafButton = new Fisma_Yui_Form_Button_Link('viewRaf',
                                    array('value' => 'View Risk Analysis Form', 
                                          'href' => "/panel/remediation/sub/raf/format/pdf/id/{$finding->id}", 
                                          'imageSrc' => '/images/pdf.gif'));
+            echo $this->escape($viewRafButton, 'none');
         }
         ?>
     </p>
@@ -52,10 +56,10 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php 
         if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
             && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-            echo ' class="editable" target="threat_level"';
+            echo $this->escape(' class="editable" target="threat_level"', 'none');
         }
         ?>>
-        <?php echo $finding->threatLevel; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <?php echo $this->escape($finding->threatLevel); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span>
 </p>
 
@@ -64,13 +68,13 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php
         if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
-            echo 'class="editable"';
+            echo $this->escape('class="editable"', 'none');
         } 
         ?>>Threat Description:</b>
 </p>
 
 <div type="textarea" id="threat" name="finding[threat]" rows="5" cols="160">
-    <?php echo $finding->threat; ?>
+    <?php echo $this->escape($finding->threat, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -98,10 +102,10 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php
         if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-            echo 'class="editable" target="effectiveness"';
+            echo $this->escape('class="editable" target="effectiveness"', 'none');
         }
         ?>>
-        <?php echo $finding->countermeasuresEffectiveness; ?>&nbsp;&nbsp;
+        <?php echo $this->escape($finding->countermeasuresEffectiveness); ?>&nbsp;&nbsp;
     </span>
 </p>
 
@@ -110,13 +114,13 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
         <?php 
             if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
                && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
-                echo 'class="editable"';
+                echo $this->escape('class="editable"', 'none');
             } 
         ?>>
         Description of Countermeasures:</b>
 </p>
 
 <div type="textarea" id="countermeasures" name="finding[countermeasures]" rows="5" cols="160">
-    <?php echo $finding->countermeasures; ?>
+    <?php echo $this->escape($finding->countermeasures, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

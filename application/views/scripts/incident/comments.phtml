@@ -2,7 +2,7 @@
 Fisma_Format_Section::startSection('Comments');
 ?>
     <div class="toolbar">
-        <?php echo $this->commentButton; ?>
+        <?php echo $this->escape($this->commentButton, 'none'); ?>
     </div>
     <div id="comments">
         <table id="commentsTable">
@@ -18,12 +18,12 @@ Fisma_Format_Section::startSection('Comments');
                 foreach ($this->comments as $comment):
                 ?>
                     <tr>
-                        <td><?php echo $comment['createdTs']; ?></td>
+                        <td><?php echo $this->escape($comment['createdTs']); ?></td>
                         <td>
-                            <?php echo $comment['User']['username']; ?>
+                            <?php echo $this->escape($comment['User']['username']); ?>
                         </td>
                         <td>
-                            <?php echo Fisma_String::textToHtml($comment['comment']); ?>
+                            <?php echo $this->escape(Fisma_String::textToHtml($comment['comment']), 'none'); ?>
                         </td>
                     </tr>                
                 <?php

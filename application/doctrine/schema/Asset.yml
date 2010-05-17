@@ -1,5 +1,5 @@
 Asset:
-    listeners: [XssListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
         
     columns:
         createdTs: timestamp
@@ -9,7 +9,6 @@ Asset:
             type: string(255)
             extra:
                 logicalName: Asset Name
-                purify: plaintext
                 searchIndex: unstored
                 notify: true
             comment: The name of this asset

@@ -7,8 +7,6 @@ IrStep:
             comment: The order of this step relative to the other steps within this workflow
         name: 
             type: string(255)
-            extra:
-                purify: plaintext
         description:
             type: string
             extra: 

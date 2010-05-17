@@ -400,7 +400,12 @@ class Fisma
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
         Zend_Date::setOptions(array('format_type' => 'php'));
-        Zend_Layout::startMvc(self::getPath('layout'));
+        Zend_Layout::startMvc(
+            array(
+                'layoutPath' => self::getPath('layout'),
+                'view' => new Fisma_View()
+            )
+        );
         
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
 

@@ -8,8 +8,8 @@ function discardChanges(event) {
         $discardButton = new Fisma_Yui_Form_Button('discardChanges',
                                              array('label' => 'Discard Changes', 
                                                    'onClickFunction' => 'discardChanges'));
-        echo $discardButton;
+        echo $this->escape($discardButton, 'none');
     ?>
 </div>
 
-<?php echo $this->tabView; ?>
+<?php echo $this->escape($this->tabView, 'none'); ?>

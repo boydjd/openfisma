@@ -8,37 +8,40 @@
 <form id="assetresult" method="post" action="/asset/delete">
 <div class="toolbar">
     <?php
-        echo new Fisma_Yui_Form_Button_Link('pdf', 
+        $pdfButton = new Fisma_Yui_Form_Button_Link('pdf', 
                                       array('value' => 'Export PDF', 
                                             'href' => "$this->url/format/pdf",
                                             'imageSrc' => '/images/pdf.gif'));
-        echo new Fisma_Yui_Form_Button_Link('xls',
+        $xlsButton = new Fisma_Yui_Form_Button_Link('xls',
                                       array('value' => 'Export Excel', 
                                             'href' => "$this->url/format/xls", 
                                             'imageSrc' => '/images/xls.gif'));
+        echo $this->escape($pdfButton, 'none');
+        echo $this->escape($xlsButton, 'none');
         if (Fisma_Acl::hasPrivilegeForClass('delete', 'Asset')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
-            echo $selectAllButton;
+            echo $this->escape($selectAllButton, 'none');
 
             $selectNoneButton = new Fisma_Yui_Form_Button('selectNone',
                                                     array('label' => 'Select None', 
                                                           'onClickFunction' => 'selectNoneUnsafe'));
-            echo $selectNoneButton;
+            echo $this->escape($selectNoneButton, 'none');
 
             $deleteButton = new Fisma_Yui_Form_Button('deleteSelected',
                                                 array('label' => 'Delete Selected', 
                                                       'onClickFunction' => 'deleteSelectedAssets'));
-            echo $deleteButton;
+            echo $this->escape($deleteButton, 'none');
         }
         if (Fisma_Acl::hasPrivilegeForClass('create', 'Asset')) {
-            echo new Fisma_Yui_Form_Button_Link('createAsset', 
+            $createButton = new Fisma_Yui_Form_Button_Link('createAsset', 
                                           array('value' => 'Create Asset', 
                                                 'href' => '/asset/create'));
+            echo $this->escape($createButton, 'none');
         }
     ?>
-    <b>Page:&nbsp;</b><?php echo $this->links['all'];?>
+    <b>Page:&nbsp;</b><?php echo $this->escape($this->links['all'])?>
 </div>
 <?php Fisma_Format_Section::startSection("Assets List <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
@@ -51,8 +54,12 @@
     var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList},<?php
     $i = 0;
     foreach ($this->columns as $k => $v) {
-        if ($i != 0) echo ',';
-        echo '{key:"' . $k . '", label:"' . $v . '"}';
+        if ($i != 0) echo $this->escape(',', 'none');
+        echo $this->escape('{key:"', 'none');
+        echo $this->escape($k, 'javascript');
+        echo $this->escape('", label:"', 'none');
+        echo $this->escape($v, 'javascript');
+        echo $this->escape('"}', 'none');
         $i ++;
     }
     ?>

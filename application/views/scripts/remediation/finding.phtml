@@ -8,41 +8,41 @@
     <table class="keyValues">
         <tr>
             <td>Finding ID:</td>
-            <td><?php echo $finding->id;?></td>
+            <td><?php echo $this->escape($finding->id)?></td>
         </tr>
         <tr>
             <td>Date Discovered:</td>
-            <td><?php echo $finding->discoveredDate;?></td>
+            <td><?php echo $this->escape($finding->discoveredDate)?></td>
         </tr>
         <tr>
             <td>Date Opened:</td>
-            <td><?php echo $finding->createdTs;?></td>
+            <td><?php echo $this->escape($finding->createdTs)?></td>
         </tr>
         <tr>
             <td>Date Closed:</td>
             <td>
                 <?php 
                 if (!is_null($finding->closedTs)) {
-                    echo $finding->closedTs;
+                    echo $this->escape($finding->closedTs);
                 } else {
-                    echo "<i>Not closed</i>";
+                    echo $this->escape("<i>Not closed</i>", 'none');
                 }
                 ?>
             </td>
         </tr>
         <tr>
             <td>Source:</td>
-            <td>(<?php echo $finding->Source->nickname;?>) <?php echo $finding->Source->name;?>
-            <?php 
-                if ($finding->uploadId) {
-                    echo '<br>' . $finding->Upload->fileName;
-                }
-            ?>
+            <td>
+                (<?php echo $this->escape($finding->Source->nickname)?>)
+                <?php echo $this->escape($finding->Source->name)?>
+            <?php if ($finding->uploadId): ?>
+                <br><?php echo $this->escape($finding->Upload->fileName)?>
+            <?php endif; ?>
             </td>
         </tr>
         <tr>
             <td>Status:</td>
-            <td><?php echo $status;?></td>
+            <td><?php echo $this->escape($status)?></td>
         </tr>
         <?php 
         if ($status != 'CLOSED') { 
@@ -50,13 +50,13 @@
         <tr>
             <td>On Time:</td>
             <td>
-            <?php
-                if (is_null($finding->nextDueDate)) {
-                    echo 'N/A';
-                } else {
-                    echo date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate)) ? 'On Time' : 'Overdue';
-                }
-            ?>
+            <?php if (is_null($finding->nextDueDate)): ?>
+                N/A
+            <?php elseif (date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate))): ?>
+                On Time
+            <?php else: ?>
+                Overdue
+            <?php endif; ?>
             </td>
         </tr>
         <?php 
@@ -76,11 +76,11 @@
                      <?php
                      if (('NEW' == $status || 'DRAFT' == $status)
                          && Fisma_Acl::hasPrivilegeForObject('update_assignment', $finding)) {
-                         echo 'class="editable" target="organization"'; 
+                         echo $this->escape('class="editable" target="organization"', 'none'); 
                      }
                      ?>>
-                    <?php echo $finding->ResponsibleOrganization->nickname;?> 
-                    - <?php echo $finding->ResponsibleOrganization->name;?>
+                    <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
+                    - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
                 </div>
             </td>
         </tr>
@@ -103,7 +103,13 @@
                 Asset Owner:
             </td>
             <td>
-                <?php echo isset($finding->Asset->Organization->name) ? $finding->Asset->Organization->name : 'n/a';?>
+                <?php
+                    if (isset($finding->Asset->Organization->name)) {
+                        echo $this->escape($finding->Asset->Organization->name);
+                    } else {
+                        echo $this->escape('n/a', 'none');
+                    }
+                ?>
             </td>
         </tr>
         <tr>
@@ -111,7 +117,7 @@
                 Asset Name:
             </td>
             <td>
-                <?php echo isset($finding->Asset->name) ? $finding->Asset->name : 'n/a';?>
+                <?php echo $this->escape(isset($finding->Asset->name) ? $finding->Asset->name : 'n/a', 'none');?>
             </td>
         </tr>
         <tr>
@@ -119,7 +125,13 @@
                 Network:
             </td>
             <td>
-                <?php echo isset($finding->Asset->Network->name) ? $finding->Asset->Network->name : 'n/a';?>
+                <?php
+                    if (isset($finding->Asset->Network->name)) {
+                        echo $this->escape($finding->Asset->Network->name);
+                    } else {
+                        echo $this->escape('n/a', 'none');
+                    }
+                ?>
             </td>
         </tr>
         <tr>
@@ -127,8 +139,13 @@
                 IP Address:
             </td>
             <td>
-                <?php echo isset($finding->Asset->Network->name) 
-                      ? ($finding->Asset->addressIp . ':' . $finding->Asset->addressPort) : 'n/a'; ?>
+                <?php
+                    if (isset($finding->Asset->Network->name)) {
+                        echo $this->escape($finding->Asset->addressIp . ':' . $finding->Asset->addressPort);
+                    } else {
+                        echo $this->escape('n/a', 'none');
+                    }
+                ?>
             </td>
         </tr>
         <tr>
@@ -138,19 +155,23 @@
             <td>
                 <?php  
                     if (!empty($finding->Asset->Product->name)) {
-                        echo $finding->Asset->Product->vendor . ' ' .
-                             $finding->Asset->Product->name . ' ' .
-                             $finding->Asset->Product->version;
+                        echo $this->escape(
+                            $finding->Asset->Product->vendor . ' ' .
+                            $finding->Asset->Product->name . ' ' .
+                            $finding->Asset->Product->version
+                        );
                     } else {
-                        echo 'n/a';
+                        echo $this->escape('n/a');
                     }
                 ?>
             </td>
         </tr>
     </table>
-    <?php 
+    <?php
         else:
-            print "<i>Asset information cannot be displayed because you do not have the privileges required.</i>";
+    ?>
+        <i>Asset information cannot be displayed because you do not have the privileges required.</i>
+    <?php
         endif;
         Fisma_Format_Section::stopSection(); 
     ?>
@@ -167,7 +188,7 @@ if (Fisma_Acl::hasPrivilegeForObject('update_description', $finding)
 }
 ?>
 <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160"> 
-    <?php echo $finding->description; ?>
+    <?php echo $this->escape($finding->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -180,6 +201,6 @@ if (('NEW' == $status || 'DRAFT' == $status)
 }
 ?>
 <div name="finding[recommendation]" id="recommendation" type="textarea" rows="3" cols="160">
-    <?php echo $finding->recommendation; ?>
+    <?php echo $this->escape($finding->recommendation, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

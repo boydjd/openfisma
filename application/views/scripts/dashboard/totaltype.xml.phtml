@@ -11,14 +11,14 @@
         </row>
         <row>
             <string>count</string>
-            <number tooltip='<?php echo $this->summary['NONE']; ?> findings without a mitigation strategy'>
-                <?php echo $this->summary['NONE']; ?></number>
-            <number tooltip='<?php echo $this->summary['CAP']; ?> CAP findings'>
-                <?php echo $this->summary['CAP']; ?></number>
-            <number tooltip='<?php echo $this->summary['FP']; ?> FP findings'>
-                <?php echo $this->summary['FP']; ?></number>
-            <number tooltip='<?php echo $this->summary['AR']; ?> AR findings'>
-                <?php echo $this->summary['AR']; ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['NONE'])?> findings without a mitigation strategy'>
+                <?php echo $this->escape($this->summary['NONE']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['CAP'])?> CAP findings'>
+                <?php echo $this->escape($this->summary['CAP']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['FP'])?> FP findings'>
+                <?php echo $this->escape($this->summary['FP']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['AR'])?> AR findings'>
+                <?php echo $this->escape($this->summary['AR']); ?></number>
         </row>
     </chart_data>
 
@@ -31,9 +31,9 @@
 
     <chart_type><?php
         if (array_sum($this->summary) == 0) {
-            echo 'bar';
+            echo $this->escape('bar', 'none');
         } else {
-            echo 'pie';
+            echo $this->escape('pie', 'none');
         }
     ?></chart_type>
     

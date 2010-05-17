@@ -10,9 +10,9 @@
         <tbody>
         <?php foreach ($this->logs as $log) : ?>
         <tr>
-            <td><?php echo $log['o_createdTs']; ?></td>
-            <td><?php echo $log['u_username']; ?></td>
-            <td><?php echo $log['o_message']; ?></td>
+            <td><?php echo $this->escape($log['o_createdTs']); ?></td>
+            <td><?php echo $this->escape($log['u_username']); ?></td>
+            <td><?php echo $this->escape($log['o_message'], 'none'); ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>

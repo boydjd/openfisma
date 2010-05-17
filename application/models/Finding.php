@@ -230,9 +230,10 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
         
+        $commentHtml = htmlspecialchars($comment);
         $logMessage = 'Approved: '
                     . $this->getStatus() 
-                    . (preg_match('/^\s*$/', $comment) ? '' : '<p>Comment: <br> ' . $comment . '</p>');
+                    . (preg_match('/^\s*$/', $comment) ? '' : '<p>Comment: <br> ' . $commentHtml . '</p>');
         
         $this->getAuditLog()->write($logMessage);
 
@@ -289,7 +290,8 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . '<p>Comment: <br> ' . $comment . '</p>');
+        $commentHtml = htmlspecialchars($comment);
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . '<p>Comment: <br> ' . $commentHtml . '</p>');
 
         switch ($this->status) {
             case 'MSA':

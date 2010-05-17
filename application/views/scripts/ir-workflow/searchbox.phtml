@@ -5,7 +5,7 @@
                                                array('value' => 'IR Workflow List', 
                                                      'imageSrc' => '/images/view_list.png',
                                                      'href' => '/panel/irworkflow/sub/list'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
     
         <?php 
@@ -13,7 +13,7 @@
                                                array('value' => 'IR Workflow Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
                                                      'href' => '/panel/irworkflow/sub/tree'));
-        echo $listButton;
+        echo $this->escape($listButton, 'none');
         ?>
 
         <?php 
@@ -22,13 +22,13 @@
                                                    array('value' => 'Add IR Workflow', 
                                                          'imageSrc' => '/images/add.png',
                                                          'href' => '/panel/irworkflow/sub/create'));
-            echo $createButton;
+            echo $this->escape($createButton, 'none');
         
             $subCreateButton = new Fisma_Yui_Form_Button_Link('subCreateButton', 
                                                    array('value' => 'Add IR Workflow Step', 
                                                          'imageSrc' => '/images/add.png',
                                                          'href' => '/panel/irworkflow/sub/step_create'));
-            echo $subCreateButton;
+            echo $this->escape($subCreateButton, 'none');
         endif; 
         ?>
     </div>

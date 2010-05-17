@@ -1,12 +1,15 @@
 [database]
 adapter=mysqli 
-params.host=<?php echo $this->dsn['host']; ?> 
-params.port=<?php echo $this->dsn['port'];?> 
-params.username=<?php echo $this->dsn['name_c'];?> 
-params.password=<?php echo $this->dsn['pass_c'];?> 
-params.dbname=<?php echo $this->dsn['dbname'];?> 
+params.host=<?php echo $this->escape($this->dsn['host'], 'none')?> 
+params.port=<?php echo $this->escape($this->dsn['port'], 'none')?> 
+params.username=<?php echo $this->escape($this->dsn['name_c'], 'none')?> 
+params.password=<?php echo $this->escape($this->dsn['pass_c'], 'none')?> 
+params.dbname=<?php echo $this->escape($this->dsn['dbname'], 'none')?> 
 
 [general]
-hostUrl=<?php echo "{$this->hostUrl}\n"; ?>
-encrypt=<?php echo "{$this->encrypt}\n"; ?>
-<?php echo isset($this->encryptKey)?'encryptKey='.$this->encryptKey:'';?>
+hostUrl=<?php echo $this->escape($this->hostUrl, 'none')?>
+encrypt=<?php echo $this->escape($this->encrypt, 'none')?>
+<?php if (isset($this->encryptKey)): ?>
+encryptKey=<?php echo $this->escape($this->encryptKey, 'none')?>
+<?php endif; ?>
+

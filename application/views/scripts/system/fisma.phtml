@@ -18,7 +18,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>
-                  <?php echo $this->system->controlledBy; ?>&nbsp;
+                  <?php echo $this->escape($this->system->controlledBy); ?>&nbsp;
             </span>
         </td>
     </tr>
@@ -37,7 +37,7 @@ Fisma_Format_Section::startSection('FISMA Data');
                 <?php 
                 }
                 ?>>
-                <?php echo $this->system->securityAuthorizationDt; ?>&nbsp;
+                <?php echo $this->escape($this->system->securityAuthorizationDt); ?>&nbsp;
             </span>
         </td>
     </tr>    
@@ -56,7 +56,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>                  
-                 <?php echo $this->system->contingencyPlanTestDt; ?>&nbsp;
+                 <?php echo $this->escape($this->system->contingencyPlanTestDt); ?>&nbsp;
             </span>
         </td>
     </tr>
@@ -76,7 +76,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             }
             ?>>
                   
-                 <?php echo $this->system->controlAssessmentDt; ?>&nbsp;
+                 <?php echo $this->escape($this->system->controlAssessmentDt); ?>&nbsp;
             </span>
         </td>
     </tr>    
@@ -96,18 +96,19 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>                  
-                  <?php echo $this->system->hasFiif; ?>&nbsp;
+                  <?php echo $this->escape($this->system->hasFiif); ?>&nbsp;
             </span>
         </td>
     </tr>
     <tr>
         <td>
             <?php 
-                echo new Fisma_Yui_Tooltip('hasPii', 'Contains Personally Identifiable Information (PII): ',
+                $tooltip = new Fisma_Yui_Tooltip('hasPii', 'Contains Personally Identifiable Information (PII): ',
                     "<p>PII is defined as information which can be used to distinguish or trace an individual's"
                   . " identity, such as their name, social security number, biometric records, etc. alone, or when"
                   . " combined with other personal or identifying information which is linked or linkable to a specific"
                   . " individual, such as date and place of birth, mother’s maiden name, etc.</p>");
+                echo $this->escape($tooltip, 'none');
             ?>
         </td>
         <td>
@@ -124,7 +125,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>                  
-                  <?php echo $this->system->hasPii; ?>&nbsp;
+                  <?php echo $this->escape($this->system->hasPii); ?>&nbsp;
             </span>
         </td>
     </tr>        
@@ -144,7 +145,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>                  
-                  <?php echo $this->system->piaRequired; ?>&nbsp;
+                  <?php echo $this->escape($this->system->piaRequired); ?>&nbsp;
             </span>
         </td>
     </tr>
@@ -166,11 +167,12 @@ Fisma_Format_Section::startSection('FISMA Data');
                   
                 <?php
                     if (!empty($this->system->piaUrl)) {
-                        echo '<a href="/redirect/redirect/?url='
+                        $piaLink = '<a href="/redirect/redirect/?url='
                            . urlencode($this->system->piaUrl)
                            . '">'
                            . $this->system->piaUrl
                            . '</a>';
+                        echo $this->escape($piaLink, 'none');
                     }
                ?>&nbsp;
             </span>
@@ -192,7 +194,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             <?php 
             }
             ?>>                  
-                  <?php echo $this->system->sornRequired; ?>&nbsp;
+                  <?php echo $this->escape($this->system->sornRequired); ?>&nbsp;
             </span>
         </td>
     </tr>
@@ -214,11 +216,12 @@ Fisma_Format_Section::startSection('FISMA Data');
                   
                 <?php
                     if (!empty($this->system->sornUrl)) {
-                        echo '<a href="/redirect/redirect/?url='
+                        $sornLink = '<a href="/redirect/redirect/?url='
                            . urlencode($this->system->sornUrl)
                            . '">'
                            . $this->system->sornUrl
                            . '</a>';
+                        echo $this->escape($sornLink, 'none');
                     }
                 ?>&nbsp;
             </span>
@@ -227,7 +230,7 @@ Fisma_Format_Section::startSection('FISMA Data');
     <tr>
         <td>
             <?php 
-                echo new Fisma_Yui_Tooltip('ex53upi', 'Exhibit 53 Unique Project Identifier: ',
+                $tooltip = new Fisma_Yui_Tooltip('ex53upi', 'Exhibit 53 Unique Project Identifier: ',
                     "<p>Each federal agency reports its IT Investment Portfolio annually to the Office of Management"
                   . " and Budget (OMB) via an Exhibit 53. The Exhibit 53 provides budget estimates for all IT"
                   . " investments and identifies those that are major investments.</p><p>By completing an Exhibit 53,"
@@ -237,6 +240,7 @@ Fisma_Format_Section::startSection('FISMA Data');
                   . " as part of the President’s Budget.</p><p>The UPI"
                   . " always has the following format: xxx-xx-xx-xx-xx-xxxx-xx</p><p>OpenFISMA will format the number"
                   . " for your properly if you type it without the dashes.</p>");
+                echo $this->escape($tooltip, 'none');
             ?>
         </td>
         <td>
@@ -253,7 +257,7 @@ Fisma_Format_Section::startSection('FISMA Data');
             }
             ?>>
                   
-                  <?php echo $this->system->uniqueProjectId; ?>&nbsp;
+                  <?php echo $this->escape($this->system->uniqueProjectId); ?>&nbsp;
             </span>
         </td>
     </tr>

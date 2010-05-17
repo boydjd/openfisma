@@ -1,5 +1,5 @@
 <?php
-echo $this->partial('product/searchbox.phtml');
+echo $this->escape($this->partial('product/searchbox.phtml'), 'none');
 
 $operation = '';
 if (Fisma_Acl::hasPrivilegeForObject('update', $this->subject)) {
@@ -11,7 +11,7 @@ if (Fisma_Acl::hasPrivilegeForObject('delete', $this->subject)) {
 Fisma_Format_Section::startSection("Product Information $operation"); ?>
 
 <div>
-    <?php echo $this->form ?>
+    <?php echo $this->escape($this->form, 'none') ?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

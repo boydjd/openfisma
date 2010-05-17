@@ -8,13 +8,16 @@ $microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
             <li>Download the Excel <a href="/finding/template">template file</a>.
             <p>(The template file requires Excel 2007 or
             the Office Compatibility Pack, which can be downloaded for free from
-            <a href="<?php echo $microsoftUrl; ?>">Microsoft</a>.)</p>
+            <a href="<?php echo $this->escape($microsoftUrl, 'none')?>">Microsoft</a>.)</p>
             <li>Complete the template, following the instructions included in the template header.
             <li><label for="excelFile">Upload the completed spreadsheet here:</label> <br>
             <input type="file" name="excelFile" id="excelFile">
         </ol>
         <p>
-            <?php echo new Fisma_Yui_Form_Button_Submit('uploadExcelSubmit', array('label' => 'Upload')); ?>
+            <?php
+                $uploadExcelButton = new Fisma_Yui_Form_Button_Submit('uploadExcelSubmit', array('label' => 'Upload'));
+                echo $this->escape($uploadExcelButton, 'none');
+            ?>
         </p>
     </form>
 <?php Fisma_Format_Section::stopSection(); ?>

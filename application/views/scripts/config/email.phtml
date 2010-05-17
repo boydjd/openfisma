@@ -1,7 +1,7 @@
 <?php Fisma_Format_Section::startSection("E-mail Configuration "); ?>
 <div class="block">
 <?php
-    echo $this->form;
+    echo $this->escape($this->form, 'none');
 ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

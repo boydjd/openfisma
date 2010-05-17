@@ -1,8 +1,8 @@
-<p><b>Maximum file size is <?php echo $this->maxFileSize; ?></b></p>
+<p><b>Maximum file size is <?php echo $this->escape($this->maxFileSize)?></b></p>
 
 <?php
 
-echo $this->form;
+echo $this->escape($this->form, 'none');
 
 ?>
 

@@ -13,7 +13,7 @@ Fisma_Format_Section::startSection("Workflow Step Information</b> $operation");
 ?>
 
 <div>
-    <?php echo $this->form ?>
+    <?php echo $this->escape($this->form, 'none'); ?>
 </div>
 
 <?php 

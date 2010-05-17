@@ -10,16 +10,19 @@
             </tr>
         </thead>
         <?php
-            foreach ($this->reports as $reportName => $reportParams) {
-                // Use the @ operator to suppress any warnings about undefined indexes. 
-                // This data is defined in the reports.conf file, so it may not have every index defined.
-                @print "<tr><td class='tdc'>
-                        <a href=\"/panel/report/sub/plugin-report/name/{$reportName}\">{$reportParams['title']}</a></td>
-                        <td class='tdc'>{$reportParams['description']}</td>";
+            foreach ($this->reports as $reportName => $reportParams):
                 $rolesString = implode(', ', $reportParams['roles']);
-                @print "<td class='tdc'>$rolesString</td></tr>";
-            }
         ?>
+            <tr>
+                <td class='tdc'>
+                    <a href="/panel/report/sub/plugin-report/name/<?php echo $this->escape($reportName)?>">
+                        <?php echo $this->escape($reportParams['title'])?>
+                    </a>
+                </td>
+                <td class='tdc'><?php echo $this->escape($reportParams['description'], 'none')?></td>
+                <td class='tdc'><?php echo $this->escape($rolesString)?></td>
+            </tr>
+        <?php endforeach; ?>
     </table>
 </div>
 

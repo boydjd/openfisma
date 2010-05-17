@@ -9,7 +9,7 @@ if (Fisma_Acl::hasPrivilegeForObject('delete', $this->organization)) {
 Fisma_Format_Section::startSection("Organization Information</b> $operation"); ?>
 
 <div>
-    <?php echo $this->form ?>
+    <?php echo $this->escape($this->form, 'none'); ?>
 </div>
 
 <?php Fisma_Format_Section::stopSection(); ?>

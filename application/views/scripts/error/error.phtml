@@ -3,17 +3,19 @@
     if (Fisma::debug()) {
 ?>
     <p><i>Application is currently in debugging mode:</i></p>
-    <p class="stacktrace"><?php echo $this->content; ?></p>
+    <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
 <?php    
     } else {
-        echo $this->message;
+        echo $this->escape($this->message);
     }
+
+    $contactEmail = Fisma::configuration()->getConfig('contact_email');
 ?>
 <p>
-    Technical Support Contact: <?php echo Fisma::configuration()->getConfig('contact_name');?><br>
-    Contact Phone: <?php echo Fisma::configuration()->getConfig('contact_phone');?><br>
-    Contact E-mail: <a href="mailto:<?php echo Fisma::configuration()->getConfig('contact_email');?>">
-            <?php echo Fisma::configuration()->getConfig('contact_email');?></a>
+    Technical Support Contact: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_name'))?><br>
+    Contact Phone: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_phone'))?><br>
+    Contact E-mail: <a href="mailto:<?php echo $this->escape($contactEmail, 'none')?>">
+            <?php echo $this->escape(Fisma::configuration()->getConfig('contact_email'));?></a>
 </p>
 
 <?php Fisma_Format_Section::stopSection(); ?>

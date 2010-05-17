@@ -1,15 +1,9 @@
 Evaluation:
-    listeners: [XssListener]
-        
     columns:
         name: 
             type: string(255)
-            extra:
-                purify: plaintext
         nickname:
             type: string(255)
-            extra:
-                purify: plaintext
         nextId: 
             type: integer
             comment: Relates to itself and points to the next Evaluation record

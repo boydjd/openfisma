@@ -1,10 +1,10 @@
 <?php Fisma_Format_Section::startSection('Email validation message&hellip;'); ?>
-<b><?php echo $this->msg; ?></b>
+<b><?php echo $this->escape($this->msg, 'none') ?></b>
 <p>
-    Technical Support Contact: <?php echo Fisma::configuration()->getConfig('contact_name');?><br>
-    Contact Phone: <?php echo Fisma::configuration()->getConfig('contact_phone');?><br>
-    Contact E-mail: <a href="mailto:<?php echo Fisma::configuration()->getConfig('contact_email');?>">
-            <?php echo Fisma::configuration()->getConfig('contact_email');?></a>
+    Technical Support Contact: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_name'))?><br>
+    Contact Phone: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_phone'))?><br>
+    Contact E-mail: <a href="mailto:<?php echo $this->escape(Fisma::configuration()->getConfig('contact_email'))?>">
+            <?php echo $this->escape(Fisma::configuration()->getConfig('contact_email'));?></a>
 </p>
 
 <?php Fisma_Format_Section::stopSection(); ?>

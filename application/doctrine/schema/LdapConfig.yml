@@ -4,21 +4,13 @@ LdapConfig:
     columns:
         host:
             type: string(255)
-            extra:
-                purify: plaintext
         port: integer(2)
         accountDomainName:
             type: string(255)
-            extra:
-                purify: plaintext
         accountDomainNameShort:
             type: string(255)
-            extra:
-                purify: plaintext
         username: 
             type: string(255)
-            extra:
-                purify: plaintext
         # Password field is purified for HTML, even though it shouldn't contain HTML. The reason is that the plaintext
         # purifier might obscure valid characters in the password
         password: 
@@ -27,8 +19,6 @@ LdapConfig:
                 purify: html
         baseDn: 
             type: string
-            extra:
-                purify: plaintext 
         # Account filter is not plaintext purified either, for the reason as the password field      
         accountFilterFormat: 
             type: string(255)

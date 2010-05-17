@@ -1,6 +1,6 @@
 <script type="text/javascript" src="/javascripts/account.js"></script>
 <?php 
-echo $this->partial('user/searchbox.phtml');
+echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 $operation = "[<a href='{$this->viewLink}'>View</a>]";
 
 if (Fisma_Acl::hasPrivilegeForObject('read', $this->subject)) {
@@ -14,24 +14,26 @@ if (!empty($this->requirements)) {
 ?>
     <p>The password must meet the following complexity criteria:</p>
     <ul>
-        <?php
-        foreach ($this->requirements as $requirement) {
-            echo "<li>$requirement";
-        }
-        ?>
+    <?php foreach ($this->requirements as $requirement): ?>
+        <li>
+            <?php echo $this->escape($requirement, 'none'); ?>
+        </li>
+    <?php endforeach; ?>
     </ul>
 <?php 
 } 
 ?>
 
 <div class="form_box">
-    <form method="post" action="/panel/User/sub/edit/id/<?php echo $this->id ?>">
+    <form method="post" action="/panel/User/sub/edit/id/<?php echo $this->escape($this->id); ?>">
     <?php 
-    echo $this->form;
-    echo $this->tabView; ?>
+        echo $this->escape($this->form, 'none');
+        echo $this->escape($this->tabView, 'none');
+    ?>
     </form>
 </div>
 <?php 
 Fisma_Format_Section::stopSection();
-echo $this->partial('tab-view/roles.phtml', array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0));
-?>
+$opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
+echo $this->escape($this->partial('tab-view/roles.phtml', $opts), 'none');
+unset($opts);

@@ -53,7 +53,7 @@
             <td><b><label for="notify_frequency">Notify Frequency (hours):</label></b></td>
             <td>
                 <input name="notify_frequency" id="notify_frequency" type="text" 
-                    value="<?php echo round($this->me->notifyFrequency, 2);?>" size="30"/>
+                    value="<?php echo $this->escape(round($this->me->notifyFrequency, 2), 'none')?>" size="30"/>
             </td>
         </tr>
         <tr>
@@ -67,14 +67,14 @@
             <td><b><label for="notify_email">Notify E-mail:</label></b></td>
             <td>
                 <input name="notify_email" id="notify_email" type="text" 
-                    value="<?php echo $this->me->notifyEmail;?>" size="30" />
+                    value="<?php echo $this->escape($this->me->notifyEmail);?>" size="30" />
             </td>
         </tr>
         <tr>
             <td colspan="2"><p>
         <div class="left"><b><label for="availableEvents">Available events:</label></b><br/>
             <?php 
-            echo $this->formSelect(
+            $formSelect = $this->formSelect(
                 'availableEvents',
                 null, 
                 array(
@@ -83,6 +83,8 @@
                 ), 
                 $this->me->getAvailableEvents()
             );
+            echo $this->escape($formSelect, 'none');
+            unset($formSelect);
             ?>
         </div>
         <div class="left" id="move">
@@ -92,7 +94,7 @@
                                                       array('label' => 'Select',
                                                             'onClickFunction' => 'addNotificationEvents'));
                 $addEvent->imageSrc = '/images/right_arrow.png';
-                echo $addEvent;
+                echo $this->escape($addEvent, 'none');
                 ?>
             </p>
             <p>
@@ -101,30 +103,31 @@
                                                          array('label' => 'Remove',
                                                                'onClickFunction' => 'removeNotificationEvents'));
                 $removeEvent->imageSrc = '/images/left_arrow.png';
-                echo $removeEvent;
+                echo $this->escape($removeEvent, 'none');
                 ?>
             </p>
         </div>
         <div class="left" id="enable"><b><label for="existEvents">Selected events:</label></b><br />
         <?php 
-            echo $this->formSelect(
-                'existEvents',
-                null, 
-                array(
-                    'multiple' => 'multiple', 
-                    'size' => '20'
-                ), 
-                $this->me->getExistEvents()
-            );
+            $opts = array('multiple' => 'multiple', 'size' => '20');
+            $formSelect = $this->formSelect('existEvents', null, $opts, $this->me->getExistEvents());
+            echo $this->escape($formSelect, 'none');
+            unset($opts);
+            unset($formSelect);
         ?>
         </div>
         </td></tr>
         <tr>
             <td colspan="2" align="center">
             <div id="actionButton">
-                <?php echo new Fisma_Yui_Form_Button('submit',
-                                                array('label' => 'Save',
-                                                      'onClickFunction' => 'saveEvents'));?>
+                <?php
+                    $submitButton = new Fisma_Yui_Form_Button(
+                        'submit',
+                        array('label' => 'Save', 'onClickFunction' => 'saveEvents')
+                    );
+                    echo $this->escape($submitButton, 'none');
+                    unset($submitButton);
+                ?>
             </div>
             </td>
         </tr>

@@ -1,4 +1,7 @@
-<div id="<?php echo $this->containerId; ?>">
+<?php
+    $flashVars = 'library_path=/flash/charts_library&xml_source=' . $this->sourceUrl;
+?>
+<div id="<?php echo $this->escape($this->containerId, 'none')?>">
 </div>
 
 <script language="JavaScript" type="text/javascript">
@@ -6,15 +9,15 @@
     if (hasRightVersion) {
         var flashContent = AC_FL_RunContent(
             'codebase', 'https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9.0.45.0',
-            'width', '<?php echo $this->width; ?>',
-            'height', '<?php echo $this->height; ?>',
+            'width', '<?php echo $this->escape($this->width, 'javascript')?>',
+            'height', '<?php echo $this->escape($this->height, 'javascript')?>',
             'scale', 'noscale',
             'salign', 'TL',
             'bgcolor', '#FFFFFF',
             'wmode', 'opaque',
             'movie', '/flash/charts',
             'src', '/flash/charts',
-            'FlashVars', 'library_path=/flash/charts_library&xml_source=<?php echo $this->sourceUrl; ?>',
+            'FlashVars', '<?php echo $this->escape($flashVars, 'javascript')?>',
             'id', 'my_chart',
             'name', 'my_chart',
             'menu', 'true',
@@ -26,7 +29,7 @@
             'play', 'true',
             'devicefont', 'false'
         );
-        var containerEl = document.getElementById('<?php echo $this->containerId; ?>');
+        var containerEl = document.getElementById('<?php echo $this->escape($this->containerId, 'javascript')?>');
         containerEl.innerHTML = flashContent;
     } else {
         var alternateContent = 'This content requires the Adobe Flash Player.';

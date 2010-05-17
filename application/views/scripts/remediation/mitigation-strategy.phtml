@@ -10,10 +10,10 @@
         <?php 
             if (('NEW' == $finding->status || 'DRAFT' == $finding->status) 
                 && Fisma_Acl::hasPrivilegeForObject('update_type', $finding)) {
-                echo 'class="editable" target="type"';
+                echo $this->escape('class="editable" target="type"', 'none');
             }
         ?>>
-        <?php echo $finding->type;?>&nbsp;&nbsp;
+        <?php echo $this->escape($finding->type)?>&nbsp;&nbsp;
     </span>
 </p>
             
@@ -22,14 +22,14 @@
         <?php 
             if (in_array($finding->status, array('NEW', 'DRAFT'))
                 && Fisma_Acl::hasPrivilegeForObject('update_course_of_action', $finding)) {
-               echo 'class="editable"';
+               echo $this->escape('class="editable"', 'none');
             }
         ?>>
         Description:
     </b>
 </p>
 <div name="finding[mitigationStrategy]" id="mitigation_strategy" type="textarea">
-    <?php echo $finding->mitigationStrategy; ?> 
+    <?php echo $this->escape($finding->mitigationStrategy, 'none'); ?> 
 </div>
 
 <p>
@@ -37,14 +37,14 @@
         <?php
             if (in_array($finding->status, array('NEW', 'DRAFT'))
                 && Fisma_Acl::hasPrivilegeForObject('update_resources', $finding)) {
-                echo 'class="editable" target="resources_required"';
+                echo $this->escape('class="editable" target="resources_required"', 'none');
             } 
         ?>>
         Resources Required:
     </b>
 </p>
 <div name="finding[resourcesRequired]" id="resources_required" type="textarea"> 
-    <?php echo $finding->resourcesRequired; ?> 
+    <?php echo $this->escape($finding->resourcesRequired, 'none'); ?> 
 </div>
 
 <?php 
@@ -55,15 +55,16 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
             if ($finding->isEcdEditable()) {
-                echo ' class="date editable" target="currentEcd"';
+                echo $this->escape(' class="date editable" target="currentEcd"', 'none');
                 if ($finding->ecdLocked) {
-                    echo 'onclick="document.getElementById(\'ecdChangeDescription\').style.display = \'block\';"';
+                    echo $this->escape(
+                        'onclick="document.getElementById(\'ecdChangeDescription\').style.display = \'block\';"',
+                        'none'
+                    );
                 }
-                echo '>';
-            } else {
-                echo '>';
             }
-            echo (empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd);
+            echo $this->escape('>', 'none');
+            echo $this->escape((empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd), 'none');
         ?>
     </span>
 </p>
@@ -87,36 +88,37 @@ if ($finding->originalEcd == $finding->currentEcd) {
 </p>
 <p>
     <b>Original ECD:</b>
-    <span><?php echo $finding->originalEcd; ?></span>
+    <span><?php echo $this->escape($finding->originalEcd); ?></span>
 </p>
 <p>
     <b>Current ECD:</b>
     <span name="finding[currentEcd]" id="currentEcd" type="text"
         <?php 
             if ($finding->isEcdEditable()) {
-                echo ' class="date editable" target="currentEcd"';
+                echo $this->escape(' class="date editable" target="currentEcd"', 'none');
                 if ($finding->ecdLocked) {
-                    echo 'onclick="document.getElementById(\'currentChangeDescription\').style.display = \'none\';
-                          document.getElementById(\'ecdChangeDescription\').style.display = \'inline\'"';
+                    $onclick = "document.getElementById('currentChangeDescription').style.display = 'none';"
+                        . "document.getElementById('ecdChangeDescription').style.display = 'inline'";
+                    echo $this->escape('onclick="', 'none');
+                    echo $this->escape($onclick, 'none');
+                    echo $this->escape('"', 'none');
                 }
-                echo '>';
-            } else {
-                echo '>';
             }
-            echo (empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd);
+            echo $this->escape('>', 'none');
+            echo $this->escape((empty($finding->currentEcd) ? 'NONE' : $finding->currentEcd));
         ?>
     </span>
     <input type="text" style="display:none" 
            name="finding[ecdChangeDescription]"
-           value="<?php echo $finding->ecdChangeDescription; ?>">
+           value="<?php echo $this->escape($finding->ecdChangeDescription, 'none') ?>">
 </p>
 <p>
     <b><label for="finding[ecdChangeDescription]">Justification for changing the ECD:</label> </b>
-    <span id="currentChangeDescription"><?php echo $finding->ecdChangeDescription; ?></span>
+    <span id="currentChangeDescription"><?php echo $this->escape($finding->ecdChangeDescription, 'none'); ?></span>
     <input type="text" style="display:none" 
            id='finding[ecdChangeDescription]'
            name="finding[ecdChangeDescription]"
-           value="<?php echo $finding->ecdChangeDescription; ?>">
+           value="<?php echo $this->escape($finding->ecdChangeDescription, 'none'); ?>">
     
 </p>
 <?php
@@ -128,9 +130,9 @@ if ($finding->originalEcd == $finding->currentEcd) {
     <span>
         <?php 
             if (empty($finding->actualCompletionDate)) {
-                echo '(not completed)';
+                echo $this->escape('(not completed)', 'none');
             } else {
-                echo $finding->actualCompletionDate;
+                echo $this->escape($finding->actualCompletionDate, 'none');
             }
         ?>
     </span>
@@ -160,87 +162,107 @@ foreach ($array as $row) {
     }
 }
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
-    echo "<script type=\"text/javascript\">
-                function submitMitigationStrategy(event, obj) {
-                    if (form_confirm(document.finding_detail, \"Submit Mitigation Strategy\")) {
-                        document.location = \"$postAction/do/submitmitigation\";
-                    }
-                }
-          </script>";
-          
-    echo '<p><i>The mitigation strategy, security control, and risk analysis sections must
-          be fully completed before this can be submitted for approval.</i></p>';
-
     $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
                                                   array('label' => 'Submit Mitigation Strategy', 
                                                         'onClickFunction' => 'submitMitigationStrategy')    );
     if (false == $complete || !Fisma_Acl::hasPrivilegeForObject('mitigation_strategy_submit', $finding)) {
         $submitMitigationButton->readOnly = true;
     }
-    echo "<div class='toolbar'>$submitMitigationButton</div>";
+?>
+    <script type="text/javascript">
+        function submitMitigationStrategy(event, obj) {
+            if (form_confirm(document.finding_detail, "Submit Mitigation Strategy")) {
+                document.location = "<?php echo $this->escape($postAction, 'javascript')?>/do/submitmitigation";
+            }
+        }
+    </script>
+    <p><i>The mitigation strategy, security control, and risk analysis sections must
+          be fully completed before this can be submitted for approval.</i></p>
+
+    <div class='toolbar'><?php echo $this->escape($submitMitigationButton, 'none')?></div>
+<?php
 }
 
 if ('EN' == $finding->status && Fisma_Acl::hasPrivilegeForObject('mitigation_strategy_revise', $finding)) {
     $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
              . 'Are you sure that you want to continue?';
-    echo "<script language=\"javascript\">
-            function reviseMitigationStrategy()
-            {
-                var str = \"$message\";
-                if(confirm(str) == true){
-                    location.href = \"$postAction/do/revisemitigation\";
-                }
-                return false;
-            }
-          </script>";
     $reviseMitigationButton = new Fisma_Yui_Form_Button('reviseMitigationButton',
                                                   array('label' => 'Revise Mitigation Strategy', 
                                                         'onClickFunction' => 'reviseMitigationStrategy'));
-    echo "<div class='toolbar'>$reviseMitigationButton</div>";
+?>
+    <script language="javascript">
+        function reviseMitigationStrategy()
+        {
+            var str = "<?php echo $this->escape($message, 'javascript')?>";
+            if(confirm(str) == true){
+                location.href = "<?php echo $this->escape($postAction, 'javascript')?>/do/revisemitigation";
+            }
+            return false;
+        }
+    </script>
+    <div class='toolbar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
+<?php
 }  
 
 if ($finding->status != 'NEW' 
     && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
-    echo '<div class="approval">';
+    echo $this->escape('<div class="approval">', 'none');
     foreach ($findingEvaluations = $finding->getFindingEvaluations('action') as $k => $findingEvaluation) {
         $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
         $decision = $findingEvaluation->decision;
-        echo '<div class="approvalStep"><p><b>' 
-           . html_entity_decode($findingEvaluation->Evaluation->name) 
-           . ':</b>';
+        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
+        echo $this->escape($findingEvaluation->Evaluation->name);
+        echo $this->escape(':</b>', 'none');
         if ('APPROVED' == $decision) {
-            echo "<span class=\"approved\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
+            echo $this->escape('<span class="approved"><b>', 'none');
+            echo $this->escape($decision);
+            echo $this->escape('</b> (', 'none');
+            echo $this->escape($userName);
+            echo $this->escape(' at ', 'none');
+            echo $this->escape($findingEvaluation->createdTs);
+            echo $this->escape(')</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
-                echo $this->textToHtml($findingEvaluation->comment);
+                echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
             }
         } elseif ('DENIED' == $decision) {
-            echo "<span class=\"denied\"><b>$decision</b> ($userName at $findingEvaluation->createdTs)</span></p>";
+            echo $this->escape('<span class="denied"><b>', 'none');
+            echo $this->escape($decision);
+            echo $this->escape('</b> (', 'none');
+            echo $this->escape($userName);
+            echo $this->escape(' at ', 'none');
+            echo $this->escape($findingEvaluation->createdTs);
+            echo $this->escape(')</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
-                echo $this->textToHtml($findingEvaluation->comment);
+                echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
             }
         }
-        echo "</div>";
+        echo $this->escape('</div>', 'none');
         if ($findingEvaluation->Evaluation->nextId == null || 'DENIED' == $decision) {
-            echo '</div>';
+            echo $this->escape('</div>', 'none');
             if ($k != count($findingEvaluations)-1 || 'MSA' == $finding->status) {
-                echo '<div class="approval">';
+                echo $this->escape('<div class="approval">', 'none');
             }
         }
     }
 
     $activeEvaluation = $finding->CurrentEvaluation;
     if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
-        echo '<div class="approvalStep"><p><b>' . html_entity_decode($activeEvaluation->name) . '</b>';
+        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
+        echo $this->escape($activeEvaluation->name);
+        echo $this->escape('</b>', 'none');
         if (Fisma_Acl::hasPrivilegeForObject($activeEvaluation->Privilege->action, $finding)) {
-            echo '<input type="hidden" name="comment" value="" />';
-            echo '<input type="hidden" name="decision" value="APPROVED" />';
-            echo '<input name="submit_msa" type="button" value="APPROVED"
-                onclick="ms_approve(document.finding_detail);"/>&nbsp;';
-            echo '<input type="button" value="DENIED" onclick="ms_deny(document.finding_detail);" />';
+            echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
+            echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
+            echo $this->escape('<input name="submit_msa" type="button" value="APPROVED" ', 'none');
+            echo $this->escape('onclick="ms_approve(document.finding_detail);"/>&nbsp;', 'none');
+            echo $this->escape(
+                '<input type="button" value="DENIED" onclick="ms_deny(document.finding_detail);" />',
+                'none'
+            );
         } else {
-            echo "PENDING";
+            echo $this->escape("PENDING", 'none');
         }
-        echo '</div>';
+        echo $this->escape('</div>', 'none');
     }
 
     $disableEvaluations = array();
@@ -253,9 +275,11 @@ if ($finding->status != 'NEW'
     }
 
     foreach ($disableEvaluations as $evaluation) {
-        echo "<div class='approvalStep'><p><b>{$evaluation->name}</b>N/A</div>";
+        echo $this->escape('<div class="approvalStep"><p><b>{', 'none');
+        echo $this->escape($evaluation->name);
+        echo $this->escape('}</b>N/A</div>', 'none');
     }
-    echo "</div>";
+    echo $this->escape('</div>', 'none');
 }
 Fisma_Format_Section::stopSection(); 
 ?>

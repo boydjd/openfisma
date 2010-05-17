@@ -8,8 +8,6 @@ IrCategory:
             type: timestamp
         name: 
             type: string(255)
-            extra:
-                purify: plaintext
         description:
             type: string
             extra: 
