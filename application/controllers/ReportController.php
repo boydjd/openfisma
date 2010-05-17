@@ -160,11 +160,16 @@ class ReportController extends SecurityController
         $bureaus = Organization::getBureaus();
         $stats = array();
         foreach ($bureaus as $bureau) {
-            $stats[] = $bureau->getFismaStatistics();
+            $bureauStats = $bureau->getFismaStatistics();
+            $stats[$bureauStats['name']] = $bureauStats;
         }
+
+        // Sort by bureau name (which is the array key)
+        ksort($stats);
+
         $this->view->stats = $stats;
     }
-    
+
     /**
      * Generate the annual FISMA report
      * 
@@ -183,8 +188,13 @@ class ReportController extends SecurityController
         $bureaus = Organization::getBureaus();
         $stats = array();
         foreach ($bureaus as $bureau) {
-            $stats[] = $bureau->getFismaStatistics();
+            $bureauStats = $bureau->getFismaStatistics();
+            $stats[$bureauStats['name']] = $bureauStats;
         }
+
+        // Sort by bureau name (which is the array key)
+        ksort($stats);
+
         $this->view->stats = $stats;
     }
         
