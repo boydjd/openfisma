@@ -488,7 +488,7 @@ class IncidentController extends SecurityController
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
         $this->view->allIncidentsUrl = $link
-                                     . '/status/all/sortby/reportTs/order/asc/startIndex/0/count/'
+                                     . '/status/all/sortby/i_reportTs/order/asc/startIndex/0/count/'
                                      . $this->_paging['count'];
         
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
@@ -1221,18 +1221,18 @@ class IncidentController extends SecurityController
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
-        $sortBy = $this->_request->getParam('sortby', 'reportTs');
+        $sortBy = $this->_request->getParam('sortby', 'i_reportTs');
         $order = $this->_request->getParam('order');
         $status = array($this->_request->getParam('status'));
+
+        // Convert YUI column name to Doctrine column name
+        $sortBy{strpos('_', $sortBy) + 1} = '.';
 
         if ($status[0] == 'resolved') {
             $status[] = 'rejected';
         }  
        
         $organization = Doctrine::getTable('Incident');
-        if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            throw new Fisma_Exception('Invalid "sortBy" parameter');
-        }
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -1242,9 +1242,9 @@ class IncidentController extends SecurityController
         $q = self::getUserIncidentQuery()
              ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
              ->leftJoin('i.Category c')
-             ->orderBy("i.$sortBy $order")
+             ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
-             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         if ($status[0] != 'all') {
             $q->whereIn('i.status', $status);
@@ -1269,10 +1269,6 @@ class IncidentController extends SecurityController
 
         $totalRecords = $q->count();
         $incidents = $q->execute();
-
-        foreach ($incidents as $key => $val) {
-            $incidents[$key]['category'] = $incidents[$key]['Category']['name'];
-        }
  
         $tableData = array('table' => array(
             'recordsReturned' => count($incidents),
