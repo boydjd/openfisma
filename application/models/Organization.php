@@ -165,16 +165,6 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
                 $system = $child->System;
                 $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
             
-                // Create the systems matrix for section 2.e. of the annual report. This only includes systems that have
-                // not been C&A'ed.
-                if (empty($system->securityAuthorizationDt)) {
-                    $systems[] = array(
-                        'name' => $child->name,
-                        'fipsCategory' => $fipsCategory,
-                        'uniqueProjectId' => $system->uniqueProjectId
-                    );
-                }
-            
                 // Controlled by the agency or a contractor?
                 if (!empty($system->controlledBy)) {
                     $securityStats[$fipsCategory][$system->controlledBy]++;
@@ -211,18 +201,35 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
                     // Was the system C&A'ed in the last 3 years? 
                     $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
                     $nextCaDate = $currentCaDate->addYear(3);
+                    
                     /** 
                      * @todo should have used isEarlier and isLater() instead of compare()
                      * compare is not very readable 
                      */
                     if (1 == $nextCaDate->compare($today)) {
                         $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
+                    } else {
+                        // System has an expired C&A. Add to section 2.e. of the annual report.
+                        $systems[] = array(
+                            'name' => $child->name,
+                            'fipsCategory' => $fipsCategory,
+                            'uniqueProjectId' => $system->uniqueProjectId
+                        );
                     }
                 
                     // Was the system C&A'ed in the last quarter?
                     $lastQuarter = $today->subMonth(3);
                     if (1 == $currentCaDate->compare($lastQuarter)) {
                         $securityStats[$fipsCategory]['CERTIFIED_THIS_QUARTER']++;
+                    }
+                } else {
+                    // System does not have any C&A at all. Add to section 2.e. of the annual report.
+                    if (empty($system->securityAuthorizationDt)) {
+                        $systems[] = array(
+                            'name' => $child->name,
+                            'fipsCategory' => $fipsCategory,
+                            'uniqueProjectId' => $system->uniqueProjectId
+                        );
                     }
                 }
 
