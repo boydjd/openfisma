@@ -9,13 +9,13 @@ Fisma_Format_Section::startSection("System List <span id='searchResultsTotalFoun
 // Column definitions
 var myColumnDefs = [
     {key:"o_id", label:"id",hidden: true}
-    ,{key:"o_name", label:"System Name", sortable: true, hidden: false}
-    ,{key:"o_nickname", label:"Acronym", sortable: true, hidden: false}
-    ,{key:"s_type", label:"Application Type", sortable: true, hidden: false}
-    ,{key:"s_confidentiality", label:"Confidentiality", sortable: true, hidden: false}
-    ,{key:"s_integrity", label:"Integrity", sortable: true, hidden: false}
-    ,{key:"s_availability", label:"Availability", sortable: true, hidden: false}
-    ,{key:"s_fipsCategory", label:"FIPS-199 Categorization", sortable: true, hidden: false}
+    ,{key:"o_name", label:"System Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"o_nickname", label:"Acronym", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"s_type", label:"Application Type", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"s_confidentiality", label:"Confidentiality", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"s_integrity", label:"Integrity", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"s_availability", label:"Availability", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"s_fipsCategory", label:"FIPS-199 Categorization", sortable: true, hidden: false, formatter: "text"}
 ];
 
     // A function which builds the query string

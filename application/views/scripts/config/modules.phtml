@@ -8,7 +8,7 @@ Fisma_Format_Section::startSection('Installed Modules');
     ?>
         <tr>
             <td><?php echo $this->escape($module['name']) ?></td>
-            <td><?php echo $this->escape($module['control']) ?></td>
+            <td><?php echo $this->escape($module['control'], 'none') ?></td>
         </tr>
     <?php
     endforeach;

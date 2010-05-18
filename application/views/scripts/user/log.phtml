@@ -40,7 +40,7 @@ Fisma_Format_Section::startSection("User Audit Log ($this->username) $operation"
 <script type="text/javascript">
 // Convert the HTML table above into a YUI table
 YAHOO.util.Event.onContentReady('container', function() {
-    var myColumnDefs = [<?php echo $this->escape($keys, 'none')?>];
+    var myColumnDefs = [<?php echo $this->escape($defKeys, 'none')?>];
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("reportTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {

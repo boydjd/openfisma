@@ -386,6 +386,7 @@ class IncidentController extends SecurityController
         // Load the view with all of the non-empty values that the user provided
         $incidentReport = $incident->toArray();
         $incidentReview = array();
+        $richColumns = array();
         $incidentTable = Doctrine::getTable('Incident');
         foreach ($incidentReport as $key => &$value) {
             $cleanValue = trim(strip_tags($value));
@@ -397,6 +398,10 @@ class IncidentController extends SecurityController
                 if ($columnDef) {
                     $logicalName = stripslashes($columnDef['extra']['logicalName']);
                     $incidentReview[$logicalName] = stripslashes($value);
+                    // we need to know, in the view, which fields are rich-text
+                    if (!empty($columnDef['extra']['purify'])) {
+                        $richColumns[$logicalName] = $columnDef['extra']['purify'];
+                    }
                 } else {
                     throw new Fisma_Exception("Column ($key) does not have a logical name");
                 }
@@ -404,6 +409,7 @@ class IncidentController extends SecurityController
         }
         
         $this->view->incidentReview = $incidentReview;
+        $this->view->richColumns = $richColumns;
         $this->view->step = count($this->_formParts);
         $this->view->actionUrlBase = $this->_me 
                                    ? '/panel/incident/sub'
@@ -1050,6 +1056,12 @@ class IncidentController extends SecurityController
         $this->_assertCurrentUserCanViewIncident($id);
 
         $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+
+        // format comment text as HTML
+        foreach ($comments as &$comment) {
+            $comment['comment'] = htmlspecialchars($comment['comment']);
+            $comment['comment'] = Fisma_String::textToHtml($comment['comment']);
+        }
 
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 

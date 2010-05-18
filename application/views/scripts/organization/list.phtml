@@ -4,9 +4,9 @@
 // Column definitions
 var myColumnDefs = [
     {key:"id", label:"id", hidden: true}
-    ,{key:"name", label:"Organization Name", sortable: true, hidden: false}
-    ,{key:"nickname", label:"Nickname", sortable: true, hidden: false}
-    ,{key:"orgType", label:"type", sortable: true, hidden: false}
+    ,{key:"name", label:"Organization Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"nickname", label:"Nickname", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"orgType", label:"type", sortable: true, hidden: false, formatter: "text"}
 ];
 
     // A function which builds the query string

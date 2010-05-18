@@ -67,7 +67,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         echo $this->escape($k, 'javascript');
         echo $this->escape('", label:"', 'none');
         echo $this->escape($v, 'javascript');
-        echo $this->escape('"}', 'none');
+        echo $this->escape('", formatter:"text"}', 'none');
     }
     ?>, {key: 'id', label:'View', formatter: operation}];
 

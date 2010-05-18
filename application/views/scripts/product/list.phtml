@@ -7,10 +7,10 @@ Fisma_Format_Section::startSection("Product List <span id='searchResultsTotalFou
 // Column definitions
 var myColumnDefs = [
     {key:"id", label:"id",hidden: true}
-    ,{key:"name", label:"Product Name", sortable: true, hidden: false}
-    ,{key:"vendor", label:"Vendor", sortable: true, hidden: false}
-    ,{key:"version", label:"Version", sortable: true, hidden: false}
-    ,{key:"cpeName", label:"Cpename", sortable: false, hidden: false}
+    ,{key:"name", label:"Product Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"vendor", label:"Vendor", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"version", label:"Version", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"cpeName", label:"Cpename", sortable: false, hidden: false, formatter: "text"}
 ];
 
     // A function which builds the query string
