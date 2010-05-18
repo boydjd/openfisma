@@ -196,8 +196,8 @@ class IrCategoryController extends SecurityController
     {
         Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
 
-        $this->view->updateIrCategoryPrivilege = Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -468,8 +468,8 @@ class IrCategoryController extends SecurityController
     {
         Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->updateIrCategoryPrivilege = Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');

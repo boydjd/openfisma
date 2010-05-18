@@ -60,9 +60,9 @@ class IRWorkflowController extends SecurityController
     
     public function listAction() 
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->view->readIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        $this->view->readIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef');
         
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
@@ -82,9 +82,9 @@ class IRWorkflowController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->createIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('create', 'IrWorkflowDef');
+        $this->createIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('create', 'IrWorkflowDef');
         
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
@@ -98,7 +98,7 @@ class IRWorkflowController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
         $value = trim($this->_request->getParam('keywords'));
 
@@ -152,7 +152,7 @@ class IRWorkflowController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
 
         $this->searchbox();
         $this->render('tree');        
@@ -163,7 +163,7 @@ class IRWorkflowController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
                
         /* Get all categories */ 
         $q = Doctrine_Query::create()
@@ -196,7 +196,7 @@ class IRWorkflowController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilege('create', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
         
         $form = $this->_getWorkflowForm();
         
@@ -256,10 +256,10 @@ class IRWorkflowController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
 
-        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('update', 'IrWorkflowDef');
-        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('delete', 'IrWorkflowDef');
+        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
+        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -297,7 +297,7 @@ class IRWorkflowController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilege('update', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id', 0);
         $irworkflow = new IrWorkflowDef();
@@ -346,7 +346,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepcreateAction()
     {
-        Fisma_Acl::requirePrivilege('create', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
         
         $form = $this->_getWorkflowStepForm();
         
@@ -458,10 +458,10 @@ class IRWorkflowController extends SecurityController
      */
     public function stepviewAction()
     {
-        Fisma_Acl::requirePrivilege('read', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('update', 'IrWorkflowDef');
-        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::requirePrivilege('delete', 'IrWorkflowDef');
+        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
+        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -499,7 +499,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepupdateAction()
     {
-        Fisma_Acl::requirePrivilege('update', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id', 0);
         $irworkflowstep = new IrStep();
@@ -551,7 +551,7 @@ class IRWorkflowController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilege('delete', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrWorkflowDef')->find($id);
@@ -576,7 +576,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepdeleteAction()
     {
-        Fisma_Acl::requirePrivilege('delete', 'IrWorkflowDef');
+        Fisma_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrStep')->find($id);
