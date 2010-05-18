@@ -1597,8 +1597,14 @@ class YAHOO_util_Loader
                 $remoteContent = curl_exec($ch);
 
                 // save the contents of the remote url for 30 minutes
-                if ($this->apcAvail === true) {
+                if ($this->apcAvail === true && $remoteContent) {
                     apc_store($url, $remoteContent, $this->apcttl);
+                }
+
+                if (!$remoteContent) {
+                    $remoteContent = "<!--// An error occured while fetching the remote content: ";
+                    $remoteContent .= curl_error($ch);
+                    $remoteContent .= " -->";
                 }
 
                 curl_close($ch);
