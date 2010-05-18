@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Library
  * @version    $Id$
  */
-class Test_Fisma_Behavior_AttachArtifacts_Generator extends Test_FismaUnitTest
+class Test_Library_Fisma_Behavior_AttachArtifacts_Generator extends Test_FismaUnitTest
 {
     /**
      * Test the blacklist function against a mimetype
