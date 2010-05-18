@@ -5,12 +5,12 @@ $mitigationEvaluations = $this->mitigationEvaluations->toArray();
 $evidenceEvaluations = $this->evidenceEvaluations->toArray();
 array_walk(
     $mitigationEvaluations, create_function('$v, $k, &$statusArray', '$statusArray[] = $v[\'nickname\'];'),
-    &$statusArray
+    $statusArray
 );
 $statusArray[] = 'EN';
 array_walk(
     $evidenceEvaluations, create_function('$v, $k, &$statusArray', '$statusArray[] = $v[\'nickname\'];'),
-    &$statusArray
+    $statusArray
 );
 $statusArray[] = 'CLOSED';
 $statusArray[] = 'TOTAL';
