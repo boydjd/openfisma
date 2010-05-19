@@ -5,8 +5,7 @@ Fisma_Format_Section::startSection("Documentation <span id='searchResultsTotalFo
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"d_id", label:"id",hidden: true}
-    ,{key:"o_nickname", label:"System", sortable: true, hidden: false}
+    {key:"o_nickname", label:"System", sortable: true, hidden: false}
     ,{key:"t_name", label:"Document Name", sortable: true, hidden: false}
     ,{key:"d_version", label:"Version", sortable: true, hidden: false}
     ,{key:"d_description", label:"Version Notes", sortable: false, hidden: false}
@@ -18,7 +17,7 @@ var myColumnDefs = [
     var myRequestBuilder = function(oState, oSelf) {
         // Get states or use defaults
         oState = oState || {pagination:null, sortedBy:null};
-        var sort = (oState.sortedBy) ? oState.sortedBy.key : "id";
+        var sort = (oState.sortedBy) ? oState.sortedBy.key : "o_nickname";
         var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
@@ -47,7 +46,7 @@ var myColumnDefs = [
                       + "/sortby/o_nickname/order/asc/startIndex/0/count/"
                       + "<?php echo $this->escape($this->pageInfo['count'])?>",
         dynamicData: true, 
-        //sortedBy : {key:"o_nickname", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        sortedBy : {key:"o_nickname", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
             {
                 rowsPerPage:<?php echo $this->escape($this->pageInfo['count'])?>,

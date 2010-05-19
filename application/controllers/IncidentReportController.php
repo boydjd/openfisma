@@ -115,7 +115,7 @@ class IncidentReportController extends SecurityController
              * Generate an array that correlates names of months to column names so that the view can display this 
              * in a table
              */
-            $months[$columnName] = $startDate->get('M');
+            $months['i_' . $columnName] = $startDate->get('M');
             
             /**
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 

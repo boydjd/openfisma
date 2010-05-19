@@ -304,8 +304,9 @@ class OrganizationController extends SecurityController
                     $userRoles->save();
                     $this->_me->invalidateAcl();
 
-                    $msg = "The organization is created";
+                    $msg = "Organization created successfully";
                     $model = 'notice';
+                    $this->view->priorityMessenger($msg, $model);
                     $this->_redirect("/panel/organization/sub/view/id/{$organization->id}");
                 } catch (Doctrine_Validator_Exception $e) {
                     $msg = $e->getMessage();

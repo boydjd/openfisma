@@ -41,26 +41,27 @@ Fisma_Format_Section::startSection("Review Incident Report");
                 array(
                     'label' => 'Submit Report', 
                     'imageSrc' => '/images/add.png',
-                    'class' => 'left',
-                    'onClick' => 'confirmIrSubmit'
+                    'class' => 'left'
                 )
             );
         echo $this->escape($saveReportButton, 'none');
         ?>
     </form>
     
-    <?php
-    $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
-        'irReportCancel', 
-        array(
-            'label' => 'Cancel Report', 
-            'imageSrc' => "/images/del.png",
-        )
-    );
-    echo $this->escape($irReportCancelButton, 'none');
+    <form method="post" action="/incident/cancel-report" style="display: inline;">
+        <?php
+        $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
+            'irReportCancel', 
+            array(
+                'label' => 'Cancel Report', 
+                'imageSrc' => "/images/del.png",
+            )
+        );
+        echo $this->escape($irReportCancelButton, 'none');
 
-    $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
-    ?>
+        $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
+        ?>
+    </form>
     
     <form method="post" 
           action="<?php echo $this->escape($formAction, 'none'); ?>" 

@@ -265,9 +265,12 @@ class Fisma_Inject_Excel
             if (!empty($asset['addressPort']) && !is_numeric($asset['addressPort'])) {
                 throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
             }
-            if (empty($asset['name'])) {
+
+            if (empty($finding['assetName'])) {
                 if (!empty($asset['addressIp']) && !empty($asset['addressPort'])) {
                     $asset['name'] = "{$asset['addressIp']}:{$asset['addressPort']}";
+                } else {
+                    $asset['name'] = 'unknown';
                 }
             } else {
                 $asset['name'] = $finding['assetName'];

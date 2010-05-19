@@ -100,7 +100,7 @@ class SystemDocumentController extends SecurityController
     {
         Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
 
-        $sortBy = $this->_request->getParam('sortby', 'id');
+        $sortBy = $this->_request->getParam('sortby', 'o_nickname');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
 

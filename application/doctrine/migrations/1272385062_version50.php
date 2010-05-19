@@ -53,30 +53,6 @@ class Version50 extends Doctrine_Migration_Base
              'foreign' => 'id',
              'foreignTable' => 'ir_sub_category',
              ));
-		$this->createForeignKey('ir_audit_log', 'ir_audit_log_incidentid_incident_id', array(
-             'name' => 'ir_audit_log_incidentid_incident_id',
-             'local' => 'incidentid',
-             'foreign' => 'id',
-             'foreignTable' => 'incident',
-             ));
-		$this->createForeignKey('ir_audit_log', 'ir_audit_log_userid_user_id', array(
-             'name' => 'ir_audit_log_userid_user_id',
-             'local' => 'userid',
-             'foreign' => 'id',
-             'foreignTable' => 'user',
-             ));
-		$this->createForeignKey('ir_history', 'ir_history_userid_user_id', array(
-             'name' => 'ir_history_userid_user_id',
-             'local' => 'userid',
-             'foreign' => 'id',
-             'foreignTable' => 'user',
-             ));
-		$this->createForeignKey('ir_history', 'ir_history_incidentid_incident_id', array(
-             'name' => 'ir_history_incidentid_incident_id',
-             'local' => 'incidentid',
-             'foreign' => 'id',
-             'foreignTable' => 'incident',
-             ));
 		$this->createForeignKey('ir_incident_actor', 'ir_incident_actor_incidentid_incident_id', array(
              'name' => 'ir_incident_actor_incidentid_incident_id',
              'local' => 'incidentid',

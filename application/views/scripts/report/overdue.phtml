@@ -113,30 +113,23 @@
 <div id="overdue_report"></div>
 <script type="text/javascript">
 // Column definitions
-var myColumnDefs = [
 <?php 
+$columnString = '';
 foreach ($this->columns as $key => $val) { 
-    if (!isset($i)) {
-        $i = true;
-    } else {
-        echo $this->escape(',', 'none'); 
-    }
-    
-    echo $this->escape("{key:'", 'none');
-    echo $this->escape($key);
-    echo $this->escape("', label:'", 'none');
-    echo $this->escape($val);
-    echo $this->escape("', sortable: true, hidden: false}", 'none');
-} 
-unset($i); 
+    $columnString .= "{key:'" 
+                   . $this->escape($key) 
+                   . "', label:'"
+                   . $this->escape($val)
+                   . "', sortable: true, hidden: false}, ";
+}
+$columnString = rtrim($columnString, ',');
 ?>
-    ];
 
-    var dataSource = { rows: [
-    <?php echo $this->escape(Zend_Json::encode($this->poamList), 'none');?>
-    ]};
+    var myColumnDefs = [<?php echo $this->escape($columnString, 'none'); ?>];
     
-    var myDataSource = new YAHOO.util.DataSource(dataSource.rows);
+    var dataSource = <?php echo $this->escape(Zend_Json::encode($this->poamList), 'none'); ?>;
+    
+    var myDataSource = new YAHOO.util.LocalDataSource(dataSource);
     
     // DataTable configuration
     var myConfigs = {

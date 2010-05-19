@@ -19,6 +19,9 @@
 /**
  * Adds/removes UserRoleOrganization
  * 
+ * This file contains generated code... skip standards check.
+ * @codingStandardsIgnoreFile
+ * 
  * @package Migration
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -34,7 +37,7 @@ class Version32 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $this->createTable(
+         $this->createTable(
             'user_role_organization', array(
              'userroleid' => 
              array(
@@ -57,37 +60,46 @@ class Version32 extends Doctrine_Migration_Base
              )
         );
 
-        $this->dropConstraint('user_role', NULL, TRUE);
-
-        $this->changeColumn(
-            'user_role', 'userid', '8', 'integer', array(
-             'notnull' => TRUE,
-             'primary' => FALSE,
-             )
-        );
-        $this->changeColumn(
-            'user_role', 'roleid', '8', 'integer', array(
-             'notnull' => TRUE,
-             'primary' => FALSE,
-             )
-        );
         $this->addColumn(
             'user_role', 'userroleid', 'integer', '8', array(
-             'notnull' => TRUE,
-             'primary' => TRUE,
+             'notnull' => TRUE
              )
         );
-        $this->createConstraint(
-            'user_role', NULL, array(
-            'primary' => TRUE,
-            'fields' => array('userroleid' => array()),
-        )
-        );
-        $this->changeColumn(
-            'user_role', 'userroleid', '8', 'integer', array(
-            'autoincrement' => TRUE,
-        )
-        );
+
+    }
+
+    /**
+     * Write a new sequence of primary keys into the new primary key column, userroleid.
+     * 
+     * This cannot be done in up() because the migration queues all of the DMLs and runs them after up() returns,
+     * and the following queries cannot be performed until the userroleid column has been added.
+     */
+    public function postUp()
+    {
+        $conn = Doctrine_Manager::connection();
+
+        $conn->beginTransaction();
+        $userRolesQuery = Doctrine_Query::create()->from('UserRole')->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $userRoles = $userRolesQuery->execute();
+
+        $i = 1;
+        
+        /*
+         * This is awkward. Because this table has a composite primary key, Doctrine 1.1 cannot hydrate a resultset of
+         * objects. So we find all existing user roles and hydrate as scalar, then issue a bunch of queries to add a
+         * monotonically increasing sequence of numbers into the new primary key column.
+         */
+        foreach ($userRoles as $userRole) {
+            $update = Doctrine_Query::create()
+                      ->update('UserRole u')
+                      ->set('u.userRoleId', $i++)
+                      ->where('u.userId = ? AND u.roleId = ?', 
+                              array($userRole['UserRole_userId'], $userRole['UserRole_roleId']));
+
+            $update->execute();
+        }
+
+        $conn->commit();
     }
 
     /**

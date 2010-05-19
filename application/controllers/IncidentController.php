@@ -494,7 +494,7 @@ class IncidentController extends SecurityController
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
         $this->view->allIncidentsUrl = $link
-                                     . '/status/all/sortby/reportTs/order/asc/startIndex/0/count/'
+                                     . '/status/all/sortby/i_reportTs/order/asc/startIndex/0/count/'
                                      . $this->_paging['count'];
         
         $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
@@ -906,26 +906,24 @@ class IncidentController extends SecurityController
             
             $comment = $this->getRequest()->getParam('comment');
 
-            if (!empty($comment)) {
-                // Get reference to current step before marking it complete
-                $currentStep = $incident->CurrentWorkflowStep;
-                
-                $incident->completeStep($comment);
+            // Get reference to current step before marking it complete
+            $currentStep = $incident->CurrentWorkflowStep;
+            
+            $incident->completeStep($comment);
 
-                foreach ($this->_getAssociatedUsers($id) as $userId) {
-                    $mail = new Fisma_Mail();
-                    $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
-                }
-
-                $message = 'Workflow step completed. ';
-                if ('closed' == $incident->status) {
-                    $message .= 'All steps have been now completed and the incident has been marked as closed.';
-                }
-                
-                $this->view->priorityMessenger($message, 'notice');
-            } else {
-                $this->view->priorityMessenger('Must provide a comment to complete a step.', 'warning');
+            foreach ($this->_getAssociatedUsers($id) as $userId) {
+                $mail = new Fisma_Mail();
+                $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
             }
+
+            $message = 'Workflow step completed. ';
+            if ('closed' == $incident->status) {
+                $message .= 'All steps have been now completed and the incident has been marked as closed.';
+            }
+            
+            $this->view->priorityMessenger($message, 'notice');
+        } catch (Fisma_Exception_User $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Fisma_Behavior_Lockable_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
@@ -951,7 +949,7 @@ class IncidentController extends SecurityController
 
         // Create the category menu
         $categoryElement = $form->getElement('categoryId');
-        $categoryElement->addMultiOption(array('' => ''));
+        $categoryElement->addMultiOption('', '');
         foreach ($this->_getCategories() as $key => $value) {
             $categoryElement->addMultiOptions(array($key => $value));
         }
@@ -975,47 +973,56 @@ class IncidentController extends SecurityController
 
         $comment = $this->_request->getParam('comment');
 
-        if ($this->_request->getParam('reject') == 'reject') {                
+        try {
+            if ($this->_request->getParam('reject') == 'reject') {                
 
-            // Handle incident rejection
-            $incident->reject($comment);
-            $incident->save();
+                // Handle incident rejection
+                $incident->reject($comment);
+                $incident->save();
             
-            $message = 'This incident has been marked as rejected.';
-            $this->view->priorityMessenger($message, 'notice');
-        } elseif ($this->_request->getParam('open') == 'open') {
+                $message = 'This incident has been marked as rejected.';
+                $this->view->priorityMessenger($message, 'notice');
+            } elseif ($this->_request->getParam('open') == 'open') {
 
-            // Opening an incident requires a subcategory to be assigned
-            $categoryId = $this->_request->getParam('categoryId');
-            $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
+                // Opening an incident requires a subcategory to be assigned
+                $categoryId = $this->_request->getParam('categoryId');
             
-            if (!$category) {
-                throw new Fisma_Exception("No subcategory with id ($categoryId) found.");
-            }
+                if (empty($categoryId)) {
+                    throw new Fisma_Exception_User('You must select a category.');
+                }
             
-            $incident->open($category, $comment);
-            $incident->save();
+                $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
+
+                if (!$category) {
+                    throw new Fisma_Exception("No subcategory with id ($categoryId) found.");
+                }
+            
+                $incident->open($category, $comment);
+                $incident->save();
                         
-            // Assign privacy advocates and/or inspector general as actors if requested
-            $actors = new Doctrine_Collection('User');
+                // Assign privacy advocates and/or inspector general as actors if requested
+                $actors = new Doctrine_Collection('User');
 
-            if (1 == $this->_request->getParam('pa')) { 
-                $actors->merge($this->_getPrivacyAdvocates());
+                if (1 == $this->_request->getParam('pa')) { 
+                    $actors->merge($this->_getPrivacyAdvocates());
+                }
+
+                if (1 == $this->_request->getParam('oig')) { 
+                    $actors->merge($this->_getOigUsers());
+                }
+
+                foreach ($actors as $actor) {
+                    $incident->link('Actors', array($actor->id));
+                }            
+
+                $incident->save();
+
+                // Success message
+                $message = 'This incident has been opened and a workflow has been assigned. ';
+                $this->view->priorityMessenger($message, 'notice');
             }
-
-            if (1 == $this->_request->getParam('oig')) { 
-                $actors->merge($this->_getOigUsers());
-            }
-
-            foreach ($actors as $actor) {
-                $incident->link('Actors', array($actor->id));
-            }            
-
-            $incident->save();
-
-            // Success message
-            $message = 'This incident has been opened and a workflow has been assigned. ';
-            $this->view->priorityMessenger($message, 'notice');
+        } catch (Fisma_Exception_User $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -1233,18 +1240,18 @@ class IncidentController extends SecurityController
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
-        $sortBy = $this->_request->getParam('sortby', 'reportTs');
+        $sortBy = $this->_request->getParam('sortby', 'i_reportTs');
         $order = $this->_request->getParam('order');
         $status = array($this->_request->getParam('status'));
+
+        // Convert YUI column name to Doctrine column name
+        $sortBy{strpos('_', $sortBy) + 1} = '.';
 
         if ($status[0] == 'resolved') {
             $status[] = 'rejected';
         }  
        
         $organization = Doctrine::getTable('Incident');
-        if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            throw new Fisma_Exception('Invalid "sortBy" parameter');
-        }
         
         $order = strtoupper($order);
         if ($order != 'DESC') {
@@ -1254,9 +1261,9 @@ class IncidentController extends SecurityController
         $q = self::getUserIncidentQuery()
              ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
              ->leftJoin('i.Category c')
-             ->orderBy("i.$sortBy $order")
+             ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
-             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         if ($status[0] != 'all') {
             $q->whereIn('i.status', $status);
@@ -1281,10 +1288,6 @@ class IncidentController extends SecurityController
 
         $totalRecords = $q->count();
         $incidents = $q->execute();
-
-        foreach ($incidents as $key => $val) {
-            $incidents[$key]['category'] = $incidents[$key]['Category']['name'];
-        }
  
         $tableData = array('table' => array(
             'recordsReturned' => count($incidents),

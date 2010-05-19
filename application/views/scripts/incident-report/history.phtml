@@ -1,5 +1,4 @@
 <?php
-
 echo $this->escape($this->partial('/incident-report/toolbar.phtml'), 'none');
 
 Fisma_Format_Section::startSection($this->title);
@@ -29,7 +28,7 @@ Fisma_Format_Section::startSection($this->title);
                     <?php
                     foreach($this->months as $columnName => $monthName):
                     ?>
-                        <td><?php echo $this->escape($history['i_' . $columnName]) ?></td>
+                        <td><?php echo $this->escape($history[$columnName]) ?></td>
                     <?php
                     endforeach;
                     ?>

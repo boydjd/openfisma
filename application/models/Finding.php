@@ -112,6 +112,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
         parent::setUp();
         
         $this->hasMutator('currentEcd', 'setCurrentEcd');
+        $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');
         $this->hasMutator('nextDueDate', 'setNextDueDate');
         $this->hasMutator('originalEcd', 'setOriginalEcd');
         $this->hasMutator('status', 'setStatus');
@@ -523,6 +524,21 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
         // If the original ECD is not locked, then keep it synchronized with this ECD
         if (!$this->ecdLocked) {
             $this->_set('originalEcd', $value);
+        }
+    }
+
+    /**
+     * Set ECD change description to null if it is set to a blank value
+     * 
+     * @param string $value
+     * @return void
+     */
+    public function setEcdChangeDescription($value)
+    {
+        if ('' == trim($value)) {
+            $this->_set('ecdChangeDescription', null);
+        } else {
+            $this->_set('ecdChangeDescription', $value);
         }
     }
 
