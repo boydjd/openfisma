@@ -15,7 +15,7 @@
               <oneOrMore>
                 <element name="preference">
                   <element name="name">
-                   <text/>
+                    <data type="NCName"/>
                   </element>
                   <element name="value">
                     <text/>
@@ -39,7 +39,7 @@
                     <text/>
                   </element>
                   <element name="preferenceType">
-                    <text/>
+                    <data type="NCName"/>
                   </element>
                   <element name="preferenceValues">
                     <text/>
@@ -62,7 +62,7 @@
             </oneOrMore>
           </element>
           <element name="IndividualPluginSelection">
-            <oneOrMore>
+            <zeroOrMore>
               <element name="PluginItem">
                 <element name="PluginId">
                   <data type="integer"/>
@@ -75,23 +75,21 @@
                 </element>
                 <ref name="Status"/>
               </element>
-            </oneOrMore>
+            </zeroOrMore>
           </element>
         </element>
         <element name="Report">
-          <attribute name="name">
-            <text/>
-          </attribute>
+          <attribute name="name"/>
           <oneOrMore>
             <element name="ReportHost">
               <attribute name="name">
-                <text/>
+                <data type="NMTOKEN"/>
               </attribute>
               <element name="HostProperties">
                 <zeroOrMore>
                   <element name="tag">
                     <attribute name="name">
-                      <text/>
+                      <data type="NCName"/>
                     </attribute>
                     <text/>
                   </element>
@@ -108,7 +106,7 @@
                     <data type="integer"/>
                   </attribute>
                   <attribute name="protocol">
-                    <text/>
+                    <data type="NCName"/>
                   </attribute>
                   <attribute name="severity">
                     <data type="integer"/>
@@ -124,7 +122,7 @@
                       <text/>
                     </element>
                     <element name="risk_factor">
-                      <text/>
+                      <data type="NCName"/>
                     </element>
                   </optional>
                   <optional>
@@ -158,13 +156,18 @@
                     </element>
                   </zeroOrMore>
                   <optional>
+                    <element name="plugin_modification_date">
+                      <text/>
+                    </element>
+                  </optional>
+                  <optional>
                     <element name="cvss_base_score">
                       <data type="decimal"/>
                     </element>
                   </optional>
                   <zeroOrMore>
                     <element name="cve">
-                      <text/>
+                      <data type="NCName"/>
                     </element>
                   </zeroOrMore>
                   <zeroOrMore>
@@ -174,7 +177,7 @@
                   </zeroOrMore>
                   <zeroOrMore>
                     <element name="xref">
-                      <text/>
+                      <data type="NMTOKEN"/>
                     </element>
                   </zeroOrMore>
                   <optional>
@@ -203,7 +206,7 @@
         </element>
         <element name="ns1:define">
           <attribute name="name">
-            <text/>
+            <data type="NCName"/>
           </attribute>
           <ref name="ns1.element"/>
         </element>
@@ -213,12 +216,12 @@
   <define name="ns1.element">
     <element name="ns1:element">
       <attribute name="name">
-        <text/>
+        <data type="NCName"/>
       </attribute>
       <optional>
         <element name="ns1:ref">
           <attribute name="name">
-            <text/>
+            <data type="NCName"/>
           </attribute>
         </element>
       </optional>
@@ -227,7 +230,7 @@
           <ref name="ns1.element"/>
           <element name="ns1:attribute">
             <attribute name="name">
-              <text/>
+              <data type="NCName"/>
             </attribute>
             <optional>
               <ref name="ns1.data"/>
@@ -267,13 +270,13 @@
   </define>
   <define name="Status">
     <element name="Status">
-      <text/>
+      <data type="NCName"/>
     </element>
   </define>
   <define name="ns1.data">
     <element name="ns1:data">
       <attribute name="type">
-        <text/>
+        <data type="NCName"/>
       </attribute>
     </element>
   </define>
