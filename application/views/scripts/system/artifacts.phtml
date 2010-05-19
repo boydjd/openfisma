@@ -27,7 +27,7 @@ foreach ($this->documents as $document) {
         </td>
         <td><?php echo $this->escape($document->getSizeKb())?></td>
         <td align='center'><?php echo $this->escape($document->version)?></td>
-        <td><?php echo $this->escape($document->description, 'none')?></td>
+        <td><?php echo $this->escape($document->description)?></td>
         <td><?php echo $this->escape($document->User->username)?></td>
         <td><?php echo $this->escape($document['updated_at'])?></td>
         <td>

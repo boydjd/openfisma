@@ -44,7 +44,7 @@ Fisma_Format_Section::startSection($sectionName);
     </tr>
     <tr>
         <td>Version Notes:</td>
-        <td><?php echo $this->escape($this->document->description, 'none'); ?></td>
+        <td><?php echo $this->escape($this->document->description); ?></td>
     </tr>
 </table>
 
@@ -71,7 +71,7 @@ Fisma_Format_Section::startSection($sectionName);
         <?php echo $this->escape($history->version); ?>
     </td>
     <td>
-        <?php echo $this->escape($history->description, 'none'); ?>
+        <?php echo $this->escape($history->description); ?>
     </td></tr>
 <?php
     }

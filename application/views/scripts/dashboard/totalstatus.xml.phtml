@@ -10,10 +10,11 @@
         foreach ($this->summary AS $status=>$statusCount) { 
         ?>
         <row>
-            <string><?php echo $this->escape($status)?></string>
-            <number tooltip='<?php echo $this->escape("$statusCount $status")?>'>
-                <?php echo $this->escape($statusCount)?>
-            </number>
+            <string><?php echo $this->escape($status); ?></string>
+            <number tooltip='<?php echo $this->escape("$statusCount $status"); ?>'><?php
+                // IMPORTANT: Whitespace not permitted here
+                echo $this->escape($statusCount);
+            ?></number>
         </row>
         <?php 
         } 

@@ -5,12 +5,13 @@ Fisma_Format_Section::startSection("Documentation <span id='searchResultsTotalFo
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
-    {key:"o_nickname", label:"System", sortable: true, hidden: false}
-    ,{key:"t_name", label:"Document Name", sortable: true, hidden: false}
-    ,{key:"d_version", label:"Version", sortable: true, hidden: false}
-    ,{key:"d_description", label:"Version Notes", sortable: false, hidden: false}
-    ,{key:"u_username", label:"Last Modified By User", sortable: true, hidden: false}
-    ,{key:"d_updated_at", label:"Last Modified Date", sortable: true, hidden: false}
+    {key:"d_id", label:"id",hidden: true}
+    ,{key:"o_nickname", label:"System", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"t_name", label:"Document Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"d_version", label:"Version", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"d_description", label:"Version Notes", sortable: false, hidden: false, formatter: "text"}
+    ,{key:"u_username", label:"Last Modified By User", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"d_updated_at", label:"Last Modified Date", sortable: true, hidden: false, formatter: "text"}
 ];
 
     // A function which builds the query string

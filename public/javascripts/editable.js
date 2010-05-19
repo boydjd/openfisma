@@ -44,8 +44,10 @@ function setupEditFields() {
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
              if (type == 'text') {
-                 target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
+                 target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" />';
                  textEl = document.getElementById(t_name);
+                 // set value attribute using JS call instead of string concatenation so we don't have to worry about escaping special characters
+                 textEl.setAttribute('value', cur_val.trim());
                  if (oldWidth < 200) {
                      oldWidth = 200;
                  }
@@ -65,8 +67,9 @@ function setupEditFields() {
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
                  var col = target.getAttribute('cols');
-                 target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">' + cur_html+ '</textarea>';
+                 target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'"></textarea>';
                  var textareaEl = document.getElementById(name);
+                 textareaEl.value = cur_html;
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);

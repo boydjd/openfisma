@@ -100,7 +100,8 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
     for (var i in treeNodes) {
         // Create tree node
         treeNode = treeNodes[i];
-        nodeText = "<b>" + treeNode.label + "</b> - <i>" + treeNode.orgTypeLabel + "</i>";
+        nodeText = "<b>" + PHP_JS().htmlspecialchars(treeNode.label) + "</b> - <i>"
+                         + PHP_JS().htmlspecialchars(treeNode.orgTypeLabel) + "</i>";
         var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
         yuiNode.labelStyle = treeNode.orgType;
         

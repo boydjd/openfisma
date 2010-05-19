@@ -78,7 +78,7 @@ class CommentController extends SecurityController
             $commentRecord = $object->getComments()->addComment($trimmedComment);
             $commentArray = $commentRecord->toArray();
             $commentArray['username'] = $commentRecord->User->username;
-            $commentArray['comment'] = Fisma_String::textToHtml($commentArray['comment']);
+            $commentArray['comment'] = Fisma_String::textToHtml(htmlspecialchars($commentArray['comment']));
             
             $response->comment = $commentArray;
             

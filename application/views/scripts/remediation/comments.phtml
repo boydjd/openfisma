@@ -44,8 +44,8 @@ Fisma_Format_Section::stopSection();
 // Convert comments table to YUI table
 YAHOO.util.Event.onContentReady('comments', function() {
     var myColumnDefs = [
-        {key:'timestamp', label:'Timestamp', sortable:true},
-        {key:'username', label:'User', sortable:true},
+        {key:'timestamp', label:'Timestamp', sortable:true, formatter: "text"},
+        {key:'username', label:'User', sortable:true, formatter: "text"},
         {key:'comment', label:'Comment', sortable:false}
     ];
 

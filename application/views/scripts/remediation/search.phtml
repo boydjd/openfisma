@@ -36,7 +36,9 @@ var myColumnDefs = [
         $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
                . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
                . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
-               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false') . '}';
+               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false')
+               . (!empty($columnDef['formatter']) ? ', formatter: "'. $columnDef['formatter'] . '"' : '')
+               . '}';
     }
     $defs = implode(',', $defs);
     echo $this->escape($defs, 'none');

@@ -1532,8 +1532,10 @@ function setupEditFields() {
              var cur_val = target.innerText ? target.innerText : target.textContent;
              var cur_html = target.innerHTML;
              if (type == 'text') {
-                 target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" value="'+cur_val.trim()+'" />';
+                 target.outerHTML = '<input length="50" name="'+name+'" id="'+t_name+'" class="'+eclass+'" type="text" />';
                  textEl = document.getElementById(t_name);
+                 // set value attribute using JS call instead of string concatenation so we don't have to worry about escaping special characters
+                 textEl.setAttribute('value', cur_val.trim());
                  if (oldWidth < 200) {
                      oldWidth = 200;
                  }
@@ -1553,8 +1555,9 @@ function setupEditFields() {
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
                  var col = target.getAttribute('cols');
-                 target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'">' + cur_html+ '</textarea>';
+                 target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col+'" name="'+name+'"></textarea>';
                  var textareaEl = document.getElementById(name);
+                 textareaEl.value = cur_html;
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
@@ -3028,7 +3031,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(e,b){var d=this;var c={timestamp:e.createdTs,username:e.username,comment:e.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();b.hide();b.destroy()}};/**
+Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3727,7 +3730,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(e,b){var d=this;var c={timestamp:e.createdTs,username:e.username,comment:e.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();b.hide();b.destroy()}};/**
+Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.

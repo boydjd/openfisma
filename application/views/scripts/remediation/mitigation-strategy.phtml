@@ -233,7 +233,7 @@ if ($finding->status != 'NEW'
             echo $this->escape($findingEvaluation->createdTs);
             echo $this->escape(')</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
-                echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
+                echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');
             }
         }
         echo $this->escape('</div>', 'none');
