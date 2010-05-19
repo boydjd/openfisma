@@ -74,9 +74,7 @@ class Incident extends BaseIncident
             throw new Fisma_Exception('Cannot reject an incident unless it is in "new" status');
         }
 
-        /*
-         * Validate that comment is not empty
-         */
+        // Validate that comment is not empty
         if ('' == trim($comment)) {
             throw new Fisma_Exception_User('You must provide a comment');
         }
@@ -112,9 +110,7 @@ class Incident extends BaseIncident
         $this->status = 'open';
         $this->Category = $category;
         
-        /*
-         * Validate that comment is not empty
-         */
+        // Validate that comment is not empty
         if ('' == trim($comment)) {
             throw new Fisma_Exception_User('You must provide a comment');
         }
@@ -165,6 +161,11 @@ class Incident extends BaseIncident
      */
     public function completeStep($comment)
     {
+        // Validate that comment is not empty
+        if ('' == trim($comment)) {
+            throw new Fisma_Exception_User('You must provide a comment');
+        }
+
         // Update the completed step first
         $completedStep = $this->CurrentWorkflowStep;
         $completedStep->completeStep($comment);

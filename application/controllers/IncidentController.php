@@ -900,26 +900,24 @@ class IncidentController extends SecurityController
             
             $comment = $this->getRequest()->getParam('comment');
 
-            if (!empty($comment)) {
-                // Get reference to current step before marking it complete
-                $currentStep = $incident->CurrentWorkflowStep;
-                
-                $incident->completeStep($comment);
+            // Get reference to current step before marking it complete
+            $currentStep = $incident->CurrentWorkflowStep;
+            
+            $incident->completeStep($comment);
 
-                foreach ($this->_getAssociatedUsers($id) as $userId) {
-                    $mail = new Fisma_Mail();
-                    $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
-                }
-
-                $message = 'Workflow step completed. ';
-                if ('closed' == $incident->status) {
-                    $message .= 'All steps have been now completed and the incident has been marked as closed.';
-                }
-                
-                $this->view->priorityMessenger($message, 'notice');
-            } else {
-                $this->view->priorityMessenger('Must provide a comment to complete a step.', 'warning');
+            foreach ($this->_getAssociatedUsers($id) as $userId) {
+                $mail = new Fisma_Mail();
+                $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
             }
+
+            $message = 'Workflow step completed. ';
+            if ('closed' == $incident->status) {
+                $message .= 'All steps have been now completed and the incident has been marked as closed.';
+            }
+            
+            $this->view->priorityMessenger($message, 'notice');
+        } catch (Fisma_Exception_User $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Fisma_Behavior_Lockable_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
