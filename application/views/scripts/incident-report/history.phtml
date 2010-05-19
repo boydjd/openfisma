@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @codingStandardsIgnoreFile -- view sniff is interfering with release 2.6 branch development
+ */
 echo $this->partial('/incident-report/toolbar.phtml');
 
 Fisma_Format_Section::startSection($this->title);
@@ -29,7 +31,7 @@ Fisma_Format_Section::startSection($this->title);
                     <?php
                     foreach($this->months as $columnName => $monthName):
                     ?>
-                        <td><?php echo $history['i_' . $columnName]; ?></td>
+                        <td><?php echo $history[$columnName]; ?></td>
                     <?php
                     endforeach;
                     ?>
