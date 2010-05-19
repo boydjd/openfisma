@@ -73,7 +73,14 @@ class Incident extends BaseIncident
         if ('new' != $this->status) {
             throw new Fisma_Exception('Cannot reject an incident unless it is in "new" status');
         }
-        
+
+        /*
+         * Validate that comment is not empty
+         */
+        if ('' == trim($comment)) {
+            throw new Fisma_Exception_User('You must provide a comment');
+        }
+
         // Create a workflow step for rejecting then mark it as closed
         $rejectStep = new IrIncidentWorkflow();
 
@@ -104,6 +111,13 @@ class Incident extends BaseIncident
     {
         $this->status = 'open';
         $this->Category = $category;
+        
+        /*
+         * Validate that comment is not empty
+         */
+        if ('' == trim($comment)) {
+            throw new Fisma_Exception_User('You must provide a comment');
+        }
         
         /*
          * Insert an initial workflow step which reflects the opening of the incident

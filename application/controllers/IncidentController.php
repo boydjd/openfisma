@@ -945,7 +945,7 @@ class IncidentController extends SecurityController
 
         // Create the category menu
         $categoryElement = $form->getElement('categoryId');
-        $categoryElement->addMultiOption(array('' => ''));
+        $categoryElement->addMultiOption('', '');
         foreach ($this->_getCategories() as $key => $value) {
             $categoryElement->addMultiOptions(array($key => $value));
         }
@@ -969,47 +969,56 @@ class IncidentController extends SecurityController
 
         $comment = $this->_request->getParam('comment');
 
-        if ($this->_request->getParam('reject') == 'reject') {                
+        try {
+            if ($this->_request->getParam('reject') == 'reject') {                
 
-            // Handle incident rejection
-            $incident->reject($comment);
-            $incident->save();
+                // Handle incident rejection
+                $incident->reject($comment);
+                $incident->save();
             
-            $message = 'This incident has been marked as rejected.';
-            $this->view->priorityMessenger($message, 'notice');
-        } elseif ($this->_request->getParam('open') == 'open') {
+                $message = 'This incident has been marked as rejected.';
+                $this->view->priorityMessenger($message, 'notice');
+            } elseif ($this->_request->getParam('open') == 'open') {
 
-            // Opening an incident requires a subcategory to be assigned
-            $categoryId = $this->_request->getParam('categoryId');
-            $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
+                // Opening an incident requires a subcategory to be assigned
+                $categoryId = $this->_request->getParam('categoryId');
             
-            if (!$category) {
-                throw new Fisma_Exception("No subcategory with id ($categoryId) found.");
-            }
+                if (empty($categoryId)) {
+                    throw new Fisma_Exception_User('You must select a category.');
+                }
             
-            $incident->open($category, $comment);
-            $incident->save();
+                $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
+
+                if (!$category) {
+                    throw new Fisma_Exception("No subcategory with id ($categoryId) found.");
+                }
+            
+                $incident->open($category, $comment);
+                $incident->save();
                         
-            // Assign privacy advocates and/or inspector general as actors if requested
-            $actors = new Doctrine_Collection('User');
+                // Assign privacy advocates and/or inspector general as actors if requested
+                $actors = new Doctrine_Collection('User');
 
-            if (1 == $this->_request->getParam('pa')) { 
-                $actors->merge($this->_getPrivacyAdvocates());
+                if (1 == $this->_request->getParam('pa')) { 
+                    $actors->merge($this->_getPrivacyAdvocates());
+                }
+
+                if (1 == $this->_request->getParam('oig')) { 
+                    $actors->merge($this->_getOigUsers());
+                }
+
+                foreach ($actors as $actor) {
+                    $incident->link('Actors', array($actor->id));
+                }            
+
+                $incident->save();
+
+                // Success message
+                $message = 'This incident has been opened and a workflow has been assigned. ';
+                $this->view->priorityMessenger($message, 'notice');
             }
-
-            if (1 == $this->_request->getParam('oig')) { 
-                $actors->merge($this->_getOigUsers());
-            }
-
-            foreach ($actors as $actor) {
-                $incident->link('Actors', array($actor->id));
-            }            
-
-            $incident->save();
-
-            // Success message
-            $message = 'This incident has been opened and a workflow has been assigned. ';
-            $this->view->priorityMessenger($message, 'notice');
+        } catch (Fisma_Exception_User $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
         $this->_redirect("/panel/incident/sub/view/id/$id");
