@@ -51,7 +51,7 @@ class Fisma_Yui_Menu
     function __construct($title) 
     {
         $this->text = $title;
-        $this->submenu['id'] = $title;
+        $this->submenu['id'] = uniqid();
         $this->submenu['itemdata'] = array();
     }
     
