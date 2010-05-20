@@ -14,23 +14,66 @@
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
  * {@link http://www.gnu.org/licenses/}.
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license   http://www.openfisma.org/content/license GPLv3
- * @version   $Id$
  */
-require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
 
 try {
+    defined('APPLICATION_PATH')
+        || define(
+            'APPLICATION_PATH',
+            realpath(dirname(__FILE__) . '/../application')
+        );
+
+    defined('APPLICATION_ENV')
+        || define(
+            'APPLICATION_ENV',
+            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+        );
+
+    set_include_path(
+        APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR . APPLICATION_PATH . '/../library' .
+        PATH_SEPARATOR . get_include_path()
+    );
+
+    require_once 'Fisma.php';
+    require_once 'Zend/Application.php';
+
     Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
-    register_shutdown_function('Zend_Session::writeClose', true);
-    Fisma::setConfiguration(new Fisma_Configuration_Database());
     
     if (Fisma::isInstall()) {
-        Fisma::connectDb();
+        $application = new Zend_Application(
+            APPLICATION_ENV,
+            APPLICATION_PATH . '/config/application.ini'
+        );
+    } else {
+        // If the application isn't installed, we need to create a basic configuration to allow the application to
+        // bootstrap and install.
+        $config = array(
+            'bootstrap' => array(
+                'path' => APPLICATION_PATH . "/Bootstrap.php",
+                'class' => 'Bootstrap',
+                'container' => array(
+                    'type' => 'symfony'
+                )
+             ),
+             'resources' =>
+                array(
+                   'frontcontroller' => array(
+                       'controllerdirectory' => APPLICATION_PATH . '/controllers'
+                   )
+                ),
+             'includePaths' =>
+                array(
+                    'library' => APPLICATION_PATH . '/../library'
+                ),
+        );
+
+        $application = new Zend_Application(
+            APPLICATION_ENV,
+            new Zend_Config($config)
+        );
     }
-    Fisma::dispatch();
+
+    $application->bootstrap()->run();
 } catch (Zend_Config_Exception $zce) {
     // A zend config exception indicates that the application may not be installed properly
     echo '<h1>The application is not installed correctly</h1>';

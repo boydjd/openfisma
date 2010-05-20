@@ -222,7 +222,7 @@ class InstallController extends Zend_Controller_Action
         );
         $method = 'connection';
         // create config file
-        $configInfo = file_get_contents(Fisma::getPath('config') . '/app.conf.template');
+        $configInfo = file_get_contents(Fisma::getPath('config') . '/application.ini.template');
         $configInfo = str_replace(
             array(
                 '##DB_ADAPTER##', 
@@ -242,7 +242,7 @@ class InstallController extends Zend_Controller_Action
             ), 
             $configInfo
         );
-        file_put_contents(Fisma::getPath('config') . '/app.conf', $configInfo);
+        file_put_contents(Fisma::getPath('config') . '/application.ini', $configInfo);
 
         // test the connection of database
         try {
@@ -279,7 +279,7 @@ class InstallController extends Zend_Controller_Action
             $checklist['savingconfig'] = 'ok';
             $this->view->next = '/install/complete';
         } catch (Exception $e) {
-            @unlink(Fisma::getPath('config') . '/app.conf');
+            @unlink(Fisma::getPath('config') . '/application.ini');
             throw $e;
         }
 

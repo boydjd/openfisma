@@ -89,7 +89,7 @@ class Fisma
     private static $_listenerEnabled = true;
     
     /**
-     * The application configuration, stored in application/config/app.conf
+     * The application configuration, stored in application/config/application.ini
      * 
      * @var Zend_Config_Ini
      */
@@ -170,7 +170,7 @@ class Fisma
      * 
      * @param int $mode One of the run modes specified as constants in this class
      * @return void
-     * @throws Fisma_Exception if neither the environment parameter in app.conf is 'production' nor 'development'
+     * @throws Fisma_Exception if neither the environment parameter in application.ini is 'production' nor 'development'
      */
     public static function initialize($mode) 
     {
@@ -236,7 +236,7 @@ class Fisma
         );
 
         // Load the system configuration
-        $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/app.conf';
+        $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/application.ini';
         if (file_exists($appConfFile)) {
             $conf = new Zend_Config_Ini($appConfFile);
             if ('production' == $conf->environment) {
@@ -244,8 +244,8 @@ class Fisma
             } elseif ('development' == $conf->environment) {
                 self::$_appConf = $conf->development;
             } else {
-                throw new Fisma_Exception("The environment parameter in app.conf must be either \"production\" or "
-                                        . "\"development\" but it's actually \"$conf->environment\"");
+                throw new Fisma_Exception("The environment parameter in application.ini must be either \"production\""
+                                        . " or \"development\" but it's actually \"$conf->environment\"");
             }
     
             // PHP configuration
@@ -437,10 +437,6 @@ class Fisma
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
-
-        if (self::mode() != self::RUN_MODE_TEST) {
-            $frontController->dispatch();
-        }
     }
     
     /**

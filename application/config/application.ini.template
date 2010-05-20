@@ -56,10 +56,19 @@ testdb.username =
 testdb.password = 
 testdb.schema = 
 
+version.app = 2.7.0
+version.yui = 2.7.0
+
 php.display_errors = false
-php.memory_limit = 64M
+php.memory_limit = 128M
 
 timezone = "America/New_York"
+
+bootstrap.path = APPLICATION_PATH "/Bootstrap.php"
+bootstrap.class = "Bootstrap"
+bootstrap.container.type = symfony
+resources.frontController.controllerDirectory = APPLICATION_PATH "/controllers"
+includePaths.library = APPLICATION_PATH "/../library"
 
 ; Development mode displays error messages to the user and enables some features that aid 
 ; debugging but reduce performance. Development mode inherits all properties from production
@@ -68,6 +77,6 @@ timezone = "America/New_York"
 debug = true
 
 php.display_errors = true
-xdebug.var_display_max_depth = 3
+xdebug.var_display_max_depth = 3 
 
 session.cookie_secure = false
