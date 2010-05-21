@@ -90,7 +90,7 @@ class Fisma_Inject_Factory
         $contents = fread($handle, 128);
         fclose($handle);
 
-        if (stristr($contents, 'Nessus')) {
+        if (stristr($contents, 'NessusClientData_v2')) {
             return 'Nessus';
         } elseif (stristr($contents, 'AppDetective')) {
             return 'AppDetective';
