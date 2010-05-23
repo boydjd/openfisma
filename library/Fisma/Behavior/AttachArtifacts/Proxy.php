@@ -60,12 +60,12 @@ class Fisma_Behavior_AttachArtifacts_Proxy
     /**
      * Proxy method for attaching an artifact
      * 
-     * @param string $path
+     * @param string $file A $_FILES style array of uploaded file info
      * @param string $comment User's comment associated with this artifact
      */
-    public function attach($path, $comment)
+    public function attach($file, $comment)
     {
-        $this->_generator->attach($this->_instance, $path, $comment);
+        $this->_generator->attach($this->_instance, $file, $comment);
     }
     
     /**

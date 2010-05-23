@@ -41,7 +41,9 @@ class Test_Library_Fisma_Behavior_AttachArtifacts_Generator extends Test_FismaUn
         
         $file = array('name' => 'Artifact.txt', 'type' => 'application/x-javascript');
         
-        $incident->getArtifacts()->attach($file);
+        $comment = "Inane comment goes here";
+
+        $incident->getArtifacts()->attach($file, $comment);
     }
 
     /**
@@ -55,6 +57,8 @@ class Test_Library_Fisma_Behavior_AttachArtifacts_Generator extends Test_FismaUn
         
         $file = array('name' => 'dangerous.exe');
         
-        $incident->getArtifacts()->attach($file);
+        $comment = "Inane comment goes here";
+        
+        $incident->getArtifacts()->attach($file, $comment);
     }
 }
