@@ -36,7 +36,7 @@ environment = production
 [production]
 session.name = OpenFISMA
 session.save_path = "data/sessions" ; save path is relative to the application root
-session.cookie_secure = false
+session.cookie_secure = true
 session.hash_function = 1 ; 0->md5, 1->sha1, use sha1 by default
 session.use_only_cookies = true
 
@@ -57,7 +57,7 @@ testdb.password =
 testdb.schema = 
 
 php.display_errors = false
-php.memory_limit = 128M
+php.memory_limit = 64M
 
 timezone = "America/New_York"
 
