@@ -151,14 +151,34 @@ class RemediationController extends SecurityController
                                      ->from('Evaluation e')
                                      ->where('approvalGroup = \'action\'')
                                      ->orderBy('e.precedence');
-        $this->view->mitigationEvaluations = $mitigationEvaluationQuery->execute();
+
+        $mitigationEvaluations = $mitigationEvaluationQuery->execute();
         
         $evidenceEvaluationQuery = Doctrine_Query::create()
                                      ->from('Evaluation e')
                                      ->where('approvalGroup = \'evidence\'')
                                      ->orderBy('e.precedence');
-        $this->view->evidenceEvaluations = $evidenceEvaluationQuery->execute();
+        $evidenceEvaluations = $evidenceEvaluationQuery->execute();
         
+        // Create a list of the columns displayed on the summary
+        $columns = array('NEW', 'DRAFT');
+
+        foreach ($mitigationEvaluations as $evaluation) {
+            $columns[] = $evaluation->nickname;
+        }
+        
+        $columns[] = 'EN';
+
+        foreach ($evidenceEvaluations as $evaluation) {
+            $columns[] = $evaluation->nickname;            
+        }
+        
+        $columns[] = 'CLOSED';
+        $columns[] = 'TOTAL';
+        
+        $this->view->statusArray = $columns;
+        $this->view->mitigationEvaluations = $mitigationEvaluations;
+        $this->view->evidenceEvaluations = $evidenceEvaluations;
         $this->view->findingSources = Doctrine::getTable('Source')->findAll();
     }
     

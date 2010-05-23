@@ -1,20 +1,5 @@
 <?php
-// Build array for header link output
-$statusArray = array('NEW', 'DRAFT');
-$mitigationEvaluations = $this->mitigationEvaluations->toArray();
-$evidenceEvaluations = $this->evidenceEvaluations->toArray();
-array_walk(
-    $mitigationEvaluations, create_function('$v, $k, &$statusArray', '$statusArray[] = $v[\'nickname\'];'),
-    $statusArray
-);
-$statusArray[] = 'EN';
-array_walk(
-    $evidenceEvaluations, create_function('$v, $k, &$statusArray', '$statusArray[] = $v[\'nickname\'];'),
-    $statusArray
-);
-$statusArray[] = 'CLOSED';
-$statusArray[] = 'TOTAL';
-// Finished building header link array
+// @codingStandardsIgnoreFile
 ?>
 <script type="text/javascript">
 
@@ -108,7 +93,7 @@ function menuHandler(source) {
             + '/format/json';
     reloadTable(url);
 
-    <?php foreach ($statusArray as $status): ?>
+    <?php foreach ($this->statusArray as $status): ?>
     document.getElementById('finding_summary_search_<?php echo urlencode($status);?>').href = 
         '/panel/remediation/sub/searchbox/status/<?php echo urlencode($status);?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
@@ -209,7 +194,7 @@ print $exportPdf;
         <th colspan="<?php echo count($this->evidenceEvaluations); ?>">Approval</th>
     </tr>
     <tr>
-    <?php foreach ($statusArray as $status):
+    <?php foreach ($this->statusArray as $status):
         $url = Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/' . urlencode($status));?>
         <th>
             <a id="finding_summary_search_<?php echo urlencode($status); ?>" href="<?php echo $url; ?>">
