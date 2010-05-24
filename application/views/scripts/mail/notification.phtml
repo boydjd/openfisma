@@ -7,9 +7,9 @@ to modify your notification preferences, please log in to the system and select
 foreach ( $this->notifyData as $row ) { 
 ?>
 ---------------------------------------
-Event: <?php echo $this->escape($row->eventText)?>
+Event: <?php echo $this->escape($row->eventText, 'none')?>
 
-Time:  <?php echo $this->escape($row->createdTs)?>
+Time:  <?php echo $this->escape($row->createdTs, 'none')?>
 
 <?php 
 } 

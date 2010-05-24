@@ -1,13 +1,13 @@
 This is an automatically generated message, please do not reply to this address.
 
-Your <?php echo $this->escape(Fisma::configuration()->getConfig('system_name')) ?> account has been created.
+Your <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'), 'none') ?> account has been created.
 
-Login: <?php echo $this->escape($this->user->username)?>
+Login: <?php echo $this->escape($this->user->username, 'none')?>
 
 <?php if (Fisma::configuration()->getConfig('auth_type') == 'ldap'): ?>
 Password: <Same as your network password>
 <?php else: ?>
-Temporary Password: <?php echo $this->escape($this->user->plainTextPassword)?>
+Temporary Password: <?php echo $this->escape($this->user->plainTextPassword, 'none')?>
 
 <?php endif; ?>
 
