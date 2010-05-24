@@ -49,7 +49,12 @@ $pdf->closeObject();
 $pdf->addObject($all,'all');
 $pdf->ezSetMargins($top_margin,$bottom_margin,$horiz_margin,$horiz_margin);
 
-$pdf->ezTable($this->tableData, $this->columns,'Finding Summary',
+// we need to escape the syste/organization names in the first column.
+$tableData = $this->tableData;
+foreach ($tableData as &$tableRow) {
+    $tableRow[0] = htmlentities($tableRow[0]);
+}
+$pdf->ezTable($tableData, $this->columns,'Finding Summary',
     array('fontSize'=>8, 'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
 
 // IE has a bug where it can't display certain mimetypes if a no-cache header is sent,

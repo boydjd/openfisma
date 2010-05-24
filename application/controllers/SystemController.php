@@ -161,7 +161,9 @@ class SystemController extends BaseController
 
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
 
-        $tabView->addTab("$organization->name ($organization->nickname)", "/system/system/id/$id");
+        $firstTab = $this->view->escape($organization->name)
+                  . ' (' . $this->view->escape($organization->nickname) . ')';
+        $tabView->addTab($firstTab, "/system/system/id/$id");
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
