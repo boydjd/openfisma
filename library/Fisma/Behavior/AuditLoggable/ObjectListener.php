@@ -112,13 +112,20 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
                     }
                     
                     // The log always shows the old and new values for the field.
-                    $oldValue = Fisma_String::htmlToPlainText($invoker->getOriginalValue($field));
+                    $oldValue = $invoker->getOriginalValue($field);
+                    $newValue = $invoker->$field;
+                    
+                    if ($this->_fieldIsHtml($invoker->getTable(), $field)) {
+                        $oldValue = Fisma_String::htmlToPlainText($oldValue);
+                        $newValue = Fisma_String::htmlToPlainText($newValue);
+                    }
+                    $oldValue = htmlspecialchars($oldValue);
+                    $newValue = htmlspecialchars($newValue);
+
                     if (empty($oldValue)) {
                         $oldValue = "<em>No value</em>";
                     }
-                    
-                    $newValue = Fisma_String::htmlToPlainText($invoker->$field);
-                    
+
                     $message = "Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue";
                     $invoker->getAuditLog()->write($message);
                 }
@@ -158,6 +165,24 @@ class Fisma_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listen
 
         if (@isset($definition['extra']['auditLog'])) {
             return $definition['extra']['auditLog'];
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Determine whether a particular field on a particular table contains HTML
+     * 
+     * @param Doctrine_Table $table The specified doctrine table object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return boolean True if found extra property 'purify' in the table definition and is 'html', false otherwise
+     */
+    private function _fieldIsHtml(Doctrine_Table $table, $field)
+    {
+        $definition = $table->getDefinitionOf($field);
+
+        if (@isset($definition['extra']['purify'])) {
+            return $definition['extra']['purify'] === 'html';
         } else {
             return false;
         }
