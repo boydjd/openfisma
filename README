@@ -19,9 +19,9 @@ http://documentation.openfisma.org
 http://api.openfisma.org
 
 Issue Tracking/Build Status:
-http://jira.openfisma.org
-http://crucible.openfisma.org
-http://ci.openfisma.org
+http://jira.openfisma.org (Bug reports, feature requests)
+http://crucible.openfisma.org (Peer code review, source code browser)
+http://bamboo.openfisma.org (Continuous Integration)
 
 Help:
 Please visit the forums at http://www.openfisma.org/forum or email openfisma@endeavorsystems.com
