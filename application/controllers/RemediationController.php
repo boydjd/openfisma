@@ -1369,12 +1369,20 @@ class RemediationController extends SecurityController
             } else {
                 $row['duetime'] = 'Overdue';
             }
-            if ($format == 'pdf' || $format == 'xls') {
-                $row['description'] = strip_tags(html_entity_decode($result->description));
-                $row['recommendation'] = strip_tags(html_entity_decode($result->recommendation));
-                $row['mitigationStrategy'] = strip_tags(html_entity_decode($result->mitigationStrategy));
-                $row['threat'] = strip_tags(html_entity_decode($result->threat));
-                $row['countermeasures'] = strip_tags(html_entity_decode($result->countermeasures));
+            if ($format == 'pdf') {
+                $row['systemNickname'] = htmlspecialchars($row['systemNickname']);
+                $row['assetName'] = htmlspecialchars($row['assetName']);
+                $row['description'] = strip_tags($result->description);
+                $row['recommendation'] = strip_tags($result->recommendation);
+                $row['mitigationStrategy'] = strip_tags($result->mitigationStrategy);
+                $row['threat'] = strip_tags($result->threat);
+                $row['countermeasures'] = strip_tags($result->countermeasures);
+            } else if ($format == 'xls') {
+                $row['description'] = html_entity_decode(strip_tags($result->description));
+                $row['recommendation'] = html_entity_decode(strip_tags($result->recommendation));
+                $row['mitigationStrategy'] = html_entity_decode(strip_tags($result->mitigationStrategy));
+                $row['threat'] = html_entity_decode(strip_tags($result->threat));
+                $row['countermeasures'] = html_entity_decode(strip_tags($result->countermeasures));
             } else {
                 $row['description'] = $this->view->ShowLongText(
                     strip_tags($result->description), 
