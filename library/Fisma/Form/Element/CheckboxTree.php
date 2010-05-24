@@ -127,15 +127,18 @@ class Fisma_Form_Element_CheckboxTree extends Zend_Form_Element
                      . (2*$checkbox['level']) 
                      . "em\">";
             $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
+            $group = $this->getView()->escape($checkbox['group']);
+            $name = $this->getView()->escape($checkbox['name']);
             $render .= "<input type='checkbox'"
-                     . " id =\"{$groupName}[{$checkbox['group']}][{$checkbox['name']}]\""
-                     . " name=\"{$groupName}[{$checkbox['group']}][]\""
-                     . " value='{$checkbox['name']}'"
-                     . ' onclick=\'YAHOO.fisma.CheckboxTree.handleClick(this, event);\''
-                     . " nestedLevel=\"{$checkbox['level']}\""
-                     . "$class$checked$disabled>&nbsp;"
-                     . "<label for=\"{$groupName}[{$checkbox['group']}][{$checkbox['name']}]\">"
-                     . "{$checkbox['label']}</label>&nbsp;</li>";
+                     . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
+                     . ' name="' . $groupName . '[' . $group . '][]"'
+                     . ' value="' . $name . '"'
+                     . ' onclick="YAHOO.fisma.CheckboxTree.handleClick(this, event);"'
+                     . ' nestedLevel="' . $checkbox['level'] . '"'
+                     . $class . $checked . $disabled . '>&nbsp;'
+                     . '<label for="' . $groupName . '[' . $group . '][' . $name . ']">'
+                     . $this->getView()->escape($checkbox['label'])
+                     . '</label>&nbsp;</li>';
         }
         $render .= "</ul></td></tr>\n";
 
