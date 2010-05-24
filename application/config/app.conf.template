@@ -1,3 +1,78 @@
+<<<<<<< .mine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Copyright (c) 2008 Endeavor Systems, Inc.
+;
+; This file is part of OpenFISMA.
+;
+; OpenFISMA is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; OpenFISMA is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; The configuration file is split into two sections, production and development. Most deployments should run in 
+; production mode.
+;
+; Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright: (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+; License:   http://www.openfisma.org/content/license
+; Version:   $Id$
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Environment can be "production" or "development"
+environment = production
+
+; Most deployments should run in production mode
+[production]
+session.name = OpenFISMA
+session.save_path = "data/sessions" ; save path is relative to the application root
+session.cookie_secure = true
+session.hash_function = 1 ; 0->md5, 1->sha1, use sha1 by default
+session.use_only_cookies = true
+
+db.adapter = ##DB_ADAPTER##
+db.host = ##DB_HOST##
+db.port = ##DB_PORT##
+db.username = ##DB_USER##
+db.password = ##DB_PASS##
+db.schema = ##DB_NAME##
+
+; The test DB is used for unit tests. It should be different from the main DB since the unit tests will
+; destory any data in this DB. It's left blank by default to avoid accidentaly running tests against the main DB.
+testdb.adapter = 
+testdb.host = 
+testdb.port = 
+testdb.username = 
+testdb.password = 
+testdb.schema = 
+
+php.display_errors = false
+php.memory_limit = 64M
+
+timezone = "America/New_York"
+
+; Development mode displays error messages to the user and enables some features that aid 
+; debugging but reduce performance. Development mode inherits all properties from production
+; mode unless specifically over-ridden.
+[development : production]
+debug = true
+
+php.display_errors = true
+xdebug.var_display_max_depth = 3
+
+session.cookie_secure = false
+=======
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ; Copyright (c) 2008 Endeavor Systems, Inc.
@@ -71,3 +146,4 @@ php.display_errors = true
 xdebug.var_display_max_depth = 3
 
 session.cookie_secure = false
+>>>>>>> .r3409
