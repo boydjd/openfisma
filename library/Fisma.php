@@ -394,7 +394,7 @@ class Fisma
                                 );
 
             $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
-            //$frontController->registerPlugin($debug);
+            $frontController->registerPlugin($debug);
         }
 
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
