@@ -85,7 +85,14 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Comments:</td>
-                        <td><?php echo $this->escape(Fisma_String::textToHtml($step['comments']), 'none') ?></td>
+                        <td>
+                            <?php
+                                echo $this->escape(
+                                    Fisma_String::textToHtml(htmlspecialchars($step['comments'])),
+                                    'none'
+                                );
+                            ?>
+                        </td>
                     </tr>
                 <?php
                 endif;

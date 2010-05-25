@@ -1064,12 +1064,6 @@ class IncidentController extends SecurityController
 
         $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
-        // format comment text as HTML
-        foreach ($comments as &$comment) {
-            $comment['comment'] = htmlspecialchars($comment['comment']);
-            $comment['comment'] = Fisma_String::textToHtml($comment['comment']);
-        }
-
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 
             array(

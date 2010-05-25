@@ -17,9 +17,6 @@ IrIncidentWorkflow:
             type: timestamp
         comments:
             type: string
-            extra: 
-                purify: html
-
         incidentId: 
             type: integer
             comment: Foreign key to the incident to which this workflow step belongs

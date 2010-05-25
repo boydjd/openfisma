@@ -77,7 +77,7 @@ class CommentController extends SecurityController
             // Add comment and include comment details (including username) in response object
             $commentRecord = $object->getComments()->addComment($trimmedComment);
             $commentArray = $commentRecord->toArray();
-            $commentArray['username'] = $commentRecord->User->username;
+            $commentArray['username'] = htmlspecialchars($commentRecord->User->username);
             $commentArray['comment'] = Fisma_String::textToHtml(htmlspecialchars($commentArray['comment']));
             
             $response->comment = $commentArray;
