@@ -30,10 +30,36 @@ require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
  */
 class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
 {
-    public function testStub()
+    /**
+     * Test purification of plain text fields to prevent XSS injection
+     */
+    public function testXssListenerPurifiesPlainTextField()
     {
-        class_exists('XssListener');
+        // Use Incident.reporterFirstName as a sample field which we know has a plaintext purifier
+        $incident = new Incident();
         
-        $this->markTestIncomplete();
+        $incident->reporterFirstName = "<script type='text/javascript'>alert('hello')</script>";
+        
+        $incident->save();
+        
+        // The input is "safe" if there are no angle brackets left in the field
+        $this->assertNotContains('<', $incident->reporterFirstName);
+        $this->assertNotContains('>', $incident->reporterFirstName);
+    }
+    
+    /**
+     * Test purification of html fields to prevent XSS injection
+     */
+    public function testXssListenerPurifiesHtmlField()
+    {
+        // Use Incident.additionalInfo as a sample field which we know has an HTML purifier
+        $incident = new Incident();
+        
+        $incident->additionalInfo = "<script type='text/javascript'>alert('hello')</script>";
+        
+        $incident->save();
+        
+        // HTML purifier should blank out the entire string, since it is all malicious
+        $this->assertEquals('', trim($incident->additionalInfo));
     }
 }
