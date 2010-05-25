@@ -117,10 +117,10 @@
 $columnString = '';
 foreach ($this->columns as $key => $val) { 
     $columnString .= "{key:'" 
-                   . $this->escape($key) 
+                   . $this->escape($key, 'javascript') 
                    . "', label:'"
-                   . $this->escape($val)
-                   . "', sortable: true, hidden: false}, ";
+                   . $this->escape($val, 'javascript')
+                   . "', sortable: true, hidden: false, formatter: 'text'}, ";
 }
 $columnString = rtrim($columnString, ',');
 ?>

@@ -69,8 +69,15 @@ if( isset($this->criteria['sourceId']) ) {
     $title .= " [Source] : {$this->sourceList[$this->criteria['sourceId']]}";
 }
 
+$poamTable = $this->poamList;
+foreach ($poamTable as &$record) {
+    foreach ($record as &$field) {
+        $field = $this->escape($field);
+    }
+}
+
 $pdf->ezText('Plans of Actions And Milestones Report Administration',16,array('justification'=>'center'));
-$pdf->ezTable($this->poamList, $cols ,$title,
+$pdf->ezTable($poamTable, $cols ,$title,
     array('fontSize'=>8,'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
 
 header('Pragma: private');
