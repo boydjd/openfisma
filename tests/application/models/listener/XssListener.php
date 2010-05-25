@@ -30,10 +30,19 @@ require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
  */
 class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
 {
-    public function testStub()
+    /**
+     * Test purification of html fields to prevent XSS injection
+     */
+    public function testXssListenerPurifiesHtmlField()
     {
-        class_exists('XssListener');
+        // Use Incident.additionalInfo as a sample field which we know has an HTML purifier
+        $incident = new Incident();
         
-        $this->markTestIncomplete();
+        $incident->additionalInfo = "<script type='text/javascript'>alert('hello')</script>";
+        
+        $incident->save();
+        
+        // HTML purifier should blank out the entire string, since it is all malicious
+        $this->assertEquals('', trim($incident->additionalInfo));
     }
 }
