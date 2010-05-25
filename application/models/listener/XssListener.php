@@ -58,21 +58,22 @@ class XssListener extends Fisma_Record_Listener
         $table = $invoker->getTable();
         
         // Step through each modified value, and see if it needs to have any purification applied
-        foreach ($modified as $column => $value) {
-            $columnDefinition = $table->getColumnDefinition($column);
-            if (isset($columnDefinition['extra'])
-                && isset ($columnDefinition['extra']['purify'])) {
-                $purifyType = $columnDefinition['extra']['purify'];
+        foreach ($modified as $field => $value) {
+            $fieldDefinition = $table->getDefinitionOf($field);
+
+            if (isset($fieldDefinition['extra'])
+                && isset ($fieldDefinition['extra']['purify'])) {
+                $purifyType = $fieldDefinition['extra']['purify'];
                 switch ($purifyType) {
                     case 'plaintext':
-                        $invoker[$column] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', FALSE);
+                        $invoker[$field] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', FALSE);
                         break;
                     case 'html':
-                        $invoker[$column] = $this->getPurifier()->purify($value);
+                        $invoker[$field] = $this->getPurifier()->purify($value);
                         break;
                     default:
-                        throw new Fisma_Exception("Undefined purification type '$purifyType' on column "
-                                                . "'$column' on table '{$table->getTableName()}'");
+                        throw new Fisma_Exception("Undefined purification type '$purifyType' on field "
+                                                . "'$field' on table '{$table->getTableName()}'");
                 }
             }
         }
