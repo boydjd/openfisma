@@ -296,8 +296,8 @@ abstract class BaseController extends SecurityController
     public function listAction()
     {
         Fisma_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
-        $keywords = htmlentities(trim($this->_request->getParam('keywords')));
-        $link = empty($keywords) ? '' :'/keywords/'.$keywords;
+        $keywords = trim($this->_request->getParam('keywords'));
+        $link = empty($keywords) ? '' :'/keywords/' . $this->view->escape($keywords, 'url');
         $this->view->link     = $link;
         $this->view->pageInfo = $this->_paging;
         $this->view->keywords = $keywords;

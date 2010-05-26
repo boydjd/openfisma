@@ -77,7 +77,7 @@ $pdf->ezText($this->title, 16, array('justification'=>'center'));
 foreach ($this->rows as &$row) {
     $row = array_values($row);
     foreach ($row as &$column) {
-        $column = Fisma_String::htmltoPdfText($column);
+        $column = $this->escape($column);
     }
 }
 
