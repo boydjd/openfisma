@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
 
 /**
- * This is a stub for XssListener to mark test coverage
+ * Tests for cross site scripting (XSS) listener
  * 
  * @author     Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
