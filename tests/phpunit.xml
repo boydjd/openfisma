@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+    <filter>
+        <whitelist>
+            <directory>../application</directory>
+            <file>../library/Fisma.php</file>
+            <directory>../library/Fisma</directory>
+        </whitelist>
+        
+        <blacklist>
+            <directory>../library/Fisma/Symfony</directory>
+        </blacklist>
+    </filter>
+    
+    <logging>
+        <log type="junit" target="./junit.xml" />
+        <log type="coverage-clover" target="./clover.xml" />
+    </logging>
+</phpunit>

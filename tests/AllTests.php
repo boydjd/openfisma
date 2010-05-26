@@ -55,7 +55,7 @@ class AllTests
      */
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('phpUnderControl - AllTests');
+        $suite = new PHPUnit_Framework_TestSuite('OpenFISMA - All Tests');
         
         // Load in all files which are in subdirectories of the test
         // directory
