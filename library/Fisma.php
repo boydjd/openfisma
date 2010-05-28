@@ -188,7 +188,6 @@ class Fisma
             'controller' => 'application/controllers',
             'listener' => 'application/models/listener',
             'library' => 'library',
-            'fisma' => 'library/Fisma',
             'pear' => 'library/Pear'
         );
         
