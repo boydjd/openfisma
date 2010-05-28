@@ -197,7 +197,7 @@ class Version39 extends Doctrine_Migration_Base
              'reporterip' => 
              array(
               'type' => 'string',
-              'Fisma_Validator_Ip' => true,
+              'Fisma_Doctrine_Validator_Ip' => true,
               'extra' => 
               array(
               'auditLog' => true,
@@ -537,7 +537,7 @@ class Version39 extends Doctrine_Migration_Base
              'hostip' => 
              array(
               'type' => 'string',
-              'Fisma_Validator_Ip' => true,
+              'Fisma_Doctrine_Validator_Ip' => true,
               'extra' => 
               array(
               'auditLog' => true,
@@ -591,7 +591,7 @@ class Version39 extends Doctrine_Migration_Base
              'sourceip' => 
              array(
               'type' => 'string',
-              'Fisma_Validator_Ip' => true,
+              'Fisma_Doctrine_Validator_Ip' => true,
               'extra' => 
               array(
               'auditLog' => true,

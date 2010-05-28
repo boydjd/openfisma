@@ -121,7 +121,7 @@ class AssetController extends BaseController
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
         }
         $form->getElement('networkId')->addMultiOptions($networkList);
-        $form = Fisma_Form_Manager::prepareForm($form);
+        $form = Fisma_Zend_Form_Manager::prepareForm($form);
         return $form;
     }
     
@@ -149,14 +149,14 @@ class AssetController extends BaseController
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
      * @return void
-     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } elseif (!$subject instanceof Doctrine_Record) {
-            throw new Fisma_Exception('Invalid parameter: Expected a Doctrine_Record');
+            throw new Fisma_Zend_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
         $values = $form->getValues();
 
@@ -219,7 +219,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'Asset');
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'Asset');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -231,7 +231,7 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Asset');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
         $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
@@ -254,7 +254,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Asset');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Asset');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -340,7 +340,7 @@ class AssetController extends BaseController
      * View detail information of the subject model
      * 
      * @return void
-     * @throws Fisma_Exception if the asset id is invalid
+     * @throws Fisma_Zend_Exception if the asset id is invalid
      */
     public function viewAction()
     {
@@ -351,7 +351,7 @@ class AssetController extends BaseController
             $asset = new Asset();
             $asset = $asset->getTable('Asset')->find($id);
             if (!$asset) {
-                throw new Fisma_Exception("Invalid asset ID");
+                throw new Fisma_Zend_Exception("Invalid asset ID");
             }
             $assetInfo = $asset->toArray();
             $assetInfo['systemName'] = $asset->Organization->name;
@@ -374,7 +374,7 @@ class AssetController extends BaseController
     {
         $id = $this->_request->getParam('id');
         $asset = Doctrine::getTable($this->_modelName)->find($id);
-        Fisma_Acl::requirePrivilegeForObject('delete', $asset);
+        Fisma_Zend_Acl::requirePrivilegeForObject('delete', $asset);
         
         if (!$asset) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -418,7 +418,7 @@ class AssetController extends BaseController
             foreach ($aids as $id) {
                 $assetIds[] = $id;
                 $asset = Doctrine::getTable('Asset')->find($id);
-                Fisma_Acl::requirePrivilegeForObject('delete', $asset);
+                Fisma_Zend_Acl::requirePrivilegeForObject('delete', $asset);
                 if (!$asset) {
                     $errno++;
                 } else {
@@ -447,7 +447,7 @@ class AssetController extends BaseController
 
     public function importAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'Asset');
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'Asset');
 
         $uploadForm = $this->getForm('asset_upload');
 
@@ -464,7 +464,7 @@ class AssetController extends BaseController
             $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE: FALSE;
 
             if (!$uploadForm->isValid($postValues)) {
-                $msgs[] = array('warning' => Fisma_Form_Manager::getErrors($uploadForm));
+                $msgs[] = array('warning' => Fisma_Zend_Form_Manager::getErrors($uploadForm));
                 $err = TRUE;
             } elseif (!$filesReceived) {
                 $msgs[] = array('warning' => "File not received.");

@@ -32,12 +32,12 @@ class IncidentReportController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Acl::requireArea('incident_report');
+        Fisma_Zend_Acl::requireArea('incident_report');
 
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
 
         // Add header/footer to any action which expects an HTML response

@@ -19,7 +19,7 @@
 /**
  * Fisma_Symfony_Exception 
  * 
- * @uses Fisma_Exception
+ * @uses Fisma_Zend_Exception
  * @package Fisma_Symfony 
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -27,7 +27,7 @@
  * @author Loïc Frering <loic.frering@gmail.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Symfony_Exception extends Fisma_Exception
+class Fisma_Symfony_Exception extends Fisma_Zend_Exception
 {
     
 }

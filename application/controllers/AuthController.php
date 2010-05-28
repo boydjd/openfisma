@@ -95,12 +95,12 @@ class AuthController extends Zend_Controller_Action
             if ($accountExpiration->isEarlier($now)) {
                 $user->lockAccount(User::LOCK_TYPE_INACTIVE);
                 $reason = $user->getLockReason();
-                throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
+                throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
             }
 
             // Perform authentication
             $auth = Zend_Auth::getInstance();
-            $auth->setStorage(new Fisma_Auth_Storage_Session());
+            $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
             $authAdapter = $this->getAuthAdapter($user, $password);
             $authResult = $auth->authenticate($authAdapter); 
 
@@ -203,10 +203,10 @@ class AuthController extends Zend_Controller_Action
         switch ($method) {
             case 'ldap':
                 $ldapConfig = LdapConfig::getConfig();
-                $authAdapter = new Fisma_Auth_Adapter_Ldap($ldapConfig, $user->username, $password);
+                $authAdapter = new Fisma_Zend_Auth_Adapter_Ldap($ldapConfig, $user->username, $password);
                 break;
             case 'database':
-                $authAdapter = new Fisma_Auth_Adapter_Doctrine($user, $password);
+                $authAdapter = new Fisma_Zend_Auth_Adapter_Doctrine($user, $password);
                 break;
             default:
                 throw new Zend_Auth_Exception('Invalid authentication method ($method)');
@@ -231,7 +231,7 @@ class AuthController extends Zend_Controller_Action
         }
 
         $auth = Zend_Auth::getInstance();
-        $auth->setStorage(new Fisma_Auth_Storage_Session());
+        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
         $auth->clearIdentity();
         $this->_forward('login');
     }

@@ -12,7 +12,7 @@
         ?>
 
         <?php 
-        if (Fisma_Acl::hasPrivilegeForClass('create', 'Asset')) {
+        if (Fisma_Zend_Acl::hasPrivilegeForClass('create', 'Asset')) {
             $createButton = new Fisma_Yui_Form_Button_Link(
                 'createButton', 
                 array(

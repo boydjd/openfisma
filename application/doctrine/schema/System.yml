@@ -84,7 +84,7 @@ System:
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
             type: string(255)
-            Fisma_Validator_Url: true
+            Fisma_Doctrine_Validator_Url: true
             comment: A URL pointing to the Privacy Impact Analysis
         sornRequired:
             type: enum
@@ -94,7 +94,7 @@ System:
             comment: Whether a System Of Record Notice is required
         sornUrl:
             type: string(255)
-            Fisma_Validator_Url: true
+            Fisma_Doctrine_Validator_Url: true
             comment: A URL pointing to the System Of Record Notice
         uniqueProjectId:
             type: string(23)

@@ -49,7 +49,7 @@ class SystemController extends BaseController
      */
     public function getForm($formName = null)
     {
-        $form = Fisma_Form_Manager::loadForm('system');
+        $form = Fisma_Zend_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
         $q = User::currentUser()->getOrganizationsByPrivilegeQuery('organization', 'read');
         $organizationTreeObject->setBaseQuery($q);
@@ -76,18 +76,18 @@ class SystemController extends BaseController
         $type = $systemTable->getEnumValues('type');
         $form->getElement('type')->addMultiOptions(array_combine($type, $type));
         
-        return Fisma_Form_Manager::prepareForm($form);
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
     
     /**
      * List the systems from the search. If search none, it list all systems
      * 
      * @return void
-     * @throws Fisma_Exception if the order parameter invalid
+     * @throws Fisma_Zend_Exception if the order parameter invalid
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
         
         $keywords = trim($this->_request->getParam('keywords'));
         
@@ -97,7 +97,7 @@ class SystemController extends BaseController
         $order = $this->_request->getParam('order', 'ASC');
         
         if (!in_array(strtolower($order), array('asc', 'desc'))) {
-            throw new Fisma_Exception('Invalid "order" parameter');
+            throw new Fisma_Zend_Exception('Invalid "order" parameter');
         }
         
         $q = User::currentUser()
@@ -154,7 +154,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('read', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->view->organization = $organization;
@@ -180,7 +180,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('read', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
@@ -197,7 +197,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('read', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -215,7 +215,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('read', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -233,7 +233,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('read', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -264,7 +264,7 @@ class SystemController extends BaseController
             )
         );
 
-        if (!Fisma_Acl::hasPrivilegeForObject('update', $organization)) {
+        if (!Fisma_Zend_Acl::hasPrivilegeForObject('update', $organization)) {
             $uploadPanelButton->readOnly = true;
         }
         
@@ -289,7 +289,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('update', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -337,7 +337,7 @@ class SystemController extends BaseController
      *
      * @param Zend_Form $form
      * @param Doctrine_Record $system
-     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $system=null)
     {
@@ -353,7 +353,7 @@ class SystemController extends BaseController
              */
             $addSystemToUserAcl = true;
         } elseif (!$subject instanceof Doctrine_Record) {
-            throw new Fisma_Exception('Expected a Doctrine_Record object');
+            throw new Fisma_Zend_Exception('Expected a Doctrine_Record object');
         }
 
         // Merge form data into the organization model and system model. The variables are named such that each model
@@ -366,7 +366,7 @@ class SystemController extends BaseController
         // Create the tree structure for this system
         $parentNode = Doctrine::getTable('Organization')->find($systemData['parentOrganizationId']);
         if (!$parentNode) {
-            throw new Fisma_Exception("No parent organization with id={$systemData['parentOrganizationId']}ß");
+            throw new Fisma_Zend_Exception("No parent organization with id={$systemData['parentOrganizationId']}ß");
         }
         $system->Organization->getNode()->insertAsLastChildOf($parentNode);
         $system->Organization->save();
@@ -390,7 +390,7 @@ class SystemController extends BaseController
 
         $organizationId = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($organizationId);
-        Fisma_Acl::requirePrivilegeForObject('update', $organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('update', $organization);
                 
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
         $versionNotes = $this->getRequest()->getParam('versionNotes');
@@ -399,7 +399,7 @@ class SystemController extends BaseController
 
         try {
             if (empty($documentTypeId)) {
-                throw new Fisma_Exception_User('Select a Document Type');
+                throw new Fisma_Zend_Exception_User('Select a Document Type');
             }
             
             // Get the existing document
@@ -426,7 +426,7 @@ class SystemController extends BaseController
             // Move file into its correct place
             $error = '';
             if (empty($_FILES['file']['name'])) {
-                throw new Fisma_Exception_User("You did not specify a file to upload.");
+                throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
             }
             $file = $_FILES['file'];
             $destinationPath = Fisma::getPath('systemDocument') . "/$organizationId";
@@ -437,12 +437,14 @@ class SystemController extends BaseController
             $filePath = "$destinationPath/$fileName";
 
             if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-                throw new Fisma_Exception("The file could not be stored due to the server's permissions settings.");
+                throw new Fisma_Zend_Exception(
+                    "The file could not be stored due to the server's permissions settings."
+                );
             }
     
             // Update the document object and save
             if ('' == trim($versionNotes)) {
-                throw new Fisma_Exception_User("Version notes are required.");
+                throw new Fisma_Zend_Exception_User("Version notes are required.");
             }
             
             $document->description = $versionNotes;
@@ -450,9 +452,9 @@ class SystemController extends BaseController
             $document->mimeType = $file['type'];
             $document->size = $file['size'];
             $document->save();
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
-        } catch (Fisma_Exception $e) {
+        } catch (Fisma_Zend_Exception $e) {
             if (Fisma::debug()) {
                 $response->fail("Failure (debug mode): " . $e->getMessage());
             } else {
@@ -473,7 +475,7 @@ class SystemController extends BaseController
      * Download the specified system document
      * 
      * @return void
-     * @throws Fisma_Exception if requested file doesn`t exist
+     * @throws Fisma_Zend_Exception if requested file doesn`t exist
      */
     public function downloadDocumentAction()
     {
@@ -482,7 +484,7 @@ class SystemController extends BaseController
         $document = Doctrine::getTable('SystemDocument')->find($id);
         
         // Documents don't have their own privileges, access control is based on the associated organization
-        Fisma_Acl::requirePrivilegeForObject('read', $document->System->Organization);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $document->System->Organization);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
@@ -497,7 +499,7 @@ class SystemController extends BaseController
         }
 
         if (is_null($document)) {
-            throw new Fisma_Exception("Requested file does not exist.");
+            throw new Fisma_Zend_Exception("Requested file does not exist.");
         }
 
         /** @todo better error checking */

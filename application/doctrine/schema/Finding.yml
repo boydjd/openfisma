@@ -249,11 +249,11 @@ Finding:
                 name: modifiedTs
                 type: timestamp
         
-        Fisma_Behavior_AuditLoggable:
+        Fisma_Doctrine_Behavior_AuditLoggable:
             logCreateObject: true
             logUpdateField: true
             logDeleteObject: true
         
-        Fisma_Behavior_Commentable: true
+        Fisma_Doctrine_Behavior_Commentable: true
         
         SoftDelete: true

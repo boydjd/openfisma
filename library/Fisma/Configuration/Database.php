@@ -33,7 +33,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      * 
      * @param string $name The requested configuration item name
      * @return mixed The returned configuration item value
-     * @throws Fisma_Exception_Config if the requested configuration item name is invalid
+     * @throws Fisma_Zend_Exception_Config if the requested configuration item name is invalid
      */
     public function getConfig($name) 
     {
@@ -43,7 +43,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
             $config = Doctrine::getTable('Configuration')->findOneByName($name);
 
             if (!$config) {
-                throw new Fisma_Exception_Config("Invalid configuration name: $name");
+                throw new Fisma_Zend_Exception_Config("Invalid configuration name: $name");
             }
 
             $cache->save($config, 'configuration_' . $name);
@@ -61,7 +61,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function setConfig($name, $value) 
     {
-        Fisma_Acl::requireArea('configuration');
+        Fisma_Zend_Acl::requireArea('configuration');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         

@@ -63,7 +63,7 @@ class SecurityController extends Zend_Controller_Action
         // Verify that the user is authenticated, and store a reference to the authenticated user credentials
         $auth = Zend_Auth::getInstance();
         //use the consistent storage
-        $auth->setStorage(new Fisma_Auth_Storage_Session());
+        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
 
         if ($auth->hasIdentity()) {
             // Store a reference to the authenticated user inside the controller, for convenience
@@ -85,7 +85,7 @@ class SecurityController extends Zend_Controller_Action
      * the login page.
      * 
      * @return void
-     * @throws Fisma_Exception_InvalidAuthentication if user session expired
+     * @throws Fisma_Zend_Exception_InvalidAuthentication if user session expired
      */
     public function preDispatch()
     {
@@ -97,7 +97,7 @@ class SecurityController extends Zend_Controller_Action
         if (!(($cont == 'incident') && (in_array($act, array('anonreport','anoncreate','anonsuccess'))))) {
             if (empty($this->_me)) {
                 $message = 'Your session has expired. Please log in again to begin a new session.';
-                throw new Fisma_Exception_InvalidAuthentication($message);
+                throw new Fisma_Zend_Exception_InvalidAuthentication($message);
             }
         }
     }

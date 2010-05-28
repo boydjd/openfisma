@@ -43,7 +43,7 @@ class IRWorkflowController extends SecurityController
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
 
         $req = $this->getRequest();
@@ -60,9 +60,9 @@ class IRWorkflowController extends SecurityController
     
     public function listAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->view->readIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef');
+        $this->view->readIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef');
         
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
@@ -82,9 +82,9 @@ class IRWorkflowController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->createIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('create', 'IrWorkflowDef');
+        $this->createIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('create', 'IrWorkflowDef');
         
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
@@ -98,7 +98,7 @@ class IRWorkflowController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
         $value = trim($this->_request->getParam('keywords'));
 
@@ -109,7 +109,7 @@ class IRWorkflowController extends SecurityController
         
         $organization = Doctrine::getTable('IrWorkflowDef');
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            throw new Fisma_Exception('Invalid "sortBy" parameter');
+            throw new Fisma_Zend_Exception('Invalid "sortBy" parameter');
         }        
         
         $order = strtoupper($order);
@@ -152,7 +152,7 @@ class IRWorkflowController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
 
         $this->searchbox();
         $this->render('tree');        
@@ -163,7 +163,7 @@ class IRWorkflowController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
                
         /* Get all categories */ 
         $q = Doctrine_Query::create()
@@ -196,7 +196,7 @@ class IRWorkflowController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
         
         $form = $this->_getWorkflowForm();
         
@@ -224,7 +224,7 @@ class IRWorkflowController extends SecurityController
                 return;
 
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create workflow:<br>$errorString", self::M_WARNING);
             }
@@ -247,8 +247,8 @@ class IRWorkflowController extends SecurityController
      */
     private function _getWorkflowForm()
     {
-        $form = Fisma_Form_Manager::loadForm('irworkflow');
-        return Fisma_Form_Manager::prepareForm($form);
+        $form = Fisma_Zend_Form_Manager::loadForm('irworkflow');
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
     
     /**
@@ -256,10 +256,10 @@ class IRWorkflowController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
 
-        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
-        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
+        $this->updateIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
+        $this->deleteIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -270,7 +270,7 @@ class IRWorkflowController extends SecurityController
         $form = $this->_getWorkflowForm($irworkflow);
         
         if (!$irworkflow) {
-            throw new Fisma_Exception('Invalid workflow ID');
+            throw new Fisma_Zend_Exception('Invalid workflow ID');
         } else {
             $irworkflow = $irworkflow->toArray();
         }
@@ -297,7 +297,7 @@ class IRWorkflowController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id', 0);
         $irworkflow = new IrWorkflowDef();
@@ -330,7 +330,7 @@ class IRWorkflowController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $irworkflow->id));
         } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update workflow<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
@@ -346,7 +346,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepcreateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrWorkflowDef');
         
         $form = $this->_getWorkflowStepForm();
         
@@ -377,7 +377,7 @@ class IRWorkflowController extends SecurityController
                 return;
 
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create workflow step:<br>$errorString", self::M_WARNING);
             }
@@ -400,7 +400,7 @@ class IRWorkflowController extends SecurityController
      */
     private function _getWorkflowStepForm()
     {
-        $form = Fisma_Form_Manager::loadForm('irworkflowstep');
+        $form = Fisma_Zend_Form_Manager::loadForm('irworkflowstep');
         
         /* Get all workflows */ 
         $q = Doctrine_Query::create()
@@ -450,7 +450,7 @@ class IRWorkflowController extends SecurityController
         
         $form->getElement('cardinality')->addMultiOptions($cardinalitys);
 
-        return Fisma_Form_Manager::prepareForm($form);
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
     
     /**
@@ -458,10 +458,10 @@ class IRWorkflowController extends SecurityController
      */
     public function stepviewAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrWorkflowDef');
         
-        $this->updateIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
-        $this->deleteIrWorkflowDefPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
+        $this->updateIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrWorkflowDef');
+        $this->deleteIrWorkflowDefPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrWorkflowDef');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -472,7 +472,7 @@ class IRWorkflowController extends SecurityController
         $form = $this->_getWorkflowStepForm($irworkflowstep);
         
         if (!$irworkflowstep) {
-            throw new Fisma_Exception('Invalid workflow step ID');
+            throw new Fisma_Zend_Exception('Invalid workflow step ID');
         } else {
             $irworkflowstep = $irworkflowstep->toArray();
         }
@@ -499,7 +499,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepupdateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id', 0);
         $irworkflowstep = new IrStep();
@@ -537,7 +537,7 @@ class IRWorkflowController extends SecurityController
         
             $this->_forward('stepview', null, null, array('id' => $irworkflowstep->id));
         } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update workflow step<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
@@ -551,7 +551,7 @@ class IRWorkflowController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrWorkflowDef')->find($id);
@@ -576,7 +576,7 @@ class IRWorkflowController extends SecurityController
      */
     public function stepdeleteAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
+        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrWorkflowDef');
         
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrStep')->find($id);

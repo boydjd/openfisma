@@ -119,7 +119,7 @@ class Notify
      */
     static function sendNotificationEmail($notifications) 
     {
-        $mail = new Fisma_Mail();
+        $mail = new Fisma_Zend_Mail();
         // Send the e-mail
         $mail->sendNotification($notifications);
     }

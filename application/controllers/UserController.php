@@ -59,7 +59,7 @@ class UserController extends BaseController
      */
     public function getForm($formName = null) 
     {
-        $form = Fisma_Form_Manager::loadForm('account');
+        $form = Fisma_Zend_Form_Manager::loadForm('account');
         if ('create' == $this->_request->getActionName()) {
             $form->getElement('password')->setRequired(true);
         }
@@ -95,7 +95,7 @@ class UserController extends BaseController
             $form->removeElement('lockTs');
         }
         
-        $form = Fisma_Form_Manager::prepareForm($form);
+        $form = Fisma_Zend_Form_Manager::prepareForm($form);
         return $form;
     }
 
@@ -108,7 +108,7 @@ class UserController extends BaseController
      */
     private function _getProfileForm()
     {
-        $form = Fisma_Form_Manager::loadForm('account');
+        $form = Fisma_Zend_Form_Manager::loadForm('account');
         $form->removeElement('username');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
@@ -125,7 +125,7 @@ class UserController extends BaseController
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The specified subject related to the form
      * @return void
-     * @throws Fisma_Exception if the related subject is not instance of Doctrine_Record
+     * @throws Fisma_Zend_Exception if the related subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
@@ -139,7 +139,7 @@ class UserController extends BaseController
             if (is_null($subject)) {
                 $subject = new $this->_modelName();
             } elseif (!($subject instanceof Doctrine_Record)) {
-                throw new Fisma_Exception('Invalid parameter, expected a Doctrine_Model');
+                throw new Fisma_Zend_Exception('Invalid parameter, expected a Doctrine_Model');
             }
             $values = $form->getValues();
 
@@ -203,7 +203,7 @@ class UserController extends BaseController
             $this->view->id = $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
-            throw new Fisma_Exception('Unable to save user.');
+            throw new Fisma_Zend_Exception('Unable to save user.');
         }
     }
 
@@ -260,7 +260,7 @@ class UserController extends BaseController
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully"; 
                     if (isset($modified['email'])) {
-                        $mail = new Fisma_Mail();
+                        $mail = new Fisma_Zend_Mail();
                         if ($mail->validateEmail($user, $modified['email'])) {
                             $message .= ", and a validation email has been sent to your new e-mail address.";
                         } 
@@ -272,7 +272,7 @@ class UserController extends BaseController
                     $model   = 'warning';
                 }
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $message     = "Unable to update profile:<br>" . $errorString;
                 $model       = 'warning';
             }
@@ -280,7 +280,7 @@ class UserController extends BaseController
         } else {
             $form->setDefaults($user->toArray());
         }
-        $this->view->form    = Fisma_Form_Manager::prepareForm($form);
+        $this->view->form    = Fisma_Zend_Form_Manager::prepareForm($form);
     }
 
     /**
@@ -292,12 +292,14 @@ class UserController extends BaseController
     {
         // This action isn't allowed unless the system's authorization is based on the database
         if ('database' != Fisma::configuration()->getConfig('auth_type') && 'root' != User::currentUser()->username) {
-            throw new Fisma_Exception('Password change is not allowed when the authentication type is not "database"');
+            throw new Fisma_Zend_Exception(
+                'Password change is not allowed when the authentication type is not "database"'
+            );
         }
         
         // Load the change password file
-        $form = Fisma_Form_Manager::loadForm('change_password');
-        $form = Fisma_Form_Manager::prepareForm($form);
+        $form = Fisma_Zend_Form_Manager::loadForm('change_password');
+        $form = Fisma_Zend_Form_Manager::prepareForm($form);
 
         $this->view->requirements =  $this->_getPasswordRequirements();
         $post   = $this->_request->getPost();
@@ -316,7 +318,7 @@ class UserController extends BaseController
                     $model   = 'warning';
                 }
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $message     = "Unable to change password:<br>" . $errorString;
                 $model       = 'warning';
             }
@@ -480,7 +482,7 @@ class UserController extends BaseController
         $subForm->removeDecorator('DtDdWrapper');
         $subForm->removeDecorator('HtmlTag');
 
-        $organizations = new Fisma_Form_Element_CheckboxTree("organizations");
+        $organizations = new Fisma_Zend_Form_Element_CheckboxTree("organizations");
         $organizations->clearDecorators();
         $organizations->setLabel('Organizations & Information Systems');
 
@@ -550,7 +552,7 @@ class UserController extends BaseController
         $this->view->roles = Zend_Json::encode($roles);
 
         parent::editAction();
-        $this->view->form->removeDecorator('Fisma_Form_FismaDecorator');
+        $this->view->form->removeDecorator('Fisma_Zend_Form_FismaDecorator');
     }
 
     /**
@@ -571,7 +573,7 @@ class UserController extends BaseController
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
         parent::createAction();
-        $this->view->form->removeDecorator('Fisma_Form_FismaDecorator');
+        $this->view->form->removeDecorator('Fisma_Zend_Form_FismaDecorator');
 
         if (!empty($this->view->id)) {
             $this->_request->setParam('id', $this->view->id);
@@ -637,7 +639,7 @@ class UserController extends BaseController
      */
     public function checkAccountAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'User');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'User');
         
         $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');

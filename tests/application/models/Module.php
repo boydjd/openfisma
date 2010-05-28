@@ -48,7 +48,7 @@ class Test_Application_Models_Module extends Test_FismaUnitTest
     /**
      * Try to disable a module which cannot be disabled
      * 
-     * @expectedException Fisma_Exception
+     * @expectedException Fisma_Zend_Exception
      */
     public function testDisableModule()
     {

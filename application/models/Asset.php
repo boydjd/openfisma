@@ -25,7 +25,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Asset extends BaseAsset implements Fisma_Acl_OrganizationDependency
+class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
      * Declares fields stored in related records that should be indexed along with records in this table
@@ -46,7 +46,7 @@ class Asset extends BaseAsset implements Fisma_Acl_OrganizationDependency
     );
     
     /**
-     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
      * 
      * @return int
      */

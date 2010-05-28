@@ -32,7 +32,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class NotificationListener extends Fisma_Record_Listener
+class NotificationListener extends Fisma_Doctrine_Record_Listener
 {
     /**
      * Send notifications for object creation

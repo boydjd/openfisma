@@ -104,7 +104,7 @@ class Fisma_Inject_Excel
      * @param string $filePath The specified excel file path
      * @param string $uploadId The id of upload excel
      * @return int The number of findings processed in the file
-     * @throws Fisma_Exception_InvalidFileFormat if the file is not a valid Excel spreadsheet, 
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not a valid Excel spreadsheet, 
      * or the excel template is out-of-date or imcompatible, 
      * or the some required or used columns are empty or invalid
      */
@@ -113,7 +113,7 @@ class Fisma_Inject_Excel
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
         $spreadsheet = @simplexml_load_file($filePath);
         if ($spreadsheet === false) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
             );
         }
@@ -121,7 +121,7 @@ class Fisma_Inject_Excel
         // Check that the template version matches the version of OpenFISMA which is running.
         $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
         if ($templateVersion != self::TEMPLATE_VERSION) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "This template was created by a previous version of OpenFISMA and is not compatible with the current"
                 . " version. Download a new copy of the template and transfer your data into it."
             );
@@ -132,7 +132,7 @@ class Fisma_Inject_Excel
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
         $findingData = $spreadsheet->xpath('/s:Workbook/s:Worksheet[1]/s:Table/s:Row');
         if ($findingData === false) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "The file format is not recognized. Your version of Excel might be incompatible."
             );
         }
@@ -176,8 +176,9 @@ class Fisma_Inject_Excel
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
                 if (empty($finding[$columnName])) {
-                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Required column \"$columnDescription\"
-                                                          is empty");
+                    throw new Fisma_Zend_Exception_InvalidFileFormat(
+                        "Row $rowNumber: Required column \"$columnDescription\" is empty"
+                    );
                 }
             }
             
@@ -188,14 +189,16 @@ class Fisma_Inject_Excel
             $poam['uploadId'] = $uploadId;
             $organization = Doctrine::getTable('Organization')->findOneByNickname($finding['systemNickname']);
             if (!$organization) {
-                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid system selected. Your template may
-                                                      be out of date. Please try downloading it again.");
+                throw new Fisma_Zend_Exception_InvalidFileFormat(
+                    "Row $rowNumber: Invalid system selected. Your template may be out of date. Please try downloading 
+                    it again."
+                );
             }
             $poam['responsibleOrganizationId'] = $organization->id;
             
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
-                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
+                throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
                                                       template may
                                                       be out of date. Please try downloading it again.");
             }
@@ -206,7 +209,7 @@ class Fisma_Inject_Excel
                 if (!$securityControlTable) {
                     $error = "Row $rowNumber: Invalid security control selected. Your template may be out of date."
                            . 'Please try downloading it again.';
-                    throw new Fisma_Exception_InvalidFileFormat($error);
+                    throw new Fisma_Zend_Exception_InvalidFileFormat($error);
                 }
                 $poam['securityControlId'] = $securityControlTable->id;
             } else {
@@ -250,7 +253,7 @@ class Fisma_Inject_Excel
             if (!empty($finding['network'])) {
                 $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
                 if (!$networkTable) {
-                    throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
+                    throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
                                                           template may
                                                           be out of date. Please try downloading it again.");
                 }
@@ -263,7 +266,7 @@ class Fisma_Inject_Excel
                 $asset['addressPort'] = $finding['assetPort'];
             }
             if (!empty($asset['addressPort']) && !is_numeric($asset['addressPort'])) {
-                throw new Fisma_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
+                throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
             }
 
             if (empty($finding['assetName'])) {
@@ -330,7 +333,7 @@ class Fisma_Inject_Excel
                     } catch (Doctrine_Validator_Exception $e) {
                         /**@todo english*/
                         $message = "Row $rowNumber: " . $e->getMessage();
-                        throw new Fisma_Exception_InvalidFileFormat($message);
+                        throw new Fisma_Zend_Exception_InvalidFileFormat($message);
                     }
                 } else {
                     $assetId = $assetRecord[0]['id'];

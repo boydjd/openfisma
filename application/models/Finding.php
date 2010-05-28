@@ -26,7 +26,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
+class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
      * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
@@ -165,12 +165,13 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * 
      * @param User $user The specified user to submit the mitigation strategy
      * @return void
-     * @throws Fisma_Exception if the mitigation strategy is submitted when the finding is not in NEW or DRAFT status
+     * @throws Fisma_Zend_Exception if the mitigation strategy is submitted when the finding is not in NEW or DRAFT
+     * status
      */
     public function submitMitigation(User $user)
     {
         if (!('NEW' == $this->status || 'DRAFT' == $this->status)) {
-            throw new Fisma_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
+            throw new Fisma_Zend_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
         $this->_updateNextDueDate();
@@ -188,12 +189,12 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * 
      * @param User $user The specified user to revise the mitigation strategy
      * @return void
-     * @throws Fisma_Exception if the mitigation strategy is revised when the finding is not in EN status
+     * @throws Fisma_Zend_Exception if the mitigation strategy is revised when the finding is not in EN status
      */
     public function reviseMitigation(User $user)
     {
         if ('EN' != $this->status) {
-            throw new Fisma_Exception("The mitigation strategy can only be revised in EN status");
+            throw new Fisma_Zend_Exception("The mitigation strategy can only be revised in EN status");
         }
         $this->status = 'DRAFT';
         $this->_updateNextDueDate();
@@ -212,12 +213,12 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * @param Object $user The specified user to approve the current evaluation
      * @param string $comment The user comment why they accept the current evaluation
      * @return void
-     * @throws Fisma_Exception if the findings is approved when the finding is not in MSA or EA status
+     * @throws Fisma_Zend_Exception if the findings is approved when the finding is not in MSA or EA status
      */
     public function approve(User $user, $comment)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            throw new Fisma_Exception("Findings can only be approved when in MSA or EA status");
+            throw new Fisma_Zend_Exception("Findings can only be approved when in MSA or EA status");
         }
         
         $findingEvaluation = new FindingEvaluation();
@@ -267,17 +268,17 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * @param $user The specified user to deny the current evaluation
      * @param string $comment The deny comment of user
      * @return void
-     * @throws Fisma_Exception if the findings is denined 
+     * @throws Fisma_Zend_Exception if the findings is denined 
      * when the finding is not in MSA or EA status or the deny comment missed
      */
     public function deny(User $user, $comment)
     {
         if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            throw new Fisma_Exception("Findings can only be denined when in MSA or EA status");
+            throw new Fisma_Zend_Exception("Findings can only be denined when in MSA or EA status");
         }
 
         if (is_null($comment) || preg_match('/^\s*$/', $comment)) {
-            throw new Fisma_Exception("Comments are required when denying an evaluation");
+            throw new Fisma_Zend_Exception("Comments are required when denying an evaluation");
         }
 
         $findingEvaluation = new FindingEvaluation();
@@ -315,12 +316,12 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * @param string $fileName The uploaded evidence file name
      * @param User $user The specified user to upload the evidence
      * @return void
-     * @throws Fisma_Exception if the evidence is updated when the finding is not in EN status
+     * @throws Fisma_Zend_Exception if the evidence is updated when the finding is not in EN status
      */
     public function uploadEvidence($fileName, User $user)
     {
         if ('EN' != $this->status) {
-            throw new Fisma_Exception("Evidence can only be updated when the finding is in EN status");
+            throw new Fisma_Zend_Exception("Evidence can only be updated when the finding is in EN status");
         }
         $this->status = 'EA';
         $this->ecdLocked = true;
@@ -342,7 +343,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * Set the nextduedate when the status has changed except 'CLOSED'
      * 
      * @return void
-     * @throws Fisma_Exception if cannot update the next due dates since of the an invalid finding status
+     * @throws Fisma_Zend_Exception if cannot update the next due dates since of the an invalid finding status
      * @todo why the 'Y-m-d' is a wrong date
      */
     private function _updateNextDueDate()
@@ -363,7 +364,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                 $startDate = $this->currentEcd;
                 break;
             default:
-                throw new Fisma_Exception('Cannot update the next due date because the finding has an'
+                throw new Fisma_Zend_Exception('Cannot update the next due date because the finding has an'
                                         . " invalid status: '$this->status'");
         }
 
@@ -377,12 +378,12 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      *
      * @param string $approvalGroup The specified evaluation approval group to search
      * @return array The matched finding evaluations in array
-     * @throws Fisma_Exception if the specified approval group for evaluations is neither 'action' nor 'evidence'
+     * @throws Fisma_Zend_Exception if the specified approval group for evaluations is neither 'action' nor 'evidence'
      */
     public function getFindingEvaluations($approvalGroup)
     {
         if (!in_array($approvalGroup, array('action', 'evidence'))) {
-            throw new Fisma_Exception("The approval group for evaluations must either be 'action' or 'evidence', 
+            throw new Fisma_Zend_Exception("The approval group for evaluations must either be 'action' or 'evidence', 
                 but was actually '$approvalGroup'");
         }
         $findingEvaluations = array();
@@ -464,10 +465,10 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
                         if ($this->ecdLocked && '' == trim($this->ecdChangeDescription)) {
                             $error = 'The ECD was previously approved and cannot be changed without'
                                    . ' providing a justification.';
-                            throw new Fisma_Exception_User($error);
+                            throw new Fisma_Zend_Exception_User($error);
                         }
                         if ($this->ecdLocked) {
-                            Fisma_Acl::requirePrivilegeForObject('update_ecd', $this);
+                            Fisma_Zend_Acl::requirePrivilegeForObject('update_ecd', $this);
                             Notification::notify(
                                 'UPDATE_ECD', 
                                 $this, 
@@ -496,7 +497,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
                 if (isset(self::$_requiredPrivileges[$key])) {
-                    Fisma_Acl::requirePrivilegeForObject(self::$_requiredPrivileges[$key], $this);
+                    Fisma_Zend_Acl::requirePrivilegeForObject(self::$_requiredPrivileges[$key], $this);
                 }
             
                 // Check whether this field generates any notification events
@@ -546,22 +547,22 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
      * Throws an exception if you try to set next due date directly
      * 
      * @param string $value The specified valud of next due date to set
-     * @throws Fisma_Exception if the method is called
+     * @throws Fisma_Zend_Exception if the method is called
      */
     public function setNextDueDate($value)
     {
-        throw new Fisma_Exception('Next due date cannot be set directly');
+        throw new Fisma_Zend_Exception('Next due date cannot be set directly');
     }
 
     /**
      * Original ECD cannot be set directly
      * 
      * @param string $value The specofoed value of original ECD to set
-     * @throws Fisma_Exception if the method is called
+     * @throws Fisma_Zend_Exception if the method is called
      */
     public function setOriginalEcd($value)
     {
-        throw new Fisma_Exception('Original ECD cannot be set directly');
+        throw new Fisma_Zend_Exception('Original ECD cannot be set directly');
     }
 
     /**
@@ -621,13 +622,13 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
         if (in_array($this->status, array('NEW', 'DRAFT'))) {
 
             // If the ECD is unlocked, then you need the update_ecd privilege
-            if (!$this->ecdLocked && Fisma_Acl::hasPrivilegeForObject('update_ecd', $this)) {
+            if (!$this->ecdLocked && Fisma_Zend_Acl::hasPrivilegeForObject('update_ecd', $this)) {
             
                 return true;
             }
         
             // If the ECD is locked, then you need the update_locked_ecd privilege
-            if ($this->ecdLocked && Fisma_Acl::hasPrivilegeForObject('update_locked_ecd', $this)) {
+            if ($this->ecdLocked && Fisma_Zend_Acl::hasPrivilegeForObject('update_locked_ecd', $this)) {
         
                 return true;
             }
@@ -638,7 +639,7 @@ class Finding extends BaseFinding implements Fisma_Acl_OrganizationDependency
     }
 
     /**
-     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
      * 
      * @return int
      */

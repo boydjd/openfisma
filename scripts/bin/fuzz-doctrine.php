@@ -73,7 +73,7 @@ try {
 
     // Script does not run in production mode, just to be safe
     if (!Fisma::debug()) {
-        throw new Fisma_Exception("This script only runs in debug mode, not in production mode.");
+        throw new Fisma_Zend_Exception("This script only runs in debug mode, not in production mode.");
     }
     
     // Require user to explicitly confirm what they are about to do.
@@ -105,7 +105,7 @@ try {
     $modelDirectory = opendir(Fisma::getPath('model'));
     
     if (!$modelDirectory) {
-        throw new Fisma_Exception("Model directory cannot be opened");
+        throw new Fisma_Zend_Exception("Model directory cannot be opened");
     }
     
     while ($modelFileName = readdir($modelDirectory)) {
@@ -153,9 +153,9 @@ try {
                     }
                     
                     // The following validators will not succeed with the malicous data and will cause exceptions
-                    if (   isset($columnDefinition['Fisma_Validator_Ip'])
+                    if (   isset($columnDefinition['Fisma_Doctrine_Validator_Ip'])
                         || isset($columnDefinition['email'])
-                        || isset($columnDefinition['Fisma_Validator_Email'])) {
+                        || isset($columnDefinition['Fisma_Doctrine_Validator_Email'])) {
                         continue;
                     }
                     

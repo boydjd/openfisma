@@ -81,7 +81,7 @@ class AllTests
      * @param string $directory The name of the directory
      * @param PHPUnit_Framework_TestSuite $suite The test suite to assemble test case
      * @return void
-     * @throws Fisma_Exception if the file doesn`t contain the class
+     * @throws Fisma_Zend_Exception if the file doesn`t contain the class
      */
     public static function loadAllTests($path, $directory, $suite)
     {
@@ -123,7 +123,7 @@ class AllTests
                         $suite->addTestSuite($className);
                     } else {
                         $error = "The file $fullPath does not contain a class called $className";
-                        throw new Fisma_Exception($error);
+                        throw new Fisma_Zend_Exception($error);
                     }
                 }
             }

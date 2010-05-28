@@ -3,5 +3,5 @@
 if (Fisma::debug()) {
     var_dump($this->findings);
 } else {
-    throw new Fisma_Exception("This view is only allowed in development mode");
+    throw new Fisma_Zend_Exception("This view is only allowed in development mode");
 }

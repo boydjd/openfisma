@@ -49,12 +49,12 @@ class MetadataController extends Zend_Controller_Action
         
         $table = Doctrine::getTable($model);
         if (!$table) {
-            throw new Fisma_Exception("Invalid model name ($model)");
+            throw new Fisma_Zend_Exception("Invalid model name ($model)");
         }
         
         $enumValues = $table->getEnumValues($field);
         if (!$enumValues) {
-            throw new Fisma_Exception("Invalid field name ($field)");
+            throw new Fisma_Zend_Exception("Invalid field name ($field)");
         }
 
         $this->view->selectedValue = $this->getRequest()->getParam('value');        

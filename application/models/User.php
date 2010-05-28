@@ -70,7 +70,7 @@ class User extends BaseUser
     {
         if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
             $auth = Zend_Auth::getInstance();
-            $auth->setStorage(new Fisma_Auth_Storage_Session());
+            $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
             return $auth->getIdentity();
         } else {
             return null;
@@ -111,7 +111,7 @@ class User extends BaseUser
     public function lockAccount($lockType)
     {
         if (empty($lockType)) {
-            throw new Fisma_Exception("Lock type cannot be blank");
+            throw new Fisma_Zend_Exception("Lock type cannot be blank");
         }
         
         $this->locked = true;
@@ -183,7 +183,7 @@ class User extends BaseUser
      * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
      * 
      * @return void
-     * @throws Fisma_Exception_AccountLocked if the account is locked
+     * @throws Fisma_Zend_Exception_AccountLocked if the account is locked
      */
     public function checkAccountLock()
     {
@@ -199,7 +199,7 @@ class User extends BaseUser
             
             // Construct an error message based on the lock type
             $reason = $this->getLockReason();
-            throw new Fisma_Exception_AccountLocked("Account is locked ($reason)");
+            throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
         }
     }
     
@@ -211,7 +211,7 @@ class User extends BaseUser
      * lock type on the account).
      * 
      * @return int The remaining minutes to be unlocked automatically
-     * @throws Fisma_Exception if the account is not eligible for automatic unlock
+     * @throws Fisma_Zend_Exception if the account is not eligible for automatic unlock
      */
     public function getLockRemainingMinutes()
     {
@@ -227,7 +227,7 @@ class User extends BaseUser
             // (otherwise the lock would be released early)
             $lockMinutesRemaining = ceil($lockTs->getTimestamp() / 60);
         } else {
-            throw new Fisma_Exception('This account is not eligible for automatic unlock');
+            throw new Fisma_Zend_Exception('This account is not eligible for automatic unlock');
         }
 
         return $lockMinutesRemaining;
@@ -237,7 +237,7 @@ class User extends BaseUser
      * Returns a human-readable explanation of why the account was locked
      * 
      * @return string The human-readable explanation of why the account was locked
-     * @throws Fisma_Exception if the lock type is unexcepted
+     * @throws Fisma_Zend_Exception if the lock type is unexcepted
      */
     public function getLockReason()
     {
@@ -265,7 +265,7 @@ class User extends BaseUser
                         . ' days old';
                 break;
             default:
-                throw new Fisma_Exception("Unexpected lock type ($this->lockType)");
+                throw new Fisma_Zend_Exception("Unexpected lock type ($this->lockType)");
                 break;
         }
         
@@ -313,7 +313,7 @@ class User extends BaseUser
             $this->refresh();
             if ($this->locked) {
                 $reason = $this->getLockReason();
-                throw new Fisma_Exception_InvalidAuthentication("Account is locked ($reason)");
+                throw new Fisma_Zend_Exception_InvalidAuthentication("Account is locked ($reason)");
             }
             
             // Temporarily disable class loading warnings
@@ -325,7 +325,7 @@ class User extends BaseUser
 
             if (!$acl = $cache->load(md5($this->username) . '_acl')) {
 
-                $acl = new Fisma_Acl();
+                $acl = new Fisma_Zend_Acl();
             
                 // For each role, add its privileges to the ACL
                 $roleArray = array();
@@ -346,7 +346,7 @@ class User extends BaseUser
                         if (class_exists($className)) {
                             $reflection = new ReflectionClass($className);
                             $organizationDependency = $reflection->implementsInterface(
-                                'Fisma_Acl_OrganizationDependency'
+                                'Fisma_Zend_Acl_OrganizationDependency'
                             );
                         }
                     
@@ -649,7 +649,7 @@ class User extends BaseUser
             $emailValidation->email = $this->email;
             $emailValidation->validationCode = md5(rand());
             $this->EmailValidation[] = $emailValidation;
-            $mail = new Fisma_Mail();
+            $mail = new Fisma_Zend_Mail();
             $mail->sendAccountInfo($this);
         }
     }
@@ -667,7 +667,7 @@ class User extends BaseUser
         
         //send password changing email after password updated
         if (isset($modified['password'])) {
-            $mail = new Fisma_Mail();
+            $mail = new Fisma_Zend_Mail();
             $mail->sendPassword($this);
         }
         
@@ -682,13 +682,13 @@ class User extends BaseUser
             }
             $emailValidation->validationCode = md5(rand());
             $this->EmailValidation[] = $emailValidation;
-            $mail = new Fisma_Mail();
+            $mail = new Fisma_Zend_Mail();
             $mail->validateEmail($this, $emailValidation->email);
         }
 
         // Ensure that any user can not change root username
         if (isset($modified['username']) && 'root' == $modified['username']) {
-            throw new Fisma_Exception_User('The root user\'s username cannot be modified.');
+            throw new Fisma_Zend_Exception_User('The root user\'s username cannot be modified.');
         }
     }
 
@@ -701,7 +701,7 @@ class User extends BaseUser
     public function preDelete($event)
     {
         if ('root' == $this->username) {
-            throw new Fisma_Exception_User('The root user cannot be deleted.');
+            throw new Fisma_Zend_Exception_User('The root user cannot be deleted.');
         }
     }
 
@@ -798,7 +798,7 @@ class User extends BaseUser
     {
         $render = "$this->nameFirst $this->nameLast ($this->username)";
 
-        if (Fisma_Acl::hasPrivilegeForObject('read', $this)) {
+        if (Fisma_Zend_Acl::hasPrivilegeForObject('read', $this)) {
             $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
         }
 

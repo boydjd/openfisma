@@ -99,7 +99,7 @@ class Test_Application_Models_System extends Test_FismaUnitTest
      * FIPS category cannot be set directly
      * 
      * @return void
-     * @expectedException Fisma_Exception
+     * @expectedException Fisma_Zend_Exception
      */
     public function testCannotSetFipsCategoryDirectly()
     {

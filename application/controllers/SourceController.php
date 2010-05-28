@@ -49,7 +49,7 @@ class SourceController extends BaseController
             $msg   = "Invalid {$this->_modelName} ID";
             $type = 'warning';
         } else {
-            Fisma_Acl::requirePrivilegeForObject('delete', $source);
+            Fisma_Zend_Acl::requirePrivilegeForObject('delete', $source);
             
             try {
                 if (count($source->Findings) > 0) {

@@ -34,7 +34,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
      * Cannot set next due date directly
      * 
      * @return void
-     * @expectedException Fisma_Exception
+     * @expectedException Fisma_Zend_Exception
      */
     public function testCannotSetDueDateDirectly()
     {
@@ -86,7 +86,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
      * Original ECD cannot be set directly
      * 
      * @return void
-     * @expectedException Fisma_Exception
+     * @expectedException Fisma_Zend_Exception
      */
     public function testOriginalEcdCannotBeSet()
     {

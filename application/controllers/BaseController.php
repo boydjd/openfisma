@@ -63,7 +63,7 @@ abstract class BaseController extends SecurityController
      *  Initialize model and make sure the model has been properly set
      * 
      * @return void
-     * @throws Fisma_Exception if model name is null
+     * @throws Fisma_Zend_Exception if model name is null
      */
     public function init()
     {
@@ -71,7 +71,7 @@ abstract class BaseController extends SecurityController
         
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
-            throw new Fisma_Exception('Internal error. Subclasses of the BaseController'
+            throw new Fisma_Zend_Exception('Internal error. Subclasses of the BaseController'
                                     . ' must specify the _modelName field');
         }
     }
@@ -101,8 +101,8 @@ abstract class BaseController extends SecurityController
             if (is_null($formName)) {
                 $formName = strtolower((string) $this->_modelName);
             }
-            $form = Fisma_Form_Manager::loadForm($formName);
-            $form = Fisma_Form_Manager::prepareForm($form);
+            $form = Fisma_Zend_Form_Manager::loadForm($formName);
+            $form = Fisma_Zend_Form_Manager::prepareForm($form);
         }
         return $form;
     }
@@ -126,14 +126,14 @@ abstract class BaseController extends SecurityController
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
      * @return void
-     * @throws Fisma_Exception if the subject is not instance of Doctrine_Record
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } elseif (!$subject instanceof Doctrine_Record) {
-            throw new Fisma_Exception('Expected a Doctrine_Record object');
+            throw new Fisma_Zend_Exception('Expected a Doctrine_Record object');
         }
         $subject->merge($form->getValues());
         $subject->save();
@@ -143,16 +143,16 @@ abstract class BaseController extends SecurityController
      * View detail information of the subject model
      * 
      * @return void
-     * @throws Fisma_Exception if the model id is invalid
+     * @throws Fisma_Zend_Exception if the model id is invalid
      */
     public function viewAction()
     {
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
-            throw new Fisma_Exception("Invalid {$this->_modelName} ID");
+            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        Fisma_Acl::requirePrivilegeForObject('read', $subject);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $subject);
 
         $form   = $this->getForm();
         
@@ -173,7 +173,7 @@ abstract class BaseController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', $this->getAclResourceName());
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', $this->getAclResourceName());
         
         // Get the subject form
         $form   = $this->getForm();
@@ -194,7 +194,7 @@ abstract class BaseController extends SecurityController
                 }
                 $this->view->priorityMessenger($msg, $model);
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $this->view->priorityMessenger("Unable to create the {$this->_modelName}:<br>$errorString", 'warning');
             }
         }
@@ -205,16 +205,16 @@ abstract class BaseController extends SecurityController
      * Edit a subject model
      * 
      * @return void
-     * @throws Fisma_Exception if the model id is invalid
+     * @throws Fisma_Zend_Exception if the model id is invalid
      */
     public function editAction()
     {
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
         if (!$subject) {
-            throw new Fisma_Exception("Invalid {$this->_modelName} ID");
+            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        Fisma_Acl::requirePrivilegeForObject('update', $subject);
+        Fisma_Zend_Acl::requirePrivilegeForObject('update', $subject);
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
@@ -241,7 +241,7 @@ abstract class BaseController extends SecurityController
                 }
                 $this->view->priorityMessenger($msg, $type);
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $error = "Error while trying to save: {$this->_modelName}: <br>$errorString";
                 $this->view->priorityMessenger($error, 'warning');
             }
@@ -261,7 +261,7 @@ abstract class BaseController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
-        Fisma_Acl::requirePrivilegeForObject('delete', $subject);
+        Fisma_Zend_Acl::requirePrivilegeForObject('delete', $subject);
 
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -273,7 +273,7 @@ abstract class BaseController extends SecurityController
                 Doctrine_Manager::connection()->commit();
                 $msg   = "{$this->_modelName} deleted successfully";
                 $type = 'notice';
-            } catch (Fisma_Exception_User $e) {
+            } catch (Fisma_Zend_Exception_User $e) {
                 $msg  = $e->getMessage();
                 $type = 'warning';
             } catch (Doctrine_Exception $e) {
@@ -295,7 +295,7 @@ abstract class BaseController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
         $keywords = trim($this->_request->getParam('keywords'));
         $link = empty($keywords) ? '' :'/keywords/' . $this->view->escape($keywords, 'url');
         $this->view->link     = $link;
@@ -313,7 +313,7 @@ abstract class BaseController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 

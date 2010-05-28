@@ -52,7 +52,7 @@ class NetworkController extends BaseController
             $msg   = "Invalid Network ID";
             $type = 'warning';
         } else {
-            Fisma_Acl::requirePrivilegeForObject('delete', $network);
+            Fisma_Zend_Acl::requirePrivilegeForObject('delete', $network);
             
             $assets = $network->Assets->toArray();
             if (!empty($assets)) {

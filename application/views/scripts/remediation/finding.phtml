@@ -75,7 +75,7 @@
                      href="/metainfo/list/o/organization/format/html/"
                      <?php
                      if (('NEW' == $status || 'DRAFT' == $status)
-                         && Fisma_Acl::hasPrivilegeForObject('update_assignment', $finding)) {
+                         && Fisma_Zend_Acl::hasPrivilegeForObject('update_assignment', $finding)) {
                          echo $this->escape('class="editable" target="organization"', 'none'); 
                      }
                      ?>>
@@ -95,7 +95,7 @@
     ?>
         <p><i>No asset associated with this finding.</i></p>
     <?php
-        elseif (Fisma_Acl::hasPrivilegeForObject('read', $finding->Asset)):
+        elseif (Fisma_Zend_Acl::hasPrivilegeForObject('read', $finding->Asset)):
     ?>
     <table class="keyValues">
         <tr>
@@ -180,7 +180,7 @@
 <div class="clear"></div>
 
 <?php 
-if (Fisma_Acl::hasPrivilegeForObject('update_description', $finding)
+if (Fisma_Zend_Acl::hasPrivilegeForObject('update_description', $finding)
     && ('NEW' == $status || 'DRAFT' == $status)) {
     Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
@@ -194,7 +194,7 @@ if (Fisma_Acl::hasPrivilegeForObject('update_description', $finding)
 
 <?php
 if (('NEW' == $status || 'DRAFT' == $status)
-    && Fisma_Acl::hasPrivilegeForObject('update_recommendation', $finding)) {
+    && Fisma_Zend_Acl::hasPrivilegeForObject('update_recommendation', $finding)) {
     Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {
     Fisma_Format_Section::startSection('Recommendation');

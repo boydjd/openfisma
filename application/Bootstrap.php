@@ -25,7 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Bootstrap extends Fisma_Application_Bootstrap_SymfonyContainerBootstrap
+class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstrap
 {
     /**
      * Initialize OpenFISMA specific code 

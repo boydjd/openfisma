@@ -31,12 +31,13 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
 class Test_Library_Fisma extends Test_FismaUnitTest
 {
     /**
-     * Test the ability to globally set the enabled state of a Fisma_Record_Listener.
+     * Test the ability to globally set the enabled state of a Fisma_Doctrine_Record_Listener.
      * 
      * This covers the logic for loading listeners if they haven't been loaded when the enabled state is set.
      * 
-     * This test isn't ideal because it relies on knowledge of a known Fisma_Record_Listener subclass in order to 
-     * test the logic in the Fisma class, but it's a necessary evil to get coverage of this rather important function.
+     * This test isn't ideal because it relies on knowledge of a known Fisma_Doctrine_Record_Listener subclass in order
+     * to test the logic in the Fisma class, but it's a necessary evil to get coverage of this rather important
+     * function.
      */
     public function testGloballySetListenerEnabledState()
     {

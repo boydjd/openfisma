@@ -44,7 +44,7 @@ class Fisma_Hash
      * @param string $data The specified data to be hashed
      * @param string $hashType The specified hash algorithm
      * @return string The hash code of the requested data
-     * @throws Fisma_Exception if the hash type is not supported
+     * @throws Fisma_Zend_Exception if the hash type is not supported
      */
     static public function hash($data, $hashType)
     {
@@ -55,7 +55,7 @@ class Fisma_Hash
         } elseif ('sha256' == $hashType) {
             return mhash(MHASH_SHA256, $data);
         } else {
-            throw new Fisma_Exception("Unsupported hash type: {$hashType}");
+            throw new Fisma_Zend_Exception("Unsupported hash type: {$hashType}");
         }
     }
 }

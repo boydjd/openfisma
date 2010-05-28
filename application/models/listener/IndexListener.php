@@ -25,7 +25,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class IndexListener extends Fisma_Record_Listener
+class IndexListener extends Fisma_Doctrine_Record_Listener
 {
     /**
      * New records always get indexed

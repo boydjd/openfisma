@@ -47,7 +47,7 @@ class CommentController extends SecurityController
         // The view is rendered into a panel, so it doesn't need a layout
         $this->_helper->layout->disableLayout();
         
-        $form = Fisma_Form_Manager::loadForm('add_comment');
+        $form = Fisma_Zend_Form_Manager::loadForm('add_comment');
                                 
         $this->view->form = $form;
     }
@@ -67,11 +67,11 @@ class CommentController extends SecurityController
             $object = Doctrine::getTable($objectClass)->find($objectId);
             
             if (!$object) {
-                throw new Fisma_Exception("No object exist in class $objectClass with id $id");
+                throw new Fisma_Zend_Exception("No object exist in class $objectClass with id $id");
             }
             
             if (empty($trimmedComment)) {
-                throw new Fisma_Exception_User("Comment cannot be blank");
+                throw new Fisma_Zend_Exception_User("Comment cannot be blank");
             }
             
             // Add comment and include comment details (including username) in response object
@@ -82,7 +82,7 @@ class CommentController extends SecurityController
             
             $response->comment = $commentArray;
             
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
         } catch (Exception $e) {
             if (Fisma::debug()) {

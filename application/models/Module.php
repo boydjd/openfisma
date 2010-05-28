@@ -50,7 +50,7 @@ class Module extends BaseModule
     public function setEnabled($enabled)
     {
         if ($enabled === false  && !$this->canBeDisabled) {
-            throw new Fisma_Exception("The '$this->name' module cannot be disabled");
+            throw new Fisma_Zend_Exception("The '$this->name' module cannot be disabled");
         } else {
             $this->_set('enabled', $enabled);
         }

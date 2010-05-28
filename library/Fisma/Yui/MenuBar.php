@@ -40,14 +40,15 @@ class Fisma_Yui_MenuBar
      * 
      * @param Fisma_Yui_Menu|Fisma_Yui_MenuItem $item The menu ir submenu item to be appended to this menu bar
      * @return void
-     * @throws Fisma_Exception if neither the specified item is instance of class Fisma_Yui_Menu nor Fisma_Yui_MenuItem
+     * @throws Fisma_Zend_Exception if neither the specified item is instance of class Fisma_Yui_Menu nor 
+     * Fisma_Yui_MenuItem
      */
     function add($item) 
     {
         if ($item instanceof Fisma_Yui_Menu || $item instanceof Fisma_Yui_MenuItem) {
             $this->_menus[] = $item;
         } else {
-            throw new Fisma_Exception("Can only add Menus and MenuItems to this class.");
+            throw new Fisma_Zend_Exception("Can only add Menus and MenuItems to this class.");
         }
     }
     

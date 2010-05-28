@@ -46,7 +46,7 @@ class Fisma_Configuration_Array implements Fisma_Configuration_Interface
      * 
      * @param string $name The specified configuration item name to obtain
      * @return mixed The value of the requested configuration item name
-     * @throws Fisma_Exception_Config if the requested configuration item name is invalid
+     * @throws Fisma_Zend_Exception_Config if the requested configuration item name is invalid
      * @todo suggest to handle the exception that the requested configuration item name is invalid 
      * since programmers maybe use a undefined configuration item name in test case 
      */

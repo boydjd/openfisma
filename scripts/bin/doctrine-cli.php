@@ -54,7 +54,7 @@ try {
         // Create a build directory
         $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
         if (!mkdir($sampleDataBuildPath, 0700)) {
-            throw new Fisma_Exception('Could not create directory for sample data build. Maybe it already exists'
+            throw new Fisma_Zend_Exception('Could not create directory for sample data build. Maybe it already exists'
                                     . " or it has the wrong permissions? ($sampleDataBuildPath)");
         }
         
@@ -71,7 +71,7 @@ try {
             $source = "$fixturePath/$fixtureFile";
             $target = "$sampleDataBuildPath/$fixtureFile";
             if (!copy($source, $target)) {
-                throw new Fisma_Exception("Could not copy '$source' to '$target'");
+                throw new Fisma_Zend_Exception("Could not copy '$source' to '$target'");
             }
         }
         
@@ -91,7 +91,7 @@ try {
             if (!file_exists($target)) {
                 // If the file doesn't already exist, then we can simply copy the sample data into the build directory
                 if (!copy($source, $target)) {
-                    throw new Fisma_Exception("Could not copy '$source' to '$target'");
+                    throw new Fisma_Zend_Exception("Could not copy '$source' to '$target'");
                 }
             } else {
                 // If the target file does already exist, then we need to merge the YAML files.

@@ -25,7 +25,7 @@
  * @package    Model
  * @version    $Id$
  */
-class System extends BaseSystem implements Fisma_Acl_OrganizationDependency
+class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
      * Confidentiality, Integrity, Availability
@@ -253,11 +253,11 @@ class System extends BaseSystem implements Fisma_Acl_OrganizationDependency
      * 
      * @param string $value The value of FIPS category to set
      * @return void
-     * @throws Fisma_Exception if this mutator is called anytime and anywhere
+     * @throws Fisma_Zend_Exception if this mutator is called anytime and anywhere
      */
     public function setFipsCategory($value)
     {
-        throw new Fisma_Exception('Cannot set FIPS Security category directly. It is derived from CIA.');
+        throw new Fisma_Zend_Exception('Cannot set FIPS Security category directly. It is derived from CIA.');
     }
 
     /**
@@ -298,7 +298,7 @@ class System extends BaseSystem implements Fisma_Acl_OrganizationDependency
     }
 
     /**
-     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
      * 
      * @return int
      */

@@ -25,7 +25,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Form
+ * @subpackage Fisma_Zend_Form
  * @version    $Id$
  * 
  * @uses       Test_FismaUnitTest
@@ -73,7 +73,7 @@ class Test_Library_Fisma_Cookie extends Test_FismaUnitTest
      * @param string $expected The expected result
      * @return void
      * @dataProvider badCookieProvider
-     * @expectedException Fisma_Exception
+     * @expectedException Fisma_Zend_Exception
      */
     public function testGetUnavailableCookie(array $cookie, $key, $expected)
     {

@@ -39,7 +39,7 @@ class Version51 extends Doctrine_Migration_Base
         $tempDir = Fisma::getPath('temp') . '/version51data.' . uniqid();
 
         if (!mkdir($tempDir, 0777)) {
-            throw new Fisma_Exception("Could not create temp directory: $tempDir");
+            throw new Fisma_Zend_Exception("Could not create temp directory: $tempDir");
         }
 
         $basePath = Fisma::getPath('fixture');
@@ -47,7 +47,7 @@ class Version51 extends Doctrine_Migration_Base
         if (!(   copy($basePath . '/IrCategory.yml', $tempDir . '/IrCategory.yml')
               && copy($basePath . '/IrWorkflowDef.yml', $tempDir . '/IrWorkflowDef.yml')
               && copy($basePath . '/IrSubCategory.yml', $tempDir . '/IrSubCategory.yml'))) {
-            throw new Fisma_Exception("Could not copy fixtures into temp directory: $tempDir");
+            throw new Fisma_Zend_Exception("Could not copy fixtures into temp directory: $tempDir");
         }
         
         Doctrine::loadData($tempDir);

@@ -123,7 +123,7 @@ class Fisma_Import_Filter_Nmap
 
         while ($this->_report->read()) {
             if (!$this->_report->isValid()) {
-                throw new Fisma_Exception('Bad XML!');
+                throw new Fisma_Zend_Exception('Bad XML!');
             }
 
             if ($this->_report->depth >= 1 && $this->_report->nodeType == XMLReader::ELEMENT) {

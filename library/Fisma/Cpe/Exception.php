@@ -26,7 +26,7 @@
  * @subpackage Fisma_Cpe
  * @version    $Id$
  */
-class Fisma_Cpe_Exception extends Fisma_Exception
+class Fisma_Cpe_Exception extends Fisma_Zend_Exception
 {
     
 }

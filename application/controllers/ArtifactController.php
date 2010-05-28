@@ -54,19 +54,19 @@ class ArtifactController extends SecurityController
             $formName = 'upload_artifact';
         }
 
-        $form = Fisma_Form_Manager::loadForm($formName);
+        $form = Fisma_Zend_Form_Manager::loadForm($formName);
 
         // Check that the form includes a few required elements to function correctly
         $fileElement = $form->getElement('file');
 
         if (is_null($fileElement) || !($fileElement instanceof Zend_Form_Element_File)) {
-            throw new Fisma_Exception('Upload forms require a Zend_Form_Element_File named "file"');
+            throw new Fisma_Zend_Exception('Upload forms require a Zend_Form_Element_File named "file"');
         }
 
         $uploadElement = $form->getElement('uploadButton');
 
         if (is_null($uploadElement) || !($uploadElement instanceof Zend_Form_Element_Submit)) {
-            throw new Fisma_Exception('Upload forms require a Zend_Form_Element_Submit named "uploadButton"');
+            throw new Fisma_Zend_Exception('Upload forms require a Zend_Form_Element_Submit named "uploadButton"');
         }
         
         // Select elements can be loaded from a table
@@ -122,7 +122,7 @@ class ArtifactController extends SecurityController
 
         // Sanity check the apc id
         if (!preg_match('/^[0-9A-Za-z]+$/', $apcId)) {
-            throw new Fisma_Exception("Invalid APC upload progress ID");
+            throw new Fisma_Zend_Exception("Invalid APC upload progress ID");
         }
 
         // Default return object. Indicates that upload progress is not an available feature on this server.

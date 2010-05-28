@@ -48,7 +48,7 @@ User:
     
         lastLoginIp:
             type: string(15)
-            Fisma_Validator_Ip: true
+            Fisma_Doctrine_Validator_Ip: true
         lastLoginTs: timestamp
     
         title: 
@@ -141,7 +141,7 @@ User:
             updated:
                 name: modifiedTs
                 type: timestamp
-        Fisma_Behavior_AuditLoggable:
+        Fisma_Doctrine_Behavior_AuditLoggable:
             logCreateObject: true
             logUpdateObject: true
             logDeleteObject: true

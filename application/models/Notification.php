@@ -34,7 +34,7 @@ class Notification extends BaseNotification
      * @param Doctrine_Record $record  The notification applied model
      * @param User $user  The user which triggers the notification event
      * @return void
-     * @throws Fisma_Exception if the specified event name is not found
+     * @throws Fisma_Zend_Exception if the specified event name is not found
      */
     public static function notify($eventName, $record, $user)
     {
@@ -45,7 +45,7 @@ class Notification extends BaseNotification
         $event = Doctrine::getTable('Event')->findOneByName($eventName);
 
         if (!$event) {
-            throw new Fisma_Exception("No event named '$eventName' was found");
+            throw new Fisma_Zend_Exception("No event named '$eventName' was found");
         }
 
         $eventText = $event->description;
@@ -74,7 +74,7 @@ class Notification extends BaseNotification
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
         // If the object has an ACL dependency on Organization, then extend the query for that condition
-        if ($record instanceof Fisma_Acl_OrganizationDependency) {
+        if ($record instanceof Fisma_Zend_Acl_OrganizationDependency) {
             $eventsQuery->innerJoin('u.UserRole ur')
                         ->leftJoin('ur.Organizations o')
                         ->andWhere('o.id = ?', $record->getOrganizationDependencyId());

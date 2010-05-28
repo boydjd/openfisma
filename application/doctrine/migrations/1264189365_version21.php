@@ -23,7 +23,7 @@
  * distinction also.
  * 
  * The orgSpecific flag is deprecated because this information is communicated in the class definition by implementing
- * the Fisma_Acl_OrganizationDependency interface.
+ * the Fisma_Zend_Acl_OrganizationDependency interface.
  * 
  * @package Migration
  * @version $Id$

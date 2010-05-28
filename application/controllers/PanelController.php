@@ -44,18 +44,20 @@ class PanelController extends SecurityController
      * Redirect user to a suitable dashboard
      * 
      * @return void
-     * @throw Fisma_Exception_User if no suitable dashboard exists
+     * @throw Fisma_Zend_Exception_User if no suitable dashboard exists
      */
     public function indexAction()
     {
-        if (Fisma_Acl::hasArea('dashboard')) {
+        if (Fisma_Zend_Acl::hasArea('dashboard')) {
             $this->_helper->actionStack('index', 'dashboard');
             $this->_helper->actionStack('header');
-        } elseif (Fisma_Acl::hasArea('incident')) {
+        } elseif (Fisma_Zend_Acl::hasArea('incident')) {
             $this->_helper->actionStack('index', 'incident-dashboard');
         } else {
-            throw new Fisma_Exception_User('Your account does not have access to any dashboards. Please contact the'
-                                         . ' administrator to correct your account privileges.');
+            throw new Fisma_Zend_Exception_User(
+                'Your account does not have access to any dashboards. Please contact the'
+                . ' administrator to correct your account privileges.'
+            );
         }
     }
 

@@ -4,5 +4,5 @@
 if (Fisma::debug()) {
     var_dump($this->treeData);
 } else {
-    throw new Fisma_Exception("This view is only allowed in debug mode.");
+    throw new Fisma_Zend_Exception("This view is only allowed in debug mode.");
 }

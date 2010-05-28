@@ -31,7 +31,7 @@ class DebugController extends Zend_Controller_Action
      * Prepares actions
      *
      * @return void
-     * @throws Fisma_Exception if Debug mode is not enabled
+     * @throws Fisma_Zend_Exception if Debug mode is not enabled
      */
     public function preDispatch()
     {
@@ -39,7 +39,7 @@ class DebugController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setNoRender(true);
 
         if (!Fisma::debug())
-            throw new Fisma_Exception('Action is only allowed in debug mode.');
+            throw new Fisma_Zend_Exception('Action is only allowed in debug mode.');
     }
 
     /**
@@ -96,7 +96,7 @@ class DebugController extends Zend_Controller_Action
                 $cacheInfo = apc_cache_info('user');
                 break;
             default:
-                throw new Fisma_Exception("Invalid cache type: '$cacheType'");
+                throw new Fisma_Zend_Exception("Invalid cache type: '$cacheType'");
                 break;
         }
 

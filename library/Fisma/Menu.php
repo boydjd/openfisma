@@ -37,39 +37,39 @@ class Fisma_Menu
     {
         $mainMenuBar = new Fisma_Yui_MenuBar();
 
-        if (Fisma_Acl::hasArea('dashboard')) {
+        if (Fisma_Zend_Acl::hasArea('dashboard')) {
             $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
             $mainMenuBar->add($dashboard);
         }
 
-        if (Fisma_Acl::hasPrivilegeForClass('read', 'Finding')) {
+        if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Finding')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
             $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
             $findings->add(new Fisma_Yui_MenuItem('Search', '/panel/remediation/sub/searchbox'));
 
-            if (Fisma_Acl::hasPrivilegeForClass('create', 'Finding')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('create', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/panel/finding/sub/create'));
             }
             
-            if (Fisma_Acl::hasPrivilegeForClass('inject', 'Finding')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('inject', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
             
-            if (Fisma_Acl::hasPrivilegeForClass('approve', 'Finding')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('approve', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
             }
             
             $mainMenuBar->add($findings);
         }
 
-        if (Fisma_Acl::hasPrivilegeForClass('read', 'Organization')) {
+        if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Organization')) {
             $systems = new Fisma_Yui_Menu('System Inventory');
 
             $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
             
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Asset')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Asset')) {
                 $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
@@ -82,7 +82,7 @@ class Fisma_Menu
 
         $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
-        if ($incidentModule && $incidentModule->enabled && Fisma_Acl::hasArea('incident')) {
+        if ($incidentModule && $incidentModule->enabled && Fisma_Zend_Acl::hasArea('incident')) {
             // Incidents main menu
             $incidentMenu = new Fisma_Yui_Menu('Incidents');
 
@@ -93,14 +93,14 @@ class Fisma_Menu
             $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/incident-dashboard'));
 
             // Incident Administration submenu
-            if (Fisma_Acl::hasArea('incident_admin')) {
+            if (Fisma_Zend_Acl::hasArea('incident_admin')) {
                 $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
-                if (Fisma_Acl::hasPrivilegeForClass('read', 'IrCategory')) {
+                if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'IrCategory')) {
                     $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/panel/ircategory/sub/list'));
                 }
                 
-                if (Fisma_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef')) {
+                if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'IrWorkflowDef')) {
                     $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/panel/irworkflow/sub/list'));
                 }
 
@@ -108,7 +108,7 @@ class Fisma_Menu
             }
         
             // Incident reports submenu
-            if (Fisma_Acl::hasArea('incident_report')) {
+            if (Fisma_Zend_Acl::hasArea('incident_report')) {
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
                 $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category'));
                 $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident History', '/incident-report/history'));
@@ -118,12 +118,12 @@ class Fisma_Menu
             $mainMenuBar->add($incidentMenu);
         }
         
-        if (Fisma_Acl::hasArea('reports')) {
+        if (Fisma_Zend_Acl::hasArea('reports')) {
             $reports = new Fisma_Yui_Menu('Reports');
             
             $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
             
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Organization')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Organization')) {
                 $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));    
             }
             
@@ -132,34 +132,34 @@ class Fisma_Menu
             $mainMenuBar->add($reports);
         }
         
-        if (Fisma_Acl::hasArea('admin')) {
+        if (Fisma_Zend_Acl::hasArea('admin')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
-            if (Fisma_Acl::hasArea('configuration')) {
+            if (Fisma_Zend_Acl::hasArea('configuration')) {
                 $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Source')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Source')) {
                 $admin->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
             }
 
-            if (Fisma_Acl::hasArea('configuration')) {
+            if (Fisma_Zend_Acl::hasArea('configuration')) {
                 $admin->add(new Fisma_Yui_MenuItem('Modules', '/panel/config/sub/modules'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Network')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Network')) {
                 $admin->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Product')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Product')) {
                 $admin->add(new Fisma_Yui_MenuItem('Products', '/panel/product/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'Role')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Role')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));
             }
 
-            if (Fisma_Acl::hasPrivilegeForClass('read', 'User')) {
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'User')) {
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
             }
             

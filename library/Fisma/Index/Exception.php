@@ -26,6 +26,6 @@
  * @subpackage Fisma_Index
  * @version    $Id$
  */
-class Fisma_Index_Exception extends Fisma_Exception
+class Fisma_Index_Exception extends Fisma_Zend_Exception
 {
 }

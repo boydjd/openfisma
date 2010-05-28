@@ -170,7 +170,8 @@ class Fisma
      * 
      * @param int $mode One of the run modes specified as constants in this class
      * @return void
-     * @throws Fisma_Exception if neither the environment parameter in application.ini is 'production' nor 'development'
+     * @throws Fisma_Zend_Exception if neither the environment parameter in application.ini is 'production' nor 
+     * 'development'
      */
     public static function initialize($mode) 
     {
@@ -187,6 +188,7 @@ class Fisma
             'controller' => 'application/controllers',
             'listener' => 'application/models/listener',
             'library' => 'library',
+            'fisma' => 'library/Fisma',
             'pear' => 'library/Pear'
         );
         
@@ -244,8 +246,10 @@ class Fisma
             } elseif ('development' == $conf->environment) {
                 self::$_appConf = $conf->development;
             } else {
-                throw new Fisma_Exception("The environment parameter in application.ini must be either \"production\""
-                                        . " or \"development\" but it's actually \"$conf->environment\"");
+                throw new Fisma_Zend_Exception(
+                    "The environment parameter in application.ini must be either \"production\""
+                                        . " or \"development\" but it's actually \"$conf->environment\""
+                );
             }
     
             // PHP configuration
@@ -306,7 +310,7 @@ class Fisma
         if (self::$_configuration) {
             return self::$_configuration;
         } else {
-            throw new Fisma_Exception('System has no configuration object');
+            throw new Fisma_Zend_Exception('System has no configuration object');
         }
     }
 
@@ -331,7 +335,7 @@ class Fisma
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
-        $manager->registerValidators(array('Fisma_Validator_Ip', 'Fisma_Validator_Url'));
+        $manager->registerValidators(array('Fisma_Doctrine_Validator_Ip', 'Fisma_Doctrine_Validator_Url'));
         /**
          * @todo We want to enable VALIDATE_ALL in release 2.6
          */
@@ -354,7 +358,7 @@ class Fisma
                 'migrations_path'     =>  self::getPath('migration'),
                 'yaml_schema_path'    =>  self::getPath('schema'),
                 'generate_models_options' => array(
-                    'baseClassName' => 'Fisma_Record'
+                    'baseClassName' => 'Fisma_Doctrine_Record'
                 )
             )
         );
@@ -403,11 +407,11 @@ class Fisma
         Zend_Layout::startMvc(
             array(
                 'layoutPath' => self::getPath('layout'),
-                'view' => new Fisma_View()
+                'view' => new Fisma_Zend_View()
             )
         );
         
-        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Controller_Action_Helper');
+        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
 
         if (!self::isInstall()) {
             set_time_limit(0);
@@ -471,7 +475,7 @@ class Fisma
     }
 
     /**
-     * Returns whether Fisma_Record_Listeners are enabled
+     * Returns whether Fisma_Doctrine_Record_Listeners are enabled
      * 
      * @return boolean Ture if listener is enabled, false otherwise
      */
@@ -481,7 +485,7 @@ class Fisma
     }
     
     /**
-     * Enable or disable all Fisma_Record_Listeners
+     * Enable or disable all Fisma_Doctrine_Record_Listeners
      * 
      * @param boolean $enabled
      * @param boolean $loadClasses If true, attempt to load all listeners in the listeners directory first
@@ -505,11 +509,11 @@ class Fisma
             }
         }
         
-        // Enumerate all classes and search for ones that subclass the Fisma_Record_Listener marker class
+        // Enumerate all classes and search for ones that subclass the Fisma_Doctrine_Record_Listener marker class
         $classes = get_declared_classes();
         foreach ($classes as $class) {
-            if (is_subclass_of($class, 'Fisma_Record_Listener')) {
-                Fisma_Record_Listener::setEnabled($enabled);
+            if (is_subclass_of($class, 'Fisma_Doctrine_Record_Listener')) {
+                Fisma_Doctrine_Record_Listener::setEnabled($enabled);
             }
         }
     }
@@ -518,12 +522,12 @@ class Fisma
      * Returns true if in debug mode, false otherwise.
      * 
      * @return bool Ture if in debug mode, false otherwise
-     * @throws Fisma_Exception if the Fisma object has not been initialized
+     * @throws Fisma_Zend_Exception if the Fisma object has not been initialized
      */
     public static function debug() 
     {
         if (!self::$_initialized) {
-            throw new Fisma_Exception('The Fisma object has not been initialized.');
+            throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
 
         if (!isset(self::$_appConf->debug)) {
@@ -541,13 +545,13 @@ class Fisma
      * 
      * @param string $key The specified key to obtain
      * @return string The application path of the key
-     * @throws Fisma_Exception if no path found for the key
+     * @throws Fisma_Zend_Exception if no path found for the key
      * @see Fisma::initialize()
      */
     public static function getPath($key) 
     {
         if (!self::$_initialized) {
-            throw new Fisma_Exception('The Fisma object has not been initialized.');
+            throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
         
         if (isset(self::$_includePath[$key])) {
@@ -555,7 +559,7 @@ class Fisma
         } elseif (isset(self::$_applicationPath[$key])) {
             return self::$_rootPath . '/' . self::$_applicationPath[$key];
         } else {
-            throw new Fisma_Exception("No path found for key: \"$key\"");
+            throw new Fisma_Zend_Exception("No path found for key: \"$key\"");
         }
     }
     
@@ -688,7 +692,7 @@ class Fisma
     public static function setConfiguration(Fisma_Configuration_Interface $config, $replace = false)
     {
         if (self::$_configuration && !$replace) {
-            throw new Fisma_Exception('Configuration already exists');
+            throw new Fisma_Zend_Exception('Configuration already exists');
         } else {
             self::$_configuration = $config;
         }

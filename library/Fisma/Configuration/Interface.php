@@ -33,7 +33,7 @@ interface Fisma_Configuration_Interface
      * 
      * @param string $name The configuration item name to obtain
      * @return mixed The value of the requested configuration item name
-     * @throws Fisma_Exception_Config if not found the requested configuration item name
+     * @throws Fisma_Zend_Exception_Config if not found the requested configuration item name
      */
     public function getConfig($name);
     

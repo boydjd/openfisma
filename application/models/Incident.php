@@ -71,12 +71,12 @@ class Incident extends BaseIncident
     public function reject($comment)
     {
         if ('new' != $this->status) {
-            throw new Fisma_Exception('Cannot reject an incident unless it is in "new" status');
+            throw new Fisma_Zend_Exception('Cannot reject an incident unless it is in "new" status');
         }
 
         // Validate that comment is not empty
         if ('' == trim($comment)) {
-            throw new Fisma_Exception_User('You must provide a comment');
+            throw new Fisma_Zend_Exception_User('You must provide a comment');
         }
 
         // Create a workflow step for rejecting then mark it as closed
@@ -112,7 +112,7 @@ class Incident extends BaseIncident
         
         // Validate that comment is not empty
         if ('' == trim($comment)) {
-            throw new Fisma_Exception_User('You must provide a comment');
+            throw new Fisma_Zend_Exception_User('You must provide a comment');
         }
         
         /*
@@ -163,7 +163,7 @@ class Incident extends BaseIncident
     {
         // Validate that comment is not empty
         if ('' == trim($comment)) {
-            throw new Fisma_Exception_User('You must provide a comment');
+            throw new Fisma_Zend_Exception_User('You must provide a comment');
         }
 
         // Update the completed step first
@@ -211,7 +211,7 @@ class Incident extends BaseIncident
         } else {
             $message = "The workflow for this incident ($this->id) appears to be corrupted. There are two steps"
                      . " with the same id.";
-            throw new Fisma_Exception($message);
+            throw new Fisma_Zend_Exception($message);
         }
     }
 

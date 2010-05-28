@@ -58,11 +58,11 @@ class Fisma_Inject_Factory
             }
 
             throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
-        } catch (Fisma_Exception_InvalidFileFormat $e) {
+        } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
             throw $e;
         } catch(Exception $e) {
             $msg = $e->getMessage();
-            throw new Fisma_Exception("An exception occured while instantiating a Fisma_Inject object: $msg");
+            throw new Fisma_Zend_Exception("An exception occured while instantiating a Fisma_Inject object: $msg");
         }
     }
 
@@ -74,7 +74,7 @@ class Fisma_Inject_Factory
     private static function _validateType($type)
     {
         if (empty($type) || !is_string($type)) {
-            throw new Fisma_Exception_InvalidFileFormat('The uploaded file is not a supported file format.');
+            throw new Fisma_Zend_Exception_InvalidFileFormat('The uploaded file is not a supported file format.');
         }
     }
 

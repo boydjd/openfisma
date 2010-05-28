@@ -50,10 +50,10 @@ class IncidentDashboardController extends SecurityController
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
         
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
         
-        Fisma_Acl::requireArea('incident');
+        Fisma_Zend_Acl::requireArea('incident');
     }
 
     /**

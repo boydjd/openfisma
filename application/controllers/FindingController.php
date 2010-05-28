@@ -53,7 +53,7 @@ class FindingController extends BaseController
      */
     public function getForm($formName = null)
     {
-        $form = Fisma_Form_Manager::loadForm('finding');
+        $form = Fisma_Zend_Form_Manager::loadForm('finding');
 
         $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
         $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
@@ -87,12 +87,12 @@ class FindingController extends BaseController
         $form->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Form_CreateFindingDecorator()
+                new Fisma_Zend_Form_CreateFindingDecorator()
             )
         );
         
         // Check if the user is allowed to read assets.
-        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Asset')) {
+        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Asset')) {
             $form->removeElement('name');
             $form->removeElement('ip');
             $form->removeElement('port');
@@ -100,11 +100,11 @@ class FindingController extends BaseController
             $form->removeElement('assetId');
         }
         
-        $form->setElementDecorators(array(new Fisma_Form_CreateFindingDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_CreateFindingDecorator()));
         $dateElement = $form->getElement('discoveredDate');
         $dateElement->clearDecorators();
         $dateElement->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-        $dateElement->addDecorator(new Fisma_Form_CreateFindingDecorator());
+        $dateElement->addDecorator(new Fisma_Zend_Form_CreateFindingDecorator());
         return $form;
     }
 
@@ -114,7 +114,7 @@ class FindingController extends BaseController
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
      * @return void
-     * @throws Fisma_Exception if the subject is not null or the organization of the finding associated
+     * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
     protected function saveValue($form, $subject=null)
@@ -122,7 +122,7 @@ class FindingController extends BaseController
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } else {
-            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+            throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
         if (empty($values['securityControlId'])) {
@@ -144,7 +144,7 @@ class FindingController extends BaseController
             if ($organization !== false) {
                 $subject->ResponsibleOrganization = $organization;
             } else {
-                throw new Fisma_Exception("The user tried to associate a new finding with a"
+                throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
                                         . " non-existent organization (id={$values['orgSystemId']}).");
             }
         }
@@ -159,7 +159,7 @@ class FindingController extends BaseController
      */
     public function injectionAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('inject', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
 
         /** @todo convert this to a Zend_Form */
         // If the form isn't submitted, then there is no work to do
@@ -204,7 +204,7 @@ class FindingController extends BaseController
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";
                 $type  = 'notice';
-            } catch (Fisma_Exception_InvalidFileFormat $e) {
+            } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
                 $error = "The file cannot be processed due to an error.<br>{$e->getMessage()}";
                 $type  = 'warning';
@@ -223,7 +223,7 @@ class FindingController extends BaseController
      */
     public function templateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('inject', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext(
@@ -249,7 +249,7 @@ class FindingController extends BaseController
                 $systems[$orgSystem['id']] = $orgSystem['nickname'];
             }
             if (count($systems) == 0) {
-                throw new Fisma_Exception("The spreadsheet template can not be
+                throw new Fisma_Zend_Exception("The spreadsheet template can not be
                     prepared because there are no systems defined.");
             } else {
                 /** 
@@ -267,7 +267,7 @@ class FindingController extends BaseController
                 $this->view->networks[$network['id']] = $network['nickname'];
             }
             if (count($this->view->networks) == 0) {
-                throw new Fisma_Exception("The spreadsheet template can not be
+                throw new Fisma_Zend_Exception("The spreadsheet template can not be
                      prepared because there are no networks defined.");
             }
             
@@ -277,7 +277,7 @@ class FindingController extends BaseController
                 $this->view->sources[$source['id']] = $source['nickname'];
             }
             if (count($this->view->sources) == 0) {
-                throw new Fisma_Exception("The spreadsheet template can
+                throw new Fisma_Zend_Exception("The spreadsheet template can
                     not be prepared because there are no finding sources
                     defined.");
             }
@@ -288,7 +288,7 @@ class FindingController extends BaseController
                 $this->view->securityControls[$securityControl['id']] = $securityControl['code'];
             }
             if (count($this->view->securityControls) == 0) {
-                 throw new Fisma_Exception('The spreadsheet template can not be ' .
+                 throw new Fisma_Zend_Exception('The spreadsheet template can not be ' .
                                                    'prepared because there are no security controls defined.');
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
@@ -305,7 +305,7 @@ class FindingController extends BaseController
              */                                       
             $this->getResponse()->setHeader('Pragma', 'private', true);
             $this->getResponse()->setHeader('Cache-Control', 'private', true);
-        } catch(Fisma_Exception $fe) {
+        } catch(Fisma_Zend_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
             $this->_forward('finding', 'panel', null, array('sub' => 'injection'));
@@ -319,11 +319,11 @@ class FindingController extends BaseController
      */
     public function pluginAction()
     {       
-        Fisma_Acl::requirePrivilegeForClass('inject', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
 
         // Load the finding plugin form
-        $uploadForm = Fisma_Form_Manager::loadForm('finding_upload');
-        $uploadForm = Fisma_Form_Manager::prepareForm($uploadForm);
+        $uploadForm = Fisma_Zend_Form_Manager::loadForm('finding_upload');
+        $uploadForm = Fisma_Zend_Form_Manager::prepareForm($uploadForm);
         $uploadForm->setAttrib('id', 'injectionForm');
 
         // Populate the drop menu options
@@ -395,11 +395,11 @@ class FindingController extends BaseController
                     if (($plugin->created + $plugin->reviewed) == 0) {
                         $upload->delete();
                     }
-                } catch (Fisma_Exception_InvalidFileFormat $e) {
+                } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                     $this->view->priorityMessenger($e->getMessage(), 'warning');
                 }
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($uploadForm);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
 
                 if (!$fileReceived) {
                     $errorString .= "File not received<br>";
@@ -422,7 +422,7 @@ class FindingController extends BaseController
      */
     public function approveAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('approve', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('approve', 'Finding');
         
         $q = Doctrine_Query::create()
              ->select('*')
@@ -439,7 +439,7 @@ class FindingController extends BaseController
      */
     public function processApprovalAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('approve', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('approve', 'Finding');
 
         $findings = $this->_request->getPost('findings', array());
         foreach ($findings as $id) {

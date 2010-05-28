@@ -58,7 +58,7 @@ class ConfigController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Acl::requireArea('configuration');
+        Fisma_Zend_Acl::requireArea('configuration');
     }
 
     /**
@@ -70,8 +70,8 @@ class ConfigController extends SecurityController
     public function getConfigForm($formName)
     {
         // Load the form and populate the dynamic pull downs
-        $form = Fisma_Form_Manager::loadForm($formName);
-        $form = Fisma_Form_Manager::prepareForm($form);
+        $form = Fisma_Zend_Form_Manager::loadForm($formName);
+        $form = Fisma_Zend_Form_Manager::prepareForm($form);
 
         return $form;
     }
@@ -104,7 +104,7 @@ class ConfigController extends SecurityController
                 Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
                 $this->view->priorityMessenger($msg, 'notice');
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
             }
         }
@@ -236,7 +236,7 @@ class ConfigController extends SecurityController
                 $this->_redirect('/panel/config/');
                 return;
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
                 $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'warning');
             }
@@ -297,7 +297,7 @@ class ConfigController extends SecurityController
                     echo "<b>". $e->getMessage(). "</b>";
                 }
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 echo $errorString;
             }
         } else {
@@ -312,7 +312,7 @@ class ConfigController extends SecurityController
      */
     public function modulesAction()
     {
-        Fisma_Acl::requireArea('configuration');
+        Fisma_Zend_Acl::requireArea('configuration');
 
         $moduleQuery = Doctrine_Query::create()
                        ->from('Module m')
@@ -351,19 +351,19 @@ class ConfigController extends SecurityController
         $response = new Fisma_AsyncResponse();
 
         try {
-            Fisma_Acl::requireArea('configuration');
+            Fisma_Zend_Acl::requireArea('configuration');
             
             // Load module object
             $moduleId = $this->getRequest()->getParam('id');
             
             if (empty($moduleId)) {
-                throw new Fisma_Exception('ID parameter is required');
+                throw new Fisma_Zend_Exception('ID parameter is required');
             }
             
             $module = Doctrine::getTable('Module')->find($moduleId);
             
             if (!$module) {
-                throw new Fisma_Exception("Module with id '$moduleId' not found");
+                throw new Fisma_Zend_Exception("Module with id '$moduleId' not found");
             }
 
             // Handle the 'enabled' parameter, which is a string value either 'true' or 'false'
@@ -374,14 +374,14 @@ class ConfigController extends SecurityController
             } elseif ('false' == $enabled) {
                 $module->enabled = false;
             } else {
-                throw new Fisma_Exception("Invalid enabled state: $enabled");
+                throw new Fisma_Zend_Exception("Invalid enabled state: $enabled");
             }
 
             $module->save();
             
         } catch (Fisma_User_Exception $userException) {
             $response->fail($userException->getMessage());
-        } catch (Fisma_Exception_InvalidPrivilege $invalidPrivilege) {
+        } catch (Fisma_Zend_Exception_InvalidPrivilege $invalidPrivilege) {
             $response->fail('User is not authorized to perform this action.');
         }
         
@@ -465,7 +465,7 @@ class ConfigController extends SecurityController
                 }
             } else {
                 $type = 'warning';
-                $msg  = Fisma_Form_Manager::getErrors($form);
+                $msg  = Fisma_Zend_Form_Manager::getErrors($form);
             }
         } else {
             $type = 'warning';

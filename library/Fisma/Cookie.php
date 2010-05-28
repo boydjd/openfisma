@@ -36,7 +36,7 @@ class Fisma_Cookie
     * @param array $cookie The cookie array, or some other collection of cookies
     * @param string $key The name of the cookie to retrieve from the cookie array
     * @return string The value of the requested cookie
-    * @throws Fisma_Exception if not found the requested cookie key
+    * @throws Fisma_Zend_Exception if not found the requested cookie key
     */
     public static function get(array $cookie, $key) 
     {
@@ -45,7 +45,7 @@ class Fisma_Cookie
         if (isset($cookie[$key])) {
             return $cookie[$key];
         } else {
-            throw new Fisma_Exception("Cookie $key not found.");
+            throw new Fisma_Zend_Exception("Cookie $key not found.");
         }
     }
 

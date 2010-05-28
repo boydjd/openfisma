@@ -42,7 +42,7 @@ class IrCategoryController extends SecurityController
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
 
         $req = $this->getRequest();
@@ -59,9 +59,9 @@ class IrCategoryController extends SecurityController
 
     public function listAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->readIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('read', 'IrCategory');
+        $this->view->readIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('read', 'IrCategory');
         
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
@@ -83,7 +83,7 @@ class IrCategoryController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
         $value = trim($this->_request->getParam('keywords'));
 
@@ -94,7 +94,7 @@ class IrCategoryController extends SecurityController
         
         $organization = Doctrine::getTable('IrCategory');
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            throw new Fisma_Exception('Invalid "sortBy" parameter');
+            throw new Fisma_Zend_Exception('Invalid "sortBy" parameter');
         }
         
         $order = strtoupper($order);
@@ -137,9 +137,9 @@ class IrCategoryController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->createIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('create', 'IrCategory');
+        $this->view->createIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('create', 'IrCategory');
         
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
@@ -151,7 +151,7 @@ class IrCategoryController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
         $this->searchbox();
         $this->render('tree');        
@@ -162,7 +162,7 @@ class IrCategoryController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
                
         /* Get all categories */ 
         $q = Doctrine_Query::create()
@@ -194,10 +194,10 @@ class IrCategoryController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
 
-        $this->view->updateIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -208,7 +208,7 @@ class IrCategoryController extends SecurityController
         $form = $this->_getCategoryForm($ircategory);
         
         if (!$ircategory) {
-            throw new Fisma_Exception('Invalid category ID');
+            throw new Fisma_Zend_Exception('Invalid category ID');
         } else {
             $ircategory = $ircategory->toArray();
         }
@@ -233,7 +233,7 @@ class IrCategoryController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
         
         $form = $this->_getCategoryForm();
         
@@ -261,7 +261,7 @@ class IrCategoryController extends SecurityController
                 return;
 
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create category:<br>$errorString", self::M_WARNING);
             }
@@ -282,7 +282,7 @@ class IrCategoryController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
         
         $id = $this->_request->getParam('id', 0);
         $ircategory = new IrCategory();
@@ -315,7 +315,7 @@ class IrCategoryController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $ircategory->id));
         } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update category<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
@@ -332,7 +332,7 @@ class IrCategoryController extends SecurityController
      */
     private function _getCategoryForm($currCat = null)
     {
-        $form = Fisma_Form_Manager::loadForm('ircategory');
+        $form = Fisma_Zend_Form_Manager::loadForm('ircategory');
         
         /* TODO: this may need to be edited to only include categories that have not been used */    
         $categories = array(    'CAT0' => 'CAT0', 
@@ -346,7 +346,7 @@ class IrCategoryController extends SecurityController
 
         $form->getElement('category')->addMultiOptions($categories);
         
-        return Fisma_Form_Manager::prepareForm($form);
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
     
     /**
@@ -355,7 +355,7 @@ class IrCategoryController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
         
         $id = $this->_request->getParam('id');
         $ircategory = Doctrine::getTable('IrCategory')->find($id);
@@ -377,7 +377,7 @@ class IrCategoryController extends SecurityController
      */
     public function subcreateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
         
         $form = $this->_getSubCategoryForm();
         
@@ -405,7 +405,7 @@ class IrCategoryController extends SecurityController
                 return;
 
             } else {
-                $errorString = Fisma_Form_Manager::getErrors($form);
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
                 $this->message("Unable to create sub category:<br>$errorString", self::M_WARNING);
             }
@@ -429,7 +429,7 @@ class IrCategoryController extends SecurityController
      */
     private function _getSubCategoryForm($currCat = null)
     {
-        $form = Fisma_Form_Manager::loadForm('irsubcategory');
+        $form = Fisma_Zend_Form_Manager::loadForm('irsubcategory');
        
         /* Get all categories */ 
         $q = Doctrine_Query::create()
@@ -458,7 +458,7 @@ class IrCategoryController extends SecurityController
         $form->getElement('categoryId')->addMultiOptions($categories);
         $form->getElement('workflowId')->addMultiOptions($workflows);
         
-        return Fisma_Form_Manager::prepareForm($form);
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
     
     /**
@@ -466,10 +466,10 @@ class IrCategoryController extends SecurityController
      */
     public function subviewAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->updateIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Acl::hasPrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -480,7 +480,7 @@ class IrCategoryController extends SecurityController
         $form = $this->_getSubCategoryForm($irsubcategory);
         
         if (!$irsubcategory) {
-            throw new Fisma_Exception('Invalid sub category ID');
+            throw new Fisma_Zend_Exception('Invalid sub category ID');
         } else {
             $irsubcategory = $irsubcategory->toArray();
         }
@@ -507,7 +507,7 @@ class IrCategoryController extends SecurityController
      */
     public function subupdateAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
         
         $id = $this->_request->getParam('id', 0);
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
@@ -539,7 +539,7 @@ class IrCategoryController extends SecurityController
             $this->message($msg, $model);
             $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
         } else {
-            $errorString = Fisma_Form_Manager::getErrors($form);
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
             $this->message("Unable to update category<br>$errorString", self::M_WARNING);
             // On error, redirect back to the edit action.
@@ -553,7 +553,7 @@ class IrCategoryController extends SecurityController
      */
     public function subdeleteAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
         
         $id = $this->_request->getParam('id');
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);

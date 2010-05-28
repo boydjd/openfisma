@@ -81,7 +81,7 @@ class Fisma_Yui_TabView
     public function __construct($tabViewId, $objectId = null)
     {
         if (empty($tabViewId)) {
-            throw new Fisma_Exception('TabView ID must be set to non-empty value');
+            throw new Fisma_Zend_Exception('TabView ID must be set to non-empty value');
         }
         
         $this->_id = $tabViewId;

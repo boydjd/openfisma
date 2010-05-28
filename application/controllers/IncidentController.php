@@ -92,7 +92,7 @@ class IncidentController extends SecurityController
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
 
         if (in_array($this->_request->action, array('totalstatus','totalcategory'))) {
@@ -152,12 +152,12 @@ class IncidentController extends SecurityController
             } elseif ($this->getRequest()->getParam('irReportBackwards')) {
                 $step--;
             } else {
-                throw new Fisma_Exception('User must move forwards, backwards, or cancel');
+                throw new Fisma_Zend_Exception('User must move forwards, backwards, or cancel');
             }
         }
         
         if ($step < 0) {
-            throw new Fisma_Exception("Illegal step number: $step");
+            throw new Fisma_Zend_Exception("Illegal step number: $step");
         }
         
         // Some business logic to determine if any steps can be skipped based on previous answers:
@@ -219,7 +219,7 @@ class IncidentController extends SecurityController
      */
     public function getFormPart($step)
     {
-        $formPart = Fisma_Form_Manager::loadForm($this->_formParts[$step]['name']);
+        $formPart = Fisma_Zend_Form_Manager::loadForm($this->_formParts[$step]['name']);
         
         /**
          * Add buttons to the form. The continue button is added first so that it is the default submit button if
@@ -259,10 +259,10 @@ class IncidentController extends SecurityController
         $formPart->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Form_CreateIncidentDecorator()
+                new Fisma_Zend_Form_CreateIncidentDecorator()
             )
         );
-        $formPart->setElementDecorators(array(new Fisma_Form_CreateIncidentDecorator()));
+        $formPart->setElementDecorators(array(new Fisma_Zend_Form_CreateIncidentDecorator()));
 
         // Each step has some specific data that needs to be set up
         switch ($step) {
@@ -278,7 +278,7 @@ class IncidentController extends SecurityController
                 $timestamp = $formPart->getElement('incidentDate');
                 $timestamp->clearDecorators();
                 $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-                $timestamp->addDecorator(new Fisma_Form_CreateIncidentDecorator);
+                $timestamp->addDecorator(new Fisma_Zend_Form_CreateIncidentDecorator);
                 $tz = $formPart->getElement('incidentTimezone');
                 $tz->addMultiOptions($this->_timezones);
                 break;
@@ -324,7 +324,7 @@ class IncidentController extends SecurityController
      */
     public function getForm()
     {
-        $form = new Fisma_Form();
+        $form = new Fisma_Zend_Form();
         
         // Load all form parts and append each one to the main form
         $formParts = array_keys($this->_formParts);
@@ -363,7 +363,7 @@ class IncidentController extends SecurityController
 
         // Setup decorators
         $form->setSubFormDecorators(array(new Zend_Form_Decorator_FormElements()));
-        $form->setElementDecorators(array(new Fisma_Form_FismaDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_FismaDecorator()));
 
         return $form;
     }
@@ -380,7 +380,7 @@ class IncidentController extends SecurityController
         if (isset($session->irDraft)) {
             $incident = unserialize($session->irDraft);
         } else {
-            throw new Fisma_Exception('No incident report found in session');
+            throw new Fisma_Zend_Exception('No incident report found in session');
         }
         
         // Load the view with all of the non-empty values that the user provided
@@ -403,7 +403,7 @@ class IncidentController extends SecurityController
                         $richColumns[$logicalName] = $columnDef['extra']['purify'];
                     }
                 } else {
-                    throw new Fisma_Exception("Column ($key) does not have a logical name");
+                    throw new Fisma_Zend_Exception("Column ($key) does not have a logical name");
                 }
             }
         }
@@ -435,7 +435,7 @@ class IncidentController extends SecurityController
         if (isset($session->irDraft)) {
             $incident = unserialize($session->irDraft);
         } else {
-            throw new Fisma_Exception('No incident report found in session');
+            throw new Fisma_Zend_Exception('No incident report found in session');
         }
 
         $incident->save();
@@ -450,7 +450,7 @@ class IncidentController extends SecurityController
         // Send emails to IRCs
         $coordinators = $this->_getIrcs();
         foreach ($coordinators as $coordinator) {
-            $mail = new Fisma_Mail();
+            $mail = new Fisma_Zend_Mail();
             $mail->IRReport($coordinator, $incident->id);
         }
         
@@ -558,7 +558,7 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->find($id);
         
         if (!$incident) {
-            throw new Fisma_Exception("Invalid incident ID ($id)");
+            throw new Fisma_Zend_Exception("Invalid incident ID ($id)");
         }
         
         $this->_assertCurrentUserCanViewIncident($id);
@@ -609,7 +609,7 @@ class IncidentController extends SecurityController
         $this->_assertCurrentUserCanViewIncident($id);
         
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
-        $this->view->lockIncidentPrivilege = Fisma_Acl::hasPrivilegeForClass('lock', 'Incident');
+        $this->view->lockIncidentPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('lock', 'Incident');
                 
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
@@ -657,7 +657,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('lock', $incident);
+        Fisma_Zend_Acl::requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = TRUE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -674,7 +674,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
-        Fisma_Acl::requirePrivilegeForObject('lock', $incident);
+        Fisma_Zend_Acl::requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = FALSE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -806,7 +806,7 @@ class IncidentController extends SecurityController
         }
 
         // Send e-mail
-        $mail = new Fisma_Mail();
+        $mail = new Fisma_Zend_Mail();
         $mail->IRAssign($userId, $incidentId);
 
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
@@ -912,7 +912,7 @@ class IncidentController extends SecurityController
             $incident->completeStep($comment);
 
             foreach ($this->_getAssociatedUsers($id) as $userId) {
-                $mail = new Fisma_Mail();
+                $mail = new Fisma_Zend_Mail();
                 $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
             }
 
@@ -922,9 +922,9 @@ class IncidentController extends SecurityController
             }
             
             $this->view->priorityMessenger($message, 'notice');
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
-        } catch (Fisma_Behavior_Lockable_Exception $e) {
+        } catch (Fisma_Doctrine_Behavior_Lockable_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -943,7 +943,7 @@ class IncidentController extends SecurityController
         
         $this->view->classifyIncidentPrivilege = $this->_currentUserCanClassifyIncident($id);
         
-        $form = Fisma_Form_Manager::loadForm('incident_classify');
+        $form = Fisma_Zend_Form_Manager::loadForm('incident_classify');
 
         $form->setAction("/incident/classify/id/$id");
 
@@ -955,7 +955,7 @@ class IncidentController extends SecurityController
         }
         $form->getElement('categoryId')->setValue($incident->categoryId);
 
-        Fisma_Form_Manager::prepareForm($form);
+        Fisma_Zend_Form_Manager::prepareForm($form);
         $this->view->assign('form', $form);
     }
 
@@ -969,7 +969,7 @@ class IncidentController extends SecurityController
         $id = $this->_request->getParam('id');        
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('classify', $incident);
+        Fisma_Zend_Acl::requirePrivilegeForObject('classify', $incident);
 
         $comment = $this->_request->getParam('comment');
 
@@ -988,13 +988,13 @@ class IncidentController extends SecurityController
                 $categoryId = $this->_request->getParam('categoryId');
             
                 if (empty($categoryId)) {
-                    throw new Fisma_Exception_User('You must select a category.');
+                    throw new Fisma_Zend_Exception_User('You must select a category.');
                 }
             
                 $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
 
                 if (!$category) {
-                    throw new Fisma_Exception("No subcategory with id ($categoryId) found.");
+                    throw new Fisma_Zend_Exception("No subcategory with id ($categoryId) found.");
                 }
             
                 $incident->open($category, $comment);
@@ -1021,7 +1021,7 @@ class IncidentController extends SecurityController
                 $message = 'This incident has been opened and a workflow has been assigned. ';
                 $this->view->priorityMessenger($message, 'notice');
             }
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
@@ -1142,7 +1142,7 @@ class IncidentController extends SecurityController
 
         $this->view->artifacts = $artifacts;
         
-        $this->view->form = Fisma_Form_Manager::loadForm('upload_artifact');
+        $this->view->form = Fisma_Zend_Form_Manager::loadForm('upload_artifact');
         
     }
     
@@ -1172,17 +1172,17 @@ class IncidentController extends SecurityController
 
             // If file upload is too large, then $_FILES will be empty (thanks for the helpful behavior, PHP!)
             if (0 == count($_FILES)) {
-                throw new Fisma_Exception_User('File size is over the limit.');
+                throw new Fisma_Zend_Exception_User('File size is over the limit.');
             }
             
             // 'file' is the name of the file input element.
             if (!isset($_FILES['file'])) {
-                throw new Fisma_Exception_User('You did not specify a file to upload.');
+                throw new Fisma_Zend_Exception_User('You did not specify a file to upload.');
             }
 
             $incident->getArtifacts()->attach($_FILES['file'], $comment);
             
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
         } catch (Exception $e) {
             if (Fisma::debug()) {
@@ -1327,7 +1327,7 @@ class IncidentController extends SecurityController
         if (is_null($subject)) {
             $subject = new $this->_modelName();
         } else {
-            throw new Fisma_Exception('Invalid parameter expecting a Record model');
+            throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
         }
         $values = $form->getValues();
 
@@ -1364,10 +1364,10 @@ class IncidentController extends SecurityController
         $subject->Actors[] = $actor;
         $subject->save();
 
-        $mail = new Fisma_Mail();
+        $mail = new Fisma_Zend_Mail();
         $mail->IRReport($edcirc, $subject['id']);
         
-        $mail = new Fisma_Mail();
+        $mail = new Fisma_Zend_Mail();
         $mail->IRReport($user['id'], $subject['id']);
         
         $this->_forward('dashboard');
@@ -1387,12 +1387,12 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
 
         if (
-            Fisma_Acl::hasPrivilegeForObject('update', $incident) && 
+            Fisma_Zend_Acl::hasPrivilegeForObject('update', $incident) && 
             ((!$incident->isLocked) || 
-            ($incident->isLocked && Fisma_Acl::hasPrivilegeForObject('lock', $incident)))
+            ($incident->isLocked && Fisma_Zend_Acl::hasPrivilegeForObject('lock', $incident)))
         ) {
             $userCanUpdate = true;
-        } elseif (!Fisma_Acl::hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
+        } elseif (!Fisma_Zend_Acl::hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
             // Check if this user is an actor
             $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
@@ -1422,7 +1422,7 @@ class IncidentController extends SecurityController
     private function _assertCurrentUserCanUpdateIncident($incidentId)
     {
         if (!$this->_currentUserCanUpdateIncident($incidentId)) {
-            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to edit this incident.');
+            throw new Fisma_Zend_Exception_InvalidPrivilege('You are not allowed to edit this incident.');
         }
     }
 
@@ -1438,7 +1438,7 @@ class IncidentController extends SecurityController
     {
         $userCanView = false;
         
-        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
+        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Incident')) {
             // Check if this user is an observer or actor
             $observerCount = Doctrine_Query::create()
                  ->select('i.id')
@@ -1471,9 +1471,9 @@ class IncidentController extends SecurityController
     {
         $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
 
-        if (Fisma_Acl::hasPrivilegeForObject('classify', $incident)) {
+        if (Fisma_Zend_Acl::hasPrivilegeForObject('classify', $incident)) {
             if ($incident->isLocked) {
-                if (Fisma_Acl::hasPrivilegeForObject('lock', $incident)) {
+                if (Fisma_Zend_Acl::hasPrivilegeForObject('lock', $incident)) {
                     return true;
                 }
             } else {
@@ -1496,7 +1496,7 @@ class IncidentController extends SecurityController
     private function _assertCurrentUserCanViewIncident($incidentId)
     {
         if (!$this->_currentUserCanViewIncident($incidentId)) {
-            throw new Fisma_Exception_InvalidPrivilege('You are not allowed to view this incident.');
+            throw new Fisma_Zend_Exception_InvalidPrivilege('You are not allowed to view this incident.');
         }
     }
 
@@ -1725,7 +1725,7 @@ class IncidentController extends SecurityController
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i');
         
-        if (!Fisma_Acl::hasPrivilegeForClass('read', 'Incident')) {
+        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Incident')) {
             $incidentQuery->leftJoin('i.Actors a')
                           ->leftJoin('i.Observers o')
                           ->where('a.id = ? OR o.id = ?', array($user->id, $user->id));

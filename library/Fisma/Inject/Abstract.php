@@ -277,7 +277,7 @@ abstract class Fisma_Inject_Abstract
                 $action = ($orgSame) ? self::DELETE_FINDING : self::REVIEW_FINDING;
                 break;
             default:
-                throw new Fisma_Exception('No duplicate finding action defined for mitigation type: '
+                throw new Fisma_Zend_Exception('No duplicate finding action defined for mitigation type: '
                     . $duplicateFinding['type']);
         }
 

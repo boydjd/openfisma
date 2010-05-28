@@ -72,7 +72,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * 
      * @param string $uploadId The specified id of upload file to be parsed
      * @return void
-     * @throws Fisma_Exception_InvalidFileFormat if the file is not an App Detective report
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not an App Detective report
      */
     public function parse($uploadId)
     {
@@ -84,7 +84,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // kinds of report.)
         $checkCrystalReport = $report->getNamespaces(true);
         if (in_array('urn:crystal-reports:schemas', $checkCrystalReport)) {
-            throw new Fisma_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
+            throw new Fisma_Zend_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
         }
         // Apply mapping rules
         $this->_asset    = $this->_mapAsset($report);
@@ -104,7 +104,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      *
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array The parsed and mapped asset
-     * @throws Fisma_Exception_InvalidFileFormat if found multiple appName fields or unable to parse IP or port
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if found multiple appName fields or unable to parse IP or port
      */
     private function _mapAsset($report)
     {
@@ -115,7 +115,9 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (count($reportAppName) == 1) {
             $reportAppName = $reportAppName[0];
         } else {
-            throw new Fisma_Exception_InvalidFileFormat('Expected 1 appName field, but found ' . count($reportAppName));
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
+                'Expected 1 appName field, but found ' . count($reportAppName)
+            );
         }
         $appName = array();
         if (preg_match('/\((.*?)\)/', $reportAppName, $appName)) {
@@ -129,7 +131,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // Parse out IP Address
         $ipAddress = array();
         if (!preg_match('/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/', $reportAppName, $ipAddress)) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "Unable to parse the IP address from the appName field: \"$reportAppName\""
             );
         }
@@ -138,7 +140,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         // Parse out port number
         $port = array();
         if (!preg_match('/\bport (\d{1,5})\b/i', $reportAppName, $port)) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "Unable to parse the port number from the appName field: \"$reportAppName\""
             );
         }
@@ -153,7 +155,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      *
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array  The parsed and mapped product
-     * @throws Fisma_Exception_InvalidFileFormat if found multiple cpe-item fileds
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if found multiple cpe-item fileds
      */
     private function _mapProduct($report)
     {
@@ -164,7 +166,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (count($reportCpeItem) == 1) {
             $reportCpeItem = $reportCpeItem[0];
         } else {
-            throw new Fisma_Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' 
+            throw new Fisma_Zend_Exception_InvalidFileFormat('Expected 1 cpe-item field, but found ' 
                                                         . count($reportCpeItem));
         }
 
@@ -174,7 +176,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             // App Detective does not follow the CPE specification when it cannot identify the platform. It creates a
             // CPE called "cpe:no-match", which is not valid and will cause the Cpe class to throw an exception.
             $cpe = new Fisma_Cpe($reportCpeItem->attributes()->name);
-        } catch (Fisma_Exception_InvalidFileFormat $e) {
+        } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
             // If the CPE is not valid, then return NULL for the product object
             return null;
         }
@@ -190,7 +192,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      *
      * @param SimpleXMLElement $report The full AppDetective report
      * @return array An array of arrays contain one row for each new finding
-     * @throws Fisma_Exception_InvalidFileFormat if found multiple testDate fields 
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if found multiple testDate fields 
      * or unable to parse date from the testDate field
      */
     private function _mapFindings($report, $uploadId)
@@ -202,12 +204,12 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         if (count($testDateString) == 1) {
             $testDateString = $testDateString[0];
         } else {
-            throw new Fisma_Exception_InvalidFileFormat('Expected 1 testDate field, but found ' 
+            throw new Fisma_Zend_Exception_InvalidFileFormat('Expected 1 testDate field, but found ' 
                                                         . count($testDateString));
         }
         $testDate = array();
         if (!preg_match('/\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{1,2}:\d{1,2} [AP]M/', $testDateString, $testDate)) {
-            throw new Fisma_Exception_InvalidFileFormat(
+            throw new Fisma_Zend_Exception_InvalidFileFormat(
                 "Unable to parse the date from the testDate field: \"$testDateString\""
             );
         }

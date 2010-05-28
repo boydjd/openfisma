@@ -27,7 +27,7 @@
  * @package    Model
  * @version    $Id$
  */
-class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDependency
+class Organization extends BaseOrganization implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
      * Implements the interface for Zend_Acl_Role_Interface
@@ -115,14 +115,14 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
      * will be generated and thrown away.
      * 
      * @return array The matrix of statistics which corresponds to the FISMA report in array
-     * @throws Fisma_Exception if this method is called when the type of organziation is not bureau
+     * @throws Fisma_Zend_Exception if this method is called when the type of organziation is not bureau
      * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
      */
     public function getFismaStatistics()
     {
         // Reject any organization which is not a bureau
         if ('bureau' != $this->orgType) {
-            throw new Fisma_Exception('getFismaStatistics() is only valid for Bureaus, but was called on a '
+            throw new Fisma_Zend_Exception('getFismaStatistics() is only valid for Bureaus, but was called on a '
                                     . "'$this->orgType' instead.");
         }
         
@@ -358,7 +358,7 @@ class Organization extends BaseOrganization implements Fisma_Acl_OrganizationDep
     }
 
     /**
-     * Implement the required method for Fisma_Acl_OrganizationDependency
+     * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
      * 
      * @return int
      */

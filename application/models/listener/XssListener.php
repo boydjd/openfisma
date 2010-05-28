@@ -32,7 +32,7 @@
  * @package    Listener
  * @version    $Id$
  */
-class XssListener extends Fisma_Record_Listener
+class XssListener extends Fisma_Doctrine_Record_Listener
 {
     /**
      * The HTMLPurifier instance used by the listener
@@ -69,7 +69,7 @@ class XssListener extends Fisma_Record_Listener
                         $invoker[$field] = $this->getPurifier()->purify($value);
                         break;
                     default:
-                        throw new Fisma_Exception("Undefined purification type '$purifyType' on field "
+                        throw new Fisma_Zend_Exception("Undefined purification type '$purifyType' on field "
                                                 . "'$field' on table '{$table->getTableName()}'");
                 }
             }

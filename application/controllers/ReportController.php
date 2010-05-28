@@ -52,7 +52,7 @@ class ReportController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Acl::requireArea('reports');
+        Fisma_Zend_Acl::requireArea('reports');
 
         $this->req = $this->getRequest();
         $swCtx = $this->_helper->fismaContextSwitch();
@@ -215,9 +215,9 @@ class ReportController extends SecurityController
 
         if (!empty($params['orgSystemId'])) {
             $organization = Doctrine::getTable('Organization')->find($params['orgSystemId']);
-            Fisma_Acl::requirePrivilegeForObject('read', $organization);
+            Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
         } else {
-            Fisma_Acl::requirePrivilegeForClass('read', 'Organization');
+            Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
         }
 
         $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
@@ -326,7 +326,7 @@ class ReportController extends SecurityController
                             $actOwner['availability']
                         );
                         if (NULL == $securityCategorization) {
-                            throw new Fisma_Exception('The security categorization for ('.$actOwner['id'].')'.
+                            throw new Fisma_Zend_Exception('The security categorization for ('.$actOwner['id'].')'.
                                 $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
                                 'unless these values are defined.');
                         }
@@ -344,8 +344,8 @@ class ReportController extends SecurityController
                     header("Pragma: public");
                     echo file_get_contents($fname);
                     @unlink($fname);
-                } catch (Fisma_Exception $e) {
-                    if ($e instanceof Fisma_Exception) {
+                } catch (Fisma_Zend_Exception $e) {
+                    if ($e instanceof Fisma_Zend_Exception) {
                         $message = $e->getMessage();
                     }
                     $this->view->priorityMessenger($message, 'warning');
@@ -426,7 +426,7 @@ class ReportController extends SecurityController
                 }
             }
             if (!$hasRole) {
-                throw new Fisma_Exception("User \"{$this->_me->username}\" does not have permission to view"
+                throw new Fisma_Zend_Exception("User \"{$this->_me->username}\" does not have permission to view"
                                           . " the \"$reportName\" plug-in report.");
             }
         }
@@ -435,7 +435,7 @@ class ReportController extends SecurityController
         $reportScriptFile = Fisma::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
         if (!$reportScriptFileHandle) {
-            throw new Fisma_Exception("Unable to load plug-in report SQL file: $reportScriptFile");
+            throw new Fisma_Zend_Exception("Unable to load plug-in report SQL file: $reportScriptFile");
         }
         $reportScript = '';
         while (!feof($reportScriptFileHandle)) {

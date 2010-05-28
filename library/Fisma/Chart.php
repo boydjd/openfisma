@@ -61,11 +61,13 @@ class Fisma_Chart
     public function __construct($sourceUrl, $width, $height)
     {
         if (empty($sourceUrl)) {
-            throw new Fisma_Exception("Source URL is required for chart");
+            throw new Fisma_Zend_Exception("Source URL is required for chart");
         }
         
         if (!(is_int($width) && is_int($height))) {
-            throw new Fisma_Exception("Chart width and height must both be integers (width=$width, height=$height)");
+            throw new Fisma_Zend_Exception(
+                "Chart width and height must both be integers (width=$width, height=$height)"
+            );
         }
         
         $this->_sourceUrl = $sourceUrl;

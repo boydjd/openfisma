@@ -43,7 +43,7 @@ class Version22 extends Doctrine_Migration_Base
                           ->findByDql('resource = ? and action = ?', array('notification', 'finding'));
                           
         if (!$eventPrivilege) {
-            throw new Fisma_Exception("Not able to find the finding notification privilege");
+            throw new Fisma_Zend_Exception("Not able to find the finding notification privilege");
         }
         
         // New events

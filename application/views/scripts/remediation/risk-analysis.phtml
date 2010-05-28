@@ -3,7 +3,7 @@
     $organization = $finding->ResponsibleOrganization->nickname;
 ?>
 <?php
-if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
+if (Fisma_Zend_Acl::hasPrivilegeForObject('read', $finding)) {
     Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
 ?>
     <p>
@@ -54,7 +54,7 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php 
-        if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
+        if (Fisma_Zend_Acl::hasPrivilegeForObject('update_threat', $finding)
             && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
             echo $this->escape(' class="editable" target="threat_level"', 'none');
         }
@@ -66,7 +66,7 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 <p>
     <b target="threat" 
         <?php
-        if (Fisma_Acl::hasPrivilegeForObject('update_threat', $finding)
+        if (Fisma_Zend_Acl::hasPrivilegeForObject('update_threat', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
             echo $this->escape('class="editable"', 'none');
         } 
@@ -100,7 +100,7 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
           id="effectiveness" 
           href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
         <?php
-        if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
+        if (Fisma_Zend_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
             echo $this->escape('class="editable" target="effectiveness"', 'none');
         }
@@ -112,7 +112,7 @@ if (Fisma_Acl::hasPrivilegeForObject('read', $finding)) {
 <p>
     <b target="countermeasures" 
         <?php 
-            if (Fisma_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
+            if (Fisma_Zend_Acl::hasPrivilegeForObject('update_countermeasures', $finding)
                && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
                 echo $this->escape('class="editable"', 'none');
             } 

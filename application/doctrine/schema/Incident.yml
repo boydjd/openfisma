@@ -79,7 +79,7 @@ Incident:
                 logicalName: Reporter's E-mail Address
         reporterIp:
             type: string(15)
-            Fisma_Validator_Ip: true
+            Fisma_Doctrine_Validator_Ip: true
             extra:
                 auditLog: true
                 logicalName: Reporter's IP Address
@@ -235,7 +235,7 @@ Incident:
 
         hostIp:
             type: string(15)
-            Fisma_Validator_Ip: true
+            Fisma_Doctrine_Validator_Ip: true
             extra:
                 auditLog: true
                 logicalName: Host IP Address
@@ -260,7 +260,7 @@ Incident:
         
         sourceIp:
             type: string(15)
-            Fisma_Validator_Ip: true
+            Fisma_Doctrine_Validator_Ip: true
             extra:
                 auditLog: true
                 logicalName: Source IP Address
@@ -336,13 +336,13 @@ Incident:
             foreignAlias: ObserverIncidents
 
     actAs:
-        Fisma_Behavior_Commentable: true
+        Fisma_Doctrine_Behavior_Commentable: true
         
-        Fisma_Behavior_Lockable: true
+        Fisma_Doctrine_Behavior_Lockable: true
 
-        Fisma_Behavior_AttachArtifacts: true
+        Fisma_Doctrine_Behavior_AttachArtifacts: true
             
-        Fisma_Behavior_AuditLoggable:
+        Fisma_Doctrine_Behavior_AuditLoggable:
             logCreateObject: true
             logUpdateField: true
             logDeleteObject: true

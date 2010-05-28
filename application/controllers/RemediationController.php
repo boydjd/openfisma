@@ -131,7 +131,7 @@ class RemediationController extends SecurityController
      */
     public function indexAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Finding');
         
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
@@ -145,7 +145,7 @@ class RemediationController extends SecurityController
      */
     public function summaryAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Finding');
                 
         $mitigationEvaluationQuery = Doctrine_Query::create()
                                      ->from('Evaluation e')
@@ -189,7 +189,7 @@ class RemediationController extends SecurityController
      */
     public function summaryDataAction() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Finding');
 
         $type = $this->getRequest()->getParam('type');
         $source = $this->getRequest()->getParam('sourceId');        
@@ -546,7 +546,7 @@ class RemediationController extends SecurityController
         try {
             $cookie = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
             $visibleColumns = $cookie;
-        } catch(Fisma_Exception $e) {
+        } catch(Fisma_Zend_Exception $e) {
             if (empty($me->searchColumnsPref)) {
                 $me->searchColumnsPref = $visibleColumns = 66037;
                 $me->save();
@@ -628,7 +628,7 @@ class RemediationController extends SecurityController
     */
     public function searchAction()
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Finding');
         
         $params = $this->_parseCriteria();
         
@@ -679,7 +679,7 @@ class RemediationController extends SecurityController
         $finding = $this->_getFinding($id);
         $this->view->finding = $finding;
         
-        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $finding);
         
         // Put a span around the comment count so that it can be updated from Javascript
         $commentCount = '<span id=\'findingCommentsCount\'>' . $finding->getComments()->count() . '</span>';
@@ -705,7 +705,7 @@ class RemediationController extends SecurityController
         $id = $this->getRequest()->getParam('id');
         $finding = Doctrine::getTable('Finding')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('comment', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('comment', $finding);
         
         $comment = $this->getRequest()->getParam('comment');
         
@@ -727,7 +727,7 @@ class RemediationController extends SecurityController
         $this->view->assign('id', $id);
         $finding = Doctrine::getTable('Finding')->find($id);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $finding);
 
         $comments = $finding->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
@@ -747,7 +747,7 @@ class RemediationController extends SecurityController
             )
         );
 
-        if (!Fisma_Acl::hasPrivilegeForObject('comment', $finding)) {
+        if (!Fisma_Zend_Acl::hasPrivilegeForObject('comment', $finding)) {
             $commentButton->readOnly = true;
         }
 
@@ -794,7 +794,7 @@ class RemediationController extends SecurityController
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
-        } catch (Fisma_Exception_User $e) {
+        } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();
@@ -820,18 +820,18 @@ class RemediationController extends SecurityController
 
         $finding  = $this->_getFinding($id);
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
+            Fisma_Zend_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
        
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
             if ('submitmitigation' == $do) {
-                Fisma_Acl::requirePrivilegeForObject('mitigation_strategy_submit', $finding);
+                Fisma_Zend_Acl::requirePrivilegeForObject('mitigation_strategy_submit', $finding);
                 $finding->submitMitigation(User::currentUser());
             }
             if ('revisemitigation' == $do) {
-                Fisma_Acl::requirePrivilegeForObject('mitigation_strategy_revise', $finding);
+                Fisma_Zend_Acl::requirePrivilegeForObject('mitigation_strategy_revise', $finding);
                 $finding->reviseMitigation(User::currentUser());
             }
 
@@ -871,7 +871,7 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilegeForObject('upload_evidence', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('upload_evidence', $finding);
 
         define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
         $file = $_FILES['evidence'];
@@ -885,12 +885,12 @@ class RemediationController extends SecurityController
               } else {
                 $message = "An error occurred while processing the uploaded file.";
               }
-              throw new Fisma_Exception($message);
+              throw new Fisma_Zend_Exception($message);
             }
 
             if (!$file['name']) {
                 $message = "You did not select a file to upload. Please select a file and try again.";
-                throw new Fisma_Exception($message);
+                throw new Fisma_Zend_Exception($message);
             }
 
             $extension = explode('.', $file['name']);
@@ -899,7 +899,7 @@ class RemediationController extends SecurityController
             /** @todo cleanup */
             if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
                 $message = 'This file type is not allowed.';
-                throw new Fisma_Exception($message);
+                throw new Fisma_Zend_Exception($message);
             }
 
             if (!file_exists(EVIDENCE_PATH)) {
@@ -920,14 +920,14 @@ class RemediationController extends SecurityController
                              . ' Please contact the administrator.';
                     $logger = Fisma::getLogInstance();
                     $logger->log('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'], Zend_Log::ERR);
-                    throw new Fisma_Exception($message);
+                    throw new Fisma_Zend_Exception($message);
                 }
             } else {
-                throw new Fisma_Exception('The filename is not valid');
+                throw new Fisma_Zend_Exception('The filename is not valid');
             }
 
             $finding->uploadEvidence($filename, User::currentUser());
-        } catch (Fisma_Exception $e) {
+        } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
         $this->_forward('view', null, null, array('id' => $id));
@@ -943,11 +943,11 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $evidence = Doctrine::getTable('Evidence')->find($id);
         if (empty($evidence)) {
-            throw new Fisma_Exception('Invalid evidence ID');
+            throw new Fisma_Zend_Exception('Invalid evidence ID');
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
-        Fisma_Acl::requirePrivilegeForObject('read', $evidence->Finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $evidence->Finding);
 
         $fileName = $evidence->filename;
         $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';
@@ -968,7 +968,7 @@ class RemediationController extends SecurityController
             }
             fclose($fp);
         } else {
-            throw new Fisma_Exception('The requested file could not be found');
+            throw new Fisma_Zend_Exception('The requested file could not be found');
         }
     }
     
@@ -985,7 +985,7 @@ class RemediationController extends SecurityController
         $finding  = $this->_getFinding($id);
 
         if (!empty($decision)) {
-            Fisma_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
+            Fisma_Zend_Acl::requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
 
         try {
@@ -1024,27 +1024,27 @@ class RemediationController extends SecurityController
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
 
-        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $finding);
 
         try {
             if ($finding->threat == '' ||
                 empty($finding->threatLevel) ||
                 $finding->countermeasures == '' ||
                 empty($finding->countermeasuresEffectiveness)) {
-                throw new Fisma_Exception("The Threat or Countermeasures Information is not "
+                throw new Fisma_Zend_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
             
             $system = $finding->ResponsibleOrganization->System;
             if (NULL == $system->fipsCategory) {
-                throw new Fisma_Exception('The security categorization for ' .
+                throw new Fisma_Zend_Exception('The security categorization for ' .
                      '(' . $finding->responsibleOrganizationId . ')' . 
                      $finding->ResponsibleOrganization->name . ' is not defined. An analysis of ' .
                      'risk cannot be generated unless these values are defined.');
             }
             $this->view->securityCategorization = $system->fipsCategory;
-        } catch (Fisma_Exception $e) {
-            if ($e instanceof Fisma_Exception) {
+        } catch (Fisma_Zend_Exception $e) {
+            if ($e instanceof Fisma_Zend_Exception) {
                 $message = $e->getMessage();
             }
             $this->view->priorityMessenger($message, 'warning');
@@ -1132,7 +1132,7 @@ class RemediationController extends SecurityController
      */
     public function search2Action() 
     {
-        Fisma_Acl::requirePrivilegeForClass('read', 'Finding');
+        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Finding');
         
         /* @todo A hack to translate column names in the data table to column names
          * which can be sorted... this could probably be done in a much better way.
@@ -1460,7 +1460,7 @@ class RemediationController extends SecurityController
         $orgNickname = $finding->ResponsibleOrganization->nickname;
 
         // Check that the user is permitted to view this finding
-        Fisma_Acl::requirePrivilegeForObject('read', $finding);
+        Fisma_Zend_Acl::requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
     }
@@ -1470,14 +1470,14 @@ class RemediationController extends SecurityController
      *
      * @param int $id The specified finding id
      * @return Finding The found finding
-     * @throws Fisma_Exception if the specified finding id is not found
+     * @throws Fisma_Zend_Exception if the specified finding id is not found
      */
     private function _getFinding($id)
     {
         $finding = Doctrine::getTable('Finding')->find($id);
 
         if (false == $finding) {
-             throw new Fisma_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
+             throw new Fisma_Zend_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
         }
         
         return $finding;

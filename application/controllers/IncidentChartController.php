@@ -48,10 +48,10 @@ class IncidentChartController extends SecurityController
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
         
         if (!$module->enabled) {
-            throw new Fisma_Exception('This module is not enabled.');
+            throw new Fisma_Zend_Exception('This module is not enabled.');
         }
         
-        Fisma_Acl::requireArea('incident');
+        Fisma_Zend_Acl::requireArea('incident');
     }
     
     /**
@@ -68,7 +68,7 @@ class IncidentChartController extends SecurityController
         
         if (!is_int((int)$period) || $period > 12) {
             $message = "Incident status chart period parameter must be an integer less than or equal to 12.";
-            throw new Fisma_Exception($message);
+            throw new Fisma_Zend_Exception($message);
         }
         
         // Calculate the cutoff date based on the period        
