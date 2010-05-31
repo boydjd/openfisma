@@ -9,8 +9,8 @@
 ; Version   $Id: incident.form 2150 2009-08-25 23:47:25Z nathanrharris $
 
 [incident_close]
-elementPrefixPath.prefix = Fisma_Form
-elementPrefixPath.path = Fisma/Form
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 method = "post"
 action = "/panel/incident/sub/close"

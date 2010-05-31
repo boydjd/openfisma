@@ -12,8 +12,8 @@
 ; which do not apply to the current authentication schema (ldap or database)
 
 [account]
-elementPrefixPath.prefix = Fisma_Form
-elementPrefixPath.path = Fisma/Form
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 
 elements.username.type = "text"

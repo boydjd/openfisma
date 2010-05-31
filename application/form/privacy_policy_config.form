@@ -9,8 +9,8 @@
 ; Version   $Id:$
 
 [privacy_policy_config]
-elementPrefixPath.prefix = Fisma_Form
-elementPrefixPath.path = Fisma/Form
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 method = "post"
 action = "/panel/config/type/privacy_policy"
