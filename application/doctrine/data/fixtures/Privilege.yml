@@ -4,18 +4,37 @@ Privilege:
         resource: area
         action: dashboard
         description: View Dashboard
-    areas_reports:
-        resource: area
-        action: reports
-        description: View Reports
     areas_admin:
         resource: area
         action: admin
         description: View Administration Menu
-    areas_configuration:
+
+    finding_area:
         resource: area
-        action: configuration
-        description: Configure Application
+        action: finding
+        description: Finding Module
+    finding_admin_area:
+        resource: area
+        action: finding_admin
+        description: Finding Module Administration
+    finding_report_area:
+        resource: area
+        action: finding_report
+        description: Finding Module Reports
+
+    system_inventory_area:
+        resource: area
+        action: system_inventory
+        description: System Inventory Module
+    system_inventory_admin_area:
+        resource: area
+        action: system_inventory_admin
+        description: System Inventory Module Administration
+    system_inventory_report_area:
+        resource: area
+        action: system_inventory_report
+        description: System Inventory Module Reports
+
     incident_area:
         resource: area
         action: incident

@@ -17,50 +17,42 @@
  */
 
 /**
- * The report controller creates the multitude of reports available in
- * OpenFISMA.
- *
- * @author     Ryan Yang <ryan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * A controller for the finding module's reports
+ * 
+ * @author     Mark E. Haase
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  * @version    $Id$
  */
-class ReportController extends SecurityController
+class FindingReportController extends SecurityController
 {
     /**
-     * Create the additional pdf and xls contexts for this class.
-     * 
-     * @return void
-     * @todo Why are the contexts duplicated in init() and predispatch()? I think the init() method is the right place
-     * for it.
+     * Set up the context switch for Excel and PDF output
      */
     public function init()
     {
-        /*
-         * initialize context switching before initializing SecurityController.  This has to be done because security
-         * controller starts the php session
-         */
-        $swCtx = $this->_helper->fismaContextSwitch();
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('overdue', array('pdf', 'xls'))
+                      ->addActionContext('plugin-report', array('pdf', 'xls'))
+                      ->addActionContext('fisma-quarterly', 'xls')
+                      ->addActionContext('fisma-annual', 'xls')
+                      ->initContext();
+        
         parent::init();
     }
     
     /**
-     * Add the action contexts for this controller.
-     * 
-     * @return void
+     * Check that the user has the privilege to run reports
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('reports');
+        Fisma_Zend_Acl::requireArea('finding_report');
 
-        $this->req = $this->getRequest();
-        $swCtx = $this->_helper->fismaContextSwitch();
-        $swCtx->addActionContext('overdue', array('pdf', 'xls'))
-              ->addActionContext('plugin-report', array('pdf', 'xls'))
-              ->addActionContext('fisma-quarterly', 'xls')
-              ->addActionContext('fisma-annual', 'xls')
-              ->initContext();
+        // Add header/footer to any action which expects an HTML response
+        if (!$this->_hasParam('format')) {
+            $this->_helper->actionStack('header', 'panel');
+        }
     }
 
     /**
@@ -227,7 +219,7 @@ class ReportController extends SecurityController
         );
         $this->view->assign('networkList', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('params', $params);
-        $this->view->assign('url', '/report/overdue' . $this->_helper->makeUrlParams($params));
+        $this->view->assign('url', '/finding-report/overdue' . $this->_helper->makeUrlParams($params));
         $isExport = $req->getParam('format');
 
         if ('search' == $req->getParam('s') || isset($isExport)) {
@@ -286,75 +278,6 @@ class ReportController extends SecurityController
                                          'total' => 'Total Overdue', 
                                          'average' => 'Average (days)',
                                          'max' => 'Maximum (days)');
-        }
-    }
-
-    /**
-     * Batch generate RAFs for each system
-     * 
-     * @return void
-     */
-    public function rafsAction()
-    {
-        $sid = $this->getRequest()->getParam('system_id', 0);
-        $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
-        $this->view->assign('organizations', $organizations->toKeyValueArray('id', 'name'));
-        if (!empty($sid)) {
-            $query = Doctrine_Query::create()
-                     ->select('*')
-                     ->from('Finding f')
-                     ->where('threat_level IS NOT NULL')
-                     ->andWhere('countermeasure_effectiveness IS NOT NULL');
-            $findings = $query->execute();
-            $count = count($findings);
-            if ($count > 0) {
-                $fname = tempnam('/tmp/', "RAFs");
-                @unlink($fname);
-                $rafs = new Archive_Tar($fname, true);
-                $path = $this->_helper
-                             ->viewRenderer
-                             ->getViewScript('raf', array('controller' => 'remediation', 'suffix' => 'pdf.phtml'));
-                try {
-                    foreach ($findings as $finding) {
-                        $poamDetail = & $this->_poam->getDetail($id);
-                        $this->view->assign('poam', $poamDetail);
-                        $ret = $system->find($poamDetail['system_id']);
-                        $actOwner = $ret->current()->toArray();
-                        $securityCategorization = $system->calcSecurityCategory(
-                            $actOwner['confidentiality'],
-                            $actOwner['integrity'],
-                            $actOwner['availability']
-                        );
-                        if (NULL == $securityCategorization) {
-                            throw new Fisma_Zend_Exception('The security categorization for ('.$actOwner['id'].')'.
-                                $actOwner['name'].' is not defined. An analysis of risk cannot be generated '.
-                                'unless these values are defined.');
-                        }
-                        $this->view->assign('securityCategorization', $securityCategorization);
-                        $rafs->addString("raf_{$id}.pdf", $this->view->render($path));
-                    }
-                    $this->_helper->layout->disableLayout(true);
-                    $this->_helper->viewRenderer->setNoRender();
-                    header("Content-type: application/octetstream");
-                    header('Content-Length: ' . filesize($fname));
-                    header("Content-Disposition: attachment; filename=RAFs.tgz");
-                    header("Content-Transfer-Encoding: binary");
-                    header("Expires: 0");
-                    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-                    header("Pragma: public");
-                    echo file_get_contents($fname);
-                    @unlink($fname);
-                } catch (Fisma_Zend_Exception $e) {
-                    if ($e instanceof Fisma_Zend_Exception) {
-                        $message = $e->getMessage();
-                    }
-                    $this->view->priorityMessenger($message, 'warning');
-                }
-            } else {
-                $this->view->sid = $sid;
-                $this->view->priorityMessenger('There are no findings to generate RAFs for', 'warning');
-                $this->_forward('report', 'panel', null, array('sub' => 'rafs', 'system_id' => ''));
-            }
         }
     }
     
@@ -472,6 +395,6 @@ class ReportController extends SecurityController
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
         $this->view->assign('rows', $reportData);
-        $this->view->assign('url', "/panel/report/sub/plugin-report/name/$reportName");
+        $this->view->assign('url', "/finding-report/plugin-report/name/$reportName");
     }
 }

@@ -42,11 +42,22 @@ class Fisma_Menu
             $mainMenuBar->add($dashboard);
         }
 
-        if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Finding')) {
+        if (Fisma_Zend_Acl::hasArea('finding')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
             $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
             $findings->add(new Fisma_Yui_MenuItem('Search', '/panel/remediation/sub/searchbox'));
+
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('create', 'Finding')
+                || Fisma_Zend_Acl::hasPrivilegeForClass('inject', 'Finding')
+                || Fisma_Zend_Acl::hasPrivilegeForClass('approve', 'Finding')) {
+
+                $findings->addSeparator();    
+            }
+
+            if (Fisma_Zend_Acl::hasPrivilegeForClass('approve', 'Finding')) {
+                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
+            }
 
             if (Fisma_Zend_Acl::hasPrivilegeForClass('create', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/panel/finding/sub/create'));
@@ -56,28 +67,72 @@ class Fisma_Menu
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
+                        
+            if (Fisma_Zend_Acl::hasArea('incident_admin')
+                || Fisma_Zend_Acl::hasArea('incident_report')) {
+                    
+                $findings->addSeparator();
+            }
             
-            if (Fisma_Zend_Acl::hasPrivilegeForClass('approve', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
+            // Finding Administration submenu
+            if (Fisma_Zend_Acl::hasArea('finding_admin')) {
+                $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
+
+                if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Source')) {
+                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
+                }
+
+                $findings->add($findingAdminSubmenu);
+            }
+        
+            // Finding reports submenu
+            if (Fisma_Zend_Acl::hasArea('finding_report')) {
+                $findingReportsSubmenu = new Fisma_Yui_Menu('Reports');
+
+                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding-report/fisma'));
+
+                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue'));
+
+                /**
+                 * @todo This doesn't belong here, but plugin reports needs to be re-written.
+                 */
+                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/finding-report/plugin'));
+
+                $findings->add($findingReportsSubmenu);
             }
             
             $mainMenuBar->add($findings);
         }
 
-        if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Organization')) {
-            $systems = new Fisma_Yui_Menu('System Inventory');
-
-            $systems->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
+        if (Fisma_Zend_Acl::hasArea('system_inventory')) {
+            $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
             
             if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Asset')) {
-                $systems->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
+                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
 
-            $systems->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
 
-            $systems->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
             
-            $mainMenuBar->add($systems);
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
+
+            // Organization Administration submenu
+            if (Fisma_Zend_Acl::hasArea('system_inventory_admin')) {
+                $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
+
+                if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Network')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
+                }
+
+                if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Product')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/panel/product/sub/list'));
+                }
+
+                $systemInventoryMenu->add($systemInventoryAdminMenu);
+            }
+
+            $mainMenuBar->add($systemInventoryMenu);
         }
 
         $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
@@ -89,6 +144,8 @@ class Fisma_Menu
             $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/panel/incident/sub/report'));
       
             $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/panel/incident/sub/list'));
+
+            $incidentMenu->addSeparator();
 
             $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/incident-dashboard'));
 
@@ -117,43 +174,13 @@ class Fisma_Menu
 
             $mainMenuBar->add($incidentMenu);
         }
-        
-        if (Fisma_Zend_Acl::hasArea('reports')) {
-            $reports = new Fisma_Yui_Menu('Reports');
-            
-            $reports->add(new Fisma_Yui_MenuItem('FISMA Report', '/panel/report/sub/fisma'));
-            
-            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Organization')) {
-                $reports->add(new Fisma_Yui_MenuItem('Overdue Report', '/panel/report/sub/overdue'));    
-            }
-            
-            $reports->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/panel/report/sub/plugin'));
-            
-            $mainMenuBar->add($reports);
-        }
-        
+                
         if (Fisma_Zend_Acl::hasArea('admin')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
-            if (Fisma_Zend_Acl::hasArea('configuration')) {
-                $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
-            }
+            $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
 
-            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Source')) {
-                $admin->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
-            }
-
-            if (Fisma_Zend_Acl::hasArea('configuration')) {
-                $admin->add(new Fisma_Yui_MenuItem('Modules', '/panel/config/sub/modules'));
-            }
-
-            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Network')) {
-                $admin->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
-            }
-
-            if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Product')) {
-                $admin->add(new Fisma_Yui_MenuItem('Products', '/panel/product/sub/list'));
-            }
+            $admin->add(new Fisma_Yui_MenuItem('Modules', '/panel/config/sub/modules'));
 
             if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Role')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));

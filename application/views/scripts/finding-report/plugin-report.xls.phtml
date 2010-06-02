@@ -45,5 +45,4 @@ for ($i = 0; $i < count($this->rows); $i++) {
     $worksheet->writeRow($i + 2, 0, $this->rows[$i], $dataFormat);
 }
 
-$workbook->send('report.xls');
 $workbook->close();
