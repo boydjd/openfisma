@@ -1,7 +1,9 @@
+<?php echo $this->escape($this->invalidateCacheButton, 'none'); ?>
+
 <?php
 Fisma_Format_Section::startSection($this->cacheType . ' Cache Summary');
 ?>
-
+    
     <table class="keyValues">
         <?php
         foreach ($this->cacheSummary as $key => $value):

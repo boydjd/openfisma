@@ -82,12 +82,8 @@ class DebugController extends Zend_Controller_Action
         $this->_helper->actionStack('header', 'panel');
         
         // Cache type can be 'system' or 'user'. Defaults to 'system'.
-        $cacheType = $this->getRequest()->getParam('type');
+        $cacheType = $this->getRequest()->getParam('type', 'system');
         
-        if (!$cacheType) {
-            $cacheType = 'system';
-        }
-
         switch ($cacheType) {
             case 'system':
                 $cacheInfo = apc_cache_info();
@@ -106,10 +102,42 @@ class DebugController extends Zend_Controller_Action
         
         $this->view->cacheType = ucfirst(htmlspecialchars($cacheType));
         $this->view->cacheSummary = $cacheInfo;
+        
+        $invalidateCacheButton = new Fisma_Yui_Form_Button_Link(
+            'exportPdf',
+            array(
+                'value' => "Invalidate {$this->view->cacheType} Cache",
+                'href' => "/debug/invalidate-apc-cache/type/$cacheType"
+            )
+        );
+        $this->view->invalidateCacheButton = $invalidateCacheButton;
 
         if (count($cacheItems) > 0) {
             $this->view->cacheItemHeaders = array_keys($cacheItems[0]);
             $this->view->cacheItems = $cacheItems;
         }
+    }
+    
+    /**
+     * Invalidate APC cache
+     */
+    public function invalidateApcCacheAction()
+    {
+        // Cache type can be 'system' or 'user'
+        $cacheType = $this->getRequest()->getParam('type', 'system');
+        
+        switch ($cacheType) {
+            case 'system':
+                apc_clear_cache();
+                break;
+            case 'user':
+                apc_clear_cache('user');
+                break;
+            default:
+                throw new Fisma_Zend_Exception("Invalid cache type: '$cacheType'");
+                break;
+        }
+        
+        $this->_forward('apc-cache');
     }
 }
