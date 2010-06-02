@@ -37,7 +37,12 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     public function init()
     {
         session_cache_limiter(false);
+        
         parent::init();
+
+        $this->removeContext('json');
+        
+        $this->removeContext('xml');
 
         if (!$this->hasContext('pdf')) {
             $this->addContext(
@@ -45,23 +50,24 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                 array(
                     'suffix' => 'pdf',
                     'headers' => array(
-                        'Content-Disposition' => 'attachement;filename="export.pdf"',
+                        'Content-Disposition' => 'attachment; filename=Report.pdf',
                         'Content-Type' => 'application/pdf'
                     )
                 )
             );
         }
+        
         if (!$this->hasContext('xls')) {
             $this->addContext(
                 'xls',
                 array(
                     'suffix' => 'xls',
                     'headers' => array(
-                        'Content-type' => 'application/vnd.ms-excel',
-                        'Content-Disposition' => 'filename=Fisma_Report.xls'
+                        'Content-Disposition' => 'attachment; filename=Report.xls',
+                        'Content-Type' => 'application/vnd.ms-excel'
                     )
                 )
             );
-        }
+        }      
     }
 }
