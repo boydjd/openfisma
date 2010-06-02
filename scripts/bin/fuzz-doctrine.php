@@ -62,8 +62,9 @@ const BACKSPACE = 0x08;
  * @var array
  */
 $skipFields = array(
-    'Configuration' => array('name'), 
+    'Configuration' => array('name', 'value'), 
     'Event' => array('name'), 
+    'Module' => array('name'),
     'Privilege' => array('action', 'resource')
 );
 
