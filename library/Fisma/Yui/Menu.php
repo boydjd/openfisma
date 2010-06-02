@@ -19,6 +19,11 @@
 /**
  * An object which represents a menu in YUI
  * 
+ * This object is designed to be easily converted to JSON, so it's JSON members are exposed in PHP as public members.
+ * 
+ * This design constraint makes this class a little difficult to understand, so refer to the unit tests if you are
+ * trying to figure out how this works. Also see the phpdoc on $submenu.
+ * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -36,12 +41,34 @@ class Fisma_Yui_Menu
     public $text;
     
     /**
-     * Stores submenu id and submenu items
+     * Stores submenu id and item data
      * 
+     * Example:
+     * 
+     * 'id' => 'uniqueMenuIdGoesHere'
+     * 'itemdata' => array(
+     *     0 => array(
+     *         new MenuItem('Item 1'),
+     *         new MenuItem('Item 2')
+     *     ),
+     *     1 => array(
+     *         new MenuItem('Item 3')
+     *     )
+     * )
+     * 
+     * The example above would draw the following menus:
+     * 
+     * ------
+     * Item 1
+     * Item 2
+     * ------
+     * Item 3
+     * ------
+     *
      * @var array
      */
     public $submenu = array();
-    
+
     /**
      * To perform initialization as a default constructor
      * 
@@ -51,8 +78,12 @@ class Fisma_Yui_Menu
     function __construct($title) 
     {
         $this->text = $title;
+        
         $this->submenu['id'] = uniqid();
+        
+        // itemdata is an array of arrays. Create one empty inner array to begin with.
         $this->submenu['itemdata'] = array();
+        $this->submenu['itemdata'][0] = array();
     }
     
     /**
@@ -62,8 +93,19 @@ class Fisma_Yui_Menu
      * @return void
      * @todo is it necessary to support Fisma_Yui_Menu based cascading menu in the future?
      */
-    function add($item) 
+    public function add($item) 
     {
-        $this->submenu['itemdata'][] = $item;
+        $currentMenu = count($this->submenu['itemdata']) - 1;
+        
+        $this->submenu['itemdata'][$currentMenu][] = $item;
+    }
+    
+    /**
+     * Add a menu separator immediately after the menu item which was most recently added
+     * 
+     */
+    public function addSeparator()
+    {
+        $this->submenu['itemdata'][] = array();
     }
 }
