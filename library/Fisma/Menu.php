@@ -117,6 +117,10 @@ class Fisma_Menu
             
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
 
+            $systemInventoryMenu->addSeparator();
+
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/organization-dashboard'));
+
             // Organization Administration submenu
             if (Fisma_Zend_Acl::hasArea('system_inventory_admin')) {
                 $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
@@ -130,6 +134,25 @@ class Fisma_Menu
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
+            }
+
+            // Organization reports submenu
+            if (Fisma_Zend_Acl::hasArea('system_inventory_report')) {
+                $systemInventoryReportsMenu = new Fisma_Yui_Menu('Reports');
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel')
+                );
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem('Privacy', '/organization-report/system-privacy')
+                );
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem('Security Authorizations', '/organization-report/system-privacy')
+                );
+
+                $systemInventoryMenu->add($systemInventoryReportsMenu);
             }
 
             $mainMenuBar->add($systemInventoryMenu);

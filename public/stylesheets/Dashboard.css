@@ -1,0 +1,82 @@
+/**
+ * Dashboard.css
+ *
+ * Copyright (c) 2010 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later 
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see {@link
+ * http://www.gnu.org/licenses/}.
+ */
+ 
+/**
+ * Styling for dashboard elements
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ */
+
+/* 
+ * A dashboard card is a simple box that contains the title and value of a particular metric. 
+ * By default, it is gray in color. But it can be colored by using the color styles below.
+ */
+div.dashboardCard {
+	/* Relative positioning lets us absolutely position the child elements */
+	position: relative;
+    float: left;
+    width: 10em;
+    height: 6em;
+    margin: .8em;
+    
+    border: 1px solid #b0b0b0;
+    background-color: lightgrey;
+}
+
+/*
+ * Each dashboard card has two child divs, a title and a metric value.
+ */
+div.dashboardCard div.title {
+    margin: .3em auto 0em auto;
+    text-align: center;
+
+    font-weight: bold;
+    font-size: 1em;
+}
+
+div.dashboardCard div.metric {
+    position: absolute;
+	width: 100%;
+	bottom: 0em;
+
+	text-align: center;
+    font-weight: bold;
+    font-size: 2.5em;
+}
+
+/*
+ * The following styles are for coloring a dashboard card.
+ */
+div.dashboardGreen {
+    border-color: #83ca8d;
+    background-color: lightgreen;
+}
+
+div.dashboardYellow {
+    border-color: #e2e13b;
+    background-color: yellow;
+}
+
+div.dashboardRed {
+    border-color: #daaeb5;
+    background-color: pink;
+}

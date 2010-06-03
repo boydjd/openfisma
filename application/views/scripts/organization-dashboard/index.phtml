@@ -1,0 +1,11 @@
+<?php Fisma_Format_Section::startSection('System Inventory Dashboard'); ?>
+
+<?php foreach ($this->metrics as $name => $metric): ?>
+    <div class="dashboardCard <?php echo $this->escape($metric['color']); ?>">
+        <div class="title"><?php echo $this->escape($metric['title']); ?></div>
+    
+        <div class="metric"><?php echo $this->escape($metric['value'] . $metric['suffix']); ?></div>
+    </div>
+<?php endforeach; ?>
+
+<?php Fisma_Format_Section::stopSection(); ?>
