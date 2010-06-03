@@ -60,8 +60,8 @@ class Fisma_Zend_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
             if (isset($element->tooltip)) {
                 $render = "<span id='{$element->getName()}Tooltip' class='tooltip'>$render</span>"
                         . '<script type="text/javascript">'
-                        . "{$element->getName()}Tooltip = new YAHOO.widget.Tooltip("
-                        . "\"{$element->getName()}TooltipObj\", { context:\"{$element->getName()}Tooltip\", "
+                        . "{$element->getName()}TooltipObj = new YAHOO.widget.Tooltip("
+                        . "\"{$element->getName()}TooltipYui\", { context:\"{$element->getName()}Tooltip\", "
                         . "showdelay: 150, hidedelay: 150, autodismissdelay: 25000, "
                         . "text:\"{$element->tooltip}\", "
                         . 'effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, '
