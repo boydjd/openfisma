@@ -12,8 +12,6 @@
 elementPrefixPath.prefix = Fisma_Zend_Form
 elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
-method = "post"
-action = "/panel/config/type/privacy_policy"
 
 elements.privacy_policy.type = "textarea"
 elements.privacy_policy.options.label = "Privacy Policy"

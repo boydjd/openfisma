@@ -13,11 +13,6 @@ elementPrefixPath.prefix = Fisma_Zend_Form
 elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 
-method = "post"
-action = "/panel/config/type/general"
-elementFilters.trim = "StringTrim"
-elementFilters.tags = "StripTags"
-
 elements.system_name.type = "text"
 elements.system_name.options.label = "System Name"
 elements.system_name.options.validators.strlen.validator = "StringLength"
@@ -64,8 +59,8 @@ displayGroups.general.elements.rob_duration = "rob_duration"
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
 elements.use_notification.options.validators.mceNotEmpty.validator = "MceNotEmpty"
-elements.use_notification.options.cols = "70%"
-elements.use_notification.options.rows = "7"
+elements.use_notification.options.cols = "80"
+elements.use_notification.options.rows = "8"
 elements.use_notification.options.required = true
 elements.use_notification.options.tooltip = "<p><b>Warning Banner</b></p><p>This is the warning banner displayed to all users before they log into OpenFISMA. You may customize the warning banner as you see fit.</p>"
 displayGroups.general.elements.use_notification = "use_notification"

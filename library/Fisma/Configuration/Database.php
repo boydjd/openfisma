@@ -61,16 +61,24 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function setConfig($name, $value) 
     {
-        Fisma_Zend_Acl::requireArea('configuration');
+        Fisma_Zend_Acl::requireArea('admin');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         
         if (!$config) {
             $config = new Configuration();
+            
+            $config->name = $name;
+            
+            if (Fisma::debug()) {
+                trigger_error("Created configuration item because it didn't exist: $name", E_USER_NOTICE);
+            }
         }
         
         $config->value = $value;
         $config->save();
+
+        Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
 
         $cache = Fisma::getCacheManager()->getCache('default');
         if ($dirtyConfig = $cache->load('configuration_' . $name)) {

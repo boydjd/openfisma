@@ -178,13 +178,25 @@ class Fisma_Menu
         if (Fisma_Zend_Acl::hasArea('admin')) {
             $admin = new Fisma_Yui_Menu('Administration');
             
-            $admin->add(new Fisma_Yui_MenuItem('Configuration', '/panel/config'));
+            $admin->add(new Fisma_Yui_MenuItem('E-mail', '/config/email'));
+            
+            $admin->add(new Fisma_Yui_MenuItem('General Policies', '/config/general'));
 
-            $admin->add(new Fisma_Yui_MenuItem('Modules', '/panel/config/sub/modules'));
+            if ('ldap' == Fisma::configuration()->getConfig('auth_type')) {
+                $admin->add(new Fisma_Yui_MenuItem('LDAP', '/config/ldaplist'));
+            }
+
+            $admin->add(new Fisma_Yui_MenuItem('Modules', '/config/modules'));
+
+            $admin->add(new Fisma_Yui_MenuItem('Password Policy', '/config/password'));
+
+            $admin->add(new Fisma_Yui_MenuItem('Privacy Policy', '/config/privacy'));
 
             if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Role')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));
             }
+            
+            $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
 
             if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'User')) {
                 $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
@@ -195,12 +207,13 @@ class Fisma_Menu
         
         $preferences = new Fisma_Yui_Menu('User Preferences');
         
-        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
         if ('database' == Fisma::configuration()->getConfig('auth_type')
             || 'root' == User::currentUser()->username) {
             $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
         }
         $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/user/sub/notification'));
+
+        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
         
         $mainMenuBar->add($preferences);
 

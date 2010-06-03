@@ -9,8 +9,6 @@
 ; Version   $Id:$
 
 [contact_config]
-method = "post"
-action = "/panel/config/type/contact"
 
 elements.contact_name.type = "text"
 elements.contact_name.options.label = "Technical Support Name"

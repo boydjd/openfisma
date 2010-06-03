@@ -185,19 +185,6 @@ class PanelController extends SecurityController
     }
 
     /** 
-     * Forward to report Controller
-     * 
-     * @return void
-     */
-    public function reportAction()
-    {
-        $req = $this->getRequest();
-        $sub = $req->getParam('sub');
-        $this->_helper->actionStack($sub, 'Report');
-        $this->_helper->actionStack('header');
-    }
-
-    /** 
      * Forward to system Controller
      * 
      * @return void
@@ -259,18 +246,6 @@ class PanelController extends SecurityController
         $sub = $this->_request->getParam('sub');
         $this->_helper->actionStack($sub, 'Network');
         $this->_helper->actionStack('header');
-    }
-
-    /** 
-     * Forward to config Controller
-     * 
-     * @return void
-     */
-    public function configAction()
-    {
-        $sub = $this->_request->getParam('sub', 'index');
-        $this->_helper->actionStack('header');
-        $this->_helper->actionStack($sub, 'Config');
     }
 
     /** 

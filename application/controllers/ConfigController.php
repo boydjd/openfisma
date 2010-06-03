@@ -58,7 +58,12 @@ class ConfigController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('configuration');
+        Fisma_Zend_Acl::requireArea('admin');
+
+        // Add header/footer to any action which expects an HTML response
+        if (!$this->_hasParam('format')) {
+            $this->_helper->actionStack('header', 'panel');
+        }
     }
 
     /**
@@ -67,7 +72,7 @@ class ConfigController extends SecurityController
      * @param string $formName The name of the form to load
      * @return Zend_Form The loaded form
      */
-    public function getConfigForm($formName)
+    private function _getConfigForm($formName)
     {
         // Load the form and populate the dynamic pull downs
         $form = Fisma_Zend_Form_Manager::loadForm($formName);
@@ -77,73 +82,40 @@ class ConfigController extends SecurityController
     }
 
     /**
-     * The default Action which handles the configuration updating
-     * 
-     * @return void
-     */
-    public function indexAction()
-    {
-        // Handle any updates to the configuration
-        if ($this->_request->isPost()) {
-            $type = $this->_request->getParam('type');
-            $form = $this->getConfigForm($type . '_config');
-            $post = $this->_request->getPost();
-            if ($form->isValid($post)) {
-                $values = $form->getValues();
-                foreach ($values as $k => &$v) {
-                    if (in_array($k, array('session_inactivity_period', 'unlock_duration'))) {
-                        $v *= 60; // convert minutes to seconds
-                    }
-                    $config = Doctrine::getTable('Configuration')->findOneByName($k);
-                    if ($config) {
-                        $config->value = $v;
-                        $config->save();
-                    }
-                }
-                $msg = 'Configuration updated successfully';
-                Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
-                $this->view->priorityMessenger($msg, 'notice');
-            } else {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
-            }
-        }
-
-        // Display tab view
-        $tabView = new Fisma_Yui_TabView('ConfigurationIndex');
-
-        $tabView->addTab('General Policy', '/config/general');
-        $tabView->addTab('Privacy Policy', '/config/privacy');
-        $tabView->addTab('Technical Contact', '/config/contact');
-        $tabView->addTab('E-mail', '/config/email');
-        $tabView->addTab('Password Policy', '/config/password');
-        
-        if ('ldap' == Fisma::configuration()->getConfig('auth_type')) {
-            $tabView->addTab('LDAP', '/config/ldaplist');
-        }
-        
-        $this->view->tabView = $tabView;
-    
-    }
-
-    /**
      * Display and update the persistent configurations
      * 
      * @return void
      */
     public function generalAction()
     {
-        $form = $this->getConfigForm('general_config');
-        $configs = Doctrine::getTable('Configuration')->findAll();
+        $form = $this->_getConfigForm('general_config');
 
-        $configArray = array();
-        foreach ($configs as $config) {
-            if (in_array($config->name, array('session_inactivity_period', 'unlock_duration'))) {
-                $config->value /= 60; //convert to minute from second
-            }
-            $configArray[$config->name] = $config->value;
+        if ($this->getRequest()->isPost()) {
+            $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
+            
+            $this->_redirect('/config/general');
         }
-        $form->setDefaults($configArray);
+
+        // Populate default values for non-submit button elements
+        foreach ($form->getElements() as $element) {
+
+            if ($element instanceof Zend_Form_Element_Submit) {
+                continue;
+            }
+            
+            $name = $element->getName();            
+            $value = Fisma::configuration()->getConfig($name);
+
+            /**
+             * @todo More ugliness. Remove this.
+             */
+            if (in_array($name, array('session_inactivity_period', 'unlock_duration'))) {
+                $value /= 60; // Convert from seconds to minutes
+            }
+            
+            $form->setDefault($name, $value);
+        }
+        
         $this->view->generalConfig = $form;
     }
 
@@ -199,12 +171,27 @@ class ConfigController extends SecurityController
      */
     public function contactAction()
     {        
-        $form = $this->getConfigForm('contact_config');
-        $columns = array('contact_name', 'contact_phone', 'contact_email', 'contact_subject');
-        foreach ($columns as $column) {
-            $configs[$column] = Fisma::configuration()->getConfig($column);
+        $form = $this->_getConfigForm('contact_config');
+
+        if ($this->getRequest()->isPost()) {
+            $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
+            
+            $this->_redirect('/config/contact');
         }
-        $form->setDefaults($configs);
+
+        // Populate default values for non-submit button elements
+        foreach ($form->getElements() as $element) {
+
+            if ($element instanceof Zend_Form_Element_Submit) {
+                continue;
+            }
+            
+            $name = $element->getName();            
+            $value = Fisma::configuration()->getConfig($name);
+            
+            $form->setDefault($name, $value);
+        }
+
         $this->view->form = $form;
     }
 
@@ -215,7 +202,7 @@ class ConfigController extends SecurityController
      */
     public function ldapupdateAction()
     {        
-        $form = $this->getConfigForm('ldap');
+        $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
         
         $ldap = new LdapConfig();
@@ -233,7 +220,7 @@ class ConfigController extends SecurityController
                 
                 $msg = 'Configuration updated successfully';
                 $this->view->priorityMessenger($msg, 'notice');
-                $this->_redirect('/panel/config/');
+                $this->_redirect('/config/ldaplist');
                 return;
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
@@ -259,7 +246,7 @@ class ConfigController extends SecurityController
         Doctrine::getTable('LdapConfig')->find($id)->delete();
         $msg = "Ldap Server deleted successfully.";
         $this->view->priorityMessenger($msg, 'notice');
-        $this->_forward('index');
+        $this->_redirect('/config/ldaplist');
     }
 
     /**
@@ -271,7 +258,7 @@ class ConfigController extends SecurityController
      */
     public function ldapvalidAction()
     {        
-        $form = $this->getConfigForm('ldap');
+        $form = $this->_getConfigForm('ldap');
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
             if ($form->isValid($data)) {
@@ -312,8 +299,6 @@ class ConfigController extends SecurityController
      */
     public function modulesAction()
     {
-        Fisma_Zend_Acl::requireArea('configuration');
-
         $moduleQuery = Doctrine_Query::create()
                        ->from('Module m')
                        ->orderBy('m.name')
@@ -350,9 +335,7 @@ class ConfigController extends SecurityController
     {        
         $response = new Fisma_AsyncResponse();
 
-        try {
-            Fisma_Zend_Acl::requireArea('configuration');
-            
+        try {            
             // Load module object
             $moduleId = $this->getRequest()->getParam('id');
             
@@ -389,21 +372,74 @@ class ConfigController extends SecurityController
     }
 
     /**
+     * Generic save method.
+     * 
+     * This will validate and save post variables into the system configuration
+     * 
+     * @param Zend_Form $form The form which was submitted
+     * @param array $post Posted variables
+     */
+    private function _saveConfigurationForm($form, $post)
+    {
+        if ($form->isValid($post)) {        
+            $values = $form->getValues();
+        
+            foreach ($values as $item => &$value) {
+            
+                /**
+                 * @todo this needs to be cleaned up
+                 */
+                if (in_array($item, array('session_inactivity_period', 'unlock_duration'))) {
+                    $value *= 60; // convert minutes to seconds
+                }
+
+                Fisma::configuration()->setConfig($item, $value);
+            }
+
+            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
+        } else {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
+            $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
+        }
+    }
+    
+    /**
      * Email event system base setting
      * 
      * @return void
      */
     public function emailAction()
-    {        
-        $form = $this->getConfigForm('email_config');
-        $columns = array('sender', 'subject', 'send_type', 'smtp_host', 'smtp_port',
-                         'smtp_tls', 'smtp_username', 'smtp_password');
-        foreach ($columns as $column) {
-            $configs[$column] = Fisma::configuration()->getConfig($column);
+    {
+        $form = $this->_getConfigForm('email_config');
+        
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            
+            /**
+             * @todo The wiring on this is screwy because the test email panel uses the same form to submit, even though
+             * its submitting to a different action and submitting different data! This needs fixing!
+             */
+            unset($post['recipient']);
+
+            $this->_saveConfigurationForm($form, $post);
+            
+            $this->_redirect('/config/email');
         }
-        $form->setDefaults($configs);
+        
+        $configurations = array('sender', 
+                                'subject', 
+                                'send_type', 
+                                'smtp_host', 
+                                'smtp_port',
+                                'smtp_tls', 
+                                'smtp_username', 
+                                'smtp_password');
+                         
+        foreach ($configurations as $configuration) {
+            $form->setDefault($configuration, Fisma::configuration()->getConfig($configuration));
+        }
+        
         $this->view->form = $form;
-        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -414,7 +450,7 @@ class ConfigController extends SecurityController
     public function testEmailConfigAction()
     {        
         // Load the form from notification_config.form file
-        $form = $this->getConfigForm('email_config');
+        $form = $this->_getConfigForm('email_config');
         if ($this->_request->isPost()) {
             $postEmailConfigValues = $this->_request->getPost();
             if ($form->isValid($postEmailConfigValues)) {
@@ -483,8 +519,27 @@ class ConfigController extends SecurityController
      */
     public function privacyAction()
     {        
-        $form = $this->getConfigForm('privacy_policy_config');
-        $form->setDefaults(array('privacy_policy' => Fisma::configuration()->getConfig('privacy_policy')));
+        $form = $this->_getConfigForm('privacy_policy_config');
+
+        if ($this->getRequest()->isPost()) {
+            $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
+            
+            $this->_redirect('/config/privacy');
+        }
+
+        // Populate default values for non-submit button elements
+        foreach ($form->getElements() as $element) {
+
+            if ($element instanceof Zend_Form_Element_Submit) {
+                continue;
+            }
+            
+            $name = $element->getName();            
+            $value = Fisma::configuration()->getConfig($name);
+            
+            $form->setDefault($name, $value);
+        }
+
         $this->view->form = $form;
     }
      
@@ -495,15 +550,34 @@ class ConfigController extends SecurityController
      */
     public function passwordAction()
     {        
-        $form = $this->getConfigForm('password_config');
-        $columns = array('failure_threshold' ,'unlock_enabled', 'unlock_duration', 'pass_expire',
-                         'pass_warning', 'pass_uppercase', 'pass_lowercase',
-                         'pass_numerical', 'pass_special', 'pass_min_length', 'pass_max_length');
-        foreach ($columns as $column) {
-            $configs[$column] = Fisma::configuration()->getConfig($column);
+        $form = $this->_getConfigForm('password_config');
+
+        if ($this->getRequest()->isPost()) {
+            $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
+            
+            $this->_redirect('/config/password');
         }
-        $configs['unlock_duration'] /= 60 ;//Convert to minutes
-        $form->setDefaults($configs);
+
+        // Populate default values for non-submit button elements
+        foreach ($form->getElements() as $element) {
+
+            if ($element instanceof Zend_Form_Element_Submit) {
+                continue;
+            }
+            
+            $name = $element->getName();            
+            $value = Fisma::configuration()->getConfig($name);
+
+            /**
+             * @todo More ugliness. Remove this.
+             */
+            if ('unlock_duration' == $name) {
+                $value /= 60; // Convert from seconds to minutes
+            }
+            
+            $form->setDefault($name, $value);
+        }
+
         $this->view->form = $form;
     }
 }
