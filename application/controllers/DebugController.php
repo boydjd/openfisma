@@ -49,7 +49,9 @@ class DebugController extends Zend_Controller_Action
      */
     public function phpinfoAction()
     {
-        phpinfo();
+        $this->_helper->layout()->enableLayout();
+        $this->_helper->viewRenderer->setNoRender(false);
+        $this->_helper->actionStack('header', 'panel');
     }
 
     /**
@@ -59,7 +61,11 @@ class DebugController extends Zend_Controller_Action
      */
     public function errorlogAction()
     {
-        echo file_get_contents('../data/logs/error.log');
+        $this->_helper->layout()->enableLayout();
+        $this->_helper->viewRenderer->setNoRender(false);
+        $this->_helper->actionStack('header', 'panel');
+        $this->view->errorLog = ($errorLog = @file_get_contents(APPLICATION_PATH . '/../data/logs/error.log')) 
+            ? $errorLog : 'The error log does not exist.'; 
     }
 
     /**
@@ -69,7 +75,11 @@ class DebugController extends Zend_Controller_Action
      */
     public function phplogAction()
     {
-        echo file_get_contents('../data/logs/php.log');
+        $this->_helper->layout()->enableLayout();
+        $this->_helper->viewRenderer->setNoRender(false);
+        $this->_helper->actionStack('header', 'panel');
+        $this->view->log = ($log = @file_get_contents(APPLICATION_PATH . '/../data/logs/php.log'))
+            ? $log : 'The php log does not exist';
     }
     
     /**
