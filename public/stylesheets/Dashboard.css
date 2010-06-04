@@ -1,3 +1,5 @@
+/* @override http://openfisma-trunk/stylesheets/Dashboard.css */
+
 /**
  * Dashboard.css
  *
@@ -80,3 +82,13 @@ div.dashboardRed {
     border-color: #daaeb5;
     background-color: pink;
 }
+
+/*
+ * A dashboard chart is centered and has bold text
+ */
+div.dashboardChart {
+	margin: 2em 0em;
+    text-align: center;
+    font-weight: bold;
+}
+

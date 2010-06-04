@@ -81,9 +81,12 @@ class OrganizationDashboardController extends SecurityController
      */
     public function indexAction()
     {
+        $userOrganizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
+        
         $metricsQuery = Doctrine_Query::create()
-                       ->from('System s')
-                       ->select('COUNT(*) AS total_systems')
+                       ->from('Organization o')
+                       ->innerJoin('o.System s')
+                       ->addSelect('COUNT(s.id) AS total_systems')
                        ->addSelect(
                            'ROUND(AVG(IF(DATE_ADD(s.securityAuthorizationDt, INTERVAL ' 
                            . self::ATO_PERIOD_MONTHS 
@@ -103,49 +106,63 @@ class OrganizationDashboardController extends SecurityController
                            'ROUND(SUM(IF(s.hasPii = \'YES\' AND s.piaUrl IS NOT NULL, 1, 0)) / '
                            . 'SUM(IF(s.hasPii = \'YES\' OR s.hasPii IS NULL, 1, 0)) * 100, 1) AS current_pias'
                        )
-                       ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                       ->whereIn('o.id', $userOrganizations)
+                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
         // This query returns one row because it uses aggregate functions and no GROUP BY clause
         $metrics = $metricsQuery->execute();
         $metrics = $metrics[0];
                 
         // Add metadata for each metric which is returned in the previous query
-        $metrics['total_systems'] = array(
+        $metrics['s_total_systems'] = array(
             'title' => 'Total Number of Systems', 
-            'value' => $metrics['total_systems'],
+            'value' => $metrics['s_total_systems'],
             'color' => '',
             'suffix' => ''
         );
 
-        $metrics['current_atos'] = array(
+        $metrics['s_current_atos'] = array(
             'title' => 'Current ATO', 
-            'value' => $metrics['current_atos'],
-            'color' => $this->_getColorForPercentage($metrics['current_atos']),
+            'value' => $metrics['s_current_atos'],
+            'color' => $this->_getColorForPercentage($metrics['s_current_atos']),
             'suffix' => '%'
         );
         
-        $metrics['current_self_assessment'] = array(
+        $metrics['s_current_self_assessment'] = array(
             'title' => 'Current 800-53 Self-Assessment', 
-            'value' => $metrics['current_self_assessment'],
-            'color' => $this->_getColorForPercentage($metrics['current_self_assessment']),
+            'value' => $metrics['s_current_self_assessment'],
+            'color' => $this->_getColorForPercentage($metrics['s_current_self_assessment']),
             'suffix' => '%'
         );
 
-        $metrics['contingency_plan_tests'] = array(
+        $metrics['s_contingency_plan_tests'] = array(
             'title' => 'Contingency Plans Tested', 
-            'value' => $metrics['contingency_plan_tests'],
-            'color' => $this->_getColorForPercentage($metrics['contingency_plan_tests']),
+            'value' => $metrics['s_contingency_plan_tests'],
+            'color' => $this->_getColorForPercentage($metrics['s_contingency_plan_tests']),
             'suffix' => '%'
         );
 
-        $metrics['current_pias'] = array(
+        $metrics['s_current_pias'] = array(
             'title' => 'Completed PIA', 
-            'value' => $metrics['current_pias'],
-            'color' => $this->_getColorForPercentage($metrics['current_pias']),
+            'value' => $metrics['s_current_pias'],
+            'color' => $this->_getColorForPercentage($metrics['s_current_pias']),
             'suffix' => '%'
         );
 
         $this->view->metrics = $metrics;
+        
+        // Create dashboard charts
+        $this->view->fipsCategoryChart = new Fisma_Chart(
+            '/organization-chart/fips-category/format/xml', 
+            350, 
+            200
+        );
+        
+        $this->view->agencyContractorChart = new Fisma_Chart(
+            '/organization-chart/agency-contractor/format/xml', 
+            350, 
+            200
+        );
     }
     
     /**

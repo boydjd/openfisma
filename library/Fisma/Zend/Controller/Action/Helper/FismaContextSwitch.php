@@ -40,10 +40,6 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
         
         parent::init();
 
-        $this->removeContext('json');
-        
-        $this->removeContext('xml');
-
         if (!$this->hasContext('pdf')) {
             $this->addContext(
                 'pdf',
