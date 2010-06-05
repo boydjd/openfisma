@@ -1,0 +1,41 @@
+<div id="<?php echo $this->escape($this->containerId); ?>">
+    <table id="<?php echo $this->escape($this->tableId); ?>" border="1">
+        <thead>
+            <tr>
+                <?php foreach ($this->columns as $column): ?>
+                    <th><?php echo $this->escape($column->getName()); ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+
+        <tbody>
+            <?php foreach ($this->data as $row): ?>
+                <tr>
+                    <?php foreach($row as $cell): ?>
+                    <td><?php echo $this->escape($cell) ?></td>
+                    <?php endforeach;?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    YAHOO.util.Event.onContentReady('<?php echo $this->escape($this->containerId); ?>', function() {
+
+        var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
+
+        var dataSource = new YAHOO.util.DataSource(
+            YAHOO.util.Dom.get("<?php echo $this->escape($this->tableId); ?>")
+        );
+        dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+        dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
+
+        var dataTable = new YAHOO.widget.DataTable(
+            "<?php echo $this->escape($this->containerId); ?>", 
+            columnDefs, 
+            dataSource, 
+            {}
+        );
+    });
+</script>
