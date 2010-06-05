@@ -35,5 +35,5 @@ if (!empty($this->requirements)) {
 <?php 
 Fisma_Format_Section::stopSection();
 $opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
-echo $this->escape($this->partial('tab-view/roles.phtml', $opts), 'none');
+echo $this->escape($this->partial('yui/roles.phtml', $opts), 'none');
 unset($opts);
