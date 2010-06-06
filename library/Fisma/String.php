@@ -191,4 +191,24 @@ class Fisma_String
 
         return $string;
     }
+    
+    /**
+     * Convert a string into a valid javascript variable name
+     * 
+     * @see http://www.w3schools.com/js/js_variables.asp
+     * 
+     * @param $string $name
+     */
+    static function convertToJavascriptName($name)
+    {
+        // Javascript variables cannot start with numbers, so prepend an underscore if necessary
+        if (is_numeric($name{0})) {
+            $name = '_' . $name;
+        }
+
+        // Replace any illegal characters with an underscore
+        $name = preg_replace('/[^A-Za-z0-9]/', '_', $name);
+
+        return $name;        
+    }
 }
