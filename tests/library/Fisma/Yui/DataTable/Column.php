@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Library
  * @version    $Id$
  */
-class Tests_Library_Fisma_Yui_DataTable_Column extends Test_FismaUnitTest
+class Test_Library_Fisma_Yui_DataTable_Column extends Test_FismaUnitTest
 {
     /**
      * Test the constructor and accessors for the table column class

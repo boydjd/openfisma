@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Library
  * @version    $Id$
  */
-class Tests_Library_Fisma_Yui_DataTable_Local extends Test_FismaUnitTest
+class Test_library_Fisma_Yui_DataTable_Local extends Test_FismaUnitTest
 {
     /**
      * Add columns and get columns from a data table
