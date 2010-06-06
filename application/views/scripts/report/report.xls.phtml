@@ -1,0 +1,63 @@
+<?php
+// Create a workbook with 1 worksheet
+$workbook = new Spreadsheet_Excel_Writer();
+$workbook->setVersion(8);
+$worksheet = $workbook->addWorksheet();
+
+// Create formats for the column headers and for the data cells
+$annotationFormat = $workbook->addFormat(
+    array(
+        'Size' => 10
+    )
+);
+
+$headerFormat = $workbook->addFormat(
+    array(
+        'Size' => 10,
+        'Align' => 'center',
+        'Color' => 'white',
+        'FgColor' => 'black',
+        'Bold' => true
+    )
+);
+
+$dataFormat = $workbook->addFormat(
+    array(
+        'Size' => 10,
+        'Align' => 'left',
+        'Color' => 'black',
+        'BorderColor '=> 'black',
+        'Bottom' => 1,
+        'Top' => 1,
+        'Left' => 1,
+        'Right' => 1
+    )
+);
+
+$dataFormat->setVAlign('top');
+$dataFormat->setTextWrap();
+
+$columnCount = count($this->columns);
+
+// The first row is a timestamp
+$worksheet->write(0, 0, "Report Date: $this->timestamp", $annotationFormat);
+$worksheet->mergeCells(0, 0, 0, $columnCount - 1);
+
+// The second row is our shameless self-promotion
+$worksheet->write(1, 0, "Produced By $this->systemName", $annotationFormat);
+$worksheet->mergeCells(1, 0, 1, $columnCount - 1);
+
+// The third row is for column headers
+$worksheet->writeRow(2, 0, $this->columns, $headerFormat);
+
+// Set default width for all data columns
+$worksheet->setColumn(0, $columnCount - 1, 20);
+
+// Write out data
+$currentRow = 3;
+foreach ($this->data as $row) {
+    $worksheet->writeRow($currentRow, 0, $row, $dataFormat);
+    $currentRow++;
+}
+
+$workbook->close();

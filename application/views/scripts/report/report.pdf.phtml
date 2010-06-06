@@ -1,0 +1,121 @@
+<?php
+require_once('pdf/class.ezpdf.php');
+
+$pdf = new Cezpdf('LETTER', 'landscape');
+
+$pdf->selectFont(Fisma::getPath('library') . '/pdf/fonts/Helvetica.afm');
+
+/*
+ * The origin for the PDF coordinate system is in the lower left corner of the page. I believe that all units in this
+ * PDF library are pixels that are equal to 1/72nd of an inch. 
+ * 
+ * @see http://www.websupergoo.com/helppdf7net/source/2-getting_started/3-coordinates.htm
+ */
+$horizontalMargin = 40;
+$bottomMargin = 80;
+$topMargin = 50;
+$headerFooterMargin = 5;
+$horizontalRuleMargin = 5;
+
+// Define content area boundaries based on page size and margin size, exclusive of the header footer
+$contentLeftEdge = $horizontalMargin;
+$contentRightEdge = $pdf->ez['pageWidth'] - $horizontalMargin;
+$contentTopEdge = $pdf->ez['pageHeight'] - $topMargin;
+$contentBottomEdge = $bottomMargin;
+
+$contentWidth = $contentRightEdge - $contentLeftEdge;
+
+// Font sizes -- I have no idea what unit of measurement this is in
+$defaultFontSize = 8;
+$headerFontSize = 16;
+
+// Create header and footer. This requires some ezPdf voodoo to display it on every single page
+$headerFooterDesign = $pdf->openObject();
+
+$headerHeight = 5;
+
+// Report timestamp
+$pdf->addTextWrap(
+    $contentLeftEdge,
+    $contentTopEdge + $headerHeight + $headerFooterMargin,
+    $contentWidth,
+    $defaultFontSize,
+    "Report Date: $this->timestamp",
+    'left'
+);
+
+// Shameless self-promotion
+$pdf->addTextWrap(
+    $contentLeftEdge,
+    $contentTopEdge + $headerHeight + $headerFooterMargin,
+    $contentWidth,
+    $defaultFontSize,
+    "Produced By $this->systemName",
+    'right'
+);
+
+// Draw a line underneath the header text
+$pdf->setStrokeColor(0, 0, 0);
+$headerHeight = 5;
+$pdf->line(
+    $contentLeftEdge,
+    $contentTopEdge + $headerHeight + $headerFooterMargin - $horizontalRuleMargin,
+    $contentRightEdge,
+    $contentTopEdge + $headerHeight + $headerFooterMargin - $horizontalRuleMargin
+);
+
+// Draw a line above the footer
+$pdf->line(
+    $contentLeftEdge,
+    $contentBottomEdge - $headerFooterMargin,
+    $contentRightEdge,
+    $contentBottomEdge - $headerFooterMargin
+);
+
+// Print footer text -- notice that it's one line of text and it's wrapped it to the page size with addTextWrap()
+$warning = '<b>WARNING:</b> This report is for internal, official use only.  This report contains'
+         . ' sensitive computer security related information. Public disclosure of this information would risk'
+         . ' circumvention of the law. Recipients of this report must not, under any circumstances, show or release its'
+         . ' contents for purposes other than official action. This report must be safeguarded to prevent improper'
+         . ' disclosure. Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.';
+
+$lineHeight = $pdf->getFontHeight($defaultFontSize);
+$currentLineY = $contentBottomEdge - $horizontalRuleMargin;
+
+while (!empty($warning)) {
+    $currentLineY -= $lineHeight;
+
+    $warning = $pdf->addTextWrap(
+        $contentLeftEdge, 
+        $currentLineY,
+        $contentWidth, 
+        $defaultFontSize, 
+        $warning, 
+        'left'
+    );
+}
+
+// Add the header footer to each page
+$pdf->closeObject();
+$pdf->addObject($headerFooterDesign, 'all');
+
+// Display the main content
+$pdf->ezSetMargins($topMargin, $bottomMargin, $horizontalMargin, $horizontalMargin);
+
+$pdf->ezText($this->title, $headerFontSize, array('justification'=>'center'));
+
+$columns = array_values($this->columns);
+
+$pdf->ezTable(
+    $this->data,
+    $this->columns,
+    ' ',
+    array(
+        'fontSize' => $defaultFontSize,
+        'width' => $contentWidth,
+        'xPos' => $contentLeftEdge + 5, // for some reason, ezpdf draws the tables 5 pixels too far to the left
+        'xOrientation' => 'right'
+    )
+);
+
+echo $this->escape($pdf->ezOutput(), 'none');

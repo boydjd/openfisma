@@ -93,6 +93,9 @@ class Fisma_Zend_View extends Zend_View
                     )
                 );
 
+            case 'json':
+                return json_encode($string);
+                
             case 'mail':
                 // safe way to display e-mail address on a web page
                 return str_replace(array('@', '.'), array(' [AT] ', ' [DOT] '), $string);
