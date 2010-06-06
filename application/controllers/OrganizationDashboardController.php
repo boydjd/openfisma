@@ -28,27 +28,6 @@
 class OrganizationDashboardController extends SecurityController
 {
     /**
-     * The number of months for which an Authority To Operate (ATO) is valid and current. 
-     * 
-     * After this period elapses, the ATO is considered expired.
-     */
-    const ATO_PERIOD_MONTHS = 36;
-
-    /**
-     * The number of months for which a Self-Assessment is valid and current. 
-     * 
-     * After this period elapses, the Self-Assessment is considered expired.
-     */
-    const SELF_ASSESSMENT_PERIOD_MONTHS = 12;
-
-    /**
-     * The number months for which a contingency plan test is valid and current.
-     * 
-     * After this period elapses, the Self-Assessment is considered expired.
-     */    
-    const SELF_CPLAN_PERIOD_MONTHS = 12;
-
-    /**
      * The threshold (as a percentage) for which a metric becomes green.
      * 
      * Anything below this is yellow or red.
@@ -89,17 +68,17 @@ class OrganizationDashboardController extends SecurityController
                        ->addSelect('COUNT(s.id) AS total_systems')
                        ->addSelect(
                            'ROUND(AVG(IF(DATE_ADD(s.securityAuthorizationDt, INTERVAL ' 
-                           . self::ATO_PERIOD_MONTHS 
+                           . System::ATO_PERIOD_MONTHS 
                            . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_atos'
                        )
                        ->addSelect(
                            'ROUND(AVG(IF(DATE_ADD(s.controlAssessmentDt, INTERVAL ' 
-                           . self::SELF_ASSESSMENT_PERIOD_MONTHS 
+                           . System::SELF_ASSESSMENT_PERIOD_MONTHS 
                            . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_self_assessment'
                        )
                        ->addSelect(
                            'ROUND(AVG(IF(DATE_ADD(s.contingencyPlanTestDt, INTERVAL ' 
-                           . self::SELF_CPLAN_PERIOD_MONTHS 
+                           . System::SELF_CPLAN_PERIOD_MONTHS 
                            . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS contingency_plan_tests'
                        )
                        ->addSelect(

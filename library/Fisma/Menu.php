@@ -68,8 +68,8 @@ class Fisma_Menu
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
                         
-            if (Fisma_Zend_Acl::hasArea('incident_admin')
-                || Fisma_Zend_Acl::hasArea('incident_report')) {
+            if (Fisma_Zend_Acl::hasArea('finding_admin')
+                || Fisma_Zend_Acl::hasArea('finding_report')) {
                     
                 $findings->addSeparator();
             }
@@ -141,15 +141,18 @@ class Fisma_Menu
                 $systemInventoryReportsMenu = new Fisma_Yui_Menu('Reports');
 
                 $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel')
+                    new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel/format/html')
                 );
 
                 $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem('Privacy', '/organization-report/system-privacy')
+                    new Fisma_Yui_MenuItem('Privacy', '/organization-report/privacy/format/html')
                 );
 
                 $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem('Security Authorizations', '/organization-report/system-privacy')
+                    new Fisma_Yui_MenuItem(
+                        'Security Authorizations', 
+                        '/organization-report/security-authorization/format/html'
+                    )
                 );
 
                 $systemInventoryMenu->add($systemInventoryReportsMenu);

@@ -48,6 +48,27 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     const CIA_NA = 'NA';
 
     /**
+     * The number of months for which an Authority To Operate (ATO) is valid and current. 
+     * 
+     * After this period elapses, the ATO is considered expired.
+     */
+    const ATO_PERIOD_MONTHS = 36;
+
+    /**
+     * The number of months for which a Self-Assessment is valid and current. 
+     * 
+     * After this period elapses, the Self-Assessment is considered expired.
+     */
+    const SELF_ASSESSMENT_PERIOD_MONTHS = 12;
+
+    /**
+     * The number months for which a contingency plan test is valid and current.
+     * 
+     * After this period elapses, the Self-Assessment is considered expired.
+     */    
+    const SELF_CPLAN_PERIOD_MONTHS = 12;
+
+    /**
      * Defines the way counter measure effectiveness and threat level combine to produce the threat likelihood. This
      * array is indexed as: $_threatLikelihoodMatrix[THREAT_LEVEL][COUNTERMEASURE_EFFECTIVENESS] == THREAT_LIKELIHOOD
      * 

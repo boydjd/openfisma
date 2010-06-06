@@ -2627,6 +2627,22 @@ Fisma.AutoComplete = function() {
                 return params.queryPrepend + query;
             };
 
+            /**
+             * Overridable method that returns HTML markup for one result to be populated
+             * as innerHTML of an &lt;LI&gt; element.
+             *
+             * @method formatResult
+             * @param oResultData {Object} Result data object.
+             * @param sQuery {String} The corresponding query string.
+             * @param sResultMatch {HTMLElement} The current query string.
+             * @return {String} HTML markup of formatted result data.
+             */
+            ac.formatResult = function(oResultData, sQuery, sResultMatch) {
+                var sMarkup = (sResultMatch) ? sResultMatch : "";
+                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
+                return sMarkup;
+            };
+
             ac.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe, { hiddenFieldId: params.hiddenFieldId } );
         },
         /**
