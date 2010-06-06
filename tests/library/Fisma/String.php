@@ -206,4 +206,15 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         
         $this->assertEquals($expected, Fisma_String::escapeJsString($unescaped));
     }
+    
+    /**
+     * Convert an arbitrary string that contains illegal javascript characters to a valid javascript variable name
+     */
+    public function testConvertToJavascriptName()
+    {
+        $original = '0 Day Exploits!';
+        $expected = '_0_Day_Exploits_';
+        
+        $this->assertEquals($expected, Fisma_String::convertToJavascriptName($original));
+    }
 }
