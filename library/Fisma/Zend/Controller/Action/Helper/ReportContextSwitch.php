@@ -189,8 +189,14 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
             $dataTable->setData($this->_report->getData());
 
-            foreach ($this->_report->getColumns() as $column) {
-                $dataTable->addColumn(new Fisma_Yui_DataTable_Column($column, true));
+            foreach ($this->_report->getColumns() as $reportColumn) {
+                $yuiColumn = new Fisma_Yui_DataTable_Column(
+                    $reportColumn->getName(), 
+                    $reportColumn->isSortable(), 
+                    $reportColumn->getFormatter()
+                );
+                
+                $dataTable->addColumn($yuiColumn);
             }
 
             $view->dataTable = $dataTable;
@@ -215,7 +221,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $view = Zend_Layout::getMvcInstance()->getView();
 
         $view->title = $this->_report->getTitle();
-        $view->columns = $this->_report->getColumns();
+        $view->columns = $this->_report->getColumnNames();
         $view->timestamp = Zend_Date::now()->toString('Y-m-d h:i:s A T');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
 
@@ -247,7 +253,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $view = Zend_Layout::getMvcInstance()->getView();
 
         $view->title = $this->_report->getTitle();
-        $view->columns = $this->_report->getColumns();
+        $view->columns = $this->_report->getColumnNames();
         $view->timestamp = Zend_Date::now()->toString('Y-m-d h:i:s A T');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
         $view->data = $this->_report->getData();

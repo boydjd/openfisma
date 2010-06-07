@@ -22,6 +22,8 @@
  * Reports typically contain a rectangular (or tabular) data set and a set of column headings, and can be rendered
  * into an HTML, Excel, or PDF context.
  * 
+ * TO BE CLEAR: This is not in any way related to the quarterly or annual reports which are sent to OMB.
+ * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -39,12 +41,16 @@ class Fisma_Report
     private $_title;
     
     /**
-     * The column names for this report
+     * An array of Fisma_Report_Column objects
+     * 
+     * @var array
      */
-    private $_columnNames;
+    private $_columns = array();
     
     /**
      * Rectangular data for this report
+     * 
+     * @var array
      */
     private $_data;
     
@@ -71,7 +77,9 @@ class Fisma_Report
     }
     
     /**
-     * Columns accessor
+     * Returns an array of Fisma_Report_Column
+     * 
+     * @return array
      */
     public function getColumns()
     {
@@ -79,13 +87,29 @@ class Fisma_Report
     }
     
     /**
-     * Columns mutator
+     * Return an array of just the column names, not column objects
      * 
-     * @param array $columns
+     * @return array
      */
-    public function setColumns($columns)
+    public function getColumnNames()
     {
-        $this->_columns = $columns;
+        $names = array();
+        
+        foreach ($this->_columns as $column) {
+            $names[] = $column->getName();
+        }
+        
+        return $names;
+    }
+    
+    /**
+     * Add a column to the report
+     * 
+     * @param Fisma_Report_Column $column
+     */
+    public function addColumn($column)
+    {
+        $this->_columns[] = $column;
         
         return $this;
     }
