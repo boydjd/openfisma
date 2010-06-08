@@ -204,3 +204,110 @@ if (('NEW' == $status || 'DRAFT' == $status)
     <?php echo $this->escape($finding->recommendation, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<?php 
+Fisma_Format_Section::startSection("Cross-References");
+?>
+    <p>
+        Cross-references are typically provided by automated scanners. These cross-references link to external websites
+        which may be able to provide additional context and/or technical detail for this finding.
+    </p>
+    <table class="keyValues">
+        <?php 
+        if ($this->finding->Bugtraqs->count() > 0): 
+            foreach ($this->finding->Bugtraqs as $bugtraq):
+        ?>
+                <tr>
+                    <td>
+                        Bugtraq:
+                    </td>
+                    <td>
+                        <a href="<?php echo $this->escape($bugtraq->getUrl(), 'none'); ?>">
+                            <?php echo $this->escape($bugtraq->value); ?>
+                        </a>
+                    </td>
+                </tr>
+        <?php 
+            endforeach;
+        else: 
+        ?>
+            <tr>
+                <td>
+                    Bugtraq:
+                </td>
+                <td>
+                    <i>No Bugtraq cross-references available</i>
+                </td>
+            </tr>
+        <?php
+        endif;
+        ?>
+
+        <?php 
+        if ($this->finding->Cves->count() > 0): 
+            foreach ($this->finding->Cves as $cve):
+        ?>
+                <tr>
+                    <td>
+                        CVE:
+                    </td>
+                    <td>
+                        <a href="<?php echo $this->escape($cve->getUrl(), 'none'); ?>">
+                            <?php echo $this->escape($cve->value); ?>
+                        </a>
+                    </td>
+                </tr>
+        <?php 
+            endforeach;
+        else: 
+        ?>
+            <tr>
+                <td>
+                    CVE:
+                </td>
+                <td>
+                    <i>No CVE cross-references available</i>
+                </td>
+            </tr>
+        <?php
+        endif;
+        ?>
+
+        <?php 
+        if ($this->finding->Xrefs->count() > 0): 
+            foreach ($this->finding->Xrefs as $xref):
+                $url = $xref->getUrl();
+        ?>
+                <tr>
+                    <td>
+                        Xref:
+                    </td>
+                    <td>
+                        <?php if (!is_null($url)): ?>
+                        <a href="<?php echo $this->escape($url, 'none'); ?>">
+                            <?php echo $this->escape($xref->value); ?>
+                        </a>
+                        <?php else: ?>
+                            <?php echo $this->escape($xref->value); ?> (No link available)
+                        <?php endif; ?>
+                    </td>
+                </tr>
+        <?php 
+            endforeach;
+        else: 
+        ?>
+            <tr>
+                <td>
+                    Xref:
+                </td>
+                <td>
+                    <i>No Xref cross-references available</i>
+                </td>
+            </tr>
+        <?php
+        endif;
+        ?>
+    </table>
+<?php
+Fisma_Format_Section::stopSection(); 
+?>

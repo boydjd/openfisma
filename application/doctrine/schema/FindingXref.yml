@@ -6,8 +6,3 @@ FindingXref:
         xref_id:
             type: integer
             primary: true
-    relations:
-        Finding:
-            foreignAlias: FindingXrefs
-        Xref:
-            foreignAlias: FindingXrefs

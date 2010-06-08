@@ -28,5 +28,51 @@
  */
 class Xref extends BaseXref
 {
+    /**
+     * Mapping of Xref types to corresponding URLs
+     * 
+     * Some reference providers do not have an automated system for getting URLs. Those providers are not included
+     * in this list.
+     * 
+     * @see http://cve.mitre.org/data/refs/index.html
+     * @var array
+     */
+    private $_types = array(
+        'AIXAPAR' => 'http://www-01.ibm.com/support/docview.wss?uid=1',
+        'BID' => 'http://www.securityfocus.com/bid/',
+        'OSVDB' => 'http://osvdb.org/show/osvdb/',
+        'SECTRACK' => 'http://www.securitytracker.com/id?',
+        'SECUNIA' => 'http://secunia.com/advisories/',
+        'SREASON' => 'http://securityreason.com/securityalert/',
+        'UBUNTU' => 'http://www.ubuntu.com/usn/',
+        'XF' => 'http://xforce.iss.net/xforce/xfdb/'
+    );
+    
+    /**
+     * Get a URL to this external reference
+     * 
+     * An Xref value looks like this: OSVDB:1234. In this case, it would link to the OSVDB website using 1234
+     * as the object identifier.
+     * 
+     * This will return null if the Xref type is not recognized.
+     * 
+     * @return string|null
+     */
+    public function getUrl()
+    {
+        $matches = array();
+        $url = null;
 
+        if (preg_match('/(\w+?):(.+)/', $this->value, $matches)) {
+            
+            $type = $matches[1];
+            $id = $matches[2];
+            
+            if (isset($this->_types[$type])) {
+                $url = $this->_types[$type] . $id;
+            }
+        }
+        
+        return $url;
+    }
 }

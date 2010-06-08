@@ -226,17 +226,17 @@ Finding:
             foreignAlias: Findings
         Cves:
             class: Cve
-            local: id
+            local: finding_id
             foreign: cve_id
             refClass: FindingCve
         Bugtraqs:
             class: Bugtraq
-            local: id
+            local: finding_id
             foreign: bugtraq_id
             refClass: FindingBugtraq
         Xrefs:
             class: Xref
-            local: id
+            local: finding_id
             foreign: xref_id
             refClass: FindingXref
 

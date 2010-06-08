@@ -28,5 +28,13 @@
  */
 class Bugtraq extends BaseBugtraq
 {
-
+    /**
+     * Get a URL to this external reference
+     * 
+     * @return string
+     */
+    public function getUrl()
+    {
+        return 'http://www.securityfocus.com/bid/' . $this->value;
+    }
 }

@@ -28,5 +28,13 @@
  */
 class Cve extends BaseCve
 {
-
+    /**
+     * Get a URL to this external reference
+     * 
+     * @return string
+     */
+    public function getUrl()
+    {
+        return 'http://web.nvd.nist.gov/view/vuln/detail?vulnId=' . $this->value;
+    }
 }

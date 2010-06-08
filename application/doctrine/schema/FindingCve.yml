@@ -6,8 +6,3 @@ FindingCve:
         cve_id:
             type: integer
             primary: true
-    relations:
-        Finding:
-            foreignAlias: FindingCves
-        Cve:
-            foreignAlias: FindingCves
