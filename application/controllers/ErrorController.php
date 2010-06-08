@@ -58,13 +58,13 @@ class ErrorController extends Zend_Controller_Action
         } else {
             $this->getResponse()->clearBody();
             $content = get_class($errors->exception)
-                     . ": "
+                     . ": \""
                      . $errors->exception->getMessage()
-                     . '<br>'
+                     . "\"\n"
                      . $errors->exception->getTraceAsString()
-                     . '<br>';
+                     . "\n";
             $logger = Fisma::getLogInstance();
-            $logger->log(Fisma_String::htmlToPlainText($content), Zend_Log::ERR);
+            $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 
             if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {

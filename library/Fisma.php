@@ -573,22 +573,24 @@ class Fisma
     public static function getLogInstance()
     {
         if (null === self::$_log) {
-            $write = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
-            $auth = Zend_Auth::getInstance();
-            $remote = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null;
-
-            if ($auth->hasIdentity()) {
-                $user = User::currentUser();
-                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-                    "$user->username ($user->id) from {$remote}" . PHP_EOL;
+            $writer = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
+            $ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : '(none)';
+                
+            // Log the current username if we are in an authenticated session
+            if (User::currentUser()) {
+                $username = User::currentUser()->username;
             } else {
-                $format = '%timestamp% %priorityName% (%priority%): %message% by ' .
-                    "{$remote}" . PHP_EOL;
+                $username = '(none)';
             }
+                
+            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n";
             $formatter = new Zend_Log_Formatter_Simple($format);
-            $write->setFormatter($formatter);
-            self::$_log = new Zend_Log($write);
+
+            $writer->setFormatter($formatter);
+
+            self::$_log = new Zend_Log($writer);
         }
+        
         return self::$_log;
     }
 
