@@ -80,9 +80,17 @@ class OrganizationReportController extends SecurityController
                        ->addSelect('system.nickname AS name')
                        ->addSelect('systemData.hasPii AS has_pii')
                        ->addSelect('systemData.piaRequired AS pia_required')
-                       ->addSelect('IF(systemData.piaUrl IS NULL, \'NO\', \'YES\') AS pia_url')
+                       ->addSelect(
+                           'IF(\'YES\' = systemData.piaRequired, 
+                               IF(systemData.piaUrl IS NULL, \'NO\', \'YES\'),
+                               \'N/A\') AS pia_url'
+                       )
                        ->addSelect('systemData.sornRequired AS sorn_required')
-                       ->addSelect('IF(systemData.sornUrl IS NULL, \'NO\', \'YES\') AS sorn_url')
+                       ->addSelect(
+                           'IF(\'YES\' = systemData.piaRequired, 
+                               IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
+                               \'N/A\') AS sorn_url'
+                       )
                        ->from('Organization system')
                        ->innerJoin('system.System systemData')
                        ->leftJoin('Organization bureau')
@@ -95,19 +103,15 @@ class OrganizationReportController extends SecurityController
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
-        
-        $columns = array(
-            'Bureau', 
-            'System', 
-            'Contains PII', 
-            'PIA Required', 
-            'PIA Completed', 
-            'SORN Required', 
-            'SORN Completed'
-        );
-        
+                
         $report->setTitle('Privacy Report')
-               ->setColumns($columns)
+               ->addColumn(new Fisma_Report_Column('Bureau', true))
+               ->addColumn(new Fisma_Report_Column('System', true))
+               ->addColumn(new Fisma_Report_Column('Contains PII', true))
+               ->addColumn(new Fisma_Report_Column('PIA Required', true))
+               ->addColumn(new Fisma_Report_Column('PIA Completed', true, 'Fisma.TableFormat.yesNo'))
+               ->addColumn(new Fisma_Report_Column('SORN Required', true))
+               ->addColumn(new Fisma_Report_Column('SORN Completed', true, 'Fisma.TableFormat.yesNo'))
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);        
@@ -138,19 +142,33 @@ class OrganizationReportController extends SecurityController
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
-        
-        $columns = array(
-            'Bureau', 
-            'System', 
-            'FIPS 199', 
-            'Operated By', 
-            'Security Authorization', 
-            'Self-Assessment', 
-            'Contingency Plan Test'
-        );
-        
+                
         $report->setTitle('Security Authorizations Report')
-               ->setColumns($columns)
+               ->addColumn(new Fisma_Report_Column('Bureau', true))
+               ->addColumn(new Fisma_Report_Column('System', true))
+               ->addColumn(new Fisma_Report_Column('FIPS 199', true))
+               ->addColumn(new Fisma_Report_Column('Operated By', true))
+               ->addColumn(
+                   new Fisma_Report_Column(
+                       'Security Authorization', 
+                       true, 
+                       'Fisma.TableFormat.securityAuthorization'
+                   )
+               )
+               ->addColumn(
+                   new Fisma_Report_Column(
+                       'Self-Assessment', 
+                       true,
+                       'Fisma.TableFormat.selfAssessment'
+                   )
+               )
+               ->addColumn(
+                   new Fisma_Report_Column(
+                       'Contingency Plan Test', 
+                       true,
+                       'Fisma.TableFormat.contingencyPlanTest'
+                   )
+               )
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);        
