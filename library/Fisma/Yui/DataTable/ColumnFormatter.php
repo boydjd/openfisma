@@ -17,7 +17,7 @@
  */
 
 /**
- * A wrapper for YUI's data table column
+ * Represents a YUI column formatter function
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -26,68 +26,33 @@
  * @subpackage Fisma_Yui
  * @version    $Id$
  */
-class Fisma_Yui_DataTable_Column
+class Fisma_Yui_DataTable_ColumnFormatter
 {
     /**
-     * The logical (human-friendly) name for this column. It is displayed in the table header.
+     * The name of the formatter function, e.g. "Fisma.TableFormat.myFormat" refers to a function called 
+     * "myFormat()" in the Fisma.TableFormat javascript namespace.
      * 
      * @var string
-     */
+     */    
     private $_name;
     
     /**
-     * Whether this column is sortable or not
+     * Constructor
      * 
-     * @var bool
+     * @param string $name The name of the formatter function.
      */
-    private $_sortable;
-    
-    /**
-     * A formatter for this column
-     * 
-     * @var Fisma_Yui_DataTable_ColumnFormatter
-     */
-    private $_formatter;
-    
-    /**
-     * Create a column with a human-friendly name
-     * 
-     * @param string $name
-     * @param bool $sortable
-     * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
-     */
-    public function __construct($name, $sortable, $formatter)
+    public function __construct($name)
     {
         $this->_name = $name;
-        $this->_sortable = $sortable;
-        $this->_formatter = $formatter;
     }
     
     /**
-     * Getter for logical name
+     * Accessor for function name
      * 
      * @return string
      */
     public function getName()
     {
         return $this->_name;
-    }
-
-    /**
-     * True if this column is sortable, false otherwise
-     */
-    public function getSortable()
-    {
-        return $this->_sortable;
-    }
-    
-    /**
-     * Accessor for $_formatter
-     * 
-     * @return Fisma_Yui_DataTable_ColumnFormatter
-     */
-    public function getFormatter()
-    {
-        return $this->_formatter;
     }
 }

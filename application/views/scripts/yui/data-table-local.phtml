@@ -25,6 +25,18 @@
 
         var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
 
+        /* 
+         * Column definitions are defined in JSON, which cannot embed object references such as formatters. So 
+         * loop over the definitions and convert any names of formatters into references to those actual objects.
+         */
+        for (index in columnDefs) {
+            var columnDef = columnDefs[index];
+            
+            if (columnDef['formatter']) {
+                columnDef['formatter'] = getObjectFromName(columnDef['formatter']);
+            }
+        }
+
         var dataSource = new YAHOO.util.DataSource(
             YAHOO.util.Dom.get("<?php echo $this->escape($this->tableId); ?>")
         );

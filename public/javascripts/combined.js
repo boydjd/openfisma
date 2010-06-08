@@ -1395,7 +1395,31 @@ function updateTimeField(id) {
     var time = hour + ':' + minute + ':00';
     hiddenEl.value = time;
 }
+
 /**
+ * Convert a string name of an object into a reference to that object.
+ * 
+ * For example, "Fisma.Foo.myFoo" returns a reference to the actual Fisma.Foo.myFoo object, if it exists, 
+ * or null otherwise.
+ * 
+ * This is useful for sending references to objects in JSON syntax, since JSON cannot encode a reference directly.
+ */
+function getObjectFromName(objectName) {
+
+    var pieces = objectName.split('.');
+    var currentObj = window;
+        
+    for (piece in pieces) {
+        currentObj = currentObj[pieces[piece]];
+        
+        if (!currentObj) {
+            throw "Specified object does not exist: " + objectName;
+        }
+    }
+        
+    // At this point, the current value of parentObj should be the object itself
+    return currentObj;
+}/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2566,7 +2590,7 @@ Fisma.AttachArtifacts = {
         }
     }
 };
-Fisma.AutoComplete=function(){return{init:function(a,e,d){var c=new YAHOO.widget.DS_XHR(d.xhr,d.schema);c.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;c.maxCacheEntries=500;c.queryMatchContains=true;var b=new YAHOO.widget.AutoComplete(d.fieldId,d.containerId,c);b.maxResultsDisplayed=20;b.forceSelection=true;b.generateRequest=function(f){return d.queryPrepend+f};b.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:d.hiddenFieldId})},subscribe:function(c,b,a){document.getElementById(a.hiddenFieldId).value=b[2][1]["id"]}}}();/**
+Fisma.AutoComplete=function(){return{init:function(a,e,d){var c=new YAHOO.widget.DS_XHR(d.xhr,d.schema);c.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;c.maxCacheEntries=500;c.queryMatchContains=true;var b=new YAHOO.widget.AutoComplete(d.fieldId,d.containerId,c);b.maxResultsDisplayed=20;b.forceSelection=true;b.generateRequest=function(f){return d.queryPrepend+f};b.formatResult=function(g,i,f){var h=(f)?f:"";h=PHP_JS().htmlspecialchars(h);return h};b.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:d.hiddenFieldId})},subscribe:function(c,b,a){document.getElementById(a.hiddenFieldId).value=b[2][1]["id"]}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4165,7 +4189,7 @@ function ms_deny(formname){
         form2.submit();
     }
 }
-Fisma.SwitchButton=function(b,a,g,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=g){var f=g.split(".");var e=window;for(piece in f){e=e[f[piece]];if(!e){throw"Specified callback does not exist: "+g}}if("function"==typeof e){this.callback=e}else{throw"Specified callback is not a function: "+g}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
+Fisma.SwitchButton=function(b,a,e,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=e){callbackObj=getObjectFromName(e);if("function"==typeof callbackObj){this.callback=callbackObj}else{throw"Specified callback is not a function: "+e}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/
  * 
@@ -4241,20 +4265,11 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
     if ('' != callback) {
-        var callbackPieces = callback.split('.');
-        var callbackParent = window;
-        
-        for (piece in callbackPieces) {
-            callbackParent = callbackParent[callbackPieces[piece]];
-            
-            if (!callbackParent) {
-                throw "Specified callback does not exist: " + callback;
-            }
-        }
+        callbackObj = getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
-        if ('function' ==  typeof callbackParent) {
-            this.callback = callbackParent;
+        if ('function' ==  typeof callbackObj) {
+            this.callback = callbackObj;
         } else {
             throw "Specified callback is not a function: " + callback;
         }
@@ -4504,7 +4519,153 @@ Fisma.TabView.Roles = function() {
         }
     }
 }();
-Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
+Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}}};/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides various formatters for use with YUI table
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+ 
+Fisma.TableFormat = {
+    /**
+     * CSS green color
+     */
+    greenColor : 'lightgreen',
+
+    /**
+     * CSS yellow color
+     */    
+    yellowColor : 'yellow',
+
+    /**
+     * CSS red color
+     */
+    redColor : 'pink',
+
+    /**
+     * Color an element green
+     */
+    green : function (element) {
+        element.style.backgroundColor = Fisma.TableFormat.greenColor;
+    },
+
+    /**
+     * Color an element yellow
+     */
+    yellow : function (element) {
+        element.style.backgroundColor = Fisma.TableFormat.yellowColor;
+    },
+    
+    /**
+     * Color an element red
+     */
+    red : function (element) {
+        element.style.backgroundColor = Fisma.TableFormat.redColor;
+    },
+    
+    /**
+     * A formatter which colors the security authorization date in red, yellow, or green (or not at all)
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    securityAuthorization : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = oData;
+
+        // Date format is YYYY-MM-DD. Convert into javascript date object.
+        dateParts = oData.split('-');
+        
+        if (3 == dateParts.length) {
+
+            authorizedDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            
+            greenDate = new Date();
+            greenDate.setMonth(greenDate.getMonth() - 30);
+
+            yellowDate = new Date();
+            yellowDate.setMonth(yellowDate.getMonth() - 36);
+
+            if (authorizedDate >= greenDate) {
+                Fisma.TableFormat.green(elCell.parentNode);
+            } else if (authorizedDate >= yellowDate) {
+                Fisma.TableFormat.yellow(elCell.parentNode);
+            } else {
+                Fisma.TableFormat.red(elCell.parentNode);
+            }
+        }
+    },
+    
+    /**
+     * A formatter which colors the self-assessment date in red, yellow, or green (or not at all)
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    selfAssessment : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = oData;
+
+        // Date format is YYYY-MM-DD. Convert into javascript date object.
+        dateParts = oData.split('-');
+        
+        if (3 == dateParts.length) {
+
+            assessmentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            
+            greenDate = new Date();
+            greenDate.setMonth(greenDate.getMonth() - 8);
+
+            yellowDate = new Date();
+            yellowDate.setMonth(yellowDate.getMonth() - 12);
+
+            if (assessmentDate >= greenDate) {
+                Fisma.TableFormat.green(elCell.parentNode);
+            } else if (assessmentDate >= yellowDate) {
+                Fisma.TableFormat.yellow(elCell.parentNode);
+            } else {
+                Fisma.TableFormat.red(elCell.parentNode);
+            }
+        }
+    },
+    
+    /**
+     * A formatter which colors cells green if the value is YES, and red if the value is NO
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    yesNo : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = oData;
+        
+        if ('YES' == oData) {
+            Fisma.TableFormat.green(elCell.parentNode);
+        } else if ('NO' == oData) {
+            Fisma.TableFormat.red(elCell.parentNode);
+        }
+    }
+};Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.

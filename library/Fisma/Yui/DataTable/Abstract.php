@@ -74,11 +74,19 @@ abstract class Fisma_Yui_DataTable_Abstract
         $columnDefinitions = array();
         
         foreach ($this->getColumns() as $column) {
+            
+            // These keys are always defined
             $columnDefinition = array(
                 'key' => Fisma_String::convertToJavascriptName($column->getName()),
                 'label' => $column->getName(),
                 'sortable' => $column->getSortable()
             );
+
+            // Add the formatter key only if the column has a formatter
+            $formatter = $column->getFormatter();
+            if ($formatter) {
+                $columnDefinition['formatter'] = $column->getFormatter();
+            }
 
             $columnDefinitions[] = $columnDefinition;
         }

@@ -74,20 +74,11 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
     if ('' != callback) {
-        var callbackPieces = callback.split('.');
-        var callbackParent = window;
-        
-        for (piece in callbackPieces) {
-            callbackParent = callbackParent[callbackPieces[piece]];
-            
-            if (!callbackParent) {
-                throw "Specified callback does not exist: " + callback;
-            }
-        }
+        callbackObj = getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
-        if ('function' ==  typeof callbackParent) {
-            this.callback = callbackParent;
+        if ('function' ==  typeof callbackObj) {
+            this.callback = callbackObj;
         } else {
             throw "Specified callback is not a function: " + callback;
         }

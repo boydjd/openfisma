@@ -60,6 +60,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
+                                      '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
                                       '/javascripts/Fisma/UrlPanel.js',
