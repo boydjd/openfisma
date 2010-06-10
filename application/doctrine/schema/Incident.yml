@@ -322,18 +322,12 @@ Incident:
             class: IrSubCategory
             local: categoryId
             foreign: id
-        Actors:
+        Users:
             class: User
             local: incidentId
             foreign: userId
-            refClass: IrIncidentActor
-            foreignAlias: ActorIncidents
-        Observers:
-            class: User
-            local: incidentId
-            foreign: userId
-            refClass: IrIncidentObserver
-            foreignAlias: ObserverIncidents
+            refClass: IrIncidentUser
+            foreignAlias: Incidents
 
     actAs:
         Fisma_Doctrine_Behavior_Commentable: true

@@ -1,4 +1,4 @@
-IrIncidentObserver:
+IrIncidentUser:
     columns:
         incidentId: 
             type: integer
@@ -6,3 +6,6 @@ IrIncidentObserver:
         userId: 
             type: integer
             primary: true
+        accessType:
+            type: enum
+            values: [ACTOR, OBSERVER]
