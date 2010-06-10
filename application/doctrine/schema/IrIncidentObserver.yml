@@ -1,0 +1,8 @@
+IrIncidentObserver:
+    columns:
+        incidentId: 
+            type: integer
+            primary: true
+        userId: 
+            type: integer
+            primary: true

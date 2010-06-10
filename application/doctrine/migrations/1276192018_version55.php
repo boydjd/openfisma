@@ -85,8 +85,12 @@ class Version55 extends Doctrine_Migration_Base
     public function postUp()
     {
         // Regenerate models so that we can instantiate new IrIncidentUser objects
-        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('doctrine-models'));
+        $task = new Doctrine_Task_GenerateModelsYaml();
+        
+        $task->setArguments(Zend_Registry::get('doctrine_config'));
 
+        $task->execute();
+        
         // Copy records from each old table into the new table, wrapped in a transaction
         $conn = Doctrine_Manager::connection();
         $conn->beginTransaction();

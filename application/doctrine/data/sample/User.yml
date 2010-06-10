@@ -13,8 +13,6 @@ User:
         nameFirst: Incident Response
         nameLast: Coordinator
         Roles: [irc_role]
-        Incidents:
-            - pii_incident
     oig_user:
         username: oig
         password: 0p3nfism@
