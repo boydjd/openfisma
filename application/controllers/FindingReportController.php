@@ -371,7 +371,7 @@ class FindingReportController extends SecurityController
         if (empty($myOrganizations)) {
             $msg = "The report could not be created because this user does not have access to any organizations.";
             $this->view->priorityMessenger($msg, 'warning');
-            $this->_forward('plugin');
+            $this->_redirect('/finding-report/plugin');
             return;
         }
         $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
@@ -388,7 +388,7 @@ class FindingReportController extends SecurityController
         } else {
             $msg = "The report could not be created because the report query did not return any data.";
             $this->view->priorityMessenger($msg, 'warning');
-            $this->_forward('plugin');
+            $this->_redirect('/finding-report/plugin');
             return;
         }
         
