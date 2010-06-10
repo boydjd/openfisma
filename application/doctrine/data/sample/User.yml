@@ -13,7 +13,7 @@ User:
         nameFirst: Incident Response
         nameLast: Coordinator
         Roles: [irc_role]
-        ActorIncidents:
+        Incidents:
             - pii_incident
     oig_user:
         username: oig
