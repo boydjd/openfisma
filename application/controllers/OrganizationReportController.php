@@ -64,7 +64,12 @@ class OrganizationReportController extends SecurityController
         $report = new Fisma_Report();
         
         $report->setTitle('Personnel Report')
-               ->setColumns(array('System', 'Role', 'Last Name', 'First Name', 'Office Phone', 'E-mail'))
+               ->addColumn(new Fisma_Report_Column('System', true))
+               ->addColumn(new Fisma_Report_Column('Role', true))
+               ->addColumn(new Fisma_Report_Column('Last Name', true))
+               ->addColumn(new Fisma_Report_Column('First Name', true))
+               ->addColumn(new Fisma_Report_Column('Office Phone', true))
+               ->addColumn(new Fisma_Report_Column('E-mail', true))
                ->setData($personnel);
 
         $this->_helper->reportContextSwitch()->setReport($report);        
@@ -172,5 +177,5 @@ class OrganizationReportController extends SecurityController
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);        
-    }
+    }    
 }

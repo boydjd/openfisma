@@ -225,7 +225,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $view->timestamp = Zend_Date::now()->toString('Y-m-d h:i:s A T');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
 
-        /**
+        /*
          * For some reazon, EZPdf needs its data array numerically indexed, so convert the string indices to numeric 
          * indices.
          */
@@ -260,7 +260,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         
         $this->_getViewRenderer()->renderScript('/report/report.xls.phtml');
     }
-
+    
     /**
      * Stack an action for an HTML response
      * 
@@ -288,7 +288,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      * @param string $format
      * @return string
      */
-    public function _getFormatUrl($format)
+    private function _getFormatUrl($format)
     {
         // Look for a format parameter and overwrite it with the request format.
         return preg_replace('/([^\/]\/format\/)\w+/', "\$1$format", Fisma_Url::currentUrl());        
