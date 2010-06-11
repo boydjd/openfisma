@@ -21,7 +21,7 @@
 </div>
 
 <script type="text/javascript">
-    YAHOO.util.Event.onContentReady('<?php echo $this->escape($this->containerId); ?>', function() {
+    YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
 
         var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
 
@@ -38,13 +38,13 @@
         }
 
         var dataSource = new YAHOO.util.DataSource(
-            YAHOO.util.Dom.get("<?php echo $this->escape($this->tableId); ?>")
+            YAHOO.util.Dom.get("<?php echo $this->escape($this->tableId, 'javascript'); ?>")
         );
         dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
         dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
 
         var dataTable = new YAHOO.widget.DataTable(
-            "<?php echo $this->escape($this->containerId); ?>", 
+            "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 
             columnDefs, 
             dataSource, 
             {}

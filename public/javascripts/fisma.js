@@ -614,28 +614,3 @@ function updateTimeField(id) {
     var time = hour + ':' + minute + ':00';
     hiddenEl.value = time;
 }
-
-/**
- * Convert a string name of an object into a reference to that object.
- * 
- * For example, "Fisma.Foo.myFoo" returns a reference to the actual Fisma.Foo.myFoo object, if it exists, 
- * or null otherwise.
- * 
- * This is useful for sending references to objects in JSON syntax, since JSON cannot encode a reference directly.
- */
-function getObjectFromName(objectName) {
-
-    var pieces = objectName.split('.');
-    var currentObj = window;
-        
-    for (piece in pieces) {
-        currentObj = currentObj[pieces[piece]];
-        
-        if (!currentObj) {
-            throw "Specified object does not exist: " + objectName;
-        }
-    }
-        
-    // At this point, the current value of parentObj should be the object itself
-    return currentObj;
-}

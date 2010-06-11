@@ -64,6 +64,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
                                       '/javascripts/Fisma/UrlPanel.js',
+                                      '/javascripts/Fisma/Util.js',
                                       '/javascripts/AC_RunActiveContent.js'
                                  ),
                                 '/stylesheets/combined.css' =>
