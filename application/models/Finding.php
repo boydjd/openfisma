@@ -356,6 +356,14 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         switch ($this->status) {
             case 'NEW':
             case 'DRAFT':
+                // If this is an unpersisted object, then it won't have a createdTs yet
+                if (isset($this->createdTs)) {
+                    $createdDt = new Zend_Date($this->createdTs, Zend_Date::ISO_8601);
+                    $startDate = $createdDt->toString('Y-m-d');
+                } else {
+                    $startDate = Zend_Date::now()->toString('Y-m-d');
+                }
+                break;
             case 'MSA':
             case 'EA':
                 $startDate = Fisma::now();

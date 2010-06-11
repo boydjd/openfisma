@@ -66,12 +66,9 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
-    public function testDueDates()
+    public function testDueDatesForPendAndClosedFindings()
     {
         $finding = new Finding();
-        
-        // The due date for a NEW finding is not null
-        $this->assertNotNull($finding->nextDueDate);
         
         // If the finding is set to PEND, the date should be null
         $finding->status = 'PEND';
@@ -80,6 +77,25 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         // If the finding is set to CLOSED, the date should be null
         $finding->status = 'CLOSED';
         $this->assertNull($finding->nextDueDate);
+    }
+    
+    /**
+     * Test due date logic for new and draft findings based on the creation timestamp
+     */
+    public function testDueDatesForNewAndDraftFindings($value='')
+    {
+        $finding = new Finding();
+        
+        // Manipulate the creation timestamp to 45 days prior to today
+        $finding->createdTs = Zend_Date::now()->subDay(45)->toString(Zend_Date::ISO_8601);
+        
+        // Trigger the finding to update its due date by setting the status again
+        $finding->status = 'NEW';
+        
+        // Expected due date is 30 days after creation date
+        $expectedDueDate = Zend_Date::now()->subDay(15)->toString('Y-m-d');
+        
+        $this->assertEquals($expectedDueDate, $finding->nextDueDate);
     }
     
     /**
