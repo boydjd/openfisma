@@ -425,6 +425,9 @@ class IncidentController extends SecurityController
      */
     public function saveReportAction() 
     {
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
+        
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
@@ -443,10 +446,21 @@ class IncidentController extends SecurityController
         // Set the reporting user
         if ($this->_me) {
             $incident->ReportingUser = $this->_me;
-            $incident->link('Actors', array($this->_me->id));
+            
             $incident->save();
         }
 
+        // Add the reporting user as an actor
+        $incidentActor = new IrIncidentUser();
+
+        $incidentActor->userId = $this->_me->id;
+        $incidentActor->incidentId = $incident->id;
+        $incidentActor->accessType = 'ACTOR';
+
+        $incidentActor->save();
+
+        $conn->commit();
+        
         // Send emails to IRCs
         $coordinators = $this->_getIrcs();
         foreach ($coordinators as $coordinator) {
@@ -520,31 +534,6 @@ class IncidentController extends SecurityController
         $this->view->assign('keywords', $this->_request->getParam('keywords'));
     
         $this->render('searchbox');
-    }
-
-    /**
-     * Displays the data related to a particular incident - will be called by ajax on all the incident interfaces
-     *
-     * @return string the rendered page
-     */
-    public function incidentdataAction() 
-    {
-        $this->_helper->layout->disableLayout();
-        $incidentId = $this->_request->getParam('id');
-        
-        $this->_assertCurrentUserCanViewIncident($incidentId);
-        
-        $this->view->assign('id', $incidentId);
-       
-        $closed = $this->_request->getParam('closed');
-        $this->view->assign('closed', $closed);
-
-        $incident = Doctrine::getTable('Incident')->find($incidentId);
-        
-        $association = $this->_getAssociation($incidentId);
-        $this->view->assign('association', $association);
-
-        $this->view->assign('incident', $incident);
     }
 
     /**
@@ -717,24 +706,26 @@ class IncidentController extends SecurityController
         $actorQuery = Doctrine_Query::create()
                       ->select('i.id, a.id, a.username, a.nameFirst, a.nameLast')
                       ->from('Incident i')
-                      ->innerJoin('i.Actors a')
-                      ->where('i.id = ?', $id)
+                      ->innerJoin('i.IrIncidentUser iu')
+                      ->innerJoin('iu.User a')
+                      ->where('i.id = ? AND iu.accessType = ?', array($id, 'ACTOR'))
                       ->orderBy('a.username')
                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $actors = $actorQuery->execute();
-        
+
         $this->view->assign('actors', $actors);
 
         // Get list of observers
         $observerQuery = Doctrine_Query::create()
                          ->select('i.id, o.id, o.username, o.nameFirst, o.nameLast')
                          ->from('Incident i')
-                         ->innerJoin('i.Observers o')
-                         ->where('i.id = ?', $id)
+                         ->innerJoin('i.IrIncidentUser iu')
+                         ->innerJoin('iu.User o')
+                         ->where('i.id = ? AND iu.accessType = ?', array($id, 'OBSERVER'))
                          ->orderBy('o.username')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $observers = $observerQuery->execute();
-                
+
         $this->view->assign('observers', $observers);
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         
@@ -797,13 +788,17 @@ class IncidentController extends SecurityController
         // Create the requested link
         $type = $this->getRequest()->getParam('type');
 
-        if ('actor' == $type) {
-            $incident->link('Actors', array($userId));
-            $incident->save();
-        } elseif ('observer' == $type) {
-            $incident->link('Observers', array($userId));            
-            $incident->save();
+        if (!in_array($type, array('actor', 'observer'))) {
+            throw new Fisma_Zend_Exception("Invalid incident user type: '$type'");
         }
+
+        $incidentActor = new IrIncidentUser();
+
+        $incidentActor->userId = $userId;
+        $incidentActor->incidentId = $incidentId;
+        $incidentActor->accessType = strtoupper($type);
+
+        $incidentActor->save();
 
         // Send e-mail
         $mail = new Fisma_Zend_Mail();
@@ -822,17 +817,11 @@ class IncidentController extends SecurityController
 
         $this->_assertCurrentUserCanUpdateIncident($incidentId);
                 
-        // Remove the specified link
+        // Remove the specified user from this incident
         $userId = $this->getRequest()->getParam('userId');
-        $type = $this->getRequest()->getParam('type');
 
-        if ('actor' == $type) {
-            $incident->unlink('Actors', array($userId));
-            $incident->save();
-        } elseif ('observer' == $type) {
-            $incident->unlink('Observers', array($userId));
-            $incident->save();
-        }
+        $incident->unlink('Users', array($userId));
+        $incident->save();
 
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
     }
@@ -973,6 +962,9 @@ class IncidentController extends SecurityController
 
         $comment = $this->_request->getParam('comment');
 
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
+
         try {
             if ($this->_request->getParam('reject') == 'reject') {                
 
@@ -1001,26 +993,32 @@ class IncidentController extends SecurityController
                 $incident->save();
                         
                 // Assign privacy advocates and/or inspector general as actors if requested
-                $actors = new Doctrine_Collection('User');
+                $users = new Doctrine_Collection('User');
 
                 if (1 == $this->_request->getParam('pa')) { 
-                    $actors->merge($this->_getPrivacyAdvocates());
+                    $users->merge($this->_getPrivacyAdvocates());
                 }
 
                 if (1 == $this->_request->getParam('oig')) { 
-                    $actors->merge($this->_getOigUsers());
+                    $users->merge($this->_getOigUsers());
                 }
 
-                foreach ($actors as $actor) {
-                    $incident->link('Actors', array($actor->id));
+                foreach ($users as $user) {
+                    $incidentActor = new IrIncidentUser();
+                    
+                    $incidentActor->userId = $user->id;
+                    $incidentActor->incidentId = $incident->id;
+                    $incidentActor->accessType = 'ACTOR';
+                                        
+                    $incidentActor->save();
                 }            
-
-                $incident->save();
 
                 // Success message
                 $message = 'This incident has been opened and a workflow has been assigned. ';
                 $this->view->priorityMessenger($message, 'notice');
             }
+            
+            $conn->commit();
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
@@ -1316,63 +1314,6 @@ class IncidentController extends SecurityController
         $this->_redirect("/panel/incident/sub/view/id/$id");
     }
 
-    /** 
-     * Overriding Hooks
-     *
-     * @param Zend_Form $form
-     * @param Doctrine_Record|null $subject
-     */
-    protected function saveValue($form, $subject=null)
-    {
-        if (is_null($subject)) {
-            $subject = new $this->_modelName();
-        } else {
-            throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
-        }
-        $values = $form->getValues();
-
-        $values['sourceIp'] = $_SERVER['REMOTE_ADDR'];
-
-        $values['reportTs'] = date('Y-m-d G:i:s');
-        $values['reportTz'] = date('T');
-        
-        $values['status'] = 'new';
-
-        if ($values['incidentHour'] && $values['incidentMinute'] && $values['incidentAmpm']) {
-            if ($values['incidentAmpm'] == 'PM') {
-                $values['incidentHour'] += 12;
-            }
-            $values['incidentTs'] .= " {$values['incidentHour']}:{$values['incidentMinute']}:00";
-        }
-
-        $subject->merge($values);
-        $subject->save();
-
-        $actor = new IrIncidentActor();
-
-        $user = $this->_me;
-        $actor->userId = $user['id']; 
-        
-        $actor->incidentId = $subject['id'];
-        $subject->Actors[] = $actor;
-        
-        $actor = new IrIncidentActor();
-
-        $actor->incidentId = $subject['id'];
-        $edcirc = $this->_getEDCIRC();
-        $actor->userId = $edcirc;
-        $subject->Actors[] = $actor;
-        $subject->save();
-
-        $mail = new Fisma_Zend_Mail();
-        $mail->IRReport($edcirc, $subject['id']);
-        
-        $mail = new Fisma_Zend_Mail();
-        $mail->IRReport($user['id'], $subject['id']);
-        
-        $this->_forward('dashboard');
-    }
-
     /**
      * Check whether the current user can update the specified incident
      * 
@@ -1397,9 +1338,9 @@ class IncidentController extends SecurityController
             $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
                  ->from('Incident i')
-                 ->innerJoin('i.Actors a')
-                 ->where('i.id = ?', $incidentId)
-                 ->andWhere('a.id = ?', $this->_me->id)
+                 ->innerJoin('i.IrIncidentUser iu')
+                 ->innerJoin('iu.User u')
+                 ->where('i.id = ? AND u.id = ? AND iu.accessType = ?', array($incidentId, $this->_me->id, 'ACTOR'))
                  ->count();
             
             if ($actorCount > 0) {
@@ -1443,11 +1384,8 @@ class IncidentController extends SecurityController
             $observerCount = Doctrine_Query::create()
                  ->select('i.id')
                  ->from('Incident i')
-                 ->leftJoin('i.Actors a')
-                 ->leftJoin('i.Observers o')
-                 ->where('i.id = ?', $incidentId)
-                 ->andWhere('a.id = ?', $this->_me->id)
-                 ->orWhere('o.id = ?', $this->_me->id)
+                 ->leftJoin('i.Users u')
+                 ->where('i.id = ? AND u.id = ?', array($incidentId, $this->_me->id))
                  ->count();
 
             if ($observerCount > 0) {
@@ -1625,31 +1563,6 @@ class IncidentController extends SecurityController
 
         return $selectOptions;
     }
-    
-    private function _getCategoriesArr() 
-    {
-        $q = Doctrine_Query::create()
-             ->select('c.id, c.category')
-             ->from('IrCategory c')
-             ->orderBy("c.category");
-
-        $categories = $q->execute()->toArray();
-        
-        foreach ($categories as $key => $val) {
-                $q2 = Doctrine_Query::create()
-                     ->select('s.id, s.name')
-                     ->from('IrSubCategory s')
-                     ->where('s.categoryId = ?', $val['id'])
-                     ->orderBy("s.name");
-
-                $subCats = $q2->execute()->toArray();
-                foreach ($subCats as $key2 => $val2) {
-                    $retVal[$val['category']][] = $val2['id'];
-                }
-        }
-
-        return $retVal;
-    }
 
     /**
      * Get the user ids of all IRCs
@@ -1716,8 +1629,6 @@ class IncidentController extends SecurityController
      */
     public static function getUserIncidentQuery()
     {
-        $user = User::currentUser();
-        
         /*
          * A user can read *all* incidents if he has the (read, Incident) privilege. Otherwise, he is only allowed to 
          * view those incidents for which he is an actor or an observer.
@@ -1726,89 +1637,25 @@ class IncidentController extends SecurityController
                          ->from('Incident i');
         
         if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Incident')) {
-            $incidentQuery->leftJoin('i.Actors a')
-                          ->leftJoin('i.Observers o')
-                          ->where('a.id = ? OR o.id = ?', array($user->id, $user->id));
+            $incidentQuery->leftJoin('i.Users u')
+                          ->where('u.id = ?', User::currentUser()->id);
         }
 
         return $incidentQuery;
     }
 
-    private function _userIncidents() 
-    {
-        $user = $this->_me;
-        $incidents = array();
-        
-        $q = Doctrine_Query::create()
-             ->select('i.incidentid')
-             ->from('IrIncidentActor i')
-             ->where('i.userid = ?', $user['id']);
-
-        $actors = $q->execute()->toArray();
-       
-        foreach ($actors as $actor) {
-            $incidents[] = $actor['incidentId'];
-        }
-
-        $q = Doctrine_Query::create()
-             ->select('i.incidentid')
-             ->from('IrIncidentObserver i')
-             ->where('i.userid = ?', $user['id']);
-
-        $observers = $q->execute()->toArray();
-
-        foreach ($observers as $observer) {
-            $incidents[] = $observer['incidentId'];
-        }
-    
-        return $incidents;
-    }
-
-    private function _getAssociation($incidentId) 
-    {
-        $user = $this->_me;
-        
-        $q = Doctrine_Query::create()
-             ->select('count(*) as count')
-             ->from('IrIncidentActor i')
-             ->where('i.userid = ?', $user['id'])
-             ->andWhere('i.incidentid = ?', $incidentId);
-
-        $actor = $q->execute()->toArray();
-
-        return ($actor[0]['count'] >= 1) ? 'actor' : 'viewer';
-    }   
-
     private function _getAssociatedUsers($incidentId) 
     {
-        $q = Doctrine_Query::create()
-             ->select('u.userId')
-             ->from('IrIncidentActor u')   
-             ->where('u.incidentId = ?', $incidentId)
-             ->groupBy('u.userId')
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        $incidentUsersQuery = Doctrine_Query::create()
+                              ->select('u.userId')
+                              ->from('IrIncidentActor u')   
+                              ->where('u.incidentId = ?', $incidentId)
+                              ->groupBy('u.userId')
+                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
-        $data = $q->execute();
+        $incidentUsers = $incidentUsersQuery->execute();
 
-        $users = array();
-        foreach ($data as $val) {
-            $users[] = $val['u_userId'];
-        }
-    
-        $q = Doctrine_Query::create()
-             ->select('u.userId')
-             ->from('IrIncidentObserver u')   
-             ->where('u.incidentId = ?', $incidentId)
-             ->groupBy('u.userId')
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        $data = $q->execute();
-
-        foreach ($data as $key => $val) {
-            $users[] = $val['u_userId'];
-        }    
-
-        return $users;
+        return $incidentUsers;
     }
 
     /**
@@ -1824,11 +1671,9 @@ class IncidentController extends SecurityController
         $userQuery = Doctrine_Query::create()
                      ->select('u.username')
                      ->from('User u')
-                     ->leftJoin('u.ActorIncidents ai')
-                     ->leftJoin('u.ObserverIncidents oi')
+                     ->leftJoin('u.Incidents i')
                      ->where("u.username like ?", "%$queryString%")
-                     ->andWhere('ai.id IS NULL OR ai.id <> ?', $id)
-                     ->andWhere('oi.id IS NULL OR oi.id <> ?', $id)
+                     ->andWhere('i.id IS NULL OR i.id <> ?', $id)
                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $users = $userQuery->execute();

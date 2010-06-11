@@ -9,3 +9,13 @@ IrIncidentUser:
         accessType:
             type: enum
             values: [ACTOR, OBSERVER]
+
+    # Defining relations on a join table isn't strictly necessary, but doing so lets us get at the attributes
+    # that are defined in this model (namely: accessType)
+    relations:
+        Incident:
+            local: incidentId
+            foreign: id
+        User:
+            local: userId
+            foreign: id

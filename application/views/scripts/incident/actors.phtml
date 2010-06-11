@@ -41,7 +41,7 @@
                         <td><?php echo $this->escape($actor['a_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
-                            $removeLink  = '/incident/remove-actor/type/actor'
+                            $removeLink  = '/incident/remove-actor'
                                          . '/incidentId/' . $this->id
                                          . '/userId/' . $actor['a_id'];
                         ?>
@@ -104,7 +104,7 @@
                         <td><?php echo $this->escape($observer['o_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
-                            $removeLink = '/incident/remove-actor/type/observer'
+                            $removeLink = '/incident/remove-actor'
                                         . '/incidentId/' . $this->id
                                         . '/userId/' . $observer['o_id'];
                         ?>

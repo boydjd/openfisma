@@ -131,6 +131,13 @@ User:
             local: userId
             foreign: eventId
             refClass: UserEvent
+        
+        # Incidents is many-to-many    
+        Incidents:
+            class: User
+            local: userId
+            foreign: incidentId
+            refClass: IrIncidentUser
 
     actAs:
         SoftDelete:
