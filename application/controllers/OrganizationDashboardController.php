@@ -49,8 +49,6 @@ class OrganizationDashboardController extends SecurityController
         Fisma_Zend_Acl::requireArea('system_inventory');
 
         if (!$this->_hasParam('format')) {
-            $this->_helper->layout->setLayout('layout');
-
             $this->_helper->actionStack('header', 'panel');
         }
     }
