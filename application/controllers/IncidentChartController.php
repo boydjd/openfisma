@@ -142,6 +142,7 @@ class IncidentChartController extends SecurityController
                          ->from('IrCategory category INDEXBY category')
                          ->innerJoin('category.SubCategories subcategory')
                          ->innerJoin('subcategory.Incident i')
+                         ->where('i.status = \'open\'')
                          ->groupBy('category.id')
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         

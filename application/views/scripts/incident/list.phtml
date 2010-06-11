@@ -22,7 +22,7 @@ var myColumnDefs = [
         var count = oState.pagination.rowsPerPage;
     
         // Build custom request
-        var request = "<?php echo $this->escape($this->link, 'none'); ?>" + 
+        var request = "<?php echo $this->escape($this->link, 'javascript'); ?>" + 
                       "/status/all" +
                       "/sortby/" + sort +
                       "/order/" + dir +

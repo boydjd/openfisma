@@ -70,6 +70,9 @@ class Incident extends BaseIncident
      */
     public function reject($comment)
     {
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
+        
         if ('new' != $this->status) {
             throw new Fisma_Zend_Exception('Cannot reject an incident unless it is in "new" status');
         }
@@ -95,6 +98,8 @@ class Incident extends BaseIncident
         
         // Update incident log
         $this->getAuditLog()->write('Rejected Incident Report');
+        
+        $conn->commit();
     }
     
     /**
@@ -107,6 +112,9 @@ class Incident extends BaseIncident
      */
     public function open(IrSubCategory $category, $comment)
     {
+        $conn = Doctrine_Manager::connection();
+        $conn->beginTransaction();
+
         $this->status = 'open';
         $this->Category = $category;
         
@@ -152,6 +160,8 @@ class Incident extends BaseIncident
 
         // Now mark the first step (the opening step) as being complete
         $this->completeStep($comment);   
+        
+        $conn->commit();
     }
     
     /**

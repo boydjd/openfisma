@@ -28,6 +28,19 @@
 class IncidentReportController extends SecurityController
 {
     /**
+     * Initialize the controller
+     */
+    public function init()
+    {
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('category', array('pdf', 'xls'))
+                      ->addActionContext('history', array('pdf', 'xls'))
+                      ->initContext();
+        
+        parent::init();        
+    }
+    
+    /**
      * Check that the user has the privilege to run reports
      */
     public function preDispatch()
@@ -44,32 +57,6 @@ class IncidentReportController extends SecurityController
         if (!$this->_hasParam('format')) {
             $this->_helper->actionStack('header', 'panel');
         }
-        
-        // Add PDF and XLS contexts
-        $this->_helper->contextSwitch()->addContext(
-            'pdf', 
-            array(
-                'suffix' => 'pdf',
-                'headers' => array(
-                    'Content-Type' => 'application/pdf'
-                )
-            )
-        );
-
-        $this->_helper->contextSwitch()->addContext(
-            'xls', 
-            array(
-                'suffix' => 'xls',
-                'headers' => array(
-                    'Content-type' => 'application/vnd.ms-excel'
-                )
-            )
-        );
-
-        $this->_helper->contextSwitch()
-                      ->addActionContext('category', array('pdf', 'xls'))
-                      ->addActionContext('history', array('pdf', 'xls'))
-                      ->initContext();
     }
 
     /**

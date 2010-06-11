@@ -165,28 +165,28 @@ class IrCategoryController extends SecurityController
         Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
                
         /* Get all categories */ 
-        $q = Doctrine_Query::create()
-             ->select('c.name, c.category')
-             ->from('IrCategory c');
+        $categoryQuery = Doctrine_Query::create()
+                         ->select('c.name, c.category, sc.name')
+                         ->from('IrCategory c')
+                         ->innerJoin('c.SubCategories sc')
+                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         
-        $cats = $q->execute()->toArray();        
+        $categories = $categoryQuery->execute();        
 
-        /* For each category, get the related subcategories and format them so they will work as a tree */
-        foreach ($cats as $key => $val) {
-            $cats[$key]['children'] =  ''; 
-
-            $q2 = Doctrine_Query::create()
-                  ->select('sc.name')
-                  ->from('IrSubCategory sc')
-                  ->where('sc.categoryId = ?', $val['id']);  
-
-            $cats[$key]['children'] = $q2->execute()->toArray();
-            foreach ($cats[$key]['children'] as $key2 => $val2) {
-                $cats[$key]['children'][$key2]['children'] = array();
+        /*
+         * Format data for YUI tree view. It requires each node to have an array named 'children' to sore child nodes.
+         * For nodes with no children, it still needs an empty children array.
+         */        
+        foreach ($categories as &$category) {
+            $category['children'] = $category['SubCategories'];
+            unset($category['SubCategories']);
+            
+            foreach ($category['children'] as &$child) {
+                $child['children'] = array();
             }
         }
-        
-        $this->view->treeData = $cats;
+
+        $this->view->treeData = $categories;
     }
 
     /**
@@ -216,11 +216,14 @@ class IrCategoryController extends SecurityController
         if ($v == 'edit') {
             $this->view->assign('viewLink', "/panel/ircategory/sub/view/id/$id");
             $form->setAction("/panel/ircategory/sub/update/id/$id");
-        } else {
+        } elseif ($v == 'view') {
             // In view mode, disable all of the form controls
             $this->view->assign('editLink', "/panel/ircategory/sub/view/id/$id/v/edit");
             $form->setReadOnly(true);
+        } else {
+            throw new Fisma_Zend_Exception('Invalid v parameter');
         }
+        
         $this->view->assign('deleteLink', "/panel/ircategory/sub/delete/id/$id");
         $form->setDefaults($ircategory);
         $this->view->form = $form;
@@ -248,13 +251,12 @@ class IrCategoryController extends SecurityController
                 // save the data, if failure then return false
                 if (!$ircategory->trySave()) {
                     $msg = "Failure in creation";
-                    $model = self::M_WARNING;
+                    $model = 'warning';
                 } else {
-                    /* TODO: ask mark to explain this */
                     $ircategory->getTable()->getRecordListener()->setOption('disabled', true);
                     
                     $msg = "The category is created";
-                    $model = self::M_NOTICE;
+                    $model = 'notice';
                 }
                 $this->message($msg, $model);
                 $this->_forward('view', null, null, array('id' => $ircategory->id));
@@ -262,8 +264,7 @@ class IrCategoryController extends SecurityController
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                // Error message
-                $this->message("Unable to create category:<br>$errorString", self::M_WARNING);
+                $this->view->priorityMessenger("Unable to create category: $errorString", 'warning');
             }
         }
         
@@ -307,17 +308,17 @@ class IrCategoryController extends SecurityController
             
             if ($isModify) {
                 $msg = "The category is saved";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Nothing changed";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
             $this->message($msg, $model);
             $this->_forward('view', null, null, array('id' => $ircategory->id));
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update category<br>$errorString", self::M_WARNING);
+            $this->message("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
@@ -362,10 +363,10 @@ class IrCategoryController extends SecurityController
         if ($ircategory) {
             if ($ircategory->delete()) {
                 $msg = "Category deleted successfully";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Failed to delete the Category";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
             $this->message($msg, $model);
         }
@@ -392,13 +393,13 @@ class IrCategoryController extends SecurityController
                 // save the data, if failure then return false
                 if (!$irsubcategory->trySave()) {
                     $msg = "Failure in creation";
-                    $model = self::M_WARNING;
+                    $model = 'warning';
                 } else {
                     /* TODO: ask mark to explain this */
                     $irsubcategory->getTable()->getRecordListener()->setOption('disabled', true);
                     
                     $msg = "The category is created";
-                    $model = self::M_NOTICE;
+                    $model = 'notice';
                 }
                 $this->message($msg, $model);
                 $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
@@ -407,7 +408,7 @@ class IrCategoryController extends SecurityController
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to create sub category:<br>$errorString", self::M_WARNING);
+                $this->message("Unable to create sub category:<br>$errorString", 'warning');
             }
         }
         
@@ -531,17 +532,17 @@ class IrCategoryController extends SecurityController
             
             if ($isModify) {
                 $msg = "The category is saved";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Nothing changed";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
             $this->message($msg, $model);
             $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update category<br>$errorString", self::M_WARNING);
+            $this->message("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('subview', null, null, array('id' => $id, 'v' => 'subedit'));
         }
@@ -560,10 +561,10 @@ class IrCategoryController extends SecurityController
         if ($irsubcategory) {
             if ($irsubcategory->delete()) {
                 $msg = "Sub Category deleted successfully";
-                $model = self::M_NOTICE;
+                $model = 'notice';
             } else {
                 $msg = "Failed to delete the Sub Category";
-                $model = self::M_WARNING;
+                $model = 'warning';
             }
             $this->message($msg, $model);
         }
