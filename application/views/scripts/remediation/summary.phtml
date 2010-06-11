@@ -174,7 +174,9 @@ echo $this->escape($exportPdf, 'none');
                             . "the finding and assigned an initial remediation strategy, but has not yet "
                             . "submitted the mitigation strategy for approval.</p>";
                 foreach ($this->mitigationEvaluations as $evaluation) {
-                    $msaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                    $nickname = $this->escape($evaluation->nickname);
+                    $name = $this->escape($evaluation->name);
+                    $msaTooltip .= "<p><b>$nickname:</b> $name</p>";
                 }
                 $tooltip = new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
                 echo $this->escape($tooltip, 'none');
@@ -186,7 +188,9 @@ echo $this->escape($exportPdf, 'none');
                 $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
                            . "uploaded documentation that the course of action has been completed.</p>";
                 foreach ($this->evidenceEvaluations as $evaluation) {
-                    $eaTooltip .= "<p><b>$evaluation->nickname:</b> $evaluation->name</p>";
+                    $nickname = $this->escape($evaluation->nickname);
+                    $name = $this->escape($evaluation->name);
+                    $eaTooltip .= "<p><b>$nickname:</b> $name</p>";
                 }
                 $tooltip = new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
                 echo $this->escape($tooltip, 'none');
