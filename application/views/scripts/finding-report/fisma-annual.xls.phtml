@@ -2512,7 +2512,7 @@
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s66">
     <Cell ss:StyleID="s74"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="3" ss:StyleID="s76"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
+    <Cell ss:MergeAcross="3" ss:StyleID="s76"><Data ss:Type="String"><?php echo $this->escape($this->agencyName); ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s78"><Data ss:Type="String">Submission date:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
@@ -2613,7 +2613,7 @@
    </Row>
    <?php foreach ($this->stats as $bureau): ?>
        <Row ss:AutoFitHeight="0">
-        <Cell ss:StyleID="s137"><Data ss:Type="String"><?php echo $bureau['name']; ?></Data><NamedCell
+        <Cell ss:StyleID="s137"><Data ss:Type="String"><?php echo $this->escape($bureau['name']); ?></Data><NamedCell
           ss:Name="Print_Area"/></Cell>
         <Cell ss:StyleID="s138"><Data ss:Type="String">High</Data><NamedCell
           ss:Name="Print_Area"/></Cell>
@@ -3075,7 +3075,7 @@
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s66">
     <Cell ss:StyleID="s74"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Titles"/><NamedCell ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="3" ss:StyleID="s199"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
+    <Cell ss:MergeAcross="3" ss:StyleID="s199"><Data ss:Type="String"><?php echo $this->escape($this->agencyName); ?></Data><NamedCell
       ss:Name="Print_Titles"/><NamedCell ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s200"><NamedCell ss:Name="Print_Titles"/><NamedCell
       ss:Name="Print_Area"/></Cell>
@@ -3142,9 +3142,9 @@
    ?>
        <Row ss:AutoFitHeight="0" ss:Height="12.75" ss:StyleID="s234">
         <Cell ss:StyleID="s235"><NamedCell ss:Name="Print_Area"/></Cell>
-        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $bureau['name']; ?></Data><NamedCell
+        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $this->escape($bureau['name']); ?></Data><NamedCell
           ss:Name="Print_Area"/></Cell>
-        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $system['name']; ?></Data><NamedCell
+        <Cell ss:StyleID="s238"><Data ss:Type="String"><?php echo $this->escape($system['name']); ?></Data><NamedCell
           ss:Name="Print_Area"/></Cell>
         <Cell ss:StyleID="s239"><Data ss:Type="String"><?php echo $system['fipsCategory']; ?></Data><NamedCell
           ss:Name="Print_Area"/></Cell>
@@ -3310,7 +3310,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s255"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="1" ss:StyleID="m81573672"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
+    <Cell ss:MergeAcross="1" ss:StyleID="m81573672"><Data ss:Type="String"><?php echo $this->escape($this->agencyName); ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
     <Cell ss:StyleID="s252"/>
     <Cell ss:StyleID="s252"/>
@@ -3598,7 +3598,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s255"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="6" ss:StyleID="m81995336"><Data ss:Type="String"><?php echo $this->agencyName; ?></Data><NamedCell
+    <Cell ss:MergeAcross="6" ss:StyleID="m81995336"><Data ss:Type="String"><?php echo $this->escape($this->agencyName); ?></Data><NamedCell
       ss:Name="Print_Area"/></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18" ss:StyleID="s327">
@@ -4030,7 +4030,7 @@
     <Cell ss:MergeAcross="1" ss:StyleID="s398"
      ss:Formula="='Section B -CIO  #1-2'!RC"><Data ss:Type="String">Agency Name:</Data><NamedCell
       ss:Name="Print_Area"/></Cell>
-    <Cell ss:MergeAcross="1" ss:StyleID="m81993768"><NamedCell ss:Name="Print_Area"/><Data ss:Type="String"><?php echo $this->agencyName; ?></Data></Cell>
+    <Cell ss:MergeAcross="1" ss:StyleID="m81993768"><NamedCell ss:Name="Print_Area"/><Data ss:Type="String"><?php echo $this->escape($this->agencyName); ?></Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="18">
     <Cell ss:MergeAcross="3" ss:StyleID="m81993788"><Data ss:Type="String">Question 8:  Incident Reporting</Data><NamedCell
