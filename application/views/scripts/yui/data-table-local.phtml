@@ -33,7 +33,7 @@
             var columnDef = columnDefs[index];
             
             if (columnDef['formatter']) {
-                columnDef['formatter'] = getObjectFromName(columnDef['formatter']);
+                columnDef['formatter'] = Fisma.Util.getObjectFromName(columnDef['formatter']);
             }
         }
 

@@ -126,7 +126,14 @@ Fisma.TableFormat = {
             }
         }
     },
-    
+
+    /**
+     * A proxy for selfAssessment() above -- they have identical formatting logic
+     */
+    contingencyPlanTest : function (elCell, oRecord, oColumn, oData) {
+        Fisma.TableFormat.selfAssessment(elCell, oRecord, oColumn, oData);
+    },
+
     /**
      * A formatter which colors cells green if the value is YES, and red if the value is NO
      * 

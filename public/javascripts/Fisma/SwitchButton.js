@@ -74,7 +74,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
     if ('' != callback) {
-        callbackObj = getObjectFromName(callback);
+        callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
         if ('function' ==  typeof callbackObj) {

@@ -4241,7 +4241,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
     if ('' != callback) {
-        callbackObj = getObjectFromName(callback);
+        callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
         if ('function' ==  typeof callbackObj) {
@@ -4623,7 +4623,14 @@ Fisma.TableFormat = {
             }
         }
     },
-    
+
+    /**
+     * A proxy for selfAssessment() above -- they have identical formatting logic
+     */
+    contingencyPlanTest : function (elCell, oRecord, oColumn, oData) {
+        Fisma.TableFormat.selfAssessment(elCell, oRecord, oColumn, oData);
+    },
+
     /**
      * A formatter which colors cells green if the value is YES, and red if the value is NO
      * 
@@ -4727,7 +4734,7 @@ Fisma.UrlPanel = function() {
         }
     };
 }();
-/**
+Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(!a){throw"Specified object does not exist: "+c}}return a}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4771,7 +4778,7 @@ Fisma.Util = {
         for (piece in pieces) {
             currentObj = currentObj[pieces[piece]];
 
-            if (!currentObj) {
+            if (currentObj == undefined) {
                 throw "Specified object does not exist: " + objectName;
             }
         }
