@@ -3,7 +3,7 @@
     Fisma_Format_Section::startSection("Actors");
     if ($this->updateIncidentPrivilege):
     ?>
-        <form method="post" action="/incident/add-actor/type/actor/id/<?php echo $this->escape($this->id); ?>">
+        <form method="post" action="/incident/add-user/type/actor/id/<?php echo $this->escape($this->id); ?>">
             <input type="hidden" id="actorId" name="userId" value="">
             <div style="position: relative; top: 0px; width: 200px;">&nbsp;
                 <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
@@ -41,7 +41,7 @@
                         <td><?php echo $this->escape($actor['a_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
-                            $removeLink  = '/incident/remove-actor'
+                            $removeLink  = '/incident/remove-user'
                                          . '/incidentId/' . $this->id
                                          . '/userId/' . $actor['a_id'];
                         ?>
@@ -66,7 +66,7 @@
     Fisma_Format_Section::startSection("Observers");
     if ($this->updateIncidentPrivilege):
     ?>
-    <form method="post" action="/incident/add-actor/type/observer/id/<?php echo $this->escape($this->id); ?>">
+    <form method="post" action="/incident/add-user/type/observer/id/<?php echo $this->escape($this->id); ?>">
         <input type="hidden" id="observerId" name="userId" value="">
         <div style="position: relative; top: 0px; width: 200px;">&nbsp;
             <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
@@ -104,7 +104,7 @@
                         <td><?php echo $this->escape($observer['o_nameLast']); ?></td>
                         <?php 
                         if ($this->updateIncidentPrivilege): 
-                            $removeLink = '/incident/remove-actor'
+                            $removeLink = '/incident/remove-user'
                                         . '/incidentId/' . $this->id
                                         . '/userId/' . $observer['o_id'];
                         ?>

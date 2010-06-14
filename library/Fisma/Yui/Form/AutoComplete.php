@@ -52,10 +52,12 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
             $disabled = "disabled=\"true\"";
         }
 
+        $name = $this->getName();
+        
         $render  = "<div>
-        <input type=\"text\" id=\"{$this->getName()}\" {$disabled} value=\"{$this->getValue()}\"/>
-        <div id=\"{$this->getAttrib('containerId')}\"></div>
-        </div>";
+                    <input type=\"text\" name=\"$name\" id=\"$name\" {$disabled} value=\"{$this->getValue()}\"/>
+                    <div id=\"{$this->getAttrib('containerId')}\"></div>
+                    </div>";
 
         if (!$this->getAttrib('readonly')) {
             $render = $render . "
@@ -63,7 +65,7 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                 YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
                   { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
                     xhr : \"{$this->getAttrib('xhr')}\",
-                    fieldId : \"{$this->getName()}\",
+                    fieldId : \"$name\",
                     containerId: \"{$this->getAttrib('containerId')}\",
                     hiddenFieldId: \"{$this->getAttrib('hiddenField')}\",
                     queryPrepend: \"{$this->getAttrib('queryPrepend')}\"

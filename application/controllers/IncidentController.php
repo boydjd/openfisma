@@ -565,7 +565,7 @@ class IncidentController extends SecurityController
 
         $tabView->addTab("Incident #$id", "/incident/incident/id/$id");
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
-        $tabView->addTab('Actors & Observers', "/incident/actors/id/$id");
+        $tabView->addTab('Actors & Observers', "/incident/users/id/$id");
         $tabView->addTab("Comments ($commentCount)", "/incident/comments/id/$id");
         $tabView->addTab("Artifacts ($artifactCount)", "/incident/artifacts/id/$id");
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
@@ -691,9 +691,9 @@ class IncidentController extends SecurityController
     }
     
     /**
-     * Display actors and observers and provide controls to add/remove actors and observers
+     * Display users with actor or observer privileges and provide controls to add/remove actors and observers
      */
-    public function actorsAction()
+    public function usersAction()
     {
         $this->_helper->layout->disableLayout();
         
@@ -767,50 +767,68 @@ class IncidentController extends SecurityController
     }
     
     /**
-     * Add an actor or observer to the specified incident
+     * Add a user as an actor or observer to the specified incident
      */
-    public function addActorAction()
+    public function addUserAction()
     {
         $incidentId = $this->getRequest()->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
         $this->_assertCurrentUserCanUpdateIncident($incidentId);
 
-        // userId is supplied by an autocomplete. If the user did not use autocomplete, show a helpful message
         $userId = $this->getRequest()->getParam('userId');
-        
-        if (empty($userId)) {
-            $message = 'Type a few letters and the system will return a list of matching names. You must select from'
-                     . ' that list of names.';
-            $this->view->priorityMessenger($message, 'warning');
-        }
-
-        // Create the requested link
         $type = $this->getRequest()->getParam('type');
 
         if (!in_array($type, array('actor', 'observer'))) {
             throw new Fisma_Zend_Exception("Invalid incident user type: '$type'");
         }
 
-        $incidentActor = new IrIncidentUser();
+        /*
+         * User ID is supplied by an autocomplete. If the user did not use autocomplete, then check to see if the
+         * username can be looked up.
+         */         
+        if (empty($userId)) {
 
-        $incidentActor->userId = $userId;
-        $incidentActor->incidentId = $incidentId;
-        $incidentActor->accessType = strtoupper($type);
+            $username = ($type == 'actor') 
+                      ? $this->getRequest()->getParam('actorAutocomplete')
+                      : $this->getRequest()->getParam('observerAutocomplete');
+            
+            $user = Doctrine::getTable('User')->findOneByUsername($username);
+            
+            if (!$user) {
+                $error = "No user exists with the username \"$username\"";
+                $this->view->priorityMessenger($error, 'warning');
+            } else {
+                $userId = $user->id;
+            }
+        }
 
-        $incidentActor->save();
+        /*
+         * User ID may have been missing in the form submission, but found by looking up the username, so we need to
+         * verify that userId is set before creating the link and sending the e-mail.
+         */
+        if (!empty($userId)) {
+            // Create the requested link
+            $incidentActor = new IrIncidentUser();
 
-        // Send e-mail
-        $mail = new Fisma_Zend_Mail();
-        $mail->IRAssign($userId, $incidentId);
+            $incidentActor->userId = $userId;
+            $incidentActor->incidentId = $incidentId;
+            $incidentActor->accessType = strtoupper($type);
 
+            $incidentActor->save();
+
+            // Send e-mail
+            $mail = new Fisma_Zend_Mail();
+            $mail->IRAssign($userId, $incidentId);
+        }
+        
         $this->_redirect("/panel/incident/sub/view/id/$incidentId");
     }
     
     /**
-     * Remove an actor or observer from the specified incident
+     * Remove user's actor or observer privileges for the specified incident
      */
-    public function removeActorAction()
+    public function removeUserAction()
     {
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
