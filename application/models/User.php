@@ -304,8 +304,6 @@ class User extends BaseUser
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
             $classLoader->suppressNotFoundWarnings(true);
 
-            $cache = Fisma::getCacheManager()->getCache('default');
-
             $acl = new Fisma_Zend_Acl();
 
             // For each role, add its privileges to the ACL
