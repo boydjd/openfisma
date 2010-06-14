@@ -92,7 +92,7 @@ class OrganizationController extends SecurityController
         $form = Fisma_Zend_Form_Manager::loadForm('organization');
         
         // build base query
-        $q = User::currentUser()->getOrganizationsByPrivilegeQuery('organization', 'read');
+        $q = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
         if ($currOrg == null) {
             $currOrg = new Organization();
@@ -142,7 +142,7 @@ class OrganizationController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
@@ -155,7 +155,7 @@ class OrganizationController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         $value = htmlentities(trim($this->_request->getParam('keywords')));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         $this->searchbox();
@@ -172,7 +172,7 @@ class OrganizationController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         $keywords = html_entity_decode(trim($this->_request->getParam('keywords')));
         
         $this->_helper->layout->setLayout('ajax');
@@ -240,7 +240,7 @@ class OrganizationController extends SecurityController
         if (!$organization) {
             throw new Fisma_Zend_Exception('Invalid organization ID');
         } else {
-            Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+            $this->_acl->requirePrivilegeForObject('read', $organization);
             $this->view->organization = $organization;
             
             $organization = $organization->toArray();
@@ -268,7 +268,7 @@ class OrganizationController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'Organization');
+        $this->_acl->requirePrivilegeForClass('create', 'Organization');
         
         $form = $this->_getOrganizationForm();
         $orgValues = $this->_request->getPost();
@@ -339,7 +339,7 @@ class OrganizationController extends SecurityController
         $id = $this->_request->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
-            Fisma_Zend_Acl::requirePrivilegeForObject('delete', $organization);
+            $this->_acl->requirePrivilegeForObject('delete', $organization);
             
             if ($organization->delete()) {
                 $msg = "Organization deleted successfully";
@@ -370,7 +370,7 @@ class OrganizationController extends SecurityController
             throw new Exception_General("Invalid organization ID");
         }
         
-        Fisma_Zend_Acl::requirePrivilegeForObject('update', $organization);
+        $this->_acl->requirePrivilegeForObject('update', $organization);
         
         $form = $this->_getOrganizationForm($organization);
         $orgValues = $this->_request->getPost();
@@ -427,7 +427,7 @@ class OrganizationController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         $this->searchbox();
         $this->render('tree');
     }
@@ -459,7 +459,7 @@ class OrganizationController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         
         $this->view->treeData = $this->getOrganizationTree();        
     }

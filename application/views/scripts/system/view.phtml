@@ -9,7 +9,7 @@ function discardChanges(event) {
       method="post">
     <div class="toolbar">
         <?php            
-            if (Fisma_Zend_Acl::hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
                 $discardButton = new Fisma_Yui_Form_Button('discardChanges',
                                                 array('label' => 'Discard Changes', 
                                                       'onClickFunction' => 'discardChanges'));

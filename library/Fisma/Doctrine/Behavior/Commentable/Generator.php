@@ -144,7 +144,7 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
         $commentEntry = new $commentClass;
         $commentEntry->createdTs = Fisma::now();
         $commentEntry->comment = $comment;
-        $commentEntry->userId = User::currentUser()->id;
+        $commentEntry->userId = CurrentUser::getInstance()->id;
         $commentEntry->objectId = $instance->id;
 
         $commentEntry->save();

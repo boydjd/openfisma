@@ -53,7 +53,7 @@ class IncidentDashboardController extends SecurityController
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
         
-        Fisma_Zend_Acl::requireArea('incident');
+        $this->_acl->requireArea('incident');
     }
 
     /**

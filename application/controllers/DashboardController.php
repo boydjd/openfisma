@@ -59,7 +59,7 @@ class DashboardController extends SecurityController
      */
     function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('dashboard');
+        $this->_acl->requireArea('dashboard');
 
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         // Headers Required for IE+SSL (see bug #2039290) to stream XML
@@ -127,7 +127,7 @@ class DashboardController extends SecurityController
         $result = $eoFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
 
-        if (Fisma_Zend_Acl::hasPrivilegeForClass('approve', 'Finding')) {
+        if ($this->_acl->hasPrivilegeForClass('approve', 'Finding')) {
             $pendingFindingsQuery = Doctrine_Query::create()
                                     ->select('COUNT(*) as count')
                                     ->from('Finding f')

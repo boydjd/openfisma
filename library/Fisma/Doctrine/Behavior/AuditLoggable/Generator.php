@@ -163,7 +163,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_Generator extends Doctrine_Record_Ge
     {
         // Normally logs are written by the current user, but current user can be null if the session is 
         // unauthenticated (for example, failed login attempt)
-        $user = User::currentUser();
+        $user = CurrentUser::getInstance();
         $userId = $user ? $user->id : null;
         
         if ($this->_enabled) {

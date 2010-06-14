@@ -201,7 +201,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Generator extends Doctrine_Record_
         $artifact->mimeType = $file['type'];
         $artifact->fileSize = $file['size'];
         $artifact->comment = $comment;
-        $artifact->userId = User::currentUser()->id;
+        $artifact->userId = CurrentUser::getInstance()->id;
         $artifact->objectId = $instance->id;
 
         // Insert a timestamp into the file name

@@ -50,7 +50,7 @@ class MetainfoController extends SecurityController
         $module = $this->_request->getParam('o');
         $this->view->selected = $this->_request->getParam('value', '');
         if ($module == 'organization') {
-            $organizations  = User::currentUser()->getOrganizations();
+            $organizations  = CurrentUser::getInstance()->getOrganizations();
             $list = $this->view->treeToSelect($organizations, 'nickname');
 
             // Since the list for organizations is prepended with dashes, we need to do some

@@ -568,17 +568,18 @@ class Fisma
      * As the log requires the authente information, the log should be only initialized 
      * after the successfully login.
      *
+     * @param User $user
      * @return Zend_Log The instance of Zend_Log
      */
-    public static function getLogInstance()
+    public static function getLogInstance($user = null)
     {
         if (null === self::$_log) {
             $writer = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
             $ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : '(none)';
                 
             // Log the current username if we are in an authenticated session
-            if (User::currentUser()) {
-                $username = User::currentUser()->username;
+            if ($user) {
+                $username = $user->username;
             } else {
                 $username = '(none)';
             }

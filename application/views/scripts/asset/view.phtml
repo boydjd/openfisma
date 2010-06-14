@@ -2,10 +2,10 @@
 echo $this->escape($this->partial('asset/navibar.phtml'), 'none');
 $operation = '';
 $asset = Doctrine::getTable('Asset')->find($this->id);
-if (Fisma_Zend_Acl::hasPrivilegeForObject('update', $asset)) {
+if ($this->acl->hasPrivilegeForObject('update', $asset)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if (Fisma_Zend_Acl::hasPrivilegeForObject('delete', $asset)) {
+if ($this->acl->hasPrivilegeForObject('delete', $asset)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Asset $operation"); ?>

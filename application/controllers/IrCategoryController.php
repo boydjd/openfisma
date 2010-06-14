@@ -59,9 +59,9 @@ class IrCategoryController extends SecurityController
 
     public function listAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->readIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('read', 'IrCategory');
+        $this->view->readIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('read', 'IrCategory');
         
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
@@ -83,7 +83,7 @@ class IrCategoryController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
         
         $value = trim($this->_request->getParam('keywords'));
 
@@ -137,9 +137,9 @@ class IrCategoryController extends SecurityController
      */
     public function searchbox()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->createIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('create', 'IrCategory');
+        $this->view->createIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('create', 'IrCategory');
         
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
@@ -151,7 +151,7 @@ class IrCategoryController extends SecurityController
      */
     public function treeAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
         
         $this->searchbox();
         $this->render('tree');        
@@ -162,7 +162,7 @@ class IrCategoryController extends SecurityController
      */
     public function treeDataAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
                
         /* Get all categories */ 
         $categoryQuery = Doctrine_Query::create()
@@ -194,10 +194,10 @@ class IrCategoryController extends SecurityController
      */
     public function viewAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
 
-        $this->view->updateIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -236,7 +236,7 @@ class IrCategoryController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('create', 'IrCategory'); 
         
         $form = $this->_getCategoryForm();
         
@@ -283,7 +283,7 @@ class IrCategoryController extends SecurityController
      */
     public function updateAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('update', 'IrCategory'); 
         
         $id = $this->_request->getParam('id', 0);
         $ircategory = new IrCategory();
@@ -356,7 +356,7 @@ class IrCategoryController extends SecurityController
      */
     public function deleteAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('delete', 'IrCategory'); 
         
         $id = $this->_request->getParam('id');
         $ircategory = Doctrine::getTable('IrCategory')->find($id);
@@ -378,7 +378,7 @@ class IrCategoryController extends SecurityController
      */
     public function subcreateAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('create', 'IrCategory'); 
         
         $form = $this->_getSubCategoryForm();
         
@@ -467,10 +467,10 @@ class IrCategoryController extends SecurityController
      */
     public function subviewAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
         
-        $this->view->updateIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'IrCategory');
+        $this->view->updateIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('update', 'IrCategory');
+        $this->view->deleteIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -508,7 +508,7 @@ class IrCategoryController extends SecurityController
      */
     public function subupdateAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('update', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('update', 'IrCategory'); 
         
         $id = $this->_request->getParam('id', 0);
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
@@ -554,7 +554,7 @@ class IrCategoryController extends SecurityController
      */
     public function subdeleteAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('delete', 'IrCategory'); 
+        $this->_acl->requirePrivilegeForClass('delete', 'IrCategory'); 
         
         $id = $this->_request->getParam('id');
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);

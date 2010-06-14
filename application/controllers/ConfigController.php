@@ -58,7 +58,7 @@ class ConfigController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('admin');
+        $this->_acl->requireArea('admin');
 
         // Add header/footer to any action which expects an HTML response
         if (!$this->_hasParam('format')) {

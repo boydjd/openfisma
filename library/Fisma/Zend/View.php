@@ -115,9 +115,6 @@ class Fisma_Zend_View extends Zend_View
                 return $return;
 
             case 'none':
-                if (Fisma::debug()) {
-                    trigger_error('Make sure that you really want to echo the raw string.', E_USER_NOTICE);
-                }
                 return $string;
 
             default:

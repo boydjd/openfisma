@@ -38,6 +38,20 @@ class SecurityController extends Zend_Controller_Action
      * @var User
      */
     protected $_me = null;
+
+    /**
+     * Authenticated user's ACL 
+     * 
+     * @var Fisma_Zend_Acl 
+     */
+    protected $_acl = null;
+
+    /**
+     * Symfony DI Container instance 
+     * 
+     * @var sfContainer 
+     */
+    protected $_container = null;
     
     /**
      * Stores the current time. This might be useful for synchronizing events in the audit logs that result
@@ -55,6 +69,8 @@ class SecurityController extends Zend_Controller_Action
     public function init()
     {
         parent::init();
+        $this->_container = $this->getInvokeArg('bootstrap')->getContainer();
+
         // Initialize time storage
         if (empty(self::$now)) {
             self::$now = Zend_Date::now();
@@ -67,10 +83,13 @@ class SecurityController extends Zend_Controller_Action
 
         if ($auth->hasIdentity()) {
             // Store a reference to the authenticated user inside the controller, for convenience
-            $this->_me = User::currentUser();
+            $this->_me = $this->_container->currentUser->get();
+
+            // Store a reference to the authenticated user's ACL inside the controller
+            $this->_acl = $this->_container->acl->get();
              
             // Store a reference to the ACL inside the view object
-            $this->view->assign('acl', $this->_me->acl());
+            $this->view->assign('acl', $this->_acl);
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their

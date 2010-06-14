@@ -51,7 +51,7 @@ class SystemController extends BaseController
     {
         $form = Fisma_Zend_Form_Manager::loadForm('system');
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = User::currentUser()->getOrganizationsByPrivilegeQuery('organization', 'read');
+        $q = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
         if (!empty($organizationTree)) {
@@ -87,7 +87,7 @@ class SystemController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
         
         $keywords = trim($this->_request->getParam('keywords'));
         
@@ -100,7 +100,7 @@ class SystemController extends BaseController
             throw new Fisma_Zend_Exception('Invalid "order" parameter');
         }
         
-        $q = User::currentUser()
+        $q = CurrentUser::getInstance()
              ->getOrganizationsByPrivilegeQuery('organization', 'read')
              ->select(
                  'o.id, 
@@ -154,7 +154,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
         
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->view->organization = $organization;
@@ -180,7 +180,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
@@ -197,7 +197,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -215,7 +215,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
@@ -233,7 +233,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -264,7 +264,7 @@ class SystemController extends BaseController
             )
         );
 
-        if (!Fisma_Zend_Acl::hasPrivilegeForObject('update', $organization)) {
+        if (!$this->_acl->hasPrivilegeForObject('update', $organization)) {
             $uploadPanelButton->readOnly = true;
         }
         
@@ -289,7 +289,7 @@ class SystemController extends BaseController
     {
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('update', $organization);
+        $this->_acl->requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -373,9 +373,9 @@ class SystemController extends BaseController
         
         // Add the system to the user's ACL if the flag was set above
         if ($addSystemToUserAcl) {
-            User::currentUser()->Organizations[] = $system->Organization;
-            User::currentUser()->save();
-            User::currentUser()->invalidateAcl();
+            CurrentUser::getInstance()->Organizations[] = $system->Organization;
+            CurrentUser::getInstance()->save();
+            CurrentUser::getInstance()->invalidateAcl();
         }
     }
 
@@ -390,7 +390,7 @@ class SystemController extends BaseController
 
         $organizationId = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($organizationId);
-        Fisma_Zend_Acl::requirePrivilegeForObject('update', $organization);
+        $this->_acl->requirePrivilegeForObject('update', $organization);
                 
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
         $versionNotes = $this->getRequest()->getParam('versionNotes');
@@ -418,7 +418,7 @@ class SystemController extends BaseController
                 $document = new SystemDocument();
                 $document->documentTypeId = $documentTypeId;
                 $document->System = $organization->System;
-                $document->User = User::currentUser();
+                $document->User = CurrentUser::getInstance();
             } else {
                 $document = $documents[0];
             }
@@ -461,7 +461,7 @@ class SystemController extends BaseController
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance()->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
         $this->view->response = json_encode($response);
@@ -484,7 +484,7 @@ class SystemController extends BaseController
         $document = Doctrine::getTable('SystemDocument')->find($id);
         
         // Documents don't have their own privileges, access control is based on the associated organization
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $document->System->Organization);
+        $this->_acl->requirePrivilegeForObject('read', $document->System->Organization);
 
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);

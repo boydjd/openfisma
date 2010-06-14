@@ -92,7 +92,7 @@ class FindingController extends BaseController
         );
         
         // Check if the user is allowed to read assets.
-        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Asset')) {
+        if (!$this->_acl->hasPrivilegeForClass('read', 'Asset')) {
             $form->removeElement('name');
             $form->removeElement('ip');
             $form->removeElement('port');
@@ -159,7 +159,7 @@ class FindingController extends BaseController
      */
     public function injectionAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
+        $this->_acl->requirePrivilegeForClass('inject', 'Finding');
 
         /** @todo convert this to a Zend_Form */
         // If the form isn't submitted, then there is no work to do
@@ -223,7 +223,7 @@ class FindingController extends BaseController
      */
     public function templateAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
+        $this->_acl->requirePrivilegeForClass('inject', 'Finding');
         
         $contextSwitch = $this->_helper->getHelper('contextSwitch');
         $contextSwitch->addContext(
@@ -319,7 +319,7 @@ class FindingController extends BaseController
      */
     public function pluginAction()
     {       
-        Fisma_Zend_Acl::requirePrivilegeForClass('inject', 'Finding');
+        $this->_acl->requirePrivilegeForClass('inject', 'Finding');
 
         // Load the finding plugin form
         $uploadForm = Fisma_Zend_Form_Manager::loadForm('finding_upload');
@@ -422,7 +422,7 @@ class FindingController extends BaseController
      */
     public function approveAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('approve', 'Finding');
+        $this->_acl->requirePrivilegeForClass('approve', 'Finding');
         
         $q = Doctrine_Query::create()
              ->select('*')
@@ -439,7 +439,7 @@ class FindingController extends BaseController
      */
     public function processApprovalAction() 
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('approve', 'Finding');
+        $this->_acl->requirePrivilegeForClass('approve', 'Finding');
 
         $findings = $this->_request->getPost('findings', array());
         foreach ($findings as $id) {

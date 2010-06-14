@@ -91,7 +91,7 @@ class CommentController extends SecurityController
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance()->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         $this->view->response = $response;

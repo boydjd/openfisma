@@ -118,13 +118,6 @@ User:
             foreign: roleId
             refClass: UserRole
 
-        # Organizations is a many-to-many relation
-        Organizations:
-            class: Organization
-            local: userId
-            foreign: organizationId
-            refClass: UserOrganization
-        
         # Events is a many-to-many relation
         Events:
             class: Event

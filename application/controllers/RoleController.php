@@ -62,7 +62,7 @@ class RoleController extends BaseController
             $msg   = "Invalid Role ID";
             $type = 'warning';
         } else {
-            Fisma_Zend_Acl::requirePrivilegeForObject('delete', $role);
+            $this->_acl->requirePrivilegeForObject('delete', $role);
             
             $users = $role->Users->toArray();
             if (!empty($users)) {
@@ -95,7 +95,7 @@ class RoleController extends BaseController
         $screenName = $req->getParam('screen_name');
         
         $role = Doctrine::getTable('Role')->find($roleId);
-        Fisma_Zend_Acl::requirePrivilegeForObject('assignPrivileges', $role);
+        $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
                 
         $existFunctions = $role->Privileges->toArray();
         if ('availableFunctions' == $do) {

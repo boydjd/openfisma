@@ -46,7 +46,7 @@ class OrganizationDashboardController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('system_inventory');
+        $this->_acl->requireArea('system_inventory');
 
         if (!$this->_hasParam('format')) {
             $this->_helper->actionStack('header', 'panel');

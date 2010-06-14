@@ -47,7 +47,7 @@ class FindingReportController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('finding_report');
+        $this->_acl->requireArea('finding_report');
 
         // Add header/footer to any action which expects an HTML response
         if (!$this->_hasParam('format')) {
@@ -207,9 +207,9 @@ class FindingReportController extends SecurityController
 
         if (!empty($params['orgSystemId'])) {
             $organization = Doctrine::getTable('Organization')->find($params['orgSystemId']);
-            Fisma_Zend_Acl::requirePrivilegeForObject('read', $organization);
+            $this->_acl->requirePrivilegeForObject('read', $organization);
         } else {
-            Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Organization');
+            $this->_acl->requirePrivilegeForClass('read', 'Organization');
         }
 
         $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
@@ -338,7 +338,7 @@ class FindingReportController extends SecurityController
                               ->select('u.id, r.nickname')
                               ->from('User u')
                               ->innerJoin('u.Roles r')
-                              ->where('u.id = ?', User::currentUser()->id)
+                              ->where('u.id = ?', CurrentUser::getInstance()->id)
                               ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
             $userRolesResult = $userRolesQuery->execute();
             $userRoles = array();

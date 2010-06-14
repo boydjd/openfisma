@@ -32,7 +32,7 @@ class OrganizationReportController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('system_inventory_report');
+        $this->_acl->requireArea('system_inventory_report');
 
         $this->_helper->reportContextSwitch()
                       ->htmlActionStack('header', 'panel')

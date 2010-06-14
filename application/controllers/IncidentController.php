@@ -598,7 +598,7 @@ class IncidentController extends SecurityController
         $this->_assertCurrentUserCanViewIncident($id);
         
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
-        $this->view->lockIncidentPrivilege = Fisma_Zend_Acl::hasPrivilegeForClass('lock', 'Incident');
+        $this->view->lockIncidentPrivilege = $this->_acl->hasPrivilegeForClass('lock', 'Incident');
                 
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
@@ -646,7 +646,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('lock', $incident);
+        $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = TRUE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -663,7 +663,7 @@ class IncidentController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $incident = Doctrine::getTable('Incident')->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('lock', $incident);
+        $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = FALSE;
         $incident->save();
         $this->_redirect("/panel/incident/sub/view/id/$id");
@@ -958,7 +958,7 @@ class IncidentController extends SecurityController
         $id = $this->_request->getParam('id');        
         $incident = Doctrine::getTable('Incident')->find($id);
 
-        Fisma_Zend_Acl::requirePrivilegeForObject('classify', $incident);
+        $this->_acl->requirePrivilegeForObject('classify', $incident);
 
         $comment = $this->_request->getParam('comment');
 
@@ -1189,7 +1189,7 @@ class IncidentController extends SecurityController
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance()->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
         $this->view->response = json_encode($response);
@@ -1328,12 +1328,12 @@ class IncidentController extends SecurityController
         $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
 
         if (
-            Fisma_Zend_Acl::hasPrivilegeForObject('update', $incident) && 
+            $this->_acl->hasPrivilegeForObject('update', $incident) && 
             ((!$incident->isLocked) || 
-            ($incident->isLocked && Fisma_Zend_Acl::hasPrivilegeForObject('lock', $incident)))
+            ($incident->isLocked && $this->_acl->hasPrivilegeForObject('lock', $incident)))
         ) {
             $userCanUpdate = true;
-        } elseif (!Fisma_Zend_Acl::hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
+        } elseif (!$this->_acl->hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
             // Check if this user is an actor
             $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
@@ -1379,7 +1379,7 @@ class IncidentController extends SecurityController
     {
         $userCanView = false;
         
-        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Incident')) {
+        if (!$this->_acl->hasPrivilegeForClass('read', 'Incident')) {
             // Check if this user is an observer or actor
             $observerCount = Doctrine_Query::create()
                  ->select('i.id')
@@ -1409,9 +1409,9 @@ class IncidentController extends SecurityController
     {
         $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
 
-        if (Fisma_Zend_Acl::hasPrivilegeForObject('classify', $incident)) {
+        if ($this->_acl->hasPrivilegeForObject('classify', $incident)) {
             if ($incident->isLocked) {
-                if (Fisma_Zend_Acl::hasPrivilegeForObject('lock', $incident)) {
+                if ($this->_acl->hasPrivilegeForObject('lock', $incident)) {
                     return true;
                 }
             } else {
@@ -1636,9 +1636,9 @@ class IncidentController extends SecurityController
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i');
         
-        if (!Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Incident')) {
+        if (!$this->_acl->hasPrivilegeForClass('read', 'Incident')) {
             $incidentQuery->leftJoin('i.Users u')
-                          ->where('u.id = ?', User::currentUser()->id);
+                          ->where('u.id = ?', CurrentUser::getInstance()->id);
         }
 
         return $incidentQuery;

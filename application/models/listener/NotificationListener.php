@@ -48,7 +48,7 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
 
         $record = $event->getInvoker();
         $eventName = $this->_classNameToEventName(get_class($record)) . '_CREATED';
-        Notification::notify($eventName, $record, User::currentUser());
+        Notification::notify($eventName, $record, CurrentUser::getInstance());
     }
     
     /**
@@ -76,7 +76,7 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
             $columnDef = $table->getColumnDefinition($table->getColumnName($name));
             // Not all columns will define this index, so the suppression operator is used:
             if (@$columnDef['extra']['notify']) {
-                Notification::notify($eventName, $record, User::currentUser());
+                Notification::notify($eventName, $record, CurrentUser::getInstance());
                 break;
             }
         }
@@ -96,7 +96,7 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
 
         $record = $event->getInvoker();
         $eventName = $this->_classNameToEventName(get_class($record)) . '_DELETED';
-        Notification::notify($eventName, $record, User::currentUser());    
+        Notification::notify($eventName, $record, CurrentUser::getInstance());    
     }
     
     /**

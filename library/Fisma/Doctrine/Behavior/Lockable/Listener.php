@@ -19,8 +19,6 @@
 /**
  * Listener for the Lockable behavior. Hooks into preSave() ensuring that locked records aren't modified.
  *
- * @TODO See if we can de-couple this from Fisma_Zend_Acl at some point.
- * 
  * @package Fisma
  * @subpackage Fisma_Doctrine_Behavior_Lockable
  * @version $Id$
@@ -45,7 +43,7 @@ class Fisma_Doctrine_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         $pendingLinks = $invoker->getPendingLinks();
         $pendingUnlinks = $invoker->getPendingUnlinks();
         $noLinkChanges = empty($pendingLinks) && empty($pendingUnlinks);
-        $hasPrivilege = Fisma_Zend_Acl::hasPrivilegeForObject('lock', $invoker);
+        $hasPrivilege = CurrentUser::getInstance()->acl()->hasPrivilegeForObject('lock', $invoker);
         $locked = $invoker->isLocked;
         $lockModified = (array_key_exists('isLocked', $modifiedFields) && ($modifiedFields['isLocked'] != $locked))
             ? true : false;

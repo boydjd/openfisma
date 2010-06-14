@@ -18,7 +18,7 @@
                                             'imageSrc' => '/images/xls.gif'));
         echo $this->escape($pdfButton, 'none');
         echo $this->escape($xlsButton, 'none');
-        if (Fisma_Zend_Acl::hasPrivilegeForClass('delete', 'Asset')) {
+        if ($this->acl->hasPrivilegeForClass('delete', 'Asset')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
@@ -34,7 +34,7 @@
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $this->escape($deleteButton, 'none');
         }
-        if (Fisma_Zend_Acl::hasPrivilegeForClass('create', 'Asset')) {
+        if ($this->acl->hasPrivilegeForClass('create', 'Asset')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createAsset', 
                                           array('value' => 'Create Asset', 
                                                 'href' => '/asset/create'));
@@ -117,7 +117,7 @@
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
     <?php 
-    if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Asset')) { 
+    if ($this->acl->hasPrivilegeForClass('read', 'Asset')) { 
     ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {

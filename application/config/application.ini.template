@@ -67,6 +67,7 @@ timezone = "America/New_York"
 bootstrap.path = APPLICATION_PATH "/Bootstrap.php"
 bootstrap.class = "Bootstrap"
 bootstrap.container.type = symfony
+bootstrap.container.symfony.configPaths[] = APPLICATION_PATH "/services"
 resources.frontController.controllerDirectory = APPLICATION_PATH "/controllers"
 includePaths.library = APPLICATION_PATH "/../library"
 

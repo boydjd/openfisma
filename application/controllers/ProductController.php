@@ -49,7 +49,7 @@ class ProductController extends BaseController
             $msg   = "Invalid Product ID";
             $type = 'warning';
         } else {
-            Fisma_Zend_Acl::requirePrivilegeForObject('delete', $product);
+            $this->_acl->requirePrivilegeForObject('delete', $product);
             
             $assets = $product->Assets->toArray();
             if (!empty($assets)) {

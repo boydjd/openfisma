@@ -38,12 +38,6 @@ Organization:
             local: systemId
             foreign: id
             foreignType: one # Forces Doctrine to make this one-to-one instead of one-to-many
-        # Users is a many-to-many relation
-        Users:
-            class: User
-            local: organizationId
-            foreign: userId
-            refClass: UserOrganization
 
     actAs:
         NestedSet:

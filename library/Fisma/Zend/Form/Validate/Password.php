@@ -150,7 +150,7 @@ class Fisma_Zend_Form_Validate_Password extends Zend_Validate_Abstract
             }
         }
 
-        $user = User::currentUser();
+        $user = CurrentUser::getInstance();
         // password change
         $nameincluded = true;
         // check last name

@@ -63,7 +63,7 @@ class ErrorController extends Zend_Controller_Action
                      . "\"\n"
                      . $errors->exception->getTraceAsString()
                      . "\n";
-            $logger = Fisma::getLogInstance();
+            $logger = Fisma::getLogInstance(CurrentUser::getInstance());
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 

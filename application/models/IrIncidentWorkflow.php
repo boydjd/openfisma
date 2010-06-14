@@ -49,7 +49,7 @@ class IrIncidentWorkflow extends BaseIrIncidentWorkflow
     {
         $this->status = 'completed';
         $this->completeTs = date('Y-m-d H:i:s');
-        $this->User = User::currentUser();
+        $this->User = CurrentUser::getInstance();
         $this->comments = $comment;
     }
 }

@@ -48,10 +48,10 @@ class PanelController extends SecurityController
      */
     public function indexAction()
     {
-        if (Fisma_Zend_Acl::hasArea('dashboard')) {
+        if ($this->_acl->hasArea('dashboard')) {
             $this->_helper->actionStack('index', 'dashboard');
             $this->_helper->actionStack('header');
-        } elseif (Fisma_Zend_Acl::hasArea('incident')) {
+        } elseif ($this->_acl->hasArea('incident')) {
             $this->_helper->actionStack('index', 'incident-dashboard');
         } else {
             throw new Fisma_Zend_Exception_User(
@@ -68,7 +68,7 @@ class PanelController extends SecurityController
      */
     public function headerAction()
     {
-        $this->view->mainMenuBar = Fisma_Menu::getMainMenu();
+        $this->view->mainMenuBar = Fisma_Menu::getMainMenu($this->_me);
         
         $this->_helper->layout->setLayout('layout');
         $this->_helper->actionStack('footer');

@@ -320,7 +320,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $eventName = 'SYSTEM_CREATED';
         }
 
-        Notification::notify($eventName, $this, User::currentUser());
+        Notification::notify($eventName, $this, CurrentUser::getInstance());
     }
     
     /**
@@ -335,7 +335,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
         // in case the system model somehow triggers a save() on its related organization object
         if ('organization' == $this->orgType) {
             $eventName = 'ORGANIZATION_UPDATED';
-            Notification::notify($eventName, $this, User::currentUser());
+            Notification::notify($eventName, $this, CurrentUser::getInstance());
         }
     }
 
@@ -354,7 +354,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $eventName = 'SYSTEM_DELETED';
         }
         
-        Notification::notify($eventName, $this, User::currentUser());
+        Notification::notify($eventName, $this, CurrentUser::getInstance());
     }
 
     /**

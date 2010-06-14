@@ -57,25 +57,6 @@ class User extends BaseUser
      * The mininum number of unique passwords required before an old password can be reused
      */
     const PASSWORD_HISTORY_LIMIT = 3;
-    
-    /**
-     * Returns an object which represents the current, authenticated user
-     * 
-     * In certain contexts there is no current user, such as before login or when running from a command line. In those
-     * cases, this method returns null.
-     * 
-     * @return User The current authenticated user or null if none exists
-     */
-    public static function currentUser() 
-    {
-        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
-            $auth = Zend_Auth::getInstance();
-            $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-            return $auth->getIdentity();
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Doctrine hook which is used to set up mutators
@@ -85,11 +66,11 @@ class User extends BaseUser
     public function setUp()
     {
         parent::setUp();
-        
+
         $this->hasMutator('lastRob', 'setLastRob');
         $this->hasMutator('password', 'setPassword');
     }
-    
+
     /**
      * Hook into the constructor to map the plainTextPassword field
      */
@@ -113,7 +94,7 @@ class User extends BaseUser
         if (empty($lockType)) {
             throw new Fisma_Zend_Exception("Lock type cannot be blank");
         }
-        
+
         $this->locked = true;
         $this->lockTs = date('Y-m-d H:i:s');
         $this->lockType = $lockType;
@@ -127,20 +108,20 @@ class User extends BaseUser
 
         // If the account is locked due to password failure, etc., then there is no current user. In that case, we log
         // with a null user and include the remote IP address in the log entry instead.
-        if (User::currentUser()) {
+        if (CurrentUser::getInstance()) {
             $message = 'Locked: ' . $this->getLockReason();
             $this->getAuditLog()->write($message);
         } else {
             $message = 'Locked by unknown user (' 
-                     . $_SERVER['REMOTE_ADDR']
-                     . '): '
-                     . $this->getLockReason();
+                    . $_SERVER['REMOTE_ADDR']
+                    . '): '
+                . $this->getLockReason();
             $this->getAuditLog()->write($message);
         }
-        
+
         Notification::notify('USER_LOCKED', $this, self::currentUser());
     }
-    
+
     /**
      * Unlock this account, which will allow a user to login again.
      * 
@@ -163,22 +144,22 @@ class User extends BaseUser
         $this->lockTs = null;
         $this->lockType = null;
         $this->failureCount = 0;
-        
+
         $this->save();
-        
+
         // If the account is unlocked automatically (such as an expired lock), then there may not be an authenticated
         // user. In that case, the user is null and the IP address is included
-        if (User::currentUser()) {
+        if (CurrentUser::getInstance()) {
             $this->getAuditLog()->write('Unlocked');
         } else {
             $message = 'Unlocked by unknown user (' 
-                     . $_SERVER['REMOTE_ADDR']
-                     . '): '
-                     . $this->getLockReason();
+                    . $_SERVER['REMOTE_ADDR']
+                    . '): '
+                . $this->getLockReason();
             $this->getAuditLog()->write($message);
         }
     }
-        
+
     /**
      * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
      * 
@@ -196,13 +177,13 @@ class User extends BaseUser
                     $this->unlockAccount();
                 }
             }
-            
+
             // Construct an error message based on the lock type
             $reason = $this->getLockReason();
             throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
         }
     }
-    
+
     /**
      * Returns the number of minutes until this account is automatically unlocked. Could be negative if the lock already
      * expired but has not actually been removed yet.
@@ -216,8 +197,8 @@ class User extends BaseUser
     public function getLockRemainingMinutes()
     {
         if ($this->locked 
-            && self::LOCK_TYPE_PASSWORD == $this->lockType
-            && Fisma::configuration()->getConfig('unlock_enabled')) {
+                && self::LOCK_TYPE_PASSWORD == $this->lockType
+                && Fisma::configuration()->getConfig('unlock_enabled')) {
 
             $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
             $lockTs->addSecond(Fisma::configuration()->getConfig('unlock_duration'));
@@ -247,31 +228,31 @@ class User extends BaseUser
                 break;
             case self::LOCK_TYPE_PASSWORD:
                 $reason = Fisma::configuration()->getConfig('failure_threshold')
-                        . ' failed login attempts';
+                    . ' failed login attempts';
                 if (Fisma::configuration()->getConfig('unlock_enabled')) {
                     $reason .= ', will be unlocked in '
-                             . $this->getLockRemainingMinutes()
-                             . ' minutes';
+                        . $this->getLockRemainingMinutes()
+                        . ' minutes';
                 }
                 break;
             case self::LOCK_TYPE_INACTIVE:
                 $reason = 'exceeded '
-                        . Fisma::configuration()->getConfig('account_inactivity_period')
-                        . ' days of inactivity';
+                    . Fisma::configuration()->getConfig('account_inactivity_period')
+                    . ' days of inactivity';
                 break;
             case self::LOCK_TYPE_EXPIRED:
                 $reason = 'password is more than '
-                        . Fisma::configuration()->getConfig('pass_expire')
-                        . ' days old';
+                    . Fisma::configuration()->getConfig('pass_expire')
+                    . ' days old';
                 break;
             default:
                 throw new Fisma_Zend_Exception("Unexpected lock type ($this->lockType)");
                 break;
         }
-        
+
         return $reason;
     }
-    
+
     /**
      * Returns this user's access control list (ACL) object. It will initialize the ACL first,
      * if necessary.
@@ -307,7 +288,9 @@ class User extends BaseUser
      */
     public function acl()
     {
-        if (!Zend_Registry::isRegistered('acl')) {
+        $cache = Fisma::getCacheManager()->getCache('default');
+
+        if (!$acl = $cache->load(md5($this->username) . '_acl')) {
             // Refresh the user object to ensure latest user's data is reloaded from database since there are probably
             // differences between the user object in session and database after the user is updated.
             $this->refresh();
@@ -315,7 +298,7 @@ class User extends BaseUser
                 $reason = $this->getLockReason();
                 throw new Fisma_Zend_Exception_InvalidAuthentication("Account is locked ($reason)");
             }
-            
+
             // Temporarily disable class loading warnings
             $classLoader = Zend_Loader_Autoloader::getInstance();
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
@@ -323,82 +306,78 @@ class User extends BaseUser
 
             $cache = Fisma::getCacheManager()->getCache('default');
 
-            if (!$acl = $cache->load(md5($this->username) . '_acl')) {
+            $acl = new Fisma_Zend_Acl();
 
-                $acl = new Fisma_Zend_Acl();
-            
-                // For each role, add its privileges to the ACL
-                $roleArray = array();
-                foreach ($this->Roles as $role) {
-                    // Roles are stored by role.nickname, e.g. "ADMIN", which are guaranteed to be unique
-                    $newRole = new Zend_Acl_Role($role->nickname);
-                    $acl->addRole($newRole);
-                    $roleArray[] = $role->nickname;
+            // For each role, add its privileges to the ACL
+            $roleArray = array();
+            foreach ($this->Roles as $role) {
+                // Roles are stored by role.nickname, e.g. "ADMIN", which are guaranteed to be unique
+                $newRole = new Zend_Acl_Role($role->nickname);
+                $acl->addRole($newRole);
+                $roleArray[] = $role->nickname;
 
-                    foreach ($role->Privileges as $privilege) {
-                        /**
-                         * Check whether this privilege corresponds to a class, and if it does, then check whether that
-                         * class has an organization dependency
-                         */
-                        $organizationDependency = false;
-                        $className = Doctrine_Inflector::classify($privilege->resource);
+                foreach ($role->Privileges as $privilege) {
+                    /**
+                     * Check whether this privilege corresponds to a class, and if it does, then check whether that
+                     * class has an organization dependency
+                     */
+                    $organizationDependency = false;
+                    $className = Doctrine_Inflector::classify($privilege->resource);
 
-                        if (class_exists($className)) {
-                            $reflection = new ReflectionClass($className);
-                            $organizationDependency = $reflection->implementsInterface(
-                                'Fisma_Zend_Acl_OrganizationDependency'
-                            );
-                        }
-                    
-                        // If a privilege is organization-specific, then grant it as a nested resource within
-                        // that organization, otherwise, grant it directly to that resource.
-                        // e.g. Organization->Finding->Create versus Network->Create
-                        if ($organizationDependency) {
-                            // This is the cartesian join between roles and systems
-                            foreach ($this->getOrganizationsByRole($role->id) as $organization) {
-                                // Fake hierarhical access control by storing system-specific attributes like this:
-                                // If the system nickname is "ABC" and the resource is called "finding", then the
-                                // resource stored in the ACL is called "ABC/finding"
-                                $systemResource = "$organization->id/$privilege->resource";
-                                if (!$acl->has($systemResource)) {
-                                    $acl->add(new Zend_Acl_Resource($systemResource));
-                                }
-                                $acl->allow($newRole, $systemResource, $privilege->action);
-                                
-                                // The wildcard resources indicates whether a user has this privilege on *any* 
-                                // system. This is useful for knowing when to show certain user interface elements
-                                // like menu items.
-                                $wildcardResource = "$privilege->resource";
-                                if (!$acl->has($wildcardResource)) {
-                                    $acl->add(new Zend_Acl_Resource($wildcardResource));
-                                }
-                                $acl->allow($newRole, $wildcardResource, $privilege->action); 
+                    if (class_exists($className)) {
+                        $reflection = new ReflectionClass($className);
+                        $organizationDependency = $reflection->implementsInterface(
+                            'Fisma_Zend_Acl_OrganizationDependency'
+                        );
+                    }
+
+                    // If a privilege is organization-specific, then grant it as a nested resource within
+                    // that organization, otherwise, grant it directly to that resource.
+                    // e.g. Organization->Finding->Create versus Network->Create
+                    if ($organizationDependency) {
+                        // This is the cartesian join between roles and systems
+                        foreach ($this->getOrganizationsByRole($role->id) as $organization) {
+                            // Fake hierarhical access control by storing system-specific attributes like this:
+                            // If the system nickname is "ABC" and the resource is called "finding", then the
+                            // resource stored in the ACL is called "ABC/finding"
+                            $systemResource = "$organization->id/$privilege->resource";
+                            if (!$acl->has($systemResource)) {
+                                $acl->add(new Zend_Acl_Resource($systemResource));
                             }
-                        } else {
-                                // Create a resource and grant it to the current role
-                                if (!$acl->has($privilege->resource)) {
-                                    $acl->add(new Zend_Acl_Resource($privilege->resource));
-                                }
-                                $acl->allow($newRole, $privilege->resource, $privilege->action);
+                            $acl->allow($newRole, $systemResource, $privilege->action);
+
+                            // The wildcard resources indicates whether a user has this privilege on *any* 
+                            // system. This is useful for knowing when to show certain user interface elements
+                            // like menu items.
+                            $wildcardResource = "$privilege->resource";
+                            if (!$acl->has($wildcardResource)) {
+                                $acl->add(new Zend_Acl_Resource($wildcardResource));
+                            }
+                            $acl->allow($newRole, $wildcardResource, $privilege->action); 
                         }
+                    } else {
+                        // Create a resource and grant it to the current role
+                        if (!$acl->has($privilege->resource)) {
+                            $acl->add(new Zend_Acl_Resource($privilege->resource));
+                        }
+                        $acl->allow($newRole, $privilege->resource, $privilege->action);
                     }
                 }
-
-                // Create a role for this user that inherits all of the roles created above
-                $userRole = new Zend_Acl_Role($this->username);
-                $acl->addRole($userRole, $roleArray);
             }
 
+            // Create a role for this user that inherits all of the roles created above
+            $userRole = new Zend_Acl_Role($this->username);
+            $acl->addRole($userRole, $roleArray);
+
             $cache->save($acl, md5($this->username) . '_acl');
-            Zend_Registry::set('acl', $acl);
-            
+
             // Reset class loader warning suppression to original setting
             $classLoader->suppressNotFoundWarnings($suppressWarningsOriginalValue);
         }
-        
-        return Zend_Registry::get('acl');
+
+        return $acl;
     }
-    
+
     /**
      * Mark's the user's current ACL object as "dirty", indicating that it needs to be re-generated. 
      * 
@@ -407,20 +386,10 @@ class User extends BaseUser
      */
     public function invalidateAcl()
     {
-        /**
-         * There is only one way to unset a Zend_Registry value, and its a little hacky:
-         * http://framework.zend.com/issues/browse/ZF-2752
-         */
-        $registry = Zend_Registry::getInstance();
-
-        if (!empty($registry['acl'])) {
-            unset($registry['acl']);
-        }
-
         $cache = Fisma::getCacheManager()->getCache('default');
         $cache->remove(md5($this->username) . '_acl');
     }
-    
+
     /**
      * Validate the user's e-mail change.
      * 
@@ -436,7 +405,7 @@ class User extends BaseUser
             $this->emailValidate = true;
             $emailValidation->delete();
             $this->save();
-            
+
             $this->getAuditLog()->write('Validated e-mail address');
 
             return true;
@@ -489,16 +458,16 @@ class User extends BaseUser
             $query = Doctrine::getTable('Event')->findAll();
         } else {
             $query = Doctrine_Query::Create()
-                        ->select('e.*')
-                        ->from('Event e')
-                        ->innerJoin('e.Privilege p')
-                        ->innerJoin('p.Role r')
-                        ->innerJoin('r.Users u')
-                        ->where('u.id = ?', $this->id)
-                        ->orderBy('e.name')
-                        ->execute();
+                ->select('e.*')
+                ->from('Event e')
+                ->innerJoin('e.Privilege p')
+                ->innerJoin('p.Role r')
+                ->innerJoin('r.Users u')
+                ->where('u.id = ?', $this->id)
+                ->orderBy('e.name')
+                ->execute();
         }
-        
+
         foreach ($query as $event) {
             $availableEvents[$event->id] = $event->description;
         }
@@ -509,7 +478,7 @@ class User extends BaseUser
         }
         return $availableEvents;
     }
-    
+
     /**
      * Get the user's organizations.
      * 
@@ -523,7 +492,7 @@ class User extends BaseUser
     {
         $query = $this->getOrganizationsQuery();
         $result = $query->execute();
-        
+
         return $result;
     }
 
@@ -558,7 +527,7 @@ class User extends BaseUser
         $query = $this->getOrganizationsByPrivilegeQuery($resource, $action);
         return $query->execute();
     }
-   
+
     /**
      * Get the roles associated with a user for a specific privilege resource and action. 
      * 
@@ -581,7 +550,7 @@ class User extends BaseUser
 
         return $roles;
     }
-   
+
     /**
      * Get a query which will select this user's organizations.
      * 
@@ -607,7 +576,7 @@ class User extends BaseUser
                 ->from("Organization o, o.UserRole ur WITH ur.userid = $this->id")
                 ->orderBy('o.lft');
         }
-        
+
         return $query;
     }
 
@@ -653,7 +622,7 @@ class User extends BaseUser
             $mail->sendAccountInfo($this);
         }
     }
-    
+
     /**
      * Doctrine hook for post-update
      * 
@@ -664,13 +633,13 @@ class User extends BaseUser
     public function postUpdate($event)
     {
         $modified = $this->getModified(true, true);
-        
+
         //send password changing email after password updated
         if (isset($modified['password'])) {
             $mail = new Fisma_Zend_Mail();
             $mail->sendPassword($this);
         }
-        
+
         // Send validation email after email or notifyEmail updated
         if (isset($modified['email']) || isset($modified['notifyEmail'])) {
             $this->emailValidate = false;
@@ -713,7 +682,7 @@ class User extends BaseUser
     public function setLastRob($value)
     {
         $this->_set('lastRob', $value);
-        
+
         $this->getAuditLog()->write('Accepted Rules of Behavior');
     }
 
@@ -731,7 +700,7 @@ class User extends BaseUser
             $saltColumn = Doctrine::getTable('User')->getColumnDefinition('passwordsalt');
             $this->passwordSalt = Fisma_String::random($saltColumn['length']);
         }
-        
+
         // Set the user's hash type if it is not set already
         if (!$this->hashType) {
             $this->hashType = Fisma::configuration()->getConfig('hash_type');
@@ -749,7 +718,7 @@ class User extends BaseUser
              * @todo Throw a doctrine exception... not enough time to fix the exception handlers right now
              */
             throw new Doctrine_Exception('Your password cannot be the same as any of your previous'
-                                       . ' 3 passwords.');
+                    . ' 3 passwords.');
         }
         $this->_set('password', $password);
 
@@ -759,14 +728,14 @@ class User extends BaseUser
         array_unshift($oldPasswords, $this->password);
         $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);        
         $this->passwordHistory = implode(':', $oldPasswords);
-                
+
         /*
          * Store the plain-text password into a mapped value, which means it will remain resident in memory for the
          * duration of this request.
          */
         $this->plainTextPassword = $value;
     }
-    
+
     /**
      * Retrieve user assigned roles.
      * 
@@ -779,13 +748,13 @@ class User extends BaseUser
     public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR)
     {
         $userRolesQuery = Doctrine_Query::create()
-                          ->select('u.id, r.*')
-                          ->from('User u')
-                          ->innerJoin('u.Roles r')
-                          ->where('u.id = ?', $this->id)
-                          ->setHydrationMode($hydrationMode);
+            ->select('u.id, r.*')
+            ->from('User u')
+            ->innerJoin('u.Roles r')
+            ->where('u.id = ?', $this->id)
+            ->setHydrationMode($hydrationMode);
         $userRolesResult = $userRolesQuery->execute();
-        
+
         return $userRolesResult;
     }
 
@@ -798,7 +767,7 @@ class User extends BaseUser
     {
         $render = "$this->nameFirst $this->nameLast ($this->username)";
 
-        if (Fisma_Zend_Acl::hasPrivilegeForObject('read', $this)) {
+        if ($this->acl()->hasPrivilegeForObject('read', $this)) {
             $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
         }
 

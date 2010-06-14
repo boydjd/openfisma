@@ -74,7 +74,7 @@ var myColumnDefs = [
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
 
     <?php 
-    if (Fisma_Zend_Acl::hasPrivilegeForClass('read', 'Product')): 
+    if ($this->acl->hasPrivilegeForClass('read', 'Product')): 
     ?>
         myDataTable.subscribe("rowClickEvent", 
             function (oArgs) {

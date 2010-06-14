@@ -219,7 +219,7 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'Asset');
+        $this->_acl->requirePrivilegeForClass('create', 'Asset');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -231,7 +231,7 @@ class AssetController extends BaseController
      */
     public function searchboxAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Asset');
+        $this->_acl->requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
         $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
@@ -254,7 +254,7 @@ class AssetController extends BaseController
      */
     public function searchAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'Asset');
+        $this->_acl->requirePrivilegeForClass('read', 'Asset');
 
         $params = $this->parseCriteria();
         $q = Doctrine_Query::create()
@@ -374,7 +374,7 @@ class AssetController extends BaseController
     {
         $id = $this->_request->getParam('id');
         $asset = Doctrine::getTable($this->_modelName)->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('delete', $asset);
+        $this->_acl->requirePrivilegeForObject('delete', $asset);
         
         if (!$asset) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -418,7 +418,7 @@ class AssetController extends BaseController
             foreach ($aids as $id) {
                 $assetIds[] = $id;
                 $asset = Doctrine::getTable('Asset')->find($id);
-                Fisma_Zend_Acl::requirePrivilegeForObject('delete', $asset);
+                $this->_acl->requirePrivilegeForObject('delete', $asset);
                 if (!$asset) {
                     $errno++;
                 } else {
@@ -447,7 +447,7 @@ class AssetController extends BaseController
 
     public function importAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', 'Asset');
+        $this->_acl->requirePrivilegeForClass('create', 'Asset');
 
         $uploadForm = $this->getForm('asset_upload');
 

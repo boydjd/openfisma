@@ -45,7 +45,7 @@ class IncidentReportController extends SecurityController
      */
     public function preDispatch()
     {
-        Fisma_Zend_Acl::requireArea('incident_report');
+        $this->_acl->requireArea('incident_report');
 
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 

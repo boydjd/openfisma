@@ -3,7 +3,7 @@
 echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 $operation = "[<a href='{$this->viewLink}'>View</a>]";
 
-if (Fisma_Zend_Acl::hasPrivilegeForObject('read', $this->subject)) {
+if ($this->acl->hasPrivilegeForObject('read', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
 }
 

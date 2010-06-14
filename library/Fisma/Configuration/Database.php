@@ -61,7 +61,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function setConfig($name, $value) 
     {
-        Fisma_Zend_Acl::requireArea('admin');
+        CurrentUser::getInstance()->acl()->requireArea('admin');
         
         $config = Doctrine::getTable('Configuration')->findOneByName($name);
         
@@ -78,7 +78,7 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         $config->value = $value;
         $config->save();
 
-        Notification::notify('CONFIGURATION_UPDATED', null, User::currentUser());
+        Notification::notify('CONFIGURATION_UPDATED', null, CurrentUser::getInstance());
 
         $cache = Fisma::getCacheManager()->getCache('default');
         if ($dirtyConfig = $cache->load('configuration_' . $name)) {

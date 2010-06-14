@@ -152,7 +152,7 @@ abstract class BaseController extends SecurityController
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        Fisma_Zend_Acl::requirePrivilegeForObject('read', $subject);
+        $this->_acl->requirePrivilegeForObject('read', $subject);
 
         $form   = $this->getForm();
         
@@ -173,7 +173,7 @@ abstract class BaseController extends SecurityController
      */
     public function createAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('create', $this->getAclResourceName());
+        $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
         
         // Get the subject form
         $form   = $this->getForm();
@@ -214,7 +214,7 @@ abstract class BaseController extends SecurityController
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        Fisma_Zend_Acl::requirePrivilegeForObject('update', $subject);
+        $this->_acl->requirePrivilegeForObject('update', $subject);
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
@@ -261,7 +261,7 @@ abstract class BaseController extends SecurityController
     {
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
-        Fisma_Zend_Acl::requirePrivilegeForObject('delete', $subject);
+        $this->_acl->requirePrivilegeForObject('delete', $subject);
 
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -295,7 +295,7 @@ abstract class BaseController extends SecurityController
      */
     public function listAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
+        $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
         $keywords = trim($this->_request->getParam('keywords'));
         $link = empty($keywords) ? '' :'/keywords/' . $this->view->escape($keywords, 'url');
         $this->view->link     = $link;
@@ -313,7 +313,7 @@ abstract class BaseController extends SecurityController
      */
     public function searchAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', $this->getAclResourceName());
+        $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
         $sortBy = $this->_request->getParam('sortby', 'id');
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 

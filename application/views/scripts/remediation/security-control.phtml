@@ -15,7 +15,7 @@
                   name="finding[securityControlId]" 
                   href="/metainfo/list/o/security_control/format/html/"
                     <?php
-                    if (Fisma_Zend_Acl::hasPrivilegeForObject('update_control_assignment', $this->finding)
+                    if ($this->acl->hasPrivilegeForObject('update_control_assignment', $this->finding)
                         && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
                         echo $this->escape('class="editable" target="security_control"', 'none');
                     }

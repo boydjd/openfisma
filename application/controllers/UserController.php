@@ -224,7 +224,7 @@ class UserController extends BaseController
 
         return $form;
     }
-    
+
     /**
      * Show audit logs for a given user
      */
@@ -291,7 +291,10 @@ class UserController extends BaseController
     public function passwordAction()
     {
         // This action isn't allowed unless the system's authorization is based on the database
-        if ('database' != Fisma::configuration()->getConfig('auth_type') && 'root' != User::currentUser()->username) {
+        if (
+            'database' != Fisma::configuration()->getConfig('auth_type') && 
+            'root' != CurrentUser::getInstance()->username
+        ) {
             throw new Fisma_Zend_Exception(
                 'Password change is not allowed when the authentication type is not "database"'
             );
@@ -307,7 +310,7 @@ class UserController extends BaseController
         if (isset($post['oldPassword'])) {
 
             if ($form->isValid($post)) {
-                $user = User::currentUser();
+                $user = CurrentUser::getInstance();
                 try {
                     $user->merge($post);
                     $user->save();
@@ -413,7 +416,7 @@ class UserController extends BaseController
      */
     public function acceptRobAction()
     {
-        $user = User::currentUser();
+        $user = CurrentUser::getInstance();
         $user->lastRob = Fisma::now();
         $user->save();
         
@@ -639,7 +642,7 @@ class UserController extends BaseController
      */
     public function checkAccountAction()
     {
-        Fisma_Zend_Acl::requirePrivilegeForClass('read', 'User');
+        $this->_acl->requirePrivilegeForClass('read', 'User');
         
         $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');

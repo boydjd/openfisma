@@ -52,7 +52,7 @@ class Fisma_Zend_Form_Validate_PasswdMatch extends Zend_Validate_Abstract
     public function isValid($pass)
     {
         //it seemed that currentUser() is an old user
-        $user = Doctrine::getTable('User')->find(User::currentUser()->id);
+        $user = Doctrine::getTable('User')->find(CurrentUser::getInstance()->id);
         $this->_setValue($pass);
 
         if (Fisma_Hash::hash($pass . $user->passwordSalt, $user->hashType) != $user->password) {
