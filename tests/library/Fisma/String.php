@@ -217,4 +217,12 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         
         $this->assertEquals($expected, Fisma_String::convertToJavascriptName($original));
     }
+
+    /**
+     * Convert first character of string to lower case 
+     */
+    public function testLowercaseFirstCharacterOfString()
+    {
+        $this->assertEquals('hello', Fisma_String::lcfirst('Hello'));
+    }
 }

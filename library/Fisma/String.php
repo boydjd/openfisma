@@ -211,4 +211,16 @@ class Fisma_String
 
         return $name;        
     }
+
+    /**
+     * Change the first character of a string to lowercase 
+     * 
+     * @param mixed $string 
+     * @return string 
+     */
+    static function lcfirst($string)
+    {
+        $string[0] = strtolower($string[0]);  
+        return $string;
+    }
 }

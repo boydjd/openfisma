@@ -78,7 +78,7 @@ class Fisma_Zend_Controller_Dispatcher_SymfonyContainerDispatcher extends Zend_C
         } else {
             $container = null;
         }
-        if (null !== $container && $container->hasService(lcfirst($controllerId))) {
+        if (null !== $container && $container->hasService(Fisma_String::lcfirst($controllerId))) {
             $container->setService('zend.controller.request', $request);
             $container->setService('zend.controller.response', $this->getResponse());
             $container->setService('zend.controller.params', $this->getParams());

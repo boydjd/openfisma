@@ -210,8 +210,8 @@ class Fisma_Symfony_Components_ServiceContainerLoaderAnnotations extends sfServi
         if (!empty($serviceTagDescription)) {
             return $serviceTagDescription;
         } elseif (false !== ($pos = strrpos($className, '_'))) {
-            return lcfirst(substr($className, $pos + 1));
+            return Fisma_String::lcfirst(substr($className, $pos + 1));
         }
-        return lcfirst($className);
+        return Fisma_String::lcfirst($className);
     }
 }

@@ -114,8 +114,8 @@ abstract class Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstract
     protected function _filterSetPrefix($value)
     {
         if (strpos($value, 'set') === 0) {
-            return lcfirst(substr($value, 3));
+            return Fisma_String::lcfirst(substr($value, 3));
         }
-        return lcfirst($value);
+        return Fisma_String::lcfirst($value);
     }
 }
