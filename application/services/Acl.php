@@ -55,7 +55,7 @@ class Application_Service_Acl
      * @param Fisma_Zend_Acl $acl 
      * @return void
      */
-    public function set($acl = null)
+    public function set(Fisma_Zend_Acl $acl = null)
     {
         $this->_acl = $acl;
     }
