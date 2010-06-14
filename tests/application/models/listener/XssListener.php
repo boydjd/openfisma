@@ -35,14 +35,13 @@ class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
      */
     public function testXssListenerPurifiesHtmlField()
     {
-        // Use Incident.additionalInfo as a sample field which we know has an HTML purifier
-        $incident = new Incident();
+        $configuration = new Configuration();
         
-        $incident->additionalInfo = "<script type='text/javascript'>alert('hello')</script>";
-        
-        $incident->save();
+        $configuration->value = "<script type='text/javascript'>alert('hello')</script>";
+
+        $configuration->save();
         
         // HTML purifier should blank out the entire string, since it is all malicious
-        $this->assertEquals('', trim($incident->additionalInfo));
+        $this->assertEquals('', trim($configuration->value));
     }
 }
