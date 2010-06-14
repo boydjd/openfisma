@@ -23,12 +23,6 @@ try {
             realpath(dirname(__FILE__) . '/../application')
         );
 
-    defined('APPLICATION_ENV')
-        || define(
-            'APPLICATION_ENV',
-            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-        );
-
     set_include_path(
         APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR . APPLICATION_PATH . '/../library' .
         PATH_SEPARATOR . get_include_path()
@@ -41,7 +35,7 @@ try {
     
     if (Fisma::isInstall()) {
         $application = new Zend_Application(
-            APPLICATION_ENV,
+            'production',
             APPLICATION_PATH . '/config/application.ini'
         );
     } else {
@@ -68,7 +62,7 @@ try {
         );
 
         $application = new Zend_Application(
-            APPLICATION_ENV,
+            'production',
             new Zend_Config($config)
         );
     }
