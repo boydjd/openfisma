@@ -448,16 +448,16 @@ class IncidentController extends SecurityController
             $incident->ReportingUser = $this->_me;
             
             $incident->save();
+
+            // Add the reporting user as an actor
+            $incidentActor = new IrIncidentUser();
+
+            $incidentActor->userId = $this->_me->id;
+            $incidentActor->incidentId = $incident->id;
+            $incidentActor->accessType = 'ACTOR';
+
+            $incidentActor->save();
         }
-
-        // Add the reporting user as an actor
-        $incidentActor = new IrIncidentUser();
-
-        $incidentActor->userId = $this->_me->id;
-        $incidentActor->incidentId = $incident->id;
-        $incidentActor->accessType = 'ACTOR';
-
-        $incidentActor->save();
 
         $conn->commit();
         

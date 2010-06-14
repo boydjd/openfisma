@@ -43,7 +43,8 @@ class Fisma_Doctrine_Behavior_Lockable_Listener extends Doctrine_Record_Listener
         $pendingLinks = $invoker->getPendingLinks();
         $pendingUnlinks = $invoker->getPendingUnlinks();
         $noLinkChanges = empty($pendingLinks) && empty($pendingUnlinks);
-        $hasPrivilege = CurrentUser::getInstance()->acl()->hasPrivilegeForObject('lock', $invoker);
+        $hasPrivilege = (CurrentUser::getInstance())
+            ? CurrentUser::getInstance()->acl()->hasPrivilegeForObject('lock', $invoker) : false;
         $locked = $invoker->isLocked;
         $lockModified = (array_key_exists('isLocked', $modifiedFields) && ($modifiedFields['isLocked'] != $locked))
             ? true : false;

@@ -31,7 +31,7 @@ class CurrentUser
      * Holds an instance of the class
      * @var User
      */
-    private static $_instance;
+    private static $_instance = null;
 
     /**
      * Private constructor prevents direct instantiation of the class 
@@ -39,6 +39,15 @@ class CurrentUser
      * @return void
      */
     private function __construct()
+    {
+    }
+
+    /**
+     * Prevent cloning of the singleton instance 
+     * 
+     * @return void
+     */
+    private final function __clone()
     {
     }
 
@@ -52,24 +61,14 @@ class CurrentUser
      */
     public static function getInstance()
     {
-        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
-            $auth = Zend_Auth::getInstance();
-            $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-            self::$_instance = $auth->getIdentity();
-        } else {
-            self::$_instance = null;
+        if (!isset(self::$_instance)) {
+            if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode()) {
+                $auth = Zend_Auth::getInstance();
+                $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
+                self::$_instance = $auth->getIdentity();
+            }
         }
 
         return self::$_instance;
-    }
-
-    /**
-     * Prevent cloning of the singleton instance 
-     * 
-     * @return void
-     */
-    public function __clone()
-    {
-        trigger_error('Clone is not allowed.', E_USER_ERROR);
     }
 }
