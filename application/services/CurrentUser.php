@@ -50,7 +50,7 @@ class Application_Service_CurrentUser
      * @param User $user 
      * @return void
      */
-    public function set($user)
+    public function set(User $user)
     {
         $this->_user = $user;
     }
