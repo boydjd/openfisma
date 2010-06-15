@@ -80,8 +80,8 @@ class OrganizationDashboardController extends SecurityController
                            . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS contingency_plan_tests'
                        )
                        ->addSelect(
-                           'ROUND(SUM(IF(s.hasPii = \'YES\' AND s.piaUrl IS NOT NULL, 1, 0)) / '
-                           . 'SUM(IF(s.hasPii = \'YES\' OR s.hasPii IS NULL, 1, 0)) * 100, 1) AS current_pias'
+                           "ROUND(SUM(IF(s.piaRequired = 'YES' AND s.piaUrl IS NOT NULL AND s.piaUrl <> '', 1, 0)) / "
+                           . "SUM(IF(s.piaRequired = 'YES' OR s.piaRequired IS NULL, 1, 0)) * 100, 1) AS current_pias"
                        )
                        ->whereIn('o.id', $userOrganizations)
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
