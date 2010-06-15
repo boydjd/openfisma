@@ -149,19 +149,19 @@ abstract class Fisma_Inject_Abstract
         // Handle related objects, since merge doesn't
         if (!empty($findingData['cve'])) {
             foreach ($findingData['cve'] as $cve) {
-                $finding->Cve[]->value = $cve;
+                $finding->Cves[]->value = $cve;
             }
         }
 
         if (!empty($findingData['bugtraq'])) {
             foreach ($findingData['bugtraq'] as $bugtraq) {
-                $finding->Bugtraq[]->value = $bugtraq;
+                $finding->Bugtraqs[]->value = $bugtraq;
             }
         }
 
         if (!empty($findingData['xref'])) {
             foreach ($findingData['xref'] as $xref) {
-                $finding->Xref[]->value = $xref;
+                $finding->Xrefs[]->value = $xref;
             }
         }
 
