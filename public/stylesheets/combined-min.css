@@ -84,6 +84,13 @@ div.section>div>div.clear{display:none;}
 div.section>div.form_box>form>div.clear{display:none;}
 form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
+div.dashboardCard{position:relative;float:left;width:10em;height:6em;margin:.8em;border:1px solid #b0b0b0;background-color:lightgrey;}
+div.dashboardCard div.title{margin:.3em auto 0 auto;text-align:center;font-weight:bold;font-size:1em;}
+div.dashboardCard div.metric{position:absolute;width:100%;bottom:0;text-align:center;font-weight:bold;font-size:2.5em;}
+div.dashboardGreen{border-color:#83ca8d;background-color:lightgreen;}
+div.dashboardYellow{border-color:#e2e13b;background-color:yellow;}
+div.dashboardRed{border-color:#daaeb5;background-color:pink;}
+div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
 div.attachArtifactsProgressBar{width:128px;height:15px;margin:10px auto 0 auto;display:none;}
 table.treeTable{width:100%;}
 table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
