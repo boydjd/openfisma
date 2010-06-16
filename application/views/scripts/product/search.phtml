@@ -5,7 +5,7 @@
         <th colspan="2" align="left">Product Search</th>
         <th width="183" align="left">Product Select</th>
         <?php 
-        if ($this->acl()->isAllowed('admin_products', 'create')) { 
+        if ($this->acl->isAllowed('admin_products', 'create')) { 
         ?>
             <th width="249" align="left">
                 [<a id="add_product" 

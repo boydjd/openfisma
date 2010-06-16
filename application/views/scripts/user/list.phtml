@@ -75,7 +75,7 @@ var myColumnDefs = [
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
     <?php 
-    if ($this->acl()->hasPrivilegeForClass('read', 'User')) { 
+    if ($this->acl->hasPrivilegeForClass('read', 'User')) { 
     ?>
     myDataTable.subscribe("rowClickEvent", 
         function (oArgs) {

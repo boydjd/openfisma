@@ -1,13 +1,13 @@
 <?php
 echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
 $operation = '';
-if ($this->acl()->hasPrivilegeForObject('update', $this->subject)) {
+if ($this->acl->hasPrivilegeForObject('update', $this->subject)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl()->hasPrivilegeForObject('delete', $this->subject)) {
+if ($this->acl->hasPrivilegeForObject('delete', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
-if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
+if ($this->acl->hasPrivilegeForObject('read', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
 }
 Fisma_Format_Section::startSection("User Account Information $operation"); ?>

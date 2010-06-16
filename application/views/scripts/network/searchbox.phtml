@@ -8,7 +8,7 @@
         ?>
 
         <?php 
-        if ($this->acl()->hasPrivilegeForClass('create', 'Network')) {
+        if ($this->acl->hasPrivilegeForClass('create', 'Network')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Network', 
                                                          'href' => '/panel/network/sub/create'));

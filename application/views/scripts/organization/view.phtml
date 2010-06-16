@@ -1,9 +1,9 @@
 <?php
 $operation = '';
-if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 }
-if ($this->acl()->hasPrivilegeForObject('delete', $this->organization)) {
+if ($this->acl->hasPrivilegeForObject('delete', $this->organization)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 Fisma_Format_Section::startSection("Organization Information</b> $operation"); ?>

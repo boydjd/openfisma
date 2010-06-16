@@ -1,4 +1,5 @@
 <?php Fisma_Format_Section::startSection('Dashboard'); ?>
+
 <div class="panel">
     <p><em>Alerts</em></p>
     <ul>
@@ -16,7 +17,7 @@
             </a>
             </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
         </li>
-<?php if ($this->acl()->hasPrivilegeForClass('approve', 'Finding')) : ?>
+<?php if ($this->acl->hasPrivilegeForClass('approve', 'Finding')) : ?>
         <li>
             There are <b>
             <a href="<?php echo $this->escape($this->pendingUrl, 'none')?>">
