@@ -219,14 +219,14 @@ class IRWorkflowController extends SecurityController
                     $msg = "The workflow is created";
                     $model = 'notice';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
                 $this->_forward('view', null, null, array('id' => $irworkflow->id));
                 return;
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to create workflow:<br>$errorString", 'warning');
+                $this->view->priorityMessenger("Unable to create workflow:<br>$errorString", 'warning');
             }
         }
         
@@ -327,12 +327,12 @@ class IRWorkflowController extends SecurityController
                 $msg = "Nothing changed";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_forward('view', null, null, array('id' => $irworkflow->id));
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update workflow<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to update workflow<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
@@ -372,14 +372,14 @@ class IRWorkflowController extends SecurityController
                     $msg = "The workflow step is created";
                     $model = 'notice';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
                 $this->_forward('stepview', null, null, array('id' => $irworkflowstep->id));
                 return;
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to create workflow step:<br>$errorString", 'warning');
+                $this->view->priorityMessenger("Unable to create workflow step:<br>$errorString", 'warning');
             }
         }
         
@@ -531,7 +531,7 @@ class IRWorkflowController extends SecurityController
                 $msg = "Nothing changed";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
 
             $this->_sortSteps();
         
@@ -539,7 +539,7 @@ class IRWorkflowController extends SecurityController
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update workflow step<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to update workflow step<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('stepview', null, null, array('id' => $id, 'v' => 'stepedit'));
         }
@@ -564,7 +564,7 @@ class IRWorkflowController extends SecurityController
                 $msg = "Failed to delete the Workflow";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
         }
         $this->_forward('list');
     }
@@ -586,7 +586,7 @@ class IRWorkflowController extends SecurityController
                 $msg = "Failed to delete the Workflow Step";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_sortSteps();
         }
         $this->_forward('tree');

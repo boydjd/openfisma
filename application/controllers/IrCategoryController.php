@@ -258,13 +258,13 @@ class IrCategoryController extends SecurityController
                     $msg = "The category is created";
                     $model = 'notice';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
                 $this->_forward('view', null, null, array('id' => $ircategory->id));
                 return;
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $this->view->priorityMessenger("Unable to create category: $errorString", 'warning');
+                $this->view->view->priorityMessenger("Unable to create category: $errorString", 'warning');
             }
         }
         
@@ -313,12 +313,12 @@ class IrCategoryController extends SecurityController
                 $msg = "Nothing changed";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_forward('view', null, null, array('id' => $ircategory->id));
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update category<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
         }
@@ -368,7 +368,7 @@ class IrCategoryController extends SecurityController
                 $msg = "Failed to delete the Category";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
         }
         $this->_forward('list');
     }
@@ -401,14 +401,14 @@ class IrCategoryController extends SecurityController
                     $msg = "The category is created";
                     $model = 'notice';
                 }
-                $this->message($msg, $model);
+                $this->view->priorityMessenger($msg, $model);
                 $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
                 return;
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
-                $this->message("Unable to create sub category:<br>$errorString", 'warning');
+                $this->view->priorityMessenger("Unable to create sub category:<br>$errorString", 'warning');
             }
         }
         
@@ -537,12 +537,12 @@ class IrCategoryController extends SecurityController
                 $msg = "Nothing changed";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
             $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
-            $this->message("Unable to update category<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
             $this->_forward('subview', null, null, array('id' => $id, 'v' => 'subedit'));
         }
@@ -566,7 +566,7 @@ class IrCategoryController extends SecurityController
                 $msg = "Failed to delete the Sub Category";
                 $model = 'warning';
             }
-            $this->message($msg, $model);
+            $this->view->priorityMessenger($msg, $model);
         }
         $this->_forward('tree');
     }
