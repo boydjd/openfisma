@@ -211,7 +211,7 @@ class Fisma_Menu
             $admin->add(new Fisma_Yui_MenuItem('General Policies', '/config/general'));
 
             if ('ldap' == Fisma::configuration()->getConfig('auth_type')) {
-                $admin->add(new Fisma_Yui_MenuItem('LDAP', '/config/ldaplist'));
+                $admin->add(new Fisma_Yui_MenuItem('LDAP', '/config/list-ldap'));
             }
 
             $admin->add(new Fisma_Yui_MenuItem('Modules', '/config/modules'));

@@ -56,7 +56,7 @@ class Fisma_Yui_DataTable_Column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
      */
-    public function __construct($name, $sortable, $formatter)
+    public function __construct($name, $sortable, $formatter = null)
     {
         $this->_name = $name;
         $this->_sortable = $sortable;

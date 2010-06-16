@@ -150,5 +150,45 @@ Fisma.TableFormat = {
         } else if ('NO' == oData) {
             Fisma.TableFormat.red(elCell.parentNode);
         }
-    }
+    },
+    
+    /**
+     * A formatter which displays an edit icon that is linked to an edit page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+     editControl : function (elCell, oRecord, oColumn, oData) {
+        
+        var icon = document.createElement('img');
+        icon.src = '/images/edit.png';
+        
+        var link = document.createElement('a');
+        link.href = oData;
+        link.appendChild(icon);
+        
+        elCell.appendChild(link);
+     },
+     
+     /**
+      * A formatter which displays a delete icon that is linked to an edit page
+      * 
+      * @param elCell Reference to a container inside the <td> element
+      * @param oRecord Reference to the YUI row object
+      * @param oColumn Reference to the YUI column object
+      * @param oData The data stored in this cell
+      */
+      deleteControl : function (elCell, oRecord, oColumn, oData) {
+
+         var icon = document.createElement('img');
+         icon.src = '/images/del.png';
+
+         var link = document.createElement('a');
+         link.href = oData;
+         link.appendChild(icon);
+
+         elCell.appendChild(link);
+      }
 };

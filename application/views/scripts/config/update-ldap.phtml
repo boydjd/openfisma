@@ -1,4 +1,4 @@
-<?php Fisma_Format_Section::startSection('LDAP Configurations <a href="/config/ldaplist">[Back]</a>'); ?>
+<?php Fisma_Format_Section::startSection('LDAP Configurations <a href="/config/list-ldap">[Back]</a>'); ?>
 <div class="block">
 <?php
     $this->form->setAttrib('id', 'ldapUpdate');
@@ -9,7 +9,7 @@
     var validateLDAP = function(){
         var form = document.getElementById('ldapUpdate');
         YAHOO.util.Connect.setForm(form);
-        YAHOO.util.Connect.asyncRequest('POST', '/config/ldapvalid/format/html', {
+        YAHOO.util.Connect.asyncRequest('POST', '/config/validate-ldap/format/html', {
             success:function (o){ldapResult(o.responseText, o.statusText)},
             failure: handleFailure});
     }

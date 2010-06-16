@@ -4165,7 +4165,7 @@ function ms_deny(formname){
         form2.submit();
     }
 }
-Fisma.SwitchButton=function(b,a,e,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=e){callbackObj=getObjectFromName(e);if("function"==typeof callbackObj){this.callback=callbackObj}else{throw"Specified callback is not a function: "+e}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
+Fisma.SwitchButton=function(b,a,e,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=e){callbackObj=Fisma.Util.getObjectFromName(e);if("function"==typeof callbackObj){this.callback=callbackObj}else{throw"Specified callback is not a function: "+e}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/
  * 
@@ -4495,7 +4495,7 @@ Fisma.TabView.Roles = function() {
         }
     }
 }();
-Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}}};/**
+Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},contingencyPlanTest:function(b,a,c,d){Fisma.TableFormat.selfAssessment(b,a,c,d)},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4647,7 +4647,47 @@ Fisma.TableFormat = {
         } else if ('NO' == oData) {
             Fisma.TableFormat.red(elCell.parentNode);
         }
-    }
+    },
+    
+    /**
+     * A formatter which displays an edit icon that is linked to an edit page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+     editControl : function (elCell, oRecord, oColumn, oData) {
+        
+        var icon = document.createElement('img');
+        icon.src = '/images/edit.png';
+        
+        var link = document.createElement('a');
+        link.href = oData;
+        link.appendChild(icon);
+        
+        elCell.appendChild(link);
+     },
+     
+     /**
+      * A formatter which displays a delete icon that is linked to an edit page
+      * 
+      * @param elCell Reference to a container inside the <td> element
+      * @param oRecord Reference to the YUI row object
+      * @param oColumn Reference to the YUI column object
+      * @param oData The data stored in this cell
+      */
+      deleteControl : function (elCell, oRecord, oColumn, oData) {
+
+         var icon = document.createElement('img');
+         icon.src = '/images/del.png';
+
+         var link = document.createElement('a');
+         link.href = oData;
+         link.appendChild(icon);
+
+         elCell.appendChild(link);
+      }
 };Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -4734,7 +4774,7 @@ Fisma.UrlPanel = function() {
         }
     };
 }();
-Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(!a){throw"Specified object does not exist: "+c}}return a}};/**
+Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.

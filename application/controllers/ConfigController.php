@@ -44,7 +44,7 @@ class ConfigController extends SecurityController
     {
         parent::init();
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('ldapvalid', 'html')
+        $ajaxContext->addActionContext('validate-ldap', 'html')
                     ->initContext();
         $contextSwitch = $this->_helper->contextSwitch();
         $contextSwitch->setAutoJsonSerialization(false)
@@ -124,43 +124,68 @@ class ConfigController extends SecurityController
      * 
      * @return void
      */
-    public function ldaplistAction()
+    public function listLdapAction()
     {
-        $ldapCollection = Doctrine::getTable('LdapConfig')->findAll();
+        $ldapQuery = Doctrine_Query::create()
+                     ->select('id, username, host, port, useSsl')
+                     ->from('LdapConfig')
+                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                     
+        $ldapConfigs = $ldapQuery->execute();
 
-        // @see http://jira.openfisma.org/browse/OFJ-30        
-        $ldapArray = $ldapCollection->toArray();
-        
-        foreach ($ldapArray as &$ldap) {
-            $ldap['password'] = '********';
-            $ldap['url'] = $this->_makeLdapUrl($ldap);
+        // Construct the table data for the LDAP list, including edit and delete icons
+        $ldapList = array();
+
+        foreach ($ldapConfigs as $ldapConfig) {
+            $url = $this->_makeLdapUrl(
+                $ldapConfig['username'], 
+                $ldapConfig['host'], 
+                $ldapConfig['port'], 
+                $ldapConfig['useSsl']
+            );
+            
+            $editUrl = "/config/update-ldap/id/{$ldapConfig['id']}";
+            $deleteUrl = "/config/delete-ldap/id/{$ldapConfig['id']}";
+                      
+            $ldapList[] = array($url, $editUrl, $deleteUrl);
         }
 
-        $this->view->assign('ldaps', $ldapArray);
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->setData($ldapList);
+            
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Connection', false, 'YAHOO.widget.DataTable.formatText'));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'));
+
+        $this->view->dataTable = $dataTable;
     }
 
     /**
-     * Just removed this from the view script and threw it in here so we could finish standards
+     * Return a displayable LDAP URL
      * 
-     * @param LdapConfig $value An LdapConfig object to convert to URL form
-     * @return string The assembled Ldap URL
-     * @todo cleanup
+     * The password is masked so that it is not displayed to the end user in this view
+     * 
+     * @param string $username
+     * @param string $host
+     * @param string $port
+     * @param string $useSsl
+     * @return string
      */
-    private function _makeLdapUrl($value)
+    private function _makeLdapUrl($username, $host, $port, $useSsl)
     {
-        $url = $value['useSsl'] ? "ldaps://" : "ldap://";
-        if (!empty($value['username'])) {
-            $url .= $value['username'];
-            if (!empty($value['password'])) {
-                $url .= ':' . $value['password'];
-            }
-            $url .= '@';
-        }
-        $url .= $value['host'];
+        $url = $useSsl ? "ldaps://" : "ldap://";
 
-        if (!empty($value['port'])) {
-            $url .= ':' .$value['port'];
+        if (!empty($username)) {
+            $url .= "$username:********@";
         }
+
+        $url .= $host;
+
+        if (!empty($port)) {
+            $url .= ":$port";
+        }
+        
         return $url;
     }
 
@@ -200,7 +225,7 @@ class ConfigController extends SecurityController
      * 
      * @return void
      */
-    public function ldapupdateAction()
+    public function updateLdapAction()
     {        
         $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
@@ -220,7 +245,7 @@ class ConfigController extends SecurityController
                 
                 $msg = 'Configuration updated successfully';
                 $this->view->priorityMessenger($msg, 'notice');
-                $this->_redirect('/config/ldaplist');
+                $this->_redirect('/config/list-ldap');
                 return;
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
@@ -240,13 +265,13 @@ class ConfigController extends SecurityController
      * 
      * @return void
      */
-    public function ldapdelAction()
+    public function deleteLdapAction()
     {        
         $id = $this->_request->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
         $msg = "Ldap Server deleted successfully.";
         $this->view->priorityMessenger($msg, 'notice');
-        $this->_redirect('/config/ldaplist');
+        $this->_redirect('/config/list-ldap');
     }
 
     /**
@@ -256,7 +281,7 @@ class ConfigController extends SecurityController
      * 
      * @return void
      */
-    public function ldapvalidAction()
+    public function validateLdapAction()
     {        
         $form = $this->_getConfigForm('ldap');
         if ($this->_request->isPost()) {
