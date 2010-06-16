@@ -109,7 +109,7 @@ class ConfigController extends SecurityController
             /**
              * @todo More ugliness. Remove this.
              */
-            if (in_array($name, array('session_inactivity_period', 'unlock_duration'))) {
+            if (in_array($name, array('session_inactivity_period'))) {
                 $value /= 60; // Convert from seconds to minutes
             }
             
@@ -414,7 +414,7 @@ class ConfigController extends SecurityController
                 /**
                  * @todo this needs to be cleaned up
                  */
-                if (in_array($item, array('session_inactivity_period', 'unlock_duration'))) {
+                if ('session_inactivity_period' == $item) {
                     $value *= 60; // convert minutes to seconds
                 }
 
@@ -593,13 +593,6 @@ class ConfigController extends SecurityController
             $name = $element->getName();            
             $value = Fisma::configuration()->getConfig($name);
 
-            /**
-             * @todo More ugliness. Remove this.
-             */
-            if ('unlock_duration' == $name) {
-                $value /= 60; // Convert from seconds to minutes
-            }
-            
             $form->setDefault($name, $value);
         }
 

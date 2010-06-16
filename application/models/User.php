@@ -201,7 +201,7 @@ class User extends BaseUser
                 && Fisma::configuration()->getConfig('unlock_enabled')) {
 
             $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
-            $lockTs->addSecond(Fisma::configuration()->getConfig('unlock_duration'));
+            $lockTs->addMinute(Fisma::configuration()->getConfig('unlock_duration'));
             $now = Zend_Date::now();            
             $lockTs->sub($now);
             // ceil() so that 1 second remaining is rounded up to 1 minute, rather than rounded down to 0 minute
