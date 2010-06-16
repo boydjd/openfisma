@@ -2,15 +2,15 @@
 echo $this->escape($this->partial('role/searchbox.phtml'), 'none');
 $operation = '';
 
-if ($this->acl->hasPrivilegeForObject('assignPrivileges', $this->subject)) {
+if ($this->acl()->hasPrivilegeForObject('assignPrivileges', $this->subject)) {
     $operation .= "[<a href='{$this->rightLink}'>Right</a>]";
 }
 
-if ($this->acl->hasPrivilegeForObject('update', $this->subject)) {
+if ($this->acl()->hasPrivilegeForObject('update', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->editLink}'>Edit</a>]";
 }
 
-if ($this->acl->hasPrivilegeForObject('delete', $this->subject)) {
+if ($this->acl()->hasPrivilegeForObject('delete', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
 }
 

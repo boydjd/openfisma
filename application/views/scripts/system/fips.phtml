@@ -6,7 +6,7 @@ Fisma_Format_Section::startSection('Confidentiality');
         <td>Confidentiality: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="confidentiality" 
                   class="editable" 
@@ -31,7 +31,7 @@ Fisma_Format_Section::startSection('Confidentiality');
         <td>Description: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <div id="confidentialityDescription" 
                   class="editable" 
@@ -63,7 +63,7 @@ Fisma_Format_Section::startSection('Integrity');
         <td>Integrity: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="integrity" 
                   class="editable" 
@@ -88,7 +88,7 @@ Fisma_Format_Section::startSection('Integrity');
         <td>Description: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <div id="integrityDescription" 
                   class="editable" 
@@ -120,7 +120,7 @@ Fisma_Format_Section::startSection('Availability');
         <td>Availability: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <span id="availability" 
                   class="editable" 
@@ -145,7 +145,7 @@ Fisma_Format_Section::startSection('Availability');
         <td>Description: </td>
         <td>
             <?php
-            if ($this->acl->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
             <div id="availabilityDescription" 
                   class="editable" 

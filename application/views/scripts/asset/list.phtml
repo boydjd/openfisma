@@ -9,7 +9,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
 <form id="assetresult" method="post" action="/panel/asset/sub/multidelete">
 <div class="toolbar">
     <?php
-        if ($this->acl->hasPrivilegeForClass('create', 'Asset')) {
+        if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
             $importButton = new Fisma_Yui_Form_Button_Link('import',
                                                 array('value' => 'Import Assets',
                                                       'href' => '/panel/asset/sub/import'));
@@ -22,7 +22,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                             'imageSrc' => '/images/pdf.gif'));
         echo $this->escape($pdfButton, 'none');
 
-        if ($this->acl->hasPrivilegeForClass('delete', 'Asset')) {
+        if ($this->acl()->hasPrivilegeForClass('delete', 'Asset')) {
             $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
                                                    array('label' => 'Select All', 
                                                          'onClickFunction' => 'selectAllUnsafe'));
@@ -38,7 +38,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                                                       'onClickFunction' => 'deleteSelectedAssets'));
             echo $this->escape($deleteButton, 'none');
         }
-        if ($this->acl->hasPrivilegeForClass('create', 'Asset')) {
+        if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
             $createAssetButton = new Fisma_Yui_Form_Button_Link(
                 'createAsset', 
                 array(

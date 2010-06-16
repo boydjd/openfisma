@@ -88,8 +88,9 @@ class SecurityController extends Zend_Controller_Action
             // Store a reference to the authenticated user's ACL inside the controller
             $this->_acl = $this->_container->acl->get();
              
-            // Store a reference to the ACL inside the view object
-            $this->view->assign('acl', $this->_acl);
+            // Setup the ACL view helper
+            $aclHelper = $this->view->getHelper('acl');
+            $aclHelper->setAcl($this->_acl);
         } else {
             // User is not authenticated. The preDispatch will forward the user to the login page,
             // but we want to store their original request so that we can redirect them to their
