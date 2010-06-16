@@ -98,7 +98,7 @@ if ($finding->originalEcd == $finding->currentEcd) {
                 echo $this->escape(' class="date editable" target="currentEcd"', 'none');
                 if ($finding->ecdLocked) {
                     $onclick = "document.getElementById('currentChangeDescription').style.display = 'none';"
-                        . "document.getElementById('ecdChangeDescription').style.display = 'inline'";
+                        . "document.getElementById('finding[ecdChangeDescription]').style.display = 'inline'";
                     echo $this->escape('onclick="', 'none');
                     echo $this->escape($onclick, 'none');
                     echo $this->escape('"', 'none');
