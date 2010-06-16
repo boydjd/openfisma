@@ -371,13 +371,6 @@ class Fisma
      */
     public static function dispatch() 
     {
-        // This is a hack to accomodate the flash file uploader. Flash can't send cookies, so it posts the session
-        // ID instead.
-        /** @todo review this -- is it any kind of a security risk? */
-        if (isset($_POST['sessionId'])) {
-            Zend_Session::setId($_POST['sessionId']);
-        }
-
         $frontController = Zend_Controller_Front::getInstance();
 
         if (self::debug()) {
