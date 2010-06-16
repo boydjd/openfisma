@@ -48,7 +48,7 @@
     <div class="approvalStep">
     <p>
         <b><?php echo $this->escape($activeEvaluation->name)?></b>
-        <?php if ($this->acl->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)): ?>
+        <?php if ($this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)): ?>
             <input type="hidden" name="comment" value="" />
             <input type="hidden" name="decision" value="APPROVED" />
             <input name="submit_ea" type="button" value="APPROVED"
@@ -84,7 +84,7 @@
     $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                                 array('label' => 'Upload Evidence', 
                                                       'onClickFunction' => 'upload_evidence'));
-    if ('EN' != $this->finding->status || !$this->acl->hasPrivilegeForObject('upload_evidence', $this->finding)) {
+    if ('EN' != $this->finding->status || !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)) {
         $uploadEvidenceButton->readOnly = true;
     }
 ?>

@@ -8,7 +8,7 @@
         ?>
 
         <?php 
-        if ($this->acl->hasPrivilegeForClass('create', 'Organization')) {
+        if ($this->acl()->hasPrivilegeForClass('create', 'Organization')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add System', 
                                                          'href' => '/panel/system/sub/create'));

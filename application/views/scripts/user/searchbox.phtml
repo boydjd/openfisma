@@ -6,7 +6,7 @@
                                                      'href' => '/panel/account/sub/list'));
         echo $this->escape($listButton, 'none');
 
-        if ($this->acl->hasPrivilegeForClass('create', 'User')) {
+        if ($this->acl()->hasPrivilegeForClass('create', 'User')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Account', 
                                                          'href' => '/panel/account/sub/create'));
