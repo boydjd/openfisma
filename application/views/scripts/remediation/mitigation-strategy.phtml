@@ -275,9 +275,9 @@ if ($finding->status != 'NEW'
     }
 
     foreach ($disableEvaluations as $evaluation) {
-        echo $this->escape('<div class="approvalStep"><p><b>{', 'none');
+        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
         echo $this->escape($evaluation->name);
-        echo $this->escape('}</b>N/A</div>', 'none');
+        echo $this->escape('</b>N/A</div>', 'none');
     }
     echo $this->escape('</div>', 'none');
 }
