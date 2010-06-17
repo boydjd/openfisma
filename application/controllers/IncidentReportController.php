@@ -64,7 +64,7 @@ class IncidentReportController extends SecurityController
      */
     public function historyAction()
     {
-        /**
+        /*
          * This data is gotten in 2 separate queries and then glued together in PHP. These are base queries which are 
          * extended below. First query gets the stats for reported incidents, second query gets stats for rejected and
          * resolved incidents. This can't be done in one query because one query operates on reportTs and the other 
@@ -72,6 +72,7 @@ class IncidentReportController extends SecurityController
          */
         $reportedIncidentsQuery = Doctrine_Query::create()
                                   ->from('Incident i')
+                                  ->having('COUNT(*) > 0')
                                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
         $closedIncidentsQuery = Doctrine_Query::create()
@@ -104,7 +105,7 @@ class IncidentReportController extends SecurityController
              */
             $months['i_' . $columnName] = $startDate->get('M');
             
-            /**
+            /*
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
              * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
              * are generated based off of internal dates and then filtered through Zend_Date.
@@ -119,12 +120,12 @@ class IncidentReportController extends SecurityController
         $reportedIncidents = $reportedIncidentsQuery->execute();
         $closedIncidents = $closedIncidentsQuery->execute();
 
-        /**
+        /*
          * Consolidate query results into a single 2d array, filling in blank entries in case either query above
          * doesn't have any hits.
          */
         $history = array();
-        
+
         if (count($reportedIncidents) == 0) {
             // Create 12 blank months
             $history['Reported'] = array_combine(array_keys($months), array_fill(0, 12, 0));
@@ -137,19 +138,25 @@ class IncidentReportController extends SecurityController
             $history['Rejected'] = array_combine(array_keys($months), array_fill(0, 12, 0));
             $history['Resolved'] = array_combine(array_keys($months), array_fill(0, 12, 0));
         } else {
-            if ('rejected' != $closedIncidents[0]['i_resolution']) {
+            if (count($closedIncidents) == 2) {
+                // Rejected and resolved incidents found. Rejected will always be in index 0 due to sort in query.
+                $history['Rejected'] = $closedIncidents[0];
+                unset($history['Rejected']['i_resolution']);
+                
+                $history['Resolved'] = $closedIncidents[1];
+                unset($history['Resolved']['i_resolution']);                
+            } elseif ('resolved' == $closedIncidents[0]['i_resolution']) {
                 // No rejected incidents were found but resolved incidents were found
                 $history['Rejected'] = array_combine(array_keys($months), array_fill(0, 12, 0));
 
                 $history['Resolved'] = $closedIncidents[0];
                 unset($history['Resolved']['i_resolution']);
             } else {
-                // Rejected and resolved incidents found. Rejected will always be in index 0 due to sort in query.
+                // No resolved incidents were found but rejected incidents were found
                 $history['Rejected'] = $closedIncidents[0];
                 unset($history['Rejected']['i_resolution']);
-                
-                $history['Resolved'] = $closedIncidents[1];
-                unset($history['Resolved']['i_resolution']);
+
+                $history['Resolved'] = array_combine(array_keys($months), array_fill(0, 12, 0));
             }
         }
 
@@ -189,13 +196,13 @@ class IncidentReportController extends SecurityController
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
             
-            /**
+            /*
              * Generate an array that correlates names of months to column names so that the view can display this 
              * in a table
              */
             $months[$columnName] = $startDate->get('M');
             
-            /**
+            /*
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
              * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
              * are generated based off of internal dates and then filtered through Zend_Date.
