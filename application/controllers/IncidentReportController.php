@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentReportController extends SecurityController
+class IncidentReportController extends IncidentBaseController
 {
     /**
      * Initialize the controller

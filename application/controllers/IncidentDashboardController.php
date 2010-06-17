@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentDashboardController extends SecurityController
+class IncidentDashboardController extends IncidentBaseController
 {
     /**
      * Set up the JSON contexts used in this controller
@@ -107,11 +107,11 @@ class IncidentDashboardController extends SecurityController
         $limit = $this->getRequest()->getParam('limit', 10);
         $offset = $this->getRequest()->getParam('offset', 0);
             
-        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
-                             ->select('i.id, i.reportTs, i.additionalInfo, i.piiInvolved')
-                             ->andWhere('i.status = ?', "new")
-                             ->orderBy("i.$sortBy $order")
-                             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $newIncidentsQuery = $this->_getUserIncidentQuery()
+                                  ->select('i.id, i.reportTs, i.additionalInfo, i.piiInvolved')
+                                  ->andWhere('i.status = ?', "new")
+                                  ->orderBy("i.$sortBy $order")
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         // Get total count of results
         $this->view->count = $newIncidentsQuery->count();
@@ -147,11 +147,11 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
-                             ->select('i.id, i.additionalInfo, i.modifiedTs')
-                             ->andWhere('i.modifiedTs > ?', $cutoffTime)
-                             ->orderBy("i.$sortBy $order")
-                             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $newIncidentsQuery = $this->_getUserIncidentQuery()
+                                  ->select('i.id, i.additionalInfo, i.modifiedTs')
+                                  ->andWhere('i.modifiedTs > ?', $cutoffTime)
+                                  ->orderBy("i.$sortBy $order")
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         // Get total count of results
         $this->view->count = $newIncidentsQuery->count();
@@ -187,12 +187,12 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(5, Zend_Date::DAY)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
-                             ->select('i.id, i.additionalInfo, i.closedTs, i.resolution')
-                             ->andWhere('i.status = ?', 'closed')
-                             ->andWhere('i.closedTs > ?', $cutoffTime)
-                             ->orderBy("i.$sortBy $order")
-                             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $newIncidentsQuery = $this->_getUserIncidentQuery()
+                                  ->select('i.id, i.additionalInfo, i.closedTs, i.resolution')
+                                  ->andWhere('i.status = ?', 'closed')
+                                  ->andWhere('i.closedTs > ?', $cutoffTime)
+                                  ->orderBy("i.$sortBy $order")
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         // Get total count of results
         $this->view->count = $newIncidentsQuery->count();
@@ -228,13 +228,13 @@ class IncidentDashboardController extends SecurityController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = IncidentController::getUserIncidentQuery()
-                             ->select('i.id, i.additionalInfo, count(c.id) AS count')
-                             ->innerJoin('i.IncidentComment c')
-                             ->andWhere('c.createdTs > ?', $cutoffTime)
-                             ->groupBy('i.id')
-                             ->orderBy("i.$sortBy $order")
-                             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $newIncidentsQuery = $this->_getUserIncidentQuery()
+                                  ->select('i.id, i.additionalInfo, count(c.id) AS count')
+                                  ->innerJoin('i.IncidentComment c')
+                                  ->andWhere('c.createdTs > ?', $cutoffTime)
+                                  ->groupBy('i.id')
+                                  ->orderBy("i.$sortBy $order")
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         // Get total count of results
         $this->view->count = $newIncidentsQuery->count();

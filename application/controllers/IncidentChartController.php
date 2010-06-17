@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentChartController extends SecurityController
+class IncidentChartController extends IncidentBaseController
 {
     /**
      * Set contexts for this controller's actions

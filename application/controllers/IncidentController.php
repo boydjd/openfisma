@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentController extends SecurityController
+class IncidentController extends IncidentBaseController
 {
     /**
      * The main name of the model.
@@ -1242,7 +1242,7 @@ class IncidentController extends SecurityController
      * 
      * If no search parameters, then lists all incidents visible to the current user
      * 
-     * Access control is handled in the query itself, which is returned from getUserIncidentQuery
+     * Access control is handled in the query itself, which is returned from _getUserIncidentQuery
      */
     public function searchAction()
     {
@@ -1268,7 +1268,7 @@ class IncidentController extends SecurityController
             $order = 'ASC'; //ignore other values
         }
         
-        $q = self::getUserIncidentQuery()
+        $q = $this->_getUserIncidentQuery()
              ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
              ->leftJoin('i.Category c')
              ->orderBy("$sortBy $order")
@@ -1638,28 +1638,6 @@ class IncidentController extends SecurityController
         $paUsers = $paQuery->execute();
                 
         return $paUsers;
-    }
-
-    /**
-     * Returns a query which matches all of the users currently viewable incidents
-     * 
-     * @return Doctrine_Query
-     */
-    public static function getUserIncidentQuery()
-    {
-        /*
-         * A user can read *all* incidents if he has the (read, Incident) privilege. Otherwise, he is only allowed to 
-         * view those incidents for which he is an actor or an observer.
-         */
-        $incidentQuery = Doctrine_Query::create()
-                         ->from('Incident i');
-        
-        if (!$this->_acl->hasPrivilegeForClass('read', 'Incident')) {
-            $incidentQuery->leftJoin('i.Users u')
-                          ->where('u.id = ?', CurrentUser::getInstance()->id);
-        }
-
-        return $incidentQuery;
     }
 
     private function _getAssociatedUsers($incidentId) 
