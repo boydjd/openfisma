@@ -6,7 +6,7 @@
     <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
 <?php    
     } else {
-        echo $this->escape($this->message);
+        echo $this->escape($this->message, 'none');
     }
 
     $contactEmail = Fisma::configuration()->getConfig('contact_email');
