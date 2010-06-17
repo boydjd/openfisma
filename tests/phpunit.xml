@@ -5,6 +5,11 @@
             <directory>../application</directory>
             <file>../library/Fisma.php</file>
             <directory>../library/Fisma</directory>
+            <exclude>
+                <directory>../application/controllers</directory>
+                <directory>../application/models/generated</directory>
+                <directory>../application/doctrine/migrations</directory>
+            </exclude>
         </whitelist>
         
         <blacklist>
