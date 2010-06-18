@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Library
  * @version    $Id$
  */
-class Test_library_Fisma_Yui_DataTable_Local extends Test_FismaUnitTest
+class Test_Library_Fisma_Yui_DataTable_Local extends Test_FismaUnitTest
 {
     /**
      * Add columns and get columns from a data table
@@ -41,8 +41,8 @@ class Test_library_Fisma_Yui_DataTable_Local extends Test_FismaUnitTest
         $this->assertEquals(0, count($table->getColumns()));
             
         // Now add 2 columns
-        $table->addColumn('Column 1', true)
-              ->addColumn('Column 2', true);
+        $table->addColumn(new Fisma_Yui_DataTable_Column('Column 1', true), true)
+              ->addColumn(new Fisma_Yui_DataTable_Column('Column 2', true), true);
 
         $this->assertEquals(2, count($table->getColumns()));
     }
