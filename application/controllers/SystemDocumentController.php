@@ -81,7 +81,7 @@ class SystemDocumentController extends SecurityController
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
         
-        $keywords = htmlentities(trim($this->_request->getParam('keywords')));
+        $keywords = trim($this->_request->getParam('keywords'));
         $link = empty($keywords) ? '' :'/keywords/'.$keywords;
         $this->view->link     = $link;
         $this->view->pageInfo = $this->_paging;
