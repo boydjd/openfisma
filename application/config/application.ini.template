@@ -56,9 +56,6 @@ testdb.username =
 testdb.password = 
 testdb.schema = 
 
-version.app = 2.7.0
-version.yui = 2.7.0
-
 php.display_errors = false
 php.memory_limit = 128M
 
