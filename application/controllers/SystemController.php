@@ -373,8 +373,14 @@ class SystemController extends BaseController
         
         // Add the system to the user's ACL if the flag was set above
         if ($addSystemToUserAcl) {
-            CurrentUser::getInstance()->Organizations[] = $system->Organization;
-            CurrentUser::getInstance()->save();
+            $userRoles = CurrentUser::getInstance()->getRolesByPrivilege('organization', 'create');
+
+            foreach ($userRoles as $role) {
+                $role->Organizations[] = $system->Organization;
+            }
+
+            $userRoles->save();
+
             CurrentUser::getInstance()->invalidateAcl();
         }
     }
