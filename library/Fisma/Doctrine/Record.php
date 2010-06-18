@@ -125,7 +125,7 @@ class Fisma_Doctrine_Record extends Doctrine_Record
     {
         parent::_set($fieldName, $value, $load);
         
-        if (!isset($this->_originalValues[$fieldName]) && isset($this->_oldValues[$fieldName])) {
+        if (!array_key_exists($fieldName, $this->_originalValues) && array_key_exists($fieldName, $this->_oldValues)) {
             $this->_originalValues[$fieldName] = $this->_oldValues[$fieldName];
         }
     }
