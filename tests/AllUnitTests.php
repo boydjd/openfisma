@@ -97,6 +97,12 @@ class AllUnitTests
                 if (is_dir($fullPath)) {
                     self::loadAllTests($path . '/' . $directory, $file, $suite);
                 } else {
+                    
+                    // Files must have a .php extension
+                    if (!preg_match('/\.php$/', $file)) {
+                        continue;
+                    }
+                    
                     // Figure out the className by using the full path
                     // information: Remove the .php extension and replace the
                     // '.' path with 'Test'

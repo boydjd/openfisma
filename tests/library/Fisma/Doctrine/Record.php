@@ -47,6 +47,6 @@ class Test_Library_Fisma_Doctrine_Record extends Test_FismaUnitTest
         $finding->description = 'Deep Thoughts With Jack Handy';
         $finding->description = 'Celebrity Jeopardy';
         
-        $this->assertEquals('Janet Reno Dance Party', $finding->getOriginalValue('description'));
+        $this->assertNull($finding->getOriginalValue('description'));
     }
 }
