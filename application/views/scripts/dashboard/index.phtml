@@ -85,13 +85,9 @@ if (isset($this->notifications)) {
             foreach ($this->notifications as $notification) {
             ?>
                 <li>
-                    <b>
-                        <?php 
-                        echo $this->escape($notification['eventText'], 'none');
-                        ?></b>&nbsp;at&nbsp;<b><?php
-                        echo $this->escape($notification['createdTs']);
-                        ?>
-                    </b>
+                    <?php echo $this->escape($notification['eventText']); ?>
+                    at
+                    <?php echo $this->escape($notification['createdTs']); ?>
                 </li>
             <?php
             }
