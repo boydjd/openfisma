@@ -243,11 +243,22 @@ function toggleColumn(event, columnKey) {
  */
 function saveColumnPreference(event, obj) {
     saveColumnPreferenceCookie();
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/user/set-column-preference', 
-                                    null,
-                                    null); 
-    alert('Your preference has been saved. These columns will be visible whenever you log in.');
+
+//debugger;
+    YAHOO.util.Connect.asyncRequest(
+        'GET',
+        '/user/set-column-preference',
+        {
+            success : function (response) {
+                alert('Your preference has been saved. These columns will be visible whenever you log in.');
+            },
+            
+            failure : function (response) {
+                alert('An error occurred and your preference could not be saved.');
+            }
+        },
+        null
+    );
 }
 
 function saveColumnPreferenceCookie() {
