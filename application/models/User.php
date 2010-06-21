@@ -119,7 +119,7 @@ class User extends BaseUser
             $this->getAuditLog()->write($message);
         }
 
-        Notification::notify('USER_LOCKED', $this, self::currentUser());
+        Notification::notify('USER_LOCKED', $this, CurrentUser::getInstance());
     }
 
     /**
