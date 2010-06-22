@@ -75,5 +75,28 @@ Fisma.Finding = {
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
+    },
+    
+    /**
+     * A function which is called when the ECD needs to be changed and a justification needs to be provided.
+     * 
+     * This function will convert the ECD justification into an editable text field that can be submitted with the
+     * form.
+     */
+    editEcdJustification : function () {
+        
+        // Hide the current text
+        var currentEcdJustificationEl = document.getElementById('currentChangeDescription');
+        currentEcdJustificationEl.style.display = 'none';
+        
+        // Copy current text into a new input element
+        var currentEcdJustification = currentEcdJustificationEl.firstChild.nodeValue;
+        
+        var inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.value = currentEcdJustification;
+        inputEl.name = 'finding[ecdChangeDescription]';
+        
+        currentEcdJustificationEl.parentNode.appendChild(inputEl);
     }
 }
