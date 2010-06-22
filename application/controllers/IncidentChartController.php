@@ -34,7 +34,7 @@ class IncidentChartController extends IncidentBaseController
     {
         parent::init();
         
-        $this->_helper->contextSwitch
+        $this->_helper->fismaContextSwitch()
                       ->setActionContext('history', 'xml')
                       ->setActionContext('category', 'xml')
                       ->initContext();
