@@ -45,6 +45,9 @@ class OrganizationReportController extends SecurityController
     
     /**
      * List ISO and ISSO personnel for each organization and system
+     * 
+     * This is the one report which is not constrained by the organizations which a user is allowed to view. This report
+     * is kind of like a phone book for security personnel, so all users are allowed to view all entries in it.
      */
     public function personnelAction()
     {
@@ -80,9 +83,11 @@ class OrganizationReportController extends SecurityController
      */
     public function privacyAction()
     {
-        $systemQuery = Doctrine_Query::create()
+        $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
+
+        $systemQuery = $baseQuery
                        ->select('bureau.nickname AS name')
-                       ->addSelect('system.nickname AS name')
+                       ->addSelect('o.nickname AS name')
                        ->addSelect('systemData.hasPii AS has_pii')
                        ->addSelect('systemData.piaRequired AS pia_required')
                        ->addSelect(
@@ -96,13 +101,12 @@ class OrganizationReportController extends SecurityController
                                IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
                                \'N/A\') AS sorn_url'
                        )
-                       ->from('Organization system')
-                       ->innerJoin('system.System systemData')
+                       ->innerJoin('o.System systemData')
                        ->leftJoin('Organization bureau')
-                       ->where('system.orgType = ?', array('system'))
+                       ->andWhere('o.orgType = ?', array('system'))
                        ->andWhere('bureau.orgType = ?', array('bureau'))
-                       ->andWhere('system.lft BETWEEN bureau.lft and bureau.rgt')
-                       ->orderBy('bureau.nickname, system.nickname')
+                       ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                       ->orderBy('bureau.nickname, o.nickname')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $systems = $systemQuery->execute();
@@ -127,21 +131,22 @@ class OrganizationReportController extends SecurityController
      */
     public function securityAuthorizationAction()
     {
-        $systemQuery = Doctrine_Query::create()
+        $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
+
+        $systemQuery = $baseQuery
                        ->select('bureau.nickname AS name')
-                       ->addSelect('system.nickname AS name')
+                       ->addSelect('o.nickname AS name')
                        ->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
                        ->addSelect('IFNULL(systemData.controlledBy, \'N/A\') AS operated_by')
                        ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
                        ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
                        ->addSelect('IFNULL(systemData.contingencyPlanTestDt, \'N/A\') AS cplan_test_dt')
-                       ->from('Organization system')
-                       ->innerJoin('system.System systemData')
+                       ->innerJoin('o.System systemData')
                        ->leftJoin('Organization bureau')
-                       ->where('system.orgType = ?', array('system'))
+                       ->andWhere('o.orgType = ?', array('system'))
                        ->andWhere('bureau.orgType = ?', array('bureau'))
-                       ->andWhere('system.lft BETWEEN bureau.lft and bureau.rgt')
-                       ->orderBy('bureau.nickname, system.nickname')
+                       ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                       ->orderBy('bureau.nickname, o.nickname')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $systems = $systemQuery->execute();

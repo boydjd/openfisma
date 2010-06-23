@@ -111,6 +111,10 @@ class SystemDocumentController extends SecurityController
             $order = 'asc'; //ignore other values
         }
 
+        $organizationIds = CurrentUser::getInstance()
+                           ->getOrganizationsByPrivilege('organization', 'read')
+                           ->toKeyValueArray('id', 'id');
+        
         $query  = Doctrine_Query::create()
                   ->select('d.id, t.name, o.nickname, d.version, d.description, u.username, d.updated_at, s.id, o.id')
                   ->from('SystemDocument d')
@@ -118,6 +122,7 @@ class SystemDocumentController extends SecurityController
                   ->innerJoin('d.DocumentType t')
                   ->innerJoin('d.System s')
                   ->innerJoin('s.Organization o')
+                  ->whereIn('o.id', $organizationIds)
                   ->orderBy("$sortBy $order")
                   ->limit($this->_paging['count'])
                   ->offset($this->_paging['startIndex']);

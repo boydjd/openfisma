@@ -64,6 +64,19 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                     )
                 )
             );
-        }      
+        }
+        
+        // The base class predefines an XML context that causes problems in IE and needs to be replaced
+        $this->removeContext('xml');
+
+        $this->addContext(
+            'xml',
+            array(
+                'suffix' => 'xml',
+                'headers' => array(
+                    'Content-Type' => 'text/xml'
+                )
+            )
+        );
     }
 }

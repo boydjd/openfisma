@@ -55,7 +55,8 @@ class OrganizationChartController extends SecurityController
      */
     public function fipsCategoryAction()
     {
-        $userOrganizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
+        $userOrganizations = $this->_me->getOrganizationsByPrivilege('organization', 'read')
+                             ->toKeyValueArray('id', 'id');
         
         $categoriesQuery = Doctrine_Query::create()
                            ->from('Organization o')
@@ -75,7 +76,8 @@ class OrganizationChartController extends SecurityController
      */
     public function agencyContractorAction()
     {
-        $userOrganizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
+        $userOrganizations = $this->_me->getOrganizationsByPrivilege('organization', 'read')
+                             ->toKeyValueArray('id', 'id');
         
         $agencyContractorQuery = Doctrine_Query::create()
                                  ->from('Organization o')
@@ -88,6 +90,5 @@ class OrganizationChartController extends SecurityController
                                  ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $this->view->agencyContractor = $agencyContractorQuery->execute();
-
     }
 }

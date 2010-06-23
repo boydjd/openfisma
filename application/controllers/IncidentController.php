@@ -94,17 +94,6 @@ class IncidentController extends IncidentBaseController
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
-
-        if (in_array($this->_request->action, array('totalstatus','totalcategory'))) {
-
-            $contextSwitch = $this->_helper->getHelper('contextSwitch');
-            // Headers Required for IE+SSL (see bug #2039290) to stream XML
-            $contextSwitch->addHeader('xml', 'Pragma', 'private')
-                          ->addHeader('xml', 'Cache-Control', 'private')
-                          ->addActionContext('totalstatus', 'xml')
-                          ->addActionContext('totalcategory', 'xml')
-                          ->initContext();
-        }
     }
 
     /**
