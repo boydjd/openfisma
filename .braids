@@ -1,0 +1,7 @@
+--- 
+library/Zend: 
+  remote: braid/library/Zend
+  revision: 22483
+  squashed: true
+  type: svn
+  url: http://framework.zend.com/svn/framework/standard/tags/release-1.10.6/library/Zend
