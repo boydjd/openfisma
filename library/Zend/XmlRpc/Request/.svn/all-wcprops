@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Request
+END
+Http.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Request/Http.php
+END
+Stdin.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Request/Stdin.php
+END

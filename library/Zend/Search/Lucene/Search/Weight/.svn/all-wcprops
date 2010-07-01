@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight
+END
+Empty.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight/Empty.php
+END
+Boolean.php
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight/Boolean.php
+END
+MultiTerm.php
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight/MultiTerm.php
+END
+Phrase.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight/Phrase.php
+END
+Term.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight/Term.php
+END

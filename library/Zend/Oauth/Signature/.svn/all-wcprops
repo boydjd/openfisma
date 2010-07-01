@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Signature
+END
+Rsa.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Signature/Rsa.php
+END
+SignatureAbstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Signature/SignatureAbstract.php
+END
+Hmac.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Signature/Hmac.php
+END
+Plaintext.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Signature/Plaintext.php
+END

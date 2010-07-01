@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Highlighter
+END
+Interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Highlighter/Interface.php
+END
+Default.php
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Highlighter/Default.php
+END

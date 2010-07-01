@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File
+END
+MimeType.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/MimeType.php
+END
+Sha1.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Sha1.php
+END
+FilesSize.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/FilesSize.php
+END
+IsCompressed.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/IsCompressed.php
+END
+NotExists.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/NotExists.php
+END
+ExcludeMimeType.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/ExcludeMimeType.php
+END
+Size.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Size.php
+END
+Crc32.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Crc32.php
+END
+Extension.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Extension.php
+END
+ImageSize.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/ImageSize.php
+END
+IsImage.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/IsImage.php
+END
+Exists.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Exists.php
+END
+Hash.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Hash.php
+END
+WordCount.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/WordCount.php
+END
+Upload.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Upload.php
+END
+Md5.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Md5.php
+END
+ExcludeExtension.php
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/ExcludeExtension.php
+END
+Count.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Validate/File/Count.php
+END

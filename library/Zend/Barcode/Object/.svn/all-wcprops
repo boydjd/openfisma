@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object
+END
+Error.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Error.php
+END
+Royalmail.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Royalmail.php
+END
+ObjectAbstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/ObjectAbstract.php
+END
+Ean8.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Ean8.php
+END
+Upce.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Upce.php
+END
+Postnet.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Postnet.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Exception.php
+END
+Identcode.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Identcode.php
+END
+Code25interleaved.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Code25interleaved.php
+END
+Ean13.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Ean13.php
+END
+Code25.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Code25.php
+END
+Planet.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Planet.php
+END
+Ean2.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Ean2.php
+END
+Code39.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Code39.php
+END
+Itf14.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Itf14.php
+END
+Leitcode.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Leitcode.php
+END
+Ean5.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Ean5.php
+END
+Upca.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Barcode/Object/Upca.php
+END

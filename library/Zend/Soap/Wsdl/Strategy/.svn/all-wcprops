@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy
+END
+AnyType.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/AnyType.php
+END
+ArrayOfTypeComplex.php
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/ArrayOfTypeComplex.php
+END
+ArrayOfTypeSequence.php
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/ArrayOfTypeSequence.php
+END
+DefaultComplexType.php
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/DefaultComplexType.php
+END
+Interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/Interface.php
+END
+Composite.php
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/Composite.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Soap/Wsdl/Strategy/Abstract.php
+END

@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps
+END
+Error.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/Error.php
+END
+UserEntry.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/UserEntry.php
+END
+UserFeed.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/UserFeed.php
+END
+UserQuery.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/UserQuery.php
+END
+EmailListEntry.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListEntry.php
+END
+Query.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/Query.php
+END
+EmailListFeed.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListFeed.php
+END
+NicknameEntry.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/NicknameEntry.php
+END
+EmailListRecipientEntry.php
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListRecipientEntry.php
+END
+EmailListQuery.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListQuery.php
+END
+NicknameFeed.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/NicknameFeed.php
+END
+EmailListRecipientFeed.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListRecipientFeed.php
+END
+NicknameQuery.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/NicknameQuery.php
+END
+EmailListRecipientQuery.php
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/EmailListRecipientQuery.php
+END
+ServiceException.php
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Gapps/ServiceException.php
+END

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage
+END
+Folder.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Folder.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Exception.php
+END
+Maildir.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Maildir.php
+END
+Pop3.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Pop3.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Abstract.php
+END
+Mbox.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Mbox.php
+END
+Imap.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Imap.php
+END

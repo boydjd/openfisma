@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension
+END
+Distance.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Distance.php
+END
+Exposure.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Exposure.php
+END
+Iso.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Iso.php
+END
+FStop.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/FStop.php
+END
+Flash.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Flash.php
+END
+Make.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Make.php
+END
+Tags.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Tags.php
+END
+Time.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Time.php
+END
+Model.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/Model.php
+END
+FocalLength.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/FocalLength.php
+END
+ImageUniqueId.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/Exif/Extension/ImageUniqueId.php
+END

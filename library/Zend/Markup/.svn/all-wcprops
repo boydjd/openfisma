@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Markup
+END
+TokenList.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Markup/TokenList.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Markup/Exception.php
+END
+Token.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Markup/Token.php
+END

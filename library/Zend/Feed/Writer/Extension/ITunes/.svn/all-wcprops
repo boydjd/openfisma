@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Extension/ITunes
+END
+Entry.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Extension/ITunes/Entry.php
+END
+Feed.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Extension/ITunes/Feed.php
+END

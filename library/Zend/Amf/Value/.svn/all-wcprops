@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Amf/Value
+END
+MessageHeader.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Amf/Value/MessageHeader.php
+END
+ByteArray.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Amf/Value/ByteArray.php
+END
+MessageBody.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Amf/Value/MessageBody.php
+END
+TraitsInfo.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Amf/Value/TraitsInfo.php
+END

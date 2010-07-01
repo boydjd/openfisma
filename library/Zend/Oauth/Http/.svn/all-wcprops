@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Http
+END
+RequestToken.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Http/RequestToken.php
+END
+UserAuthorization.php
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Http/UserAuthorization.php
+END
+AccessToken.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Http/AccessToken.php
+END
+Utility.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Oauth/Http/Utility.php
+END

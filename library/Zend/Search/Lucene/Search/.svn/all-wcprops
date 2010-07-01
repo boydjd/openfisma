@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search
+END
+QueryHit.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryHit.php
+END
+QueryParserException.php
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryParserException.php
+END
+QueryParser.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryParser.php
+END
+QueryLexer.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryLexer.php
+END
+Query.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Query.php
+END
+QueryToken.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryToken.php
+END
+Similarity.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Similarity.php
+END
+Weight.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/Weight.php
+END
+QueryParserContext.php
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryParserContext.php
+END
+QueryEntry.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/QueryEntry.php
+END
+BooleanExpressionRecognizer.php
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Search/Lucene/Search/BooleanExpressionRecognizer.php
+END

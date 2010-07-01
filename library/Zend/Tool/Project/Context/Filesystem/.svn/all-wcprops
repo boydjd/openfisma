@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Tool/Project/Context/Filesystem
+END
+File.php
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Tool/Project/Context/Filesystem/File.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Tool/Project/Context/Filesystem/Abstract.php
+END
+Directory.php
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Tool/Project/Context/Filesystem/Directory.php
+END

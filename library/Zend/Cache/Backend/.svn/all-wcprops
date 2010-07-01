@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend
+END
+Xcache.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Xcache.php
+END
+File.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/File.php
+END
+Test.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Test.php
+END
+Interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Interface.php
+END
+ExtendedInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/ExtendedInterface.php
+END
+Sqlite.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Sqlite.php
+END
+Apc.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Apc.php
+END
+BlackHole.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/BlackHole.php
+END
+TwoLevels.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/TwoLevels.php
+END
+ZendPlatform.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/ZendPlatform.php
+END
+Memcached.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Memcached.php
+END
+Static.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/Static.php
+END
+ZendServer.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Cache/Backend/ZendServer.php
+END

@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value
+END
+Double.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Double.php
+END
+Collection.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Collection.php
+END
+DateTime.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/DateTime.php
+END
+Integer.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Integer.php
+END
+Array.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Array.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Exception.php
+END
+BigInteger.php
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/BigInteger.php
+END
+Boolean.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Boolean.php
+END
+Nil.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Nil.php
+END
+Base64.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Base64.php
+END
+Struct.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Struct.php
+END
+Scalar.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/Scalar.php
+END
+String.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/XmlRpc/Value/String.php
+END

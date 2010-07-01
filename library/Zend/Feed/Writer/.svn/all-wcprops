@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer
+END
+Source.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Source.php
+END
+Entry.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Entry.php
+END
+Feed.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Feed.php
+END
+Deleted.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Feed/Writer/Deleted.php
+END

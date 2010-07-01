@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib
+END
+sfServiceContainerDumperXml.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumperXml.php
+END
+sfServiceContainerDumperInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumperInterface.php
+END
+services.xsd
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/services.xsd
+END
+sfServiceParameter.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceParameter.php
+END
+sfServiceContainerDumperYaml.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumperYaml.php
+END
+sfServiceContainer.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainer.php
+END
+sfServiceSimpleXMLElement.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceSimpleXMLElement.php
+END
+sfServiceDefinition.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceDefinition.php
+END
+sfServiceContainerBuilder.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerBuilder.php
+END
+sfServiceContainerLoaderFileXml.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoaderFileXml.php
+END
+sfServiceContainerLoaderInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoaderInterface.php
+END
+sfServiceContainerLoaderFileYaml.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoaderFileYaml.php
+END
+sfServiceReference.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceReference.php
+END
+sfServiceContainerDumper.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumper.php
+END
+sfServiceContainerAutoloader.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerAutoloader.php
+END
+sfServiceContainerInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerInterface.php
+END
+sfServiceContainerDumperPhp.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumperPhp.php
+END
+sfServiceContainerLoaderFileIni.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoaderFileIni.php
+END
+sfServiceContainerLoaderFile.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoaderFile.php
+END
+sfServiceContainerLoader.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerLoader.php
+END
+sfServiceContainerDumperGraphviz.php
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/!svn/ver/24024/components/dependency_injection/branches/1.0/lib/sfServiceContainerDumperGraphviz.php
+END

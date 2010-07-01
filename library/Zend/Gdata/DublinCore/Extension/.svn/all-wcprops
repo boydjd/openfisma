@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension
+END
+Date.php
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Date.php
+END
+Publisher.php
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Publisher.php
+END
+Creator.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Creator.php
+END
+Subject.php
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Subject.php
+END
+Rights.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Rights.php
+END
+Title.php
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Title.php
+END
+Identifier.php
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Identifier.php
+END
+Description.php
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Description.php
+END
+Language.php
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Language.php
+END
+Format.php
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Gdata/DublinCore/Extension/Format.php
+END

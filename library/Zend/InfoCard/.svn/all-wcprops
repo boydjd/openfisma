@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/InfoCard
+END
+Cipher.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/InfoCard/Cipher.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/InfoCard/Exception.php
+END
+Claims.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/InfoCard/Claims.php
+END

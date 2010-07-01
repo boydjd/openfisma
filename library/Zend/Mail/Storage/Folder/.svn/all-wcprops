@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Folder
+END
+Interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Folder/Interface.php
+END
+Maildir.php
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Folder/Maildir.php
+END
+Mbox.php
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Mail/Storage/Folder/Mbox.php
+END

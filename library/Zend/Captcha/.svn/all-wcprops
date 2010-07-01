@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha
+END
+Base.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Base.php
+END
+Figlet.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Figlet.php
+END
+ReCaptcha.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/ReCaptcha.php
+END
+Word.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Word.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Exception.php
+END
+Adapter.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Adapter.php
+END
+Image.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Image.php
+END
+Dumb.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Captcha/Dumb.php
+END

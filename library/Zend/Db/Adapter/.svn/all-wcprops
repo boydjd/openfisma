@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter
+END
+Sqlsrv.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Sqlsrv.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Exception.php
+END
+Mysqli.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Mysqli.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Abstract.php
+END
+Oracle.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Oracle.php
+END
+Db2.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/framework/!svn/ver/22483/standard/tags/release-1.10.6/library/Zend/Db/Adapter/Db2.php
+END
