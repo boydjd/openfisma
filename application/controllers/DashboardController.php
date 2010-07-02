@@ -32,25 +32,11 @@ class DashboardController extends SecurityController
     /**
      * My OrgSystem ids
      *
+     * Not initialized until preDispatch
+     *
      * @var array
      */
     private $_myOrgSystemIds = null;
-    
-    /**
-     * Initialize internal members.
-     * 
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
-        $orgSystemIds = array(0);
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemIds[] = $orgSystem['id'];
-        }
-        $this->_myOrgSystemIds = $orgSystemIds;
-    }
     
     /**
      * Invoked before each Actions
@@ -59,7 +45,16 @@ class DashboardController extends SecurityController
      */
     function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('dashboard');
+
+        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
+        $orgSystemIds = array(0);
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $this->_myOrgSystemIds = $orgSystemIds;
 
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('totalstatus', 'xml')

@@ -45,13 +45,6 @@ class SecurityController extends Zend_Controller_Action
      * @var Fisma_Zend_Acl 
      */
     protected $_acl = null;
-
-    /**
-     * Symfony DI Container instance 
-     * 
-     * @var sfContainer 
-     */
-    protected $_container = null;
     
     /**
      * Stores the current time. This might be useful for synchronizing events in the audit logs that result
@@ -60,45 +53,6 @@ class SecurityController extends Zend_Controller_Action
      * @var Zend_Date
      */
     public static $now = null;
-
-    /**
-     * Initialize class members
-     * 
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_container = $this->getInvokeArg('bootstrap')->getContainer();
-
-        // Initialize time storage
-        if (empty(self::$now)) {
-            self::$now = Zend_Date::now();
-        }
-        
-        // Verify that the user is authenticated, and store a reference to the authenticated user credentials
-        $auth = Zend_Auth::getInstance();
-        //use the consistent storage
-        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-
-        if ($auth->hasIdentity()) {
-            // Store a reference to the authenticated user inside the controller, for convenience
-            $this->_me = $this->_container->currentUser->get();
-
-            // Store a reference to the authenticated user's ACL inside the controller
-            $this->_acl = $this->_container->acl->get();
-             
-            // Setup the ACL view helper
-            $aclHelper = $this->view->getHelper('acl');
-            $aclHelper->setAcl($this->_acl);
-        } else {
-            // User is not authenticated. The preDispatch will forward the user to the login page,
-            // but we want to store their original request so that we can redirect them to their
-            // original destination after they have authenticated.
-            $session = Fisma::getSession();
-            $session->redirectPage = $_SERVER['REQUEST_URI'];
-        }
-    }
 
     /**
      * Non-authenticated users are not allowed to access Security Controllers. Redirect them to
@@ -111,12 +65,24 @@ class SecurityController extends Zend_Controller_Action
     {
         parent::preDispatch();
    
-        $cont = $this->_request->controller; 
-        $act  = $this->_request->action; 
+        // Verify that the user is authenticated, and store a reference to the authenticated user credentials
+        $auth = Zend_Auth::getInstance();
+        //use the consistent storage
+        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
 
-        if (empty($this->_me)) {
-            $message = 'Your session has expired. Please log in again to begin a new session.';
-            throw new Fisma_Zend_Exception_InvalidAuthentication($message);
+        if ($auth->hasIdentity()) {
+            $container = $this->getInvokeArg('bootstrap')->getContainer();
+
+            // Store a reference to the authenticated user inside the controller, for convenience
+            $this->_me = $container->currentUser->get();
+
+            // getting the ACL can throw an exception that we want to trap
+            try {
+                // Store a reference to the authenticated user's ACL inside the controller
+                $this->_acl = $container->acl->get();
+            } catch(Fisma_Zend_Exception_InvalidAuthentication $e) {
+                // this error condition handled by Fisma_Zend_Controller_Action_Helper_Security
+            }
         }
     }
 }

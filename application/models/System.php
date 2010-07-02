@@ -104,6 +104,19 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     );
 
     /**
+     * Mapping from SDLC Phase physical IDs to English
+     *
+     * @var array
+     */
+     private static $_sdlcPhaseMap = array(
+                'initiation' => 'Initiation',
+                'development' => 'Development/Acquisition',
+                'imlementation' => 'Implementation/Assessment',
+                'operations' => 'Operations/Maintenance',
+                'disposal' => 'Disposal'
+     );
+
+    /**
      * Doctrine hook which is used to set up mutators
      * 
      * @return void
@@ -128,7 +141,27 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     {
         return $this->_typeMap[$this->type];
     }
+
+    /**
+     * Return English name for the SDLC Phase
+     *
+     * @return string English SDLC Phase label
+     */
+     public function getSdlcPhaseLabel()
+     {
+         return self::$_sdlcPhaseMap[$this->sdlcPhase];
+     }
     
+    /**
+     * Get a mapping of SDL phases to their respective English names
+     *
+     * @return array Mapping from name to English
+     */
+    public static function getSdlcPhaseMap()
+    {
+        return self::$_sdlcPhaseMap;
+    }
+
     /**
      * Calculate FIPS-199 Security categorization.
      *
@@ -327,4 +360,27 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     {
         return $this->Organization->id;
     }
+
+    /**
+     * Model-level validation for updates
+     *
+     * Overridden from Doctrine_Record
+     *
+     * @return void
+     */
+     protected function validateOnUpdate() {
+         $modified = $this->getModified();
+         // sdlcPhase can only be changed to 'disposal' if there are no open findings
+         if(isset($modified['sdlcPhase']) && $modified['sdlcPhase'] == 'disposal') {
+             $query = $this->getTable()->createQuery()
+                 ->from('Finding f')
+                 ->leftJoin('f.ResponsibleOrganization ro')
+                 ->leftJoin('ro.System s')
+                 ->where('f.status != ?', 'CLOSED')
+                 ->andWhere('s.id = ?', $this->id);
+             if($query->count() > 0) {
+                 $this->getErrorStack()->add('sdlcPhase', 'Systems with open findings cannot be moved into disposal phase.');
+             }
+         }
+     }
 }

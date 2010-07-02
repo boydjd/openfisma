@@ -41,5 +41,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         }
 
         Fisma::dispatch();
+
+        // register our security action helper
+        Zend_Controller_Action_HelperBroker::addHelper(new Fisma_Zend_Controller_Action_Helper_Security());
     }
 }
