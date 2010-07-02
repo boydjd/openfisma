@@ -1,0 +1,22 @@
+; This is the form for uploading a scan result
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+; License   http://openfisma.org/content/license
+; Version   $Id$
+
+[finding_spreadsheet_download]
+
+method=GET
+action=/finding/template
+
+elements.catalogId.type = "select"
+elements.catalogId.options.label = "Security Control Catalog"
+elements.catalogId.options.required = true
+elements.catalogId.options.tooltip = "<p> Each template file is generated for a particular security control catalog, such as NIST SP 800-53 Rev. 3. The template file will only contain the security controls that are pertinent to the catalog that you select.</p>"
+; The options for this selected are populated by the controller
+displayGroups.spreadsheetDownload.elements.catalogId = "catalogId"
+
+elements.download.type = "Form_Button_Submit"
+elements.download.options.label = "Download Template"
+displayGroups.spreadsheetDownload.elements.download = "download"

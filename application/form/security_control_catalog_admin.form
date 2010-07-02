@@ -1,0 +1,22 @@
+; This form contains administrative options for the security catalog controller
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id:$
+
+[security_control_catalog_admin]
+
+method=POST
+action=/security-control-catalog-admin/save
+
+elements.defaultCatalog.type = "select"
+elements.defaultCatalog.options.label = "Default Control Catalog"
+elements.defaultCatalog.options.required = true
+elements.defaultCatalog.options.tooltip = "<p>The catalog selected here will be the default catalog displayed throughout the system whenever a security control selection is displayed. This is also the catalog which will be exported with the spreadsheet template for uploading findings.</p>"
+; The select options will be added dynamically by the controller
+displayGroups.general.elements.defaultCatalog = "defaultCatalog"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.general.elements.save = "save"

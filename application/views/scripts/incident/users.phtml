@@ -4,11 +4,10 @@
     if ($this->updateIncidentPrivilege):
     ?>
         <form method="post" action="/incident/add-user/type/actor/id/<?php echo $this->escape($this->id); ?>">
-            <input type="hidden" id="actorId" name="userId" value="">
-            <div style="position: relative; top: 0px; width: 200px;">&nbsp;
+            <div style="float: left; margin-top: 3px; width: 50%;">
                 <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
             </div>
-            <div style="position: relative; top 10px; left: 220px; margin-bottom: 20px; width: 150px;">&nbsp;
+            <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
                 <?php echo $this->escape($this->addActorButton, 'none'); ?>
             </div>
         </form>
@@ -67,13 +66,13 @@
     if ($this->updateIncidentPrivilege):
     ?>
     <form method="post" action="/incident/add-user/type/observer/id/<?php echo $this->escape($this->id); ?>">
-        <input type="hidden" id="observerId" name="userId" value="">
-        <div style="position: relative; top: 0px; width: 200px;">&nbsp;
+        <div style="float: left; margin-top: 3px; width: 50%;">
             <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
         </div>
-        <div style="position: relative; top 10px; left: 220px; margin-bottom: 20px; width: 150px;">&nbsp;
+        <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
             <?php echo $this->escape($this->addObserverButton, 'none'); ?>
         </div>
+        <div style="clear: both;"></div>
     </form>
     <?php
     endif;

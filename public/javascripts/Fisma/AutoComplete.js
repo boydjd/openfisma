@@ -31,6 +31,16 @@
 Fisma.AutoComplete = function() {
     return {
         /**
+         * Used for tracking if there are any open requests.
+         */
+        requestCount : 0,
+        
+        /**
+         * Used for tracking if any results have been populated
+         */
+        resultsPopulated : false,
+        
+        /**
          * Initializes the AutoComplete widget
          *
          * @param oEvent
@@ -49,6 +59,43 @@ Fisma.AutoComplete = function() {
             ac.maxResultsDisplayed = 20;
             ac.forceSelection = true;
 
+            var spinnerImage = document.getElementById(params.containerId + "Spinner");
+
+            /**
+             * Enable the spinner
+             */
+            ac.dataRequestEvent.subscribe(function () {
+                spinnerImage.style.visibility = "visible";
+                Fisma.AutoComplete.requestCount++;
+            });
+
+            /**
+             * Disable the spinner if there are no pending requests
+             */
+            ac.dataReturnEvent.subscribe(function () {
+                Fisma.AutoComplete.requestCount--;
+                
+                if (0 == Fisma.AutoComplete.requestCount) {
+                    spinnerImage.style.visibility = "hidden";
+                }
+            });
+            
+            /**
+             * Re-display the autocomplete menu if the text field loses and then regains focus
+             */
+            ac.getInputEl().onclick = function () {
+                if (Fisma.AutoComplete.resultsPopulated) {
+                    ac.expandContainer();
+                }
+            };
+            
+            /**
+             * Record the fact that the results have been retrieved
+             */
+            ac.containerPopulateEvent.subscribe(function () {
+                Fisma.AutoComplete.resultsPopulated = true;
+            });
+            
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -58,10 +105,10 @@ Fisma.AutoComplete = function() {
             ac.generateRequest = function(query) {
                 return params.queryPrepend + query;
             };
-
+            
             /**
              * Overridable method that returns HTML markup for one result to be populated
-             * as innerHTML of an &lt;LI&gt; element.
+             * as innerHTML of an <li> element.
              *
              * @method formatResult
              * @param oResultData {Object} Result data object.
@@ -75,8 +122,15 @@ Fisma.AutoComplete = function() {
                 return sMarkup;
             };
 
-            ac.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe, { hiddenFieldId: params.hiddenFieldId } );
+            ac.itemSelectEvent.subscribe(
+                Fisma.AutoComplete.subscribe, 
+                {
+                    hiddenFieldId : params.hiddenFieldId,
+                    callback : params.callback
+                }
+            );
         },
+
         /**
          * Sets value of hiddenField to item selected
          *
@@ -86,6 +140,17 @@ Fisma.AutoComplete = function() {
          */
         subscribe : function(sType, aArgs, params) {
             document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
+
+            // If a valid callback is specified, then call it
+            try {
+                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
+
+                if ('function' == typeof callbackFunction) {
+                    callbackFunction();
+                }
+            } catch (error) {
+                // do nothing
+            }
         }
     };
 }();

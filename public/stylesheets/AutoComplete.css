@@ -1,0 +1,19 @@
+/*
+ * Override some YUI styles which don't make sense for our layouts.
+ *
+ * Notice these styles are marked ! important so that they will override YUI's
+ * autocomplete.css styles.
+ */
+
+.yui-ac-input {
+    position: static ! important;
+    width: 90% ! important;
+}
+
+div.yui-ac img.spinner {
+	display: inline;
+	visibility: hidden;
+    position: relative;
+    top: 4px;
+    left: 2px;
+}

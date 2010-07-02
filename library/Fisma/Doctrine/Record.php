@@ -115,7 +115,7 @@ class Fisma_Doctrine_Record extends Doctrine_Record
      */
     public function getOriginalValue($fieldName)
     {
-        return isset($this->_originalValues[$fieldName]) ? $this->_originalValues[$fieldName] : null;
+        return array_key_exists($fieldName, $this->_originalValues) ? $this->_originalValues[$fieldName] : null;
     }
     
     /**

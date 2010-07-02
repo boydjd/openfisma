@@ -246,8 +246,7 @@ table.keyValues th {
     padding: 5px;
 }
 
-/* A container for holding a row of buttons */
-div.toolbar {
+div.buttonBar {
     margin-bottom: 10px;
 }
 

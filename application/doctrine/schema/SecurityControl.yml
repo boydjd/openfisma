@@ -1,5 +1,5 @@
 SecurityControl:
-    listeners: [IndexListener]
+    listeners: [XssListener, IndexListener]
 
     columns:
         code: 
@@ -8,38 +8,55 @@ SecurityControl:
             comment: The control number, e.g. AC-05
             extra:
                 searchIndex: unstored
+        name:
+            type: string(255)
+            comment: Name of the control
+            extra:
+                searchIndex: unstored
         class:
             type: enum
             values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
             extra:
                 searchIndex: keyword
-        subclass: 
-            type: string(255)
-            extra:
-                searchIndex: unstored
         family: 
             type: string(255)
             extra:
                 searchIndex: unstored
+                
         control: 
             type: string
             extra:
                 searchIndex: unstored
-        guidance: 
+                purify: html
+        supplementalGuidance: 
             type: string
             extra:
                 searchIndex: unstored
+                purify: html
+        externalReferences:
+            type: string
+            extra:
+                searchIndex: unstored
+                purify: html
+        priorityCode:
+            type: enum
+            values: [P0, P1, P2, P3]
+            extra:
+                searchIndex: keyword
         controlLevel:
             type: enum
             values: [NONE, LOW, MODERATE, HIGH]
             extra:
                 searchIndex: keyword
                 searchAlias: level
-        enhancements: 
-            type: string
-            extra:
-                searchIndex: unstored
-        supplement: 
-            type: string
-            extra:
-                searchIndex: unstored
+                
+        securityControlCatalogId:
+            type: integer
+            comment: Foreign key to the catalog which this control belongs to
+
+    relations:
+        Catalog:
+            class: SecurityControlCatalog
+            local: securityControlCatalogId
+            foreign: id
+            foreignAlias: Controls

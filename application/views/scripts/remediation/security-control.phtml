@@ -1,107 +1,32 @@
-<?php 
-    Fisma_Format_Section::startSection('NIST 800-53 Control Mapping');
-    $organization = $this->finding->ResponsibleOrganization->nickname;
+<?php
+echo $this->escape($this->securityControlSearchButton, 'none')
 ?>
-<table class="keyValues">
-    <tr>
-        <td width="200">
-            <div>
-                Control ID:
-            </div>
-        </td>
-        <td>
-            <span id="security_control" 
-                  type="select" 
-                  name="finding[securityControlId]" 
-                  href="/metainfo/list/o/security_control/format/html/"
-                    <?php
-                    if ($this->acl()->hasPrivilegeForObject('update_control_assignment', $this->finding)
-                        && ('NEW' == $this->finding->status || 'DRAFT' == $this->finding->status)) {
-                        echo $this->escape('class="editable" target="security_control"', 'none');
-                    }
-                    ?>>
 
-                <?php
-                if (!empty($this->finding->securityControlId)) {
-                    echo $this->escape($this->finding->SecurityControl->code);
-                } else {
-                    // nbsp is a hack to make the pencil appear in the right place
-                    echo $this->escape('NONE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', 'none');
-                }
-                ?>
-            </span>
-        </td>
-    </tr>
-    <?php 
-    if (!empty($this->finding->securityControlId)) {
-        $securityControl = $this->finding->SecurityControl; 
+<div id="findingSecurityControlSearch">
+    <?php echo $this->escape($this->form, 'none'); ?>
+</div>
+
+<?php 
+Fisma_Format_Section::startSection('Security Control');
+?>
+
+<div id="securityControlContainer">
+
+    <?php
+    if (!empty($this->finding->securityControlId)):
+        echo $this->partial(
+            'security-control-catalog/single-control.phtml',
+            array('securityControl' => $this->finding->SecurityControl)
+        );
+    else:
     ?>
-        <tr>
-            <td>Class:</td>
-            <td><?php echo $this->escape($securityControl->class)?></td>
-        </tr>
-        <tr>
-            <td>Family:</td>
-            <td><?php echo $this->escape($securityControl->family)?></td>
-        </tr>
-        <tr>
-            <td>Subclass:</td>
-            <td><?php echo $this->escape($securityControl->subclass)?></td>
-        </tr>
-        <tr>
-            <td>Low Impact System:</td>
-            <td>
-                <?php if ('LOW' == $securityControl->controlLevel): ?>
-                    Control Required
-                <?php else: ?>
-                    Control Not Required 
-                <?php endif; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>Moderate Impact System:</td>
-            <td>
-                <?php if ('LOW' == $securityControl->controlLevel || 
-                     'MODERATE' == $securityControl->controlLevel): ?>
-                     Control Required
-                <?php else: ?>
-                     Control Not Required
-                <?php endif; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>High Impact System:</td>
-            <td>
-                <?php if ('LOW' == $securityControl->controlLevel || 
-                     'MODERATE' == $securityControl->controlLevel || 
-                     'HIGH'     == $securityControl->controlLevel): ?>
-                     Control Required
-                <?php else: ?>
-                     Control Not Required
-                <?php endif; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>Control:</td>
-            <td><?php echo $this->escape($securityControl->control)?></td>
-        </tr>
-        <tr>
-            <td>Guidance:</td>
-            <td><?php echo $this->escape($securityControl->guidance)?></td></tr>
-        <tr>
-            <td>Enhancements:</td>
-            <td>
-                <?php echo $this->escape(str_replace("\\n", "<br>", $securityControl->enhancements), 'none'); ?>
-            </td>
-        </tr>
-        <tr>
-            <td>Supplement:</td>
-            <td>
-                <?php echo $this->escape($securityControl->supplement); ?>
-            </td>
-        </tr>
-    <?php 
-    } 
+        <em>No control selected</em>
+    <?php
+    endif;
     ?>
-</table>
-<?php Fisma_Format_Section::stopSection(); ?>
+
+</div>
+
+<?php
+Fisma_Format_Section::stopSection();
+?>

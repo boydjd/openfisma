@@ -1,0 +1,14 @@
+/*
+ * This file contains styles for toolbars displayed in OpenFISMA.
+ *
+ * A toolbar is a short form that is laid out horiztonally to minimize the vertical screenspace required to render it.
+ */
+
+div.toolbar {
+    font-weight: bold;
+    background-color: #ebebeb;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    padding: 5px 10px;
+    text-align: right;
+}

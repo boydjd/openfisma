@@ -151,7 +151,7 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     <p><i>The mitigation strategy, security control, and risk analysis sections must
           be fully completed before this can be submitted for approval.</i></p>
 
-    <div class='toolbar'><?php echo $this->escape($submitMitigationButton, 'none')?></div>
+    <div class='buttonBar'><?php echo $this->escape($submitMitigationButton, 'none')?></div>
 <?php
 }
 
@@ -172,7 +172,7 @@ if ('EN' == $finding->status && $this->acl()->hasPrivilegeForObject('mitigation_
             return false;
         }
     </script>
-    <div class='toolbar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
+    <div class='buttonBar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
 <?php
 }  
 

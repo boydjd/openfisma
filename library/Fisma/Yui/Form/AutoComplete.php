@@ -47,28 +47,47 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     function renderSelf() 
     {
         $disabled = "";
-        
+
         if ($this->getAttrib('readonly')) {
             $disabled = "disabled=\"true\"";
         }
 
         $name = $this->getName();
-        
+
+        $hiddenField = $this->getAttrib('hiddenField');
+        $hiddenValue = isset($_POST[$hiddenField]) ? $_POST[$hiddenField] : null;
+        $hiddenValueAttrib = empty($hiddenValue) ? '' : "value=\"$hiddenValue\"";
+
+        $displayedValue = isset($_POST[$name]) ? $_POST[$name] : null;
+        $displayedValueAttrib = empty($displayedValue) ? '' : "value=\"$displayedValue\"";
+                
         $render  = "<div>
-                    <input type=\"text\" name=\"$name\" id=\"$name\" {$disabled} value=\"{$this->getValue()}\"/>
-                    <div id=\"{$this->getAttrib('containerId')}\"></div>
+                    <input type='hidden' 
+                           id='{$this->getAttrib('hiddenField')}' 
+                           name='{$this->getAttrib('hiddenField')}'
+                           $hiddenValueAttrib>
+                    <input type=\"text\" 
+                           name=\"$name\" 
+                           id=\"$name\" 
+                           $displayedValueAttrib
+                           $disabled>
+                    <img class='spinner'
+                         id='{$this->getAttrib('containerId')}Spinner' 
+                         src='/images/spinners/small.gif'>
+                    <div id=\"{$this->getAttrib('containerId')}\"></div>                    
                     </div>";
 
         if (!$this->getAttrib('readonly')) {
-            $render = $render . "
-                <script type='text/javascript'>
+            $render .= 
+                "<script type='text/javascript'>
                 YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
                   { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
                     xhr : \"{$this->getAttrib('xhr')}\",
                     fieldId : \"$name\",
                     containerId: \"{$this->getAttrib('containerId')}\",
-                    hiddenFieldId: \"{$this->getAttrib('hiddenField')}\",
-                    queryPrepend: \"{$this->getAttrib('queryPrepend')}\"
+                    hiddenFieldId: \"$hiddenField\",
+                    queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
+                    callback : '{$this->getAttrib('callback')}'
                   } );
             </script>";
         }

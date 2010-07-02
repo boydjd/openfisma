@@ -1,0 +1,23 @@
+SecurityControlEnhancement:
+    listeners: [XssListener]
+
+    columns:
+        level:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            comment: Indicates the lowest baseline that includes this enhancement.
+        description:
+            type: string
+            extra:
+                purify: html
+                
+        securityControlId:
+            type: integer
+            comment: Foreign key
+    
+    relations:
+        Control:
+            class: SecurityControl
+            local: securityControlId
+            foreign: id
+            foreignAlias: Enhancements

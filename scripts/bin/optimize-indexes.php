@@ -46,6 +46,7 @@ class OptimizeIndexes
         'Organization',
         'Product',
         'Role',
+        'SecurityControl',
         'System',
         'SystemDocument',
         'Source',

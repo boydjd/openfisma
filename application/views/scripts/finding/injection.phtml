@@ -1,23 +1,34 @@
-<?php 
-Fisma_Format_Section::startSection("Spreadsheet Upload"); 
+<?php
+Fisma_Format_Section::startSection("Download Template File"); 
 $microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
               . 'FamilyID=941b3470-3ae9-4aee-8f43-c6bb74cd1466&displaylang=en';
 ?>
-    <form action="/panel/finding/sub/injection" method="POST" enctype="multipart/form-data">
-        <ol>
-            <li>Download the Excel <a href="/finding/template">template file</a>.
-            <p>(The template file requires Excel 2007 or
-            the Office Compatibility Pack, which can be downloaded for free from
-            <a href="<?php echo $this->escape($microsoftUrl, 'none')?>">Microsoft</a>.)</p>
-            <li>Complete the template, following the instructions included in the template header.
-            <li><label for="excelFile">Upload the completed spreadsheet here:</label> <br>
-            <input type="file" name="excelFile" id="excelFile">
-        </ol>
-        <p>
-            <?php
-                $uploadExcelButton = new Fisma_Yui_Form_Button_Submit('uploadExcelSubmit', array('label' => 'Upload'));
-                echo $this->escape($uploadExcelButton, 'none');
-            ?>
-        </p>
-    </form>
-<?php Fisma_Format_Section::stopSection(); ?>
+
+<p>
+    The spreadsheet upload relies on a template file. This template file is generated on-the-fly and includes the
+    latest production metadata, such as names of systems, networks, and finding sources. You should download a new
+    template any time you begin an audit.
+</p>
+<p>
+    <em>The template file requires Excel 2007 or the Office Compatibility Pack, which can be downloaded for free from
+    <a href="<?php echo $this->escape($microsoftUrl, 'none')?>">Microsoft</a>.</em>
+</p>
+
+<?php 
+echo $this->escape($this->downloadForm, 'none');
+
+Fisma_Format_Section::stopSection(); 
+
+Fisma_Format_Section::startSection("Upload Completed Template File"); 
+?>
+
+<p>
+    Select a completed template file and upload it here. Do not change the formatting of the template file, as this
+    may render the file unusable.
+</p>
+
+<?php 
+echo $this->escape($this->uploadForm, 'none');
+
+Fisma_Format_Section::stopSection();
+?>

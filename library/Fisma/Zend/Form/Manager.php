@@ -46,9 +46,9 @@ class Fisma_Zend_Form_Manager
         $form = new Fisma_Zend_Form();
         
         // Configure this form to use custom form elements
-        $form->addPrefixPath('Fisma_Zend_Form', 'Fisma/Zend/Form', 'element'); // library/Fisma/Form/...
-        $form->addPrefixPath('Fisma_Zend_Form', 'Fisma/Zend/Form', 'decorator'); // library/Fisma/Form/...
-        $form->addPrefixPath('Fisma_Yui', 'Fisma/Yui', 'element'); // library/Fisma/Yui/...
+        $form->addPrefixPath('Fisma_Zend_Form', 'Fisma/Zend/Form', 'element');
+        $form->addPrefixPath('Fisma_Zend_Form_Decorator', 'Fisma/Zend/Form/Decorator', 'decorator');
+        $form->addPrefixPath('Fisma_Yui', 'Fisma/Yui', 'element');
         $form->setConfig($config);
 
         return $form;

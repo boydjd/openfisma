@@ -28,7 +28,7 @@ Fisma.Util = {
      * Convert a string name of an object into a reference to that object.
      * 
      * For example, "Fisma.Foo.myFoo" returns a reference to the actual Fisma.Foo.myFoo object, if it exists, 
-     * or null otherwise.
+     * or throws an error if does not exist.
      * 
      * This is useful for sending references to objects in JSON syntax, since JSON cannot encode a reference directly.
      * 

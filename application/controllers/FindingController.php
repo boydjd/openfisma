@@ -65,14 +65,7 @@ class FindingController extends BaseController
         foreach ($sources as $source) {
             $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
         }
-    
-        $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
-        $form->getElement('securityControlId')->addMultiOptions(array(0 => '--select--'));
-        foreach ($securityControls as $securityControl) {
-            $form->getElement('securityControlId')
-                 ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
-        }
-        
+            
         $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
@@ -161,14 +154,40 @@ class FindingController extends BaseController
     {
         $this->_acl->requirePrivilegeForClass('inject', 'Finding');
 
-        /** @todo convert this to a Zend_Form */
-        // If the form isn't submitted, then there is no work to do
-        if (!isset($_POST['uploadExcelSubmit'])) {
-            return;
-        }
+        // Set up the form for downloading template files
+        $downloadForm = Fisma_Zend_Form_Manager::loadForm('finding_spreadsheet_download');
         
-        // If the form is submitted, then the file object should contain an array
+        Fisma_Zend_Form_Manager::prepareForm($downloadForm);
+
+        $catalogQuery = Doctrine_Query::create()
+                        ->select('id AS key, name AS value')
+                        ->from('SecurityControlCatalog')
+                        ->orderBy('name')
+                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        $catalogs = $catalogQuery->execute();
+
+        $downloadForm->getElement('catalogId')
+                     ->setMultiOptions($catalogs)
+                     ->setValue(Fisma::configuration()->getConfig('default_security_control_catalog_id'));
+        
+        $this->view->downloadForm = $downloadForm;
+        
+        // Set up the form for uploading files
+        $uploadForm = Fisma_Zend_Form_Manager::loadForm('finding_spreadsheet_upload');
+        
+        Fisma_Zend_Form_Manager::prepareForm($uploadForm);
+        
+        $this->view->uploadForm = $uploadForm;
+    }
+
+    /**
+     * Handle upload of a spreadsheet template file
+     */
+    public function uploadSpreadsheetAction()
+    {
         $file = $_FILES['excelFile'];
+        
         if (!is_array($file)) {
             $this->view->priorityMessenger("The file upload failed.", 'warning');
             return;
@@ -182,13 +201,17 @@ class FindingController extends BaseController
                 
                 // get upload path
                 $path = Fisma::getPath('data') . '/uploads/spreadsheet/';
+                
                 // get original file name
                 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+                
                 // get current time and set to a format like '_2009-05-04_11_22_02'
                 $ts = time();
                 $dateTime = date('_Y-m-d_H_i_s', $ts);
+                
                 // define new file name
                 $newName = str_replace($originalName, $originalName . $dateTime, $file['name']);
+                
                 // organize upload data
                 $upload = new Upload();
                 $upload->userId = $this->_me->id;
@@ -198,6 +221,7 @@ class FindingController extends BaseController
                 $injectExcel = new Fisma_Inject_Excel();
 
                 $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
+                
                 // upload file after the file parsed
                 move_uploaded_file($file['tmp_name'], $path . $newName);
                 
@@ -206,12 +230,13 @@ class FindingController extends BaseController
                 $type  = 'notice';
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
-                $error = "The file cannot be processed due to an error.<br>{$e->getMessage()}";
+                $error = "The file cannot be processed due to an error: {$e->getMessage()}";
                 $type  = 'warning';
             }
             $this->view->priorityMessenger($error, $type);
         }
-        $this->render();
+        
+        $this->_redirect('/panel/finding/sub/injection');
     }
 
     /** 
@@ -282,7 +307,23 @@ class FindingController extends BaseController
                     defined.");
             }
             
-            $securityControls = Doctrine::getTable('SecurityControl')->findAll()->toArray();
+            $securityControlCatalogId = $this->getRequest()->getParam('catalogId');
+            $this->view->securityControlCatalogId = $securityControlCatalogId;
+
+            $securityControlCatalog = Doctrine::getTable('SecurityControlCatalog')->find($securityControlCatalogId);
+            
+            if (!$securityControlCatalog) {
+                throw new Fisma_Zend_Exception("No security control exists with id ($securityControlCatalogId)");
+            } else {
+                $this->view->securityControlCatalogName = $securityControlCatalog->name;
+            }
+            
+            $securityControlQuery = Doctrine_Query::create()
+                                    ->from('SecurityControl')
+                                    ->where('securityControlCatalogId = ?', array($securityControlCatalogId));
+            
+            $securityControls = $securityControlQuery->execute();
+            
             $this->view->securityControls = array();
             foreach ($securityControls as $securityControl) {
                 $this->view->securityControls[$securityControl['id']] = $securityControl['code'];
