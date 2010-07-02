@@ -1,0 +1,80 @@
+<div id="<?php echo $this->escape($this->containerId, 'javascript'); ?>"></div>
+
+<script type="text/javascript">
+    YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
+
+        var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
+
+        /* 
+         * Column definitions are defined in JSON, which cannot embed object references such as formatters. So 
+         * loop over the definitions and convert any names of formatters into references to those actual objects.
+         */
+        for (index in columnDefs) {
+            var columnDef = columnDefs[index];
+            
+            if (columnDef['formatter']) {
+                columnDef['formatter'] = Fisma.Util.getObjectFromName(columnDef['formatter']);
+            }
+        }
+
+        // A function which builds the query string
+        var constructUrlFunction = function (tableState, self) {    
+
+            // Build custom request
+            var request = "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>" + 
+                          "/sort/" + tableState.sortedBy.key +
+                          "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
+                          "/start/" + tableState.pagination.recordOffset +
+                          "/count/" + tableState.pagination.rowsPerPage;
+
+            return request;
+        };
+
+        // DataSource instance
+        var dataSource = new YAHOO.util.XHRDataSource();
+        dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+        dataSource.responseSchema = {
+            resultsList: "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>"
+        };
+
+        // DataTable configuration
+        var tableConfiguration = {
+            initialRequest : "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>",
+            dynamicData : true, 
+            sortedBy : {
+                key : "<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>", 
+                dir : "<?php echo $this->escape($this->sortDirection, 'javascript'); ?>"
+            },
+            paginator: new YAHOO.widget.Paginator(
+                {
+                    rowsPerPage : <?php echo $this->escape($this->rowCount, 'javascript'); ?>,
+                    template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                }
+            ), 
+            generateRequest : constructUrlFunction
+        };
+
+        // The actual DataTable instance
+        var dataTable = new YAHOO.widget.DataTable(
+            "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 
+            columnDefs, 
+            dataSource, 
+            tableConfiguration
+        );
+        
+        // Enable row highlighting for mouse over events
+        dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
+        dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
+
+        // Enable row click event handler if it was defined
+        dataTable.subscribe("rowClickEvent", function (clickEvent) {
+            var targetEl = clickEvent.target;
+            var rowData = this.getRecord(targetEl);
+
+            var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
+                    + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
+                    
+            document.location = url;
+        });
+    });
+</script>

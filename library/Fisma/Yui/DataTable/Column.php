@@ -31,9 +31,11 @@ class Fisma_Yui_DataTable_Column
     /**
      * The logical (human-friendly) name for this column. It is displayed in the table header.
      * 
+     * Also, if _name is not specified, then _label will be used to automatically generate a _name value.
+     * 
      * @var string
      */
-    private $_name;
+    private $_label;
     
     /**
      * Whether this column is sortable or not
@@ -48,29 +50,43 @@ class Fisma_Yui_DataTable_Column
      * @var Fisma_Yui_DataTable_ColumnFormatter
      */
     private $_formatter;
+
+    /**
+     * A javascript-friendly name for this column. If not specified, this is automatically derived from the _label.
+     * 
+     * @var string
+     */
+    private $_name;
     
     /**
      * Create a column with a human-friendly name
      * 
-     * @param string $name
+     * @param string $label A human-friendly label for this column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
+     * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      */
-    public function __construct($name, $sortable, $formatter = null)
+    public function __construct($label, $sortable, $formatter = null, $name = null)
     {
-        $this->_name = $name;
+        $this->_label = $label;
         $this->_sortable = $sortable;
         $this->_formatter = $formatter;
+        
+        if (is_null($name)) {
+            $this->_name = Fisma_String::convertToJavascriptName($column->getName());
+        } else {
+            $this->_name = $name;
+        }
     }
     
     /**
-     * Getter for logical name
+     * Getter for label
      * 
      * @return string
      */
-    public function getName()
+    public function getLabel()
     {
-        return $this->_name;
+        return $this->_label;
     }
 
     /**
@@ -89,5 +105,15 @@ class Fisma_Yui_DataTable_Column
     public function getFormatter()
     {
         return $this->_formatter;
+    }
+
+    /**
+     * Accessor for name
+     * 
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->_name;
     }
 }

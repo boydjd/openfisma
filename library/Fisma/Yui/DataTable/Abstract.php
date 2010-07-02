@@ -74,11 +74,11 @@ abstract class Fisma_Yui_DataTable_Abstract
         $columnDefinitions = array();
         
         foreach ($this->getColumns() as $column) {
-            
+                        
             // These keys are always defined
             $columnDefinition = array(
-                'key' => Fisma_String::convertToJavascriptName($column->getName()),
-                'label' => $column->getName(),
+                'key' => $column->getName(),
+                'label' => $column->getLabel(),
                 'sortable' => $column->getSortable()
             );
 

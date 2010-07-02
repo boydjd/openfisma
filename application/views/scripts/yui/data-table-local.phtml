@@ -49,5 +49,9 @@
             dataSource, 
             {}
         );
+        
+        // Enable row highlighting for mouse over events
+        dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
+        dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
     });
 </script>
