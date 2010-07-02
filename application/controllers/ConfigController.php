@@ -151,12 +151,11 @@ class ConfigController extends SecurityController
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
-
-        $dataTable->setData($ldapList);
             
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Connection', false, 'YAHOO.widget.DataTable.formatText'));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Connection', false, 'YAHOO.widget.DataTable.formatText'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
+                  ->setData($ldapList);
 
         $this->view->dataTable = $dataTable;
     }

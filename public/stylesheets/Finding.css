@@ -1,0 +1,8 @@
+/* The security control search box is initially hidden */
+div#findingSecurityControlSearch {
+    display: none;
+    background-color: white;
+    border: 1px solid #d3d3d3;
+    padding: 10px;
+    margin-top: 10px;
+}

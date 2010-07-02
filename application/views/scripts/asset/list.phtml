@@ -7,7 +7,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     }
 </script>
 <form id="assetresult" method="post" action="/panel/asset/sub/multidelete">
-<div class="toolbar">
+<div class="buttonBar">
     <?php
         if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
             $importButton = new Fisma_Yui_Form_Button_Link('import',

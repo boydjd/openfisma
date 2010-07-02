@@ -41,8 +41,12 @@ class Fisma_Inject_Excel
      * The template version is used to make sure that we don't try to process a template which was produced by a
      * previous version of OpenFISMA. This number should be incremented whenever the template file or processing code
      * is modified.
+     * 
+     * Version history:
+     * v1 2009-04-30 Introduce versioning of excel template
+     * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
      */
-    const TEMPLATE_VERSION = 1;
+    const TEMPLATE_VERSION = 2;
     
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -127,6 +131,9 @@ class Fisma_Inject_Excel
             );
         }
         
+        // Look up the control catalog ID for this template in the spreadsheet properties. This is used later.
+        $securityControlCatalogId = (int)$spreadsheet->CustomDocumentProperties->SecurityControlCatalogId;
+
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
         $namespaces = $spreadsheet->getNamespaces(true);
         $spreadsheet->registerXPathNamespace('s', $namespaces['']);
@@ -203,18 +210,26 @@ class Fisma_Inject_Excel
                                                       be out of date. Please try downloading it again.");
             }
             $poam['sourceId'] = $sourceTable->id;
+                        
+            // Match controls by code (e.g. "AC-01") and security control catalog ID
             if (!empty($finding['securityControl'])) {
                 $securityControlTable = Doctrine::getTable('SecurityControl');
-                $securityControlTable = $securityControlTable->findOneByCode($finding['securityControl']);
-                if (!$securityControlTable) {
+                
+                $conditions = 'code = ? and securityControlCatalogId = ?';
+                $parameters = array($finding['securityControl'], $securityControlCatalogId);
+
+                $securityControls = $securityControlTable->findByDql($conditions, $parameters);
+
+                if (count($securityControls) != 1) {
                     $error = "Row $rowNumber: Invalid security control selected. Your template may be out of date."
                            . 'Please try downloading it again.';
                     throw new Fisma_Zend_Exception_InvalidFileFormat($error);
                 }
-                $poam['securityControlId'] = $securityControlTable->id;
+                $poam['securityControlId'] = $securityControls[0]->id;
             } else {
                 $poam['securityControlId'] = null;
             }
+
             $poam['description'] = "<p>{$finding['findingDescription']}</p>";
             if (!empty($finding['contactInfo'])) {
                 $poam['description'] .= "<p>Point of Contact: {$finding['contactInfo']}</p>";

@@ -1,0 +1,10 @@
+<?php 
+Fisma_Format_Section::startSection("Security Control: {$this->securityControl->code}");
+
+echo $this->partial(
+    'security-control-catalog/single-control.phtml',
+    array('securityControl' => $this->securityControl)
+);
+
+Fisma_Format_Section::stopSection();
+?>

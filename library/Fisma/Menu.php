@@ -69,13 +69,11 @@ class Fisma_Menu
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
                 $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
             }
-                        
-            if ($acl->hasArea('finding_admin')
-                || $acl->hasArea('finding_report')) {
-                    
-                $findings->addSeparator();
-            }
-            
+                                    
+            $findings->addSeparator();
+
+            $findings->add(new Fisma_Yui_MenuItem('Dashboard', '/finding-dashboard'));
+
             // Finding Administration submenu
             if ($acl->hasArea('finding_admin')) {
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
@@ -112,6 +110,8 @@ class Fisma_Menu
             if ($acl->hasPrivilegeForClass('read', 'Asset')) {
                 $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
             }
+            
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
 
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
 
@@ -126,6 +126,8 @@ class Fisma_Menu
             // Organization Administration submenu
             if ($acl->hasArea('system_inventory_admin')) {
                 $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
+
+                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));

@@ -19,6 +19,8 @@
 /**
  * Drop the UserOrganization table
  * 
+ * @codingStandardsIgnoreFile
+ *
  * @package Migration
  * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}

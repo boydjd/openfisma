@@ -35,10 +35,6 @@ elements.product.options.attribs.queryPrepend = "/keywords/"
 elements.product.options.attribs.containerId = "product_ac_container"
 displayGroups.assetInfo.elements.product = "product"
 
-elements.productId.type = "hidden"
-elements.productId.label = null
-elements.productId.options.hideLabel = true;
-
 elements.orgSystemId.type = "select"
 elements.orgSystemId.options.label = "System"
 elements.orgSystemId.options.style = "width:250px"

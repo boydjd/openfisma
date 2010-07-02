@@ -1,0 +1,46 @@
+<chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+
+    <chart_data>
+        <row>
+            <null />
+            <?php
+            foreach ($this->deficiencies as $deficiency):
+            ?>
+                <string><?php echo $this->escape($deficiency['sc_code']); ?></string>
+            <?php
+            endforeach;
+            ?>
+        </row>
+        <row>
+            <string>Open Findings</string>
+            <?php
+            foreach ($this->deficiencies as $deficiency):
+            $tooltip = '1';
+                $tooltip = "{$deficiency['sc_count']} Finding"
+                         . ($deficiency['sc_count'] > 1 ? 's' : '');
+            ?>
+                <number tooltip="<?php echo $this->escape($tooltip)?>">
+                    <?php echo $this->escape($deficiency['sc_count']); ?></number>
+            <?php
+            endforeach;
+            ?>
+        </row>
+    </chart_data>
+
+    <chart_type>column</chart_type>
+    
+    <chart_rect x='50'
+                height='165' 
+                width='625' />
+
+    <axis_category font='arial' 
+                   orientation='vertical_up' />
+
+    <legend layout='vertical'
+            bullet='square' />
+
+    <series_color>
+        <color>416ed7</color>
+    </series_color>
+</chart> 

@@ -7,7 +7,7 @@ function discardChanges(event) {
 <form enctype="multipart/form-data"
       action="/panel/system/sub/edit/id/<?php echo $this->escape($this->organization->id, 'none') ?>" 
       method="post">
-    <div class="toolbar">
+    <div class="buttonBar">
         <?php            
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 $discardButton = new Fisma_Yui_Form_Button('discardChanges',

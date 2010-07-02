@@ -1,0 +1,22 @@
+; This form is displayed in the toolbar section of the security catalog controller.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id:$
+
+[security_control_catalog_toolbar]
+
+method=GET
+action=/security-control-catalog/list
+
+elements.id.type = "select"
+elements.id.options.label = "Catalog"
+; Options are added by the controller after the form is loaded
+elements.id.options.value = "0"
+
+elements.keyword.type = "text"
+elements.keyword.options.label = "Keywords"
+
+elements.search.type = "Form_Button_Submit"
+elements.search.options.label = "Search"

@@ -98,5 +98,43 @@ Fisma.Finding = {
         inputEl.name = 'finding[ecdChangeDescription]';
         
         currentEcdJustificationEl.parentNode.appendChild(inputEl);
+    },
+    
+    /**
+     * Show the search control on the finding view's Security Control tab
+     */
+    showSecurityControlSearch : function () {
+        var button = document.getElementById('securityControlSearchButton');
+        button.style.display = 'none';
+
+        var searchForm = document.getElementById('findingSecurityControlSearch');
+        searchForm.style.display = 'block';
+    },
+    
+    /**
+     * When the user selects a security control, refresh the screen with that control's data
+     */
+    handleSecurityControlSelection : function () {
+        var controlContainer = document.getElementById('securityControlContainer');
+        
+        controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
+        
+        var securityControlElement = document.getElementById('finding[securityControlId]');
+        
+        var securityControlId = escape(securityControlElement.value);
+        
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/security-control-catalog/single-control/id/' + securityControlId, 
+            {
+                success: function (connection) {
+                    controlContainer.innerHTML = connection.responseText;
+                },
+                
+                failure : function (connection) {
+                    alert('Unable to load security control definition.');
+                }
+            }
+        );
     }
 }

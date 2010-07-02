@@ -1,0 +1,12 @@
+# All new catalogs should be appended. None should be inserted in the middle, as the configuration fixure relies
+# on these catalogs having predictable primary keys. See Configuration.yml:175-178.
+
+SecurityControlCatalog:
+    800_53_Rev_0:
+        name: NIST SP 800-53 Rev. 0
+    800_53_Rev_1:
+        name: NIST SP 800-53 Rev. 1
+    800_53_Rev_2:
+        name: NIST SP 800-53 Rev. 2
+    800_53_Rev_3:
+        name: NIST SP 800-53 Rev. 3

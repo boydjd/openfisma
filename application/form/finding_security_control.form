@@ -1,0 +1,24 @@
+; This is the form for finding.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ryan Yang <ryan@users.sourceforge.net>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[finding_security_control]
+method = "post"
+
+elements.securityControlAutocomplete.type = "Form_AutoComplete"
+elements.securityControlAutocomplete.options.label = "Security Control Search:"
+elements.securityControlAutocomplete.options.attribs.resultsList = "controls"
+elements.securityControlAutocomplete.options.attribs.fields = "name"
+elements.securityControlAutocomplete.options.attribs.xhr = "/security-control-catalog/autocomplete/format/json"
+elements.securityControlAutocomplete.options.attribs.hiddenField = "finding[securityControlId]"
+elements.securityControlAutocomplete.options.attribs.queryPrepend = "/keyword/"
+elements.securityControlAutocomplete.options.attribs.containerId = "securityControlAutocompleteContainer"
+elements.securityControlAutocomplete.options.attribs.callback = "Fisma.Finding.handleSecurityControlSelection"
+elements.securityControlAutocomplete.options.tooltip = "<p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching controls. You must select a control from that list.</p>"
+displayGroups.finding.elements.securityControlAutocomplete = "securityControlAutocomplete"

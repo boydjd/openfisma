@@ -1436,6 +1436,33 @@ class RemediationController extends SecurityController
     {
         $this->_viewFinding();
         $this->_helper->layout->setLayout('ajax');
+        
+        $form = Fisma_Zend_Form_Manager::loadForm('finding_security_control');
+
+        // Set up the available and default values for the form
+        $form->getElement('securityControlAutocomplete')->setValue($this->view->finding->securityControlId);
+        
+        $form->setDefaults($this->getRequest()->getParams());
+
+        // Don't want any form markup (since this is being embedded into an existing form), just the form elements
+        $form->setDecorators(
+            array(
+                'FormElements',
+                array('HtmlTag', array('tag' => 'span'))
+            )
+        );
+            
+        $form->setElementDecorators(array('RenderSelf', 'Label'), 'securityControlAutocomplete');
+
+        $this->view->form = $form;
+        
+        $this->view->securityControlSearchButton = new Fisma_Yui_Form_Button(
+            'securityControlSearchButton',
+            array(
+                'label' => 'Edit Security Control Mapping',
+                'onClickFunction' => 'Fisma.Finding.showSecurityControlSearch'
+            )
+        );
     }
     
     /** 

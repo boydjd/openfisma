@@ -764,12 +764,18 @@ class IncidentController extends IncidentBaseController
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
         $this->_assertCurrentUserCanUpdateIncident($incidentId);
-
-        $userId = $this->getRequest()->getParam('userId');
+        
         $type = $this->getRequest()->getParam('type');
-
+        
         if (!in_array($type, array('actor', 'observer'))) {
             throw new Fisma_Zend_Exception("Invalid incident user type: '$type'");
+        }
+
+        // The user ID is passed as observerId or actorId depending on which type is being submitted
+        if ('actor' == $type) {
+            $userId = $this->getRequest()->getParam('actorId');
+        } else {
+            $userId = $this->getRequest()->getParam('observerId');
         }
 
         /*

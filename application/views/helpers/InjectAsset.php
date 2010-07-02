@@ -69,12 +69,15 @@ class View_Helper_InjectAsset
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
+                                      '/stylesheets/AutoComplete.css',
                                       '/stylesheets/AttachArtifacts.css',
                                       '/stylesheets/Dashboard.css',
+                                      '/stylesheets/Finding.css',
                                       '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/Modules.css',
-                                      '/stylesheets/SwitchButton.css'
+                                      '/stylesheets/SwitchButton.css',
+                                      '/stylesheets/Toolbar.css'
                                 )
                             );
 

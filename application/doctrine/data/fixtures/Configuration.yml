@@ -171,3 +171,8 @@ Configuration:
     yui_version:
         name: yui_version
         value: 2.8.0r4
+
+    default_security_control_catalog_id:
+        name: default_security_control_catalog_id
+        value: 4 # Default value points to NIST SP 800-53 Rev3
+        description: The ID of the default security control catalog which is used when the user doesn't explicitly specify a security control catalog.

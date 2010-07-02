@@ -1,0 +1,27 @@
+SecurityControlEnhancement:
+    Rev0_AC_02_E1:
+        Control: Rev0_AC_02
+        level: MODERATE
+        description: >
+            The organization employs automated mechanisms to support the management of information 
+            system accounts.
+    Rev0_AC_02_E2:
+        Control: Rev0_AC_02
+        level: MODERATE
+        description: >
+            The information system automatically terminates temporary and emergency accounts after [<em>Assignment: 
+            organization-defined time period for each type of account</em>].
+    Rev0_AC_02_E3:
+        Control: Rev0_AC_02
+        level: MODERATE
+        description: >
+            The information system automatically disables inactive accounts after [<em>Assignment: organization-defined 
+            time period</em>].
+    Rev0_AC_02_E4:
+        Control: Rev0_AC_02
+        level: HIGH
+        description: >
+            The organization employs automated mechanisms to ensure that account creation, modification, disabling, and 
+            termination actions are audited and, as required, appropriate individuals are notified.
+            
+    # The rest of the rev 0, 1, 2, 3 enhancements go here

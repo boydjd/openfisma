@@ -2599,6 +2599,16 @@ Fisma.AutoComplete=function(){return{init:function(a,e,d){var c=new YAHOO.widget
 Fisma.AutoComplete = function() {
     return {
         /**
+         * Used for tracking if there are any open requests.
+         */
+        requestCount : 0,
+        
+        /**
+         * Used for tracking if any results have been populated
+         */
+        resultsPopulated : false,
+        
+        /**
          * Initializes the AutoComplete widget
          *
          * @param oEvent
@@ -2617,6 +2627,43 @@ Fisma.AutoComplete = function() {
             ac.maxResultsDisplayed = 20;
             ac.forceSelection = true;
 
+            var spinnerImage = document.getElementById(params.containerId + "Spinner");
+
+            /**
+             * Enable the spinner
+             */
+            ac.dataRequestEvent.subscribe(function () {
+                spinnerImage.style.visibility = "visible";
+                Fisma.AutoComplete.requestCount++;
+            });
+
+            /**
+             * Disable the spinner if there are no pending requests
+             */
+            ac.dataReturnEvent.subscribe(function () {
+                Fisma.AutoComplete.requestCount--;
+                
+                if (0 == Fisma.AutoComplete.requestCount) {
+                    spinnerImage.style.visibility = "hidden";
+                }
+            });
+            
+            /**
+             * Re-display the autocomplete menu if the text field loses and then regains focus
+             */
+            ac.getInputEl().onclick = function () {
+                if (Fisma.AutoComplete.resultsPopulated) {
+                    ac.expandContainer();
+                }
+            };
+            
+            /**
+             * Record the fact that the results have been retrieved
+             */
+            ac.containerPopulateEvent.subscribe(function () {
+                Fisma.AutoComplete.resultsPopulated = true;
+            });
+            
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -2626,10 +2673,10 @@ Fisma.AutoComplete = function() {
             ac.generateRequest = function(query) {
                 return params.queryPrepend + query;
             };
-
+            
             /**
              * Overridable method that returns HTML markup for one result to be populated
-             * as innerHTML of an &lt;LI&gt; element.
+             * as innerHTML of an <li> element.
              *
              * @method formatResult
              * @param oResultData {Object} Result data object.
@@ -2643,8 +2690,15 @@ Fisma.AutoComplete = function() {
                 return sMarkup;
             };
 
-            ac.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe, { hiddenFieldId: params.hiddenFieldId } );
+            ac.itemSelectEvent.subscribe(
+                Fisma.AutoComplete.subscribe, 
+                {
+                    hiddenFieldId : params.hiddenFieldId,
+                    callback : params.callback
+                }
+            );
         },
+
         /**
          * Sets value of hiddenField to item selected
          *
@@ -2654,6 +2708,17 @@ Fisma.AutoComplete = function() {
          */
         subscribe : function(sType, aArgs, params) {
             document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
+
+            // If a valid callback is specified, then call it
+            try {
+                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
+
+                if ('function' == typeof callbackFunction) {
+                    callbackFunction();
+                }
+            } catch (error) {
+                // do nothing
+            }
         }
     };
 }();
@@ -3047,7 +3112,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**
+Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c=a.firstChild.nodeValue;var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3147,6 +3212,44 @@ Fisma.Finding = {
         inputEl.name = 'finding[ecdChangeDescription]';
         
         currentEcdJustificationEl.parentNode.appendChild(inputEl);
+    },
+    
+    /**
+     * Show the search control on the finding view's Security Control tab
+     */
+    showSecurityControlSearch : function () {
+        var button = document.getElementById('securityControlSearchButton');
+        button.style.display = 'none';
+
+        var searchForm = document.getElementById('findingSecurityControlSearch');
+        searchForm.style.display = 'block';
+    },
+    
+    /**
+     * When the user selects a security control, refresh the screen with that control's data
+     */
+    handleSecurityControlSelection : function () {
+        var controlContainer = document.getElementById('securityControlContainer');
+        
+        controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
+        
+        var securityControlElement = document.getElementById('finding[securityControlId]');
+        
+        var securityControlId = escape(securityControlElement.value);
+        
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/security-control-catalog/single-control/id/' + securityControlId, 
+            {
+                success: function (connection) {
+                    controlContainer.innerHTML = connection.responseText;
+                },
+                
+                failure : function (connection) {
+                    alert('Unable to load security control definition.');
+                }
+            }
+        );
     }
 }
 Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(var r in o){count=o[r];cell=a.insertCell(m++);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.id,r,"ontime",l.expanded)}for(var r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.id,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){var d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";var d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname==e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!=false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,d,b,h,e){if(!a.hasChildNodes()){if(g>0){var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(d,b,h,e)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(f,g,j,i){var e="";if(!(g=="CLOSED"||g=="TOTAL")){var e="/ontime/"+j}var h="";if(g!=""){h="/status/"+escape(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!=""){a="/type/"+this.filterType}var b="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!=""){b="/sourceId/"+this.filterSource}var d="/panel/remediation/sub/search"+e+h+"/responsibleOrganizationId/"+f+"/expanded/"+i+a+b;return d},exportTable:function(b){var a="/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
@@ -4827,7 +4930,7 @@ Fisma.Util = {
      * Convert a string name of an object into a reference to that object.
      * 
      * For example, "Fisma.Foo.myFoo" returns a reference to the actual Fisma.Foo.myFoo object, if it exists, 
-     * or null otherwise.
+     * or throws an error if does not exist.
      * 
      * This is useful for sending references to objects in JSON syntax, since JSON cannot encode a reference directly.
      * 

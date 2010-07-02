@@ -1,0 +1,139 @@
+<table class="keyValues">
+    <tr>
+        <td width="200">
+            <div>
+                Control ID:
+            </div>
+        </td>
+        <td>
+            <?php echo $this->escape($this->securityControl->code); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Catalog: </td>
+        <td><?php echo $this->escape($this->securityControl->Catalog->name)?></td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td><?php echo $this->escape($this->securityControl->name)?></td>
+    </tr>
+    <tr>
+        <td>Class:</td>
+        <td><?php echo $this->escape($this->securityControl->class)?></td>
+    </tr>
+    <tr>
+        <td>Family:</td>
+        <td><?php echo $this->escape($this->securityControl->family)?></td>
+    </tr>
+    <tr>
+        <td>Control:</td>
+        <td><?php echo $this->escape($this->securityControl->control, 'none')?></td>
+    </tr>
+    <tr>
+        <td>Enhancements:</td>
+        <td>
+            <ol>
+            <?php foreach ($this->securityControl->Enhancements as $enhancement): ?>
+                <li><?php echo $this->escape($enhancement->description, 'none')?></li>
+            <?php endforeach; ?>
+            </ol>
+        </td>
+    </tr>
+    <tr>
+        <td>Supplemental Guidance:</td>
+        <td>
+            <?php echo $this->escape($this->securityControl->supplementalGuidance, 'none'); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>References:</td>
+        <td>
+            <?php echo $this->escape($this->securityControl->externalReferences); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Priority:</td>
+        <td>
+            <?php echo $this->escape($this->securityControl->priorityCode); ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Low Baseline:</td>
+        <td>
+            <?php 
+            if ('LOW' == $this->securityControl->controlLevel): 
+                echo $this->escape($this->securityControl->code);
+                
+                $i = 0;
+                foreach ($this->securityControl->Enhancements as $enhancement):
+                    $i++;
+                    
+                    if ('LOW' == $enhancement->level):
+                        echo $this->escape(" ($i)");
+                    endif;
+                endforeach;
+            else: 
+            ?>
+                Not Selected
+            <?php 
+            endif; 
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Moderate Baseline:</td>
+        <td>
+            <?php 
+            if ('LOW' == $this->securityControl->controlLevel ||
+                'MODERATE' == $this->securityControl->controlLevel): 
+                
+                echo $this->escape($this->securityControl->code);
+                
+                $i = 0;
+                foreach ($this->securityControl->Enhancements as $enhancement):
+                    $i++;
+                    
+                    if ('LOW' == $enhancement->level ||
+                        'MODERATE' == $enhancement->level):
+                        
+                        echo $this->escape(" ($i)");
+                    endif;
+                endforeach;
+            else: 
+            ?>
+                Not Selected
+            <?php 
+            endif; 
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>High Baseline:</td>
+        <td>
+            <?php 
+            if ('LOW' == $this->securityControl->controlLevel ||
+                'MODERATE' == $this->securityControl->controlLevel ||
+                'HIGH' == $this->securityControl->controlLevel): 
+                
+                echo $this->escape($this->securityControl->code);
+                
+                $i = 0;
+                foreach ($this->securityControl->Enhancements as $enhancement):
+                    $i++;
+                    
+                    if ('LOW' == $enhancement->level ||
+                        'MODERATE' == $enhancement->level ||
+                        'HIGH' == $enhancement->level):
+                        
+                        echo $this->escape(" ($i)");
+                    endif;
+                endforeach;
+            else: 
+            ?>
+                Not Selected
+            <?php 
+            endif; 
+            ?>
+        </td>
+    </tr>
+</table>
