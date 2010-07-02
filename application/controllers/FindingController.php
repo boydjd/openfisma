@@ -73,7 +73,10 @@ class FindingController extends BaseController
                  ->addMultiOptions(array($securityControl['id'] => $securityControl['code']));
         }
         
-        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
+        $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
+            ->leftJoin('o.System system')
+            ->andWhere('o.orgType <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->execute();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 

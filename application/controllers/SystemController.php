@@ -64,17 +64,11 @@ class SystemController extends BaseController
         
         $systemTable = Doctrine::getTable('System');
         
-        $array = $systemTable->getEnumValues('confidentiality');
-        $form->getElement('confidentiality')->addMultiOptions(array_combine($array, $array));
-        
-        $array = $systemTable->getEnumValues('integrity');
-        $form->getElement('integrity')->addMultiOptions(array_combine($array, $array));
-        
-        $array = $systemTable->getEnumValues('availability');
-        $form->getElement('availability')->addMultiOptions(array_combine($array, $array));
-        
-        $type = $systemTable->getEnumValues('type');
-        $form->getElement('type')->addMultiOptions(array_combine($type, $type));
+        $enumFields = array('confidentiality', 'integrity', 'availability', 'type', 'sdlcPhase');
+        foreach ($enumFields as $field) {
+            $array = $systemTable->getEnumValues($field);
+            $form->getElement($field)->addMultiOptions(array_combine($array, $array));
+        }
         
         return Fisma_Zend_Form_Manager::prepareForm($form);
     }

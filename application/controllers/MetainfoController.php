@@ -123,6 +123,10 @@ class MetainfoController extends SecurityController
             );
             $selected = urldecode($this->getRequest()->getParam('value'));
             $this->view->selected = $list[array_search($selected, $list)];
+        } elseif ($module == 'systemSdlcPhase') {
+            $list = System::getSdlcPhaseMap();
+            $selected = $this->getRequest()->getParam('value');
+            $this->view->selected = $list[$selected];
         }
 
         $this->view->list = $list;

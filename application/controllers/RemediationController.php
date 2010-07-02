@@ -380,10 +380,12 @@ class RemediationController extends SecurityController
         else
             $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
 
-        $summary->leftJoin('finding.CurrentEvaluation evaluation')
+        $summary->leftJoin('node.System nodeSystem')
+            ->leftJoin('finding.CurrentEvaluation evaluation')
             ->leftJoin('Organization parent')
             ->leftJoin('parent.System system')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
+            ->andWhere('node.orgType <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -644,7 +646,9 @@ class RemediationController extends SecurityController
         // These variables go into the search box view
         $systemList = array();
         foreach ($this->_organizations as $system) {
-            $systemList[$system->id] = "$system->nickname - $system->name";
+            if ($system->orgType != 'system' || $system->System->sdlcPhase != 'disposal') {
+                $systemList[$system->id] = "$system->nickname - $system->name";
+            }
         }
         asort($systemList);
         $this->view->assign('params', $params);
@@ -1278,10 +1282,12 @@ class RemediationController extends SecurityController
             ->leftJoin('f.Asset a')
             ->leftJoin('f.SecurityControl sc')
             ->leftJoin('f.CurrentEvaluation ce')
+            ->leftJoin('ro.System ros')
             ->whereIn(
                 'f.responsibleOrganizationId', 
                 $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
             )
+            ->andWhere('ro.orgType <> ? OR ros.sdlcPhase <> ?', array('system', 'disposal'))
             ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {

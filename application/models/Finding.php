@@ -660,4 +660,17 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     {
         return $this->responsibleOrganizationId;
     }
+
+    /**
+     * Validation before insert.
+     *
+     * Overrides method from Doctrine_Record
+     */
+    protected function validateOnInsert()
+    {
+        $org = $this->ResponsibleOrganization;
+        if($org->orgType == 'system' && $org->System->sdlcPhase == 'disposal') {
+            $this->getErrorStack()->add('ResponsibleOrganization', 'Cannot create a finding for a System in the Disposal phase.');
+        }
+    }
 }
