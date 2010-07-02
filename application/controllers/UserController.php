@@ -455,6 +455,24 @@ class UserController extends BaseController
 
         parent::viewAction();
     }
+    
+    /**
+     * Displays user info in a small pop-up box. No layout.
+     */
+    public function infoAction()
+    {
+        $this->_helper->layout->disableLayout();
+        
+        $username = $this->getRequest()->getParam('username');
+
+        if ($username) {
+            $user = Doctrine::getTable('User')->findOneByUsername($username);
+        } else {
+            $user = null;
+        }
+        
+        $this->view->user = $user;
+    }
 
     /**
      * Retrieve the organization subform 

@@ -20,7 +20,7 @@ Fisma_Format_Section::startSection('Comments');
                 ?>
                     <tr>
                         <td><?php echo $this->escape($comment['createdTs']) ?></td>
-                        <td><?php echo $this->escape($comment['User']['username']) ?></td>
+                        <td><?php echo $this->escape($this->userInfo($comment['User']['username']), 'none') ?></td>
                         <td>
                             <?php 
                                 echo $this->escape(
@@ -45,7 +45,7 @@ Fisma_Format_Section::stopSection();
 YAHOO.util.Event.onContentReady('comments', function() {
     var myColumnDefs = [
         {key:'timestamp', label:'Timestamp', sortable:true, formatter: "text"},
-        {key:'username', label:'User', sortable:true, formatter: "text"},
+        {key:'username', label:'User', sortable:true, formatter: "html"},
         {key:'comment', label:'Comment', sortable:false}
     ];
 

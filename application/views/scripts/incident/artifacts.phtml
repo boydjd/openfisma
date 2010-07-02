@@ -32,7 +32,7 @@ Fisma_Format_Section::startSection('Artifacts');
                     <?php echo $this->escape($artifact['fileSize']); ?>
                 </td>
                 <td>
-                    <?php echo $this->escape($artifact['User']['username']); ?>
+                    <?php echo $this->escape($this->userInfo($artifact['User']['username']), 'none'); ?>
                 </td>
                 <td>
                     <?php echo $this->escape($artifact['createdTs']); ?>
@@ -59,7 +59,7 @@ YAHOO.util.Event.onContentReady('artifacts', function() {
         {key:'icon', label:'', sortable:false},
         {key:'fileName', label:'File Name', sortable:true},
         {key:'size', label:'Size', sortable:true},
-        {key:'uploadedBy', label:'Uploaded By', sortable:true},
+        {key:'uploadedBy', label:'Uploaded By', formatter:'html', sortable:true},
         {key:'uploadDate', label:'Upload Date', sortable:true},
         {key:'comment', label:'Comment', sortable:false}        
     ];

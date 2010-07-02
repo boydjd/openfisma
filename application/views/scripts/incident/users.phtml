@@ -35,7 +35,7 @@
                 foreach ($this->actors as $actor):
                 ?>
                     <tr>
-                        <td><?php echo $this->escape($actor['a_username']); ?></td>
+                        <td><?php echo $this->escape($this->userInfo($actor['a_username']), 'none'); ?></td>
                         <td><?php echo $this->escape($actor['a_nameFirst']); ?></td>
                         <td><?php echo $this->escape($actor['a_nameLast']); ?></td>
                         <?php 
@@ -98,7 +98,7 @@
                 foreach ($this->observers as $observer):
                 ?>
                     <tr>
-                        <td><?php echo $this->escape($observer['o_username']); ?></td>
+                        <td><?php echo $this->escape($this->userInfo($observer['o_username']), 'none'); ?></td>
                         <td><?php echo $this->escape($observer['o_nameFirst']); ?></td>
                         <td><?php echo $this->escape($observer['o_nameLast']); ?></td>
                         <?php 
@@ -127,7 +127,7 @@
 // Convert actors table to YUI table
 YAHOO.util.Event.onContentReady('actors', function() {
     var myColumnDefs = [
-        {key:'username', label:'Username', sortable:true},
+        {key:'username', label:'Username', formatter: 'html', sortable:true},
         {key:'nameFirst', label:'First Name', sortable:true},
         {key:'nameLast', label:'Last Name', sortable:true}
 <?php if ($this->updateIncidentPrivilege): ?>
@@ -154,7 +154,7 @@ YAHOO.util.Event.onContentReady('actors', function() {
 // Convert observers table to YUI table
 YAHOO.util.Event.onContentReady('observers', function() {
     var myColumnDefs = [
-        {key:'username', label:'Username', sortable:true},
+        {key:'username', label:'Username', formatter:'html', sortable:true},
         {key:'nameFirst', label:'First Name', sortable:true},
         {key:'nameLast', label:'Last Name', sortable:true}
         <?php if ($this->updateIncidentPrivilege): ?>

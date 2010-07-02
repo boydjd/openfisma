@@ -1,0 +1,35 @@
+<?php if ($this->user): ?>
+    <table class="keyValues" style="background-color: white; width: 100%;">
+        <tr>
+            <td>Name</td>
+            <td><?php echo $this->escape("{$this->user->nameFirst} {$this->user->nameLast}"); ?></td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td><?php echo $this->escape($this->user->username); ?></td>
+        </tr>
+        <tr>
+            <td>E-mail</td>
+            <td>
+                <a href="mailto:<?php echo $this->escape($this->email, 'url'); ?>">
+                    <?php echo $this->escape($this->user->email); ?>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>Work Phone</td>
+            <td><?php echo $this->escape($this->user->phoneOffice); ?></td>
+        </tr>
+        <tr>
+            <td>Mobile Phone</td>
+            <td><?php echo $this->escape($this->user->phoneMobile); ?></td>
+        </tr>
+    </table>
+    
+    <?php if ($this->user->locked): ?>
+        <img src="/images/alert.png" style="float: left; position: relative; top: 10px; margin-right: 5px;">
+        <p><em>This user account is locked and may be inactive.</em></p>
+    <?php endif; ?>
+<?php else: ?>
+    <p>No user information found.</p>
+<?php endif; ?>

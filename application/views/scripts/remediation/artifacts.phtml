@@ -13,8 +13,13 @@ foreach ($this->finding->Evidence as $evidence):
         <a href='/remediation/downloadevidence/id/<?php echo $this->escape($evidence->id)?>' target='_blank'>
             <?php echo $this->escape($evidence->filename); ?>
         </a>
-        (submitted by 
-        <?php echo $this->escape($evidence->User->nameFirst) . ' ' . $this->escape($evidence->User->nameLast); ?> 
+        submitted by 
+        <?php 
+            $user = $evidence->User;
+            $fullName = $user->nameFirst . ' ' . $user->nameLast;
+            
+            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
+        ?> 
         on 
         <?php echo $this->escape($evidence->createdTs); ?>)
     </div>
@@ -25,7 +30,9 @@ foreach ($this->finding->Evidence as $evidence):
         foreach ($evidence->FindingEvaluations as $findingEvaluation):
             $completedEvaluations[] = $findingEvaluation->Evaluation->id;
 
-            $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
+            $user = $findingEvaluation->User;
+            $fullName = $user->nameFirst . ' ' . $user->nameLast;
+            
             $decision = $findingEvaluation->decision;
             $spanClass = strtolower($decision);
         ?>
@@ -34,8 +41,8 @@ foreach ($this->finding->Evidence as $evidence):
                     <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?>:</b>
                     <span class="<?php echo $this->escape($spanClass)?>">
                         <b><?php echo $this->escape($decision)?></b>
-                        (<?php echo $this->escape($userName)?> 
-                        at <?php echo $this->escape($findingEvaluation->createdTs)?>)
+                        <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?> 
+                        at <?php echo $this->escape($findingEvaluation->createdTs)?>
                     </span>
                 </p>
             <?php 
