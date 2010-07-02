@@ -180,7 +180,9 @@ if ($finding->status != 'NEW'
     && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
     echo $this->escape('<div class="approval">', 'none');
     foreach ($findingEvaluations = $finding->getFindingEvaluations('action') as $k => $findingEvaluation) {
-        $userName = $findingEvaluation->User->nameFirst . ' ' . $findingEvaluation->User->nameLast;
+        $user = $findingEvaluation->User;
+        $fullName = $user->nameFirst . ' ' . $user->nameLast;
+        
         $decision = $findingEvaluation->decision;
         echo $this->escape('<div class="approvalStep"><p><b>', 'none');
         echo $this->escape($findingEvaluation->Evaluation->name);
@@ -188,11 +190,11 @@ if ($finding->status != 'NEW'
         if ('APPROVED' == $decision) {
             echo $this->escape('<span class="approved"><b>', 'none');
             echo $this->escape($decision);
-            echo $this->escape('</b> (', 'none');
-            echo $this->escape($userName);
+            echo $this->escape('</b>', 'none');
+            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
             echo $this->escape(' at ', 'none');
             echo $this->escape($findingEvaluation->createdTs);
-            echo $this->escape(')</span></p>', 'none');
+            echo $this->escape('</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
                 echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');
             }
@@ -200,7 +202,7 @@ if ($finding->status != 'NEW'
             echo $this->escape('<span class="denied"><b>', 'none');
             echo $this->escape($decision);
             echo $this->escape('</b> (', 'none');
-            echo $this->escape($userName);
+            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
             echo $this->escape(' at ', 'none');
             echo $this->escape($findingEvaluation->createdTs);
             echo $this->escape(')</span></p>', 'none');

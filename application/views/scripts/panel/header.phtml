@@ -16,7 +16,9 @@
     <p>
         <b>
             <?php 
-                echo $this->escape(CurrentUser::getInstance()->nameFirst . ' ' . CurrentUser::getInstance()->nameLast);
+                $user = CurrentUser::getInstance();
+                
+                echo $this->userInfo("{$user->nameFirst} {$user->nameLast}", $user->username);
             ?>
         </b>
         is currently logged in

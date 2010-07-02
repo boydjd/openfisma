@@ -64,6 +64,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
                                       '/javascripts/Fisma/UrlPanel.js',
+                                      '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/AC_RunActiveContent.js'
                                  ),
@@ -74,7 +75,8 @@ class View_Helper_InjectAsset
                                       '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/Modules.css',
-                                      '/stylesheets/SwitchButton.css'
+                                      '/stylesheets/SwitchButton.css',
+                                      '/stylesheets/User.css'
                                 )
                             );
 

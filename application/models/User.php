@@ -755,20 +755,4 @@ class User extends BaseUser
 
         return $userRolesResult;
     }
-
-    /**
-     * Renders a user object to HTML
-     * 
-     * @return string
-     */
-    public function __toString()
-    {
-        $render = "$this->nameFirst $this->nameLast ($this->username)";
-
-        if ($this->acl()->hasPrivilegeForObject('read', $this)) {
-            $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
-        }
-
-        return $render;
-    }
 }

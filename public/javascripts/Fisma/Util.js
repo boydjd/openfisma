@@ -49,5 +49,32 @@ Fisma.Util = {
 
         // At this point, the current value of parentObj should be the object itself
         return currentObj;
+    },
+    
+    /**
+     * Positions the specified panel relative to the specified element.
+     * 
+     * The goal is to put the panel near the specified element (typically, just underneath and left-aligned) but with
+     * the added constraint of not positioning the panel anywhere that will be clipped by the current viewport.
+     * 
+     * @param panel
+     * @param referenceElement
+     */
+    positionPanelRelativeToElement : function (panel, referenceElement) {
+
+        // This is a constant which indicates how far down the panel should be below the reference element
+        var VERTICAL_OFFSET = 5;
+
+        panel.cfg.setProperty(
+            "context", 
+            [
+                referenceElement, 
+                YAHOO.widget.Overlay.TOP_LEFT, 
+                YAHOO.widget.Overlay.BOTTOM_LEFT,
+                null,
+                [0, VERTICAL_OFFSET]
+            ]
+        );        
     }
+    
 };

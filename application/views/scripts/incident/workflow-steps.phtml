@@ -55,7 +55,7 @@ foreach ($this->steps as $step):
                 ?>
                     <tr>
                         <td>Completed By:</td>
-                        <td><?php echo $this->escape($step['User']['username'])?></td>
+                        <td><?php echo $this->escape($this->userInfo($step['User']['username']), 'none'); ?></td>
                     </tr>
                 <?php
                 endif;
