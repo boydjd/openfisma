@@ -177,7 +177,9 @@ class Version54 extends Doctrine_Migration_Base
             
             $removeReportAreaQuery = Doctrine_Query::create()
                                      ->delete('RolePrivilege')
-                                     ->where('privilegeId = ?', array($appConfigPrivilege->id));
+                                     ->where('privilegeId = ?', array($appConfigPrivilege[0]->id));
+
+            $removeReportAreaQuery->execute();
 
             $appConfigPrivilege->delete();
 
