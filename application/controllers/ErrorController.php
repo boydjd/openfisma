@@ -45,17 +45,6 @@ class ErrorController extends Zend_Controller_Action
         $content = null;
         $errors = $this->_getParam('error_handler');
 
-        // if the user hasn't login, or the session expired.
-        if ($errors->exception instanceof Fisma_Zend_Exception_InvalidAuthentication) {
-            $this->view->assign('error', $errors->exception->getMessage());
-            //remind the user to login
-            $this->_forward('logout', 'Auth');
-        // if the user want to access an empty path.  
-        } elseif (!$auth->hasIdentity()) {
-            $this->view->assign('error', 'Access denied. Please login first.');
-            $this->_forward('logout', 'Auth');
-        // if the user has login and meeted an exception.
-        } else {
             $this->getResponse()->clearBody();
             $content = get_class($errors->exception)
                      . ": \""
@@ -67,7 +56,8 @@ class ErrorController extends Zend_Controller_Action
             $logger->log($content, Zend_Log::ERR);
             $this->view->content = $content;
 
-            if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {
+            if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege ||
+                $errors->exception instanceof Fisma_Zend_Exception_InvalidAuthentication) {
                 $this->view->message = $errors->exception->getMessage();
             } else {         
                 $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
@@ -86,7 +76,6 @@ class ErrorController extends Zend_Controller_Action
             if ($auth->hasIdentity() && 0 === strpos($_SERVER['REQUEST_URI'], '/panel')) {
                 $this->_helper->actionStack('header', 'panel');
             }
-        }
     }
 
     /**

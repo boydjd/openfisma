@@ -58,6 +58,8 @@ class ConfigController extends SecurityController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('admin');
 
         // Add header/footer to any action which expects an HTML response

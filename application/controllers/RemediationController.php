@@ -54,6 +54,10 @@ class RemediationController extends SecurityController
      */
     public function preDispatch() 
     {
+        parent::preDispatch();
+
+        $this->_organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
+
         $request = $this->getRequest();
         $this->_paging['startIndex'] = $request->getParam('startIndex', 0);
         if ('modify' == $request->getParam('sub')) {
@@ -70,7 +74,6 @@ class RemediationController extends SecurityController
                 $this->_forward('uploadevidence');
             }
         }
-        parent::preDispatch();
     }
               
     /**
@@ -119,7 +122,6 @@ class RemediationController extends SecurityController
         }
         
         $this->_helper->contextSwitch()->initContext();
-        $this->_organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
     }
     
     /**

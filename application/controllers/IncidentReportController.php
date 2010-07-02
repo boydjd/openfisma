@@ -45,6 +45,8 @@ class IncidentReportController extends IncidentBaseController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('incident_report');
 
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
