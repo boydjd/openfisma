@@ -47,6 +47,8 @@ class FindingReportController extends SecurityController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('finding_report');
 
         // Add header/footer to any action which expects an HTML response
