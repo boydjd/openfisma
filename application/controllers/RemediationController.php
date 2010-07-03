@@ -385,7 +385,7 @@ class RemediationController extends SecurityController
             ->leftJoin('Organization parent')
             ->leftJoin('parent.System system')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
-            ->andWhere('node.orgType <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
+            ->andWhere('nodeSystem.sdlcPhase <> ?', array('disposal'))
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -1287,7 +1287,7 @@ class RemediationController extends SecurityController
                 'f.responsibleOrganizationId', 
                 $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
             )
-            ->andWhere('ro.orgType <> ? OR ros.sdlcPhase <> ?', array('system', 'disposal'))
+            ->andWhere('ros.sdlcPhase <> ?', array('disposal'))
             ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {

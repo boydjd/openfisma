@@ -113,7 +113,7 @@ class AssetController extends BaseController
         $form = parent::getForm($formName);
         $systems = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
             ->leftJoin('o.System system')
-            ->andWhere('o.orgType <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
             ->execute();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
