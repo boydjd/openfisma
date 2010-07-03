@@ -420,7 +420,7 @@ class UserController extends BaseController
         $user->lastRob = Fisma::now();
         $user->save();
         
-        $this->_forward('index', 'Panel');
+        $this->_forward('index', 'Index');
     }
 
     /**

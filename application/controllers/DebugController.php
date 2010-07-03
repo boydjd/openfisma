@@ -36,7 +36,6 @@ class DebugController extends Zend_Controller_Action
     public function preDispatch()
     {
         $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
 
         if (!Fisma::debug())
             throw new Fisma_Zend_Exception('Action is only allowed in debug mode.');
@@ -49,9 +48,6 @@ class DebugController extends Zend_Controller_Action
      */
     public function phpinfoAction()
     {
-        $this->_helper->layout()->enableLayout();
-        $this->_helper->viewRenderer->setNoRender(false);
-        $this->_helper->actionStack('header', 'panel');
     }
 
     /**
