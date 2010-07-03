@@ -81,7 +81,7 @@ function contextMenuHandler(event, eventArgs) {
     //if there is a value in workflow_id this is a step - append step to the action
     var step = (wfid) ? 'step' : '';
 
-    var url = '/panel/irworkflow/sub/' + step + 'view/v/' + step + action + '/id/' + id;
+    var url = '/irworkflow/' + step + 'view/v/' + step + action + '/id/' + id;
     window.location = url;
 }
 

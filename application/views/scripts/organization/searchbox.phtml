@@ -4,7 +4,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Organization List', 
                                                      'imageSrc' => '/images/view_list.png',
-                                                     'href' => '/panel/organization/sub/list'));
+                                                     'href' => '/organization/list'));
         echo $this->escape($listButton, 'none');
         ?>
     
@@ -12,7 +12,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('treetButton', 
                                                array('value' => 'Organization Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
-                                                     'href' => '/panel/organization/sub/tree'));
+                                                     'href' => '/organization/tree'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -21,13 +21,13 @@
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Organization', 
                                                          'imageSrc' => '/images/add.png',
-                                                         'href' => '/panel/organization/sub/create'));
+                                                         'href' => '/organization/create'));
             echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
     <div class="right">    
-        <form name="query" method="post" action="/panel/organization/sub/list" style="display:inline">
+        <form name="query" method="post" action="/organization/list" style="display:inline">
         <span class="searchField">
             <b><label for="keywords">Search:</label>&nbsp;</b>
             <input id="keywords" 

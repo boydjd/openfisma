@@ -28,7 +28,7 @@ var myColumnDefs = [
     };
 
     // DataSource instance
-    var myDataSource = new YAHOO.util.DataSource("/panel/organization/sub/search");
+    var myDataSource = new YAHOO.util.DataSource("/organization/search");
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -72,7 +72,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/organization/sub/view/v/view/id/" + oRecord.getData("id");
+            document.location = "/organization/view/v/view/id/" + oRecord.getData("id");
         }
     );
     
@@ -96,7 +96,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/organization/sub/view/v/view/id/" + rowRecord.getData("id");
+                actionUrl = "/organization/view/v/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

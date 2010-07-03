@@ -80,7 +80,7 @@ var myColumnDefs = [
             function (oArgs) {
                 var elTarget = oArgs.target;
                 var oRecord = this.getRecord(elTarget);
-                document.location = "/panel/product/sub/view/id/" + oRecord.getData("id");
+                document.location = "/product/view/id/" + oRecord.getData("id");
             }
         );
     <?php 
@@ -107,7 +107,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/product/sub/view/id/" + rowRecord.getData("id");
+                actionUrl = "/product/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

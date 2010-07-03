@@ -78,7 +78,7 @@
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/panel/asset/sub/search');
+    var myDataSource = new YAHOO.util.DataSource('/asset/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -123,7 +123,7 @@
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/asset/sub/view/id/" + oRecord.getData("id");
+            document.location = "/asset/view/id/" + oRecord.getData("id");
         }
     );
     <?php 
@@ -150,7 +150,7 @@
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/asset/sub/view/id/" + rowRecord.getData("id");
+                actionUrl = "/asset/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

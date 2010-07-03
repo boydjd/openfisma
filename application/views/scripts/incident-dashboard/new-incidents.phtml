@@ -74,7 +74,7 @@ Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'><
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/incident/sub/view/id/" + oRecord.getData("id");
+            document.location = "/incident/view/id/" + oRecord.getData("id");
         }
     );
     
@@ -98,7 +98,7 @@ Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'><
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/incident/sub/view/id/" + rowRecord.getData("id");
+                actionUrl = "/incident/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

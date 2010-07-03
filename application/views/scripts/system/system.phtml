@@ -103,7 +103,7 @@ Fisma_Format_Section::startSection('Details');
                 $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
                 if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
                     $parentOrgType = 'system' == $parentOrganization->orgType ? 'system' : 'organization';
-                    echo $this->escape('<a href="/panel/' . $parentOrgType . '/sub/view/id/', 'none');
+                    echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');
                     echo $this->escape($parentOrganization->id, 'url');
                     echo $this->escape('">', 'none');
                     echo $this->escape($parentOrganizationName);

@@ -1,5 +1,5 @@
 <?php Fisma_Format_Section::startSection("Approve Pending Findings"); ?>
-<form method="POST" action="/panel/finding/sub/process-approval">
+<form method="POST" action="/finding/process-approval">
 <div id="list"></div>
 <script type="text/javascript">
     var checkboxList = function(elCell, oRecord, oColumn, sData) {
@@ -7,7 +7,7 @@
     };
     
     var link1 = function(elCell, oRecord, oColumn, sData) {
-        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"
+        elCell.innerHTML = "<a href='/remediation/view/id/"
                          + oRecord.getData("nId")
                          + "'>"
                          + oRecord.getData("nId")
@@ -15,7 +15,7 @@
     };
     
     var link2 = function(elCell, oRecord, oColumn, sData) {
-        elCell.innerHTML = "<a href='/panel/remediation/sub/view/id/"
+        elCell.innerHTML = "<a href='/remediation/view/id/"
                          + oRecord.getData("oId")
                          + "'>"
                          + oRecord.getData("oId")

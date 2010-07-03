@@ -137,7 +137,7 @@ myDataTable.subscribe("rowClickEvent",
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
         var keywords = "<?php echo $this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
-        document.location = "/panel/remediation/sub/view/id/" + oRecord.getData("id") + keywords;
+        document.location = "/remediation/view/id/" + oRecord.getData("id") + keywords;
     }
 );
 
@@ -161,7 +161,7 @@ function contextMenuHandler(event, eventArgs) {
     var actionUrl = '';
     switch (menuItem.index) {
         case 0 :
-            actionUrl = "/panel/remediation/sub/view/id/" + rowRecord.getData("id");
+            actionUrl = "/remediation/view/id/" + rowRecord.getData("id");
             break;
     }
     if (actionUrl != '') {

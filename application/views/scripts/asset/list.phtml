@@ -6,13 +6,13 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         document.forms.assetresult.submit();
     }
 </script>
-<form id="assetresult" method="post" action="/panel/asset/sub/multidelete">
+<form id="assetresult" method="post" action="/asset/multidelete">
 <div class="toolbar">
     <?php
         if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
             $importButton = new Fisma_Yui_Form_Button_Link('import',
                                                 array('value' => 'Import Assets',
-                                                      'href' => '/panel/asset/sub/import'));
+                                                      'href' => '/asset/import'));
             echo $this->escape($importButton, 'none');
         }
 
@@ -43,7 +43,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
                 'createAsset', 
                 array(
                     'value' => 'Create Asset', 
-                    'href' => '/panel/asset/sub/create'
+                    'href' => '/asset/create'
                 )
             );
             echo $this->escape($createAssetButton, 'none');
@@ -56,7 +56,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         elCell.innerHTML = "<input type='checkbox' name='aid[]' value='" + oRecord.getData("id") + "' />";
     };
     var operation = function(elCell, oRecord, oColumn, sData) {
-        elCell.innerHTML = "<a href='/panel/asset/sub/view/id/"+oRecord.getData("id")+"'>"
+        elCell.innerHTML = "<a href='/asset/view/id/"+oRecord.getData("id")+"'>"
                          + "<img src='/images/view.gif' /></a>";
     };
     // Column definitions
@@ -85,7 +85,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/panel/asset/sub/search');
+    var myDataSource = new YAHOO.util.DataSource('/asset/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -144,7 +144,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/asset/sub/view/id/" + rowRecord.getData("id");
+                actionUrl = "/asset/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

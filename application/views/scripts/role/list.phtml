@@ -28,7 +28,7 @@ var myColumnDefs = [
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/panel/role/sub/search');
+    var myDataSource = new YAHOO.util.DataSource('/role/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -76,7 +76,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/role/sub/view/id/" + oRecord.getData("id");
+            document.location = "/role/view/id/" + oRecord.getData("id");
         }
     );
     <?php 
@@ -103,7 +103,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/role/sub/view/id/" + rowRecord.getData("id");
+                actionUrl = "/role/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

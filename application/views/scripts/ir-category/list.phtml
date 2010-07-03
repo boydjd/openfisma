@@ -31,7 +31,7 @@ var myColumnDefs = [
     };
 
     // DataSource instance
-    var myDataSource = new YAHOO.util.DataSource("/panel/ircategory/sub/search");
+    var myDataSource = new YAHOO.util.DataSource("/ircategory/search");
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -76,7 +76,7 @@ var myColumnDefs = [
             function (oArgs) {
                 var elTarget = oArgs.target;
                 var oRecord = this.getRecord(elTarget);
-                document.location = "/panel/ircategory/sub/view/v/view/id/" + oRecord.getData("id");
+                document.location = "/ircategory/view/v/view/id/" + oRecord.getData("id");
             }
         );
     <?php 
@@ -103,7 +103,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/ircategory/sub/view/v/view/id/" + rowRecord.getData("id");
+                actionUrl = "/ircategory/view/v/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

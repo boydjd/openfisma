@@ -95,7 +95,7 @@ function menuHandler(source) {
 
     <?php foreach ($this->statusArray as $status): ?>
     document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
-        '/panel/remediation/sub/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
+        '/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
         + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
@@ -206,7 +206,7 @@ echo $this->escape($exportPdf, 'none');
     </tr>
     <tr>
     <?php foreach ($this->statusArray as $status):
-        $url = Fisma_Url::customUrl('/panel/remediation/sub/searchbox/status/' . urlencode($status));?>
+        $url = Fisma_Url::customUrl('/remediation/searchbox/status/' . urlencode($status));?>
         <th>
             <a id="finding_summary_search_<?php echo $this->escape($status, 'url') ?>"
                href="<?php echo $this->escape($url, 'none') ?>">

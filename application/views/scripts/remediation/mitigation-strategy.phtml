@@ -114,7 +114,7 @@
 
 <?php 
 Fisma_Format_Section::startSection("Mitigation Strategy Approval");
-$postAction = "/panel/remediation/sub/msa/id/" . $finding->id;
+$postAction = "/remediation/msa/id/" . $finding->id;
 
 $array = array('type'                   => $finding->type,
                'description'            => $finding->description,
