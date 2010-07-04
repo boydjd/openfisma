@@ -141,7 +141,7 @@ class RoleController extends BaseController
                 $model = 'notice';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_redirect('panel/role/right/id/' . $roleId);
+            $this->_redirect('role/right/id/' . $roleId);
         } else {
             $role = Doctrine::getTable('Role')->find($roleId)->toArray();
             $q = Doctrine_Query::create()

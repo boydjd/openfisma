@@ -401,7 +401,7 @@ class IncidentController extends IncidentBaseController
         $this->view->richColumns = $richColumns;
         $this->view->step = count($this->_formParts);
         $this->view->actionUrlBase = $this->_me 
-                                   ? '/incident/sub'
+                                   ? '/incident'
                                    : '/incident';
     }
 

@@ -766,7 +766,7 @@ class User extends BaseUser
         $render = "$this->nameFirst $this->nameLast ($this->username)";
 
         if ($this->acl()->hasPrivilegeForObject('read', $this)) {
-            $render = "<a href='/panel/user/sub/view/id/{$this->id}'>$render</a>";
+            $render = "<a href='/user/view/id/{$this->id}'>$render</a>";
         }
 
         return $render;

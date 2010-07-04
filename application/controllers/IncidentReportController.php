@@ -54,11 +54,6 @@ class IncidentReportController extends IncidentBaseController
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
-
-        // Add header/footer to any action which expects an HTML response
-        if (!$this->_hasParam('format')) {
-            $this->_helper->actionStack('header', 'panel');
-        }
     }
 
     /**

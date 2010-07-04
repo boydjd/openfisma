@@ -311,7 +311,7 @@ class FindingController extends BaseController
         } catch(Fisma_Zend_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
-            $this->_forward('finding', 'panel', null, array('sub' => 'injection'));
+            $this->_forward('injection', 'finding');
         }
     }
 
