@@ -44,7 +44,7 @@ class RoleController extends BaseController
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
-        $this->view->assign('rightLink', "/panel/Role/sub/right/id/$id");
+        $this->view->assign('rightLink', "/Role/right/id/$id");
         parent::viewAction();
     }
     
@@ -141,7 +141,7 @@ class RoleController extends BaseController
                 $model = 'notice';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_redirect('panel/role/sub/right/id/' . $roleId);
+            $this->_redirect('panel/role/right/id/' . $roleId);
         } else {
             $role = Doctrine::getTable('Role')->find($roleId)->toArray();
             $q = Doctrine_Query::create()

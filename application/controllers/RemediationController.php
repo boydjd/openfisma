@@ -640,7 +640,7 @@ class RemediationController extends SecurityController
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
-        Fisma_Cookie::set('lastSearchUrl', "/panel/remediation/sub/searchbox$link");
+        Fisma_Cookie::set('lastSearchUrl', "/remediation/searchbox$link");
         $this->view->assign('columns', $this->_getColumns());
 
         // These variables go into the search box view
@@ -721,7 +721,7 @@ class RemediationController extends SecurityController
             $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
         
-        $this->_redirect("/panel/remediation/sub/view/id/$id");
+        $this->_redirect("/remediation/view/id/$id");
     }
 
     /**

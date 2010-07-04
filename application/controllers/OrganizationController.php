@@ -247,14 +247,14 @@ class OrganizationController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink', "/panel/organization/sub/view/id/$id");
-            $form->setAction("/panel/organization/sub/update/id/$id");
+            $this->view->assign('viewLink', "/organization/view/id/$id");
+            $form->setAction("/organization/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/organization/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/organization/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/panel/organization/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/organization/delete/id/$id");
         $form->setDefaults($organization);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -307,7 +307,7 @@ class OrganizationController extends SecurityController
                     $msg = "Organization created successfully";
                     $model = 'notice';
                     $this->view->priorityMessenger($msg, $model);
-                    $this->_redirect("/panel/organization/sub/view/id/{$organization->id}");
+                    $this->_redirect("/organization/view/id/{$organization->id}");
                 } catch (Doctrine_Validator_Exception $e) {
                     $msg = $e->getMessage();
                     $model = 'warning';

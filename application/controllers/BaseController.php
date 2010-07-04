@@ -156,9 +156,9 @@ abstract class BaseController extends SecurityController
 
         $form   = $this->getForm();
         
-        $this->view->assign('editLink', "/panel/{$this->_modelName}/sub/edit/id/$id");
+        $this->view->assign('editLink', "/{$this->_modelName}/edit/id/$id");
         $form->setReadOnly(true);            
-        $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
         $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
@@ -177,7 +177,7 @@ abstract class BaseController extends SecurityController
         
         // Get the subject form
         $form   = $this->getForm();
-        $form->setAction("/panel/{$this->_modelName}/sub/create");
+        $form->setAction("/{$this->_modelName}/create");
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
@@ -218,9 +218,9 @@ abstract class BaseController extends SecurityController
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
-        $this->view->assign('viewLink', "/panel/{$this->_modelName}/sub/view/id/$id");
-        $form->setAction("/panel/{$this->_modelName}/sub/edit/id/$id");
-        $this->view->assign('deleteLink', "/panel/{$this->_modelName}/sub/delete/id/$id");
+        $this->view->assign('viewLink', "/{$this->_modelName}/view/id/$id");
+        $form->setAction("/{$this->_modelName}/edit/id/$id");
+        $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
         // Update the model
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();

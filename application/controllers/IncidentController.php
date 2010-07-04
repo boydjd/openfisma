@@ -185,7 +185,7 @@ class IncidentController extends IncidentBaseController
         
         // Authenticated users and unauthenticated users have different form actions
         if ($this->_me) {
-            $formPart->setAction("/panel/incident/sub/report/step/$step");
+            $formPart->setAction("/incident/report/step/$step");
         } else {
             $formPart->setAction("/incident/report/step/$step");
         }
@@ -401,7 +401,7 @@ class IncidentController extends IncidentBaseController
         $this->view->richColumns = $richColumns;
         $this->view->step = count($this->_formParts);
         $this->view->actionUrlBase = $this->_me 
-                                   ? '/panel/incident/sub'
+                                   ? '/incident/sub'
                                    : '/incident';
     }
 
@@ -594,7 +594,7 @@ class IncidentController extends IncidentBaseController
             'discardChanges', 
             array(
                 'value' => 'Discard Changes', 
-                'href' => "/panel/incident/sub/view/id/$id"
+                'href' => "/incident/view/id/$id"
             )
         );
         
@@ -609,7 +609,7 @@ class IncidentController extends IncidentBaseController
             'unlock',
             array(
                 'value' => 'Unlock Incident',
-                'href' => "/panel/incident/sub/unlock/id/$id"
+                'href' => "/incident/unlock/id/$id"
             )
         );
 
@@ -617,7 +617,7 @@ class IncidentController extends IncidentBaseController
             'lock',
             array(
                 'value' => 'Lock Incident',
-                'href' => "/panel/incident/sub/lock/id/$id"
+                'href' => "/incident/lock/id/$id"
             )
         );
     
@@ -638,7 +638,7 @@ class IncidentController extends IncidentBaseController
         $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = TRUE;
         $incident->save();
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
 
     /**
@@ -655,7 +655,7 @@ class IncidentController extends IncidentBaseController
         $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = FALSE;
         $incident->save();
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
     
     /**
@@ -811,7 +811,7 @@ class IncidentController extends IncidentBaseController
             $mail->IRAssign($userId, $incidentId);
         }
         
-        $this->_redirect("/panel/incident/sub/view/id/$incidentId");
+        $this->_redirect("/incident/view/id/$incidentId");
     }
     
     /**
@@ -830,7 +830,7 @@ class IncidentController extends IncidentBaseController
         $incident->unlink('Users', array($userId));
         $incident->save();
 
-        $this->_redirect("/panel/incident/sub/view/id/$incidentId");
+        $this->_redirect("/incident/view/id/$incidentId");
     }
             
     /**
@@ -923,7 +923,7 @@ class IncidentController extends IncidentBaseController
         } catch (Fisma_Doctrine_Behavior_Lockable_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
 
     /**
@@ -1030,7 +1030,7 @@ class IncidentController extends IncidentBaseController
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
 
     /**
@@ -1051,7 +1051,7 @@ class IncidentController extends IncidentBaseController
             $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
         
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
 
     /**
@@ -1318,7 +1318,7 @@ class IncidentController extends IncidentBaseController
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
-        $this->_redirect("/panel/incident/sub/view/id/$id");
+        $this->_redirect("/incident/view/id/$id");
     }
 
     /**

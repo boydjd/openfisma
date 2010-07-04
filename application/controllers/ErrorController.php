@@ -71,11 +71,6 @@ class ErrorController extends Zend_Controller_Action
                 //clear the action stack to prevent additional exceptions would be throwed
                 while($stack->popStack());
             }
-            
-            // Add headers and footers for logged in users when looking at a panel view
-            if ($auth->hasIdentity() && 0 === strpos($_SERVER['REQUEST_URI'], '/panel')) {
-                $this->_helper->actionStack('header', 'panel');
-            }
     }
 
     /**
@@ -95,7 +90,6 @@ class ErrorController extends Zend_Controller_Action
         }
         $this->getResponse()->clearBody();
         $this->view->content = $content . '<p>';
-        $this->_helper->actionStack('header', 'panel');
         $this->render('error');
     }
 }

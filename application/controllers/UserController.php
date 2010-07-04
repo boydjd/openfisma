@@ -237,7 +237,7 @@ class UserController extends BaseController
         $this->view->username = $user->username;
         $this->view->columns = array('Timestamp', 'User', 'Message');
         $this->view->rows = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
-        $this->view->viewLink = "/panel/user/sub/view/id/$id";
+        $this->view->viewLink = "/user/view/id/$id";
     }
 
     /**
@@ -431,7 +431,7 @@ class UserController extends BaseController
     public function viewAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
+        $this->view->auditLogLink = "/user/log/id/$id";
 
         $tabView = new Fisma_Yui_TabView('UserView');
 
@@ -550,7 +550,7 @@ class UserController extends BaseController
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
-        $this->view->auditLogLink = "/panel/user/sub/log/id/$id";
+        $this->view->auditLogLink = "/user/log/id/$id";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 

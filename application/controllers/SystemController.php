@@ -323,7 +323,7 @@ class SystemController extends BaseController
             $this->view->priorityMessenger($msg, $type);
         }
 
-        $this->_redirect("/panel/system/sub/view/id/$id");
+        $this->_redirect("/system/view/id/$id");
     }
 
     /**
