@@ -1,173 +1,61 @@
 Configuration:
-    account_inactivity_period:
-        name: account_inactivity_period
-        value: 90
-        description: Maximum Days An Account Can Be Inactive Before Automatic Lock
+    defaultConfig:
+        account_inactivity_period: 90
 
-    failure_threshold:
-        name: failure_threshold
-        value: 3
-        description: Maximum Login Attempts Before Server Locks Account
+        failure_threshold: 3
 
-    session_inactivity_period:
-        name: session_inactivity_period
-        value: 5400
-        description: Session Timeout (seconds)
+        session_inactivity_period: 5400
 
-    auth_type:
-        name: auth_type
-        value: database
-        description: Authentication Type (db or ldap)
+        auth_type: database
 
-    sender:
-        name: sender
-        value: 
-        description: Send Email Address
+        send_type: sendmail
 
-    subject:
-        name: subject
-        value: 
-        description: Email Subject
+        smtp_port: 25
 
-    smtp_host:
-        name: smtp_host
-        value: 
-        description: Smtp server name
+        smtp_tls: 0
 
-    smtp_username:
-        name: smtp_username
-        value: 
-        description: Username for smtp Authentication
+        unlock_enabled: true
 
-    smtp_password:
-        name: smtp_password
-        value: 
-        description: Password for smtp Authentication
+        unlock_duration: 5
 
-    send_type:
-        name: send_type
-        value: sendmail
-        description: Notification email send type
+        contact_name: TECH SUPPORT NAME
 
-    smtp_port:
-        name: smtp_port
-        value: 25
-        description: Smtp server port
-        
-    smtp_tls:
-        name: smtp_tls
-        value: 0
-        description: Use Transport Layer Security (TLS)           
+        contact_phone: 202-555-1000
 
-    unlock_enabled:
-        name: unlock_enabled
-        value: 1
-        description: Enable Automated Account Unlock
+        contact_email: openfisma@department.gov
 
-    unlock_duration:
-        name: unlock_duration
-        value: 5
-        description: Automated Account Unlock Duration (In Minutes)
+        contact_subject: OpenFISMA Tech Support
 
-    contact_name:
-        name: contact_name
-        value: TECH SUPPORT NAME
-        description: Technical support Contact name
+        use_notification: <p>This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.</p>
 
-    contact_phone:
-        name: contact_phone
-        value: 202-555-1000
-        description: Technical support Contact phone number
+        behavior_rule: <p>SENSITIVE BUT UNCLASSIFIED INFORMATION PROPERTY OF THE UNITED STATES GOVERNMENT</p><p>DISCLOSURE, COPYING, DISSEMINATION, OR DISTRIBUTION OF SENSITIVE BUT UNCLASSIFIED INFORMATION TO UNAUTHORIZED USERS IS PROHIBITED.</p><p>Please dispose of sensitive but unclassified information when no longer needed.</p><p>I. Usage Agreement</p><p>This is a Federal computer system and is the property of the United States Government. It is for authorized use only. Users (authorized or unauthorized) have no explicit or implicit expectation of privacy in anything viewed, created, downloaded, or stored on this system, including e-mail, Internet, and Intranet use. Any or all uses of this system (including all peripheral devices and output media) and all files on this system may be intercepted, monitored, read, captured, recorded, disclosed, copied, audited, and/or inspected by authorized Agency personnel, the Office of Inspector General (OIG),and/or other law enforcement personnel, as well as authorized officials of other agencies. Access or use of this computer by any person, whether authorized or unauthorized, constitutes consent to such interception, monitoring, reading, capturing, recording, disclosure, copying, auditing, and/or inspection at the discretion of authorized Agency personnel, law enforcement personnel (including the OIG),and/or authorized officials other agencies. Unauthorized use of this system is prohibited and may constitute a violation of 18 U.S.C. 1030 or other Federal laws and regulations and may result in criminal, civil, and/or administrative action. By continuing to use this system, you indicate your awareness of, and consent to, these terms and conditions and acknowledge that there is no reasonable expectation of privacy in the access or use of this computer system.</p>
 
-    contact_email:
-        name: contact_email
-        value: openfisma@department.gov
-        description: Technical support Contact Email Address
+        privacy_policy: <ul><li>This is a U.S. Federal government computer system that is FOR OFFICIAL USE ONLY.</li><li>This system is subject to monitoring. No expectation of privacy is to be assumed.</li><li>Individuals found performing unauthorized activities are subject to disciplinary action including criminal prosecution.</li></ul>
 
-    contact_subject:
-        name: contact_subject
-        value: OpenFISMA Tech Support
-        description: Technical Support Email Subject Text
+        system_name: OpenFISMA
 
-    use_notification:
-        name: use_notification
-        value: <p>This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.</p>
-        description: The warning banner displayed before login
+        rob_duration: 365
 
-    behavior_rule:
-        name: behavior_rule
-        value: <p>SENSITIVE BUT UNCLASSIFIED INFORMATION PROPERTY OF THE UNITED STATES GOVERNMENT</p><p>DISCLOSURE, COPYING, DISSEMINATION, OR DISTRIBUTION OF SENSITIVE BUT UNCLASSIFIED INFORMATION TO UNAUTHORIZED USERS IS PROHIBITED.</p><p>Please dispose of sensitive but unclassified information when no longer needed.</p><p>I. Usage Agreement</p><p>This is a Federal computer system and is the property of the United States Government. It is for authorized use only. Users (authorized or unauthorized) have no explicit or implicit expectation of privacy in anything viewed, created, downloaded, or stored on this system, including e-mail, Internet, and Intranet use. Any or all uses of this system (including all peripheral devices and output media) and all files on this system may be intercepted, monitored, read, captured, recorded, disclosed, copied, audited, and/or inspected by authorized Agency personnel, the Office of Inspector General (OIG),and/or other law enforcement personnel, as well as authorized officials of other agencies. Access or use of this computer by any person, whether authorized or unauthorized, constitutes consent to such interception, monitoring, reading, capturing, recording, disclosure, copying, auditing, and/or inspection at the discretion of authorized Agency personnel, law enforcement personnel (including the OIG),and/or authorized officials other agencies. Unauthorized use of this system is prohibited and may constitute a violation of 18 U.S.C. 1030 or other Federal laws and regulations and may result in criminal, civil, and/or administrative action. By continuing to use this system, you indicate your awareness of, and consent to, these terms and conditions and acknowledge that there is no reasonable expectation of privacy in the access or use of this computer system.</p>
-        description: Rules Of Behavior
+        pass_uppercase: true
 
-    privacy_policy:
-        name: privacy_policy
-        value: <ul><li>This is a U.S. Federal government computer system that is FOR OFFICIAL USE ONLY.</li><li>This system is subject to monitoring. No expectation of privacy is to be assumed.</li><li>Individuals found performing unauthorized activities are subject to disciplinary action including criminal prosecution.</li></ul>
-        description: Privacy Policy
+        pass_lowercase: true
 
-    system_name:
-        name: system_name
-        value: OpenFISMA
-        description: System name
+        pass_numerical: true
 
-    rob_duration:
-        name: rob_duration
-        value: 365
-        description: The duration between which the user has to accept the ROB (days)
+        pass_special: 0 
 
-    pass_uppercase:
-        name: pass_uppercase
-        value: 1
-        description: Require Upper Case Characters
+        pass_min_length: 8
 
-    pass_lowercase:
-        name: pass_lowercase
-        value: 1
-        description: Require Lower Case Characters
+        pass_max_length: 16
 
-    pass_numerical:
-        name: pass_numerical
-        value: 1
-        description: Require Numerical Characters
+        pass_expire: 90
 
-    pass_special:
-        name: pass_special
-        value: 0
-        description: Require Special Characters
+        pass_warning: 14
 
-    pass_min_length:
-        name: pass_min_length
-        value: 8
-        description: Minimum Password Length
+        hash_type: sha1
 
-    pass_max_length:
-        name: pass_max_length
-        value: 16
-        description: Maximum Password Length
+        host_url: "https://openfisma.agency.gov:443"
 
-    pass_expire:
-        name: pass_expire
-        value: 90
-        description: Password Expiration (days)
+        app_version: 2.8.0
 
-    pass_warning:
-        name: pass_warning
-        value: 14
-        description: Number of days before the password will expire that a user begins to receive warnings
-
-    hash_type:
-        name: hash_type
-        value: sha1
-        description: The hash algorithm to use for password storage
-        
-    host_url:
-        name: host_url
-        value: "https://openfisma.agency.gov:443"
-        description: This is used to construct self-referencing URLs in non-HTTP contexts. The installer should overwrite this value.
-
-    app_version:
-        name: app_version
-        value: 2.7.0
-
-    yui_version:
-        name: yui_version
-        value: 2.8.0r4
+        yui_version: 2.8.0r4

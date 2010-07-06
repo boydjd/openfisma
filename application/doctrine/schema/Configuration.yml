@@ -2,15 +2,194 @@ Configuration:
     listeners: [XssListener]
         
     columns:
-        name: 
+        account_inactivity_period:
+           type: integer(1)
+           notblank: true
+           unsigned: true
+           default: 0
+           comment: Maximum days an account can be inactive before automatic lock
+        failure_threshold:
+            type: integer(1)
+            notblank: true
+            unsigned: true
+            default: 0
+            comment: Maximum login attemptes before server locks account
+        session_inactivity_period:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            default: 0
+            comment: Session timeout (seconds)
+        auth_type:
+            type: enum
+            notblank: true
+            values: [database, ldap]
+            default: database
+            comment: Authentication type
+        sender:
             type: string(255)
-            comment: A string which logically represents a unique configuration item
-        value:
+            comment: Send email address
+            default: ""
+        subject:
+            type: string(255)
+            comment: Email subject
+            default: ""
+        smtp_host:
+            type: string(255)
+            comment: SMTP server name
+            default: ""
+        smtp_username:
+            type: string(255)
+            comment: Username for SMTP authentication
+            default: ""
+        smtp_password:
+            type: string(255)
+            comment: Password for SMTP authentication
+            default: ""
+        send_type:
+            type: enum
+            notblank: true
+            values: [sendmail, smtp]
+            comment: Notification email send type
+            default: sendmail
+        smtp_port:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            comment: SMTP server port
+            default: 25
+        smtp_tls:
+            type: boolean
+            notblank: true
+            comment: Use Transport Layer Security (TLS)
+            default: 0
+        unlock_enabled:
+            type: boolean
+            notblank: true
+            comment: Enable automated account unlock
+            default: 0
+        unlock_duration:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            comment: Automated account unlock duration (in minutes)
+            default: 0
+        contact_name:
+            type: string(255)
+            notblank: true
+            comment: Technical support contact name
+            default: ""
+        contact_phone:
+            type: string(255)
+            notblank: true
+            comment: Technical support contact phone number
+            default: ""
+        contact_email:
+            type: string(255)
+            notblank: true
+            email: 
+                check_mx: false
+            comment: Technical support contact email address
+            default: ""
+        contact_subject:
+            type: string(255)
+            notblank: true
+            comment: Technical support email subject text
+            default: ""
+        use_notification:
             type: string
+            notblank: true
             extra:
                 purify: html
-            comment: The value of this unique configuration item
-        description:
+            comment: The warning banner displayed before login
+            default: ""
+        behavior_rule:
+            type: string
+            notblank: true
+            extra:
+                purify: html
+            comment: Rules of behavior
+            default: ""
+        privacy_policy:
+            type: string
+            notblank: true
+            extra:
+                purify: html
+            comment: Privacy policy
+            default: ""
+        system_name:
             type: string(255)
-            comment: A description of the configuration attribute which will be displayed to the user
-            
+            notblank: true
+            comment: System name
+            default: ""
+        rob_duration:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            comment: The duration between which the user has to accept the ROB (in days)
+            default: 0
+        pass_uppercase:
+            type: boolean
+            notblank: true
+            comment: Require upper case characters
+            default: 0
+        pass_lowercase:
+            type: boolean
+            notblank: true
+            comment: Require lower case characters
+            default: 0
+        pass_numerical:
+            type: boolean
+            notblank: true
+            comment: Require numerical characters
+            default: 0
+        pass_special:
+            type: boolean
+            notblank: true
+            comment: Require special characters
+            default: 0
+        pass_min_length:
+            type: integer(1)
+            notblank: true
+            unsigned: true
+            comment: Minimum password length
+            default: 0
+        pass_max_length:
+            type: integer(1)
+            notblank: true
+            unsigned: true
+            comment: Maximum password length
+            default: 0
+        pass_expire:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            comment: Password expiration (in days)
+            default: 0
+        pass_warning:
+            type: integer(1)
+            notblank: true
+            unsigned: true
+            comment: Number of days before the password will expire that a user begins to receive warnings
+            default: 0
+        hash_type:
+            type: enum
+            notblank: true
+            values: [sha1, md5, sha256]
+            comment: The hash algorithm to use for password storage
+            default: sha1
+        host_url:
+            type: string(255)
+            notblank: true
+            comment: This is used to construct self referencing URLs in non-HTTP contexts. The installer should overwrite this value.
+            default: ""
+        app_version:
+            type: string(10)
+            notblank: true
+            comment: The version of the application
+            default: 0
+        yui_version:
+            type: string(10)
+            notblank: true
+            comment: The version of YUI being used by the application
+            default: 0

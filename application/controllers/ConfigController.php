@@ -442,6 +442,7 @@ class ConfigController extends SecurityController
              * its submitting to a different action and submitting different data! This needs fixing!
              */
             unset($post['recipient']);
+            $form->removeElement('recipient');
 
             $this->_saveConfigurationForm($form, $post);
             
