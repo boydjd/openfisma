@@ -3050,7 +3050,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c=a.firstChild.nodeValue;var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)}};/**
+Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c;if(a.firstChild){c=a.firstChild.nodeValue}else{c=""}var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3142,7 +3142,12 @@ Fisma.Finding = {
         currentEcdJustificationEl.style.display = 'none';
         
         // Copy current text into a new input element
-        var currentEcdJustification = currentEcdJustificationEl.firstChild.nodeValue;
+        var currentEcdJustification;
+        if (currentEcdJustificationEl.firstChild) {
+            currentEcdJustification = currentEcdJustificationEl.firstChild.nodeValue;
+        } else {
+            currentEcdJustification = '';
+        }
         
         var inputEl = document.createElement('input');
         inputEl.type = 'text';
