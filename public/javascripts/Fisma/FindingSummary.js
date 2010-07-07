@@ -497,7 +497,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Render the link
-            var uri = '/panel/remediation/sub/search'
+            var uri = '/remediation/search'
                     + onTimeString
                     + statusString
                     + '/responsibleOrganizationId/'
