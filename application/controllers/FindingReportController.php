@@ -391,6 +391,7 @@ class FindingReportController extends SecurityController
         
         $this->view->assign('title', $reportConfig->title);
         $this->view->assign('columns', $columns);
+        $this->view->assign('htmlcolumns', $reportConfig->htmlcolumns->toArray());
         $this->view->assign('rows', $reportData);
         $this->view->assign('url', "/finding-report/plugin-report/name/$reportName");
     }

@@ -75,10 +75,14 @@ $pdf->ezText($this->title, 16, array('justification'=>'center'));
 // For some reazon, EZPdf needs its data array numerically indexed, so convert the string indices to numeric indices
 // here:
 foreach ($this->rows as &$row) {
-    $row = array_values($row);
-    foreach ($row as &$column) {
-        $column = $this->escape($column);
+    foreach ($row as $key => &$column) {
+        if (in_array($key, $this->htmlcolumns)) {
+            $column = Fisma_String::htmlToPdfText($column);
+        } else {
+            $colum = $this->escape($column);
+        }
     }
+    $row = array_values($row);
 }
 
 $pdf->ezTable($this->rows,

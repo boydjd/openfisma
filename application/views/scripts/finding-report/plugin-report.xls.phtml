@@ -42,6 +42,11 @@ $worksheet->mergeCells(0, 0, 0, $columnCount - 1);
 $worksheet->writeRow(1, 0, $this->columns, $headerFormat);
 
 for ($i = 0; $i < count($this->rows); $i++) {
+    foreach ($this->rows[$i] as $column => &$cell) {
+        if (in_array($column, $this->htmlcolumns)) {
+            $cell = Fisma_String::htmlToPlainText($cell);
+        }
+    }
     $worksheet->writeRow($i + 2, 0, $this->rows[$i], $dataFormat);
 }
 
