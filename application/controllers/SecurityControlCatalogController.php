@@ -39,16 +39,6 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
     }
     
     /**
-     * Set up header and footer
-     */
-    public function preDispatch()
-    {
-        if (!$this->_hasParam('format')) {
-            $this->_helper->actionStack('header', 'panel');
-        }
-    }
-    
-    /**
      * View information for a particular control
      */
     public function viewAction()
@@ -63,6 +53,7 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
         
         $this->view->securityControl = $securityControl;
     }
+
     /**
      * List all controls for the specified catalog
      */
@@ -102,7 +93,7 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
                      ->setDataUrl($dataUrl)
                      ->setInitialSortColumn('sc_code')
                      ->setSortAscending(true)
-                     ->setRowCount(10)
+                     ->setRowCount(25)
                      ->setClickEventBaseUrl('/security-control-catalog/view/id/')
                      ->setClickEventVariableName('sc_id');
         
@@ -121,8 +112,10 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
         $controlQuery = Doctrine_Query::create()
                         ->from('SecurityControl sc')
                         ->innerJoin('sc.Catalog c')
-                        ->select("sc.id,
-                                  CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') AS name")
+                        ->select(
+                            "sc.id,
+                            CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') AS name"
+                        )
                         ->where('sc.code LIKE ?', "$keyword%")
                         ->orderBy("sc.code")
                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -138,13 +131,6 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
     public function singleControlAction()
     {
         $this->_helper->layout->disableLayout(true);
-        
-        // Clear the action stack
-        $stack = Zend_Controller_Front::getInstance()->getPlugin('Zend_Controller_Plugin_ActionStack');
-
-        while ($stack->popStack()) {
-            ;
-        }
                 
         $securityControlId = $this->getRequest()->getParam('id');
         
@@ -164,7 +150,7 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
         $sortField = $request->getParam('sort', 'sc_code');
         $sortDir = $request->getParam('dir', 'asc');
         $startRow = $request->getParam('start', 0);
-        $maxRows = $request->getParam('count', 10);
+        $maxRows = $request->getParam('count', 25);
         $keyword = $request->getParam('keyword');
 
         // Convert sort field from doctrine scalar naming convention to object notation (eg. sc_code to sc.code)
@@ -173,12 +159,14 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
         // Get a list of all the controls in this catalog
         $controlQuery = Doctrine_Query::create()
                         ->from('SecurityControl sc')
-                        ->select('sc.id,
-                                  sc.code, 
-                                  sc.name,
-                                  sc.class, 
-                                  sc.family, 
-                                  sc.priorityCode')
+                        ->select(
+                            'sc.id,
+                            sc.code, 
+                            sc.name,
+                            sc.class, 
+                            sc.family, 
+                            sc.priorityCode'
+                        )
                         ->where('securityControlCatalogId = ?', array($catalogId))
                         ->orderBy("$sortField $sortDir")
                         ->limit($maxRows)
@@ -213,8 +201,10 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
             }
         }
 
+        $count = $controlQuery->count();
         $controls = $controlQuery->execute();
 
         $this->view->controls = $controls;
+        $this->view->totalRecords = $count;
     }
 }

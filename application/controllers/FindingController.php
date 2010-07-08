@@ -120,11 +120,13 @@ class FindingController extends BaseController
         } else {
             throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
         }
-        $values = $form->getValues();
+
+        $values = $this->getRequest()->getPost();
+
         if (empty($values['securityControlId'])) {
             unset($values['securityControlId']);
         }
-        
+
         $subject->merge($values);
         
         // If an asset is specified, then try to link the finding to that asset and assign

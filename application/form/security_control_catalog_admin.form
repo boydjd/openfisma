@@ -13,7 +13,7 @@ action=/security-control-catalog-admin/save
 elements.defaultCatalog.type = "select"
 elements.defaultCatalog.options.label = "Default Control Catalog"
 elements.defaultCatalog.options.required = true
-elements.defaultCatalog.options.tooltip = "<p>The catalog selected here will be the default catalog displayed throughout the system whenever a security control selection is displayed. This is also the catalog which will be exported with the spreadsheet template for uploading findings.</p>"
+elements.defaultCatalog.options.tooltip = "<p>The catalog selected here will be the default catalog displayed throughout the system whenever a security control selection is displayed.</p>"
 ; The select options will be added dynamically by the controller
 displayGroups.general.elements.defaultCatalog = "defaultCatalog"
 
