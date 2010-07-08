@@ -45,17 +45,14 @@ class IncidentReportController extends IncidentBaseController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('incident_report');
 
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
-        }
-
-        // Add header/footer to any action which expects an HTML response
-        if (!$this->_hasParam('format')) {
-            $this->_helper->actionStack('header', 'panel');
         }
     }
 

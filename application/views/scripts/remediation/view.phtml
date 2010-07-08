@@ -4,12 +4,12 @@ function backToSearch(event) {
     if (location) {
         window.location = location;
     } else {
-        window.location = '/panel/remediation/sub/searchbox';
+        window.location = '/remediation/searchbox';
     }
 }
 </script>
 <form enctype="multipart/form-data"
-      action="/panel/remediation/sub/modify/id/<?php echo $this->escape($this->finding->id)?>" 
+      action="/remediation/modify/id/<?php echo $this->escape($this->finding->id)?>" 
       method="post" 
       id="finding_detail"
       name="finding_detail">
@@ -24,7 +24,7 @@ function backToSearch(event) {
             if ($this->acl()->hasPrivilegeForObject('update_*', $this->finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
-                    'href' => '/panel/remediation/sub/view/id/' . $this->finding->id
+                    'href' => '/remediation/view/id/' . $this->finding->id
                 );
                 
                 $discardChangesButton = new Fisma_Yui_Form_Button_Link('discardChanges', $discardChangesButtonConfig);

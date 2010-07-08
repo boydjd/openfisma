@@ -3,7 +3,7 @@
         <?php 
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Role List', 
-                                                     'href' => '/panel/role/sub/list'));
+                                                     'href' => '/role/list'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -11,13 +11,13 @@
         if ($this->acl()->hasPrivilegeForClass('create', 'Role')) {
         $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                array('value' => 'Add Role', 
-                                                     'href' => '/panel/role/sub/create'));
+                                                     'href' => '/role/create'));
         echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
     <div class="right">
-        <form name="query" method="post" action="/panel/role/sub/list" style="display:inline">
+        <form name="query" method="post" action="/role/list" style="display:inline">
         <span class="searchField">
             <b><label for="keywords">Search:</label>&nbsp;</b>
             <input id="keywords" 

@@ -63,10 +63,6 @@ class IncidentDashboardController extends IncidentBaseController
      */
     public function indexAction()
     {
-        $this->_helper->layout->setLayout('layout');
-
-        $this->_helper->actionStack('header', 'panel');
-
         $tabView = new Fisma_Yui_TabView('IncidentDashboardView');
 
         $tabView->addTab("Charts", "/incident-dashboard/charts");

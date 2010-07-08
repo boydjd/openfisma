@@ -65,8 +65,11 @@ class FindingController extends BaseController
         foreach ($sources as $source) {
             $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
         }
-            
-        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
+
+        $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
+            ->leftJoin('o.System system')
+            ->andWhere('system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->execute();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
@@ -349,7 +352,7 @@ class FindingController extends BaseController
         } catch(Fisma_Zend_Exception $fe) {
             Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
-            $this->_forward('finding', 'panel', null, array('sub' => 'injection'));
+            $this->_forward('injection', 'finding');
         }
     }
 

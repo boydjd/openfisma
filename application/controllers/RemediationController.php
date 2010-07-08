@@ -54,6 +54,10 @@ class RemediationController extends SecurityController
      */
     public function preDispatch() 
     {
+        parent::preDispatch();
+
+        $this->_organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
+
         $request = $this->getRequest();
         $this->_paging['startIndex'] = $request->getParam('startIndex', 0);
         if ('modify' == $request->getParam('sub')) {
@@ -70,7 +74,6 @@ class RemediationController extends SecurityController
                 $this->_forward('uploadevidence');
             }
         }
-        parent::preDispatch();
     }
               
     /**
@@ -119,7 +122,6 @@ class RemediationController extends SecurityController
         }
         
         $this->_helper->contextSwitch()->initContext();
-        $this->_organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
     }
     
     /**
@@ -378,10 +380,12 @@ class RemediationController extends SecurityController
         else
             $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
 
-        $summary->leftJoin('finding.CurrentEvaluation evaluation')
+        $summary->leftJoin('node.System nodeSystem')
+            ->leftJoin('finding.CurrentEvaluation evaluation')
             ->leftJoin('Organization parent')
             ->leftJoin('parent.System system')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
+            ->andWhere('nodeSystem.sdlcPhase <> ?', array('disposal'))
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -636,13 +640,15 @@ class RemediationController extends SecurityController
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/remediation/search2' . $link);
-        Fisma_Cookie::set('lastSearchUrl', "/panel/remediation/sub/searchbox$link");
+        Fisma_Cookie::set('lastSearchUrl', "/remediation/searchbox$link");
         $this->view->assign('columns', $this->_getColumns());
 
         // These variables go into the search box view
         $systemList = array();
         foreach ($this->_organizations as $system) {
-            $systemList[$system->id] = "$system->nickname - $system->name";
+            if ($system->orgType != 'system' || $system->System->sdlcPhase != 'disposal') {
+                $systemList[$system->id] = "$system->nickname - $system->name";
+            }
         }
         asort($systemList);
         $this->view->assign('params', $params);
@@ -715,7 +721,7 @@ class RemediationController extends SecurityController
             $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
         
-        $this->_redirect("/panel/remediation/sub/view/id/$id");
+        $this->_redirect("/remediation/view/id/$id");
     }
 
     /**
@@ -1276,10 +1282,12 @@ class RemediationController extends SecurityController
             ->leftJoin('f.Asset a')
             ->leftJoin('f.SecurityControl sc')
             ->leftJoin('f.CurrentEvaluation ce')
+            ->leftJoin('ro.System ros')
             ->whereIn(
                 'f.responsibleOrganizationId', 
                 $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
             )
+            ->andWhere('ros.sdlcPhase <> ?', array('disposal'))
             ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {

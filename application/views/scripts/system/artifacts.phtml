@@ -31,7 +31,7 @@ foreach ($this->documents as $document) {
         <td><?php echo $this->escape($this->userInfo($document->User->username), 'none'); ?></td>
         <td><?php echo $this->escape($document['updated_at'])?></td>
         <td>
-            <a href='/panel/system-document/sub/view/id/<?php echo $this->escape($document->id)?>'>
+            <a href='/system-document/view/id/<?php echo $this->escape($document->id)?>'>
                 Version History
             </a>
         </td>

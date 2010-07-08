@@ -46,11 +46,9 @@ class OrganizationDashboardController extends SecurityController
      */
     public function preDispatch()
     {
-        $this->_acl->requireArea('system_inventory');
+        parent::preDispatch();
 
-        if (!$this->_hasParam('format')) {
-            $this->_helper->actionStack('header', 'panel');
-        }
+        $this->_acl->requireArea('system_inventory');
     }
 
     /**

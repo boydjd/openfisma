@@ -4,7 +4,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'IR Category List', 
                                                      'imageSrc' => '/images/view_list.png',
-                                                     'href' => '/panel/ircategory/sub/list'));
+                                                     'href' => '/ircategory/list'));
         echo $this->escape($listButton, 'none');
         ?>
     
@@ -12,7 +12,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('treetButton', 
                                                array('value' => 'IR Category Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
-                                                     'href' => '/panel/ircategory/sub/tree'));
+                                                     'href' => '/ircategory/tree'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -21,7 +21,7 @@
             $createButton = new Fisma_Yui_Form_Button_Link('createSubcategoryButton', 
                                                    array('value' => 'Add IR Sub Category', 
                                                          'imageSrc' => '/images/add.png',
-                                                         'href' => '/panel/ircategory/sub/sub_create'));
+                                                         'href' => '/ircategory/sub_create'));
             echo $this->escape($createButton, 'none');
         endif;
         ?>

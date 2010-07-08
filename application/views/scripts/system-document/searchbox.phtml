@@ -3,12 +3,12 @@
         <?php
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'List All Documents', 
-                                                     'href' => '/panel/system-document/sub/list'));
+                                                     'href' => '/system-document/list'));
         echo $this->escape($listButton, 'none');
         ?>
     </div>
         <div class="right">
-            <form name="query" method="post" action="/panel/system-document/sub/list" style="display:inline">
+            <form name="query" method="post" action="/system-document/list" style="display:inline">
             <span class="searchField">
                 <b><label for="keywords">Search:</label>&nbsp;</b>
                 <input id="keywords" 

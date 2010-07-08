@@ -3,19 +3,19 @@
         <?php
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Account List', 
-                                                     'href' => '/panel/account/sub/list'));
+                                                     'href' => '/account/list'));
         echo $this->escape($listButton, 'none');
 
         if ($this->acl()->hasPrivilegeForClass('create', 'User')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Account', 
-                                                         'href' => '/panel/account/sub/create'));
+                                                         'href' => '/account/create'));
             echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
     <div class="right">
-        <form name="query" method="post" action="/panel/user/sub/list" style="display:inline">
+        <form name="query" method="post" action="/user/list" style="display:inline">
         <span class="searchField">
             <b><label for="keywords">Search:</label>&nbsp;</b>
             <input id="keywords"

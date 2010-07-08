@@ -140,7 +140,7 @@ class AuthController extends Zend_Controller_Action
                              . " you should change it now.";
                     $this->view->priorityMessenger($message, 'warning');
                     // redirect back to password change action
-                    $this->_forward('user', 'Panel', null, array('sub'=>'password'));
+                    $this->_forward('password', 'user');
                     return;
                 }
 
@@ -149,7 +149,6 @@ class AuthController extends Zend_Controller_Action
                     $message = 'This version of the application uses an improved password storage scheme.'
                              . ' You will need to change your password in order to upgrade your account.';
                     $this->view->priorityMessenger($message, 'warning');
-                    $this->_helper->_actionStack('header', 'Panel');
                     $this->_forward('password', 'User');
                     return;
                 }
@@ -173,7 +172,7 @@ class AuthController extends Zend_Controller_Action
                 unset($session->redirectPage);
                 $this->_response->setRedirect($path);
             } else {
-                $this->_forward('index', 'Panel');
+                $this->_forward('index', 'index');
             }
         } catch(Zend_Auth_Exception $e) {
             // If any Auth exceptions are caught during login, 

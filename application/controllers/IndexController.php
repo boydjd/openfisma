@@ -35,6 +35,16 @@ class IndexController extends SecurityController
      */
     public function indexAction()
     {
-        $this->_forward('index', 'Panel');
+        if ($this->_acl->hasArea('dashboard')) {
+            $this->_forward('index', 'dashboard');
+        } elseif ($this->_acl->hasArea('incident')) {
+            $this->_forward('index', 'incident-dashboard');
+        } else {
+            throw new Fisma_Zend_Exception_User(
+                'Your account does not have access to any dashboards. Please contact the'
+                . ' administrator to correct your account privileges.'
+            );
+        }
+
     }
 }

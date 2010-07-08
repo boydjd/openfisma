@@ -74,6 +74,9 @@ function setupEditFields() {
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
              } else {
+                 if (val = target.getAttribute('value')) {
+                     cur_val = val;
+                 }
                  YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
                         success: function(o) {
                              if(type == 'select'){

@@ -8,6 +8,12 @@ System:
             extra:
                 searchIndex: keyword
             comment: General Support System, Major Application, or Minor Application
+        sdlcPhase:
+            type: enum
+            values: [initiation, development, implementation, operations, disposal]
+            default: operations
+            notnull: true
+            comment: System Development Life Cycle Phase
         confidentiality:
             type: enum
             values: [NA, LOW, MODERATE, HIGH]

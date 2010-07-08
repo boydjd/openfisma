@@ -37,7 +37,7 @@
         </div>
 
         <div id='header'>
-                <?php echo $this->layout()->header; ?>
+                <?php echo $this->partial('panel/header.phtml'); ?>
         </div>
 
         <div class="externalMediaMarking">
@@ -54,7 +54,7 @@
         </div>
         
         <div id='footer'>
-                <?php echo $this->layout()->footer; ?>
+                <?php echo $this->partial('panel/footer.phtml'); ?>
         </div>
     </body>
     <?php echo $this->partial('priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>

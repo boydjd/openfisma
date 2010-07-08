@@ -40,15 +40,15 @@ class Fisma_Menu
         $mainMenuBar = new Fisma_Yui_MenuBar();
 
         if ($acl->hasArea('dashboard')) {
-            $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/panel/dashboard');
+            $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/dashboard');
             $mainMenuBar->add($dashboard);
         }
 
         if ($acl->hasArea('finding')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
-            $findings->add(new Fisma_Yui_MenuItem('Summary', '/panel/remediation/sub/summary'));
-            $findings->add(new Fisma_Yui_MenuItem('Search', '/panel/remediation/sub/searchbox'));
+            $findings->add(new Fisma_Yui_MenuItem('Summary', '/remediation/summary'));
+            $findings->add(new Fisma_Yui_MenuItem('Search', '/remediation/searchbox'));
 
             if ($acl->hasPrivilegeForClass('create', 'Finding')
                 || $acl->hasPrivilegeForClass('inject', 'Finding')
@@ -58,16 +58,16 @@ class Fisma_Menu
             }
 
             if ($acl->hasPrivilegeForClass('approve', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/panel/finding/sub/approve'));
+                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/finding/approve'));
             }
 
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/panel/finding/sub/create'));
+                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/create'));
             }
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/panel/finding/sub/injection'));
-                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/panel/finding/sub/plugin'));
+                $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/injection'));
+                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/finding/plugin'));
             }
                                     
             $findings->addSeparator();
@@ -79,7 +79,7 @@ class Fisma_Menu
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
                 if ($acl->hasPrivilegeForClass('read', 'Source')) {
-                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/panel/source/sub/list'));
+                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/source/list'));
                 }
 
                 $findings->add($findingAdminSubmenu);
@@ -108,16 +108,16 @@ class Fisma_Menu
             $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
             
             if ($acl->hasPrivilegeForClass('read', 'Asset')) {
-                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/panel/asset/sub/list'));
+                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
             }
             
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
 
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/panel/system-document/sub/list'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
 
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Organizations', '/panel/organization/sub/tree'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Organizations', '/organization/tree'));
             
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Systems', '/panel/system/sub/list'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Systems', '/system/list'));
 
             $systemInventoryMenu->addSeparator();
 
@@ -130,11 +130,11 @@ class Fisma_Menu
                 $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/panel/network/sub/list'));
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
 
                 if ($acl->hasPrivilegeForClass('read', 'Product')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/panel/product/sub/list'));
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
@@ -171,9 +171,9 @@ class Fisma_Menu
             // Incidents main menu
             $incidentMenu = new Fisma_Yui_Menu('Incidents');
 
-            $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/panel/incident/sub/report'));
+            $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/incident/report'));
       
-            $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/panel/incident/sub/list'));
+            $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/incident/list'));
 
             $incidentMenu->addSeparator();
 
@@ -184,11 +184,11 @@ class Fisma_Menu
                 $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
                 if ($acl->hasPrivilegeForClass('read', 'IrCategory')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/panel/ircategory/sub/list'));
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ircategory/list'));
                 }
                 
                 if ($acl->hasPrivilegeForClass('read', 'IrWorkflowDef')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/panel/irworkflow/sub/list'));
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/irworkflow/list'));
                 }
 
                 $incidentMenu->add($incidentAdminSubmenu);
@@ -223,13 +223,13 @@ class Fisma_Menu
             $admin->add(new Fisma_Yui_MenuItem('Privacy Policy', '/config/privacy'));
 
             if ($acl->hasPrivilegeForClass('read', 'Role')) {
-                $admin->add(new Fisma_Yui_MenuItem('Roles', '/panel/role/sub/list'));
+                $admin->add(new Fisma_Yui_MenuItem('Roles', '/role/list'));
             }
             
             $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
 
             if ($acl->hasPrivilegeForClass('read', 'User')) {
-                $admin->add(new Fisma_Yui_MenuItem('Users', '/panel/account/sub/list'));
+                $admin->add(new Fisma_Yui_MenuItem('Users', '/account/list'));
             }
             
             $mainMenuBar->add($admin);
@@ -239,11 +239,11 @@ class Fisma_Menu
         
         if ('database' == Fisma::configuration()->getConfig('auth_type')
             || 'root' == $user->username) {
-            $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/panel/user/sub/password'));
+            $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/user/password'));
         }
-        $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/panel/user/sub/notification'));
+        $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/user/notification'));
 
-        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/panel/user/sub/profile'));
+        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/user/profile'));
         
         $mainMenuBar->add($preferences);
 

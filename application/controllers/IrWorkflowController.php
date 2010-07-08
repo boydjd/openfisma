@@ -276,14 +276,14 @@ class IRWorkflowController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink', "/panel/irworkflow/sub/view/id/$id");
-            $form->setAction("/panel/irworkflow/sub/update/id/$id");
+            $this->view->assign('viewLink', "/irworkflow/view/id/$id");
+            $form->setAction("/irworkflow/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/irworkflow/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/irworkflow/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/panel/irworkflow/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/irworkflow/delete/id/$id");
         $form->setDefaults($irworkflow);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -478,14 +478,14 @@ class IRWorkflowController extends SecurityController
         }
 
         if ($v == 'stepedit') {
-            $this->view->assign('viewLink', "/panel/irworkflow/sub/stepview/id/$id");
-            $form->setAction("/panel/irworkflow/sub/stepupdate/id/$id");
+            $this->view->assign('viewLink', "/irworkflow/stepview/id/$id");
+            $form->setAction("/irworkflow/stepupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/irworkflow/sub/stepview/id/$id/v/stepedit");
+            $this->view->assign('editLink', "/irworkflow/stepview/id/$id/v/stepedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/panel/irworkflow/sub/stepdelete/id/$id");
+        $this->view->assign('deleteLink', "/irworkflow/stepdelete/id/$id");
         $form->setDefaults($irworkflowstep);
         $this->view->form = $form;
         $this->view->assign('id', $id);

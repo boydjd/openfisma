@@ -4,7 +4,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'IR Workflow List', 
                                                      'imageSrc' => '/images/view_list.png',
-                                                     'href' => '/panel/irworkflow/sub/list'));
+                                                     'href' => '/irworkflow/list'));
         echo $this->escape($listButton, 'none');
         ?>
     
@@ -12,7 +12,7 @@
         $listButton = new Fisma_Yui_Form_Button_Link('treetButton', 
                                                array('value' => 'IR Workflow Tree',
                                                      'imageSrc' => '/images/view_tree.png', 
-                                                     'href' => '/panel/irworkflow/sub/tree'));
+                                                     'href' => '/irworkflow/tree'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -21,13 +21,13 @@
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add IR Workflow', 
                                                          'imageSrc' => '/images/add.png',
-                                                         'href' => '/panel/irworkflow/sub/create'));
+                                                         'href' => '/irworkflow/create'));
             echo $this->escape($createButton, 'none');
         
             $subCreateButton = new Fisma_Yui_Form_Button_Link('subCreateButton', 
                                                    array('value' => 'Add IR Workflow Step', 
                                                          'imageSrc' => '/images/add.png',
-                                                         'href' => '/panel/irworkflow/sub/step_create'));
+                                                         'href' => '/irworkflow/step_create'));
             echo $this->escape($subCreateButton, 'none');
         endif; 
         ?>

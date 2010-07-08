@@ -1,0 +1,3 @@
+span.userInfo{padding-left:17px;padding-right:1px;border-bottom:1px dashed black;background:url(/images/user-info.png) no-repeat 0 1px;}
+span.userInfo:hover{cursor:pointer;}
+span.userInfo:active{color:#416ed7;}

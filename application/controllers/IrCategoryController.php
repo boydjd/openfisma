@@ -214,17 +214,17 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink', "/panel/ircategory/sub/view/id/$id");
-            $form->setAction("/panel/ircategory/sub/update/id/$id");
+            $this->view->assign('viewLink', "/ircategory/view/id/$id");
+            $form->setAction("/ircategory/update/id/$id");
         } elseif ($v == 'view') {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/ircategory/sub/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/ircategory/view/id/$id/v/edit");
             $form->setReadOnly(true);
         } else {
             throw new Fisma_Zend_Exception('Invalid v parameter');
         }
         
-        $this->view->assign('deleteLink', "/panel/ircategory/sub/delete/id/$id");
+        $this->view->assign('deleteLink', "/ircategory/delete/id/$id");
         $form->setDefaults($ircategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -487,14 +487,14 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'subedit') {
-            $this->view->assign('viewLink', "/panel/ircategory/sub/subview/id/$id");
-            $form->setAction("/panel/ircategory/sub/subupdate/id/$id");
+            $this->view->assign('viewLink', "/ircategory/subview/id/$id");
+            $form->setAction("/ircategory/subupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/panel/ircategory/sub/subview/id/$id/v/subedit");
+            $this->view->assign('editLink', "/ircategory/subview/id/$id/v/subedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/panel/ircategory/sub/subdelete/id/$id");
+        $this->view->assign('deleteLink', "/ircategory/subdelete/id/$id");
         $form->setDefaults($irsubcategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);

@@ -35,9 +35,6 @@ class DebugController extends Zend_Controller_Action
      */
     public function preDispatch()
     {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
         if (!Fisma::debug())
             throw new Fisma_Zend_Exception('Action is only allowed in debug mode.');
     }
@@ -49,9 +46,6 @@ class DebugController extends Zend_Controller_Action
      */
     public function phpinfoAction()
     {
-        $this->_helper->layout()->enableLayout();
-        $this->_helper->viewRenderer->setNoRender(false);
-        $this->_helper->actionStack('header', 'panel');
     }
 
     /**
@@ -63,7 +57,6 @@ class DebugController extends Zend_Controller_Action
     {
         $this->_helper->layout()->enableLayout();
         $this->_helper->viewRenderer->setNoRender(false);
-        $this->_helper->actionStack('header', 'panel');
         $this->view->errorLog = ($errorLog = @file_get_contents(APPLICATION_PATH . '/../data/logs/error.log')) 
             ? $errorLog : 'The error log does not exist.'; 
     }
@@ -75,9 +68,6 @@ class DebugController extends Zend_Controller_Action
      */
     public function phplogAction()
     {
-        $this->_helper->layout()->enableLayout();
-        $this->_helper->viewRenderer->setNoRender(false);
-        $this->_helper->actionStack('header', 'panel');
         $this->view->log = ($log = @file_get_contents(APPLICATION_PATH . '/../data/logs/php.log'))
             ? $log : 'The php log does not exist';
     }
@@ -87,10 +77,6 @@ class DebugController extends Zend_Controller_Action
      */
     public function apcCacheAction()
     {
-        $this->_helper->layout()->enableLayout();
-        $this->_helper->viewRenderer->setNoRender(false);
-        $this->_helper->actionStack('header', 'panel');
-        
         // Cache type can be 'system' or 'user'. Defaults to 'system'.
         $cacheType = $this->getRequest()->getParam('type', 'system');
         

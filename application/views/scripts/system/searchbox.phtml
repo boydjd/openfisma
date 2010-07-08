@@ -3,7 +3,7 @@
         <?php 
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'System List', 
-                                                     'href' => '/panel/system/sub/list'));
+                                                     'href' => '/system/list'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -11,13 +11,13 @@
         if ($this->acl()->hasPrivilegeForClass('create', 'Organization')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add System', 
-                                                         'href' => '/panel/system/sub/create'));
+                                                         'href' => '/system/create'));
             echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
         <div class="right">
-            <form name="query" method="post" action="/panel/system/sub/list" style="display:inline">
+            <form name="query" method="post" action="/system/list" style="display:inline">
                 <span class="searchField">
                     <b><label for="keywords">Search:</label>&nbsp;</b>
                     <input id="keywords" 

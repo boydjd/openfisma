@@ -77,7 +77,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/panel/system-document/sub/view/id/" + oRecord.getData("d_id");
+            document.location = "/system-document/view/id/" + oRecord.getData("d_id");
         }
     );
     
@@ -101,7 +101,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/panel/system-document/sub/view/id/" + rowRecord.getData("d_id");
+                actionUrl = "/system-document/view/id/" + rowRecord.getData("d_id");
                 break;
         }
         if (actionUrl != '') {

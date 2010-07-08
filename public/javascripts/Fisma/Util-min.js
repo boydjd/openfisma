@@ -1,1 +1,1 @@
-Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a}};
+Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a},positionPanelRelativeToElement:function(b,c){var a=5;b.cfg.setProperty("context",[c,YAHOO.widget.Overlay.TOP_LEFT,YAHOO.widget.Overlay.BOTTOM_LEFT,null,[0,a]])}};

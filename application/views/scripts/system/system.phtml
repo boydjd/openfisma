@@ -68,6 +68,32 @@ Fisma_Format_Section::startSection('Details');
         </td>
     </tr>
     <tr>
+        <td>SDLC Phase: </td>
+        <td>
+            <?php
+            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+            ?>
+                <span id="sdlcPhase" 
+                      class="editable" 
+                      target="sdlcPhase" 
+                      name="sdlcPhase" 
+                      type="select" 
+                      value="<?php echo $this->escape($this->organization->System->sdlcPhase);?>"
+                      href="/metainfo/list/o/systemSdlcPhase/format/html/">
+                    <?php echo $this->escape($this->organization->System->getSdlcPhaseLabel()); ?>
+                </span>
+            <?php
+            } else {
+            ?>
+            <span>
+                <?php echo $this->escape($this->organization->System->getSdlcPhaseLabel()); ?>
+            </span>
+            <?php
+            }
+            ?>
+        </td>
+    </tr>
+    <tr>
         <td>Parent Organization: </td>
         <td>
         <?php
@@ -77,7 +103,7 @@ Fisma_Format_Section::startSection('Details');
                 $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
                 if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
                     $parentOrgType = 'system' == $parentOrganization->orgType ? 'system' : 'organization';
-                    echo $this->escape('<a href="/panel/' . $parentOrgType . '/sub/view/id/', 'none');
+                    echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');
                     echo $this->escape($parentOrganization->id, 'url');
                     echo $this->escape('">', 'none');
                     echo $this->escape($parentOrganizationName);

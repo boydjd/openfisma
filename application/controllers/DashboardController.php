@@ -32,25 +32,11 @@ class DashboardController extends SecurityController
     /**
      * My OrgSystem ids
      *
+     * Not initialized until preDispatch
+     *
      * @var array
      */
     private $_myOrgSystemIds = null;
-    
-    /**
-     * Initialize internal members.
-     * 
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
-        $orgSystemIds = array(0);
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemIds[] = $orgSystem['id'];
-        }
-        $this->_myOrgSystemIds = $orgSystemIds;
-    }
     
     /**
      * Invoked before each Actions
@@ -59,7 +45,16 @@ class DashboardController extends SecurityController
      */
     function preDispatch()
     {
+        parent::preDispatch();
+
         $this->_acl->requireArea('dashboard');
+
+        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
+        $orgSystemIds = array(0);
+        foreach ($orgSystems as $orgSystem) {
+            $orgSystemIds[] = $orgSystem['id'];
+        }
+        $this->_myOrgSystemIds = $orgSystemIds;
 
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('totalstatus', 'xml')
@@ -134,10 +129,10 @@ class DashboardController extends SecurityController
             $alert['PEND'] = $result['count'];
         }
         
-        $url = '/panel/remediation/sub/searchbox/status/';
+        $url = '/remediation/searchbox/status/';
 
         $this->view->url = $url;
-        $this->view->pendingUrl = '/panel/finding/sub/approve';
+        $this->view->pendingUrl = '/finding/approve';
         $this->view->alert = $alert;
         
         // Look up the last login information. If it's their first time logging in, then the view
@@ -155,7 +150,7 @@ class DashboardController extends SecurityController
         
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
-            $this->view->dismissUrl = "/panel/dashboard/dismiss/notifications";
+            $this->view->dismissUrl = "/dashboard/dismiss/notifications";
         }
 
         $this->view->statusChart = new Fisma_Chart('/dashboard/totalstatus/format/xml', 380, 275);
