@@ -89,6 +89,8 @@ class IncidentController extends IncidentBaseController
      */
     function preDispatch()
     {        
+        parent::preDispatch();
+
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
