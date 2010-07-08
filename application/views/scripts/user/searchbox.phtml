@@ -3,13 +3,13 @@
         <?php
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Account List', 
-                                                     'href' => '/account/list'));
+                                                     'href' => '/user/list'));
         echo $this->escape($listButton, 'none');
 
         if ($this->acl()->hasPrivilegeForClass('create', 'User')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Account', 
-                                                         'href' => '/account/create'));
+                                                         'href' => '/user/create'));
             echo $this->escape($createButton, 'none');
         } 
         ?>
