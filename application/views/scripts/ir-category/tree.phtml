@@ -81,7 +81,7 @@ function contextMenuHandler(event, eventArgs) {
     //if there is a value in category this is a sub category - append sub to the action
     var sub = (category) ? '' : 'sub';
 
-    var url = '/ircategory/' + sub + 'view/v/' + sub + action + '/id/' + id;
+    var url = '/ir-category/' + sub + 'view/v/' + sub + action + '/id/' + id;
     window.location = url;
 }
 

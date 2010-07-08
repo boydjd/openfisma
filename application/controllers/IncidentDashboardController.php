@@ -40,6 +40,14 @@ class IncidentDashboardController extends IncidentBaseController
                       ->setActionContext('recently-closed-data', 'json')
                       ->setActionContext('recent-comments-data', 'json')
                       ->initContext();
+
+        $this->_helper->ajaxContext
+                      ->setActionContext('charts', 'html')
+                      ->setActionContext('new-incidents', 'html')
+                      ->setActionContext('recently-updated', 'html')
+                      ->setActionContext('recently-closed', 'html')
+                      ->setActionContext('recent-comments', 'html')
+                      ->initContext('html');
     }
 
     /**

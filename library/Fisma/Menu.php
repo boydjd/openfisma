@@ -184,11 +184,11 @@ class Fisma_Menu
                 $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
                 if ($acl->hasPrivilegeForClass('read', 'IrCategory')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ircategory/list'));
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ir-category/list'));
                 }
                 
                 if ($acl->hasPrivilegeForClass('read', 'IrWorkflowDef')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/irworkflow/list'));
+                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/ir-workflow/list'));
                 }
 
                 $incidentMenu->add($incidentAdminSubmenu);
@@ -229,7 +229,7 @@ class Fisma_Menu
             $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
 
             if ($acl->hasPrivilegeForClass('read', 'User')) {
-                $admin->add(new Fisma_Yui_MenuItem('Users', '/account/list'));
+                $admin->add(new Fisma_Yui_MenuItem('Users', '/user/list'));
             }
             
             $mainMenuBar->add($admin);
