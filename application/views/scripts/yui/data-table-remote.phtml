@@ -34,7 +34,10 @@
         var dataSource = new YAHOO.util.XHRDataSource();
         dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         dataSource.responseSchema = {
-            resultsList: "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>"
+            resultsList : "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>",
+            metaFields : { 
+                totalRecords : "totalRecords"
+            }
         };
 
         // DataTable configuration
@@ -61,6 +64,13 @@
             dataSource, 
             tableConfiguration
         );
+        
+        // Update number of returned records
+        dataTable.handleDataReturnPayload = function(request, response, payload) { 
+            payload.totalRecords = response.meta.totalRecords; 
+            
+            return payload; 
+        }
         
         // Enable row highlighting for mouse over events
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
