@@ -19,13 +19,15 @@
 /**
  * Load metadata for security controls and catalogs from YAML fixture files
  * 
+ * @codingStandardsIgnoreFile
+ * 
  * @package Migration
  * @version $Id: 1276885091_version57.php 3531 2010-06-18 19:32:58Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version60 extends Doctrine_Migration_Base
+class Version62 extends Doctrine_Migration_Base
 {
     /**
      * Use the security_control_backup table to reassign foreign key references between finding and security_control.
