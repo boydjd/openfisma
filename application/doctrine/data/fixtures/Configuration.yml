@@ -166,7 +166,7 @@ Configuration:
 
     app_version:
         name: app_version
-        value: 2.7.0
+        value: 2.7.2
 
     yui_version:
         name: yui_version

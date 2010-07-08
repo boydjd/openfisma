@@ -248,7 +248,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             case 'EA':
                 if ($this->CurrentEvaluation->nextId == null) {
                     $this->status = 'CLOSED';
-                    $this->closedTs = date('Y-m-d');
+                    $this->closedTs = Fisma::now();
                 }
                 break;
         }

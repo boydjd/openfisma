@@ -90,7 +90,12 @@ Fisma.Finding = {
         currentEcdJustificationEl.style.display = 'none';
         
         // Copy current text into a new input element
-        var currentEcdJustification = currentEcdJustificationEl.firstChild.nodeValue;
+        var currentEcdJustification;
+        if (currentEcdJustificationEl.firstChild) {
+            currentEcdJustification = currentEcdJustificationEl.firstChild.nodeValue;
+        } else {
+            currentEcdJustification = '';
+        }
         
         var inputEl = document.createElement('input');
         inputEl.type = 'text';
