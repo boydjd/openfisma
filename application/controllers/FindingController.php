@@ -75,7 +75,7 @@ class FindingController extends BaseController
         
         $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
             ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
             ->execute();
         $selectArray = $this->view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
