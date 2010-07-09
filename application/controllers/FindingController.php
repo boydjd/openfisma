@@ -241,7 +241,7 @@ class FindingController extends BaseController
             $this->view->priorityMessenger($error, $type);
         }
         
-        $this->_redirect('/panel/finding/sub/injection');
+        $this->_redirect('/finding/injection');
     }
 
     /** 
