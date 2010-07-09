@@ -118,7 +118,7 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
         $controller = strtolower($request->getControllerName());
         $action  = strtolower($request->getActionName());
 
-        $allowedControllers = array('auth','debug','error','help','install','metadata','redirect');
+        $allowedControllers = array('auth','debug','error','help','metadata','redirect');
 
         return !in_array($controller, $allowedControllers);
     }
