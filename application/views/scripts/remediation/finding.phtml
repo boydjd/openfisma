@@ -69,19 +69,24 @@
                 </div>
             </td>
             <td>
-                <div name="finding[responsibleOrganizationId]" 
-                     id="organization" 
-                     type="select" 
-                     href="/metainfo/list/o/organization/format/html/"
-                     <?php
-                     if (('NEW' == $status || 'DRAFT' == $status)
-                         && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)) {
-                         echo $this->escape('class="editable" target="organization"', 'none'); 
-                     }
-                     ?>>
-                    <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
-                    - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
-                </div>
+                <span id="organization" 
+                      type="select" 
+                      name="finding[responsibleOrganizationId]" 
+                      href="/metainfo/list/o/organization/format/html/">
+                     <a href="/system/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
+                         <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
+                         - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
+                    </a>
+                </span>
+
+                <?php
+                if (('NEW' == $status || 'DRAFT' == $status)
+                     && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)):
+                ?>
+                    <span class="editable" target="organization">&nbsp;</span>
+                <?php 
+                endif; 
+                ?>
             </td>
         </tr>
     </table>
