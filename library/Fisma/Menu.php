@@ -91,7 +91,9 @@ class Fisma_Menu
 
                 $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding-report/fisma'));
 
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue'));
+                $findingReportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue/format/html')
+                );
 
                 /**
                  * @todo This doesn't belong here, but plugin reports needs to be re-written.

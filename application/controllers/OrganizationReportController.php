@@ -37,7 +37,6 @@ class OrganizationReportController extends SecurityController
         $this->_acl->requireArea('system_inventory_report');
 
         $this->_helper->reportContextSwitch()
-                      ->addActionContext('test', array('html'))
                       ->addActionContext('personnel', array('html', 'pdf', 'xls'))
                       ->addActionContext('privacy', array('html', 'pdf', 'xls'))
                       ->addActionContext('security-authorization', array('html', 'pdf', 'xls'))

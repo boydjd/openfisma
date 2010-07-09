@@ -73,7 +73,7 @@ class Fisma_Yui_DataTable_Column
         $this->_formatter = $formatter;
         
         if (is_null($name)) {
-            $this->_name = Fisma_String::convertToJavascriptName($column->getName());
+            $this->_name = Fisma_String::convertToJavascriptName($label);
         } else {
             $this->_name = $name;
         }

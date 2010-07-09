@@ -1,3 +1,9 @@
+<?php
+foreach ($this->partialViews as $script => $args):
+    echo $this->partial($script, $args);
+endforeach;
+?>
+
 <div class="searchFilters">
     <div class="left">
         <?php
@@ -10,6 +16,13 @@
         endif;
         ?>
     </div>
+    
+    <?php if (isset($this->form)): ?>
+        <div class="right">
+            <?php echo $this->escape($this->form, 'none'); ?>
+        </div>
+    <?php endif; ?>
+    
     <div class="clear"></div>        
 </div>
 
