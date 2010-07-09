@@ -306,11 +306,11 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
          * indices.
          */
         $data = $this->_report->getData();
-        
+
         foreach ($data as &$row) {
-            $row = array_values($row);
+            $row = array_map('Fisma_String::htmlToPdfText', array_values($row));
         }
-        
+
         $view->data = $data;
         
         $this->_getViewRenderer()->renderScript('/report/report.pdf.phtml');
