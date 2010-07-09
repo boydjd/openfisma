@@ -139,7 +139,8 @@ class AuthController extends Zend_Controller_Action
                     $message = "Your password will expire in $leaveDays days,"
                              . " you should change it now.";
                     $this->view->priorityMessenger($message, 'warning');
-                    // redirect back to password change action
+                    // reset default layout and forward to password change action
+                    $this->_helper->layout->setLayout('layout');
                     $this->_forward('password', 'user');
                     return;
                 }
@@ -149,6 +150,8 @@ class AuthController extends Zend_Controller_Action
                     $message = 'This version of the application uses an improved password storage scheme.'
                              . ' You will need to change your password in order to upgrade your account.';
                     $this->view->priorityMessenger($message, 'warning');
+                    // reset default layout
+                    $this->_helper->layout->setLayout('layout');
                     $this->_forward('password', 'User');
                     return;
                 }
@@ -172,6 +175,7 @@ class AuthController extends Zend_Controller_Action
                 unset($session->redirectPage);
                 $this->_response->setRedirect($path);
             } else {
+                $this->_helper->layout->setLayout('layout');
                 $this->_forward('index', 'index');
             }
         } catch(Zend_Auth_Exception $e) {
