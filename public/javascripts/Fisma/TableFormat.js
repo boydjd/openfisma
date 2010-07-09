@@ -170,25 +170,37 @@ Fisma.TableFormat = {
         link.appendChild(icon);
         
         elCell.appendChild(link);
-     },
+    },
      
-     /**
-      * A formatter which displays a delete icon that is linked to an edit page
-      * 
-      * @param elCell Reference to a container inside the <td> element
-      * @param oRecord Reference to the YUI row object
-      * @param oColumn Reference to the YUI column object
-      * @param oData The data stored in this cell
-      */
-      deleteControl : function (elCell, oRecord, oColumn, oData) {
+    /**
+     * A formatter which displays a delete icon that is linked to an edit page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    deleteControl : function (elCell, oRecord, oColumn, oData) {
 
-         var icon = document.createElement('img');
-         icon.src = '/images/del.png';
+        var icon = document.createElement('img');
+        icon.src = '/images/del.png';
 
-         var link = document.createElement('a');
-         link.href = oData;
-         link.appendChild(icon);
+        var link = document.createElement('a');
+        link.href = oData;
+        link.appendChild(icon);
 
-         elCell.appendChild(link);
-      }
+        elCell.appendChild(link);
+    },
+      
+    /**
+     * A formatter which converts escaped HTML into unescaped HTML
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatHtml : function(el, oRecord, oColumn, oData) {
+        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    }
 };

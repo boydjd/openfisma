@@ -32,9 +32,9 @@ class IncidentReportController extends IncidentBaseController
      */
     public function init()
     {
-        $this->_helper->fismaContextSwitch()
-                      ->addActionContext('category', array('pdf', 'xls'))
-                      ->addActionContext('history', array('pdf', 'xls'))
+        $this->_helper->reportContextSwitch()
+                      ->addActionContext('category', array('html', 'pdf', 'xls'))
+                      ->addActionContext('history', array('html', 'pdf', 'xls'))
                       ->initContext();
         
         parent::init();        
@@ -79,7 +79,13 @@ class IncidentReportController extends IncidentBaseController
                                 ->groupBy('i.resolution')
                                 ->orderBy('i.resolution')
                                 ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-                       
+
+        // Create base report object -- additional columns are added in the loop below
+        $report = new Fisma_Report();
+
+        $report->setTitle('Incident Creation, Resolution, and Rejection (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column('Action', true));
+
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
         $months = array();
@@ -87,6 +93,8 @@ class IncidentReportController extends IncidentBaseController
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
             
+            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+
             // Get month number without leading zero
             $month = $startDate->get('n');
             
@@ -95,11 +103,7 @@ class IncidentReportController extends IncidentBaseController
             
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
-            
-            /**
-             * Generate an array that correlates names of months to column names so that the view can display this 
-             * in a table
-             */
+
             $months['i_' . $columnName] = $startDate->get('M');
             
             /*
@@ -156,10 +160,15 @@ class IncidentReportController extends IncidentBaseController
                 $history['Resolved'] = array_combine(array_keys($months), array_fill(0, 12, 0));
             }
         }
+        
+        // Each array is missing its first column, the "Action", so add it now
+        array_unshift($history['Reported'], 'Reported');
+        array_unshift($history['Rejected'], 'Rejected');
+        array_unshift($history['Resolved'], 'Resolved');
 
-        $this->view->title = 'Incident Creation, Resolution, and Rejection (Previous 12 Months)';
-        $this->view->history = $history;
-        $this->view->months = $months;
+        $report->setData($history);
+
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
         
     /**
@@ -176,10 +185,16 @@ class IncidentReportController extends IncidentBaseController
                          ->groupBy('c.id, sc.id')
                          ->orderBy('c.category, sc.name')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        
+        // Create the base report object -- additional columns are added below
+        $report = new Fisma_Report();
+
+        $report->setTitle('Incidents Reported By Category (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column('Category', true))
+               ->addColumn(new Fisma_Report_Column('Sub Category', true));
                        
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
-        $months = array();
 
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
@@ -189,16 +204,12 @@ class IncidentReportController extends IncidentBaseController
             
             // Get year number
             $year = $startDate->get('Y');
-            
+                        
+            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
-            
-            /*
-             * Generate an array that correlates names of months to column names so that the view can display this 
-             * in a table
-             */
-            $months[$columnName] = $startDate->get('M');
-            
+
             /*
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
              * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
@@ -211,8 +222,8 @@ class IncidentReportController extends IncidentBaseController
 
         $categories = $categoryQuery->execute();
 
-        $this->view->title = 'Incidents Reported By Category (Previous 12 Months)';
-        $this->view->categories = $categories;
-        $this->view->months = $months;
+        $report->setData($categories);
+
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
 }

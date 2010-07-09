@@ -47,22 +47,42 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      * A boolean which indicates if this has been rendered already or not
      * 
      * This is necessary because the rendering of these various report formats is hooked into the postDispatch
-     * event of the action helper. This event will be called for ALL actions which get executed in the current request,
-     * including auxilary actions like the panel header and footer.
+     * event of the action helper. This event will be called for ALL actions which get executed in the current request.
      * 
      * If we rendered the view each time, then content would appear on the page multiple times. This variable lets us
      * track and avoid that condition.
+     * 
+     * @var boolean
      */
     private $_isRendered = false;
     
     /**
+     * A list of partial views which will be rendered immediately before the HTML view
+     * 
+     * @var array
+     */
+    private $_partialViews = array();
+    
+    /**
+     * A form which is displayed on the right side of the toolbar
+     * 
+     * @var Zend_Form
+     */
+    private $_toolbarForm;
+    
+    /**
      * Set the report object
      * 
+     * Fluent interface
+     * 
      * @param Fisma_Report $report
+     * @return this
      */
     public function setReport(Fisma_Report $report)
     {
         $this->_report = $report;
+        
+        return $this;
     }
     
     /**
@@ -118,6 +138,58 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                 )
             )
         );
+    }
+    
+    /**
+     * Queue up partial views which will be rendered immediately before the report's HTML view
+     * 
+     * Fluent interface
+     * 
+     * @param string $scriptPath Path to the partial view script (relative to search path)
+     * @param array $scriptArgs (Optional) Array of arguments that will be passed to the partial view
+     * @return this
+     */
+    public function addPartialView($scriptPath, $scriptArgs = null)
+    {
+        if (!array_key_exists($scriptPath, $this->_partialViews)) {
+            $this->_partialViews[$scriptPath] = $scriptArgs;
+        } else {
+            throw new Fisma_Zend_Exception("Cannot add duplicate partial views to this report ($scriptPath)");
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Set a form to be displayed on the right side of the toolbar
+     * 
+     * Fluent interface
+     * 
+     * @param Zend_Form $form
+     */
+    public function setToolbarForm($form)
+    {
+        $this->_toolbarForm = $form;
+        
+        $this->_toolbarForm->setDecorators(
+            array(
+                'FormElements',
+                array('HtmlTag', array('tag' => 'span')),
+                'Form'
+            )
+        );
+            
+        $this->_toolbarForm->setElementDecorators(array('ViewHelper', 'Label'));
+
+        // Submit buttons don't need a label decorator, but do need to render themselves (i.e. there is no view helper)
+        foreach ($this->_toolbarForm->getElements() as $element) {
+            if ($element instanceof Zend_Form_Element_Submit) {
+                $element->removeDecorator('Label')
+                        ->addDecorator('RenderSelf');
+            }
+        }
+        
+        return $this;
     }
     
     /**
@@ -200,6 +272,10 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
             }
 
             $view->dataTable = $dataTable;
+            
+            $view->partialViews = $this->_partialViews;
+
+            $view->form = $this->_toolbarForm;
 
             $this->_getViewRenderer()->renderScript('/report/report.phtml');
             
@@ -230,11 +306,11 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
          * indices.
          */
         $data = $this->_report->getData();
-        
+
         foreach ($data as &$row) {
-            $row = array_values($row);
+            $row = array_map('Fisma_String::htmlToPdfText', array_values($row));
         }
-        
+
         $view->data = $data;
         
         $this->_getViewRenderer()->renderScript('/report/report.pdf.phtml');
@@ -252,11 +328,18 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
         $view = Zend_Layout::getMvcInstance()->getView();
 
+        // Strip HTML from the report data
+        $data = $this->_report->getData();
+        
+        foreach ($data as &$row) {
+            $row = array_map('Fisma_String::htmlToPlainText', $row);
+        }
+        
         $view->title = $this->_report->getTitle();
         $view->columns = $this->_report->getColumnNames();
         $view->timestamp = Zend_Date::now()->toString('Y-m-d h:i:s A T');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
-        $view->data = $this->_report->getData();
+        $view->data = $data;
         
         $this->_getViewRenderer()->renderScript('/report/report.xls.phtml');
     }

@@ -91,7 +91,9 @@ class Fisma_Menu
 
                 $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding-report/fisma'));
 
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue'));
+                $findingReportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue/format/html')
+                );
 
                 /**
                  * @todo This doesn't belong here, but plugin reports needs to be re-written.
@@ -197,8 +199,15 @@ class Fisma_Menu
             // Incident reports submenu
             if ($acl->hasArea('incident_report')) {
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category'));
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident History', '/incident-report/history'));
+
+                $reportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category/format/html')
+                );
+
+                $reportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Incident History', '/incident-report/history/format/html')
+                );
+
                 $incidentMenu->add($reportsSubmenu);
             }
 
