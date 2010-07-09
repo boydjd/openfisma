@@ -44,7 +44,7 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
 
         // Verify that the user is authenticated, and store a reference to the authenticated user credentials
         $auth = Zend_Auth::getInstance();
-        //use the consistent storage
+        //use the persistant storage
         $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
 
         if ($auth->hasIdentity()) {

@@ -1,13 +1,16 @@
-<?php echo "{$this->doctype()}\n" ?>
+<?php
+    echo $this->escape("{$this->doctype()}\n", 'none');
+    $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period');
+?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="refresh" 
-              content="<?php echo Fisma::configuration()->getConfig('session_inactivity_period'); ?>;url=/auth/logout">
+              content="<?php echo $this->escape($inactivityPeriod, 'none'); ?>;url=/auth/logout">
 
     <?php 
     $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
-    echo $this->headTitle();
+    echo $this->escape($this->headTitle(), 'none');
 
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
@@ -26,9 +29,9 @@
 
     $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 
-    echo $yui;
-    echo $this->headScript();
-    echo $this->headLink();
+    echo $this->escape($yui, 'none');
+    echo $this->escape($this->headScript(), 'none');
+    echo $this->escape($this->headLink(), 'none');
     ?>
     </head>
     <body class="yui-skin-sam">
@@ -37,7 +40,11 @@
         </div>
 
         <div id='header'>
-                <?php echo $this->partial('panel/header.phtml'); ?>
+                <?php
+                    if (Zend_Auth::getInstance()->hasIdentity()) {
+                        echo $this->partial('panel/header.phtml');
+                    }
+                ?>
         </div>
 
         <div class="externalMediaMarking">
@@ -50,11 +57,15 @@
     
         <a name="contentStart"></a>
         <div id='content'>
-                <?php echo $this->layout()->content; ?>
+                <?php echo $this->escape($this->layout()->content, 'none'); ?>
         </div>
         
         <div id='footer'>
-                <?php echo $this->partial('panel/footer.phtml'); ?>
+                <?php
+                    if (Zend_Auth::getInstance()->hasIdentity()) {
+                        echo $this->partial('panel/footer.phtml');
+                    }
+                ?>
         </div>
     </body>
     <?php echo $this->partial('priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
