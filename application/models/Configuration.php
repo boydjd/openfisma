@@ -28,15 +28,19 @@
 class Configuration extends BaseConfiguration
 {
     /**
-     * Remove the record from the cache 
+     * Remove the modified record from the cache 
      * 
      * @param Doctrine_Event $event 
      */
-    public function postSave($event)
+    public function preSave($event)
     {
-        $invoker = $event->getInvoker();
-        $cacheName = 'configuration_' . $invoker->name;
+        if (!$this->isModified()) {
+            return;
+        }
         $cache = Fisma::getCacheManager()->getCache('default');
-        $cache->remove($cacheName);
+
+        foreach ($this->getModified() as $k => $v) {
+            $cache->remove('configuration_' . $k);
+        }
     }
 }

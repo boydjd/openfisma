@@ -83,45 +83,21 @@ class RemediationController extends SecurityController
     */
     public function init()
     {
-        parent::init();    
-        $attach = $this->_helper->contextSwitch();
-        if (!$attach->hasContext('pdf')) {
-            $attach->addContext(
-                'pdf',
-                array(
-                    'suffix' => 'pdf',
-                    'headers' => array(
-                        'Content-Disposition' => "attachement;filename=export.pdf",
-                        'Content-Type' => 'application/pdf'
-                    )
-                )
-            );
-            $attach->addActionContext('search2', array('pdf'))
-                   ->setAutoDisableLayout(true);
-        }
-        if (!$attach->hasContext('xls')) {
-            $attach->addContext(
-                'xls',
-                array(
-                    'suffix' => 'xls',
-                    'headers' => array(
-                        'Content-Disposition' => "attachement;filename=export.xls",
-                        'Content-Type' => 'application/vnd.ms-excel'
-                    )
-                )
-            );
-            $attach->addActionContext('search2', array('xls'))
-                   ->setAutoDisableLayout(true);
-        }
-        $this->_helper->contextSwitch()
+        $contextSwitch = $this->_helper->fismaContextSwitch();
+        $contextSwitch->addActionContext('search2', array('xls', 'pdf'))
                       ->addActionContext('summary-data', array('json', 'xls', 'pdf'));
 
+        if ('search2' == $this->getRequest()->getActionName()) {
+           $contextSwitch->setAutoDisableLayout(true);
+        }
         // Quick hack: disable auto-json-serialization for summary-data action
         if ('summary-data' == $this->getRequest()->getActionName()) {
-            $this->_helper->contextSwitch()->setAutoJsonSerialization(false);
+           $contextSwitch->setAutoJsonSerialization(false);
         }
         
-        $this->_helper->contextSwitch()->initContext();
+        $contextSwitch->initContext();
+
+        parent::init();
     }
     
     /**
@@ -195,7 +171,7 @@ class RemediationController extends SecurityController
 
         $type = $this->getRequest()->getParam('type');
         $source = $this->getRequest()->getParam('sourceId');        
-        $format = $this->_helper->contextSwitch()->getCurrentContext();
+        $format = $this->_request->getParam('format');
         // Prepare summary data
 
         // Get user organizations
@@ -1057,7 +1033,7 @@ class RemediationController extends SecurityController
             $this->_forward('view', null, null, array('id' => $id));
             return;
         }
-        $this->_helper->contextSwitch()
+        $this->_helper->fismaContextSwitch()
                ->setHeader('pdf', 'Content-Disposition', "attachement;filename={$id}_raf.pdf")
                ->addActionContext('raf', array('pdf'))
                ->initContext();

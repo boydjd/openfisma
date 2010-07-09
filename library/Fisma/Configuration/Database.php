@@ -40,16 +40,20 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         $cache = Fisma::getCacheManager()->getCache('default');
 
         if (!$config = $cache->load('configuration_' . $name)) {
-            $config = Doctrine::getTable('Configuration')->findOneByName($name);
 
-            if (!$config) {
-                throw new Fisma_Zend_Exception_Config("Invalid configuration name: $name");
-            }
+            $config = Doctrine_Query::create()
+                ->select("c.${name}")
+                ->from('Configuration c')
+                ->limit(1)
+                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                ->execute();
+
+            $config = $config[0][$name];
 
             $cache->save($config, 'configuration_' . $name);
         }
-            
-        return $config->value;
+
+        return $config;
     }
     
     /**
@@ -62,20 +66,15 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
     public function setConfig($name, $value) 
     {
         CurrentUser::getInstance()->acl()->requireArea('admin');
-        
-        $config = Doctrine::getTable('Configuration')->findOneByName($name);
-        
-        if (!$config) {
-            $config = new Configuration();
-            
-            $config->name = $name;
-            
-            if (Fisma::debug()) {
-                trigger_error("Created configuration item because it didn't exist: $name", E_USER_NOTICE);
-            }
-        }
-        
-        $config->value = $value;
+      
+        $config = Doctrine_Query::create()
+            ->select("c.${name}")
+            ->from('Configuration c')
+            ->limit(1)
+            ->execute();
+
+        $config = $config[0];
+        $config->$name = $value;
         $config->save();
 
         Notification::notify('CONFIGURATION_UPDATED', null, CurrentUser::getInstance());
