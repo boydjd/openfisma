@@ -32,11 +32,9 @@ class FindingDashboardController extends SecurityController
      */
     public function preDispatch()
     {
-        $this->_acl->requireArea('finding');
+        parent::preDispatch();
 
-        if (!$this->_hasParam('format')) {
-            $this->_helper->actionStack('header', 'panel');
-        }
+        $this->_acl->requireArea('finding');
     }
 
     public function indexAction()
