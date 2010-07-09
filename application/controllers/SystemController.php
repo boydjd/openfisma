@@ -85,7 +85,7 @@ class SystemController extends BaseController
         
         $keywords = trim($this->_request->getParam('keywords'));
         
-        $sortBy = $this->_request->getParam('sortby', 'name');
+        $sortBy = $this->_request->getParam('sortby', 'o_nickname');
         // Replace the HYDRATE_SCALAR alias syntax with the regular Doctrine alias syntax
         $sortBy = str_replace('_', '.', $sortBy);
         $order = $this->_request->getParam('order', 'ASC');
@@ -94,12 +94,15 @@ class SystemController extends BaseController
             throw new Fisma_Zend_Exception('Invalid "order" parameter');
         }
         
-        $q = CurrentUser::getInstance()
-             ->getOrganizationsByPrivilegeQuery('organization', 'read')
+        $myOrganizations = $this->_me->getOrganizationsByPrivilege('organization', 'read')->toKeyValueArray('id', 'id');
+        
+        $q = Doctrine_Query::create()
+             ->from('Organization o')
              ->select(
                  'o.id, 
-                  o.name, 
+                  bureau.nickname,
                   o.nickname, 
+                  o.name, 
                   s.type, 
                   s.confidentiality, 
                   s.integrity, 
@@ -107,7 +110,11 @@ class SystemController extends BaseController
                   s.fipsCategory'
              )
              ->innerJoin('o.System s')
+             ->leftJoin('Organization bureau')
+             ->whereIn('o.id', $myOrganizations)
              ->addWhere('o.orgType = ?', 'system')
+             ->andWhere('bureau.orgType = ?', 'bureau')
+             ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
              ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -161,6 +168,14 @@ class SystemController extends BaseController
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
+        
+        $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
+            'showFindings', 
+            array(
+                'value' => 'Show Findings',
+                'href' => "/remediation/search/responsibleOrganizationId/$id"
+            )
+        );
 
         $this->view->tabView = $tabView;
     }
@@ -175,6 +190,7 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;

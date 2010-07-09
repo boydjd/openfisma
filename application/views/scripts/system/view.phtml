@@ -18,6 +18,8 @@ function discardChanges(event) {
                 $submitButton = new Fisma_Yui_Form_Button_Submit('saveChanges', 
                                                 array('label' => 'Save Changes'));
                 echo $this->escape($submitButton, 'none');
+                
+                echo $this->escape($this->showFindingsButton, 'none');
             }
         ?>
     </div>

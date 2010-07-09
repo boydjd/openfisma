@@ -116,13 +116,27 @@ class SystemDocumentController extends SecurityController
                            ->toKeyValueArray('id', 'id');
         
         $query  = Doctrine_Query::create()
-                  ->select('d.id, t.name, o.nickname, d.version, d.description, u.username, d.updated_at, s.id, o.id')
+                  ->select(
+                      'd.id, 
+                      t.name, 
+                      bureau.nickname, 
+                      o.nickname, 
+                      d.version, 
+                      d.description, 
+                      u.username, 
+                      d.updated_at, 
+                      s.id, 
+                      o.id'
+                  )
                   ->from('SystemDocument d')
                   ->innerJoin('d.User u')
                   ->innerJoin('d.DocumentType t')
                   ->innerJoin('d.System s')
                   ->innerJoin('s.Organization o')
+                  ->leftJoin('Organization bureau')
                   ->whereIn('o.id', $organizationIds)
+                  ->andWhere('bureau.orgType = ?', 'bureau')
+                  ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
                   ->orderBy("$sortBy $order")
                   ->limit($this->_paging['count'])
                   ->offset($this->_paging['startIndex']);
