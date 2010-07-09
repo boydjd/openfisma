@@ -60,30 +60,6 @@ class AssetController extends BaseController
     protected $_organizations = '*';
 
     /**
-     * Initialize internal members.
-     * 
-     * @return void
-     */
-    function init()
-    {
-        parent::init();
-        
-        $swCtx = $this->_helper->contextSwitch();
-        if (!$swCtx->hasContext('pdf')) {
-            $swCtx->addContext(
-                'pdf', 
-                array(
-                    'suffix' => 'pdf',
-                    'headers' => array(
-                        'Content-Disposition' =>'attachement;filename="export.pdf"',
-                        'Content-Type' => 'application/pdf'
-                    )
-                )
-            );
-        }
-    }
-
-    /**
      * Invoked before each Actions
      * 
      * @return void
@@ -91,15 +67,12 @@ class AssetController extends BaseController
     public function preDispatch()
     {
         parent::preDispatch();
+
         $this->req = $this->getRequest();
-        $swCtx = $this->_helper->contextSwitch();
-        $swCtx->addActionContext(
-            'search', 
-            array(
-                'pdf'
-            )
-        );
-        $swCtx->initContext();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('search', array('pdf'))
+                      ->initContext();
     }
     
     /**
