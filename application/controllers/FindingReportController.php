@@ -33,12 +33,12 @@ class FindingReportController extends SecurityController
     public function init()
     {
         $this->_helper->fismaContextSwitch()
-                      ->addActionContext('plugin-report', array('pdf', 'xls'))
                       ->addActionContext('fisma-quarterly', 'xls')
                       ->addActionContext('fisma-annual', 'xls')
                       ->initContext();
 
       $this->_helper->reportContextSwitch()
+                    ->addActionContext('plugin-report', array('html', 'pdf', 'xls'))
                     ->addActionContext('overdue', array('html', 'pdf', 'xls'))
                     ->initContext();
 
@@ -312,69 +312,84 @@ class FindingReportController extends SecurityController
     {
         // Verify a plugin report name was passed to this action
         $reportName = $this->getRequest()->getParam('name');
+
         if (!isset($reportName)) {
-            $this->_forward('plugin');
-            return;
+            $this->_redirect('/finding-report/plugin');
         }
         
         // Verify that the user has permission to run this report
         $reportConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/reports.conf', $reportName);
+        
         if ($this->_me->username != 'root') {
-            $reportRoles = $reportConfig->roles;
             $report = $reportConfig->toArray();
             $reportRoles = $report['roles'];
+            
             if (!is_array($reportRoles)) {
                 $reportRoles = array($reportRoles);
             }
+            
             $userRolesQuery = Doctrine_Query::create()
                               ->select('u.id, r.nickname')
                               ->from('User u')
                               ->innerJoin('u.Roles r')
                               ->where('u.id = ?', CurrentUser::getInstance()->id)
                               ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
             $userRolesResult = $userRolesQuery->execute();
+            
             $userRoles = array();
             $hasRole = false;
+
             foreach ($userRolesResult as $key => $result) {
                 if (in_array($result['r_nickname'], $reportRoles)) {
                     $hasRole = true;
                 }
             }
+
             if (!$hasRole) {
                 throw new Fisma_Zend_Exception("User \"{$this->_me->username}\" does not have permission to view"
-                                          . " the \"$reportName\" plug-in report.");
+                                             . " the \"$reportName\" plug-in report.");
             }
         }
         
-        // Execute the report script
+        // Load the report SQL query
         $reportScriptFile = Fisma::getPath('application') . "/config/reports/$reportName.sql";
         $reportScriptFileHandle = fopen($reportScriptFile, 'r');
+
         if (!$reportScriptFileHandle) {
             throw new Fisma_Zend_Exception("Unable to load plug-in report SQL file: $reportScriptFile");
         }
+
         $reportScript = '';
+
         while (!feof($reportScriptFileHandle)) {
             $reportScript .= fgets($reportScriptFileHandle);
         }
-        $myOrganizations = array();
-        foreach ($this->_me->getOrganizationsByPrivilege('finding', 'read') as $organization) {
-            $myOrganizations[] = $organization->id;
-        }
+
+        $myOrganizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
+
         if (empty($myOrganizations)) {
             $msg = "The report could not be created because this user does not have access to any organizations.";
             $this->view->priorityMessenger($msg, 'warning');
             $this->_redirect('/finding-report/plugin');
             return;
         }
+
+        // The ##ORGANIZATIONS## token should be replaced with the IDs of this users organizations
         $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
+
         $dbh = Doctrine_Manager::connection()->getDbh(); 
         $rawResults = $dbh->query($reportScript, PDO::FETCH_ASSOC);
         $reportData = array();
+
         foreach ($rawResults as $rawResult) {
             $reportData[] = $rawResult;
         }
-        
-        // Render the report results
+
+        /*
+         * The column names are contained in the keys of each row. If there are no rows, then we can't really do 
+         * anything.
+         */
         if (isset($reportData[0])) {
             $columns = array_keys($reportData[0]);
         } else {
@@ -384,10 +399,21 @@ class FindingReportController extends SecurityController
             return;
         }
         
-        $this->view->assign('title', $reportConfig->title);
-        $this->view->assign('columns', $columns);
-        $this->view->assign('htmlcolumns', $reportConfig->htmlcolumns->toArray());
-        $this->view->assign('rows', $reportData);
-        $this->view->assign('url', "/finding-report/plugin-report/name/$reportName");
+        // Assign view outputs
+        $report = new Fisma_Report();
+
+        $report->setTitle($reportConfig->title)
+               ->setData($reportData);
+
+        // Add each column, and check whether an HTML formatter is required
+        $htmlColumns = $reportConfig->htmlcolumns->toArray();
+
+        foreach ($columns as $column) {
+            $htmlFormat = in_array($column, $htmlColumns) ? 'Fisma.TableFormat.formatHtml' : null;
+
+            $report->addColumn(new Fisma_Report_Column($column, true, $htmlFormat));
+        }
+
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
 }
