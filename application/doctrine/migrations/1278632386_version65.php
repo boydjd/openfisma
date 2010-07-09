@@ -47,7 +47,7 @@ class Version65 extends Doctrine_Migration_Base
             $updateSql = sprintf(
                 "UPDATE configuration SET '%s' = '%s'",
                 $row['name'], 
-                mysql_real_escape_string($row['value'])
+                $pdo->quote($row['value'])
             );
 
             $conn->exec($updateSql); 
