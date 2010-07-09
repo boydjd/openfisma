@@ -47,4 +47,8 @@ class HelpController extends Zend_Controller_Action
             $this->render('notFound');
         }
     }
+
+    public function installAction()
+    {
+    }
 }
