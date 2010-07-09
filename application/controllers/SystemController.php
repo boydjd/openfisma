@@ -168,6 +168,14 @@ class SystemController extends BaseController
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
+        
+        $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
+            'showFindings', 
+            array(
+                'value' => 'Show Findings',
+                'href' => "/remediation/search/responsibleOrganizationId/$id"
+            )
+        );
 
         $this->view->tabView = $tabView;
     }
@@ -182,6 +190,7 @@ class SystemController extends BaseController
         $id = $this->getRequest()->getParam('id');
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
         
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
