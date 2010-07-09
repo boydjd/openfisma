@@ -66,6 +66,12 @@ class ErrorController extends Zend_Controller_Action
                                      . " administrator.</p>";
             }
 
+        if ($errors->type === Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER ||
+            $errors->type === Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION) {
+            $this->getResponse()->setHttpResponseCode(404);
+            $this->render('error404');
+        }
+
             $front = Zend_Controller_Front::getInstance();
             if ($stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack')) {
                 //clear the action stack to prevent additional exceptions would be throwed

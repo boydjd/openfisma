@@ -1,0 +1,21 @@
+<?php Fisma_Format_Section::startSection('404: File Not Found'); ?>
+<?php
+    echo $this->escape($this->message, 'none');
+
+    if (Fisma::debug()) {
+?>
+    <p><i>Application is currently in debugging mode:</i></p>
+    <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
+<?php    
+    }
+
+    $contactEmail = Fisma::configuration()->getConfig('contact_email');
+?>
+<p>
+    Technical Support Contact: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_name'))?><br>
+    Contact Phone: <?php echo $this->escape(Fisma::configuration()->getConfig('contact_phone'))?><br>
+    Contact E-mail: <a href="mailto:<?php echo $this->escape($contactEmail, 'none')?>">
+            <?php echo $this->escape(Fisma::configuration()->getConfig('contact_email'));?></a>
+</p>
+
+<?php Fisma_Format_Section::stopSection(); ?>
