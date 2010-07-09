@@ -328,11 +328,18 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
         $view = Zend_Layout::getMvcInstance()->getView();
 
+        // Strip HTML from the report data
+        $data = $this->_report->getData();
+        
+        foreach ($data as &$row) {
+            $row = array_map('Fisma_String::htmlToPlainText', $row);
+        }
+        
         $view->title = $this->_report->getTitle();
         $view->columns = $this->_report->getColumnNames();
         $view->timestamp = Zend_Date::now()->toString('Y-m-d h:i:s A T');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
-        $view->data = $this->_report->getData();
+        $view->data = $data;
         
         $this->_getViewRenderer()->renderScript('/report/report.xls.phtml');
     }
