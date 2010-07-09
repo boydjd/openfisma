@@ -33,12 +33,15 @@ class FindingReportController extends SecurityController
     public function init()
     {
         $this->_helper->fismaContextSwitch()
-                      ->addActionContext('overdue', array('pdf', 'xls'))
                       ->addActionContext('plugin-report', array('pdf', 'xls'))
                       ->addActionContext('fisma-quarterly', 'xls')
                       ->addActionContext('fisma-annual', 'xls')
                       ->initContext();
-        
+
+      $this->_helper->reportContextSwitch()
+                    ->addActionContext('overdue', array('html', 'pdf', 'xls'))
+                    ->initContext();
+
         parent::init();
     }
     
@@ -193,89 +196,81 @@ class FindingReportController extends SecurityController
      * @return void
      */
     public function overdueAction()
-    {        
-        // Get request variables
-        $req = $this->getRequest();
-        $params['orgSystemId'] = $req->getParam('orgSystemId');
-        $params['sourceId'] = $req->getParam('sourceId');
-        $params['overdueType'] = $req->getParam('overdueType');
-        $params['overdueDay'] = $req->getParam('overdueDay');
-        $params['year'] = $req->getParam('year');
+    {
+        $systemId = $this->getRequest()->getParam('systemId');
+        $sourceId = $this->getRequest()->getParam('sourceId');
 
-        if (!empty($params['orgSystemId'])) {
-            $organization = Doctrine::getTable('Organization')->find($params['orgSystemId']);
+        if (!empty($systemId)) {
+            $organization = Doctrine::getTable('Organization')->find($systemId);
+            
             $this->_acl->requirePrivilegeForObject('read', $organization);
         } else {
             $this->_acl->requirePrivilegeForClass('read', 'Organization');
         }
 
-        $this->view->assign('sourceList', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign(
-            'systemList', 
-            $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'name')
-        );
-        $this->view->assign('networkList', Doctrine::getTable('Network')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign('params', $params);
-        $this->view->assign('url', '/finding-report/overdue' . $this->_helper->makeUrlParams($params));
-        $isExport = $req->getParam('format');
+        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'read');
+        $systemList = array('' => '') + $systems->toKeyValueArray('id', 'nickname');
+        asort($systemList);
 
-        if ('search' == $req->getParam('s') || isset($isExport)) {
-            $q = Doctrine_Query::create()
-                 ->select('f.id') // unused, but Doctrine requires a field to be selected from the parent object
-                 ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
-                 ->addSelect(
-                     "IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 'Mitigation Strategy', IF(f.status IN ('EN', 'EA'),
-                     'Corrective Action', NULL)) actionType"
-                 )
-                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) lessThan30')
-                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) moreThan30')
-                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) moreThan60')
-                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 90 AND 119, 1, 0)) moreThan90')
-                 ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) >= 120, 1, 0)) moreThan120')
-                 ->addSelect('IFNULL(COUNT(f.id), 0) total')
-                 ->addSelect('IFNULL(ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))), 0) average')
-                 ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
-                 ->from('Finding f')
-                 ->leftJoin('f.ResponsibleOrganization o')
-                 ->where('f.nextduedate < NOW()');
+        $sourceList = array('' => '') + Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
+        asort($sourceList);
 
-            if (!empty($params['orgSystemId'])) {
-                $q->andWhere('f.responsibleOrganizationId = ?', $params['orgSystemId']);
-            } else {
-                $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')
-                    ->toKeyValueArray('id', 'id');
-                $q->whereIn('f.responsibleOrganizationId', $organizations);    
-            }
+        // Set up the filter options in the toolbar
+        $toolbarForm = Fisma_Zend_Form_Manager::loadForm('overdue_report_filters');
 
-            if (!empty($params['sourceId'])) {
-                $q->andWhere('f.sourceId = ?', $params['sourceId']);
-            }
-            if ($params['overdueType'] == 'sso') {
-                $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA'));
-            } elseif ($params['overdueType'] == 'action') {
-                $q->whereIn('f.status', array('EN', 'EA'));
-            } else {
-                $q->whereIn('f.status', array('NEW', 'DRAFT', 'MSA', 'EN', 'EA'));
-            }
+        $toolbarForm->getElement('systemId')->setMultiOptions($systemList);
+        $toolbarForm->getElement('sourceId')->setMultiOptions($sourceList);
 
-            $q->groupBy('orgSystemName, actionType');
-            $q->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $list = $q->execute();
+        $toolbarForm->setDefaults($this->getRequest()->getParams());
 
-            // Assign view outputs
-            $this->view->assign('poamList', $list);
-            $this->view->criteria = $params;
-            $this->view->columns = array('orgSystemName' => 'System', 
-                                         'actionType' => 'Overdue Action Type', 
-                                         'lessThan30' => '< 30 Days',
-                                         'moreThan30' => '30-59 Days', 
-                                         'moreThan60' => '60-89 Days', 
-                                         'moreThan90' => '90-119 Days',
-                                         'moreThan120' => '120+ Days', 
-                                         'total' => 'Total Overdue', 
-                                         'average' => 'Average (days)',
-                                         'max' => 'Maximum (days)');
+        $overdueQuery = Doctrine_Query::create()
+                        ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
+                        ->addSelect(
+                            "IF(f.status IN ('NEW', 'DRAFT', 'MSA'), 
+                            'Mitigation Strategy', IF(f.status IN ('EN', 'EA'), 'Corrective Action', NULL)) actionType"
+                        )
+                        ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 59, 1, 0)) lessThan30')
+                        ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 119, 1, 0)) moreThan60')
+                        ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) >= 120, 1, 0)) moreThan120')
+                        ->addSelect('IFNULL(COUNT(f.id), 0) total')
+                        ->addSelect('IFNULL(ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))), 0) average')
+                        ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
+                        ->from('Finding f')
+                        ->leftJoin('f.ResponsibleOrganization o')
+                        ->where('f.nextduedate < NOW()')
+                        ->groupBy('o.id, actionType')
+                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        // If the user selects one organization then display that one only. Otherwise display all of this users systems.
+        if (!empty($systemId)) {
+            $overdueQuery->andWhere('o.id = ?', $systemId);
+        } else {
+            $overdueQuery->whereIn('o.id', $systems->toKeyValueArray('id', 'id'));    
         }
+
+        if (!empty($sourceId)) {
+            $overdueQuery->andWhere('f.sourceId = ?', $sourceId);
+        }
+        
+        $reportData = $overdueQuery->execute();
+
+        // Assign view outputs
+        $report = new Fisma_Report();
+
+        $report->setTitle('Overdue Report')
+               ->addColumn(new Fisma_Report_Column('System', true))
+               ->addColumn(new Fisma_Report_Column('Overdue Action Type', true))
+               ->addColumn(new Fisma_Report_Column('< 60 Days', true))
+               ->addColumn(new Fisma_Report_Column('60-119 Days', true))
+               ->addColumn(new Fisma_Report_Column('120+ Days', true))
+               ->addColumn(new Fisma_Report_Column('Total Overdue', true))
+               ->addColumn(new Fisma_Report_Column('Average (Days)', true))
+               ->addColumn(new Fisma_Report_Column('Maximum (Days)', true))
+               ->setData($reportData);
+
+        $this->_helper->reportContextSwitch()
+                      ->setReport($report)
+                      ->setToolbarForm($toolbarForm);
     }
     
     /**
