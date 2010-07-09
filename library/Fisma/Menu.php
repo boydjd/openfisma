@@ -47,12 +47,15 @@ class Fisma_Menu
         if ($acl->hasArea('finding')) {
             $findings = new Fisma_Yui_Menu('Findings');
             
-            $findings->add(new Fisma_Yui_MenuItem('Summary', '/remediation/summary'));
-            $findings->add(new Fisma_Yui_MenuItem('Search', '/remediation/searchbox'));
+            if ($acl->hasPrivilegeForClass('read', 'Finding')) {
+                $findings->add(new Fisma_Yui_MenuItem('Summary', '/remediation/summary'));
+                $findings->add(new Fisma_Yui_MenuItem('Search', '/remediation/searchbox'));
+            }
 
-            if ($acl->hasPrivilegeForClass('create', 'Finding')
-                || $acl->hasPrivilegeForClass('inject', 'Finding')
-                || $acl->hasPrivilegeForClass('approve', 'Finding')) {
+            if ($acl->hasPrivilegeForClass('read', 'Finding')
+                && ($acl->hasPrivilegeForClass('create', 'Finding')
+                    || $acl->hasPrivilegeForClass('inject', 'Finding')
+                    || $acl->hasPrivilegeForClass('approve', 'Finding'))) {
 
                 $findings->addSeparator();    
             }
