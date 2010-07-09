@@ -17,7 +17,11 @@
  */
 
 /**
- * Fisma_Zend_Controller_Action_Helper_Security
+ * Action helper to handle the authentication check to ensure users are logged in before allowing
+ * access to site resources.
+ *
+ * This helper MUST be explicitly registered in the Bootstrap or somewhere similar in order for its
+ * preDispatch() hook to be triggered.
  * 
  * @uses Zend_Controller_Action_Helper_Abstract
  * @package Fisma_Zend_Controller_Action_Helper 
@@ -116,10 +120,6 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
 
         $allowedControllers = array('auth','debug','error','help','install','metadata','redirect');
 
-        if (in_array($controller, $allowedControllers)) {
-            return false;
-        }
-
-        return true;
+        return !in_array($controller, $allowedControllers);
     }
 }
