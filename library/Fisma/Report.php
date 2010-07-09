@@ -107,7 +107,7 @@ class Fisma_Report
      * 
      * @param Fisma_Report_Column $column
      */
-    public function addColumn($column)
+    public function addColumn(Fisma_Report_Column $column)
     {
         $this->_columns[] = $column;
         
@@ -129,6 +129,10 @@ class Fisma_Report
      */
     public function setData($data)
     {
+        if (is_null($data)) {
+            throw new Fisma_Zend_Exception("Report data object is null");
+        }
+        
         $this->_data = $data;
         
         return $this;

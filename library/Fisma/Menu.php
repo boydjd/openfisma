@@ -199,8 +199,15 @@ class Fisma_Menu
             // Incident reports submenu
             if ($acl->hasArea('incident_report')) {
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category'));
-                $reportsSubmenu->add(new Fisma_Yui_MenuItem('Incident History', '/incident-report/history'));
+
+                $reportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category/format/html')
+                );
+
+                $reportsSubmenu->add(
+                    new Fisma_Yui_MenuItem('Incident History', '/incident-report/history/format/html')
+                );
+
                 $incidentMenu->add($reportsSubmenu);
             }
 
