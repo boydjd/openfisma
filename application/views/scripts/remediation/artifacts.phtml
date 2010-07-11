@@ -1,114 +1,29 @@
 <?php 
-Fisma_Format_Section::startSection('Artifacts (' . $this->finding->Evidence->count() . ')');
-$organization = $this->finding->ResponsibleOrganization->nickname;
+Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
 
-if (count($this->finding->Evidence) == 0):
+if (count($this->artifacts) == 0):
     echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
+else:
+    // Each artifact block is rendered in a partial view.
+    foreach ($this->artifacts as $index => $artifact):
+    
+        /*
+         * Each partial is passed an 'activeArtifact' boolean which is true if the artifact passed is one that is 
+         * currently under review (and false otherwise).
+         */
+        $activeArtifact = (0 == $index && 'EA' == $this->finding->status);
+        
+        echo $this->partial(
+            'remediation/artifact-detail.phtml', 
+            array(
+                'finding' => $this->finding,
+                'artifact' => $artifact,
+                'activeArtifact' => $activeArtifact
+            )
+        );
+    endforeach;
 endif;
 
-foreach ($this->finding->Evidence as $evidence):
-?>
-    <div class="approvalHeader">
-        <b>File: </b>
-        <a href='/remediation/downloadevidence/id/<?php echo $this->escape($evidence->id)?>' target='_blank'>
-            <?php echo $this->escape($evidence->filename); ?>
-        </a>
-        submitted by 
-        <?php 
-            $user = $evidence->User;
-            $fullName = $user->nameFirst . ' ' . $user->nameLast;
-            
-            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
-        ?> 
-        on 
-        <?php echo $this->escape($evidence->createdTs); ?>)
-    </div>
-    <div class="approval">
-        <?php
-        $completedEvaluations = array();
-        
-        foreach ($evidence->FindingEvaluations as $findingEvaluation):
-            $completedEvaluations[] = $findingEvaluation->Evaluation->id;
-
-            $user = $findingEvaluation->User;
-            $fullName = $user->nameFirst . ' ' . $user->nameLast;
-            
-            $decision = $findingEvaluation->decision;
-            $spanClass = strtolower($decision);
-        ?>
-            <div class="approvalStep">
-                <p>
-                    <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?>:</b>
-                    <span class="<?php echo $this->escape($spanClass)?>">
-                        <b><?php echo $this->escape($decision)?></b>
-                        <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?> 
-                        at <?php echo $this->escape($findingEvaluation->createdTs)?>
-                    </span>
-                </p>
-            <?php 
-                if (!empty($findingEvaluation->comment)):
-                        echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
-                endif;
-            ?>
-            </div>
-        <?php
-        endforeach;
-        ?>
-
-        <?php
-        $activeEvaluation = $this->finding->CurrentEvaluation;
-        if ($activeEvaluation->id != null 
-            && $activeEvaluation->approvalGroup == 'evidence'
-            && !in_array($activeEvaluation->id, $completedEvaluations)):
-        ?>
-            <div class="approvalStep">
-                <p>
-                    <b><?php echo $this->escape($activeEvaluation->name)?></b>
-                    <?php 
-                    if ($this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)): 
-                    ?>
-                        <input type="hidden" name="comment" value="" />
-                        <input type="hidden" name="decision" value="APPROVED" />
-                        <input name="submit_ea" type="button" value="APPROVED"
-                            onclick="ev_approve(document.finding_detail);"/>&nbsp;
-                        <input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />
-                    <?php 
-                    else: 
-                    ?>
-                        PENDING
-                    <?php 
-                    endif; 
-                    ?>
-                </p>
-            </div>
-        <?php
-        endif;
-
-        $disableEvaluations = array();
-        $currentEvaluation  = $this->finding->CurrentEvaluation;
-        if ($currentEvaluation->approvalGroup == 'evidence'):
-            while (null != $currentEvaluation->nextId):
-                $currentEvaluation = $currentEvaluation->NextEvaluation;
-                $disableEvaluations[] = $currentEvaluation;
-            endwhile;
-        endif;
-
-        foreach ($disableEvaluations as $evaluation):
-            if (!in_array($evaluation->id, $completedEvaluations)):
-        ?>
-                <div class='approvalStep'>
-                   <p><b><?php echo $this->escape($evaluation->name)?></b>N/A</p>
-                </div>
-        <?php
-            endif;
-        endforeach;
-        ?>
-    </div>
-<?php
-endforeach;
-?>
-    
-<?php
 $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                             array('label' => 'Upload Evidence', 
                                                   'onClickFunction' => 'upload_evidence'));
