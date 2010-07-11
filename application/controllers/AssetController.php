@@ -161,7 +161,7 @@ class AssetController extends BaseController
         } elseif (!$subject instanceof Doctrine_Record) {
             throw new Fisma_Zend_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
-        $values = $form->getValues();
+        $values = $this->getRequest()->getPost();
 
         if (empty($values['productId'])) {
             unset($values['productId']);
