@@ -1,0 +1,80 @@
+<?php
+echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact));
+?>
+
+<div class="approval">
+    <?php
+    /*
+     * This is used to track which evaluations have been completed for this artifact. After the first loop completes,
+     * any evaluation (i.e. the Evaluation table) which is not on this list can be inferred to be pending or skipped.
+     */
+    $completedEvaluations = array();
+    
+    // First: display all of the completed evaluations for the artifact.
+    foreach ($this->artifact->FindingEvaluations as $findingEvaluation):
+        $completedEvaluations[] = $findingEvaluation->Evaluation->id;
+
+        $user = $findingEvaluation->User;
+        $fullName = $user->nameFirst . ' ' . $user->nameLast;
+        
+        $decision = $findingEvaluation->decision;
+        $spanClass = strtolower($decision);
+    ?>
+        <div class="approvalStep">
+            <p>
+                <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
+                
+                <span class="<?php echo $this->escape($spanClass)?>">
+                    <b><?php echo $this->escape($decision)?></b>
+                    <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?> 
+                    at <?php echo $this->escape($findingEvaluation->createdTs)?>
+                </span>
+            </p>
+        <?php 
+            if (!empty($findingEvaluation->comment)):
+                    echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
+            endif;
+        ?>
+        </div>
+    <?php
+    endforeach;
+    ?>
+
+    <?php
+    $activeEvaluation = $this->finding->CurrentEvaluation;
+
+    /*
+     * Second: Show approval buttons for the current evaluation if the user has the required privileges.
+     */
+    if ($this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)):
+        $completedEvaluations[] = $activeEvaluation->id;
+    ?>
+        <div class="approvalStep">
+            <p>
+                <b><?php echo $this->escape($activeEvaluation->name)?></b>
+                <input type="hidden" name="comment" value="" />
+                <input type="hidden" name="decision" value="APPROVED" />
+                <input name="submit_ea" type="button" value="APPROVED"
+                    onclick="ev_approve(document.finding_detail);"/>&nbsp;
+                <input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />
+            </p>
+        </div>
+    <?php
+    endif;
+
+    /*
+     * Third: If there are any evaluations beyond the current one, then they are listed here. For artifacts which are 
+     * already denied, the status is listed as 'SKIPPED' because those evaluation will never be performed. For artifacts
+     * which are still under review, the status is listed as 'PENDING'.
+     */
+    foreach ($this->evaluations as $evaluation):
+        if (!in_array($evaluation->id, $completedEvaluations)):
+    ?>
+            <div class='approvalStep'>
+                <p><b><?php echo $this->escape($evaluation->name)?></b>PENDING</p>
+            </div>
+    <?php
+        endif;
+    endforeach;
+    ?>
+</div>

@@ -1101,6 +1101,14 @@ class RemediationController extends SecurityController
                           ->orderBy('e.createdTs DESC');
 
         $this->view->artifacts = $artifactsQuery->execute();
+
+        // Get a list of all evaluations so that the ones which are skipped or pending can still be rendered.
+        $evaluationsQuery = Doctrine_Query::create()
+                            ->from('Evaluation e')
+                            ->where('e.approvalGroup = ?', 'evidence')
+                            ->orderBy('e.precedence');
+
+        $this->view->evaluations = $evaluationsQuery->execute();
     }
         
     /**
