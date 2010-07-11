@@ -48,7 +48,7 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     {
         $disabled = "";
 
-        if ($this->getAttrib('readonly')) {
+        if ($this->readOnly) {
             $disabled = "disabled=\"true\"";
         }
 
@@ -75,22 +75,18 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                          id='{$this->getAttrib('containerId')}Spinner' 
                          src='/images/spinners/small.gif'>
                     <div id=\"{$this->getAttrib('containerId')}\"></div>                    
-                    </div>";
-
-        if (!$this->getAttrib('readonly')) {
-            $render .= 
-                "<script type='text/javascript'>
-                YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
-                  { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
-                    xhr : \"{$this->getAttrib('xhr')}\",
-                    fieldId : \"$name\",
-                    containerId: \"{$this->getAttrib('containerId')}\",
-                    hiddenFieldId: \"$hiddenField\",
-                    queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
-                    callback : '{$this->getAttrib('callback')}'
-                  } );
-            </script>";
-        }
+                    </div>
+                    <script type='text/javascript'>
+                        YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
+                          { schema: [\"{$this->getAttrib('resultsList')}\", \"{$this->getAttrib('fields')}\"],
+                            xhr : \"{$this->getAttrib('xhr')}\",
+                            fieldId : \"$name\",
+                            containerId: \"{$this->getAttrib('containerId')}\",
+                            hiddenFieldId: \"$hiddenField\",
+                            queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
+                            callback : '{$this->getAttrib('callback')}'
+                          } );
+                    </script>";
 
         return $render;
     } 
