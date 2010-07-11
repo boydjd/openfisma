@@ -7,20 +7,29 @@ else:
     // Each artifact block is rendered in a partial view.
     foreach ($this->artifacts as $index => $artifact):
     
-        /*
-         * Each partial is passed an 'activeArtifact' boolean which is true if the artifact passed is one that is 
-         * currently under review (and false otherwise).
-         */
-        $activeArtifact = (0 == $index && 'EA' == $this->finding->status);
+        // The first artifact is the one which is currently being evaluated if the finding is in EA status.
+        $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
         
-        echo $this->partial(
-            'remediation/artifact-detail.phtml', 
-            array(
-                'finding' => $this->finding,
-                'artifact' => $artifact,
-                'activeArtifact' => $activeArtifact
-            )
-        );
+        if ($currentArtifact):
+            echo $this->partial(
+                'remediation/artifact-current-item.phtml', 
+                array(
+                    'finding' => $this->finding,
+                    'artifact' => $artifact,
+                    'activeArtifact' => true,
+                    'evaluations' => $this->evaluations
+                )
+            );        
+        else:
+            echo $this->partial(
+                'remediation/artifact-old-item.phtml', 
+                array(
+                    'finding' => $this->finding,
+                    'artifact' => $artifact,
+                    'evaluations' => $this->evaluations
+                )
+            );
+        endif;
     endforeach;
 endif;
 

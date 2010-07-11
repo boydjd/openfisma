@@ -1,0 +1,55 @@
+<?php
+echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact));
+?>
+
+<div class="approval">
+    <?php
+    /*
+     * This is used to track which evaluations have been completed for this artifact. After the first loop completes,
+     * any evaluation which is not on this list can be marked SKIPPED.
+     */
+    $completedEvaluations = array();
+    
+    // First: display all of the completed evaluations for the artifact.
+    foreach ($this->artifact->FindingEvaluations as $findingEvaluation):
+        $completedEvaluations[] = $findingEvaluation->Evaluation->id;
+
+        $user = $findingEvaluation->User;
+        $fullName = $user->nameFirst . ' ' . $user->nameLast;
+        
+        $decision = $findingEvaluation->decision;
+        $spanClass = strtolower($decision);
+    ?>
+        <div class="approvalStep">
+            <p>
+                <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
+                
+                <span class="<?php echo $this->escape($spanClass)?>">
+                    <b><?php echo $this->escape($decision)?></b>
+                    <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?> 
+                    at <?php echo $this->escape($findingEvaluation->createdTs)?>
+                </span>
+            </p>
+        <?php 
+            if (!empty($findingEvaluation->comment)):
+                    echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
+            endif;
+        ?>
+        </div>
+    <?php
+    endforeach;
+
+    /*
+     * Second: If there are any remaining evaluations for this OLD artifact, then that means they were SKIPPED.
+     */
+    foreach ($this->evaluations as $evaluation):
+        if (!in_array($evaluation->id, $completedEvaluations)):
+    ?>
+        <div class='approvalStep'>
+           <p><b><?php echo $this->escape($evaluation->name)?></b>SKIPPED</p>
+        </div>
+    <?php
+        endif;
+    endforeach;
+    ?>
+</div>
