@@ -60,7 +60,7 @@ class RemediationController extends SecurityController
 
         $request = $this->getRequest();
         $this->_paging['startIndex'] = $request->getParam('startIndex', 0);
-        if ('modify' == $request->getParam('sub')) {
+        if ('modify' == $request->getActionName()) {
             // If this is a mitigation, evidence approval, or evidence upload, then redirect to the 
             // corresponding controller action
             if (isset($_POST['submit_msa'])) {
@@ -770,6 +770,12 @@ class RemediationController extends SecurityController
         }
 
         $finding = $this->_getFinding($id);
+        
+        // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
+        // be unset.
+        if (empty($findingData['securityControlId'])) {
+            unset($findingData['securityControlId']);
+        }
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
@@ -804,7 +810,7 @@ class RemediationController extends SecurityController
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
-       
+
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
@@ -1084,6 +1090,17 @@ class RemediationController extends SecurityController
     {
         $this->_viewFinding();
         $this->_helper->layout->setLayout('ajax');
+
+        // Get a list of artifacts related to this finding
+        $artifactsQuery = Doctrine_Query::create()
+                          ->from('Evidence e')
+                          ->leftJoin('e.FindingEvaluations fe')
+                          ->leftJoin('e.User u1')
+                          ->leftJoin('fe.User u2')
+                          ->where('e.findingId = ?', $this->view->finding->id)
+                          ->orderBy('e.createdTs DESC');
+
+        $this->view->artifacts = $artifactsQuery->execute();
     }
         
     /**
