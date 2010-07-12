@@ -148,7 +148,7 @@ class Version64 extends Doctrine_Migration_Base
              'comment' => 'Technical support email subject text',
              'default' => '',
              ));
-		$this->addColumn('configuration', 'use_notification', 'string', '', array(
+		$this->addColumn('configuration', 'use_notification', 'string', '65535', array(
              'notblank' => '1',
              'extra' => 
              array(
@@ -157,7 +157,7 @@ class Version64 extends Doctrine_Migration_Base
              'comment' => 'The warning banner displayed before login',
              'default' => '',
              ));
-		$this->addColumn('configuration', 'behavior_rule', 'string', '', array(
+		$this->addColumn('configuration', 'behavior_rule', 'string', '65535', array(
              'notblank' => '1',
              'extra' => 
              array(
@@ -166,7 +166,7 @@ class Version64 extends Doctrine_Migration_Base
              'comment' => 'Rules of behavior',
              'default' => '',
              ));
-		$this->addColumn('configuration', 'privacy_policy', 'string', '', array(
+		$this->addColumn('configuration', 'privacy_policy', 'string', '65535', array(
              'notblank' => '1',
              'extra' => 
              array(

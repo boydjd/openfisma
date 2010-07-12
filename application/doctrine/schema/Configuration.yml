@@ -97,21 +97,21 @@ Configuration:
             comment: Technical support email subject text
             default: ""
         use_notification:
-            type: string
+            type: string(65535)
             notblank: true
             extra:
                 purify: html
             comment: The warning banner displayed before login
             default: ""
         behavior_rule:
-            type: string
+            type: string(65535)
             notblank: true
             extra:
                 purify: html
             comment: Rules of behavior
             default: ""
         privacy_policy:
-            type: string
+            type: string(65535)
             notblank: true
             extra:
                 purify: html
