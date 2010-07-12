@@ -41,7 +41,7 @@ class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
         $role->nickname = "XSSLT";
         $role->description = "<script type='text/javascript'>alert('hello')</script>";
 
-        $role->save();
+        $role->invokeSaveHooks('pre', 'save');
         
         // HTML purifier should blank out the entire string, since it is all malicious
         $this->assertEquals('', trim($role->description));

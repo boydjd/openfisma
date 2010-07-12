@@ -31,14 +31,17 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
 class Test_Application_Models_User extends Test_FismaUnitTest
 {
     /**
-     * Disable listeners for the User model
+     * Disable listeners for the User model and create a new application configuration
      * 
      * This improves test quality by removing coupling, but some tests may selectively re-enable listeners to test the
      * functionality inside them.
      */
     public function setUp()
     {
-        Doctrine::getTable('User')->getRecordListener()->setOption('disabled', true);
+        Doctrine::getTable('User')->getRecordListener()->setOption('disabled', true);  
+
+        // Create a new configuration object for each test case to prevent cross-test contamination
+        Fisma::setConfiguration(new Fisma_Configuration_Array(), true);
     }
     
     /**
@@ -49,6 +52,8 @@ class Test_Application_Models_User extends Test_FismaUnitTest
      */
     public function testSaltAndHashAreDefinedIfPasswordIsDefined()
     {
+        Fisma::configuration()->setConfig('hash_type', 'sha1');
+        
         $user = new User();
         
         $this->assertNull($user->passwordSalt);
@@ -68,6 +73,8 @@ class Test_Application_Models_User extends Test_FismaUnitTest
      */
     public function testPasswordNotInPlainText()
     {
+        Fisma::configuration()->setConfig('hash_type', 'sha1');
+
         $user = new User();
 
         $secretPassword = 'password1';
@@ -84,6 +91,8 @@ class Test_Application_Models_User extends Test_FismaUnitTest
      */
     public function testPasswordHistoryFailure()
     {
+        Fisma::configuration()->setConfig('hash_type', 'sha1');
+
         $user = new User();
         $password = 'password1';
 
@@ -105,6 +114,8 @@ class Test_Application_Models_User extends Test_FismaUnitTest
      */
     public function testPasswordHistorySuccess()
     {
+        Fisma::configuration()->setConfig('hash_type', 'sha1');
+
         $user = new User();
 
         // We use the loop counter $i as the password to generate a simple, non-repeating sequence of passwords

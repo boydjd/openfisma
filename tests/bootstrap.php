@@ -17,34 +17,9 @@
  */
 
 try {
-    ini_set('memory_limit', '512M');
     Fisma::initialize(Fisma::RUN_MODE_TEST);
-    
-    /** 
-     * The bootstrap recreates all tables, including the configuration table. So to bootstrap the bootstrap, we need
-     * a temporary, in-memory configuration object. This gets replaced with a database-backed configuration object
-     * after the configuration table has been re-built.
-     */
-    $configuration = new Fisma_Configuration_Array();
-    $configuration->setConfig('hash_type', 'sha1');
-    $configuration->setConfig('session_inactivity_period', '3600');
-    Fisma::setConfiguration($configuration, true);
 
-    Zend_Session::start();
-
-    if (Fisma::isInstall()) {
-        Fisma::connectDb();
-    }
-
-    Fisma::setNotificationEnabled(false);
-    Fisma::setListenerEnabled(false);
-    $cli = new Doctrine_Cli(Zend_Registry::get('doctrine_config'));
-    $cliArguments = array('doctrine-cli.php', 'build-all-reload', '--no-confirmation');
-    $cli->run($cliArguments);
-    Fisma::setListenerEnabled(true);
-
-    // Now that the configuration table has been re-built, reset the global configuration object to use that table
-    Fisma::setConfiguration(new Fisma_Configuration_Database(), true);
+    Fisma::connectDb();
 
     $frontController = Zend_Controller_Front::getInstance();
     $frontController->setControllerDirectory(Fisma::getPath('controller'));
