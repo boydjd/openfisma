@@ -35,14 +35,16 @@ class Test_Library_Fisma_Yui_DataTable_Column extends Test_FismaUnitTest
      */
     public function testCreateColumn()
     {
-        $column1 = new Fisma_Yui_DataTable_Column('Column 1', true);
+        $column1 = new Fisma_Yui_DataTable_Column('Column 1', true, "Mock_Formatter");
         
-        $this->assertEquals('Column 1', $column1->getName());
+        $this->assertEquals('Column 1', $column1->getLabel());
+        $this->assertNotContains(' ', $column1->getName());
         $this->assertTrue($column1->getSortable());
+        $this->assertEquals("Mock_Formatter", $column1->getFormatter());
         
         $column2 = new Fisma_Yui_DataTable_Column('Column 2', false);
 
-        $this->assertEquals('Column 2', $column2->getName());
+        $this->assertEquals('Column 2', $column2->getLabel());
         $this->assertFalse($column2->getSortable());
     }
 }
