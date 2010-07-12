@@ -306,6 +306,9 @@ Incident:
         categoryId:
             type: integer
             comment: Foreign key to the IR sub category in which this incident belongs
+        organizationId:
+            type: integer
+            comment: Foreign key to the affected organization/system
 
     relations:
         CurrentWorkflowStep:
@@ -322,6 +325,11 @@ Incident:
             class: IrSubCategory
             local: categoryId
             foreign: id
+        Organization:
+            class: Organization
+            local: organizationId
+            foreign: id
+            foreignAlias: Incidents
         Users:
             class: User
             local: incidentId
