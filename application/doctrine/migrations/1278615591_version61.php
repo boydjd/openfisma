@@ -59,18 +59,6 @@ class Version61 extends Doctrine_Migration_Base
         unlink($tempDir . '/SecurityControlEnhancement.yml');
         
         rmdir($tempDir);
-        
-        // Insert the configuration item which indicates the default catalog.
-        // Default is NIST SP 800-53 Rev 2. This differs from the fixure (which is Rev3) because we don't want to 
-        // force upgrade pre-existing installations.
-        $configuration = new Configuration();
-        
-        $configuration->name = 'default_security_control_catalog_id';
-        $configuration->value = 3;
-        $configuration->description = 'The ID of the default security control catalog which is used when the user'
-                                    . ' doesn\'t explicitly specify a security control catalog.';
-        
-        $configuration->save();
     }
     
     /**
