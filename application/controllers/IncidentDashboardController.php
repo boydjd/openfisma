@@ -89,6 +89,7 @@ class IncidentDashboardController extends IncidentBaseController
     {
         $this->view->statusChart = new Fisma_Chart('/incident-chart/history/period/6/format/xml', 450, 300);
         $this->view->categoryChart = new Fisma_Chart('/incident-chart/category/format/xml', 450, 300);
+        $this->view->bureauChart = new Fisma_Chart('/incident-chart/bureau/format/xml', 900, 300);
     }
     
     /**
