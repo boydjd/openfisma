@@ -203,7 +203,7 @@ class UserController extends BaseController
             $this->view->id = $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
-            throw new Fisma_Zend_Exception('Unable to save user.');
+            throw $e;
         }
     }
 
