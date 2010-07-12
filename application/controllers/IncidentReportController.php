@@ -35,6 +35,7 @@ class IncidentReportController extends IncidentBaseController
         $this->_helper->reportContextSwitch()
                       ->addActionContext('category', array('html', 'pdf', 'xls'))
                       ->addActionContext('history', array('html', 'pdf', 'xls'))
+                      ->addActionContext('bureau', array('html', 'pdf', 'xls'))
                       ->initContext();
         
         parent::init();        
@@ -223,6 +224,62 @@ class IncidentReportController extends IncidentBaseController
         $categories = $categoryQuery->execute();
 
         $report->setData($categories);
+
+        $this->_helper->reportContextSwitch()->setReport($report);
+    }
+    
+    /**
+     * Show incidents by Bureau
+     */
+    public function bureauAction()
+    {
+        // Base query gets category names and joins to incidents
+        $bureauQuery = Doctrine_Query::create()
+                       ->from('Organization bureau')
+                       ->select('bureau.nickname')
+                       ->leftJoin('Organization child')
+                       ->leftJoin('child.Incidents i')
+                       ->where('bureau.orgType = ?', 'bureau')
+                       ->andWhere('child.lft BETWEEN bureau.lft AND bureau.rgt')
+                       ->groupBy('bureau.id')
+                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        // Create the base report object -- additional columns are added below
+        $report = new Fisma_Report();
+
+        $report->setTitle('Incidents Reported Per Bureau (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column('Bureau', true));
+                       
+        // Now add one column for each of last 12 months (including current month)
+        $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
+
+        for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
+            $startDate->addMonth(1);
+            
+            // Get month number without leading zero
+            $month = $startDate->get('n');
+            
+            // Get year number
+            $year = $startDate->get('Y');
+                        
+            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+
+            // Column name must be unique for each month
+            $columnName = "month_{$month}_year_{$year}";
+
+            /*
+             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
+             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
+             * are generated based off of internal dates and then filtered through Zend_Date.
+             */
+            $select = "SUM(IF(MONTH(i.reportTs) = $month AND YEAR(i.reportTs) = $year, 1, 0)) AS $columnName";
+            
+            $bureauQuery->addSelect($select);
+        }
+
+        $bureaus = $bureauQuery->execute();
+
+        $report->setData($bureaus);
 
         $this->_helper->reportContextSwitch()->setReport($report);
     }

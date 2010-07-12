@@ -37,6 +37,7 @@ class IncidentChartController extends IncidentBaseController
         $this->_helper->fismaContextSwitch()
                       ->setActionContext('history', 'xml')
                       ->setActionContext('category', 'xml')
+                      ->setActionContext('bureau', 'xml')
                       ->initContext();
     }
     
@@ -45,12 +46,14 @@ class IncidentChartController extends IncidentBaseController
      */
     public function preDispatch()
     {
+        parent::preDispatch();
+        
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
         
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
-        
+
         $this->_acl->requireArea('incident');
     }
     
@@ -147,5 +150,27 @@ class IncidentChartController extends IncidentBaseController
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         
         $this->view->categoryCounts = $categoryQuery->execute();
+    }
+    
+    /**
+     * A bar chart which shows the number of incidents per bureau in the last 90 days
+     */
+    public function bureauAction()
+    {
+        $cutoffDate = Zend_Date::now()->subDay(90)->toString('Y-m-d H:i:s');
+
+        $bureauQuery = Doctrine_Query::create()
+                       ->from('Incident i')
+                       ->select('i.id, COUNT(*) AS count, bureau.nickname')
+                       ->leftJoin('i.Organization o')
+                       ->leftJoin('Organization bureau')
+                       ->where('i.reportTs > ?', $cutoffDate)
+                       ->andWhere('bureau.orgType = ?', array('bureau'))
+                       ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                       ->orderBy('bureau.nickname')
+                       ->groupBy('bureau.id')
+                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        
+        $this->view->bureaus = $bureauQuery->execute();
     }
 }

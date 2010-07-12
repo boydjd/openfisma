@@ -129,6 +129,26 @@
         ?>
         <table class="keyValues">
             <tr>    
+                <td>Affected System/Organization:</td>
+                <td>
+                    <span id="organization" 
+                          type="select" 
+                          name="incident[organizationId]" 
+                          href="/metainfo/list/o/organization/format/html/">
+                        <?php if (isset($this->incident['Organization'])): ?> 
+                        <a href="/system/view/id/<?php echo $this->escape($this->incident['Organization']['id']); ?>">
+                            <?php echo $this->escape($this->incident['Organization']['nickname']);?> 
+                            - <?php echo $this->escape($this->incident['Organization']['name']);?>
+                        </a>
+                        <?php endif; ?>
+
+                        &nbsp;
+                    </span>
+                    
+                    <span class="editable" target="organization">&nbsp;</span>
+                </td>
+            </tr>    
+            <tr>    
                 <td>Host:</td>
                 <td>
                     <div name="incident[hostName]" 

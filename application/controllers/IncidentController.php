@@ -577,20 +577,21 @@ class IncidentController extends IncidentBaseController
         
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i')
+                         ->leftJoin('i.Organization o')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
                          ->where('i.id = ?', $id)
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $results = $incidentQuery->execute();
         $incident = $results[0];
-        
+
         $this->view->incident = $incident;
 
         $this->_assertCurrentUserCanViewIncident($id);
         
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->lockIncidentPrivilege = $this->_acl->hasPrivilegeForClass('lock', 'Incident');
-                
+
         // Create toolbar buttons and form action
         $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
             'discardChanges', 

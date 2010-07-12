@@ -36,6 +36,26 @@
 
 <div class="clear"></div>
 
+<div>
+    <div style='text-align: center;'>
+        <?php
+        Fisma_Format_Section::startSection('Reported Incidents By Bureau');
+
+        echo $this->escape($this->bureauChart, 'none');
+        ?>
+        
+        <em>
+            Incidents per bureau reported in the last 90 days.
+        </em>
+
+        <?php
+        Fisma_Format_Section::stopSection();
+        ?>
+    </div>
+</div>
+
+<div class="clear"></div>
+
 <?php
 Fisma_Format_Section::startSection('Privileges')
 ?>
