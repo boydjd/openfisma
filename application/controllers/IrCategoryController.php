@@ -197,7 +197,6 @@ class IrCategoryController extends SecurityController
         $this->_acl->requirePrivilegeForClass('read', 'IrCategory'); 
 
         $this->view->updateIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('update', 'IrCategory');
-        $this->view->deleteIrCategoryPrivilege = $this->_acl->hasPrivilegeForClass('delete', 'IrCategory');
         
         $this->searchbox();
         $id = $this->_request->getParam('id');
@@ -214,17 +213,16 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink', "/ircategory/view/id/$id");
-            $form->setAction("/ircategory/update/id/$id");
+            $this->view->assign('viewLink', "/ir-category/view/id/$id");
+            $form->setAction("/ir-category/update/id/$id");
         } elseif ($v == 'view') {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/ircategory/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/ir-category/view/id/$id/v/edit");
             $form->setReadOnly(true);
         } else {
             throw new Fisma_Zend_Exception('Invalid v parameter');
         }
         
-        $this->view->assign('deleteLink', "/ircategory/delete/id/$id");
         $form->setDefaults($ircategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -358,19 +356,9 @@ class IrCategoryController extends SecurityController
     {
         $this->_acl->requirePrivilegeForClass('delete', 'IrCategory'); 
         
-        $id = $this->_request->getParam('id');
-        $ircategory = Doctrine::getTable('IrCategory')->find($id);
-        if ($ircategory) {
-            if ($ircategory->delete()) {
-                $msg = "Category deleted successfully";
-                $model = 'notice';
-            } else {
-                $msg = "Failed to delete the Category";
-                $model = 'warning';
-            }
-            $this->view->priorityMessenger($msg, $model);
-        }
-        $this->_forward('list');
+        $this->view->priorityMessenger('IR Categories cannot be deleted', 'warning');
+
+        $this->_redirect('/ir-category/list');
     }
     
     /**
@@ -487,14 +475,14 @@ class IrCategoryController extends SecurityController
         }
 
         if ($v == 'subedit') {
-            $this->view->assign('viewLink', "/ircategory/subview/id/$id");
-            $form->setAction("/ircategory/subupdate/id/$id");
+            $this->view->assign('viewLink', "/ir-category/subview/id/$id");
+            $form->setAction("/ir-category/subupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/ircategory/subview/id/$id/v/subedit");
+            $this->view->assign('editLink', "/ir-category/subview/id/$id/v/subedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/ircategory/subdelete/id/$id");
+        $this->view->assign('deleteLink', "/ir-category/subdelete/id/$id");
         $form->setDefaults($irsubcategory);
         $this->view->form = $form;
         $this->view->assign('id', $id);
