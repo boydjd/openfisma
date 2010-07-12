@@ -35,13 +35,15 @@ class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
      */
     public function testXssListenerPurifiesHtmlField()
     {
-        $configuration = new Configuration();
-        
-        $configuration->value = "<script type='text/javascript'>alert('hello')</script>";
+        $role = new Role();
+       
+        $role->name = "XSS Listener Test";
+        $role->nickname = "XSSLT";
+        $role->description = "<script type='text/javascript'>alert('hello')</script>";
 
-        $configuration->save();
+        $role->save();
         
         // HTML purifier should blank out the entire string, since it is all malicious
-        $this->assertEquals('', trim($configuration->value));
+        $this->assertEquals('', trim($role->description));
     }
 }
