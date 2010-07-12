@@ -161,4 +161,26 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         $finding->status = 'DRAFT';
         $this->assertTrue($finding->ecdLocked);
     }
+    
+    /**
+     * Test logic for the actual completion date field on the finding model
+     */
+    public function testAcd($value='')
+    {
+        $finding = new Finding();
+        
+        // The ACD is initially null
+        $this->assertNull($finding->actualCompletionDate);
+        
+        // When the finding enters EA, the ACD should be set to today's date
+        $finding->status = 'EA';
+        
+        $today = Zend_Date::now()->toString('Y-m-d H:i:s');
+
+        $this->assertEquals($today, $finding->actualCompletionDate);
+
+        // When a finding goes back to EN status, the ACD should be null again
+        $finding->status = 'EN';
+        $this->assertNull($finding->actualCompletionDate);
+    }
 }

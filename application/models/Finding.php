@@ -589,6 +589,11 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 if (!$this->ecdLocked) {
                     $this->ecdLocked = true;
                 }
+                
+                if (!is_null($this->actualCompletionDate)) {
+                    $this->actualCompletionDate = null;
+                }
+                
                 break;
             case 'EA':
                 $this->actualCompletionDate = Fisma::now();
@@ -669,8 +674,11 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     protected function validateOnInsert()
     {
         $org = $this->ResponsibleOrganization;
-        if($org->orgType == 'system' && $org->System->sdlcPhase == 'disposal') {
-            $this->getErrorStack()->add('ResponsibleOrganization', 'Cannot create a finding for a System in the Disposal phase.');
+
+        if ($org->orgType == 'system' && $org->System->sdlcPhase == 'disposal') {
+            $message = 'Cannot create a finding for a System in the Disposal phase.';
+            
+            $this->getErrorStack()->add('ResponsibleOrganization', $message);
         }
     }
 }
