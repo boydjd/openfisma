@@ -5,10 +5,6 @@ if ($this->updateIrCategoryPrivilege):
     $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
 endif;
 
-if ($this->deleteIrCategoryPrivilege):
-    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
-endif;
-
 Fisma_Format_Section::startSection("Category Information</b> $operation"); 
 ?>
 
