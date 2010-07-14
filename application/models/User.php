@@ -393,8 +393,6 @@ class User extends BaseUser
      * 
      * @param string $validateCode The validate code
      * @return bool If validation successful
-     * @todo an user has multiple emails(email, notifyEmail), current database can't give the correct 
-     * way to show which email is validated
      */
     public function validateEmail($validateCode)
     {
@@ -644,15 +642,11 @@ class User extends BaseUser
             $mail->sendPassword($this);
         }
 
-        // Send validation email after email or notifyEmail updated
-        if (isset($modified['email']) || isset($modified['notifyEmail'])) {
+        // Send validation email after email updated
+        if (isset($modified['email'])) {
             $this->emailValidate = false;
             $emailValidation  = new EmailValidation();
-            if (isset($modified['email'])) {
-                $emailValidation->email = $this->email;
-            } elseif (isset($modified['notifyEmail'])) {
-                $emailValidation->email = $this->notifyEmail;
-            }
+            $emailValidation->email = $this->email;
             $emailValidation->validationCode = md5(rand());
             $this->EmailValidation[] = $emailValidation;
             $mail = new Fisma_Zend_Mail();

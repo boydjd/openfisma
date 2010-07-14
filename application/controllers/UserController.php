@@ -342,7 +342,6 @@ class UserController extends BaseController
         if ($this->_request->isPost()) {
             //@todo check injection
             $user->notifyFrequency = $this->_request->getParam('notify_frequency');
-            $user->notifyEmail     = $this->_request->getParam('notify_email');
 
             $postEvents = $this->_request->getPost('existEvents');
             try {

@@ -107,8 +107,6 @@ User:
     
         notifyFrequency: integer
         mostRecentNotifyTs: timestamp
-        notifyEmail:
-            type: string(255)
             
     relations:
         # Roles is a many-to-many relation

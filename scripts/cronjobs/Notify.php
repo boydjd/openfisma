@@ -71,7 +71,7 @@ class Notify
                     ->orderBy('n.userId');
         $notifications = $query->execute();*/
         $query = new Doctrine_RawSql();
-        $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.notifyEmail}, {u.nameFirst}, {u.nameLast}')
+        $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
               ->from('user u INNER JOIN notification n on u.id = n.userid')
