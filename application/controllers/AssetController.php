@@ -210,7 +210,7 @@ class AssetController extends BaseController
         $this->_acl->requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
-        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
+        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read', 'system');
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
             $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
