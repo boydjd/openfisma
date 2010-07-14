@@ -213,9 +213,7 @@ class AssetController extends BaseController
         $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read');
         $systemList[0] = "--select--";
         foreach ($systems as $system) {
-            if ('system' == $system['orgType']) {
-                $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
-            }
+            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
         }
         $this->view->systemList = $systemList;
         $this->view->assign('criteria', $params);
