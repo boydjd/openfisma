@@ -511,17 +511,16 @@ class User extends BaseUser
     }
 
     /**
-     * Get the user's organizations for a specific privilege resource, action and organ type.
+     * Get the user's organizations for a specific privilege resource and action
      * If the user is root, then this ends up returning all of the organizations
      * 
-     * @param string $resource The resoure name
-     * @param string $action The possible operations related to the resource
-     * @param string $organType One of organ type agency, bureau, organization, system
-     * @return Doctrine_Collection The collection of organ type specified organizations
+     * @param string $resource 
+     * @param string $action 
+     * @return Doctrine_Collection The collection of organizations 
      */
-    public function getOrganizationsByPrivilege($resource, $action, $organType)
+    public function getOrganizationsByPrivilege($resource, $action)
     {
-        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action, $organType);
+        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action);
         return $query->execute();
     }
 
@@ -578,15 +577,13 @@ class User extends BaseUser
     }
 
     /**
-     * Get a query which will select this user's organizations by specified privilege resource, action and organ type.
-     * If not specified the organ type, then the parameter will be ignored.
+     * Get a query which will select this user's organizations by privilege resource and action 
      * 
-     * @param string $resource The resource name
-     * @param string $action The possible operations related to the resource
-     * @param string $organType One of organ type agency, bureau, organization, system
-     * @return Doctrine_Query The doctrine query object which selects this user's organizations by specific parameters
+     * @param string $resource 
+     * @param string $action 
+     * @return Doctrine_Query 
      */
-    public function getOrganizationsByPrivilegeQuery($resource, $action, $organType)
+    public function getOrganizationsByPrivilegeQuery($resource, $action)
     {
         $query = $this->getOrganizationsQuery();
 
@@ -596,9 +593,6 @@ class User extends BaseUser
                 ->where('p.resource = ?', $resource)
                 ->andWhere('p.action = ?', $action)
                 ->groupBy('o.id');
-            if (!empty($organType)) {
-                $query->andWhere('o.orgType = ?', $organType);
-            }
         }
 
         return $query;
