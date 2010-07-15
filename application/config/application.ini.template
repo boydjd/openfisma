@@ -47,15 +47,6 @@ db.username = ##DB_USER##
 db.password = ##DB_PASS##
 db.schema = ##DB_NAME##
 
-; The test DB is used for unit tests. It should be different from the main DB since the unit tests will
-; destory any data in this DB. It's left blank by default to avoid accidentaly running tests against the main DB.
-testdb.adapter = 
-testdb.host = 
-testdb.port = 
-testdb.username = 
-testdb.password = 
-testdb.schema = 
-
 php.display_errors = false
 php.memory_limit = 128M
 
