@@ -19,7 +19,7 @@
 try {
     Fisma::initialize(Fisma::RUN_MODE_TEST);
 
-    Fisma::connectDb();
+    Doctrine_Manager::connection(new PDO('sqlite::memory:'));
 
     $frontController = Zend_Controller_Front::getInstance();
     $frontController->setControllerDirectory(Fisma::getPath('controller'));
