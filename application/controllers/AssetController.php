@@ -195,7 +195,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function createAction()
     {
-        $this->_acl->requirePrivilegeForClass('create', 'Asset');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
