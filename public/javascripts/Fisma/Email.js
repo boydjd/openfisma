@@ -37,6 +37,9 @@ Fisma.Email = function() {
          * Initializes the ShowRecipientDialog widget
          */
         showRecipientDialog : function() {
+            if (Fisma.WaitingSpinner.isWorking()) {
+                return;
+            }
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -94,12 +97,17 @@ Fisma.Email = function() {
             var form = document.getElementById('email_config');
             form.elements['recipient'].value = recipient;
     
+            var element = document.getElementById('sendTestEmail');
+            Fisma.WaitingSpinner.init(element, element.parentNode);
+            Fisma.WaitingSpinner.show();
+            
             // Post data through YUI
             YAHOO.util.Connect.setForm(form);
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
                     message(data.msg, data.type);
+                    Fisma.WaitingSpinner.destory();
                 },
                 failure : function(o) {
                     /** @todo english */

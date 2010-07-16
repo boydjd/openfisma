@@ -5,16 +5,3 @@
     echo $this->escape($this->form, 'none');
 ?>
 </div>
-<script>
-    var validateLDAP = function(){
-        var form = document.getElementById('ldapUpdate');
-        YAHOO.util.Connect.setForm(form);
-        YAHOO.util.Connect.asyncRequest('POST', '/config/validate-ldap/format/html', {
-            success:function (o){ldapResult(o.responseText, o.statusText)},
-            failure: handleFailure});
-    }
-    function ldapResult(responseText, statusText)
-    {
-        message(responseText);
-    }
-</script>

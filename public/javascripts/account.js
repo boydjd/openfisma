@@ -26,13 +26,19 @@
  */
 
 function GeneratePassword () {
+    if (Fisma.WaitingSpinner.isWorking()) {
+        return;
+    }
     var generatePasswordButton = document.getElementById('generate_password');
+    Fisma.WaitingSpinner.init(generatePasswordButton, generatePasswordButton.parentNode);
+    Fisma.WaitingSpinner.show();
     YAHOO.util.Connect.asyncRequest('GET',
                                     '/user/generate-password/format/html',
                                     {
                                         success: function(o) {
                                             document.getElementById('password').value = o.responseText;
                                             document.getElementById('confirmPassword').value = o.responseText;
+                                            Fisma.WaitingSpinner.destory();
                                         },
                                         failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
                                     },
@@ -41,7 +47,14 @@ function GeneratePassword () {
 }
 
 var check_account = function () {
+    if (Fisma.WaitingSpinner.isWorking()) {
+        return;
+    }
     var account = document.getElementById('username').value;
+    var element = document.getElementById('checkAccount');
+    document.getElementById('checkAccount-button');
+    Fisma.WaitingSpinner.init(element, element.parentNode);
+    Fisma.WaitingSpinner.show();
     account = encodeURIComponent(account);
     var url = "/user/check-account/format/json/account/" + account;
     YAHOO.util.Connect.asyncRequest('GET',
@@ -50,8 +63,9 @@ var check_account = function () {
                                         success: function(o) {
                                             var data = YAHOO.lang.JSON.parse(o.responseText);
                                             message(data.msg, data.type);
+                                            Fisma.WaitingSpinner.destory();
                                         },
-                                        failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
+                                        failure: function(o) {alert('Failed to check account password: ' + o.statusText);}
                                     },
                                     null);
     return false;
