@@ -27,7 +27,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class DashboardController extends SecurityController
+class DashboardController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * My OrgSystem ids

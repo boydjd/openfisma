@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class OrganizationReportController extends SecurityController
+class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Check that the user has the privilege to run reports

@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class MetainfoController extends SecurityController
+class MetainfoController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Initialization

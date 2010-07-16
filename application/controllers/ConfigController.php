@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class ConfigController extends SecurityController
+class ConfigController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The Config module

@@ -30,7 +30,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class SecurityController extends Zend_Controller_Action
+class Fisma_Zend_Controller_Action_Security  extends Zend_Controller_Action
 {
     /**
      * Authenticated user instance
@@ -46,14 +46,6 @@ class SecurityController extends Zend_Controller_Action
      */
     protected $_acl = null;
     
-    /**
-     * Stores the current time. This might be useful for synchronizing events in the audit logs that result
-     * from a single invocation of a controller that runs for several seconds.
-     * 
-     * @var Zend_Date
-     */
-    public static $now = null;
-
     /**
      * Non-authenticated users are not allowed to access Security Controllers. Redirect them to
      * the login page.

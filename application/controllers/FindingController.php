@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class FindingController extends BaseController
+class FindingController extends Fisma_Zend_Controller_Action_Base
 {
     /**
      * The main name of the model.
@@ -38,7 +38,7 @@ class FindingController extends BaseController
     protected $_modelName = 'Finding';
 
     /**
-     * Invokes a contract with BaseController regarding privileges
+     * Invokes a contract with Fisma_Zend_Controller_Action_Base regarding privileges
      * 
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24

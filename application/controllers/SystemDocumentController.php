@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class SystemDocumentController extends SecurityController
+class SystemDocumentController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Default pagination parameters

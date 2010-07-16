@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IRWorkflowController extends SecurityController
+class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
 {
 
     private $_paging = array(

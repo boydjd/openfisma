@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class NetworkController extends BaseController
+class NetworkController extends Fisma_Zend_Controller_Action_Base
 {
     
     /**

@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-abstract class BaseController extends SecurityController
+abstract class Fisma_Zend_Controller_Action_Base extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Default pagination parameters

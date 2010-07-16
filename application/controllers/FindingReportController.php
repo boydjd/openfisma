@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class FindingReportController extends SecurityController
+class FindingReportController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set up the context switch for Excel and PDF output

@@ -26,7 +26,7 @@
  * @subpackage SUBPACKAGE
  * @version    $Id$
  */
-class SecurityControlCatalogAdminController extends SecurityControlCatalogBaseController
+class SecurityControlCatalogAdminController extends SecurityControlCatalogController
 {
     /**
      * Check ACL and setup header/footer

@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class IncidentBaseController extends SecurityController
+class IncidentBaseController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Returns a query which matches all of the current user's viewable incidents

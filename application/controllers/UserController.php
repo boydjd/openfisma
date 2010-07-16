@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class UserController extends BaseController
+class UserController extends Fisma_Zend_Controller_Action_Base
 {
     /**
      * The main name of the model.

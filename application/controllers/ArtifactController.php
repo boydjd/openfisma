@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class ArtifactController extends SecurityController
+class ArtifactController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set JSON context for the upload-progress action

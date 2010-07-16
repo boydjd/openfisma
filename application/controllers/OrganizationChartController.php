@@ -26,7 +26,7 @@
  * @subpackage SUBPACKAGE
  * @version    $Id$
  */
-class OrganizationChartController extends SecurityController
+class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set contexts for this controller's actions
