@@ -27,7 +27,7 @@
  * 
  * @see        Zend_View_Helper_Abstract
  */
-class AssetController extends Fisma_Zend_Controller_Action_Base
+class AssetController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -52,7 +52,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Base
                                      'pro_version'=> 'Version');
 
     /**
-     * Invokes a contract with Fisma_Zend_Controller_Action_Base regarding privileges.
+     * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges.
      * 
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
