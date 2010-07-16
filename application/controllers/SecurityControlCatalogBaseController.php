@@ -26,7 +26,7 @@
  * @subpackage SUBPACKAGE
  * @version    $Id$
  */
-class SecurityControlCatalogBaseController extends Fisma_Zend_Controller_Action_Security
+abstract class SecurityControlCatalogBaseController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * A helper function to create the objects required to render the toolbar partial

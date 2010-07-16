@@ -30,7 +30,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class Fisma_Zend_Controller_Action_Security  extends Zend_Controller_Action
+abstract class Fisma_Zend_Controller_Action_Security  extends Zend_Controller_Action
 {
     /**
      * Authenticated user instance
