@@ -109,7 +109,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
      * 
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return void
+     * @return integer ID of the object 
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
@@ -148,6 +148,8 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
         }
                 
         $subject->save();
+
+        return $subject->id;
     }
     
     /**
@@ -505,5 +507,16 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
             }
         }
         $this->_forward('approve', 'Finding');
+    }
+
+    /**
+     * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?). 
+     * 
+     * @access public
+     * @return void
+     */
+    public function viewAction() 
+    {
+        $this->_forward('view', 'remediation');
     }
 }

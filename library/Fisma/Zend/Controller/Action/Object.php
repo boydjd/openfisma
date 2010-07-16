@@ -125,7 +125,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return void
+     * @return integer ID of the object saved. 
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -137,6 +137,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         $subject->merge($form->getValues());
         $subject->save();
+
+        return $subject->id;
     }
 
     /**
@@ -183,16 +185,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if ($form->isValid($post)) {
                 try {
                     Doctrine_Manager::connection()->beginTransaction();
-                    $this->saveValue($form);
+                    $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    $msg   = "{$this->_modelName} created successfully";
-                    $model = 'notice';
+                    $this->_forward('view', null, null, array('id' => $objectId));
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $msg   = $e->getMessage();
                     $model = 'warning';
+                    $this->view->priorityMessenger($msg, $model);
                 }
-                $this->view->priorityMessenger($msg, $model);
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $this->view->priorityMessenger("Unable to create the {$this->_modelName}:<br>$errorString", 'warning');
