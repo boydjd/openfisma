@@ -118,8 +118,15 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
         $controller = strtolower($request->getControllerName());
         $action  = strtolower($request->getActionName());
 
+        // controller-wide security exceptions
         $allowedControllers = array('auth','debug','error','help','metadata','redirect');
 
-        return !in_array($controller, $allowedControllers);
+        // action-specific security exceptions
+        $allowedActions = array('incident' => array('report', 'review-report', 'cancel-report'));
+
+        $isAllowedController = in_array($controller, $allowedControllers);
+        $isAllowedAction = isset($allowedActions[$controller]) && in_array($action, $allowedActions[$controller]);
+
+        return !($isAllowedController || $isAllowedAction);
     }
 }
