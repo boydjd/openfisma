@@ -83,7 +83,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
         $form->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_CreateFindingDecorator()
+                new Fisma_Zend_Form_Decorator_Finding_Create()
             )
         );
         
@@ -96,11 +96,11 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
             $form->removeElement('assetId');
         }
         
-        $form->setElementDecorators(array(new Fisma_Zend_Form_CreateFindingDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Finding_Create()));
         $dateElement = $form->getElement('discoveredDate');
         $dateElement->clearDecorators();
         $dateElement->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-        $dateElement->addDecorator(new Fisma_Zend_Form_CreateFindingDecorator());
+        $dateElement->addDecorator(new Fisma_Zend_Form_Decorator_Finding_Create());
         return $form;
     }
 

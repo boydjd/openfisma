@@ -30,9 +30,8 @@
  * @package   Fisma_Zend_Form
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @todo rename this class to "CrudDecorator"
  */
-class Fisma_Zend_Form_CreateIncidentDecorator extends Fisma_Zend_Form_FismaDecorator
+class Fisma_Zend_Form_Decorator_Incident_Create extends Fisma_Zend_Form_Decorator
 {
 
     /**

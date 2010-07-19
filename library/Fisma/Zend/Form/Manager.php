@@ -64,12 +64,12 @@ class Fisma_Zend_Form_Manager
     {
         $form->setMethod('post');
         
-        // Use the FismaDecorator for all Display Groups and Elements
+        // Use the Decorator for all Display Groups and Elements
         //$form->addPrefixPath('Form', '../apps/Form', 'decorator');
         $form->setDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_FismaDecorator()
+                new Fisma_Zend_Form_Decorator()
             )
         );
 
@@ -77,12 +77,12 @@ class Fisma_Zend_Form_Manager
         $form->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_FismaDecorator()
+                new Fisma_Zend_Form_Decorator()
             )
         );
 
         //$form->addElementPrefixPath('Form', FORMS, 'decorator');
-        $form->setElementDecorators(array(new Fisma_Zend_Form_FismaDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
         
         // By default, all input is trimmed of extraneous white space
         $form->setElementFilters(array('StringTrim'));
@@ -103,11 +103,11 @@ class Fisma_Zend_Form_Manager
         $form->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_CreateFindingDecorator()
+                new Fisma_Zend_Form_Decorator_Finding_Create()
             )
         );
 
-        $form->setElementDecorators(array(new Fisma_Zend_Form_CreateFindingDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Finding_Create()));
         
         // By default, all input is trimmed of extraneous white space
         $form->setElementFilters(array('StringTrim'));

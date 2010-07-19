@@ -572,7 +572,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->roles = Zend_Json::encode($roles);
 
         parent::editAction();
-        $this->view->form->removeDecorator('Fisma_Zend_Form_FismaDecorator');
+        $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
 
     /**
@@ -593,7 +593,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
         parent::createAction();
-        $this->view->form->removeDecorator('Fisma_Zend_Form_FismaDecorator');
+        $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
 
         if (!empty($this->view->id)) {
             $this->_request->setParam('id', $this->view->id);
