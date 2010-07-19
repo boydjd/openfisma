@@ -519,4 +519,15 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_forward('view', 'remediation');
     }
+
+    /**
+     * Forward to the remediation searchbox action. 
+     * 
+     * @access public
+     * @return void
+     */
+    public function listAction()
+    {
+        $this->_forward('searchbox', 'remediation');
+    }
 }
