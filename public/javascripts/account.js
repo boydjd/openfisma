@@ -57,16 +57,42 @@ var check_account = function () {
     Fisma.WaitingSpinner.show();
     account = encodeURIComponent(account);
     var url = "/user/check-account/format/json/account/" + account;
-    YAHOO.util.Connect.asyncRequest('GET',
-                                    url,
-                                    {
-                                        success: function(o) {
-                                            var data = YAHOO.lang.JSON.parse(o.responseText);
-                                            message(data.msg, data.type);
-                                            Fisma.WaitingSpinner.destory();
-                                        },
-                                        failure: function(o) {alert('Failed to check account password: ' + o.statusText);}
-                                    },
-                                    null);
+    YAHOO.util.Connect.asyncRequest(
+        'GET',
+        url,
+        {
+            success : function(o) {
+                var data = YAHOO.lang.JSON.parse(o.responseText);
+                message(data.msg, data.type);
+
+                // Maps column's logical names corresponding to LDAP account columns.
+                var accountColumns = new Array(
+                        ['nameFirst', 'nameLast', 'phoneOffice', 'phoneMobile', 'email', 'title'],
+                        ['sn', 'givenname', 'telephonenumber', 'mobile', 'mail', 'title']
+                    );
+
+                // Make sure each column value is not null in LDAP account, then populate to related elements.
+                if (data.accountInfo != null){
+                    for (i=0; i < accountColumns[1].length; i++)
+                    {
+                        var accountColumnObj = eval('data.accountInfo.' + accountColumns[1][i]);
+                        if (accountColumnObj != null) {
+                            document.getElementById(accountColumns[0][i]).value = accountColumnObj;
+                        } else {
+                            document.getElementById(accountColumns[0][i]).value = '';
+                        }
+                    }
+                }
+
+                Fisma.WaitingSpinner.destory();
+            },
+
+            failure : function(o) {
+                alert('Failed to check account password: ' + o.statusText);
+            }
+        },
+        null
+    );
+
     return false;
 };
