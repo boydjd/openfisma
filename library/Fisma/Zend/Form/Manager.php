@@ -60,7 +60,7 @@ class Fisma_Zend_Form_Manager
      * @param Zend_Form $form The specifed zend form to be decorated
      * @return Zend_Form The modified form
      */
-    static function prepareForm($form) 
+    static function prepareForm(Fisma_Zend_Form $form, array $options = null) 
     {
         $form->setMethod('post');
         
@@ -86,6 +86,15 @@ class Fisma_Zend_Form_Manager
         
         // By default, all input is trimmed of extraneous white space
         $form->setElementFilters(array('StringTrim'));
+
+        if ((!empty($options['formName'])) && class_exists('Fisma_Zend_Form_Manager_' . $options['formName'])) {
+            $className = 'Fisma_Zend_Form_Manager_' . $options['formName'];
+            $prepareForm = new $className($options['view'], $options['request'], $options['acl'], $options['user']);
+            $prepareForm->setForm($form);
+            $prepareForm->prepareForm();
+            $form = $prepareForm->getForm();
+            unset($prepareForm);
+        }
         
         return $form;
     }

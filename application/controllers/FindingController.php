@@ -45,65 +45,6 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
      */
     protected $_organizations = '*';
     
-    /**
-     * Returns the standard form for creating finding
-     * 
-     * @param string|null $formName The specified form name to load
-     * @return Zend_Form The assembled form
-     */
-    public function getForm($formName = null)
-    {
-        $form = Fisma_Zend_Form_Manager::loadForm('finding');
-
-        $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
-        $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
-
-        $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
-        
-        $sources = Doctrine::getTable('Source')->findAll()->toArray();
-        $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
-        foreach ($sources as $source) {
-            $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
-        }
-
-        $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
-            ->execute();
-        $selectArray = $this->view->treeToSelect($systems, 'nickname');
-        $form->getElement('orgSystemId')->addMultiOptions($selectArray);
-
-        // fix: Zend_Form can not support the values which are not in its configuration
-        //      The values are set after page loading by Ajax
-        $asset = Doctrine::getTable('Asset')->find($this->_request->getParam('assetId'));
-        if ($asset) {
-            $form->getElement('assetId')->addMultiOptions(array($asset['id'] => $asset['name']));
-        }
-        
-        $form->setDisplayGroupDecorators(
-            array(
-                new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_Decorator_Finding_Create()
-            )
-        );
-        
-        // Check if the user is allowed to read assets.
-        if (!$this->_acl->hasPrivilegeForClass('read', 'Asset')) {
-            $form->removeElement('name');
-            $form->removeElement('ip');
-            $form->removeElement('port');
-            $form->removeElement('searchAsset');
-            $form->removeElement('assetId');
-        }
-        
-        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Finding_Create()));
-        $dateElement = $form->getElement('discoveredDate');
-        $dateElement->clearDecorators();
-        $dateElement->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-        $dateElement->addDecorator(new Fisma_Zend_Form_Decorator_Finding_Create());
-        return $form;
-    }
-
     /** 
      * Overriding Hooks
      * 

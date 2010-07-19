@@ -102,7 +102,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $formName = strtolower((string) $this->_modelName);
             }
             $form = Fisma_Zend_Form_Manager::loadForm($formName);
-            $form = Fisma_Zend_Form_Manager::prepareForm($form);
+            $form = Fisma_Zend_Form_Manager::prepareForm(
+                $form, 
+                array(
+                    'formName' => ucfirst($formName), 
+                    'view' => $this->view, 
+                    'request' => $this->_request, 
+                    'acl' => $this->_acl, 
+                    'user' => $this->_me
+                )
+            );
         }
         return $form;
     }
