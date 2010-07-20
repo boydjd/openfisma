@@ -25,7 +25,7 @@
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version66 extends Doctrine_Migration_Base
+class Version68 extends Doctrine_Migration_Base
 {
     /**
      * Add column and foreign key
