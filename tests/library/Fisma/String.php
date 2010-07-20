@@ -225,4 +225,12 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
     {
         $this->assertEquals('hello', Fisma_String::lcfirst('Hello'));
     }
+
+    /**
+     * testLoremIpsum 
+     */
+    public function testLoremIpsum()
+    {
+        $this->assertGreaterThan(1, strlen(Fisma_String::loremIpsum(1)));
+    }
 }

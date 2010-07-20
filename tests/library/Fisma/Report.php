@@ -80,4 +80,15 @@ class Test_Library_Fisma_Report extends Test_FismaUnitTest
         
         $this->assertEquals($data, $report->getData());
     }
+
+    /**
+     * testNullReportData 
+     * 
+     * @expectedException Fisma_Zend_Exception
+     */
+    public function testNullReportData()
+    {
+        $report = new Fisma_Report();
+        $report->setData(null);
+    }
 }

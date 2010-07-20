@@ -81,6 +81,35 @@ class Test_Library_Fisma_Cookie extends Test_FismaUnitTest
     }
 
     /**
+     * testPrepareCookieWithoutSecureOptions 
+     * 
+     * @param mixed $name 
+     * @param mixed $value 
+     * @param mixed $secure 
+     * @param array $expected 
+     * @access public
+     * @return void
+     * @dataProvider prepareProvider
+     */
+    public function testPrepareCookieWithoutSecureOptions($name, $value, $secure, array $expected)
+    {
+        $cookie = Fisma_Cookie::prepare($name, $value);
+        $this->assertFalse((boolean) $cookie['secure']);
+    }
+
+    public function testSet()
+    {
+        Fisma_Cookie::set('hi', 'there');
+    }
+
+    public function testSetInWebAppMode()
+    {
+        Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
+        Fisma_Cookie::set('hi', 'there');
+        Fisma::initialize(Fisma::RUN_MODE_TEST);
+    }
+
+    /**
      * Create cookie data in array
      * 
      * @return array The cookie array which provides test data to test method
