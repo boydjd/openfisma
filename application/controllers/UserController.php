@@ -52,54 +52,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
     
     /**
-     * Get the specified form of the subject model
-     * 
-     * @param string $formName The specified form name to fill
-     * @return Zend_Form The assembled form
-     */
-    public function getForm($formName = null) 
-    {
-        $form = Fisma_Zend_Form_Manager::loadForm('account');
-        if ('create' == $this->_request->getActionName()) {
-            $form->getElement('password')->setRequired(true);
-        }
-        $roles  = Doctrine_Query::create()
-                    ->select('*')
-                    ->from('Role')
-                    ->execute();
-        foreach ($roles as $role) {
-            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
-        }
-
-        if ('database' == Fisma::configuration()->getConfig('auth_type')) {
-            $form->removeElement('checkAccount');
-            $this->view->requirements =  $this->_getPasswordRequirements();
-        } else {
-            $form->removeElement('password');
-            $form->removeElement('confirmPassword');
-            $form->removeElement('generate_password');
-        }
-        
-        // Show lock explanation if account is locked. Hide explanation otherwise.
-        $userId = $this->getRequest()->getParam('id');
-        $user = Doctrine::getTable('User')->find($userId);
-
-        if ($user && $user->locked) {
-            $reason = $user->getLockReason();
-            $form->getElement('lockReason')->setValue($reason);
-
-            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
-            $form->getElement('lockTs')->setValue($lockTs->get('YYYY-MM-DD HH:mm:ss '));
-        } else {
-            $form->removeElement('lockReason');
-            $form->removeElement('lockTs');
-        }
-        
-        $form = Fisma_Zend_Form_Manager::prepareForm($form);
-        return $form;
-    }
-
-    /**
      * Returns the standard form for reading, and updating
      * the current user's profile.
      *
@@ -304,7 +256,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form = Fisma_Zend_Form_Manager::loadForm('change_password');
         $form = Fisma_Zend_Form_Manager::prepareForm($form);
 
-        $this->view->requirements =  $this->_getPasswordRequirements();
+        $this->view->requirements =  $this->_helper->passwordRequirements();
         $post   = $this->_request->getPost();
 
         if (isset($post['oldPassword'])) {
@@ -364,33 +316,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->me = $user;
-    }
-
-    /**
-     * Get the password complex requirements
-     *
-     * @return array The password requirement messages in array
-     */
-    private function _getPasswordRequirements()
-    {
-        $requirements[] = "Length must be between "
-        . Fisma::configuration()->getConfig('pass_min_length')
-        . " and "
-        . Fisma::configuration()->getConfig('pass_max_length')
-        . " characters long.";
-        if (Fisma::configuration()->getConfig('pass_uppercase') == 1) {
-            $requirements[] = "Must contain at least 1 upper case character (A-Z)";
-        }
-        if (Fisma::configuration()->getConfig('pass_lowercase') == 1) {
-            $requirements[] = "Must contain at least 1 lower case character (a-z)";
-        }
-        if (Fisma::configuration()->getConfig('pass_numerical') == 1) {
-            $requirements[] = "Must contain at least 1 numeric digit (0-9)";
-        }
-        if (Fisma::configuration()->getConfig('pass_special') == 1) {
-            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
-        }
-        return $requirements;
     }
 
     /**

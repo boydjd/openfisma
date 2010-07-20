@@ -76,32 +76,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     }
     
     /**
-     * Get the specified form of the subject model
-     * 
-     * @param string|null $formName The name of the specified form
-     * @return Zend_Form The specified form of the subject model
-     */
-    public function getForm($formName=null)
-    {
-        $form = parent::getForm($formName);
-        $systems = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
-            ->execute();
-        $selectArray = $this->view->treeToSelect($systems, 'nickname');
-        $form->getElement('orgSystemId')->addMultiOptions($selectArray);
-        
-        $networks = Doctrine::getTable('Network')->findAll()->toArray();
-        $networkList = array();
-        foreach ($networks as $network) {
-            $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
-        }
-        $form->getElement('networkId')->addMultiOptions($networkList);
-        $form = Fisma_Zend_Form_Manager::prepareForm($form);
-        return $form;
-    }
-    
-    /**
      * Hooks for manipulating the values before setting to a form
      * 
      * @param Doctrine_Record $subject The specified subject model
@@ -124,7 +98,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return void
+     * @return integer Asset ID
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -142,6 +116,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         $subject->merge($values);
         $subject->save();
+        return $subject->id;
     }
     
     /**

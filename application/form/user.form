@@ -11,7 +11,7 @@
 ; simplicity, but at runtime the account controller will strip out the fields
 ; which do not apply to the current authentication schema (ldap or database)
 
-[account]
+[user]
 elementPrefixPath.prefix = Fisma_Zend_Form
 elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
