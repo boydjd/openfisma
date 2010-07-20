@@ -19,15 +19,15 @@
 require_once(realpath(dirname(__FILE__) . '/../../../../../../FismaUnitTest.php'));
 
 /**
- * Test_Fisma_Zend_Controller_Action_Helper_PasswordRequirements 
+ * Test_Library_Fisma_Zend_Controller_Action_Helper_PasswordRequirements 
  * 
  * @uses Test_FismaUnitTest
- * @package Test_Fisma_Zend_Controller_Action_Helper 
+ * @package Test_Library_Fisma_Zend_Controller_Action_Helper 
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Fisma_Zend_Controller_Action_Helper_PasswordRequirements extends Test_FismaUnitTest
+class Test_Library_Fisma_Zend_Controller_Action_Helper_PasswordRequirements extends Test_FismaUnitTest
 {
     /**
      * setUp 
