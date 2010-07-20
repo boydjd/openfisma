@@ -408,21 +408,11 @@ class Fisma
         if (!self::isInstall()) {
             set_time_limit(0);
 
-            // set the fixed controller when Openfisma has been installed 
+            // set the fixed controller when Openfisma has not been installed 
             $router = $frontController->getRouter();
-            $route['install'] = new Zend_Controller_Router_Route_Regex (
-                                        '([^/]*)/?(.*)$',
-                                        array('controller' => 'install'),
-                                        array('action' => 2),
-                                        'install/%2$s'
-                                    );
-            $router->addRoute('default', $route['install']);
-            // set the error handler when Openfisma has been installed
-            $eHandler = new Zend_Controller_Plugin_ErrorHandler( array(
-                        'model' => null,
-                        'controller' => 'Install',
-                        'action' => 'error'));
-            $frontController->registerPlugin($eHandler);
+            $defaults = array('controller' => 'help', 'action' => 'install');
+            $route = new Zend_Controller_Router_Route_Regex ( '.*', $defaults);
+            $router->addRoute('default', $route);
         }
         // Configure the views
         $view = Zend_Layout::getMvcInstance()->getView();

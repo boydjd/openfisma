@@ -26,13 +26,19 @@
  */
 
 function GeneratePassword () {
+    if (Fisma.WaitingSpinner.isWorking()) {
+        return;
+    }
     var generatePasswordButton = document.getElementById('generate_password');
+    Fisma.WaitingSpinner.init(generatePasswordButton, generatePasswordButton.parentNode);
+    Fisma.WaitingSpinner.show();
     YAHOO.util.Connect.asyncRequest('GET',
                                     '/user/generate-password/format/html',
                                     {
                                         success: function(o) {
                                             document.getElementById('password').value = o.responseText;
                                             document.getElementById('confirmPassword').value = o.responseText;
+                                            Fisma.WaitingSpinner.destory();
                                         },
                                         failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
                                     },
@@ -41,18 +47,52 @@ function GeneratePassword () {
 }
 
 var check_account = function () {
+    if (Fisma.WaitingSpinner.isWorking()) {
+        return;
+    }
     var account = document.getElementById('username').value;
+    var element = document.getElementById('checkAccount');
+    document.getElementById('checkAccount-button');
+    Fisma.WaitingSpinner.init(element, element.parentNode);
+    Fisma.WaitingSpinner.show();
     account = encodeURIComponent(account);
     var url = "/user/check-account/format/json/account/" + account;
-    YAHOO.util.Connect.asyncRequest('GET',
-                                    url,
-                                    {
-                                        success: function(o) {
-                                            var data = YAHOO.lang.JSON.parse(o.responseText);
-                                            message(data.msg, data.type);
-                                        },
-                                        failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
-                                    },
-                                    null);
+    YAHOO.util.Connect.asyncRequest(
+        'GET',
+        url,
+        {
+            success : function(o) {
+                var data = YAHOO.lang.JSON.parse(o.responseText);
+                message(data.msg, data.type);
+
+                // Maps column's logical names corresponding to LDAP account columns.
+                var accountColumns = new Array(
+                        ['nameFirst', 'nameLast', 'phoneOffice', 'phoneMobile', 'email', 'title'],
+                        ['sn', 'givenname', 'telephonenumber', 'mobile', 'mail', 'title']
+                    );
+
+                // Make sure each column value is not null in LDAP account, then populate to related elements.
+                if (data.accountInfo != null){
+                    for (i=0; i < accountColumns[1].length; i++)
+                    {
+                        var accountColumnObj = eval('data.accountInfo.' + accountColumns[1][i]);
+                        if (accountColumnObj != null) {
+                            document.getElementById(accountColumns[0][i]).value = accountColumnObj;
+                        } else {
+                            document.getElementById(accountColumns[0][i]).value = '';
+                        }
+                    }
+                }
+
+                Fisma.WaitingSpinner.destory();
+            },
+
+            failure : function(o) {
+                alert('Failed to check account password: ' + o.statusText);
+            }
+        },
+        null
+    );
+
     return false;
 };

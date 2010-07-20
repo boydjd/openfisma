@@ -16,19 +16,19 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-try {
-    Fisma::initialize(Fisma::RUN_MODE_TEST);
+require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
 
-    Doctrine_Manager::connection(new PDO('sqlite::memory:'));
-
-    $frontController = Zend_Controller_Front::getInstance();
-    $frontController->setControllerDirectory(Fisma::getPath('controller'));
-    Fisma::dispatch();
-} catch (Zend_Config_Exception $zce) {
-    echo 'Configuration exception during bootstrap.\n';
-} catch (Exception $exception) {
-    echo 'An exception occured during bootstraping.\n';
-    echo get_class($exception) . '\n';
-    echo $exception->getMessage() . '\n';
-    echo $exception->getTraceAsString();
+class Test_Library_Fisma_Zend_Exception_AccountLocked extends Test_FismaUnitTest
+{
+    /**
+     * testAccountLocked 
+     * 
+     * @access public
+     * @return void
+     * @expectedException Fisma_Zend_Exception_AccountLocked
+     */
+    public function testAccountLocked()
+    {
+        throw new Fisma_Zend_Exception_AccountLocked();
+    }
 }

@@ -342,7 +342,6 @@ class UserController extends BaseController
         if ($this->_request->isPost()) {
             //@todo check injection
             $user->notifyFrequency = $this->_request->getParam('notify_frequency');
-            $user->notifyEmail     = $this->_request->getParam('notify_email');
 
             $postEvents = $this->_request->getPost('existEvents');
             try {
@@ -675,6 +674,17 @@ class UserController extends BaseController
             try {
                 $type = 'message';
                 $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
+
+                // Just get specified standard LDAP attributes.
+                $accountInfo = $srv->getEntry(
+                    $dn,
+                    array('sn',
+                          'givenname',
+                          'mail',
+                          'telephonenumber',
+                          'mobile',
+                          'title')
+                );
                 $msg = "$account exists, the dn is: $dn";
             } catch (Zend_Ldap_Exception $e) {
                 $type = 'warning';
@@ -690,7 +700,7 @@ class UserController extends BaseController
             }
         }
 
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
         $this->_helper->viewRenderer->setNoRender();
     }
 }

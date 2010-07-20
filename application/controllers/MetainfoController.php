@@ -56,7 +56,7 @@ class MetainfoController extends SecurityController
             // Since the list for organizations is prepended with dashes, we need to do some
             // string transformation on $this->view->selected so that the full name is ripped out
             // and the appropriate level of padding is added.
-            $organization = substr($this->view->selected, 0, strpos($this->view->selected, '-')-1);
+            $organization = trim(substr($this->view->selected, 0, strpos($this->view->selected, '-')-1));
 
             foreach ($list as $item) {
                 if ($pos = strpos($item, $organization)) {

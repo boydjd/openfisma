@@ -175,9 +175,11 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         // When the finding enters EA, the ACD should be set to today's date
         $finding->status = 'EA';
         
-        $today = Zend_Date::now()->toString('Y-m-d H:i:s');
+        $today = Zend_Date::now();
+        $acd = new Zend_Date();
+        $acd->set($finding->actualCompletionDate);
 
-        $this->assertEquals($today, $finding->actualCompletionDate);
+        $this->assertEquals($today->get('Date'), $acd->get('Date'));
 
         // When a finding goes back to EN status, the ACD should be null again
         $finding->status = 'EN';

@@ -132,7 +132,7 @@ class FindingController extends BaseController
         // If an asset is specified, then try to link the finding to that asset and assign
         // the responsible system automatically. Otherwise, link to the responsible system
         // that the user selected.
-        $asset = Doctrine::getTable('Asset')->find($values['assetId']);
+        $asset = isset($values['assetId']) ? Doctrine::getTable('Asset')->find($values['assetId']) : null;
         if ($asset) {
             // set organization id by related asset
             $subject->ResponsibleOrganization = $asset->Organization;

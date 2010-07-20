@@ -3,7 +3,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 <?php
-    echo $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
+    $this->headTitle()->prepend($this->pageTitle());
+    echo $this->escape($this->headTitle(), 'none');
 
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'button');
 

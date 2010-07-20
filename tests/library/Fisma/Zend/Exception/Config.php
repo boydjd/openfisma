@@ -16,19 +16,28 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-try {
-    Fisma::initialize(Fisma::RUN_MODE_TEST);
+require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
 
-    Doctrine_Manager::connection(new PDO('sqlite::memory:'));
-
-    $frontController = Zend_Controller_Front::getInstance();
-    $frontController->setControllerDirectory(Fisma::getPath('controller'));
-    Fisma::dispatch();
-} catch (Zend_Config_Exception $zce) {
-    echo 'Configuration exception during bootstrap.\n';
-} catch (Exception $exception) {
-    echo 'An exception occured during bootstraping.\n';
-    echo get_class($exception) . '\n';
-    echo $exception->getMessage() . '\n';
-    echo $exception->getTraceAsString();
+/**
+ * Test_Library_Fisma_Zend_Exception_Config
+ * 
+ * @uses Test_FismaUnitTest
+ * @package Test_Library_Fisma_Zend_Exception 
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
+ */
+class Test_Library_Fisma_Zend_Exception_Config extends Test_FismaUnitTest
+{
+    /**
+     * testConfig
+     * 
+     * @access public
+     * @return void
+     * @expectedException Fisma_Zend_Exception_Config
+     */
+    public function testConfig()
+    {
+        throw new Fisma_Zend_Exception_Config();
+    }
 }

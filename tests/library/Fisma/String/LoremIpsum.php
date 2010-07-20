@@ -16,39 +16,36 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
+
 /**
- * apply the help document for different tips
- *
- * @author     Woody Li <woody712@users.sourceforge.net>
+ * Tests for Fisma_String_LoremIpsum
+ * 
+ * @author     Joshua D. Boyd <joshua.boyd@endeavorsystems.com> 
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Controller
- * @version    $Id$
+ * @package    Test
+ * @subpackage Test_Fisma
  */
-class HelpController extends Zend_Controller_Action
+class Test_Library_Fisma_String_LoremIpsum extends Test_FismaUnitTest
 {
     /**
-     * Apply the help document for different tips
-     * 
-     * Get the parameter from request and decide which template will be used. If the template is not existed 
-     * use a default template.
-     * 
-     * @return void
+     * testLoremIpsumDefault 
      */
-    public function helpAction()
+    public function testLoremIpsumDefault()
     {
-        $module = $this->_request->getParam('module');
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
-        $template = $this->getViewScript($module);
-        if (is_file(Fisma::getPath('application') . '/views/scripts/' . $template)) {
-            $this->render($module);
-        } else {
-            $this->render('notFound');
-        }
+        $lorem = new Fisma_String_LoremIpsum();
+        $lorem = $lorem->getContent(500);
+        $this->assertTrue((boolean) $lorem);
     }
 
-    public function installAction()
+    /**
+     * testLoremIpsumPlain
+     */
+    public function testLoremIpsumPlain()
     {
+        $lorem = new Fisma_String_LoremIpsum();
+        $lorem = $lorem->getContent(500, 'plain');
+        $this->assertTrue((boolean) $lorem);
     }
 }
