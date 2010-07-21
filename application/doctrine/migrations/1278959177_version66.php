@@ -16,27 +16,24 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
- /**
-  * Add new configuration for security control 
-  * 
-  * @uses Doctrine_Migration_Base
-  * @package Migrations 
-  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
-  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
-  * @license http://www.openfisma.org/content/license GPLv3
-  */
- class Version66 extends Doctrine_Migration_Base
- {
+/**
+ * Add new configuration for security control 
+ * 
+ * @uses Doctrine_Migration_Base
+ * @package Migrations 
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
+ */
+class Version66 extends Doctrine_Migration_Base
+{
     public function up()
     {
         // Insert the configuration item which indicates the default catalog.
         // Default is NIST SP 800-53 Rev 2. This differs from the fixure (which is Rev3) because we don't want to 
         // force upgrade pre-existing installations.
-        $configuration = new Configuration();
-        
-        $configuration->default_security_control_catalog_id = 3;
-        
-        $configuration->save();
+        $updateSql = "UPDATE configuration SET default_security_control_catalog_id = 3";
+        Doctrine_Manager::connection()->exec($updateSql);
     }
 
     public function down()
