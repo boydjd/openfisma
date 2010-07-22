@@ -303,7 +303,7 @@ SecurityControl:
         supplementalGuidance: >
             NIST Special Publication 800-48 provides guidance on wireless network security with particular emphasis on 
             the IEEE 802.11b and Bluetooth standards.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_0
 
     Rev0_AC_19:
@@ -900,7 +900,7 @@ SecurityControl:
         supplementalGuidance: >
             There are several methods for testing contingency plans to identify potential weaknesses 
             (e.g., full-scale contingency plan testing, functional/tabletop exercises).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_0
 
     Rev0_CP_05:
@@ -930,7 +930,7 @@ SecurityControl:
             storage of information system backup information.
         supplementalGuidance: >
             None.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_0
 
     Rev0_CP_07:
@@ -946,7 +946,7 @@ SecurityControl:
         supplementalGuidance: >
             Equipment and supplies required to resume operations within the organization-defined time period are 
             either available at the alternate site or contracts are in place to support delivery to the site.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_0
 
     Rev0_CP_08:
@@ -964,7 +964,7 @@ SecurityControl:
             carrier, the organization should ensure that it requests Telecommunications Service Priority (TSP) for 
             all telecommunications services used for national security emergency preparedness (see http://tsp.ncs.gov 
             for a full explanation of the TSP program).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_0
 
     Rev0_CP_09:
@@ -3328,7 +3328,7 @@ SecurityControl:
             whenever there is an indication of increased risk to organizational operations, organizational assets, or 
             individuals based on law enforcement information, intelligence information, or other credible sources of 
             information.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_AU_07:
@@ -3341,7 +3341,7 @@ SecurityControl:
         supplementalGuidance: >
             Audit reduction, review, and reporting tools support after-the-fact investigations of security incidents 
             without altering original audit records.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_AU_08:
@@ -3848,7 +3848,7 @@ SecurityControl:
             arising due to contingency operations in accordance with the plan. NIST Special Publication 800-84 
             provides guidance on test, training, and exercise programs for information technology plans and 
             capabilities.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_CP_05:
@@ -3880,7 +3880,7 @@ SecurityControl:
             The frequency of information system backups and the transfer rate of backup information to the alternate 
             storage site (if so designated) are consistent with the organization's recovery time objectives and 
             recovery point objectives.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_CP_07:
@@ -3898,7 +3898,7 @@ SecurityControl:
             either available at the alternate site or contracts are in place to support delivery to the site. 
             Timeframes to resume information system operations are consistent with organization-established recovery 
             time objectives.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_CP_08:
@@ -3916,7 +3916,7 @@ SecurityControl:
             carrier, the organization requests Telecommunications Service Priority (TSP) for all telecommunications 
             services used for national security emergency preparedness (see http://tsp.ncs.gov for a full 
             explanation of the TSP program).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_CP_09:
@@ -4484,7 +4484,7 @@ SecurityControl:
             storage containers for transporting non-digital media. Authorized transport and courier personnel may 
             include individuals from outside the organization (e.g., U.S. Postal Service or a commercial transport or 
             delivery service).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_MP_06:
@@ -5912,7 +5912,7 @@ SecurityControl:
             protection software. NIST Special Publication 800-92 provides guidance on monitoring and analyzing 
             computer security event logs. NIST Special Publication 800-94 provides guidance on intrusion detection 
             and prevention. Related security control: AC-8.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_1
 
     Rev1_SI_05:
@@ -5969,7 +5969,7 @@ SecurityControl:
             engineering practices with regard to commercial off-the-shelf integrity mechanisms (e.g., parity checks, 
             cyclical redundancy checks, cryptographic hashes) and uses tools to automatically monitor the integrity 
             of the information system and the applications it hosts.
-        controlLevel: NONE
+        controlLevel: HIGH
         Catalog: 800_53_Rev_1
 
     Rev1_SI_08:
@@ -6648,7 +6648,7 @@ SecurityControl:
             whenever there is an indication of increased risk to organizational operations, organizational assets, or 
             individuals based on law enforcement information, intelligence information, or other credible sources of 
             information.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_AU_07:
@@ -6661,7 +6661,7 @@ SecurityControl:
         supplementalGuidance: >
             Audit reduction, review, and reporting tools support after-the-fact investigations of security incidents 
             without altering original audit records.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_AU_08:
@@ -7200,7 +7200,7 @@ SecurityControl:
             The frequency of information system backups and the transfer rate of backup information to the alternate 
             storage site (if so designated) are consistent with the organization's recovery time objectives and 
             recovery point objectives.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_CP_07:
@@ -7218,7 +7218,7 @@ SecurityControl:
             either available at the alternate site or contracts are in place to support delivery to the site. 
             Timeframes to resume information system operations are consistent with organization-established recovery 
             time objectives.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_CP_08:
@@ -7236,7 +7236,7 @@ SecurityControl:
             carrier, the organization requests Telecommunications Service Priority (TSP) for all telecommunications 
             services used for national security emergency preparedness (see http://tsp.ncs.gov for a full explanation 
             of the TSP program).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_CP_09:
@@ -7807,7 +7807,7 @@ SecurityControl:
             storage containers for transporting non-digital media. Authorized transport and courier personnel may 
             include individuals from outside the organization (e.g., U.S. Postal Service or a commercial transport or 
             delivery service).
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_MP_06:
@@ -9238,7 +9238,7 @@ SecurityControl:
             software. NIST Special Publication 800-92 provides guidance on monitoring and analyzing computer security 
             event logs. NIST Special Publication 800-94 provides guidance on intrusion detection and prevention. 
             Related security control: AC-8.
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_2
 
     Rev2_SI_05:
@@ -9295,7 +9295,7 @@ SecurityControl:
             engineering practices with regard to commercial off-the-shelf integrity mechanisms (e.g., parity checks, 
             cyclical redundancy checks, cryptographic hashes) and uses tools to automatically monitor the integrity 
             of the information system and the applications it hosts.
-        controlLevel: NONE
+        controlLevel: HIGH
         Catalog: 800_53_Rev_2
 
     Rev2_SI_08:
@@ -9567,7 +9567,7 @@ SecurityControl:
         externalReferences: >
             None.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_AC_07:
@@ -10269,8 +10269,8 @@ SecurityControl:
         externalReferences: >
             None.
         priorityCode: P2
-        controlLevel: NONE
-        Catalog: 800_53_Rev_2
+        controlLevel: MODERATE
+        Catalog: 800_53_Rev_3
 
     Rev3_AU_08:
         code: AU-08
@@ -11041,7 +11041,7 @@ SecurityControl:
         externalReferences: >
             NIST Special Publication 800-34.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_CP_07:
@@ -11065,7 +11065,7 @@ SecurityControl:
         externalReferences: >
             NIST Special Publication 800-34.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_CP_08:
@@ -11083,7 +11083,7 @@ SecurityControl:
         externalReferences: >
             NIST Special Publication 800-34; Web: TSP.NCS.GOV.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_CP_09:
@@ -11213,7 +11213,7 @@ SecurityControl:
             HSPD 12; OMB Memorandum 04-04; FIPS Publication 201; NIST Special Publications 800-63, 800-73, 800-76, 
             800-78.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: LOW
         Catalog: 800_53_Rev_3
 
     Rev3_IA_03:
@@ -11307,7 +11307,7 @@ SecurityControl:
         externalReferences: >
             OMB Memorandum 04-04; FIPS Publication 201; NIST Special Publications 800-73, 800-63, 800-76, 800-78.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: LOW
         Catalog: 800_53_Rev_3
 
     Rev3_IA_06:
@@ -11624,7 +11624,7 @@ SecurityControl:
         externalReferences: >
             NIST Special Publication 800-88.
         priorityCode: P2
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_MA_04:
@@ -11865,7 +11865,7 @@ SecurityControl:
         externalReferences: >
             FIPS Publication 199; NIST Special Publication 800-60.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_MP_06:
@@ -13349,7 +13349,7 @@ SecurityControl:
         externalReferences: >
             FIPS Publications 140-2, 197; NIST Special Publications 800-52, 800-77, 800-81, 800-113; NSTISSI No. 7003.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_SC_09:
@@ -13371,7 +13371,7 @@ SecurityControl:
             FIPS Publications 140-2, 197; NIST Special Publications 800-52, 800-77, 800-113; CNSS Policy 15; 
             NSTISSI No. 7003.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_SC_10:
@@ -13596,7 +13596,7 @@ SecurityControl:
         externalReferences: >
             OMB Memorandum 08-23; NIST Special Publication 800-81.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: LOW
         Catalog: 800_53_Rev_3
 
     Rev3_SC_21:
@@ -14045,7 +14045,7 @@ SecurityControl:
         externalReferences: >
             NIST Special Publications 800-61, 800-83, 800-92, 800-94.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_SI_05:
@@ -14118,7 +14118,7 @@ SecurityControl:
         externalReferences: >
             None.
         priorityCode: P1
-        controlLevel: NONE
+        controlLevel: MODERATE
         Catalog: 800_53_Rev_3
 
     Rev3_SI_08:
