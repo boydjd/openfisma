@@ -100,7 +100,7 @@ class SystemController extends BaseController
              ->from('Organization o')
              ->select(
                  'o.id, 
-                  bureau.nickname,
+                  b.nickname,
                   o.nickname, 
                   o.name, 
                   s.type, 
@@ -110,11 +110,9 @@ class SystemController extends BaseController
                   s.fipsCategory'
              )
              ->innerJoin('o.System s')
-             ->leftJoin('Organization bureau')
+             ->leftJoin("s.Organization b ON b.orgType = 'bureau' AND o.lft BETWEEN b.lft and b.rgt")
              ->whereIn('o.id', $myOrganizations)
              ->addWhere('o.orgType = ?', 'system')
-             ->andWhere('bureau.orgType = ?', 'bureau')
-             ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
              ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
