@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Fisma_Zend_Validate
  * @version    $Id$
  */
-class Test_Library_Fisma_Zend_Validate_Phone extends Test_FismaUnitTest
+class Test_Library_Fisma_Zend_Filter_Phone extends Test_FismaUnitTest
 {
     /**
      * Tests for the filter() method.
