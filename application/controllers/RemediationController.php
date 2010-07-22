@@ -1465,13 +1465,19 @@ class RemediationController extends SecurityController
 
         $this->view->form = $form;
         
-        $this->view->securityControlSearchButton = new Fisma_Yui_Form_Button(
+        $securityControlSearchButton = new Fisma_Yui_Form_Button(
             'securityControlSearchButton',
             array(
                 'label' => 'Edit Security Control Mapping',
                 'onClickFunction' => 'Fisma.Finding.showSecurityControlSearch'
             )
         );
+        
+        if ($this->view->finding->status != 'NEW' &&  $this->view->finding->status != 'DRAFT') {
+            $securityControlSearchButton->readOnly = true;
+        }
+        
+        $this->view->securityControlSearchButton = $securityControlSearchButton;
     }
     
     /** 
