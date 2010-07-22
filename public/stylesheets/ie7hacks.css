@@ -56,3 +56,8 @@ select {
 div.attachArtifactsProgressBar {
     margin: 10px 0px 0px 10px;
 }
+
+/* Fix autocomplete rendering underneath other page elements */
+div.yui-ac {
+    z-index: 999;
+}
