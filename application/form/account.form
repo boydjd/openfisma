@@ -59,12 +59,12 @@ elements.nameLast.options.required = true
 elements.nameLast.options.attribs.size = 35
 displayGroups.accountInfo.elements.nameLast = "nameLast"
 
-elements.phoneOffice.type = "text"
+elements.phoneOffice.type = "Element_Phone"
 elements.phoneOffice.options.label = "Office Phone"
 elements.phoneOffice.options.attribs.size = 35
 displayGroups.accountInfo.elements.phoneOffice = "phoneOffice"
 
-elements.phoneMobile.type = "text"
+elements.phoneMobile.type = "Element_Phone"
 elements.phoneMobile.options.label = "Mobile Phone"
 elements.phoneMobile.options.attribs.size = 35
 displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"

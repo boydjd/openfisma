@@ -80,10 +80,11 @@ Configuration:
             comment: Technical support contact name
             default: ""
         contact_phone:
-            type: string(255)
+            type: string(15)
             notblank: true
             comment: Technical support contact phone number
             default: ""
+            Fisma_Doctrine_Validator_Phone: true
         contact_email:
             type: string(255)
             notblank: true

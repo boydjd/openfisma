@@ -9,8 +9,8 @@ Incident:
         reporterCity: Washington
         reporterState: DC
         reporterZip: 20008
-        reporterPhone: 202-555-1234
-        reporterFax: 202-555-4321
+        reporterPhone: (202) 555-1234
+        reporterFax: (202) 555-4321
         reporterEmail: openfisma-default-install@googlegroups.com
         reporterIp: 8.8.8.8
 

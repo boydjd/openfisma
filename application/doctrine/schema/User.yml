@@ -86,20 +86,22 @@ User:
             default: false
             comment: Whether the user has validated their e-mail address
         phoneOffice: 
-            type: string(10)
+            type: string(15)
             fixed: true
             extra:
                 logicalName: Office Phone
                 searchIndex: keyword
                 notify: true
+            Fisma_Doctrine_Validator_Phone: true
             comment: U.S. 10 digit phone number; stored without punctuation
         phoneMobile:
-            type: string(10)
+            type: string(15)
             fixed: true
             extra:
                 logicalName: Mobile Phone
                 searchIndex: keyword
                 notify: true
+            Fisma_Doctrine_Validator_Phone: true
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
         searchColumnsPref:
             type: integer

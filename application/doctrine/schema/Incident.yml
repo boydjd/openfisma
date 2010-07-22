@@ -60,12 +60,14 @@ Incident:
                 logicalName: Reporter's Zip Code
         reporterPhone: 
             type: string(15)
+            Fisma_Doctrine_Validator_Phone: true
             extra:
                 auditLog: true
                 logicalName: Reporter's Phone Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
         reporterFax: 
             type: string(15)
+            Fisma_Doctrine_Validator_Phone: true
             extra:
                 auditLog: true
                 logicalName: Reporter's Fax Number
