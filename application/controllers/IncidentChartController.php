@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentChartController extends IncidentBaseController
+class IncidentChartController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set contexts for this controller's actions

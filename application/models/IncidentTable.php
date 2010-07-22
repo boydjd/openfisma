@@ -17,24 +17,25 @@
  */
 
 /**
- * A common ancestor for all incident controllers which provides some shared logic
+ * IncidentTable 
  * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Controllers
- * @version    $Id$
+ * @uses Doctrine_Table
+ * @package Models 
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-abstract class IncidentBaseController extends Fisma_Zend_Controller_Action_Security
+class IncidentTable extends Doctrine_Table
 {
     /**
      * Returns a query which matches all of the current user's viewable incidents
-     * 
+     *
+     * @param User $user
+     * @param Fisma_Zend_Acl $acl
      * @return Doctrine_Query
      */
-    protected function _getUserIncidentQuery() 
+    public function getUserIncidentQuery(User $user, Fisma_Zend_Acl $acl)
     {
-        
         /*
          * A user can read *all* incidents if he has the "incident read" privilege. Otherwise, he is only allowed to 
          * view those incidents for which he is an actor or an observer.
@@ -42,9 +43,9 @@ abstract class IncidentBaseController extends Fisma_Zend_Controller_Action_Secur
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i');
         
-        if (!$this->_acl->hasPrivilegeForClass('read', 'Incident')) {
+        if (!$acl->hasPrivilegeForClass('read', 'Incident')) {
             $incidentQuery->leftJoin('i.Users u')
-                          ->where('u.id = ?', CurrentUser::getInstance()->id);
+                          ->where('u.id = ?', $user->id);
         }
 
         return $incidentQuery;

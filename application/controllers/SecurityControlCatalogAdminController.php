@@ -26,7 +26,7 @@
  * @subpackage SUBPACKAGE
  * @version    $Id$
  */
-class SecurityControlCatalogAdminController extends SecurityControlCatalogController
+class SecurityControlCatalogAdminController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Check ACL and setup header/footer
@@ -50,7 +50,7 @@ class SecurityControlCatalogAdminController extends SecurityControlCatalogContro
         $currentSetting = Fisma::configuration()->getConfig('default_security_control_catalog_id');
         
         $form->getElement('defaultCatalog')
-             ->addMultiOptions($this->_getCatalogs())
+             ->addMultiOptions(Doctrine::getTable('SecurityControlCatalog')->getCatalogs())
              ->setValue($currentSetting);
         
         $this->view->form = $form;
