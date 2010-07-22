@@ -41,8 +41,6 @@ class View_Helper_InjectAsset
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
                                       '/javascripts/fisma.js',
-                                      '/javascripts/account.js',
-                                      '/javascripts/ldap.js',
                                       '/javascripts/CheckboxTree.js',
                                       '/javascripts/editable.js',
                                       '/javascripts/help.js',
@@ -57,8 +55,10 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/FindingSummary.js',
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
+                                      '/javascripts/Fisma/Ldap.js',
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/Remediation.js',
+                                      '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',
@@ -67,7 +67,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
-                                      '/javascripts/Fisma/WaitingSpinner.js',
                                       '/javascripts/AC_RunActiveContent.js'
                                  ),
                                 '/stylesheets/combined.css' =>

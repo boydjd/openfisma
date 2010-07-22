@@ -1040,26 +1040,27 @@ function asset_detail() {
 
 function message( msg ,model){
     msg = $P.stripslashes(msg);
+
     if (document.getElementById('msgbar')) {
         var msgbar = document.getElementById('msgbar'); 
     } else {
         return;
     }
-    if (msgbar.innerHTML) {
-        msgbar.innerHTML = msgbar.innerHTML + msg;
-    } else {
-        msgbar.innerHTML = msg;
-    }
+
+    msgbar.innerHTML = msg;
 
     msgbar.style.fontWeight = 'bold';
     
-    if( model == 'warning')  {
+    if (model == 'warning')  {
         msgbar.style.color = 'red';
+        msgbar.style.borderColor = 'red';
+        msgbar.style.backgroundColor = 'pink';
     } else {
         msgbar.style.color = 'green';
         msgbar.style.borderColor = 'green';
         msgbar.style.backgroundColor = 'lightgreen';
     }
+
     msgbar.style.display = 'block';
 }
 
@@ -1798,64 +1799,6 @@ function delok(entryname)
     }
     return false;
 }
-/**
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Used for generate a complicated password and check account when create,
- *               update user and check user account when authentication is LDAP
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license   http://www.openfisma.org/content/license
- * @version   $Id$
- */
-
-function GeneratePassword () {
-    var generatePasswordButton = document.getElementById('generate_password');
-    YAHOO.util.Connect.asyncRequest('GET',
-                                    '/user/generate-password/format/html',
-                                    {
-                                        success: function(o) {
-                                            document.getElementById('password').value = o.responseText;
-                                            document.getElementById('confirmPassword').value = o.responseText;
-                                        },
-                                        failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
-                                    },
-                                    null);
-    return false;
-}
-
-var check_account = function () {
-    var account = document.getElementById('username').value;
-    account = encodeURIComponent(account);
-    var url = "/user/check-account/format/json/account/" + account;
-    YAHOO.util.Connect.asyncRequest('GET',
-                                    url,
-                                    {
-                                        success: function(o) {
-                                            var data = YAHOO.lang.JSON.parse(o.responseText);
-                                            message(data.msg, data.type);
-                                        },
-                                        failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
-                                    },
-                                    null);
-    return false;
-};
 //v1.7
 // Flash Player Version Detection
 // Detect Client Browser type
@@ -2148,7 +2091,7 @@ function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
   if (mimeType) ret.embedAttrs["type"] = mimeType;
   return ret;
 }
-Fisma.AttachArtifacts={sampleInterval:1000,apcId:null,yuiProgressBar:null,pollingTimeoutId:null,lastAsyncRequest:null,pollingEnabled:false,config:null,yuiPanel:null,showPanel:function(d,b){Fisma.AttachArtifacts.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Upload Artifact");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.AttachArtifacts.cancelPanel.call(Fisma.AttachArtifacts)});Fisma.AttachArtifacts.yuiPanel=a;var c="/artifact/upload-form";if(b.form){c+="/form/"+encodeURIComponent(b.form)}YAHOO.util.Connect.asyncRequest("GET",c,{success:function(e){e.argument.setBody(e.responseText);e.argument.center()},failure:function(e){e.argument.setBody("The content for this panel could not be loaded.");e.argument.center()},argument:a},null)},trackUploadProgress:function(){var f=document.getElementById("fileUpload");if(""==f.value){alert("Please select a file.");return false}var g=document.getElementById("uploadButton");g.disabled=true;var e=this;var c=document.getElementById("progress_key");if(c){this.apcId=c.value;var h=document.getElementById("progressBarContainer");var a=parseInt(YAHOO.util.Dom.getStyle(h,"width"));var d=parseInt(YAHOO.util.Dom.getStyle(h,"height"));YAHOO.util.Dom.removeClass(h,"attachArtifactsProgressBar");while(h.hasChildNodes()){h.removeChild(h.firstChild)}var i=new YAHOO.widget.ProgressBar();i.set("width",a);i.set("height",d);i.set("ariaTextTemplate","Upload is {value}% complete");i.set("anim",true);var b=i.get("anim");b.duration=2;b.method=YAHOO.util.Easing.easeNone;i.render("progressBarContainer");YAHOO.util.Dom.addClass(h,"attachArtifactsProgressBar");this.yuiProgressBar=i;this.pollingEnabled=true;setTimeout(function(){e.getProgress.call(e)},this.sampleInterval)}document.getElementById("progressBarContainer").style.display="block";document.getElementById("progressTextContainer").style.display="block";setTimeout(function(){e.postForm.call(e)},0);return false},postForm:function(){var a=this;var b="/"+encodeURIComponent(this.config.server.controller)+"/"+encodeURIComponent(this.config.server.action)+"/id/"+encodeURIComponent(this.config.id)+"/format/json";YAHOO.util.Connect.setForm("uploadArtifactForm",true);YAHOO.util.Connect.asyncRequest("POST",b,{upload:function(c){a.handleUploadComplete.call(a,c)},failure:function(c){alert("Document upload failed.")}},null)},getProgress:function(){var a=this;if(this.pollingEnabled){this.lastAsyncRequest=YAHOO.util.Connect.asyncRequest("GET","/artifact/upload-progress/format/json/id/"+this.apcId,{success:function(d){try{var c=YAHOO.lang.JSON.parse(d.responseText)}catch(g){if(g instanceof SyntaxError){c=new Object();c.progress=false}else{throw g}}if(!c.progress){a.yuiProgressBar.destroy();a.yuiProgressBar=null;a.pollingEnabled=false;var i=document.getElementById("progressBarContainer");YAHOO.util.Dom.addClass(i,"attachArtifactsProgressBar");var b=document.createElement("img");b.src="/images/loading_bar.gif";i.appendChild(b);a.pollingTimeoutId=null;return}var f=Math.round((c.progress.current/c.progress.total)*100);a.yuiProgressBar.set("value",f);var h=document.getElementById("progressTextContainer").firstChild;h.nodeValue=f+"%";a.pollingTimeoutId=setTimeout(function(){a.getProgress.call(a)},a.sampleInterval)}},null)}},handleUploadComplete:function(d){try{var c=YAHOO.lang.JSON.parse(d.responseText)}catch(g){if(g instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw g}}this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId);YAHOO.util.Connect.abort(this.lastAsyncRequest);if(this.yuiProgressBar){this.yuiProgressBar.get("anim").duration=0.5;this.yuiProgressBar.set("value",100)}var h=document.getElementById("progressTextContainer").firstChild;h.nodeValue="Verifying file.";if(!c.success){alert("Upload Failed: "+c.message);h.nodeValue="Uploading...";document.getElementById("progressBarContainer").style.display="none";document.getElementById("progressTextContainer").style.display="none";var b=document.getElementById("uploadButton");b.disabled=false;return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,this.yuiPanel)}}},cancelPanel:function(){if(this.pollingEnabled){this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId)}if(this.lastAsyncRequest){YAHOO.util.Connect.abort(this.lastAsyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2569,7 +2512,7 @@ Fisma.AttachArtifacts = {
         }
     }
 };
-Fisma.AutoComplete=function(){return{init:function(a,e,d){var c=new YAHOO.widget.DS_XHR(d.xhr,d.schema);c.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;c.maxCacheEntries=500;c.queryMatchContains=true;var b=new YAHOO.widget.AutoComplete(d.fieldId,d.containerId,c);b.maxResultsDisplayed=20;b.forceSelection=true;b.generateRequest=function(f){return d.queryPrepend+f};b.formatResult=function(g,i,f){var h=(f)?f:"";h=PHP_JS().htmlspecialchars(h);return h};b.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:d.hiddenFieldId})},subscribe:function(c,b,a){document.getElementById(a.hiddenFieldId).value=b[2][1]["id"]}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2725,7 +2668,7 @@ Fisma.AutoComplete = function() {
         }
     };
 }();
-Fisma.Blinker=function(a,c,b,d){this.interval=a;this.cycles=c;this.cyclesRemaining=c;this.onFunction=b;this.offFunction=d;this.state=0};Fisma.Blinker.prototype.start=function(){this.cycle()};Fisma.Blinker.prototype.cycle=function(){var a=this;if(1===this.state){this.offFunction()}else{this.onFunction()}this.state=1-this.state;this.cyclesRemaining--;if(this.cyclesRemaining>0){setTimeout(function(){a.cycle.call(a)},this.interval)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2806,7 +2749,7 @@ Fisma.Blinker.prototype.cycle = function () {
         );
     }
 }
-Fisma.Commentable={asyncRequest:null,config:null,yuiPanel:null,showPanel:function(c,b){Fisma.Commentable.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Add Comment");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.Commentable.closePanel.call(Fisma.Commentable)});Fisma.Commentable.yuiPanel=a;YAHOO.util.Connect.asyncRequest("GET","/comment/form",{success:function(d){d.argument.setBody(d.responseText);d.argument.center()},failure:function(d){d.argument.setBody("The content for this panel could not be loaded.");d.argument.center()},argument:a},null);return false},postComment:function(){var a="/comment/add/id/"+encodeURIComponent(Fisma.Commentable.config.id)+"/type/"+encodeURIComponent(Fisma.Commentable.config.type)+"/format/json";YAHOO.util.Connect.setForm("addCommentForm");Fisma.Commentable.asyncRequest=YAHOO.util.Connect.asyncRequest("POST",a,{success:function(b){Fisma.Commentable.commentCallback.call(Fisma.Commentable,b)},failure:function(b){alert("Document upload failed.")}},null);return false},commentCallback:function(d){var c;try{var b=YAHOO.lang.JSON.parse(d.responseText);c=b.response}catch(g){if(g instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw g}}if(!c.success){alert("Error: "+c.message);return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,c.comment,this.yuiPanel)}}},closePanel:function(){if(this.asyncRequest){YAHOO.util.Connect.abort(this.asyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2997,7 +2940,7 @@ Fisma.Commentable = {
          }
      }
 };
-Fisma.Email=function(){return{panelElement:null,showRecipientDialog:function(){if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}var c=document.createElement("div");var f=document.createElement("p");var b=document.createTextNode("* Target E-mail Address:");f.appendChild(b);c.appendChild(f);var d=document.createElement("input");d.id="testEmailRecipient";d.name="recipient";c.appendChild(d);var e=document.createElement("div");e.style.height="10px";c.appendChild(e);var a=document.createElement("input");a.type="button";a.id="dialogRecipientSendBtn";a.style.marginLeft="10px";a.value="Send";c.appendChild(a);Fisma.Email.panelElement=Fisma.HtmlPanel.showPanel("Test E-mail Configuration",c.innerHTML);document.getElementById("dialogRecipientSendBtn").onclick=Fisma.Email.sendTestEmail},sendTestEmail:function(){if(document.getElementById("testEmailRecipient").value==""){alert("Recipient is required.");document.getElementById("testEmailRecipient").focus();return false}var b=document.getElementById("testEmailRecipient").value;var a=document.getElementById("email_config");a.elements.recipient.value=b;YAHOO.util.Connect.setForm(a);YAHOO.util.Connect.asyncRequest("POST","/config/test-email-config/format/json",{success:function(d){var c=YAHOO.lang.JSON.parse(d.responseText);message(c.msg,c.type)},failure:function(c){alert("Failed to send mail: "+c.statusText)}},null);if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3031,11 +2974,12 @@ Fisma.Email = function() {
          * @type YAHOO.widget.Panel
          */
         panelElement : null,
-
+         
         /**
          * Initializes the ShowRecipientDialog widget
          */
         showRecipientDialog : function() {
+
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -3070,7 +3014,6 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            /** @todo english */
             Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
     
             // Set onclick handler to handle dialog_recipient
@@ -3081,6 +3024,7 @@ Fisma.Email = function() {
          * Send test email to specified recipient
          */
         sendTestEmail : function() {
+            
             if (document.getElementById('testEmailRecipient').value == '') {
                 /** @todo english */
                 alert("Recipient is required.");
@@ -3093,16 +3037,23 @@ Fisma.Email = function() {
             var form = document.getElementById('email_config');
             form.elements['recipient'].value = recipient;
     
+            var element = document.getElementById('sendTestEmail');
+
+            spinner = new Fisma.Spinner(element.parentNode);
+            spinner.show();
+            
             // Post data through YUI
             YAHOO.util.Connect.setForm(form);
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
                     message(data.msg, data.type);
+                    spinner.hide();
                 },
                 failure : function(o) {
-                    /** @todo english */
-                    alert('Failed to send mail: ' + o.statusText);
+                    alert('Failed to send test mail: ' + o.statusText);
+                    
+                    spinner.hide();
                 }
             }, null);
     
@@ -3115,7 +3066,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c;if(a.firstChild){c=a.firstChild.nodeValue}else{c=""}var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3260,7 +3211,7 @@ Fisma.Finding = {
         );
     }
 }
-Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(var r in o){count=o[r];cell=a.insertCell(m++);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.id,r,"ontime",l.expanded)}for(var r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.id,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){var d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.id,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";var d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.id,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname==e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!=false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,d,b,h,e){if(!a.hasChildNodes()){if(g>0){var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(d,b,h,e)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);var f=document.createElement("a");f.href=this.makeLink(d,b,h,e);f.appendChild(document.createTextNode(g));a.appendChild(f)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(f,g,j,i){var e="";if(!(g=="CLOSED"||g=="TOTAL")){var e="/ontime/"+j}var h="";if(g!=""){h="/status/"+escape(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!=""){a="/type/"+this.filterType}var b="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!=""){b="/sourceId/"+this.filterSource}var d="/remediation/search"+e+h+"/responsibleOrganizationId/"+f+"/expanded/"+i+a+b;return d},exportTable:function(b){var a="/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3809,7 +3760,7 @@ Fisma.FindingSummary = function() {
         }
     };
 };
-Fisma.HtmlPanel=function(){return{showPanel:function(e,c,b,d){if(typeof(b)=="undefined"||b==null){b="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(b,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(c!=""){a.setBody(c);a.center()}return a}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3880,7 +3831,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3969,7 +3920,95 @@ Fisma.Incident = {
         yuiPanel.destroy();
     }
 };
-Fisma.Module={handleSwitchButtonStateChange:function(a){a.setBusy(true);var b=a.state?"true":"false";var c="/config/set-module/id/"+a.payload.id+"/enabled/"+b+"/format/json/";YAHOO.util.Connect.asyncRequest("GET",c,{success:Fisma.Module.handleAsyncResponse,failure:Fisma.Module.handleAsyncResponse,argument:a},null)},handleAsyncResponse:function(b){try{var c=YAHOO.lang.JSON.parse(b.responseText)}catch(d){if(d instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw d}}if(!c.success){alert("Error: Not able to change module status. Reason: "+c.message)}var a=b.argument;a.setBusy(false)}};/**
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the Incident Reporting module
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+Fisma.Ldap = {
+
+    /**
+     * A boolean flag which indicates if a validation request is current working
+     */
+    validateLdapBusy : false,
+
+    /**
+     * Uses an XHR to validate the user's current LDAP settings
+     */    
+    validateLdapConfiguration : function () {
+
+        if (Fisma.Ldap.validateLdapBusy) {
+            return;
+        }
+        
+        Fisma.Ldap.validateLdapBusy = true;
+        
+        // Bit of a hack. Grab the id of the current ldap Config out of the URL
+        var location = document.location;
+        var pieces = document.location.pathname.split('/');
+        var ldapConfigId = null;
+
+        for (pieceIndex in pieces) {
+            var piece = pieces[pieceIndex];
+
+            if ('id' == piece) {
+                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+
+                break;
+            }
+        }
+        // End hack. @todo Modify controller so that it passes the id of the configuration to validate.
+        
+        var validateButton = document.getElementById('validateLdap');
+        validateButton.className = "yui-button yui-push-button yui-button-disabled";
+
+        var spinner = new Fisma.Spinner(validateButton.parentNode);
+        spinner.show();
+
+        var form = document.getElementById('ldapUpdate');
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest(
+            'POST', 
+            '/config/validate-ldap/format/json/id/' + ldapConfigId, 
+            {
+                success : function (o) {
+                    var response = YAHOO.lang.JSON.parse(o.responseText);
+                    
+                    message(response.msg, response.type);
+
+                    validateButton.className = "yui-button yui-push-button";
+                    Fisma.Ldap.validateLdapBusy = false;
+                    spinner.hide();
+                },
+
+                failure : function (o) {
+                    message('Validation failed: ' + o.statusText, 'warning');
+
+                    spinner.hide();
+                }
+            }
+        );
+    }  
+};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4045,7 +4084,7 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
-function upload_evidence(){if(!form_confirm(document.finding_detail,"Upload Evidence")){return false}Fisma.UrlPanel.showPanel("Upload Evidence","/remediation/upload-form",upload_evidence_form_init);return false}function upload_evidence_form_init(){document.finding_detail_upload_evidence.action=document.finding_detail.action}function ev_approve(d){if(!form_confirm(document.finding_detail,"approve the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments (OPTIONAL):"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}h.elements.comment.value=i;h.elements.decision.value="APPROVED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="APPROVED";h.appendChild(g);h.submit()}}function ev_deny(d){if(!form_confirm(document.finding_detail,"deny the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments:"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}if(i.match(/^\s*$/)){alert("Comments are required in order to deny.");return}h.elements.comment.value=i;h.elements.decision.value="DENIED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="DENIED";h.appendChild(g);h.submit()}}function ms_approve(d){if(!form_confirm(document.finding_detail,"approve the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments (OPTIONAL):");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}i.elements.comment.value=j;i.elements.decision.value="APPROVED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="APPROVED";i.appendChild(h);i.submit()}}function ms_deny(d){if(!form_confirm(document.finding_detail,"deny the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments:");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}if(j.match(/^\s*$/)){alert("Comments are required in order to submit.");return}i.elements.comment.value=j;i.elements.decision.value="DENIED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="DENIED";i.appendChild(h);i.submit()}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4299,7 +4338,61 @@ function ms_deny(formname){
         form2.submit();
     }
 }
-Fisma.SwitchButton=function(b,a,e,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=e){callbackObj=Fisma.Util.getObjectFromName(e);if("function"==typeof callbackObj){this.callback=callbackObj}else{throw"Specified callback is not a function: "+e}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview Used to show or hide a waiting spinner animation following the element.
+ *
+ * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
+ */
+
+/**
+ * The constructor for a spinner object
+ * 
+ * A spinner is a simple graphic that is used to indicate a "busy" or "working" state in response to some user action
+ * that does not have any other immediate, visual feedback.
+ * 
+ * @var container The spinner will be appended to the end of this container element.
+ */
+Fisma.Spinner = function (container) {
+    this.container = container;
+    
+    // Create new image element to act as spinner
+    this.spinner = document.createElement('img');
+    this.spinner.id = container.id + "_spinnerImg";
+    this.spinner.src = "/images/spinners/small.gif";
+    this.spinner.style.display = "none";
+    
+    // Append spinner to end of container element
+    this.container.appendChild(this.spinner);
+}
+
+Fisma.Spinner.prototype.show = function () {
+    this.spinner.style.display = 'inline';
+};
+        
+Fisma.Spinner.prototype.hide = function () {
+    this.spinner.style.display = 'none';
+};
+/**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/
  * 
@@ -4499,7 +4592,7 @@ Fisma.SwitchButton.prototype = {
             this.spinner.style.visibility = 'hidden';
         }
     }
-};Fisma.System={uploadDocumentCallback:function(a){window.location.href=window.location.href}};/**
+};/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4533,7 +4626,7 @@ Fisma.System = {
         window.location.href = window.location.href;
     }
 };
-Fisma.TabView={};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4556,7 +4649,7 @@ Fisma.TabView={};/**
  */
 
 Fisma.TabView = {};
-Fisma.TabView.Roles=function(){return{init:function(b,a,c){YAHOO.util.Event.addListener("role","change",function(d){YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren("role"),function(j){var h=Fisma.tabView;var g=h.get("tabs");if(j.selected){var k=0;for(var f in g){if(g[f].get("id")==j.value){k=1;break}}if(!k){for(var f in b){if(b[f]["id"]==j.value){var e=b[f]["nickname"];break}}var l=new YAHOO.widget.Tab({id:j.value,label:e,dataSrc:"/user/get-organization-subform/user/"+a+"/role/"+j.value+"/readOnly/"+c,cacheData:true,active:true});l.subscribe("dataLoadedChange",Fisma.prepareTab);h.addTab(l)}}else{for(var f in g){if(g[f].get("id")==j.value){h.removeTab(g[f])}}}})})}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4629,7 +4722,7 @@ Fisma.TabView.Roles = function() {
         }
     }
 }();
-Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},contingencyPlanTest:function(b,a,c,d){Fisma.TableFormat.selfAssessment(b,a,c,d)},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}},editControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/edit.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},deleteControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/del.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4801,28 +4894,40 @@ Fisma.TableFormat = {
         link.appendChild(icon);
         
         elCell.appendChild(link);
-     },
+    },
      
-     /**
-      * A formatter which displays a delete icon that is linked to an edit page
-      * 
-      * @param elCell Reference to a container inside the <td> element
-      * @param oRecord Reference to the YUI row object
-      * @param oColumn Reference to the YUI column object
-      * @param oData The data stored in this cell
-      */
-      deleteControl : function (elCell, oRecord, oColumn, oData) {
+    /**
+     * A formatter which displays a delete icon that is linked to an edit page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    deleteControl : function (elCell, oRecord, oColumn, oData) {
 
-         var icon = document.createElement('img');
-         icon.src = '/images/del.png';
+        var icon = document.createElement('img');
+        icon.src = '/images/del.png';
 
-         var link = document.createElement('a');
-         link.href = oData;
-         link.appendChild(icon);
+        var link = document.createElement('a');
+        link.href = oData;
+        link.appendChild(icon);
 
-         elCell.appendChild(link);
-      }
-};Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
+        elCell.appendChild(link);
+    },
+      
+    /**
+     * A formatter which converts escaped HTML into unescaped HTML
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatHtml : function(el, oRecord, oColumn, oData) {
+        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    }
+};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4908,7 +5013,244 @@ Fisma.UrlPanel = function() {
         }
     };
 }();
-Fisma.Util={getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a}};/**
+/**
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Client-side code for various operations on user objects
+ * 
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
+ */
+ 
+Fisma.User = {
+    
+    /**
+     * A dictionary of user info panels that have already been created.
+     * 
+     * We use this to make sure that we don't create multiple panels for the same user object.
+     */
+    userInfoPanelList : {},
+    
+    /**
+     * A boolean which indicates if a password is currently being generated
+     */
+    generatePasswordBusy : false,
+
+    /**
+     * A boolean which indicates if an account is currently being checked in LDAP
+     */
+    checkAccountBusy : false,
+    
+    /**
+     * Display a dialog which shows user information for the specified user.
+     * 
+     * @param referenceElement The panel will be displayed near this element
+     * @param username The name of the user to get info for
+     */
+    displayUserInfo : function (referenceElement, username) {
+
+        var panel;
+
+        if (typeof Fisma.User.userInfoPanelList[username] == 'undefined') {
+
+            // Create new panel
+            panel = Fisma.User.createUserInfoPanel(referenceElement, username);
+
+            Fisma.User.userInfoPanelList[username] = panel;
+            
+            panel.show();            
+        } else {
+
+            // Panel already exists
+            panel = Fisma.User.userInfoPanelList[username];
+            
+            // If panel is hidden then display it, or if its already visible, then hide it.
+            if (panel.cfg.getProperty("visible")) {
+                panel.hide();
+            } else {
+                panel.bringToTop();
+                panel.show();            
+            }
+        }        
+    },
+    
+    /**
+     * Create the user info panel and position it near the referenceElement
+     * 
+     * @param referenceElement
+     * @param username The name of the user to get info for
+     * @return YAHOO.widget.Panel
+     */
+    createUserInfoPanel : function (referenceElement, username) {
+        
+        var PANEL_WIDTH = 350; // in pixels
+        var panelName, panel;
+        
+        // Create the new panel object
+        panelName = username + 'InfoPanel';
+        
+        panel = new YAHOO.widget.Panel(
+            panelName, 
+            {
+                width: PANEL_WIDTH + 'px', 
+                modal : false, 
+                close : true,
+                constraintoviewport : true
+            }
+        );
+
+        panel.setHeader('User Profile');
+        panel.setBody("Loading user profile for <em>" + username + "</em>...");
+        panel.render(document.body);
+
+        Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+        
+        // Load panel content using asynchronous request
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/user/info/username/' + escape(username),
+            {
+                success: function(o) {
+                    panel.setBody(o.responseText);
+                    Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+                },
+
+                failure: function(o) {
+                    panel.setBody('User information cannot be loaded.');
+                    Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+                }
+            }, 
+            null
+        );
+
+        return panel;
+    },
+    
+    generatePassword : function () {
+        
+        if (Fisma.User.generatePasswordBusy) {
+            return;
+        }
+
+        Fisma.User.generatePasswordBusy = true;
+
+        var generatePasswordButton = document.getElementById('generate_password');
+        generatePasswordButton.className = "yui-button yui-push-button yui-button-disabled";
+
+        var spinner = new Fisma.Spinner(generatePasswordButton.parentNode);
+        spinner.show();
+
+        YAHOO.util.Connect.asyncRequest(
+            'GET',
+            '/user/generate-password/format/html',
+            {
+                success : function (o) {
+                    document.getElementById('password').value = o.responseText;
+                    document.getElementById('confirmPassword').value = o.responseText;
+
+                    Fisma.User.generatePasswordBusy = false;
+                    generatePasswordButton.className = "yui-button yui-push-button";
+                    spinner.hide();
+                },
+
+                failure : function (o) {
+                    spinner.hide();
+
+                    alert('Failed to generate password: ' + o.statusText);
+                }
+            },
+            null
+        );
+
+        return false;
+    },
+
+    checkAccount : function () {
+
+        if (Fisma.User.checkAccountBusy) {
+            return;
+        }
+
+        Fisma.User.checkAccountBusy = true;
+
+        var account = document.getElementById('username').value;
+        var url = "/user/check-account/format/json/account/" + encodeURIComponent(account);
+
+        var checkAccountButton = document.getElementById('checkAccount');
+        checkAccountButton.className = "yui-button yui-push-button yui-button-disabled";
+
+        var spinner = new Fisma.Spinner(checkAccountButton.parentNode);
+        spinner.show();
+
+        YAHOO.util.Connect.asyncRequest(
+            'GET',
+            url,
+            {
+                success : function (o) {
+                    var data = YAHOO.lang.JSON.parse(o.responseText);
+                    message(data.msg, data.type);
+
+                    // Openfisma column's name is corresponding to LDAP account column's name
+                    var openfismaColumns = new Array('nameFirst',
+                                                     'nameLast',
+                                                     'phoneOffice',
+                                                     'phoneMobile',
+                                                     'email',
+                                                     'title');
+
+                    // LDAP account column's name
+                    var ldapColumns = new Array('sn',
+                                                'givenname',
+                                                'telephonenumber',
+                                                'mobile',
+                                                'mail',
+                                                'title');
+
+                    // Make sure each column value is not null in LDAP account, then populate to related elements.
+                    if (data.accountInfo != null){
+                        for (var i in ldapColumns)
+                        {
+                            var columnValue = data.accountInfo[ldapColumns[i]];
+
+                            if (columnValue != null) {
+                                document.getElementById(openfismaColumns[i]).value = columnValue;
+                            } else {
+                                document.getElementById(openfismaColumns[i]).value = '';
+                            }
+                        }
+                    }
+
+                    Fisma.User.checkAccountBusy = false;
+                    checkAccountButton.className = "yui-button yui-push-button";
+                    spinner.hide();
+                },
+
+                failure : function(o) {
+                    spinner.hide();
+
+                    alert('Failed to check account password: ' + o.statusText);
+                }
+            },
+            null
+        );
+    }
+};
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4959,5 +5301,58 @@ Fisma.Util = {
 
         // At this point, the current value of parentObj should be the object itself
         return currentObj;
+    },
+    
+    /**
+     * Positions the specified panel relative to the specified element.
+     * 
+     * The goal is to put the panel near the specified element (typically, just underneath and left-aligned) but with
+     * the added constraint of not positioning the panel anywhere that will be clipped by the current viewport.
+     * 
+     * @param panel
+     * @param referenceElement
+     */
+    positionPanelRelativeToElement : function (panel, referenceElement) {
+
+        // This is a constant which indicates how far down the panel should be below the reference element
+        var VERTICAL_OFFSET = 5;
+
+        panel.cfg.setProperty(
+            "context", 
+            [
+                referenceElement, 
+                YAHOO.widget.Overlay.TOP_LEFT, 
+                YAHOO.widget.Overlay.BOTTOM_LEFT,
+                null,
+                [0, VERTICAL_OFFSET]
+            ]
+        );        
+    },
+    
+    /**
+     * Generate a timestamp in the format HH:MM:SS, using 24 hour time
+     */
+    getTimestamp : function () {
+        var date = new Date();
+
+        var hours = date.getHours() + "";
+
+        if (hours.length == 1) {
+         hours = "0" + hours;
+        }
+
+        var minutes = date.getMinutes() + "";
+
+        if (minutes.length == 1) {
+         minutes = "0" + minutes;
+        }
+
+        var seconds = date.getSeconds() + "";
+
+        if (seconds.length == 1) {
+         seconds = "0" + seconds;
+        }
+
+        return hours + ":" + minutes + ":" + seconds;
     }
 };

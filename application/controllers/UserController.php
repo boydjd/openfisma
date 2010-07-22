@@ -670,8 +670,9 @@ class UserController extends BaseController
         }
 
         foreach ($data as $opt) {
-            $srv = new Zend_Ldap($opt);
             try {
+                $srv = new Zend_Ldap($opt);
+
                 $type = 'message';
                 $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
 
@@ -694,7 +695,7 @@ class UserController extends BaseController
                     Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
                     $msg = "$account does NOT exist";
                 } else {
-                    $msg .= 'Unknown error while checking Account: '
+                    $msg .= 'Error while checking account: '
                           . $e->getMessage();
                 }
             }

@@ -32,14 +32,12 @@ Fisma.Email = function() {
          * @type YAHOO.widget.Panel
          */
         panelElement : null,
-
+         
         /**
          * Initializes the ShowRecipientDialog widget
          */
         showRecipientDialog : function() {
-            if (Fisma.WaitingSpinner.isWorking()) {
-                return;
-            }
+
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -74,7 +72,6 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            /** @todo english */
             Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
     
             // Set onclick handler to handle dialog_recipient
@@ -85,6 +82,7 @@ Fisma.Email = function() {
          * Send test email to specified recipient
          */
         sendTestEmail : function() {
+            
             if (document.getElementById('testEmailRecipient').value == '') {
                 /** @todo english */
                 alert("Recipient is required.");
@@ -98,8 +96,9 @@ Fisma.Email = function() {
             form.elements['recipient'].value = recipient;
     
             var element = document.getElementById('sendTestEmail');
-            Fisma.WaitingSpinner.init(element, element.parentNode);
-            Fisma.WaitingSpinner.show();
+
+            spinner = new Fisma.Spinner(element.parentNode);
+            spinner.show();
             
             // Post data through YUI
             YAHOO.util.Connect.setForm(form);
@@ -107,11 +106,12 @@ Fisma.Email = function() {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
                     message(data.msg, data.type);
-                    Fisma.WaitingSpinner.destroy();
+                    spinner.hide();
                 },
                 failure : function(o) {
-                    /** @todo english */
-                    alert('Failed to send mail: ' + o.statusText);
+                    alert('Failed to send test mail: ' + o.statusText);
+                    
+                    spinner.hide();
                 }
             }, null);
     

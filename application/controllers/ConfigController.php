@@ -43,13 +43,12 @@ class ConfigController extends SecurityController
     public function init()
     {
         parent::init();
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('validate-ldap', 'html')
-                    ->initContext();
-        $contextSwitch = $this->_helper->contextSwitch();
-        $contextSwitch->setAutoJsonSerialization(false)
+
+        $this->_helper->contextSwitch()
+                      ->setAutoJsonSerialization(false)
                       ->addActionContext('test-email-config', 'json')
                       ->addActionContext('set-module', 'json')
+                      ->addActionContext('validate-ldap', 'json')
                       ->initContext();
     }
     
@@ -279,40 +278,43 @@ class ConfigController extends SecurityController
      */
     public function validateLdapAction()
     {        
+        $id = $this->getRequest()->getParam('id');
         $form = $this->_getConfigForm('ldap');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ($form->isValid($data)) {
-                try{
-                    $data = $form->getValues();
-                    unset($data['id']);
-                    unset($data['SaveLdap']);
-                    unset($data['Reset']);
-                    if (empty($data['password'])) {
-                        $dql = 'host = ? AND port = ? AND username = ?';
-                        $params = array($data['host'], $data['port'], $data['username']);
-                        $ldap = Doctrine::getTable('LdapConfig')
-                                ->findByDql($dql, $params);
-                        if (!empty($ldap[0])) {
-                            $data['password'] = $ldap[0]->password;
-                        }
+
+        $ldapConfig = $this->_request->getPost();
+
+        if ($form->isValid($ldapConfig)) {
+            try {
+                $ldapConfig = $form->getValues();
+                
+                if (empty($ldapConfig['password'])) {
+                    $ldap = Doctrine::getTable('LdapConfig')->find($id);
+                    
+                    if (!empty($ldap[0])) {
+                        $data['password'] = $ldap[0]->password;
                     }
-                    $ldapcn = new Zend_Ldap($data);
-                    $ldapcn->connect();
-                    $ldapcn->bind();
-                    echo "<b> Bind successfully! </b>";
-                }catch (Zend_Ldap_Exception $e) {
-                    echo "<b>". $e->getMessage(). "</b>";
+
+                    unset($ldapConfig['SaveLdap']);
+                    unset($ldapConfig['Reset']);
                 }
-            } else {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                echo $errorString;
+                
+                $ldapServer = new Zend_Ldap($ldapConfig);
+                $ldapServer->connect();
+                $ldapServer->bind();
+                
+                $msg = "LDAP server is .";
+                $type = 'notice';
+            } catch (Exception $e) {
+                $msg = $e->getMessage();
+                $type = 'warning';
             }
         } else {
-            echo "<b>Invalid Parameters</b>";
+            $msg = Fisma_Zend_Form_Manager::getErrors($form);
+            $type = 'warning';
         }
-        $this->_helper->viewRenderer->setNoRender();
 
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
@@ -481,8 +483,8 @@ class ConfigController extends SecurityController
                     // Because user may not specified password for test on UI page,
                     // so have retrieve the saved one before if possible. 
                     if (empty($postEmailConfigValues['smtp_password'])) {
-                        $password = Doctrine::getTable('Configuration')
-                                    ->findByDql('name = ?', 'smtp_password');
+                        $password = Fisma::configuration()->getConfig('smtp_password');
+
                         if (!empty($password[0])) {
                             $postEmailConfigValues['smtp_password'] = $password[0]->value;
                         }

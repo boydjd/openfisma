@@ -43,9 +43,6 @@ displayGroups.general.elements.accountFilterFormat = "accountFilterFormat"
 
 elements.username.type = "text"
 elements.username.options.label = "Username"
-;elements.username.options.validators.strlen.validator = "StringLength"
-;elements.username.options.validators.strlen.options.min = "1"
-;elements.username.options.validators.strlen.options.max = "20"
 displayGroups.general.elements.username = "username"
 
 elements.password.type = "password"
@@ -70,7 +67,6 @@ elements.accountDomainNameShort.options.validators.strlen.options.min = "1"
 elements.accountDomainNameShort.options.validators.strlen.options.max = "50"
 displayGroups.general.elements.accountDomainNameShort = "accountDomainNameShort"
 
-
 elements.baseDn.type = "text"
 elements.baseDn.options.label = "Base Distinguished Name"
 elements.baseDn.options.validators.strlen.validator = "StringLength"
@@ -91,7 +87,7 @@ displayGroups.general.elements.accountCanonicalForm = "accountCanonicalForm"
 
 elements.validateLdap.type = "Form_Button"
 elements.validateLdap.options.label = "Test Configuration"
-elements.validateLdap.options.onClickFunction = "validateLDAP"
+elements.validateLdap.options.onClickFunction = "Fisma.Ldap.validateLdapConfiguration"
 displayGroups.general.elements.validateLdap = "validateLdap"
 
 elements.SaveLdap.type = "Form_Button_Submit"

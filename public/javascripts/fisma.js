@@ -259,26 +259,27 @@ function asset_detail() {
 
 function message( msg ,model){
     msg = $P.stripslashes(msg);
+
     if (document.getElementById('msgbar')) {
         var msgbar = document.getElementById('msgbar'); 
     } else {
         return;
     }
-    if (msgbar.innerHTML) {
-        msgbar.innerHTML = msgbar.innerHTML + msg;
-    } else {
-        msgbar.innerHTML = msg;
-    }
+
+    msgbar.innerHTML = msg;
 
     msgbar.style.fontWeight = 'bold';
     
-    if( model == 'warning')  {
+    if (model == 'warning')  {
         msgbar.style.color = 'red';
+        msgbar.style.borderColor = 'red';
+        msgbar.style.backgroundColor = 'pink';
     } else {
         msgbar.style.color = 'green';
         msgbar.style.borderColor = 'green';
         msgbar.style.backgroundColor = 'lightgreen';
     }
+
     msgbar.style.display = 'block';
 }
 
