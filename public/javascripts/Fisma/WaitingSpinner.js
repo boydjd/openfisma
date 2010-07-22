@@ -63,7 +63,7 @@ Fisma.WaitingSpinner = function() {
             Fisma.WaitingSpinner.element.disabled = false;
             Fisma.WaitingSpinner.container.disabled = false;
         },
-        destory: function() {
+        destroy: function() {
             Fisma.WaitingSpinner.hide();
             Fisma.WaitingSpinner.container.removeChild(Fisma.WaitingSpinner.spinner);
             Fisma.WaitingSpinner.spinner = null;

@@ -38,7 +38,7 @@ function GeneratePassword () {
                                         success: function(o) {
                                             document.getElementById('password').value = o.responseText;
                                             document.getElementById('confirmPassword').value = o.responseText;
-                                            Fisma.WaitingSpinner.destory();
+                                            Fisma.WaitingSpinner.destroy();
                                         },
                                         failure: function(o) {alert('Failed to generate password: ' + o.statusText);}
                                     },
@@ -65,26 +65,36 @@ var check_account = function () {
                 var data = YAHOO.lang.JSON.parse(o.responseText);
                 message(data.msg, data.type);
 
-                // Maps column's logical names corresponding to LDAP account columns.
-                var accountColumns = new Array(
-                        ['nameFirst', 'nameLast', 'phoneOffice', 'phoneMobile', 'email', 'title'],
-                        ['sn', 'givenname', 'telephonenumber', 'mobile', 'mail', 'title']
-                    );
+                // Openfisma column's name is corresponding to LDAP account column's name
+                var openfismaColumns = new Array('nameFirst',
+                                                 'nameLast',
+                                                 'phoneOffice',
+                                                 'phoneMobile',
+                                                 'email',
+                                                 'title');
+
+                // LDAP account column's name
+                var ldapColumns = new Array('sn',
+                                            'givenname',
+                                            'telephonenumber',
+                                            'mobile',
+                                            'mail',
+                                            'title');
 
                 // Make sure each column value is not null in LDAP account, then populate to related elements.
                 if (data.accountInfo != null){
-                    for (i=0; i < accountColumns[1].length; i++)
+                    for (var i in ldapColumns)
                     {
-                        var accountColumnObj = eval('data.accountInfo.' + accountColumns[1][i]);
-                        if (accountColumnObj != null) {
-                            document.getElementById(accountColumns[0][i]).value = accountColumnObj;
+                        var columnValue = data.accountInfo[ldapColumns[i]];
+                        if (columnValue != null) {
+                            document.getElementById(openfismaColumns[i]).value = columnValue;
                         } else {
-                            document.getElementById(accountColumns[0][i]).value = '';
+                            document.getElementById(openfismaColumns[i]).value = '';
                         }
                     }
                 }
 
-                Fisma.WaitingSpinner.destory();
+                Fisma.WaitingSpinner.destroy();
             },
 
             failure : function(o) {

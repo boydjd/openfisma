@@ -107,7 +107,7 @@ Fisma.Email = function() {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
                     message(data.msg, data.type);
-                    Fisma.WaitingSpinner.destory();
+                    Fisma.WaitingSpinner.destroy();
                 },
                 failure : function(o) {
                     /** @todo english */

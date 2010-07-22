@@ -36,7 +36,7 @@ function validateLDAP () {
     YAHOO.util.Connect.asyncRequest('POST', '/config/validate-ldap/format/html', {
         success:function (o) {
             message(o.responseText);
-            Fisma.WaitingSpinner.destory();
+            Fisma.WaitingSpinner.destroy();
         },
         failure: handleFailure});
 }
