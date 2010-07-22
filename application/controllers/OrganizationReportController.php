@@ -27,6 +27,17 @@
  */
 class OrganizationReportController extends SecurityController
 {
+    public function init()
+    {
+        parent::init();
+
+        $this->_helper->reportContextSwitch()
+                      ->addActionContext('personnel', array('html', 'pdf', 'xls'))
+                      ->addActionContext('privacy', array('html', 'pdf', 'xls'))
+                      ->addActionContext('security-authorization', array('html', 'pdf', 'xls'))
+                      ->initContext();
+    }
+
     /**
      * Check that the user has the privilege to run reports
      */
@@ -35,12 +46,6 @@ class OrganizationReportController extends SecurityController
         parent::preDispatch();
 
         $this->_acl->requireArea('system_inventory_report');
-
-        $this->_helper->reportContextSwitch()
-                      ->addActionContext('personnel', array('html', 'pdf', 'xls'))
-                      ->addActionContext('privacy', array('html', 'pdf', 'xls'))
-                      ->addActionContext('security-authorization', array('html', 'pdf', 'xls'))
-                      ->initContext();
     }
     
     /**
