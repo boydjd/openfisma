@@ -61,36 +61,6 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
     }
 
     /**
-     * The _forward() method from Zend_Controller_Action for use within this helper.
-     *
-     * @param string $action
-     * @param string $controller
-     * @param string $module
-     * @param array $params
-     * @return void
-     */
-    protected function _forward($action, $controller = null, $module = null, array $params = null)
-    {
-        $request = $this->getRequest();
-
-        if (null !== $params) {
-            $request->setParams($params);
-        }
-
-        if (null !== $controller) {
-            $request->setControllerName($controller);
-
-            // Module should only be reset if controller has been specified
-            if (null !== $module) {
-                $request->setModuleName($module);
-            }
-        }
-
-        $request->setActionName($action)
-                ->setDispatched(false);
-    }
-
-    /**
      * Method to return whether authentication is required for the current controller/action pair
      *
      * @return bool True if authentication is required, false otherwise.
