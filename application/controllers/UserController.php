@@ -617,19 +617,23 @@ class UserController extends BaseController
         
         $flag = 0;
         $password = "";
-        $length = rand($passLengthMin ? $passLengthMin : 1, $passLengthMax);
+        $length = $passLengthMax;
+
         if (true == $passUpper) {
             $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             $flag++;
         }
+
         if (true == $passLower) {
             $possibleCharactors[] = "abcdefghijklmnopqrstuvwxyz";
             $flag++;
         }
+
         if (true == $passNum) {
             $possibleCharactors[] = "0123456789";
             $flag++;
         }
+
         if (true == $passSpecial) {
             $possibleCharactors[] = "!@#$%^&*()_+=-`~\|':;?><,.[]{}/";
             $flag++;
@@ -687,6 +691,8 @@ class UserController extends BaseController
                           'title')
                 );
                 $msg = "$account exists, the dn is: $dn";
+                
+                break;
             } catch (Zend_Ldap_Exception $e) {
                 $type = 'warning';
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
