@@ -299,17 +299,18 @@ class ConfigController extends SecurityController
         if ($form->isValid($ldapConfig)) {
             try {
                 $ldapConfig = $form->getValues();
-                
-                if (empty($ldapConfig['password'])) {
-                    $ldap = Doctrine::getTable('LdapConfig')->find($id);
-                    
-                    if (!empty($ldap[0])) {
-                        $data['password'] = $ldap[0]->password;
-                    }
 
-                    unset($ldapConfig['SaveLdap']);
-                    unset($ldapConfig['Reset']);
+                // If password is all ********, then use the stored password instead
+                if (preg_match('/^\*+$/', $ldapConfig['password'])) {
+                    $ldap = Doctrine::getTable('LdapConfig')->find($id);
+
+                    if ($ldap) {
+                        $ldapConfig['password'] = $ldap->password;
+                    }
                 }
+
+                unset($ldapConfig['SaveLdap']);
+                unset($ldapConfig['Reset']);
                 
                 $ldapServer = new Zend_Ldap($ldapConfig);
                 $ldapServer->connect();
