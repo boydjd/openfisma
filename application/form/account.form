@@ -38,13 +38,13 @@ displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
 elements.generate_password.type = "Form_Button"
 elements.generate_password.options.label = "Generate Password"
-elements.generate_password.options.onClickFunction = "GeneratePassword"
+elements.generate_password.options.onClickFunction = "Fisma.Account.generatePassword"
 elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.checkAccount.type = "Form_Button"
 elements.checkAccount.options.label = "Check Account"
-elements.checkAccount.options.onClickFunction = "check_account"
+elements.checkAccount.options.onClickFunction = "Fisma.Account.checkAccount"
 displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
 elements.nameFirst.type = "text"
