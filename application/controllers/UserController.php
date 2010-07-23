@@ -687,6 +687,8 @@ class UserController extends BaseController
                           'title')
                 );
                 $msg = "$account exists, the dn is: $dn";
+                
+                break;
             } catch (Zend_Ldap_Exception $e) {
                 $type = 'warning';
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the

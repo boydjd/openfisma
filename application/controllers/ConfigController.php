@@ -224,17 +224,24 @@ class ConfigController extends SecurityController
     {        
         $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
+
+        $ldap = Doctrine::getTable('LdapConfig')->find($id);
         
-        $ldap = new LdapConfig();
-        if (!empty($id)) {
-            $ldap = $ldap->getTable('LdapConfig')->find($id);
-            // @see http://jira.openfisma.org/browse/OFJ-30
-            $ldap->password = '********';
+        if (!$ldap) {
+            throw new Fisma_Zend_Exception("No LDAP configuration found for id ($id)");
         }
+
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
+
             if ($form->isValid($data)) {
                 $values = $form->getValues();
+
+                // If password is all ********, then don't overwrite the existing password
+                if (preg_match('/^\*+$/', $values['password'])) {
+                    unset($values['password']);
+                } 
+
                 $ldap->merge($values);
                 $ldap->save();
                 
@@ -247,10 +254,16 @@ class ConfigController extends SecurityController
                 // Error message
                 $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'warning');
             }
-        } else {
-            //only represent the view
-            $form->setDefaults($ldap->toArray());
         }
+
+        // Mask password for view script @see http://jira.openfisma.org/browse/OFJ-30
+        $ldapView = $ldap->toArray();
+        
+        $ldapView['password'] = '********';
+
+        $form->getElement('password')->setRenderPassword(true);
+        $form->setDefaults($ldapView);
+        
         $this->view->form = $form;
         $this->render();
     }
@@ -302,7 +315,7 @@ class ConfigController extends SecurityController
                 $ldapServer->connect();
                 $ldapServer->bind();
                 
-                $msg = "LDAP server is .";
+                $msg = "Connected successfully!";
                 $type = 'notice';
             } catch (Exception $e) {
                 $msg = $e->getMessage();
