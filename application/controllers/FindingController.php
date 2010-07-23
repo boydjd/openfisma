@@ -44,6 +44,13 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
+    
+    public function init()
+    {
+        $this->_helper->fismaContextSwitch
+            ->addActionContext('template', 'xls')
+            ->initContext();
+    }
 
     /** 
      * Overriding Hooks
@@ -198,19 +205,9 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('inject', 'Finding');
         
-        $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addContext(
-            'xls', 
-            array(
-                'suffix' => 'xls',
-                'headers' => array(
-                    'Content-type' => 'application/vnd.ms-excel',
-                    'Content-Disposition' => 'filename=' . Fisma_Inject_Excel::TEMPLATE_NAME
-                )
-            )
-        );
-        $contextSwitch->addActionContext('template', 'xls');
-        
+        // set the filename for the browser to save the file as
+        $this->_helper->fismaContextSwitch->setFilename(Fisma_Inject_Excel::TEMPLATE_NAME);
+
         /* The spreadsheet won't open in Excel if any of these tables are 
          * empty. So we explicitly check for that condition, and if it 
          * exists then we show the user an error message explaining why 
@@ -282,20 +279,11 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
             $this->view->templateVersion = Fisma_Inject_Excel::TEMPLATE_VERSION;
-
-            // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
-            // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
-            $contextSwitch->initContext('xls');
-            
-            /* Bug fix #2507318 - 'OVMS Unable to open Spreadsheet upload file'
-             * This fixes a bug in IE6 where some mime types get deleted if IE
-             * has caching enabled with SSL. By setting the cache to 'private' 
-             * we can tell IE not to cache this file.
-             */                                       
-            $this->getResponse()->setHeader('Pragma', 'private', true);
-            $this->getResponse()->setHeader('Cache-Control', 'private', true);
         } catch(Fisma_Zend_Exception $fe) {
-            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+            // error condition, remove all stuff from the context switch
+            $this->getResponse()->clearAllHeaders();
+            $this->_helper->viewRenderer->setViewSuffix('phtml');
+            Zend_Layout::getMvcInstance()->enableLayout();
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
             $this->_forward('injection', 'finding');
         }

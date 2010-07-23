@@ -38,6 +38,13 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     protected $_contextKey = 'fismaContexts';
 
     /**
+     * Name to send to the browser in the Content-Disposition header.  Null means to use the contexts' defaults.
+     *
+     * @property string
+     */
+    protected $_dispositionFilename = null;
+
+    /**
      * Add extra initialization steps when this helper is used instead of the Zend version.
      *
      * @return void
@@ -101,5 +108,20 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     protected function _disableSessionCacheLimiter()
     {
         session_cache_limiter(false);
+    }
+
+    /**
+     * Function to set the filename passed with content-disposition headers.
+     *
+     * @param string $filename
+     * @return void
+     */
+    public function setFilename($filename)
+    {
+        $this->_dispositionFilename = $filename;
+        // if current context is set, then the context has been initialized and the header will need to be set manually
+        if ($this->_currentContext != null && $filename != null) {
+            $this->getResponse()->setHeader('Content-Disposition', 'filename='.$filename, true);
+        }
     }
 }
