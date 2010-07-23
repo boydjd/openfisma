@@ -43,37 +43,20 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
             return;
         }
 
+        $currentUser = CurrentUser::getInstance();
+
         $controller = $this->getActionController();
-        $container = $controller->getInvokeArg('bootstrap')->getContainer();
 
-        // Verify that the user is authenticated, and store a reference to the authenticated user credentials
-        $auth = Zend_Auth::getInstance();
-        //use the persistant storage
-        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-
-        if ($auth->hasIdentity()) {
-            $me = $container->currentUser->get();
-
-            // getting the ACL can throw an exception that we want to trap
-            try {
-                $acl = $container->acl->get();
-
-                // Setup the ACL view helper
-                $aclHelper = $controller->view->getHelper('acl')->setAcl($acl);
-            } catch(Fisma_Zend_Exception_InvalidAuthentication $e) {
-                $controller->view->error = $e->getMessage();
-                $this->_forward('logout', 'Auth');
-            }
+        if ($currentUser != null) {
+            // Setup the ACL view helper
+            $controller->view->getHelper('acl')->setAcl($currentUser->acl());
         } else {
-            // User is not authenticated. The preDispatch will forward the user to the login page,
-            // but we want to store their original request so that we can redirect them to their
-            // original destination after they have authenticated.
+            // store original requested URL in session for the login script to redirect to
             $session = Fisma::getSession();
             $session->redirectPage = $_SERVER['REQUEST_URI'];
 
             $message = 'Your session has expired. Please log in again to begin a new session.';
-            $controller->view->error = $message;
-            $this->_forward('logout', 'Auth');
+            throw new Fisma_Zend_Exception_InvalidAuthentication($message);
         }
     }
 

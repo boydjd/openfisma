@@ -36,35 +36,39 @@ class ErrorController extends Zend_Controller_Action
      */
     public function errorAction()
     {
-        // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
-        // we should always reset the view suffix before rendering an error message.
-        $auth = Zend_Auth::getInstance();
-        $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-
-        $this->_helper->viewRenderer->setViewSuffix('phtml');
-        $content = null;
         $errors = $this->_getParam('error_handler');
 
-            $this->getResponse()->clearBody();
-            $content = get_class($errors->exception)
-                     . ": \""
-                     . $errors->exception->getMessage()
-                     . "\"\n"
-                     . $errors->exception->getTraceAsString()
-                     . "\n";
-            $logger = Fisma::getLogInstance(CurrentUser::getInstance());
-            $logger->log($content, Zend_Log::ERR);
-            $this->view->content = $content;
+        // If exception is an authentication exception, forward to auth/login
+        if ($errors->exception instanceof Fisma_Zend_Exception_InvalidAuthentication) {
+            $this->view->error = $errors->exception->getMessage();
+            $this->_forward('logout', 'Auth');
+            return;
+        }
 
-            if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege ||
-                $errors->exception instanceof Fisma_Zend_Exception_InvalidAuthentication) {
-                $this->view->message = $errors->exception->getMessage();
-            } else {         
-                $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
-                                     . " for administrator review.</p><p>You may want to try again in a"
-                                     . " few minutes. If the problem persists, please contact your"
-                                     . " administrator.</p>";
-            }
+        // If an error occurs in any context other than the default, then the view suffix will have changed; therefore,
+        // we should always reset the view suffix before rendering an error message.
+        $this->_helper->viewRenderer->setViewSuffix('phtml');
+        $content = null;
+
+        $this->getResponse()->clearBody();
+        $content = get_class($errors->exception)
+                 . ": \""
+                 . $errors->exception->getMessage()
+                 . "\"\n"
+                 . $errors->exception->getTraceAsString()
+                 . "\n";
+        $logger = Fisma::getLogInstance(CurrentUser::getInstance());
+        $logger->log($content, Zend_Log::ERR);
+        $this->view->content = $content;
+
+        if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {
+            $this->view->message = $errors->exception->getMessage();
+        } else {         
+            $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
+                                 . " for administrator review.</p><p>You may want to try again in a"
+                                 . " few minutes. If the problem persists, please contact your"
+                                 . " administrator.</p>";
+        }
 
         if ($errors->type === Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER ||
             $errors->type === Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION) {
