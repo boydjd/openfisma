@@ -55,13 +55,13 @@ class AuthController extends Zend_Controller_Action
         $username = $this->getRequest()->getPost('username');
         $password = $this->getRequest()->getPost('userpass');
 
+        $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+
+        $this->view->showReportIncidentButton = ($incidentModule && $incidentModule->enabled);
+
         // If the username isn't passed in the post variables, then just display
         // the login screen without any further processing.
         if ( empty($username) ) {
-            $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
-
-            $this->view->showReportIncidentButton = ($incidentModule && $incidentModule->enabled);
-
             return $this->render();
         }
         
