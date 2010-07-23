@@ -735,6 +735,7 @@ class RemediationController extends SecurityController
 
         $this->view->commentButton = $commentButton;
         $this->view->comments = $comments;
+        $this->_helper->layout->setLayout('ajax');
     }
     
     /**
