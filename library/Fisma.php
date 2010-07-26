@@ -379,7 +379,7 @@ class Fisma
             $cache = self::getCacheManager()->getCache('default');
 
             $zfDebugOptions = array(
-                                'jquery_path' => '/public/javascripts/jquery-1.3.2.min.js',
+                                'jquery_path' => '/javascripts/jquery-min.js',
                                 'plugins' => array(
                                     'Variables',
                                     'Html',
