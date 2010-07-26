@@ -1462,7 +1462,7 @@ class RemediationController extends SecurityController
             )
         );
             
-        $form->setElementDecorators(array('RenderSelf', 'Label'), 'securityControlAutocomplete');
+        $form->setElementDecorators(array('RenderSelf', 'Label'), array('securityControlAutocomplete'));
 
         $this->view->form = $form;
         
