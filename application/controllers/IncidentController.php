@@ -570,7 +570,8 @@ class IncidentController extends IncidentBaseController
      * This is loaded into a tab view, so it has no layout
      */
     public function incidentAction()
-    {        
+    {
+        /** @todo move to ajax context */
         $this->_helper->layout->disableLayout();
         
         $id = $this->_request->getParam('id');
@@ -669,6 +670,9 @@ class IncidentController extends IncidentBaseController
         $id = $this->_request->getParam('id');
         
         $this->_assertCurrentUserCanViewIncident($id);
+
+        /** @todo move to ajax context */
+        $this->_helper->layout->disableLayout();
 
         $incident = Doctrine::getTable('Incident')->find($id);
         
@@ -855,6 +859,9 @@ class IncidentController extends IncidentBaseController
         $incident = Doctrine::getTable('Incident')->find($id);
         $this->view->incident = $incident;
         
+        /** @todo move to ajax context */
+        $this->_helper->layout->disableLayout();
+
         $this->_assertCurrentUserCanViewIncident($id);
         
         switch ($incident->status) {
@@ -1076,6 +1083,9 @@ class IncidentController extends IncidentBaseController
 
         $this->_assertCurrentUserCanViewIncident($id);
 
+        /** @todo move to ajax context */
+        $this->_helper->layout->disableLayout();
+
         $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
         $commentButton = new Fisma_Yui_Form_Button(
@@ -1110,6 +1120,9 @@ class IncidentController extends IncidentBaseController
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
         $incident = Doctrine::getTable('Incident')->find($id);
+
+        /** @todo move to ajax context */
+        $this->_helper->layout->disableLayout();
 
         $this->_assertCurrentUserCanViewIncident($id);
 
