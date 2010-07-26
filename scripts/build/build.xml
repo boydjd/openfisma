@@ -26,7 +26,7 @@
     <target name="-js.minify" depends="-js.concat">
         <echo message="Minifying JavaScript..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.js}" includes="**/*.js" excludes="**/tiny_mce/**,**/*-min.js"/>
+            <fileset dir="${location.js}" includes="**/*.js" excludes="**/tiny_mce/**,**/*-min.js,**/*.min.js"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <srcfile/>
