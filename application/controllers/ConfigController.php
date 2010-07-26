@@ -217,7 +217,8 @@ class ConfigController extends SecurityController
 
     /**
      * Add/Update LDAP configurations
-     * 
+     *
+     * @TODO Split this out into createLdapAction and updateLdapAction
      * @return void
      */
     public function updateLdapAction()
@@ -225,10 +226,12 @@ class ConfigController extends SecurityController
         $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
 
-        $ldap = Doctrine::getTable('LdapConfig')->find($id);
+        if (!empty($id)) {
+            $ldap = Doctrine::getTable('LdapConfig')->find($id);
         
-        if (!$ldap) {
-            throw new Fisma_Zend_Exception("No LDAP configuration found for id ($id)");
+            if (!$ldap) {
+                throw new Fisma_Zend_Exception("No LDAP configuration found for id ($id)");
+            }
         }
 
         if ($this->_request->isPost()) {
@@ -256,13 +259,15 @@ class ConfigController extends SecurityController
             }
         }
 
-        // Mask password for view script @see http://jira.openfisma.org/browse/OFJ-30
-        $ldapView = $ldap->toArray();
-        
-        $ldapView['password'] = '********';
+        if (isset($ldap)) {
+            // Mask password for view script @see http://jira.openfisma.org/browse/OFJ-30
+            $ldapView = $ldap->toArray();
+            
+            $ldapView['password'] = '********';
 
-        $form->getElement('password')->setRenderPassword(true);
-        $form->setDefaults($ldapView);
+            $form->getElement('password')->setRenderPassword(true);
+            $form->setDefaults($ldapView);
+        }
         
         $this->view->form = $form;
         $this->render();
