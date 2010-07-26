@@ -69,7 +69,15 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      * @var Zend_Form
      */
     private $_toolbarForm;
-    
+
+    /**
+     * Controller property key to utilize for context switching
+     * Override from parent.
+     *
+     * @var string
+     */
+    protected $_contextKey = 'reportContexts';
+
     /**
      * Set the report object
      * 

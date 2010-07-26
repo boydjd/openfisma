@@ -30,6 +30,14 @@
 class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Controller_Action_Helper_ContextSwitch
 {
     /**
+     * Controller property key to utilize for context switching
+     * Override from parent.
+     *
+     * @var string
+     */
+    protected $_contextKey = 'fismaContexts';
+
+    /**
      * Add extra initialization steps when this helper is used instead of the Zend version.
      *
      * @return void
