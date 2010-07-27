@@ -6,9 +6,8 @@
               content="<?php echo Fisma::configuration()->getConfig('session_inactivity_period'); ?>;url=/auth/logout">
 
     <?php 
-    $this->headTitle()->prepend($this->pageTitle());
-    echo $this->escape($this->headTitle(), 'none');
-
+    $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
+    echo $this->headTitle();
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
                            'paginator', 'datasource', 'datatable', 'selector', 'treeview', 'uploader',

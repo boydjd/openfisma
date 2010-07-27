@@ -9,7 +9,7 @@
               content="<?php echo $this->escape($inactivityPeriod, 'none'); ?>;url=/auth/logout">
 
     <?php 
-    $this->headTitle()->prepend($this->pageTitle());
+    $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
     echo $this->escape($this->headTitle(), 'none');
 
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
