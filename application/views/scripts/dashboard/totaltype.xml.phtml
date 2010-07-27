@@ -1,3 +1,4 @@
+<?php if(!empty($this->summary)) : ?>
 <chart>
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
     <link_data url="javascript:pieChartClick(_col_)" target="javascript" />
@@ -67,3 +68,6 @@
         <number>5</number>
     </series_explode>
 </chart> 
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '380', 'height' => '275'));
+endif; ?>

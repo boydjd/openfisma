@@ -1,3 +1,4 @@
+<?php if (!empty($this->summary)) : ?>
 <chart>
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
     <link_data url="javascript:barChartClick(_series_)" target="javascript" />
@@ -108,3 +109,6 @@
 ?>
     </series_color>
 </chart>
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '380', 'height' => '275'));
+endif; ?>
