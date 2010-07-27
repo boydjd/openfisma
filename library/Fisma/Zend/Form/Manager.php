@@ -86,7 +86,9 @@ class Fisma_Zend_Form_Manager
         
         // By default, all input is trimmed of extraneous white space
         foreach ($form->getElements() as $element) {
-            $element->addFilter('StringTrim');
+            if (!$element->getFilter('StringTrim')) {
+                $element->addFilter('StringTrim');
+            }
         }
         
         return $form;
