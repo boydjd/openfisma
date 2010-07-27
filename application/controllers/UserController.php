@@ -218,7 +218,11 @@ class UserController extends BaseController
     {
         $roles = array();
         $assignedRoles = $subject->Roles->toArray();
-        array_walk($assignedRoles, create_function('$v, $k, &$roles', '$roles[] = $v[\'id\'];'), &$roles);
+
+        foreach ($assignedRoles as $assignedRole) {
+            $roles[] = $assignedRole['id'];
+        }
+
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roles);
 
