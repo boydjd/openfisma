@@ -1,0 +1,9 @@
+<?php
+$request = Zend_Controller_Front::getInstance()->getRequest();
+$this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
+$this->headTitle(ucwords(str_replace('-', ' ', $request->getControllerName())))
+     ->headTitle(ucwords(str_replace('-', ' ', $request->getActionName())));
+
+$this->headTitle()->setSeparator(' - ');
+echo $this->escape($this->headTitle(), 'none');
+?>
