@@ -355,7 +355,11 @@ class UserController extends BaseController
                 $modified = $user->getModified();
 
                 $user->unlink('Events');
-                $user->link('Events', $postEvents);
+
+                if (!empty($postEvents)) {
+                    $user->link('Events', $postEvents);
+                }
+
                 $user->save();
                 Doctrine_Manager::connection()->commit();
 
