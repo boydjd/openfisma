@@ -116,6 +116,8 @@ class UserController extends BaseController
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
+        $form->removeElement('lockReason');
+        $form->removeElement('lockTs');
         return $form;
     }
 
