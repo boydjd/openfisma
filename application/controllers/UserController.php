@@ -266,10 +266,7 @@ class UserController extends BaseController
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully"; 
                     if (isset($modified['email'])) {
-                        $mail = new Fisma_Zend_Mail();
-                        if ($mail->validateEmail($user, $modified['email'])) {
                             $message .= ", and a validation email has been sent to your new e-mail address.";
-                        } 
                     }
                     $model   = 'notice';
                 } catch (Doctrine_Exception $e) {
