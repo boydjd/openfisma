@@ -255,6 +255,7 @@ div.buttonBar {
  * element which needs to become editable.
  */
 .editable {
+    white-space: nowrap;
     background: url(/images/edit.png) no-repeat top right;
     padding-right: 20px;
     margin-right: 10px;
