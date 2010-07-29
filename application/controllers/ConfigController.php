@@ -245,6 +245,10 @@ class ConfigController extends SecurityController
                     unset($values['password']);
                 } 
 
+                if (!isset($ldap)) {
+                    $ldap = new LdapConfig();
+                }
+
                 $ldap->merge($values);
                 $ldap->save();
                 
