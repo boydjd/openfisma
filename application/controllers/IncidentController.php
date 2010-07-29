@@ -1334,8 +1334,11 @@ class IncidentController extends IncidentBaseController
         }
 
         try {
-            $incident->merge($newValues = $this->getRequest()->getParam('incident'));
-            $incident->save();
+            $newValues = $this->getRequest()->getParam('incident');
+            if (!empty($newValues)) {
+                $incident->merge($newValues);
+                $incident->save();
+            }
         } catch (Doctrine_Validator_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
