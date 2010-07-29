@@ -406,7 +406,11 @@ class FindingReportController extends SecurityController
                ->setData($reportData);
 
         // Add each column, and check whether an HTML formatter is required
-        $htmlColumns = $reportConfig->htmlcolumns->toArray();
+        if (!empty($reportConfig->htmlcolumns)) {
+            $htmlColumns = $reportConfig->htmlcolumns->toArray();
+        } else {
+            $htmlColumns = array();
+        }
 
         foreach ($columns as $column) {
             $htmlFormat = in_array($column, $htmlColumns) ? 'Fisma.TableFormat.formatHtml' : null;
