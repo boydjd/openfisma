@@ -150,7 +150,7 @@ class DashboardController extends SecurityController
         
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
-            $this->view->dismissUrl = "/dashboard/dismiss/notifications";
+            $this->view->dismissUrl = "/dashboard/index/dismiss/notifications";
         }
 
         $this->view->statusChart = new Fisma_Chart('/dashboard/totalstatus/format/xml', 380, 275);
