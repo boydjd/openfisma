@@ -38,6 +38,11 @@ class Version61 extends Doctrine_Migration_Base
      */
     public function up()
     {
+        // rebuild the models so we can use them to load the data
+        $configuration = Zend_Registry::get('doctrine_config');
+        $modelOptions = $configuration['generate_models_options'];
+        Doctrine::generateModelsFromYaml(Fisma::getPath('schema'), Fisma::getPath('model'), $modelOptions);
+
         $tempDir = Fisma::getPath('temp') . '/version59data.' . uniqid();
 
         if (!mkdir($tempDir, 0777)) {
