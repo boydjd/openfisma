@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -20,18 +20,23 @@
  * Update app version 
  * 
  * @package Migration
- * @version $Id: 1268671549_version30.php 3105 2010-03-15 16:53:47Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version58 extends Doctrine_Migration_Base
+class Version70 extends Doctrine_Migration_Base
 {
     /**
      * Add configuration
      */
     public function up()
     {
+        $pdo = Doctrine_Manager::connection()->getDbh();
+        $conn = Doctrine_Manager::connection();
+
+        $updateSql = "UPDATE configuration SET app_version = '2.8.0'";
+        $conn->exec($updateSql);
+
     }
 
     /**
