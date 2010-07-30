@@ -229,11 +229,16 @@ class OrganizationController extends SecurityController
      */
     public function viewAction()
     {
-        $this->searchbox();
         $id = $this->_request->getParam('id');
-        $v = $this->_request->getParam('v', 'view');
-        
         $organization = Doctrine::getTable('Organization')->find($id);
+
+        if ($organization->orgType == 'system') {
+            $this->_forward('view', 'system');
+            return;
+        }
+
+        $this->searchbox();
+        $v = $this->_request->getParam('v', 'view');
         
         $form = $this->_getOrganizationForm($organization);
         
