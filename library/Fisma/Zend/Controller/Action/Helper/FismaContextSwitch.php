@@ -63,7 +63,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                         'Content-Type' => 'application/pdf'
                     ),
                     'callbacks' => array(
-                        self::TRIGGER_POST => '_disableSessionCacheLimiter'
+                        self::TRIGGER_INIT => '_disableSessionCacheLimiter'
                     )
                 )
             );
@@ -79,7 +79,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                         'Content-Type' => 'application/vnd.ms-excel'
                     ),
                     'callbacks' => array(
-                        self::TRIGGER_POST => '_disableSessionCacheLimiter'
+                        self::TRIGGER_INIT => '_disableSessionCacheLimiter'
                     )
                 )
             );
