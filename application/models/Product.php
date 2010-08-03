@@ -27,4 +27,19 @@
  */
 class Product extends BaseProduct
 {
+    /**
+     * preDelete 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if (count($this->Assets) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This product can not be deleted because it is already associated with one or more assets'
+            );
+        }
+    }
 }
