@@ -28,7 +28,6 @@
  */
 class NetworkController extends Fisma_Zend_Controller_Action_Object
 {
-    
     /**
      * The main name of the model.
      * 
@@ -37,37 +36,4 @@ class NetworkController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Network';
-
-    /**
-     * Delete a network
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {        
-        $id = $this->_request->getParam('id');
-        $network = Doctrine::getTable('Network')->find($id);
-        
-        if (!$network) {
-            $msg   = "Invalid Network ID";
-            $type = 'warning';
-        } else {
-            $this->_acl->requirePrivilegeForObject('delete', $network);
-            
-            $assets = $network->Assets->toArray();
-            if (!empty($assets)) {
-                $msg = 'This network can not be deleted because it is'
-                     . ' already associated with one or more assets';
-                $type = 'warning';
-            } else {
-                parent::deleteAction();
-                // parent method will take care 
-                // of the message and forword the page
-                return;
-            }
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
-    }
-
 }
