@@ -329,44 +329,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     }
     
     /**
-     * Delete an asset
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $asset = Doctrine::getTable($this->_modelName)->find($id);
-        $this->_acl->requirePrivilegeForObject('delete', $asset);
-        
-        if (!$asset) {
-            $msg   = "Invalid {$this->_modelName} ID";
-            $type = 'warning';
-        } else {
-            try {
-                if (count($asset->Findings)) {
-                    $msg   = $msg = 'This asset cannot be deleted because it has findings against it';
-                    $type = 'warning';
-                } else {
-                    Doctrine_Manager::connection()->beginTransaction();
-                    $asset->delete();
-                    Doctrine_Manager::connection()->commit();
-                    $msg   = "Asset deleted successfully";
-                    $type = 'notice';
-                }
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                if (Fisma::debug()) {
-                    $msg .= $e->getMessage();
-                }
-                $type = 'warning';
-            } 
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
-    }
-    
-    /**
      * Delete assets
      * 
      * @return void
