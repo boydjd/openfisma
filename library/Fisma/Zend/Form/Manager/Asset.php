@@ -40,7 +40,7 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
             ->leftJoin('o.System system')
             ->andWhere('system.sdlcPhase <> ?', array('disposal'))
             ->execute();
-        $selectArray = $this->view->treeToSelect($systems, 'nickname');
+        $selectArray = $this->_view->treeToSelect($systems, 'nickname');
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
         
         $networks = Doctrine::getTable('Network')->findAll()->toArray();
