@@ -44,7 +44,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
-    
+
     /** 
      * Overriding Hooks
      * 
@@ -73,7 +73,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
         // If an asset is specified, then try to link the finding to that asset and assign
         // the responsible system automatically. Otherwise, link to the responsible system
         // that the user selected.
-        $asset = Doctrine::getTable('Asset')->find($values['assetId']);
+        $asset = isset($values['assetId']) ? Doctrine::getTable('Asset')->find($values['assetId']) : null;
         if ($asset) {
             // set organization id by related asset
             $subject->ResponsibleOrganization = $asset->Organization;

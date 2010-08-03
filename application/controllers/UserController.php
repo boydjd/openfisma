@@ -68,6 +68,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('generate_password');
         $form->removeElement('role');
         $form->removeElement('locked');
+        $form->removeElement('lockReason');
+        $form->removeElement('lockTs');
         return $form;
     }
 
@@ -170,7 +172,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $roles = array();
         $assignedRoles = $subject->Roles->toArray();
-        array_walk($assignedRoles, create_function('$v, $k, &$roles', '$roles[] = $v[\'id\'];'), &$roles);
+
+        foreach ($assignedRoles as $assignedRole) {
+            $roles[] = $assignedRole['id'];
+        }
+
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roles);
 
@@ -212,10 +218,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully"; 
                     if (isset($modified['email'])) {
-                        $mail = new Fisma_Zend_Mail();
-                        if ($mail->validateEmail($user, $modified['email'])) {
                             $message .= ", and a validation email has been sent to your new e-mail address.";
-                        } 
                     }
                     $model   = 'notice';
                 } catch (Doctrine_Exception $e) {
@@ -301,7 +304,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $modified = $user->getModified();
 
                 $user->unlink('Events');
-                $user->link('Events', $postEvents);
+
+                if (!empty($postEvents)) {
+                    $user->link('Events', $postEvents);
+                }
+
                 $user->save();
                 Doctrine_Manager::connection()->commit();
 
@@ -542,19 +549,23 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         
         $flag = 0;
         $password = "";
-        $length = rand($passLengthMin ? $passLengthMin : 1, $passLengthMax);
+        $length = $passLengthMax;
+
         if (true == $passUpper) {
             $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             $flag++;
         }
+
         if (true == $passLower) {
             $possibleCharactors[] = "abcdefghijklmnopqrstuvwxyz";
             $flag++;
         }
+
         if (true == $passNum) {
             $possibleCharactors[] = "0123456789";
             $flag++;
         }
+
         if (true == $passSpecial) {
             $possibleCharactors[] = "!@#$%^&*()_+=-`~\|':;?><,.[]{}/";
             $flag++;
@@ -595,11 +606,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         foreach ($data as $opt) {
-            $srv = new Zend_Ldap($opt);
             try {
+                $srv = new Zend_Ldap($opt);
+
                 $type = 'message';
                 $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
+
+                // Just get specified standard LDAP attributes.
+                $accountInfo = $srv->getEntry(
+                    $dn,
+                    array('sn',
+                          'givenname',
+                          'mail',
+                          'telephonenumber',
+                          'mobile',
+                          'title')
+                );
                 $msg = "$account exists, the dn is: $dn";
+                
+                break;
             } catch (Zend_Ldap_Exception $e) {
                 $type = 'warning';
                 // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
@@ -608,13 +633,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
                     $msg = "$account does NOT exist";
                 } else {
-                    $msg .= 'Unknown error while checking Account: '
+                    $msg .= 'Error while checking account: '
                           . $e->getMessage();
                 }
             }
         }
 
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
         $this->_helper->viewRenderer->setNoRender();
     }
 }

@@ -32,11 +32,6 @@ class Version58 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $app = Doctrine::getTable('Configuration')->findOneByName('app_version');
-        $app->value = '2.7.2';
-        $app->save();
-        $app->free();
-        unset($app);
     }
 
     /**
@@ -44,10 +39,5 @@ class Version58 extends Doctrine_Migration_Base
      */
     public function down()
     {
-        $app = Doctrine::getTable('Configuration')->findOneByName('app_version');
-        $app->value = '2.7.1';
-        $app->save();
-        $app->free();
-        unset($app);
     }
 }

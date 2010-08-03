@@ -361,7 +361,7 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('Organization parent')
             ->leftJoin('parent.System system')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
-            ->andWhere('nodeSystem.sdlcPhase <> ?', array('disposal'))
+            ->andWhere('node.orgType <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -735,6 +735,7 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->commentButton = $commentButton;
         $this->view->comments = $comments;
+        $this->_helper->layout->setLayout('ajax');
     }
     
     /**
@@ -1288,7 +1289,7 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
                 'f.responsibleOrganizationId', 
                 $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
             )
-            ->andWhere('ros.sdlcPhase <> ?', array('disposal'))
+            ->andWhere('ro.orgType <> ? OR ros.sdlcPhase <> ?', array('system', 'disposal'))
             ->orderBy($params['sortby'] . ' ' . $params['dir']);
 
         foreach ($params as $k => $v) {
@@ -1461,17 +1462,23 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
             )
         );
             
-        $form->setElementDecorators(array('RenderSelf', 'Label'), 'securityControlAutocomplete');
+        $form->setElementDecorators(array('RenderSelf', 'Label'), array('securityControlAutocomplete'));
 
         $this->view->form = $form;
         
-        $this->view->securityControlSearchButton = new Fisma_Yui_Form_Button(
+        $securityControlSearchButton = new Fisma_Yui_Form_Button(
             'securityControlSearchButton',
             array(
                 'label' => 'Edit Security Control Mapping',
                 'onClickFunction' => 'Fisma.Finding.showSecurityControlSearch'
             )
         );
+        
+        if ($this->view->finding->status != 'NEW' &&  $this->view->finding->status != 'DRAFT') {
+            $securityControlSearchButton->readOnly = true;
+        }
+        
+        $this->view->securityControlSearchButton = $securityControlSearchButton;
     }
     
     /** 

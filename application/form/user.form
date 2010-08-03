@@ -38,13 +38,13 @@ displayGroups.accountInfo.elements.confirmPassword = "confirmPassword"
 
 elements.generate_password.type = "Form_Button"
 elements.generate_password.options.label = "Generate Password"
-elements.generate_password.options.onClickFunction = "GeneratePassword"
+elements.generate_password.options.onClickFunction = "Fisma.User.generatePassword"
 elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.checkAccount.type = "Form_Button"
 elements.checkAccount.options.label = "Check Account"
-elements.checkAccount.options.onClickFunction = "check_account"
+elements.checkAccount.options.onClickFunction = "Fisma.User.checkAccount"
 displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
 elements.nameFirst.type = "text"
@@ -59,12 +59,12 @@ elements.nameLast.options.required = true
 elements.nameLast.options.attribs.size = 35
 displayGroups.accountInfo.elements.nameLast = "nameLast"
 
-elements.phoneOffice.type = "text"
+elements.phoneOffice.type = "Element_Phone"
 elements.phoneOffice.options.label = "Office Phone"
 elements.phoneOffice.options.attribs.size = 35
 displayGroups.accountInfo.elements.phoneOffice = "phoneOffice"
 
-elements.phoneMobile.type = "text"
+elements.phoneMobile.type = "Element_Phone"
 elements.phoneMobile.options.label = "Mobile Phone"
 elements.phoneMobile.options.attribs.size = 35
 displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"

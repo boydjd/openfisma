@@ -276,14 +276,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         }
 
         if ($v == 'edit') {
-            $this->view->assign('viewLink', "/irworkflow/view/id/$id");
-            $form->setAction("/irworkflow/update/id/$id");
+            $this->view->assign('viewLink', "/ir-workflow/view/id/$id");
+            $form->setAction("/ir-workflow/update/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/irworkflow/view/id/$id/v/edit");
+            $this->view->assign('editLink', "/ir-workflow/view/id/$id/v/edit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/irworkflow/delete/id/$id");
+        $this->view->assign('deleteLink', "/ir-workflow/delete/id/$id");
         $form->setDefaults($irworkflow);
         $this->view->form = $form;
         $this->view->assign('id', $id);
@@ -478,14 +478,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         }
 
         if ($v == 'stepedit') {
-            $this->view->assign('viewLink', "/irworkflow/stepview/id/$id");
-            $form->setAction("/irworkflow/stepupdate/id/$id");
+            $this->view->assign('viewLink', "/ir-workflow/stepview/id/$id");
+            $form->setAction("/ir-workflow/stepupdate/id/$id");
         } else {
             // In view mode, disable all of the form controls
-            $this->view->assign('editLink', "/irworkflow/stepview/id/$id/v/stepedit");
+            $this->view->assign('editLink', "/ir-workflow/stepview/id/$id/v/stepedit");
             $form->setReadOnly(true);
         }
-        $this->view->assign('deleteLink', "/irworkflow/stepdelete/id/$id");
+        $this->view->assign('deleteLink', "/ir-workflow/stepdelete/id/$id");
         $form->setDefaults($irworkflowstep);
         $this->view->form = $form;
         $this->view->assign('id', $id);

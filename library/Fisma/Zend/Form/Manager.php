@@ -84,9 +84,6 @@ class Fisma_Zend_Form_Manager
         //$form->addElementPrefixPath('Form', FORMS, 'decorator');
         $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
         
-        // By default, all input is trimmed of extraneous white space
-        $form->setElementFilters(array('StringTrim'));
-
         if ((!empty($options['formName'])) && class_exists('Fisma_Zend_Form_Manager_' . $options['formName'])) {
             $className = 'Fisma_Zend_Form_Manager_' . $options['formName'];
             $prepareForm = new $className($options['view'], $options['request'], $options['acl'], $options['user']);
@@ -94,6 +91,13 @@ class Fisma_Zend_Form_Manager
             $prepareForm->prepareForm();
             $form = $prepareForm->getForm();
             unset($prepareForm);
+        }
+
+        // By default, all input is trimmed of extraneous white space
+        foreach ($form->getElements() as $element) {
+            if (!$element->getFilter('StringTrim')) {
+                $element->addFilter('StringTrim');
+            }
         }
         
         return $form;

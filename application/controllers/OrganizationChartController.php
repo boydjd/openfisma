@@ -46,6 +46,7 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function preDispatch()
     {
+        parent::preDispatch();
         $this->_acl->requireArea('system_inventory');
     }
 

@@ -58,7 +58,7 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
         $hiddenValue = isset($_POST[$hiddenField]) ? $_POST[$hiddenField] : null;
         $hiddenValueAttrib = empty($hiddenValue) ? '' : "value=\"$hiddenValue\"";
 
-        $displayedValue = isset($_POST[$name]) ? $_POST[$name] : null;
+        $displayedValue = $this->getValue() ? $this->getValue() : null;
         $displayedValueAttrib = empty($displayedValue) ? '' : "value=\"$displayedValue\"";
                 
         $render  = "<div>

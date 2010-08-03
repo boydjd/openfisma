@@ -20,7 +20,7 @@ foreach ($this->documents as $document) {
 ?>
     <tr>
         <td>
-            <a href="/system/download-document/id/<?php echo $this->escape($document->id)?>">
+            <a href="/system-document/download/id/<?php echo $this->escape($document->id)?>">
                 <img src="<?php echo $this->escape($document->getIconUrl())?>">
                 <div><?php echo $this->escape($document->DocumentType->name)?></div>
             </a>

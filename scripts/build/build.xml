@@ -9,7 +9,7 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,CheckboxTree.js,editable.js,help.js,selectallselectnone.js,deleteconfirm.js,account.js,AC_RunActiveContent.js"/>
+            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,CheckboxTree.js,editable.js,help.js,selectallselectnone.js,deleteconfirm.js,AC_RunActiveContent.js"/>
             <fileset dir="${location.js}/Fisma" includes="**/*.js"/>
         </concat>
         <echo message="JavaScript concatenated."/>
@@ -18,7 +18,7 @@
     <target name="-css.concat">
         <echo message="Concatenating stylesheets..."/>
         <concat destfile="${location.css}/combined.css" force="no">
-            <filelist dir="${location.css}" files="main.css,Dashboard.css,AttachArtifacts.css,FindingSummary.css,Incident.css,Modules.css,SwitchButton.css"/>
+            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,install.css,login.css,print.css,combined.css"/>
         </concat>
         <echo message="Stylesheets concatenated."/>
     </target>
@@ -26,7 +26,7 @@
     <target name="-js.minify" depends="-js.concat">
         <echo message="Minifying JavaScript..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.js}" includes="**/*.js" excludes="**/tiny_mce/**,**/*-min.js"/>
+            <fileset dir="${location.js}" includes="**/*.js" excludes="**/tiny_mce/**,**/*-min.js,**/*.min.js"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <srcfile/>
@@ -55,7 +55,7 @@
     <target name="-js.clean">
         <echo message="Removing minified scripts..."/>
         <delete>
-            <fileset dir="${location.js}" includes="**/*-min.js,Fisma/*-min.js"/>
+            <fileset dir="${location.js}" includes="**/*-min.js,Fisma/*-min.js" excludes="jquery-min.js"/>
         </delete>
         <delete>
             <filelist dir="${location.js}" files="combined.js"/>

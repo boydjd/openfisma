@@ -44,13 +44,8 @@ class Version65 extends Doctrine_Migration_Base
         $stmt = $pdo->query($oldConfigSql);
 
         foreach ($stmt as $row) {
-            $updateSql = sprintf(
-                "UPDATE configuration SET '%s' = '%s'",
-                $row['name'], 
-                $pdo->quote($row['value'])
-            );
-
-            $conn->exec($updateSql); 
+            $updateSql = sprintf("UPDATE configuration SET %s = ?", $row['name']);
+            $conn->prepare($updateSql)->execute(array($row['value'])); 
         }
 
         $conn->exec('DROP TABLE configuration_old');

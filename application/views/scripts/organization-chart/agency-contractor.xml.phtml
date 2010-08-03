@@ -1,3 +1,4 @@
+<?php if (!empty($this->agencyContractor)) : ?>
 <chart>
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
 
@@ -43,4 +44,7 @@
         <color>7197e1</color>
         <color>b3b3b3</color>
     </series_color>
-</chart> 
+</chart>
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '350', 'height' => '200'));
+endif; ?>

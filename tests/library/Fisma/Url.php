@@ -204,4 +204,12 @@ class Test_Library_Fisma_Url extends Test_FismaUnitTest
         $requestUri = '/test';
         $this->assertEquals('http://example.com/test', Fisma_Url::customUrl($requestUri));
     }
+
+    public function testCurrentUrlWithNoServerParms()
+    {
+        Fisma::setConfiguration(new Fisma_Configuration_Array(), true);
+        Fisma::configuration()->setConfig('host_url', 'http://test');
+        $_SERVER = array();
+        $this->assertEquals('http://test', Fisma_Url::currentUrl());
+    }
 }

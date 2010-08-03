@@ -1,3 +1,61 @@
+div.attachArtifactsProgressBar{width:128px;height:15px;margin:10px auto 0 auto;display:none;}
+.yui-ac-input{position:static!important;width:85%!important;}
+div.yui-ac img.spinner{display:inline;visibility:hidden;position:relative;top:4px;left:2px;}
+div.dashboardCard{position:relative;float:left;width:10em;height:6em;margin:.8em;border:1px solid #b0b0b0;background-color:lightgrey;}
+div.dashboardCard div.title{margin:.3em auto 0 auto;text-align:center;font-weight:bold;font-size:1em;}
+div.dashboardCard div.metric{position:absolute;width:100%;bottom:0;text-align:center;font-weight:bold;font-size:2.5em;}
+div.dashboardGreen{border-color:#83ca8d;background-color:lightgreen;}
+div.dashboardYellow{border-color:#e2e13b;background-color:yellow;}
+div.dashboardRed{border-color:#daaeb5;background-color:pink;}
+div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
+div#findingSecurityControlSearch{display:none;background-color:white;border:1px solid #d3d3d3;padding:10px;margin-top:10px;}
+table.treeTable{width:100%;}
+table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
+table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
+table.treeTable td a{color:black;}
+table.treeTable td:first-child a{text-decoration:none;}
+table.treeTable div.link{padding:1px;}
+table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
+table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}
+table.treeTable td img.icon{float:left;margin-right:6px;}
+table.treeTable td img#control{padding:5px;border:1px solid grey;}
+table.treeTable td.noDueDate{text-align:center;}
+table.treeTable td.onTime{background-color:#a6eba9;text-align:center;}
+table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weight:bold;font-style:italic;}
+.treeTable0{margin-left:0;}
+.treeTable1{margin-left:1em;}
+.treeTable2{margin-left:2em;}
+.treeTable3{margin-left:3em;}
+.treeTable4{margin-left:4em;}
+.treeTable5{margin-left:5em;}
+.treeTable6{margin-left:6em;}
+.treeTable7{margin-left:7em;}
+.treeTable8{margin-left:8em;}
+.treeTable9{margin-left:9em;}
+span#irReportForwardsContainer{position:relative;left:245px;}
+span#irReportSaveContainer{position:relative;left:260px;}
+span#irReportBackwardsContainer{position:relative;left:-110px;}
+span#irReportCancelContainer{position:relative;left:-110px;}
+div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
+div.incidentStep td{padding:5px;}
+div.incidentStep td:first-child{font-weight:bold;text-align:right;}
+div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
+div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.completedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
+div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
+div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
+div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+table.modules{margin-left:auto;margin-right:auto;}
+table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
+table.modules td:first-child{font-weight:bold;}
+div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
+div.switchButton span.border{background-position:left top;margin:0;}
+div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}
+div.toolbar{font-weight:bold;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;text-align:right;}
+span.userInfo{padding-left:17px;padding-right:1px;border-bottom:1px dashed black;background:url(/images/user-info.png) no-repeat 0 1px;}
+span.userInfo:hover{cursor:pointer;}
+span.userInfo:active{color:#416ed7;}
 #skip a,#skip a:hover,#skip a:visited{position:absolute;left:0;top:-500px;width:1px;height:1px;overflow:hidden;}
 #skip a:active,#skip a:focus{position:static;width:auto;height:auto;}
 em{font-weight:bold;}
@@ -84,54 +142,3 @@ div.section>div>div.clear{display:none;}
 div.section>div.form_box>form>div.clear{display:none;}
 form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
-div.dashboardCard{position:relative;float:left;width:10em;height:6em;margin:.8em;border:1px solid #b0b0b0;background-color:lightgrey;}
-div.dashboardCard div.title{margin:.3em auto 0 auto;text-align:center;font-weight:bold;font-size:1em;}
-div.dashboardCard div.metric{position:absolute;width:100%;bottom:0;text-align:center;font-weight:bold;font-size:2.5em;}
-div.dashboardGreen{border-color:#83ca8d;background-color:lightgreen;}
-div.dashboardYellow{border-color:#e2e13b;background-color:yellow;}
-div.dashboardRed{border-color:#daaeb5;background-color:pink;}
-div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
-div.attachArtifactsProgressBar{width:128px;height:15px;margin:10px auto 0 auto;display:none;}
-table.treeTable{width:100%;}
-table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
-table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
-table.treeTable td a{color:black;}
-table.treeTable td:first-child a{text-decoration:none;}
-table.treeTable div.link{padding:1px;}
-table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
-table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}
-table.treeTable td img.icon{float:left;margin-right:6px;}
-table.treeTable td img#control{padding:5px;border:1px solid grey;}
-table.treeTable td.noDueDate{text-align:center;}
-table.treeTable td.onTime{background-color:#a6eba9;text-align:center;}
-table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weight:bold;font-style:italic;}
-.treeTable0{margin-left:0;}
-.treeTable1{margin-left:1em;}
-.treeTable2{margin-left:2em;}
-.treeTable3{margin-left:3em;}
-.treeTable4{margin-left:4em;}
-.treeTable5{margin-left:5em;}
-.treeTable6{margin-left:6em;}
-.treeTable7{margin-left:7em;}
-.treeTable8{margin-left:8em;}
-.treeTable9{margin-left:9em;}
-span#irReportForwardsContainer{position:relative;left:245px;}
-span#irReportSaveContainer{position:relative;left:260px;}
-span#irReportBackwardsContainer{position:relative;left:-110px;}
-span#irReportCancelContainer{position:relative;left:-110px;}
-div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;}
-div.incidentStep td:first-child{font-weight:bold;text-align:right;}
-div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
-div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
-div.completedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
-div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
-div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
-div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
-div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
-table.modules{margin-left:auto;margin-right:auto;}
-table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
-table.modules td:first-child{font-weight:bold;}
-div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
-div.switchButton span.border{background-position:left top;margin:0;}
-div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}

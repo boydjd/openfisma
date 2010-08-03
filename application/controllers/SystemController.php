@@ -68,7 +68,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
              ->from('Organization o')
              ->select(
                  'o.id, 
-                  bureau.nickname,
+                  b.nickname,
                   o.nickname, 
                   o.name, 
                   s.type, 
@@ -78,11 +78,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                   s.fipsCategory'
              )
              ->innerJoin('o.System s')
-             ->leftJoin('Organization bureau')
+             ->leftJoin("s.Organization b ON b.orgType = 'bureau' AND o.lft BETWEEN b.lft and b.rgt")
              ->whereIn('o.id', $myOrganizations)
              ->addWhere('o.orgType = ?', 'system')
-             ->andWhere('bureau.orgType = ?', 'bureau')
-             ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
              ->orderBy("$sortBy $order")
              ->offset($this->_paging['startIndex'])
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -457,43 +455,4 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
         }
     }  
-    
-    /**
-     * Download the specified system document
-     * 
-     * @return void
-     * @throws Fisma_Zend_Exception if requested file doesn`t exist
-     */
-    public function downloadDocumentAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $version = $this->getRequest()->getParam('version');
-        $document = Doctrine::getTable('SystemDocument')->find($id);
-        
-        // Documents don't have their own privileges, access control is based on the associated organization
-        $this->_acl->requirePrivilegeForObject('read', $document->System->Organization);
-
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-        $document = Doctrine::getTable('SystemDocument')->find($id);
-        if (isset($version)) {
-            $versionInfo = $document->getAuditLog()->getVersion($document, $version);
-            // This is awkward. Doctrine's Versionable returns versions as arrays, not objects.
-            // So we have to create a temporary object in order to execute the required logic.
-            $document = new SystemDocument();
-            $document->merge($versionInfo[0]);
-        }
-
-        if (is_null($document)) {
-            throw new Fisma_Zend_Exception("Requested file does not exist.");
-        }
-
-        /** @todo better error checking */
-        $this->getResponse()
-             ->setHeader('Content-Type', $document->mimeType)
-             ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
-         $path = $document->getPath();
-         readfile($path);
-    }
 }

@@ -69,7 +69,15 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      * @var Zend_Form
      */
     private $_toolbarForm;
-    
+
+    /**
+     * Controller property key to utilize for context switching
+     * Override from parent.
+     *
+     * @var string
+     */
+    protected $_contextKey = 'reportContexts';
+
     /**
      * Set the report object
      * 
@@ -92,9 +100,6 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      */
     public function init()
     {
-        // Session cache limiter fixes bugs in IE6 and IE7 when sending files over SSL connection
-        session_cache_limiter(false);
-        
         parent::init();
 
         $this->clearContexts();
@@ -212,6 +217,9 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      */
     public function disableLayout()
     {    
+        // Session cache limiter fixes bugs in IE6 and IE7 when sending files over SSL connection
+        session_cache_limiter(false);
+
         Zend_Layout::getMvcInstance()->disableLayout();
     }
     
@@ -325,7 +333,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         if (is_null($this->_report)) {
             throw new Fisma_Zend_Exception('Report context switch has no report object');
         }
-
+        
         $view = Zend_Layout::getMvcInstance()->getView();
 
         // Strip HTML from the report data

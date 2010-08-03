@@ -335,7 +335,10 @@ class Fisma
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
         $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-        $manager->registerValidators(array('Fisma_Doctrine_Validator_Ip', 'Fisma_Doctrine_Validator_Url'));
+        $manager->registerValidators(
+            array('Fisma_Doctrine_Validator_Ip', 'Fisma_Doctrine_Validator_Url', 'Fisma_Doctrine_Validator_Phone')
+        );
+
         /**
          * @todo We want to enable VALIDATE_ALL in release 2.6
          */
@@ -379,6 +382,7 @@ class Fisma
             $cache = self::getCacheManager()->getCache('default');
 
             $zfDebugOptions = array(
+                                'jquery_path' => '/javascripts/jquery-min.js',
                                 'plugins' => array(
                                     'Variables',
                                     'Html',

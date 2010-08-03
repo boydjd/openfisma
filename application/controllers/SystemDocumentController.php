@@ -170,4 +170,53 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Security
         $tableData['table']['records'] = $rows;
         return $this->_helper->json($tableData);
     }
+
+    /**
+     * Download the specified system document
+     * 
+     * @return void
+     * @throws Fisma_Zend_Exception if requested file doesn`t exist
+     */
+    public function downloadAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $version = $this->getRequest()->getParam('version');
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+        
+        // Documents don't have their own privileges, access control is based on the associated organization
+        $this->_acl->requirePrivilegeForObject('read', $document->System->Organization);
+
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $document = Doctrine::getTable('SystemDocument')->find($id);
+
+        if (isset($version)) {
+            $versionInfo = $document->getAuditLog()->getVersion($document, $version);
+            // This is awkward. Doctrine's Versionable returns versions as arrays, not objects.
+            // So we have to create a temporary object in order to execute the required logic.
+            $document = new SystemDocument();
+            $document->merge($versionInfo[0]);
+        }
+
+        if (is_null($document)) {
+            throw new Fisma_Zend_Exception("Requested file does not exist.");
+        }
+
+        // Stream file to user's browser. Unset cache headers to false to avoid IE7/SSL errors.        
+        $this->getResponse()
+             ->setHeader('Content-Type', $document->mimeType)
+             ->setHeader('Cache-Control', null, true)
+             ->setHeader('Pragma', null, true)
+             ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
+
+        $path = $document->getPath();
+
+        $result = readfile($path);
+         
+        // Notice that 0 is an acceptable result, while FALSE is not, so use === instead of ==.
+        if (false === $result) {
+            throw new Fisma_Zend_Exception("Unable to read file $path");
+        }
+    }
 }    

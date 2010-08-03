@@ -1,4 +1,4 @@
-<?php echo "{$this->doctype()}\n" ?>
+<?php echo "{$this->doctype()}\n"; ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -6,8 +6,7 @@
               content="<?php echo Fisma::configuration()->getConfig('session_inactivity_period'); ?>;url=/auth/logout">
 
     <?php 
-    $this->headTitle()->prepend($this->pageTitle());
-    echo $this->escape($this->headTitle(), 'none');
+    echo $this->partial('partial/title.phtml');
 
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',

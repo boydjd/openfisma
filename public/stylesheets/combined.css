@@ -1,3 +1,460 @@
+/* Style the progress bar that's displayed in the attach artifacts dialog box */
+
+div.attachArtifactsProgressBar {
+    width: 128px; 
+    height: 15px;
+    margin: 10px auto 0px auto;
+    display: none;
+}
+/*
+ * Override some YUI styles which don't make sense for our layouts.
+ *
+ * Notice these styles are marked ! important so that they will override YUI's
+ * autocomplete.css styles.
+ */
+
+.yui-ac-input {
+    position: static ! important;
+    width: 85% ! important;
+}
+
+div.yui-ac img.spinner {
+	display: inline;
+	visibility: hidden;
+    position: relative;
+    top: 4px;
+    left: 2px;
+}
+/* @override http://openfisma-trunk/stylesheets/Dashboard.css */
+
+/**
+ * Dashboard.css
+ *
+ * Copyright (c) 2010 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later 
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see {@link
+ * http://www.gnu.org/licenses/}.
+ */
+ 
+/**
+ * Styling for dashboard elements
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ */
+
+/* 
+ * A dashboard card is a simple box that contains the title and value of a particular metric. 
+ * By default, it is gray in color. But it can be colored by using the color styles below.
+ */
+div.dashboardCard {
+	/* Relative positioning lets us absolutely position the child elements */
+	position: relative;
+    float: left;
+    width: 10em;
+    height: 6em;
+    margin: .8em;
+    
+    border: 1px solid #b0b0b0;
+    background-color: lightgrey;
+}
+
+/*
+ * Each dashboard card has two child divs, a title and a metric value.
+ */
+div.dashboardCard div.title {
+    margin: .3em auto 0em auto;
+    text-align: center;
+
+    font-weight: bold;
+    font-size: 1em;
+}
+
+div.dashboardCard div.metric {
+    position: absolute;
+	width: 100%;
+	bottom: 0em;
+
+	text-align: center;
+    font-weight: bold;
+    font-size: 2.5em;
+}
+
+/*
+ * The following styles are for coloring a dashboard card.
+ */
+div.dashboardGreen {
+    border-color: #83ca8d;
+    background-color: lightgreen;
+}
+
+div.dashboardYellow {
+    border-color: #e2e13b;
+    background-color: yellow;
+}
+
+div.dashboardRed {
+    border-color: #daaeb5;
+    background-color: pink;
+}
+
+/*
+ * A dashboard chart is centered and has bold text
+ */
+div.dashboardChart {
+	margin: 2em 0em;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* The security control search box is initially hidden */
+div#findingSecurityControlSearch {
+    display: none;
+    background-color: white;
+    border: 1px solid #d3d3d3;
+    padding: 10px;
+    margin-top: 10px;
+}
+/* @override http://localhost/stylesheets/TreeTable.css */
+/*******************************************************************************
+ *
+ * TreeTable.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Tree tables are a graphical element which represents tree data in a table
+ * view. This is a homegrown element specifically for OpenFISMA. See the
+ * corresponsing TreeTable.js script.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+ 
+table.treeTable {
+    width: 100%;
+}
+
+table.treeTable th {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.treeTable td {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+}
+
+table.treeTable td a {
+    color: black;
+}
+
+table.treeTable td:first-child a {
+    text-decoration: none;
+}
+
+table.treeTable div.link {
+	padding: 1px;    
+}
+
+table.treeTable div.link:hover {
+	padding: 0px;
+	border: 1px solid #ccc;
+	background-color: #f0f0f0;
+}
+
+table.treeTable td img.control {
+	margin: 6px 6px 6px 2px;
+	position: relative;
+	float: left;
+}
+
+table.treeTable td img.icon {
+	float: left;
+	margin-right: 6px;
+}
+
+table.treeTable td img#control {
+	padding: 5px;
+    border: 1px solid grey;
+}
+
+table.treeTable td.noDueDate {
+    text-align: center;
+}
+
+table.treeTable td.onTime {
+    background-color: #a6eba9;
+    text-align: center;
+}
+
+table.treeTable td.overdue {
+    background-color: #ffcbcf;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.treeTable0 {
+    margin-left: 0em;
+}
+.treeTable1 {
+    margin-left: 1em;
+}
+.treeTable2 {
+    margin-left: 2em;
+}
+.treeTable3 {
+    margin-left: 3em;
+}
+.treeTable4 {
+    margin-left: 4em;
+}
+.treeTable5 {
+    margin-left: 5em;
+}
+.treeTable6 {
+    margin-left: 6em;
+}
+.treeTable7 {
+    margin-left: 7em;
+}
+.treeTable8 {
+    margin-left: 8em;
+}
+.treeTable9 {
+    margin-left: 9em;
+}/*******************************************************************************
+ *
+ * Incident.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * CSS for incident pages
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+
+/* 
+ * RE-arrange buttons on the incident report wizard. The first button in the source will be the default submit button,
+ * so we use CSS to display them in a more logical order.
+ */
+
+span#irReportForwardsContainer {
+	position: relative;
+	left: 245px;
+}
+
+span#irReportSaveContainer {
+    position: relative;
+    left: 260px;
+}
+
+span#irReportBackwardsContainer {
+	position: relative;
+	left: -110px;
+}
+
+span#irReportCancelContainer {
+	position: relative;
+	left: -110px;
+}
+
+/*
+ * Styles used for displaying the incident workflow
+ */
+
+div.incidentStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    position: relative;
+}
+
+div.incidentStep td {
+	padding: 5px;
+}
+
+div.incidentStep td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.incidentCardinality {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    padding: 5px 10px;
+    font-size: x-large;
+}
+
+div.completedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.completedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
+}
+
+div.currentIncidentStep {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
+}
+
+div.currentIncidentStep div.incidentCardinality {
+    border: 2px solid #416ed7;
+    border-bottom: none;    
+    color: #416ed7;
+}
+
+div.queuedIncidentStep {
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.queuedIncidentStep div.incidentCardinality {
+    border: 2px solid gray;
+    border-bottom: none;    
+    color: gray;
+}/**
+ * The module screen is used to enable/disable individual components in OpenFISMA
+ */
+
+table.modules {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.modules td {
+    font-size: 1.4em;
+    padding: 8px;
+    vertical-align: middle;
+}
+
+table.modules td:first-child {
+	font-weight: bold;
+}
+/* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
+
+/*
+ * Based on the iToggle example from Engage Interactive Labs.
+ * http://labs.engageinteractive.co.uk/itoggle/
+ */
+
+/*
+ * The div contains the moving part of the switch, and the span contains the outline of the button
+ */
+div.switchButton,
+div.switchButton span.border {
+	display: block;
+	width: 93px;
+	height: 27px;
+	background: url(../images/switch_button.png) left bottom no-repeat;
+	cursor: pointer;
+	margin-right: 20px;
+}
+
+div.switchButton span.border {
+	background-position: left top;
+	margin: 0;
+}
+
+div.switchButton span.spinner {
+    visibility: hidden;
+    position: relative;
+    top: -23px;
+    left: 97px;
+}
+/*
+ * This file contains styles for toolbars displayed in OpenFISMA.
+ *
+ * A toolbar is a short form that is laid out horiztonally to minimize the vertical screenspace required to render it.
+ */
+
+div.toolbar {
+    font-weight: bold;
+    background-color: #ebebeb;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    padding: 5px 10px;
+    text-align: right;
+}
+/* Style for the UserInfo view helper */
+
+span.userInfo {
+	padding-left: 17px;
+	padding-right: 1px;
+    border-bottom: 1px dashed black;
+    background: url(/images/user-info.png) no-repeat 0 1px;
+}
+
+span.userInfo:hover {
+	cursor: pointer;
+}
+
+span.userInfo:active {
+	color: #416ed7;
+}
 /**
  * main.css
  *
@@ -574,404 +1031,4 @@ form dl.zend_form {
 form dl.zend_form dt, form dl.zend_form dd {
     font-weight: bold;
     margin: 5px;
-}
-/* @override http://openfisma-trunk/stylesheets/Dashboard.css */
-
-/**
- * Dashboard.css
- *
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later 
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see {@link
- * http://www.gnu.org/licenses/}.
- */
- 
-/**
- * Styling for dashboard elements
- *
- * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
- */
-
-/* 
- * A dashboard card is a simple box that contains the title and value of a particular metric. 
- * By default, it is gray in color. But it can be colored by using the color styles below.
- */
-div.dashboardCard {
-	/* Relative positioning lets us absolutely position the child elements */
-	position: relative;
-    float: left;
-    width: 10em;
-    height: 6em;
-    margin: .8em;
-    
-    border: 1px solid #b0b0b0;
-    background-color: lightgrey;
-}
-
-/*
- * Each dashboard card has two child divs, a title and a metric value.
- */
-div.dashboardCard div.title {
-    margin: .3em auto 0em auto;
-    text-align: center;
-
-    font-weight: bold;
-    font-size: 1em;
-}
-
-div.dashboardCard div.metric {
-    position: absolute;
-	width: 100%;
-	bottom: 0em;
-
-	text-align: center;
-    font-weight: bold;
-    font-size: 2.5em;
-}
-
-/*
- * The following styles are for coloring a dashboard card.
- */
-div.dashboardGreen {
-    border-color: #83ca8d;
-    background-color: lightgreen;
-}
-
-div.dashboardYellow {
-    border-color: #e2e13b;
-    background-color: yellow;
-}
-
-div.dashboardRed {
-    border-color: #daaeb5;
-    background-color: pink;
-}
-
-/*
- * A dashboard chart is centered and has bold text
- */
-div.dashboardChart {
-	margin: 2em 0em;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* Style the progress bar that's displayed in the attach artifacts dialog box */
-
-div.attachArtifactsProgressBar {
-    width: 128px; 
-    height: 15px;
-    margin: 10px auto 0px auto;
-    display: none;
-}
-/* @override http://localhost/stylesheets/TreeTable.css */
-/*******************************************************************************
- *
- * TreeTable.css
- *
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- *******************************************************************************
- *
- * Tree tables are a graphical element which represents tree data in a table
- * view. This is a homegrown element specifically for OpenFISMA. See the
- * corresponsing TreeTable.js script.
- *
- * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
- *
- *******************************************************************************
- */
- 
-table.treeTable {
-    width: 100%;
-}
-
-table.treeTable th {
-	padding: 5px;
-	background-color: #fafafa;
-    border: 1px solid #bbb;
-    font-weight: bold;
-    text-align: center;
-}
-
-table.treeTable td {
-	padding: 5px;
-	background-color: #fafafa;
-    border: 1px solid #bbb;
-}
-
-table.treeTable td a {
-    color: black;
-}
-
-table.treeTable td:first-child a {
-    text-decoration: none;
-}
-
-table.treeTable div.link {
-	padding: 1px;    
-}
-
-table.treeTable div.link:hover {
-	padding: 0px;
-	border: 1px solid #ccc;
-	background-color: #f0f0f0;
-}
-
-table.treeTable td img.control {
-	margin: 6px 6px 6px 2px;
-	position: relative;
-	float: left;
-}
-
-table.treeTable td img.icon {
-	float: left;
-	margin-right: 6px;
-}
-
-table.treeTable td img#control {
-	padding: 5px;
-    border: 1px solid grey;
-}
-
-table.treeTable td.noDueDate {
-    text-align: center;
-}
-
-table.treeTable td.onTime {
-    background-color: #a6eba9;
-    text-align: center;
-}
-
-table.treeTable td.overdue {
-    background-color: #ffcbcf;
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-}
-
-.treeTable0 {
-    margin-left: 0em;
-}
-.treeTable1 {
-    margin-left: 1em;
-}
-.treeTable2 {
-    margin-left: 2em;
-}
-.treeTable3 {
-    margin-left: 3em;
-}
-.treeTable4 {
-    margin-left: 4em;
-}
-.treeTable5 {
-    margin-left: 5em;
-}
-.treeTable6 {
-    margin-left: 6em;
-}
-.treeTable7 {
-    margin-left: 7em;
-}
-.treeTable8 {
-    margin-left: 8em;
-}
-.treeTable9 {
-    margin-left: 9em;
-}/*******************************************************************************
- *
- * Incident.css
- *
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- *******************************************************************************
- *
- * CSS for incident pages
- *
- * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
- *
- *******************************************************************************
- */
-
-/* 
- * RE-arrange buttons on the incident report wizard. The first button in the source will be the default submit button,
- * so we use CSS to display them in a more logical order.
- */
-
-span#irReportForwardsContainer {
-	position: relative;
-	left: 245px;
-}
-
-span#irReportSaveContainer {
-    position: relative;
-    left: 260px;
-}
-
-span#irReportBackwardsContainer {
-	position: relative;
-	left: -110px;
-}
-
-span#irReportCancelContainer {
-	position: relative;
-	left: -110px;
-}
-
-/*
- * Styles used for displaying the incident workflow
- */
-
-div.incidentStep {
-    margin: 10px;
-    padding: 10px 10px 10px 40px;
-    position: relative;
-}
-
-div.incidentStep td {
-	padding: 5px;
-}
-
-div.incidentStep td:first-child {
-    font-weight: bold;
-    text-align: right;
-}
-
-div.incidentCardinality {
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    padding: 5px 10px;
-    font-size: x-large;
-}
-
-div.completedIncidentStep {
-    border: 2px solid gray;
-    background-color: #f0f0f0;
-}
-
-div.completedIncidentStep div.incidentCardinality {
-    border: 2px solid gray;
-    border-bottom: none;    
-    color: gray;
-}
-
-div.currentIncidentStep {
-    border: 2px solid #416ed7;
-    background-color: #edf5ff;
-}
-
-div.currentIncidentStep div.incidentCardinality {
-    border: 2px solid #416ed7;
-    border-bottom: none;    
-    color: #416ed7;
-}
-
-div.queuedIncidentStep {
-    border: 2px solid gray;
-    background-color: #f0f0f0;
-}
-
-div.queuedIncidentStep div.incidentCardinality {
-    border: 2px solid gray;
-    border-bottom: none;    
-    color: gray;
-}/**
- * The module screen is used to enable/disable individual components in OpenFISMA
- */
-
-table.modules {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-table.modules td {
-    font-size: 1.4em;
-    padding: 8px;
-    vertical-align: middle;
-}
-
-table.modules td:first-child {
-	font-weight: bold;
-}
-/* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
-
-/*
- * Based on the iToggle example from Engage Interactive Labs.
- * http://labs.engageinteractive.co.uk/itoggle/
- */
-
-/*
- * The div contains the moving part of the switch, and the span contains the outline of the button
- */
-div.switchButton,
-div.switchButton span.border {
-	display: block;
-	width: 93px;
-	height: 27px;
-	background: url(../images/switch_button.png) left bottom no-repeat;
-	cursor: pointer;
-	margin-right: 20px;
-}
-
-div.switchButton span.border {
-	background-position: left top;
-	margin: 0;
-}
-
-div.switchButton span.spinner {
-    visibility: hidden;
-    position: relative;
-    top: -23px;
-    left: 97px;
 }

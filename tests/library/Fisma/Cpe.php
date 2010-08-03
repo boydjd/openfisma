@@ -88,4 +88,18 @@ class Test_Library_Fisma_Cpe extends Test_FismaUnitTest
         
         $cpe = new Fisma_Cpe($cpeString);
     }
+
+    public function testGetCpeName()
+    {
+        $cpeString = 'cpe:/h:readhat' . rawurlencode(':/?') . ':3:sp1:ultimate:en';
+        $cpe = new Fisma_Cpe($cpeString);
+        $this->assertEquals($cpeString, $cpe->cpeName);
+    }
+
+    public function testGetNull()
+    {
+        $cpeString = 'cpe:/h:readhat' . rawurlencode(':/?') . ':3:sp1:ultimate:en';
+        $cpe = new Fisma_Cpe($cpeString);
+        $this->assertNull($cpe->nullValue);
+    }
 }

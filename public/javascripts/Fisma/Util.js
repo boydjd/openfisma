@@ -75,6 +75,32 @@ Fisma.Util = {
                 [0, VERTICAL_OFFSET]
             ]
         );        
-    }
+    },
     
+    /**
+     * Generate a timestamp in the format HH:MM:SS, using 24 hour time
+     */
+    getTimestamp : function () {
+        var date = new Date();
+
+        var hours = date.getHours() + "";
+
+        if (hours.length == 1) {
+         hours = "0" + hours;
+        }
+
+        var minutes = date.getMinutes() + "";
+
+        if (minutes.length == 1) {
+         minutes = "0" + minutes;
+        }
+
+        var seconds = date.getSeconds() + "";
+
+        if (seconds.length == 1) {
+         seconds = "0" + seconds;
+        }
+
+        return hours + ":" + minutes + ":" + seconds;
+    }
 };

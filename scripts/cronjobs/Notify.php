@@ -16,8 +16,13 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-$notify = new Notify();
-$notify->processNotificationQueue();
+try {
+    $notify = new Notify();
+    $notify->processNotificationQueue();
+    print ("Notify finished at " . Fisma::now() . "\n");
+} catch (Exception $e) {
+    print $e->getMessage();
+}
 
 /**
  * This static class is responsible for scanning for notifications which need to

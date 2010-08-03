@@ -11,19 +11,13 @@ LdapConfig:
             type: string(255)
         username: 
             type: string(255)
-        # Password field is purified for HTML, even though it shouldn't contain HTML. The reason is that the plaintext
-        # purifier might obscure valid characters in the password
         password: 
             type: string(255)
-            extra: 
-                purify: html
         baseDn: 
             type: string
         # Account filter is not plaintext purified either, for the reason as the password field      
         accountFilterFormat: 
             type: string(255)
-            extra:
-                purify: html
         accountCanonicalForm: string(255)
         bindRequiresDn: boolean
         useSsl: boolean

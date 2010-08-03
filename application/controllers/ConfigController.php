@@ -43,13 +43,12 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     public function init()
     {
         parent::init();
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('validate-ldap', 'html')
-                    ->initContext();
-        $contextSwitch = $this->_helper->contextSwitch();
-        $contextSwitch->setAutoJsonSerialization(false)
+
+        $this->_helper->contextSwitch()
+                      ->setAutoJsonSerialization(false)
                       ->addActionContext('test-email-config', 'json')
                       ->addActionContext('set-module', 'json')
+                      ->addActionContext('validate-ldap', 'json')
                       ->initContext();
     }
     
@@ -218,24 +217,38 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Add/Update LDAP configurations
-     * 
+     *
+     * @TODO Split this out into createLdapAction and updateLdapAction
      * @return void
      */
     public function updateLdapAction()
     {        
         $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
-        
-        $ldap = new LdapConfig();
+
         if (!empty($id)) {
-            $ldap = $ldap->getTable('LdapConfig')->find($id);
-            // @see http://jira.openfisma.org/browse/OFJ-30
-            $ldap->password = '********';
+            $ldap = Doctrine::getTable('LdapConfig')->find($id);
+        
+            if (!$ldap) {
+                throw new Fisma_Zend_Exception("No LDAP configuration found for id ($id)");
+            }
         }
+
         if ($this->_request->isPost()) {
             $data = $this->_request->getPost();
+
             if ($form->isValid($data)) {
                 $values = $form->getValues();
+
+                // If password is all ********, then don't overwrite the existing password
+                if (preg_match('/^\*+$/', $values['password'])) {
+                    unset($values['password']);
+                } 
+
+                if (!isset($ldap)) {
+                    $ldap = new LdapConfig();
+                }
+
                 $ldap->merge($values);
                 $ldap->save();
                 
@@ -248,10 +261,18 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 // Error message
                 $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'warning');
             }
-        } else {
-            //only represent the view
-            $form->setDefaults($ldap->toArray());
         }
+
+        if (isset($ldap)) {
+            // Mask password for view script @see http://jira.openfisma.org/browse/OFJ-30
+            $ldapView = $ldap->toArray();
+            
+            $ldapView['password'] = '********';
+
+            $form->getElement('password')->setRenderPassword(true);
+            $form->setDefaults($ldapView);
+        }
+        
         $this->view->form = $form;
         $this->render();
     }
@@ -279,40 +300,44 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function validateLdapAction()
     {        
+        $id = $this->getRequest()->getParam('id');
         $form = $this->_getConfigForm('ldap');
-        if ($this->_request->isPost()) {
-            $data = $this->_request->getPost();
-            if ($form->isValid($data)) {
-                try{
-                    $data = $form->getValues();
-                    unset($data['id']);
-                    unset($data['SaveLdap']);
-                    unset($data['Reset']);
-                    if (empty($data['password'])) {
-                        $dql = 'host = ? AND port = ? AND username = ?';
-                        $params = array($data['host'], $data['port'], $data['username']);
-                        $ldap = Doctrine::getTable('LdapConfig')
-                                ->findByDql($dql, $params);
-                        if (!empty($ldap[0])) {
-                            $data['password'] = $ldap[0]->password;
-                        }
+
+        $ldapConfig = $this->_request->getPost();
+
+        if ($form->isValid($ldapConfig)) {
+            try {
+                $ldapConfig = $form->getValues();
+
+                // If password is all ********, then use the stored password instead
+                if (preg_match('/^\*+$/', $ldapConfig['password'])) {
+                    $ldap = Doctrine::getTable('LdapConfig')->find($id);
+
+                    if ($ldap) {
+                        $ldapConfig['password'] = $ldap->password;
                     }
-                    $ldapcn = new Zend_Ldap($data);
-                    $ldapcn->connect();
-                    $ldapcn->bind();
-                    echo "<b> Bind successfully! </b>";
-                }catch (Zend_Ldap_Exception $e) {
-                    echo "<b>". $e->getMessage(). "</b>";
                 }
-            } else {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                echo $errorString;
+
+                unset($ldapConfig['SaveLdap']);
+                unset($ldapConfig['Reset']);
+                
+                $ldapServer = new Zend_Ldap($ldapConfig);
+                $ldapServer->connect();
+                $ldapServer->bind();
+                
+                $msg = "Connected successfully!";
+                $type = 'notice';
+            } catch (Exception $e) {
+                $msg = $e->getMessage();
+                $type = 'warning';
             }
         } else {
-            echo "<b>Invalid Parameters</b>";
+            $msg = Fisma_Zend_Form_Manager::getErrors($form);
+            $type = 'warning';
         }
-        $this->_helper->viewRenderer->setNoRender();
 
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
@@ -481,8 +506,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                     // Because user may not specified password for test on UI page,
                     // so have retrieve the saved one before if possible. 
                     if (empty($postEmailConfigValues['smtp_password'])) {
-                        $password = Doctrine::getTable('Configuration')
-                                    ->findByDql('name = ?', 'smtp_password');
+                        $password = Fisma::configuration()->getConfig('smtp_password');
+
                         if (!empty($password[0])) {
                             $postEmailConfigValues['smtp_password'] = $password[0]->value;
                         }

@@ -1,3 +1,4 @@
+<?php if (!empty($this->months)) :?> 
 <chart>
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
     <link_data url="javascript:pieChartClick(_col_)" target="javascript" />
@@ -40,4 +41,7 @@
         <color>ff9933</color>
         <color>eaed1e</color>
     </series_color>
-</chart> 
+</chart>
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '450', 'height' => '300'));
+endif; ?>

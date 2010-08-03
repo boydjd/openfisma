@@ -1,3 +1,4 @@
+<?php if (!empty($this->deficiencies)) : ?>
 <chart>
     <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
 
@@ -43,4 +44,7 @@
     <series_color>
         <color>416ed7</color>
     </series_color>
-</chart> 
+</chart>
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '700', 'height' => '300'));
+endif; ?>

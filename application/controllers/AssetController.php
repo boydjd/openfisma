@@ -184,18 +184,29 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Asset');
         
         $params = $this->parseCriteria();
-        $query = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read');
-        $query->andWhere('o.orgType = ?', 'system');
-        $systems = $query->execute();
-        $systemList[0] = "--select--";
-        foreach ($systems as $system) {
-            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
-        }
-        $this->view->systemList = $systemList;
+        $this->view->systemList = $this->_getSystemSelectOptions();
         $this->view->assign('criteria', $params);
         $this->render('searchbox');
     }
     
+    /**
+     * Helper function for getting the system dropdown select
+     *
+     * @return array System select array.
+     */
+    protected function _getSystemSelectOptions()
+    {
+        $query = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
+            ->leftJoin('o.System system')
+            ->andWhere('system.sdlcPhase <> ?', 'disposal');
+        $systems = $query->execute();
+        $systemList[''] = "--select--";
+        foreach ($systems as $system) {
+            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
+        }
+        return $systemList;
+    }
+
     /**
      * Searching the asset and list them.
      * 

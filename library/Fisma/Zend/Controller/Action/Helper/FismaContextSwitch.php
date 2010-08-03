@@ -30,14 +30,20 @@
 class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Controller_Action_Helper_ContextSwitch
 {
     /**
+     * Controller property key to utilize for context switching
+     * Override from parent.
+     *
+     * @var string
+     */
+    protected $_contextKey = 'fismaContexts';
+
+    /**
      * Add extra initialization steps when this helper is used instead of the Zend version.
      *
      * @return void
      */
     public function init()
     {
-        session_cache_limiter(false);
-        
         parent::init();
 
         if (!$this->hasContext('pdf')) {
@@ -48,6 +54,9 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                     'headers' => array(
                         'Content-Disposition' => 'attachment; filename=Report.pdf',
                         'Content-Type' => 'application/pdf'
+                    ),
+                    'callbacks' => array(
+                        self::TRIGGER_POST => '_disableSessionCacheLimiter'
                     )
                 )
             );
@@ -61,6 +70,9 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                     'headers' => array(
                         'Content-Disposition' => 'attachment; filename=Report.xls',
                         'Content-Type' => 'application/vnd.ms-excel'
+                    ),
+                    'callbacks' => array(
+                        self::TRIGGER_POST => '_disableSessionCacheLimiter'
                     )
                 )
             );
@@ -78,5 +90,16 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                 )
             )
         );
+    }
+
+    /**
+     * Callback function for disabling the session cache limiter when within one of the
+     * file download contexts.
+     *
+     * @return void
+     */
+    protected function _disableSessionCacheLimiter()
+    {
+        session_cache_limiter(false);
     }
 }
