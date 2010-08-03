@@ -49,40 +49,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     }
     
     /**
-     * Delete a role
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {        
-        $req = $this->getRequest();
-        $id = $req->getParam('id');
-        $role = Doctrine::getTable('Role')->find($id);
-        if (!$role) {
-            $msg   = "Invalid Role ID";
-            $type = 'warning';
-        } else {
-            $this->_acl->requirePrivilegeForObject('delete', $role);
-            
-            $users = $role->Users->toArray();
-            if (!empty($users)) {
-                $msg = 'This role cannot be deleted because it is in use by one or more users';
-                $type = 'warning';
-            } else {
-                Doctrine::getTable('RolePrivilege')
-                ->findByRoleId($id)
-                ->delete();
-                parent::deleteAction();
-                // parent method will take care 
-                // of the message and forword the page
-                return;
-            }
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
-    }
-
-    /**
      * Assign privileges to a single role
      * 
      * @return void

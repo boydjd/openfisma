@@ -36,4 +36,24 @@ class Role extends BaseRole
     {
         return $this->id;
     }
+
+    /**
+     * preDelete 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if (count($this->Users) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This role cannot be deleted because it is in use by one or more users'
+            );
+        }
+
+        Doctrine::getTable('RolePrivilege')
+            ->findByRoleId($this->id)
+            ->delete();
+    }
 }
