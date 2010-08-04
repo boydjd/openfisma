@@ -179,7 +179,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         $acd = new Zend_Date();
         $acd->set($finding->actualCompletionDate);
 
-        $this->assertEquals($today->get('Date'), $acd->get('Date'));
+        $this->assertEquals($today->get(Zend_Date::DATE_SHORT), $acd->get(Zend_Date::DATE_SHORT));
 
         // When a finding goes back to EN status, the ACD should be null again
         $finding->status = 'EN';
