@@ -27,7 +27,7 @@
  * 
  * @todo       As part of the ongoing refactoring, this class should probably be merged with the FindingController.
  */
-class RemediationController extends SecurityController
+class RemediationController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The orgSystems which are belongs to current user.

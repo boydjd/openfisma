@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class SourceController extends BaseController
+class SourceController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -35,43 +35,4 @@ class SourceController extends BaseController
      * @var string
      */
     protected $_modelName = 'Source';
-    
-    /**
-     * Delete a subject model
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $source = Doctrine::getTable($this->_modelName)->find($id);
-        if (!$source) {
-            $msg   = "Invalid {$this->_modelName} ID";
-            $type = 'warning';
-        } else {
-            $this->_acl->requirePrivilegeForObject('delete', $source);
-            
-            try {
-                if (count($source->Findings) > 0) {
-                    $msg = 'This source cannot be deleted because it is already associated with one or
-                            findings';
-                    $type = 'warning';
-                } else {
-                    Doctrine_Manager::connection()->beginTransaction();
-                    $source->delete();
-                    Doctrine_Manager::connection()->commit();
-                    $msg   = "{$this->_modelName} deleted successfully";
-                    $type = 'notice';
-                }
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                if (Fisma::debug()) {
-                    $msg .= $e->getMessage();
-                }
-                $type = 'warning';
-            } 
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
-    }
 }

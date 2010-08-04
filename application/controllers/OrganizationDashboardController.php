@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class OrganizationDashboardController extends SecurityController
+class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The threshold (as a percentage) for which a metric becomes green.

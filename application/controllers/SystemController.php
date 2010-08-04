@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class SystemController extends BaseController
+class SystemController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -41,38 +41,6 @@ class SystemController extends BaseController
      */
     protected $_aclResource = 'Organization';
 
-    /**
-     * Returns the standard form for creating, reading, and updating systems.
-     * 
-     * @param string|null $formName The specified form name
-     * @return Zend_Form The assembled from
-     */
-    public function getForm($formName = null)
-    {
-        $form = Fisma_Zend_Form_Manager::loadForm('system');
-        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $q = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
-        $organizationTreeObject->setBaseQuery($q);
-        $organizationTree = $organizationTreeObject->fetchTree();
-        if (!empty($organizationTree)) {
-            foreach ($organizationTree as $organization) {
-                $value = $organization['id'];
-                $text = str_repeat('--', $organization['level']) . $organization['name'];
-                $form->getElement('parentOrganizationId')->addMultiOptions(array($value => $text));
-            }
-        }
-        
-        $systemTable = Doctrine::getTable('System');
-        
-        $enumFields = array('confidentiality', 'integrity', 'availability', 'type', 'sdlcPhase');
-        foreach ($enumFields as $field) {
-            $array = $systemTable->getEnumValues($field);
-            $form->getElement($field)->addMultiOptions(array_combine($array, $array));
-        }
-        
-        return Fisma_Zend_Form_Manager::prepareForm($form);
-    }
-    
     /**
      * List the systems from the search. If search none, it list all systems
      * 
@@ -346,6 +314,7 @@ class SystemController extends BaseController
      * @param Zend_Form $form
      * @param Doctrine_Record $system
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     * @returns integer Organization id of new system
      */
     protected function saveValue($form, $system=null)
     {
@@ -391,6 +360,8 @@ class SystemController extends BaseController
 
             CurrentUser::getInstance()->invalidateAcl();
         }
+
+        return $system->Organization->id;
     }
 
     /**

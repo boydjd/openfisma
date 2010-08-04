@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IndexController extends SecurityController
+class IndexController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The default action - show the home page

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,29 +17,28 @@
  */
 
 /**
- * A base controller for the security control catalogs
+ * Fisma_Zend_Controller_Action_Helper_SecurityControlCatalogToolbar 
  * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Controllers
- * @subpackage SUBPACKAGE
- * @version    $Id$
+ * @uses Zend_Controller_Action_Helper_Abstract
+ * @package Fisma_Zend_Controller_Action_Helper 
+ * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class SecurityControlCatalogBaseController extends SecurityController
+class Fisma_Zend_Controller_Action_Helper_SecurityControlCatalogToolbar extends Zend_Controller_Action_Helper_Abstract
 {
     /**
      * A helper function to create the objects required to render the toolbar partial
      * 
      * @return Zend_Form
      */
-    protected function _getToolbarForm()
+    public function direct()
     {
         $form = Fisma_Zend_Form_Manager::loadForm('security_control_catalog_toolbar');
 
         // Set up the available and default values for the form
         $form->getElement('id')
-             ->addMultiOptions($this->_getCatalogs())
+             ->addMultiOptions(Doctrine::getTable('SecurityControlCatalog')->getCatalogs())
              ->setValue(Fisma::configuration()->getConfig('default_security_control_catalog_id'));
         
         $form->setDefaults($this->getRequest()->getParams());
@@ -58,23 +57,5 @@ class SecurityControlCatalogBaseController extends SecurityController
         $form->getElement('search')->removeDecorator('Label');
         
         return $form;
-    }
-    
-    /**
-     * Get an array of catalogs by id and name, in a format that is compatible with 
-     * Zend_Form_Element_Select#addMultiOptions()
-     * 
-     * @return array
-     */
-    protected function _getCatalogs()
-    {
-        // Get data for the select element. Columns are aliased as 'key' and 'value' for addMultiOptions().
-        $catalogQuery = Doctrine_Query::create()
-                        ->select('id AS key, name AS value')
-                        ->from('SecurityControlCatalog')
-                        ->orderBy('name')
-                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        return $catalogQuery->execute();
     }
 }

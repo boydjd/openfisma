@@ -26,10 +26,8 @@
  * @package    Fisma
  * @subpackage Fisma_Zend_Form
  * @version    $Id$
- * 
- * @todo       Rename this class to "CrudDecorator"
  */
-class Fisma_Zend_Form_FismaDecorator extends Zend_Form_Decorator_Abstract
+class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                                 implements Zend_Form_Decorator_Marker_File_Interface
 {
     /**

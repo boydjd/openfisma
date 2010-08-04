@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class SecurityControlCatalogController extends SecurityControlCatalogBaseController
+class SecurityControlCatalogController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set up context switch
@@ -99,7 +99,7 @@ class SecurityControlCatalogController extends SecurityControlCatalogBaseControl
         
         $this->view->controlTable = $controlTable;
         
-        $this->view->toolbarForm = $this->_getToolbarForm();
+        $this->view->toolbarForm = $this->_helper->securityControlCatalogToolbar();
     }
     
     /**

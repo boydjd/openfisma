@@ -340,9 +340,11 @@ class Fisma
         $manager = Doctrine_Manager::getInstance();
         $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
         $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
+        $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
         $manager->registerValidators(
             array('Fisma_Doctrine_Validator_Ip', 'Fisma_Doctrine_Validator_Url', 'Fisma_Doctrine_Validator_Phone')
         );
+
         /**
          * @todo We want to enable VALIDATE_ALL in release 2.6
          */
@@ -365,6 +367,7 @@ class Fisma
                 'migrations_path'     =>  self::getPath('migration'),
                 'yaml_schema_path'    =>  self::getPath('schema'),
                 'generate_models_options' => array(
+                    'generateTableClasses' => true,
                     'baseClassName' => 'Fisma_Doctrine_Record'
                 )
             )

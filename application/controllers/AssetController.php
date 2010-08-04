@@ -27,7 +27,7 @@
  * 
  * @see        Zend_View_Helper_Abstract
  */
-class AssetController extends BaseController
+class AssetController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -52,7 +52,7 @@ class AssetController extends BaseController
                                      'pro_version'=> 'Version');
 
     /**
-     * Invokes a contract with BaseController regarding privileges.
+     * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges.
      * 
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
@@ -73,27 +73,6 @@ class AssetController extends BaseController
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('search', array('pdf'))
                       ->initContext();
-    }
-    
-    /**
-     * Get the specified form of the subject model
-     * 
-     * @param string|null $formName The name of the specified form
-     * @return Zend_Form The specified form of the subject model
-     */
-    public function getForm($formName=null)
-    {
-        $form = parent::getForm($formName);
-        $form->getElement('orgSystemId')->addMultiOptions($this->_getSystemSelectOptions());
-        
-        $networks = Doctrine::getTable('Network')->findAll()->toArray();
-        $networkList = array();
-        foreach ($networks as $network) {
-            $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
-        }
-        $form->getElement('networkId')->addMultiOptions($networkList);
-        $form = Fisma_Zend_Form_Manager::prepareForm($form);
-        return $form;
     }
     
     /**
@@ -119,7 +98,7 @@ class AssetController extends BaseController
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return void
+     * @return integer Asset ID
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -137,6 +116,7 @@ class AssetController extends BaseController
 
         $subject->merge($values);
         $subject->save();
+        return $subject->id;
     }
     
     /**
@@ -190,7 +170,6 @@ class AssetController extends BaseController
      */
     public function createAction()
     {
-        $this->_acl->requirePrivilegeForClass('create', 'Asset');
         $this->_request->setParam('source', 'MANUAL');
         parent::createAction();
     }
@@ -347,44 +326,6 @@ class AssetController extends BaseController
         } else {
             parent::viewAction();
         }
-    }
-    
-    /**
-     * Delete an asset
-     * 
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $asset = Doctrine::getTable($this->_modelName)->find($id);
-        $this->_acl->requirePrivilegeForObject('delete', $asset);
-        
-        if (!$asset) {
-            $msg   = "Invalid {$this->_modelName} ID";
-            $type = 'warning';
-        } else {
-            try {
-                if (count($asset->Findings)) {
-                    $msg   = $msg = 'This asset cannot be deleted because it has findings against it';
-                    $type = 'warning';
-                } else {
-                    Doctrine_Manager::connection()->beginTransaction();
-                    $asset->delete();
-                    Doctrine_Manager::connection()->commit();
-                    $msg   = "Asset deleted successfully";
-                    $type = 'notice';
-                }
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                if (Fisma::debug()) {
-                    $msg .= $e->getMessage();
-                }
-                $type = 'warning';
-            } 
-        }
-        $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
     }
     
     /**

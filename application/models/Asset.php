@@ -54,4 +54,20 @@ class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
     {
         return $this->orgSystemId;
     }
+
+    /**
+     * preDelete 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if (count($this->Findings) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This asset cannot be deleted because it has findings against it'
+            );
+        }
+    }
 }

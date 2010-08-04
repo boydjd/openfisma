@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id: ArtifactController.php 3266 2010-04-27 04:32:18Z mhaase $
  */
-class CommentController extends SecurityController
+class CommentController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set JSON context for the add action

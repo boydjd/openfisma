@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentDashboardController extends IncidentBaseController
+class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set up the JSON contexts used in this controller
@@ -114,7 +114,7 @@ class IncidentDashboardController extends IncidentBaseController
         $limit = $this->getRequest()->getParam('limit', 10);
         $offset = $this->getRequest()->getParam('offset', 0);
             
-        $newIncidentsQuery = $this->_getUserIncidentQuery()
+        $newIncidentsQuery = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
                                   ->select('i.id, i.reportTs, i.additionalInfo, i.piiInvolved')
                                   ->andWhere('i.status = ?', "new")
                                   ->orderBy("i.$sortBy $order")
@@ -154,7 +154,7 @@ class IncidentDashboardController extends IncidentBaseController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = $this->_getUserIncidentQuery()
+        $newIncidentsQuery = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
                                   ->select('i.id, i.additionalInfo, i.modifiedTs')
                                   ->andWhere('i.modifiedTs > ?', $cutoffTime)
                                   ->orderBy("i.$sortBy $order")
@@ -194,7 +194,7 @@ class IncidentDashboardController extends IncidentBaseController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(5, Zend_Date::DAY)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = $this->_getUserIncidentQuery()
+        $newIncidentsQuery = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
                                   ->select('i.id, i.additionalInfo, i.closedTs, i.resolution')
                                   ->andWhere('i.status = ?', 'closed')
                                   ->andWhere('i.closedTs > ?', $cutoffTime)
@@ -235,7 +235,7 @@ class IncidentDashboardController extends IncidentBaseController
         $now = Zend_Date::now();
         $cutoffTime = $now->sub(48, Zend_Date::HOUR)->get(Zend_Date::ISO_8601);
             
-        $newIncidentsQuery = $this->_getUserIncidentQuery()
+        $newIncidentsQuery = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
                                   ->select('i.id, i.additionalInfo, count(c.id) AS count')
                                   ->innerJoin('i.IncidentComment c')
                                   ->andWhere('c.createdTs > ?', $cutoffTime)

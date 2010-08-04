@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentReportController extends IncidentBaseController
+class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Initialize the controller

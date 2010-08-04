@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class OrganizationController extends SecurityController
+class OrganizationController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * A type constant of drag operation of organization tree which defines the operation that move 

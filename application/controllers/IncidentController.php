@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentController extends IncidentBaseController
+class IncidentController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The main name of the model.
@@ -250,10 +250,10 @@ class IncidentController extends IncidentBaseController
         $formPart->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_CreateIncidentDecorator()
+                new Fisma_Zend_Form_Decorator_Incident_Create()
             )
         );
-        $formPart->setElementDecorators(array(new Fisma_Zend_Form_CreateIncidentDecorator()));
+        $formPart->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Incident_Create()));
 
         // Each step has some specific data that needs to be set up
         switch ($step) {
@@ -269,7 +269,7 @@ class IncidentController extends IncidentBaseController
                 $timestamp = $formPart->getElement('incidentDate');
                 $timestamp->clearDecorators();
                 $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-                $timestamp->addDecorator(new Fisma_Zend_Form_CreateIncidentDecorator);
+                $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Incident_Create);
                 $tz = $formPart->getElement('incidentTimezone');
                 $tz->addMultiOptions($this->_timezones);
                 break;
@@ -354,7 +354,7 @@ class IncidentController extends IncidentBaseController
 
         // Setup decorators
         $form->setSubFormDecorators(array(new Zend_Form_Decorator_FormElements()));
-        $form->setElementDecorators(array(new Fisma_Zend_Form_FismaDecorator()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         return $form;
     }
@@ -1279,7 +1279,7 @@ class IncidentController extends IncidentBaseController
             $order = 'ASC'; //ignore other values
         }
         
-        $q = $this->_getUserIncidentQuery()
+        $q = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
              ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
              ->leftJoin('i.Category c')
              ->orderBy("$sortBy $order")

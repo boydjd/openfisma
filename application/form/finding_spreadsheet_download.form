@@ -8,7 +8,7 @@
 [finding_spreadsheet_download]
 
 method=GET
-action=/finding/template
+action=/finding/template/format/xls
 
 elements.catalogId.type = "select"
 elements.catalogId.options.label = "Security Control Catalog"

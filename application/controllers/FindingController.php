@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class FindingController extends BaseController
+class FindingController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -38,70 +38,18 @@ class FindingController extends BaseController
     protected $_modelName = 'Finding';
 
     /**
-     * Invokes a contract with BaseController regarding privileges
+     * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges
      * 
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
     
-    /**
-     * Returns the standard form for creating finding
-     * 
-     * @param string|null $formName The specified form name to load
-     * @return Zend_Form The assembled form
-     */
-    public function getForm($formName = null)
+    public function init()
     {
-        $form = Fisma_Zend_Form_Manager::loadForm('finding');
-
-        $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
-        $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
-
-        $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
-        
-        $sources = Doctrine::getTable('Source')->findAll()->toArray();
-        $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
-        foreach ($sources as $source) {
-            $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
-        }
-
-        $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
-            ->leftJoin('o.System system')
-            ->andWhere('o.orgType <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
-            ->execute();
-        $selectArray = $this->view->treeToSelect($systems, 'nickname');
-        $form->getElement('orgSystemId')->addMultiOptions($selectArray);
-
-        // fix: Zend_Form can not support the values which are not in its configuration
-        //      The values are set after page loading by Ajax
-        $asset = Doctrine::getTable('Asset')->find($this->_request->getParam('assetId'));
-        if ($asset) {
-            $form->getElement('assetId')->addMultiOptions(array($asset['id'] => $asset['name']));
-        }
-        
-        $form->setDisplayGroupDecorators(
-            array(
-                new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_CreateFindingDecorator()
-            )
-        );
-        
-        // Check if the user is allowed to read assets.
-        if (!$this->_acl->hasPrivilegeForClass('read', 'Asset')) {
-            $form->removeElement('name');
-            $form->removeElement('ip');
-            $form->removeElement('port');
-            $form->removeElement('searchAsset');
-            $form->removeElement('assetId');
-        }
-        
-        $form->setElementDecorators(array(new Fisma_Zend_Form_CreateFindingDecorator()));
-        $dateElement = $form->getElement('discoveredDate');
-        $dateElement->clearDecorators();
-        $dateElement->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
-        $dateElement->addDecorator(new Fisma_Zend_Form_CreateFindingDecorator());
-        return $form;
+        $this->_helper->fismaContextSwitch
+            ->addActionContext('template', 'xls')
+            ->initContext();
     }
 
     /** 
@@ -109,7 +57,7 @@ class FindingController extends BaseController
      * 
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return void
+     * @return integer ID of the object 
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
@@ -148,6 +96,8 @@ class FindingController extends BaseController
         }
                 
         $subject->save();
+
+        return $subject->id;
     }
     
     /**
@@ -255,19 +205,9 @@ class FindingController extends BaseController
     {
         $this->_acl->requirePrivilegeForClass('inject', 'Finding');
         
-        $contextSwitch = $this->_helper->getHelper('contextSwitch');
-        $contextSwitch->addContext(
-            'xls', 
-            array(
-                'suffix' => 'xls',
-                'headers' => array(
-                    'Content-type' => 'application/vnd.ms-excel',
-                    'Content-Disposition' => 'filename=' . Fisma_Inject_Excel::TEMPLATE_NAME
-                )
-            )
-        );
-        $contextSwitch->addActionContext('template', 'xls');
-        
+        // set the filename for the browser to save the file as
+        $this->_helper->fismaContextSwitch->setFilename(Fisma_Inject_Excel::TEMPLATE_NAME);
+
         /* The spreadsheet won't open in Excel if any of these tables are 
          * empty. So we explicitly check for that condition, and if it 
          * exists then we show the user an error message explaining why 
@@ -339,20 +279,11 @@ class FindingController extends BaseController
             }
             $this->view->risk = array('HIGH', 'MODERATE', 'LOW');
             $this->view->templateVersion = Fisma_Inject_Excel::TEMPLATE_VERSION;
-
-            // Context switch is called only after the above code executes successfully. Otherwise if there is an error,
-            // the error handler will be confused by context switch and will look for error.xls.tpl instead of error.tpl
-            $contextSwitch->initContext('xls');
-            
-            /* Bug fix #2507318 - 'OVMS Unable to open Spreadsheet upload file'
-             * This fixes a bug in IE6 where some mime types get deleted if IE
-             * has caching enabled with SSL. By setting the cache to 'private' 
-             * we can tell IE not to cache this file.
-             */                                       
-            $this->getResponse()->setHeader('Pragma', 'private', true);
-            $this->getResponse()->setHeader('Cache-Control', 'private', true);
         } catch(Fisma_Zend_Exception $fe) {
-            Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+            // error condition, remove all stuff from the context switch
+            $this->getResponse()->clearAllHeaders();
+            $this->_helper->viewRenderer->setViewSuffix('phtml');
+            Zend_Layout::getMvcInstance()->enableLayout();
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
             $this->_forward('injection', 'finding');
         }
@@ -505,5 +436,27 @@ class FindingController extends BaseController
             }
         }
         $this->_forward('approve', 'Finding');
+    }
+
+    /**
+     * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?). 
+     * 
+     * @access public
+     * @return void
+     */
+    public function viewAction() 
+    {
+        $this->_forward('view', 'remediation');
+    }
+
+    /**
+     * Forward to the remediation searchbox action. 
+     * 
+     * @access public
+     * @return void
+     */
+    public function listAction()
+    {
+        $this->_forward('searchbox', 'remediation');
     }
 }

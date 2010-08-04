@@ -26,7 +26,7 @@
  * @subpackage Fisma_Zend_Form
  * @version    $Id$
  */
-class Fisma_Zend_Form_CreateFindingDecorator extends Fisma_Zend_Form_FismaDecorator
+class Fisma_Zend_Form_Decorator_Finding_Create extends Fisma_Zend_Form_Decorator
 {
     /**
      * Display product detail information on the create finding page
