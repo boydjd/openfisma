@@ -1,2 +1,4 @@
 phpcs_report
 phpcs.py
+.DS_Store
+

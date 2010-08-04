@@ -24,11 +24,7 @@ try {
     $frontController = Zend_Controller_Front::getInstance();
     $frontController->setControllerDirectory(Fisma::getPath('controller'));
     Fisma::dispatch();
-} catch (Zend_Config_Exception $zce) {
-    echo 'Configuration exception during bootstrap.\n';
 } catch (Exception $exception) {
-    echo 'An exception occured during bootstraping.\n';
-    echo get_class($exception) . '\n';
-    echo $exception->getMessage() . '\n';
+    echo get_class($exception) . ": " . $exception->getMessage() . "\n";
     echo $exception->getTraceAsString();
 }
