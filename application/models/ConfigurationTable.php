@@ -25,7 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class ConfigurationTable extends Doctrine_Table
+class ConfigurationTable extends Fisma_Doctrine_RecordTable
 {
 
 }

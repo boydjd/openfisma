@@ -19,13 +19,13 @@
 /**
  * ModuleTable 
  * 
- * @uses Doctrine_Table
+ * @uses Fisma_Doctrine_RecordTable
  * @package Model 
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class ModuleTable extends Doctrine_Table
+class ModuleTable extends Fisma_Doctrine_RecordTable
 {
 
 }
