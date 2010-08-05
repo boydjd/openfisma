@@ -620,4 +620,35 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->form = $form;
     }
+    
+    /**
+     * Configurations related to searching
+     */
+    public function searchAction()
+    {
+        $form = $this->_getConfigForm('search_config');
+
+        if ($this->getRequest()->isPost()) {
+            $newValues = $this->getRequest()->getPost();
+
+            $this->_saveConfigurationForm($form, $newValues);
+
+            $this->_redirect('/config/search');
+        }
+
+        // Populate default values for non-submit button elements
+        foreach ($form->getElements() as $element) {
+
+            if ($element instanceof Zend_Form_Element_Submit) {
+                continue;
+            }
+            
+            $name = $element->getName();            
+            $value = Fisma::configuration()->getConfig($name);
+
+            $form->setDefault($name, $value);
+        }
+
+        $this->view->form = $form;
+    }
 }

@@ -242,6 +242,8 @@ class Fisma_Menu
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/role/list'));
             }
             
+            $admin->add(new Fisma_Yui_MenuItem('Search', '/config/search'));
+            
             $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
 
             if ($acl->hasPrivilegeForClass('read', 'User')) {
