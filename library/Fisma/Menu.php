@@ -109,6 +109,10 @@ class Fisma_Menu
             $mainMenuBar->add($findings);
         }
 
+        if ($acl->hasArea('vulnerability')) {
+            $mainMenuBar->add(self::buildVulnerabilitiesMenu($acl));
+        }
+
         if ($acl->hasArea('system_inventory')) {
             $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
             
@@ -276,5 +280,26 @@ class Fisma_Menu
         }
 
         return $mainMenuBar;
+    }
+
+    /**
+     * Constructs a vulnerabilities menu
+     *
+     * @param Zend_Acl $acl
+     * @return Fisma_Yui_Menu
+     */
+    protected function buildVulnerabilitiesMenu(Zend_Acl $acl)
+    {
+            $menu = new Fisma_Yui_Menu('Vulnerabilities');
+
+            if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
+                $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vulnerability/create'));
+            }
+            
+            if ($acl->hasPrivilegeForClass('inject', 'Vulnerability')) {
+                $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vulnerability/plugin'));
+            }
+
+             return $menu;
     }
 }
