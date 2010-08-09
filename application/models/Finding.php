@@ -77,7 +77,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public $relationIndex = array(
         'Source' => array('nickname' => array('type' => 'keyword', 'alias' => 'source')),
         'ResponsibleOrganization' => array('nickname' => array('type' => 'unstored', 'alias' => 'system')),
-        'Asset' => array('name' => array('type' => 'unstored', 'alias' => 'asset')),
         'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
     );
 
