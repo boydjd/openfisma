@@ -43,9 +43,6 @@ class View_Helper_UserInfo extends Zend_View_Helper_Abstract
         
         $view = Zend_Layout::getMvcInstance()->getView();
         
-        $view->displayText = $displayText;
-        $view->username = $username;
-        
-        return $view->render('helper/user-info.phtml');
+        return $view->partial('helper/user-info.phtml', 'default', array('displayText' => $displayText, 'username' => $username));
     }
 }

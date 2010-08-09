@@ -232,7 +232,7 @@ class Fisma
             'temp' => 'data/temp',
             'test' => 'tests',
             'uploads' => 'data/uploads',
-            'viewHelper' => 'application/views/helpers',
+            'viewHelper' => 'application/modules/default/views/helpers',
             'yui' => 'public/yui'
         );
 
