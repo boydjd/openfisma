@@ -923,9 +923,9 @@ class IncidentController extends IncidentBaseController
             
             $incident->completeStep($comment);
 
-            foreach ($this->_getAssociatedUsers($id) as $userId) {
+            foreach ($this->_getAssociatedUsers($id) as $user) {
                 $mail = new Fisma_Zend_Mail();
-                $mail->IRStep($userId, $id, $currentStep->name, $currentStep->User->username);
+                $mail->IRStep($user['userId'], $id, $currentStep->name, $currentStep->User->username);
             }
 
             $message = 'Workflow step completed. ';
@@ -1658,9 +1658,8 @@ class IncidentController extends IncidentBaseController
     {
         $incidentUsersQuery = Doctrine_Query::create()
                               ->select('u.userId')
-                              ->from('IrIncidentActor u')   
+                              ->from('IrIncidentUser u')   
                               ->where('u.incidentId = ?', $incidentId)
-                              ->groupBy('u.userId')
                               ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $incidentUsers = $incidentUsersQuery->execute();
