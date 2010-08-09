@@ -416,6 +416,10 @@ class SystemController extends BaseController
                 throw new Fisma_Zend_Exception_User('Select a Document Type');
             }
             
+            // Validate file extension and mime type. Failure will trigger exception handler at the end of this block
+            $artifactsGenerator = new Fisma_Doctrine_Behavior_AttachArtifacts_Generator();
+            $artifactsGenerator->checkFileBlackList($_FILES['file']);
+
             // Get the existing document
             $documentQuery = Doctrine_Query::create()
                              ->from('SystemDocument sd')
