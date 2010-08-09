@@ -1281,7 +1281,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             ->from('Finding f')
             ->leftJoin('f.ResponsibleOrganization ro')
             ->leftJoin('f.Source s')
-            ->leftJoin('f.Asset a')
             ->leftJoin('f.SecurityControl sc')
             ->leftJoin('f.CurrentEvaluation ce')
             ->leftJoin('ro.System ros')
@@ -1387,8 +1386,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $row['systemNickname'] = $responsibleOrganization ? $result->ResponsibleOrganization->nickname : '';
             $securityControl = $result->SecurityControl;
             $row['securityControl'] = $securityControl ? $result->SecurityControl->code : '';
-            $asset = $result->Asset;
-            $row['assetName'] = $asset ? $result->Asset->name : '';
             // select the finding whether have attachments
             $row['attachments'] = count($result->Evidence) > 0 ? 'Y' : 'N';
 
@@ -1401,7 +1398,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             }
             if ($format == 'pdf') {
                 $row['systemNickname'] = htmlspecialchars($row['systemNickname']);
-                $row['assetName'] = htmlspecialchars($row['assetName']);
                 $row['description'] = strip_tags($result->description);
                 $row['recommendation'] = strip_tags($result->recommendation);
                 $row['mitigationStrategy'] = strip_tags($result->mitigationStrategy);

@@ -295,6 +295,10 @@ Privilege:
         resource: notification
         action: finding
         description: Finding Notifications
+    notification_vulnerability:
+        resource: notification
+        action: vulnerability
+        description: Vulnerability Notifications
 
     # Incident
     incident_read:

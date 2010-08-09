@@ -14,6 +14,16 @@ Event:
         description: Security Scanner Finding Injected
         Privilege: notification_finding
 
+    VULNERABILITY_CREATED:
+        name: VULNERABILITY_CREATED
+        description: Vulnerability Created
+        Privilege: notification_vulnerability
+
+    VULNERABILITY_INJECTED:
+        name: VULNERABILITY_INJECTED
+        description: Security Scanner Vulnerability Injected
+        Privilege: notification_vulnerability
+
     ASSET_CREATED:
         name: ASSET_CREATED
         description: Asset Created
