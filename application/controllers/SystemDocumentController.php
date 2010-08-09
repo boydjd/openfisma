@@ -156,7 +156,7 @@ class SystemDocumentController extends SecurityController
             $ids = $index->findIds($keywords);
             if (!empty($ids)) {
                 $ids = implode(',', $ids);
-                $query->where('id IN (' . $ids . ')');
+                $query->andWhere('d.id IN (' . $ids . ')');
             } else {
                 //no data
                 return $this->_helper->json($tableData);
