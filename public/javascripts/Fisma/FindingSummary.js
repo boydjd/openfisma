@@ -497,7 +497,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Render the link
-            var uri = '/remediation/search'
+            var uri = '/finding/remediation/search'
                     + onTimeString
                     + statusString
                     + '/responsibleOrganizationId/'
@@ -516,7 +516,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/remediation/summary-data/format/'
+            var uri = '/finding/remediation/summary-data/format/'
                     + format
                     + this.listExpandedNodes(this.treeRoot, '');
 

@@ -84,11 +84,13 @@ class Fisma_Chart
     {
         $view = Zend_Layout::getMvcInstance()->getView();
 
-        $view->assign('sourceUrl', $this->_sourceUrl);
-        $view->assign('width', $this->_width);
-        $view->assign('height', $this->_height);
-        $view->assign('containerId', uniqid());
-        
-        return $view->render('chart/chart.phtml');
+        $data = array(
+            'sourceUrl' => $this->_sourceUrl,
+            'width' => $this->_width,
+            'height' => $this->_height,
+            'containerId' => uniqid()
+        );
+
+        return $view->partial('chart/chart.phtml', 'default', $data);
     }
 }

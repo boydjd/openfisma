@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class FindingReportController extends Fisma_Zend_Controller_Action_Security
+class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set up the context switch for Excel and PDF output
@@ -314,7 +314,7 @@ class FindingReportController extends Fisma_Zend_Controller_Action_Security
         $reportName = $this->getRequest()->getParam('name');
 
         if (!isset($reportName)) {
-            $this->_redirect('/finding-report/plugin');
+            $this->_redirect('/finding/report/plugin');
         }
         
         // Verify that the user has permission to run this report
@@ -371,7 +371,7 @@ class FindingReportController extends Fisma_Zend_Controller_Action_Security
         if (empty($myOrganizations)) {
             $msg = "The report could not be created because this user does not have access to any organizations.";
             $this->view->priorityMessenger($msg, 'warning');
-            $this->_redirect('/finding-report/plugin');
+            $this->_redirect('/finding/report/plugin');
             return;
         }
 
@@ -395,7 +395,7 @@ class FindingReportController extends Fisma_Zend_Controller_Action_Security
         } else {
             $msg = "The report could not be created because the report query did not return any data.";
             $this->view->priorityMessenger($msg, 'warning');
-            $this->_redirect('/finding-report/plugin');
+            $this->_redirect('/finding/report/plugin');
             return;
         }
         

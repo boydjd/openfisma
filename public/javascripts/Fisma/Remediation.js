@@ -33,7 +33,7 @@ function upload_evidence() {
     if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
         return false;
     }
-    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', upload_evidence_form_init);
+    Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', upload_evidence_form_init);
     return false;
 }
 

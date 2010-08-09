@@ -52,7 +52,7 @@ var stringToDate = function(sData) {
 };
 
 // DataSource instance
-var myDataSource = new YAHOO.util.DataSource("/remediation/search2/format/json");
+var myDataSource = new YAHOO.util.DataSource("/finding/remediation/search2/format/json");
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.responseSchema = {
     resultsList: "findings.records",
@@ -137,7 +137,7 @@ myDataTable.subscribe("rowClickEvent",
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
         var keywords = "<?php echo $this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
-        document.location = "/remediation/view/id/" + oRecord.getData("id") + keywords;
+        document.location = "/finding/remediation/view/id/" + oRecord.getData("id") + keywords;
     }
 );
 
@@ -161,7 +161,7 @@ function contextMenuHandler(event, eventArgs) {
     var actionUrl = '';
     switch (menuItem.index) {
         case 0 :
-            actionUrl = "/remediation/view/id/" + rowRecord.getData("id");
+            actionUrl = "/finding/remediation/view/id/" + rowRecord.getData("id");
             break;
     }
     if (actionUrl != '') {

@@ -98,19 +98,21 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         $view = Zend_Layout::getMvcInstance()->getView();
 
         $uniqueId = uniqid();
-                
-        $view->assign('clickEventBaseUrl', $this->_clickEventBaseUrl);
-        $view->assign('clickEventVariableName', $this->_clickEventVariableName);
-        $view->assign('columns', $this->getColumns());
-        $view->assign('columnDefinitions', $this->_getYuiColumnDefinitions());
-        $view->assign('containerId', $uniqueId . "_container");
-        $view->assign('dataUrl', $this->_dataUrl);
-        $view->assign('initialSortColumn', $this->_initialSortColumn);
-        $view->assign('resultVariable', $this->_resultVariable);
-        $view->assign('rowCount', $this->_rowCount);
-        $view->assign('sortDirection', ($this->_sortAscending ? 'asc' : 'desc'));
+               
+        $data = array(
+            'clickEventBaseUrl' => $this->_clickEventBaseUrl,
+            'clickEventVariableName' => $this->_clickEventVariableName,
+            'columns' => $this->getColumns(),
+            'columnDefinitions' => $this->_getYuiColumnDefinitions(),
+            'containerId' => $uniqueId . "_container",
+            'dataUrl' => $this->_dataUrl,
+            'initialSortColumn' => $this->_initialSortColumn,
+            'resultVariable' => $this->_resultVariable,
+            'rowCount' => $this->_rowCount,
+            'sortDirection' => ($this->_sortAscending ? 'asc' : 'desc')
+        );
         
-        return $view->render('yui/data-table-remote.phtml');
+        return $view->partial('yui/data-table-remote.phtml', 'default', $data);
     }
 
     /**

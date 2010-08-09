@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class FindingDashboardController extends Fisma_Zend_Controller_Action_Security
+class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set up headers/footers

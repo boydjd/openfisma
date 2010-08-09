@@ -27,7 +27,7 @@
  * 
  * @todo       As part of the ongoing refactoring, this class should probably be merged with the FindingController.
  */
-class RemediationController extends Fisma_Zend_Controller_Action_Security
+class Finding_RemediationController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The orgSystems which are belongs to current user.
@@ -615,8 +615,8 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
         // These variables go into the search view
         $link = $this->_helper->makeUrlParams($params);
         $this->view->assign('link', $link);
-        $this->view->assign('attachUrl', '/remediation/search2' . $link);
-        Fisma_Cookie::set('lastSearchUrl', "/remediation/searchbox$link");
+        $this->view->assign('attachUrl', '/finding/remediation/search2' . $link);
+        Fisma_Cookie::set('lastSearchUrl', "/finding/remediation/searchbox$link");
         $this->view->assign('columns', $this->_getColumns());
 
         // These variables go into the search box view
@@ -668,13 +668,13 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
 
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
-        $tabView->addTab("Finding $id", "/remediation/finding/id/$id");
-        $tabView->addTab("Mitigation Strategy", "/remediation/mitigation-strategy/id/$id");
-        $tabView->addTab("Risk Analysis", "/remediation/risk-analysis/id/$id");
-        $tabView->addTab("Security Control", "/remediation/security-control/id/$id");
-        $tabView->addTab("Comments ($commentCount)", "/remediation/comments/id/$id");
-        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/remediation/artifacts/id/$id");
-        $tabView->addTab("Audit Log", "/remediation/audit-log/id/$id");
+        $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id");
+        $tabView->addTab("Mitigation Strategy", "/finding/remediation/mitigation-strategy/id/$id");
+        $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id");
+        $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id");
+        $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id");
+        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/finding/remediation/artifacts/id/$id");
+        $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
     }
@@ -697,7 +697,7 @@ class RemediationController extends Fisma_Zend_Controller_Action_Security
             $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
         
-        $this->_redirect("/remediation/view/id/$id");
+        $this->_redirect("/finding/remediation/view/id/$id");
     }
 
     /**

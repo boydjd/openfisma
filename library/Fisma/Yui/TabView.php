@@ -125,14 +125,14 @@ class Fisma_Yui_TabView
     {
         $view = Zend_Layout::getMvcInstance()->getView();
 
-        $view->assign('selectedTabCookie', 'TabView_' . $this->_id . '_SelectedTab');
+        $tabs = array(
+            'selectedTabCookie' => 'TabView_' . $this->_id . '_SelectedTab',
+            'objectId' => $this->_objectId,
+            'objectIdCookie' => 'TabView_' . $this->_id . '_ObjectId',
+            'tabs' => $this->_tabs,
+            'tabViewContainer' => 'TabView_' . $this->_id . '_TabViewContainer'
+        );
 
-        $view->assign('objectId', $this->_objectId);    
-        $view->assign('objectIdCookie', 'TabView_' . $this->_id . '_ObjectId');
-
-        $view->assign('tabs', $this->_tabs);
-        $view->assign('tabViewContainer', 'TabView_' . $this->_id . '_TabViewContainer');
-        
-        return $view->render('yui/tab-view.phtml');
+        return $view->partial('yui/tab-view.phtml', 'default', $tabs);
     }
 }

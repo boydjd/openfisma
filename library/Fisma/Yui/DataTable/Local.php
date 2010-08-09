@@ -59,17 +59,17 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
         $view = Zend_Layout::getMvcInstance()->getView();
 
         $uniqueId = uniqid();
+       
+        $data = array(
+            'containerId' => $uniqueId . "_container",
+            'tableId' => $uniqueId . "_table",
+            'columns' => $this->getColumns(),
+            'data' => $this->_data,
+            'columnDefinitions' => $this->_getYuiColumnDefinitions(),
+            'responseSchema' => $this->_getYuiResponseSchema()
+        );
         
-        $view->assign('containerId', $uniqueId . "_container");
-        $view->assign('tableId', $uniqueId . "_table");
-
-        $view->assign('columns', $this->getColumns());
-        $view->assign('data', $this->_data);
-
-        $view->assign('columnDefinitions', $this->_getYuiColumnDefinitions());
-        $view->assign('responseSchema', $this->_getYuiResponseSchema());
-        
-        return $view->render('yui/data-table-local.phtml');
+        return $view->partial('yui/data-table-local.phtml', 'default', $data);
     }
     
     /**

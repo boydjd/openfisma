@@ -16,6 +16,7 @@ Fisma_Format_Section::startSection('Security Control');
     if (!empty($this->finding->securityControlId)):
         echo $this->partial(
             'security-control-catalog/single-control.phtml',
+            'default',
             array('securityControl' => $this->finding->SecurityControl)
         );
     else:

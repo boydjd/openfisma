@@ -26,7 +26,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class FindingController extends Fisma_Zend_Controller_Action_Object
+class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -191,7 +191,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($error, $type);
         }
         
-        $this->_redirect('/finding/injection');
+        $this->_redirect('/finding/index/injection');
     }
 
     /** 
@@ -285,7 +285,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->viewRenderer->setViewSuffix('phtml');
             Zend_Layout::getMvcInstance()->enableLayout();
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
-            $this->_forward('injection', 'finding');
+            $this->_forward('injection', 'index', 'finding');
         }
     }
 
@@ -435,7 +435,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
                 }
             }
         }
-        $this->_forward('approve', 'Finding');
+        $this->_forward('approve', 'index', 'finding');
     }
 
     /**
@@ -446,7 +446,7 @@ class FindingController extends Fisma_Zend_Controller_Action_Object
      */
     public function viewAction() 
     {
-        $this->_forward('view', 'remediation');
+        $this->_forward('view', 'remediation', 'finding');
     }
 
     /**

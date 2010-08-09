@@ -13,6 +13,7 @@ else:
         if ($currentArtifact):
             echo $this->partial(
                 'remediation/artifact-current-item.phtml', 
+                'finding',
                 array(
                     'finding' => $this->finding,
                     'artifact' => $artifact,
@@ -23,6 +24,7 @@ else:
         else:
             echo $this->partial(
                 'remediation/artifact-old-item.phtml', 
+                'finding',
                 array(
                     'finding' => $this->finding,
                     'artifact' => $artifact,

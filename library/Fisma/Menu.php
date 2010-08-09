@@ -48,8 +48,8 @@ class Fisma_Menu
             $findings = new Fisma_Yui_Menu('Findings');
             
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Summary', '/remediation/summary'));
-                $findings->add(new Fisma_Yui_MenuItem('Search', '/remediation/searchbox'));
+                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
+                $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/searchbox'));
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
@@ -61,21 +61,21 @@ class Fisma_Menu
             }
 
             if ($acl->hasPrivilegeForClass('approve', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/finding/approve'));
+                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/finding/index/approve'));
             }
 
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/create'));
+                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/index/create'));
             }
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/injection'));
-                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/finding/plugin'));
+                $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/index/injection'));
+                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/finding/index/plugin'));
             }
                                     
             $findings->addSeparator();
 
-            $findings->add(new Fisma_Yui_MenuItem('Dashboard', '/finding-dashboard'));
+            $findings->add(new Fisma_Yui_MenuItem('Dashboard', '/finding/dashboard'));
 
             // Finding Administration submenu
             if ($acl->hasArea('finding_admin')) {
@@ -92,16 +92,16 @@ class Fisma_Menu
             if ($acl->hasArea('finding_report')) {
                 $findingReportsSubmenu = new Fisma_Yui_Menu('Reports');
 
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding-report/fisma'));
+                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding/report/fisma'));
 
                 $findingReportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Overdue Findings', '/finding-report/overdue/format/html')
+                    new Fisma_Yui_MenuItem('Overdue Findings', '/finding/report/overdue/format/html')
                 );
 
                 /**
                  * @todo This doesn't belong here, but plugin reports needs to be re-written.
                  */
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/finding-report/plugin'));
+                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/finding/report/plugin'));
 
                 $findings->add($findingReportsSubmenu);
             }

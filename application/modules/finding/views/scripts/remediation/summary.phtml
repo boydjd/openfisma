@@ -8,7 +8,7 @@ var findingSummary;
 
 YAHOO.util.Event.onDOMReady(function () {
     YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/remediation/summary-data/format/json', 
+                                    '/finding/remediation/summary-data/format/json', 
                                     {
                                         success: function(o) {
                                             var summaryData = YAHOO.lang.JSON.parse(o.responseText);
@@ -87,7 +87,7 @@ function menuHandler(source) {
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
     findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
     
-    var url = '/remediation/summary-data'
+    var url = '/finding/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
             + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value)
             + '/format/json';
@@ -95,7 +95,7 @@ function menuHandler(source) {
 
     <?php foreach ($this->statusArray as $status): ?>
     document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
-        '/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
+        '/finding/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
         + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
@@ -206,7 +206,7 @@ echo $this->escape($exportPdf, 'none');
     </tr>
     <tr>
     <?php foreach ($this->statusArray as $status):
-        $url = Fisma_Url::customUrl('/remediation/searchbox/status/' . urlencode($status));?>
+        $url = Fisma_Url::customUrl('/finding/remediation/searchbox/status/' . urlencode($status));?>
         <th>
             <a id="finding_summary_search_<?php echo $this->escape($status, 'url') ?>"
                href="<?php echo $this->escape($url, 'none') ?>">
