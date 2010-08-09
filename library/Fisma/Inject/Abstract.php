@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -18,9 +18,13 @@
 
 /**
  * An abstract class for creating injection plug-ins
+ *
+ * This class (and it's subclasses) use the array key "finding" throughout.  However, this injection actually creates
+ * vulnerabilities; we maintain the use of the term "finding" due to legacy code using this convention.
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Inject
@@ -143,7 +147,7 @@ abstract class Fisma_Inject_Abstract
         }
 
         // Prepare finding
-        $finding = new Finding();
+        $finding = new Vulnerability();
         $finding->merge($findingData);
 
         // Handle related objects, since merge doesn't
@@ -168,11 +172,12 @@ abstract class Fisma_Inject_Abstract
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
-        $finding->duplicateFindingId = ($duplicateFinding) ? $duplicateFinding['id']: NULL;
+        $finding->duplicateVulnerabilityId = ($duplicateFinding) ? $duplicateFinding['id']: NULL;
 
         // Take the specified action on the current finding
         switch ($action) {
             case self::CREATE_FINDING:
+                $finding->status = 'OPEN';
                 $this->_totalFindings['created']++;
                 break;
             case self::DELETE_FINDING:
@@ -257,7 +262,7 @@ abstract class Fisma_Inject_Abstract
      * @param Array $duplicateFinding
      * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
      */
-    private function _getDuplicateAction(Finding $newFinding, Array $duplicateFinding)
+    private function _getDuplicateAction(Vulnerability $newFinding, Array $duplicateFinding)
     {
         $action  = NULL;
         $orgSame = ($newFinding->ResponsibleOrganization->id == $duplicateFinding['responsibleOrganizationId']) ? TRUE 
