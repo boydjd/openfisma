@@ -1,5 +1,5 @@
 <?php 
-echo $this->escape($this->partial('source/searchbox.phtml', array('keywords' => $this->keywords)), 'none');
+echo $this->escape($this->partial('source/searchbox.phtml', 'finding', array('keywords' => $this->keywords)), 'none');
 Fisma_Format_Section::startSection("Source List <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
 <script type="text/javascript">
@@ -29,7 +29,7 @@ var myColumnDefs = [
         return request;
     };
 
-    var myDataSource = new YAHOO.util.DataSource('/source/search');
+    var myDataSource = new YAHOO.util.DataSource('/finding/source/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -74,7 +74,7 @@ var myColumnDefs = [
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
-            document.location = "/source/view/id/" + oRecord.getData("id");
+            document.location = "/finding/source/view/id/" + oRecord.getData("id");
         }
     );
     
@@ -98,7 +98,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/source/view/id/" + rowRecord.getData("id");
+                actionUrl = "/finding/source/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

@@ -82,7 +82,7 @@ class Fisma_Menu
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
                 if ($acl->hasPrivilegeForClass('read', 'Source')) {
-                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/source/list'));
+                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/finding/source/list'));
                 }
 
                 $findings->add($findingAdminSubmenu);

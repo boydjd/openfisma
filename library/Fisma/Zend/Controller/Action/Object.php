@@ -47,6 +47,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected $_modelName = null;
 
     /**
+     * The name of the module the controller is in. 
+     * 
+     * @var string
+     * @access protected
+     */
+    protected $_moduleName = '';
+
+    /**
      * The name of the class which this class's ACL is based off of. 
      * 
      * For example, system document objects don't have their own ACL items, instead they are based on the privileges 
@@ -68,6 +76,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function init()
     {
         parent::init();
+
+        $this->_moduleName = $this->getModuleNameForLink();
         
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
@@ -166,10 +176,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->_acl->requirePrivilegeForObject('read', $subject);
 
         $form   = $this->getForm();
-        
-        $this->view->assign('editLink', "/{$this->_modelName}/edit/id/$id");
+
+        $this->view->assign('editLink', "{$this->_moduleName}/{$this->_modelName}/edit/id/$id");
         $form->setReadOnly(true);            
-        $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_modelName}/delete/id/$id");
         $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
@@ -228,7 +238,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
-        $this->view->assign('viewLink', "/{$this->_modelName}/view/id/$id");
+        $this->view->assign('viewLink', "{$this->_moduleName}/{$this->_modelName}/view/id/$id");
         $form->setAction("/{$this->_modelName}/edit/id/$id");
         $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
         // Update the model
@@ -400,5 +410,20 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getAclResourceName()
     {
         return is_null($this->_aclResource) ? $this->_modelName : $this->_aclResource;
+    }
+
+    /**
+     * getModuleNameForLink 
+     * 
+     * @access public
+     * @return string 
+     */
+    public function getModuleNameForLink()
+    {
+        if ($this->getRequest()->getModuleName() != 'default') {
+            return '/' . $this->getRequest()->getModuleName();
+        } else {
+            return '';
+        }
     }
 }
