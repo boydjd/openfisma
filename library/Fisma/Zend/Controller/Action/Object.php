@@ -198,7 +198,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         // Get the subject form
         $form   = $this->getForm();
-        $form->setAction("/{$this->_modelName}/create");
+        $form->setAction("{$this->_moduleName}/{$this->_modelName}/create");
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
