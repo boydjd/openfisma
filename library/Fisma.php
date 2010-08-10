@@ -423,6 +423,7 @@ class Fisma
         // Configure the views
         $view = Zend_Layout::getMvcInstance()->getView();
         $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
+        $view->addScriptPath(self::getPath('application') . '/modules/default/views/scripts');
         $view->doctype('HTML4_STRICT');
         // Make sure that we don't double encode
         $view->setEscape(array('Fisma', 'htmlentities'));
