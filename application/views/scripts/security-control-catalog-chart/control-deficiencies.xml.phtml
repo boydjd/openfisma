@@ -52,21 +52,23 @@
                    size='10'
                    orientation='vertical_up' />
 
-    <scroll transition='dissolve'
-            span='15'
-            x='10'
-            y='270'
-            width='785'
-            height='20'
-            url_button_1_idle='default'
-            url_button_1_over='default'
-            url_button_1_press='default'
-            url_button_2_idle='default'
-            url_button_2_over='default'
-            url_button_2_press='default'
-            url_slider_body='default'
-            url_slider_handle_1='default'
-            url_slider_handle_2='default' />
+    <?php if (count($this->deficiencies) > 20): ?>
+        <scroll transition='dissolve'
+                span='<?php echo $this->escape(1500 / count($this->deficiencies) + 15); ?>'
+                x='10'
+                y='270'
+                width='785'
+                height='20'
+                url_button_1_idle='default'
+                url_button_1_over='default'
+                url_button_1_press='default'
+                url_button_2_idle='default'
+                url_button_2_over='default'
+                url_button_2_press='default'
+                url_slider_body='default'
+                url_slider_handle_1='default'
+                url_slider_handle_2='default' />
+    <?php endif; ?>
 
     <legend font='arial'
             size='12'
