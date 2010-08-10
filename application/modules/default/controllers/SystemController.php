@@ -139,7 +139,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             'showFindings', 
             array(
                 'value' => 'Show Findings',
-                'href' => "/remediation/search/responsibleOrganizationId/$id"
+                'href' => "/finding/remediation/search/responsibleOrganizationId/$id"
             )
         );
 
