@@ -42,7 +42,19 @@ class Fisma_Zend_Form_Manager
     static function loadForm($formName) 
     {
         // Load the form from a .form file
-        $config = new Zend_Config_Ini(Fisma::getPath('form') . "/{$formName}.form", $formName);
+        $front = Zend_Controller_Front::getInstance()->getRequest();
+        $module = $front->getModuleName();
+        $path = Fisma::getPath('form');
+        $path = str_replace('default', $module, $path);
+
+        // Try loading the form in the module specific form location first, if it's not there, load from the default
+        // module form location
+        if (file_exists($path . "/{$formName}.form")) {
+            $config = new Zend_Config_Ini($path . "/{$formName}.form", $formName);
+        } else {
+            $config = new Zend_Config_Ini(Fisma::getPath('form') . "/{$formName}.form", $formName);
+        }
+
         $form = new Fisma_Zend_Form();
         
         // Configure this form to use custom form elements

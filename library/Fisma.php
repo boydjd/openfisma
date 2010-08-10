@@ -217,7 +217,7 @@ class Fisma
             'config' => 'application/config',
             'data' => 'data',
             'fixture' => 'application/doctrine/data/fixtures',
-            'form' => 'application/form',
+            'form' => 'application/modules/default/forms',
             'image' => 'public/images',
             'index' => 'data/index',
             'layout' => 'application/layouts/scripts',

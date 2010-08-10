@@ -47,6 +47,8 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     
     public function init()
     {
+        parent::init();
+
         $this->_helper->fismaContextSwitch
             ->addActionContext('template', 'xls')
             ->initContext();
