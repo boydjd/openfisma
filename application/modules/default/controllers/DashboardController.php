@@ -129,7 +129,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $alert['PEND'] = $result['count'];
         }
         
-        $url = '/remediation/searchbox/status/';
+        $url = '/finding/remediation/searchbox/status/';
 
         $this->view->url = $url;
         $this->view->pendingUrl = '/finding/approve';
