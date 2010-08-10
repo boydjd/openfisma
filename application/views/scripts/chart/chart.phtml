@@ -5,10 +5,10 @@
 </div>
 
 <script language="JavaScript" type="text/javascript">
-    var hasRightVersion = DetectFlashVer(requiredMajorVersion, requiredMinorVersion, requiredRevision);
+    var hasRightVersion = DetectFlashVer(10, 0, 45);
     if (hasRightVersion) {
         var flashContent = AC_FL_RunContent(
-            'codebase', 'https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9.0.45.0',
+			'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2',
             'width', '<?php echo $this->escape($this->width, 'javascript')?>',
             'height', '<?php echo $this->escape($this->height, 'javascript')?>',
             'scale', 'noscale',
