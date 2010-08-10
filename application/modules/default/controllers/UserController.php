@@ -60,7 +60,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     private function _getProfileForm()
     {
-        $form = Fisma_Zend_Form_Manager::loadForm('account');
+        $form = Fisma_Zend_Form_Manager::loadForm('user');
         $form->removeElement('username');
         $form->removeElement('password');
         $form->removeElement('confirmPassword');
