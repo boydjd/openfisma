@@ -127,8 +127,11 @@ class FindingController extends BaseController
             unset($values['securityControlId']);
         }
 
+        $form->getElement('securityControlAutocomplete')->setValue($values['securityControlId'])
+                                                        ->setDisplayText($values['securityControlAutocomplete']);
+
         $subject->merge($values);
-        
+
         // If an asset is specified, then try to link the finding to that asset and assign
         // the responsible system automatically. Otherwise, link to the responsible system
         // that the user selected.
@@ -149,7 +152,7 @@ class FindingController extends BaseController
                 
         $subject->save();
     }
-    
+
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      * 

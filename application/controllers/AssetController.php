@@ -106,10 +106,12 @@ class AssetController extends BaseController
     protected function setForm($subject, $form)
     {
         $product = $subject->Product;
-        $form->getElement('product')->setValue($product->name);
 
         if ($this->getRequest()->getParam('sub') != 'edit') 
             $form->getElement('product')->setAttrib('readonly', true);
+
+        $form->getElement('product')->setValue($subject->productId)
+                                    ->setDisplayText($subject->Product->name);
 
         return parent::setForm($subject, $form);
     }
