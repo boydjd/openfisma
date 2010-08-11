@@ -367,7 +367,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $msg = "Asset[s] deleted successfully";
             $this->view->priorityMessenger($msg, 'notice');
         }
-        $this->_forward('list');
+        $this->_redirect('/asset/list'); 
     }
 
     public function importAction()

@@ -232,6 +232,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model       = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/profile');
         } else {
             $form->setDefaults($user->toArray());
         }
@@ -281,6 +282,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model       = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/password');
         }
         $this->view->form    =  $form;
     }
@@ -320,6 +322,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model   = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/notification');
         }
 
         $this->view->me = $user;
@@ -529,7 +532,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if (!empty($this->view->id)) {
             $this->_request->setParam('id', $this->view->id);
-            $this->_forward('view');
+            $this->_redirect("/user/view/id/{$this->view->id}");
         }
     }
 

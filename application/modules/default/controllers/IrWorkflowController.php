@@ -328,7 +328,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $model = 'warning';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_forward('view', null, null, array('id' => $irworkflow->id));
+            $this->_redirect("/ir-workflow/view/id/{$irworkflow->id}");
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
@@ -535,7 +535,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
 
             $this->_sortSteps();
         
-            $this->_forward('stepview', null, null, array('id' => $irworkflowstep->id));
+            $this->_redirect("/ir-workflow/stepview/id/{$irworkflowstep->id}");
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message

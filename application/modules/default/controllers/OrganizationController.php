@@ -355,7 +355,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Security
             }
             $this->view->priorityMessenger($msg, $model);
         }
-        $this->_forward('list');
+        $this->_redirect('/organization/list');
     }
 
     /**
@@ -408,7 +408,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Security
                     $model = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('view', null, null, array('id' => $organization->id));
+                $this->_redirect("/organization/view/id/{$organization->id}");
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message

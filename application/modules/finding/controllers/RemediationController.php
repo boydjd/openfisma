@@ -783,6 +783,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
+            $this->_redirect("/finding/remediation/view/id/$id");
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Exception $e) {

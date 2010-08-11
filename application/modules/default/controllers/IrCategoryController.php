@@ -257,12 +257,12 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
                     $model = 'notice';
                 }
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('view', null, null, array('id' => $ircategory->id));
+                $this->_redirect("/ir-category/view/id/{$ircategory->id}");
                 return;
 
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $this->view->view->priorityMessenger("Unable to create category: $errorString", 'warning');
+                $this->view->priorityMessenger("Unable to create category: $errorString", 'warning');
             }
         }
         
@@ -312,7 +312,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
                 $model = 'warning';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_forward('view', null, null, array('id' => $ircategory->id));
+            $this->_redirect("/ir-category/view/id/{$ircategory->id}");
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
@@ -390,7 +390,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
                     $model = 'notice';
                 }
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
+                $this->_redirect("/ir-category/subview/id/{$irsubcategory->id}");
                 return;
 
             } else {
@@ -502,7 +502,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
 
         if (!$irsubcategory) {
-            throw new Exception_General("Invalid category ID");
+            throw new Fisma_Zend_Exception('Invalid category ID');
         }
         
         $form = $this->_getSubCategoryForm($irsubcategory);
@@ -526,7 +526,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
                 $model = 'warning';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_forward('subview', null, null, array('id' => $irsubcategory->id));
+            $this->_redirect("/ir-category/subview/id/{$irsubcategory->id}");
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             // Error message
@@ -556,6 +556,6 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
             }
             $this->view->priorityMessenger($msg, $model);
         }
-        $this->_forward('tree');
+        $this->_redirect('/ir-category/tree');
     }
 }
