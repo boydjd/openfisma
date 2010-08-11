@@ -29,6 +29,13 @@
 class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
 {
     /**
+     * The text displayed in the autocomplete field by default.
+     * 
+     * @var string
+     */
+    private $_displayText;
+
+    /**
      * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
      * be used as a parameter to echo, print, or string interpolation expressions.
      * 
@@ -38,7 +45,22 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
     {
         return $this->renderSelf();
     }
-    
+
+    /**
+     * Set the text displayed in the autocomplete field by default
+     * 
+     * Notice that the "value" of this element is stored in a hidden field and is distinct from the displayText
+     * 
+     * @param string $displayText
+     * @return Fluent interface
+     */
+    public function setDisplayText($displayText)
+    {
+        $this->_displayText = $displayText;
+
+        return $this;
+    }
+
     /**
      * A default implementation of render() that creates an autocomplete text field 
      * 
@@ -55,11 +77,10 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
         $name = $this->getName();
 
         $hiddenField = $this->getAttrib('hiddenField');
-        $hiddenValue = isset($_POST[$hiddenField]) ? $_POST[$hiddenField] : null;
+        $hiddenValue = $this->getValue();
         $hiddenValueAttrib = empty($hiddenValue) ? '' : "value=\"$hiddenValue\"";
 
-        $displayedValue = $this->getValue() ? $this->getValue() : null;
-        $displayedValueAttrib = empty($displayedValue) ? '' : "value=\"$displayedValue\"";
+        $displayedValueAttrib = empty($this->_displayText) ? '' : "value=\"$this->_displayText\"";
                 
         $render  = "<div>
                     <input type='hidden' 
