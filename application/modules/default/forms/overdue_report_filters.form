@@ -8,7 +8,7 @@
 [overdue_report_filters]
 
 method=GET
-action=/finding-report/overdue/format/html
+action=/finding/report/overdue/format/html
 
 elements.systemId.type = "select"
 elements.systemId.options.label = "System"
