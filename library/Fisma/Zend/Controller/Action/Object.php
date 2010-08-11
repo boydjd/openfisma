@@ -249,8 +249,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form   = $this->getForm();
 
         $this->view->assign('viewLink', "{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
-        $form->setAction("/{$this->_controllerName}/edit/id/$id");
-        $this->view->assign('deleteLink', "/{$this->_controllerName}/delete/id/$id");
+        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
         // Update the model
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
