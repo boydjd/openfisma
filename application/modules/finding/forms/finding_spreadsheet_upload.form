@@ -8,7 +8,7 @@
 [finding_spreadsheet_upload]
 
 method = POST
-action = /finding/upload-spreadsheet
+action = /finding/index/upload-spreadsheet
 enctype = multipart/form-data
 
 elements.excelFile.type = "file"
