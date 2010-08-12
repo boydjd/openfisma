@@ -39,6 +39,7 @@ ExpiresByType image/gif "access plus 10 years"
 ExpiresByType image/png "access plus 10 years"
 ExpiresByType image/vnd.microsoft.icon "access plus 10 years"
 
+<IfModule mod_php5.c>
 # Overrides current PHP server settings to harden the server by
 # turning off unwanted options which may be harmful. There are 
 # several Apache directives that allow you to change the PHP 
@@ -64,3 +65,4 @@ php_flag	magic_quotes_gpc	Off
 
 # Turns off register globals
 php_flag	register_globals	Off
+</IfModule>
