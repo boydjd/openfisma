@@ -57,6 +57,9 @@ bootstrap.class = "Bootstrap"
 bootstrap.container.type = symfony
 bootstrap.container.symfony.configPaths[] = APPLICATION_PATH "/services"
 resources.frontController.controllerDirectory = APPLICATION_PATH "/controllers"
+resources.frontController.moduleDirectory = APPLICATION_PATH "/modules"
+resources.frontController.prefixDefaultModule = false 
+resources.frontController.defaultModule = "default"
 includePaths.library = APPLICATION_PATH "/../library"
 
 ; Development mode displays error messages to the user and enables some features that aid 

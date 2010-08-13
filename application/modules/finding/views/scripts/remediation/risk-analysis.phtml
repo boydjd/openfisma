@@ -1,0 +1,126 @@
+<?php 
+    $finding = $this->finding; 
+    $organization = $finding->ResponsibleOrganization->nickname;
+?>
+<?php
+if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
+    Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
+?>
+    <p>
+        Risk is calculated by evaluating the security categorization of 
+        the information system along with the threat source and the existence 
+        of current countermeasures. 
+    </p>
+
+    <p>
+        <?php 
+        // Check to see if the threat level/description and countermeasure level/description are 
+        // set. If so, allow the user to generate a RAF.
+        if (empty($finding->threat) 
+            || empty($finding->threatLevel) 
+            || empty($finding->countermeasures) 
+            || empty($finding->countermeasuresEffectiveness)) {
+            echo $this->escape(
+                '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>',
+                'none'
+            );
+        } else {
+            $viewRafButton = new Fisma_Yui_Form_Button_Link('viewRaf',
+                                   array('value' => 'View Risk Analysis Form', 
+                                         'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}", 
+                                         'imageSrc' => '/images/pdf.gif'));
+            echo $this->escape($viewRafButton, 'none');
+        }
+        ?>
+    </p>
+<?php
+    Fisma_Format_Section::stopSection();
+}
+?>
+
+<?php
+    $threatText    = "<p>A threat is the potential for a particular threat-source to successfully exercise a "
+                   . "particular vulnerability. A vulnerability is a bug, flaw, weakness, or exposure of an "
+                   . "application, system, device, or service that could lead to a failure of confidentiality, "
+                   . "integrity, or availability. The threat level allows the organization to prioritize "
+                   . "security weaknesses based on their level of threat to the information system. Usually, "
+                   . "the security level and description are pre-populated from vulnerability scan data, "
+                   . "however, manual findings need an assigned threat level and description.</p>";
+    $threatTooltip = new Fisma_Yui_Tooltip('threats', 'Threats', $threatText);
+    Fisma_Format_Section::startSection($threatTooltip);
+?>
+<p>
+    <b>Threat Level:</b>
+
+    <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
+        <?php 
+        if ($this->acl()->hasPrivilegeForObject('update_threat', $finding)
+            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+            echo $this->escape(' class="editable" target="threat_level"', 'none');
+        }
+        ?>>
+        <?php echo $this->escape($finding->threatLevel); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+</p>
+
+<p>
+    <b target="threat" 
+        <?php
+        if ($this->acl()->hasPrivilegeForObject('update_threat', $finding)
+           && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
+            echo $this->escape('class="editable"', 'none');
+        } 
+        ?>>Threat Description:</b>
+</p>
+
+<div type="textarea" id="threat" name="finding[threat]" rows="5" cols="160">
+    <?php echo $this->escape($finding->threat, 'none'); ?>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php
+    $countermeasuresText    = "<p>The goal of this step is to analyze the controls that are currently implemented "
+                            . "by the organization to minimize or eliminate the likelihood (or probability) of "
+                            . "the vulnerability being exercised or exploited. This should not include "
+                            . "countermeasures that are planned and are not currently in place. Countermeasures "
+                            . "or Security controls can be technical and nontechnical methods. Examples of technical "
+                            . "controls would be; access control mechanisms, identification and authentication"
+                            . "mechanisms, encryption methods, software, etc. Examples of nontechnical controls "
+                            . "would be management and operational controls, such as; security policies, operational "
+                            . "procedures, personnel, physical, and environmental security.</p>";
+    $countermeasuresTooltip = new Fisma_Yui_Tooltip('countermeasures', 'Countermeasures', $countermeasuresText);
+    Fisma_Format_Section::startSection("$countermeasuresTooltip");
+?>
+
+<p>
+    <b>Countermeasures Effectiveness:</b>
+
+    <span type="select" 
+          name="finding[countermeasuresEffectiveness]" 
+          id="effectiveness" 
+          href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
+        <?php
+        if ($this->acl()->hasPrivilegeForObject('update_countermeasures', $finding)
+           && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+            echo $this->escape('class="editable" target="effectiveness"', 'none');
+        }
+        ?>>
+        <?php echo $this->escape($finding->countermeasuresEffectiveness); ?>&nbsp;&nbsp;
+    </span>
+</p>
+
+<p>
+    <b target="countermeasures" 
+        <?php 
+            if ($this->acl()->hasPrivilegeForObject('update_countermeasures', $finding)
+               && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+                echo $this->escape('class="editable"', 'none');
+            } 
+        ?>>
+        Description of Countermeasures:</b>
+</p>
+
+<div type="textarea" id="countermeasures" name="finding[countermeasures]" rows="5" cols="160">
+    <?php echo $this->escape($finding->countermeasures, 'none'); ?>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>

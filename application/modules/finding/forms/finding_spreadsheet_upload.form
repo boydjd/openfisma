@@ -1,0 +1,21 @@
+; This is the form for uploading a finding spreadsheet template
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com
+; Copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+; License   http://openfisma.org/content/license
+; Version   $Id$
+
+[finding_spreadsheet_upload]
+
+method = POST
+action = /finding/index/upload-spreadsheet
+enctype = multipart/form-data
+
+elements.excelFile.type = "file"
+elements.excelFile.options.label = "Excel Spreadsheet"
+elements.excelFile.options.required = true
+displayGroups.spreadsheetUpload.elements.excelFile = "excelFile"
+
+elements.upload.type = "Form_Button_Submit"
+elements.upload.options.label = "Upload Spreadsheet"
+displayGroups.spreadsheetUpload.elements.submit = "upload"

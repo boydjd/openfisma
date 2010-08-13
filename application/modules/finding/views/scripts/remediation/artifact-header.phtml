@@ -1,0 +1,18 @@
+<div class="approvalHeader">
+    <b>File: </b>
+
+    <a href='/finding/remediation/downloadevidence/id/<?php echo $this->escape($this->artifact->id)?>' target='_blank'>
+        <?php echo $this->escape($this->artifact->filename); ?>
+    </a>
+
+    submitted by 
+
+    <?php 
+        $user = $this->artifact->User;
+        $fullName = $user->nameFirst . ' ' . $user->nameLast;
+        
+        echo $this->escape($this->userInfo($fullName, $user->username), 'none');
+    ?> 
+    on 
+    <?php echo $this->escape($this->artifact->createdTs); ?>
+</div>

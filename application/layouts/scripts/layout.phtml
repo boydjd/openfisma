@@ -41,7 +41,7 @@
         <div id='header'>
                 <?php
                     if (Zend_Auth::getInstance()->hasIdentity()) {
-                        echo $this->partial('panel/header.phtml');
+                        echo $this->partial('partial/header.phtml');
                     }
                 ?>
         </div>
@@ -62,10 +62,10 @@
         <div id='footer'>
                 <?php
                     if (Zend_Auth::getInstance()->hasIdentity()) {
-                        echo $this->partial('panel/footer.phtml');
+                        echo $this->partial('partial/footer.phtml');
                     }
                 ?>
         </div>
     </body>
-    <?php echo $this->partial('priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
+    <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
 </html>

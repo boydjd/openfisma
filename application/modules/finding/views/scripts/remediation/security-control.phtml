@@ -1,0 +1,33 @@
+<?php
+echo $this->escape($this->securityControlSearchButton, 'none')
+?>
+
+<div id="findingSecurityControlSearch">
+    <?php echo $this->escape($this->form, 'none'); ?>
+</div>
+
+<?php 
+Fisma_Format_Section::startSection('Security Control');
+?>
+
+<div id="securityControlContainer">
+
+    <?php
+    if (!empty($this->finding->securityControlId)):
+        echo $this->partial(
+            'security-control-catalog/single-control.phtml',
+            'default',
+            array('securityControl' => $this->finding->SecurityControl)
+        );
+    else:
+    ?>
+        <em>No control selected</em>
+    <?php
+    endif;
+    ?>
+
+</div>
+
+<?php
+Fisma_Format_Section::stopSection();
+?>

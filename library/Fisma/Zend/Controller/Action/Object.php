@@ -47,6 +47,22 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected $_modelName = null;
 
     /**
+     * The name of the module the controller is in. 
+     * 
+     * @var string
+     * @access protected
+     */
+    protected $_moduleName = '';
+
+    /**
+     * _controllerName 
+     * 
+     * @var string
+     * @access protected
+     */
+    protected $_controllerName = '';
+
+    /**
      * The name of the class which this class's ACL is based off of. 
      * 
      * For example, system document objects don't have their own ACL items, instead they are based on the privileges 
@@ -68,7 +84,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function init()
     {
         parent::init();
-        
+
+        $this->_moduleName = $this->getModuleNameForLink();
+        $this->_controllerName = $this->getRequest()->getControllerName(); 
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
             throw new Fisma_Zend_Exception('Internal error. Subclasses of the BaseController'
@@ -166,10 +184,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->_acl->requirePrivilegeForObject('read', $subject);
 
         $form   = $this->getForm();
-        
-        $this->view->assign('editLink', "/{$this->_modelName}/edit/id/$id");
+
+        $this->view->assign('editLink', "{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
         $form->setReadOnly(true);            
-        $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
         $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
@@ -188,7 +206,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         // Get the subject form
         $form   = $this->getForm();
-        $form->setAction("/{$this->_modelName}/create");
+        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/create");
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
@@ -196,7 +214,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    $this->_forward('view', null, null, array('id' => $objectId));
+                    if (!empty($objectId)) {
+                            $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
+                    }
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $msg   = $e->getMessage();
@@ -228,9 +248,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
-        $this->view->assign('viewLink', "/{$this->_modelName}/view/id/$id");
-        $form->setAction("/{$this->_modelName}/edit/id/$id");
-        $this->view->assign('deleteLink', "/{$this->_modelName}/delete/id/$id");
+        $this->view->assign('viewLink', "{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
+        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
         // Update the model
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
@@ -242,7 +262,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
-                    $this->_forward('view');
+                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
@@ -295,7 +315,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
         $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
+        $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
     }
 
     /**
@@ -400,5 +420,20 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getAclResourceName()
     {
         return is_null($this->_aclResource) ? $this->_modelName : $this->_aclResource;
+    }
+
+    /**
+     * getModuleNameForLink 
+     * 
+     * @access public
+     * @return string 
+     */
+    public function getModuleNameForLink()
+    {
+        if ($this->getRequest()->getModuleName() != 'default') {
+            return '/' . $this->getRequest()->getModuleName();
+        } else {
+            return '';
+        }
     }
 }

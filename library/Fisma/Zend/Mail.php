@@ -43,7 +43,9 @@ class Fisma_Zend_Mail extends Zend_Mail
     public function __construct()
     {
         $view = new Fisma_Zend_View();
-        $this->_contentTpl = $view->setScriptPath(Fisma::getPath('application') . '/views/scripts/mail');
+        $this->_contentTpl = $view->setScriptPath(
+            Fisma::getPath('application') . '/modules/default/views/scripts/mail'
+        );
         $view->addHelperPath(Fisma::getPath('viewHelper'), 'View_Helper_');
         
         $this->setFrom(Fisma::configuration()->getConfig('sender'), Fisma::configuration()->getConfig('system_name'));

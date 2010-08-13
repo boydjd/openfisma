@@ -19,13 +19,13 @@
 /**
  * IncidentTable 
  * 
- * @uses Fisma_Doctrine_RecordTable
+ * @uses Fisma_Doctrine_Table
  * @package Models 
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IncidentTable extends Fisma_Doctrine_RecordTable
+class IncidentTable extends Fisma_Doctrine_Table
 {
     /**
      * Returns a query which matches all of the current user's viewable incidents

@@ -26,7 +26,7 @@
  * @subpackage Fisma_Doctrine_Record
  * @version    $Id$
  */
-class Fisma_Doctrine_RecordTable extends Doctrine_Table
+class Fisma_Doctrine_RecordTable extends Fisma_Doctrine_Table
 {
     
 }

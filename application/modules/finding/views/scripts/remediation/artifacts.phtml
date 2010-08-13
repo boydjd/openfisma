@@ -1,0 +1,51 @@
+<?php 
+Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
+
+if (count($this->artifacts) == 0):
+    echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
+else:
+    // Each artifact block is rendered in a partial view.
+    foreach ($this->artifacts as $index => $artifact):
+    
+        // The first artifact is the one which is currently being evaluated if the finding is in EA status.
+        $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
+        
+        if ($currentArtifact):
+            echo $this->partial(
+                'remediation/artifact-current-item.phtml', 
+                'finding',
+                array(
+                    'finding' => $this->finding,
+                    'artifact' => $artifact,
+                    'activeArtifact' => true,
+                    'evaluations' => $this->evaluations
+                )
+            );        
+        else:
+            echo $this->partial(
+                'remediation/artifact-old-item.phtml', 
+                'finding',
+                array(
+                    'finding' => $this->finding,
+                    'artifact' => $artifact,
+                    'evaluations' => $this->evaluations
+                )
+            );
+        endif;
+    endforeach;
+endif;
+
+$uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
+                                            array('label' => 'Upload Evidence', 
+                                                  'onClickFunction' => 'upload_evidence'));
+
+if ('EN' != $this->finding->status || !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)):
+    $uploadEvidenceButton->readOnly = true;
+endif;
+?>
+
+<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+
+<div class='buttonBar'>
+    <?php echo $this->escape($uploadEvidenceButton, 'none');?>
+</div>

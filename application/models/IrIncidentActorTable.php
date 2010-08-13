@@ -19,13 +19,13 @@
 /**
  * IrIncidentActorTable 
  * 
- * @uses Fisma_Doctrine_RecordTable
+ * @uses Fisma_Doctrine_Table
  * @package Model 
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IrIncidentActorTable extends Fisma_Doctrine_RecordTable
+class IrIncidentActorTable extends Fisma_Doctrine_Table
 {
 
 }

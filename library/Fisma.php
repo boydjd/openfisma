@@ -222,7 +222,7 @@ class Fisma
             'config' => 'application/config',
             'data' => 'data',
             'fixture' => 'application/doctrine/data/fixtures',
-            'form' => 'application/form',
+            'form' => 'application/modules/default/forms',
             'image' => 'public/images',
             'index' => 'data/index',
             'layout' => 'application/layouts/scripts',
@@ -237,7 +237,7 @@ class Fisma
             'temp' => 'data/temp',
             'test' => 'tests',
             'uploads' => 'data/uploads',
-            'viewHelper' => 'application/views/helpers',
+            'viewHelper' => 'application/modules/default/views/helpers',
             'yui' => 'public/yui'
         );
 
@@ -429,6 +429,7 @@ class Fisma
         // Configure the views
         $view = Zend_Layout::getMvcInstance()->getView();
         $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
+        $view->addScriptPath(self::getPath('application') . '/modules/default/views/scripts');
         $view->doctype('HTML4_STRICT');
         // Make sure that we don't double encode
         $view->setEscape(array('Fisma', 'htmlentities'));
