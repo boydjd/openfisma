@@ -31,7 +31,7 @@
  * @subpackage Fisma_Doctrine_Record
  * @version    $Id$
  */
-class Fisma_Doctrine_Record extends Doctrine_Record
+abstract class Fisma_Doctrine_Record extends Doctrine_Record implements ezcBasePersistable
 {
     /**
      * Store the original values of this record.
@@ -39,6 +39,28 @@ class Fisma_Doctrine_Record extends Doctrine_Record
      * @var array
      */
     private $_originalValues = array();
+    
+    /**
+     * Implements ezcBasePersistable interface in order to be indexable for searching
+     * 
+     * @return array
+     */
+    public function getState()
+    {
+        $state = $this->toArray();
+
+        return $state;
+    }
+
+    /**
+     * Implements ezcBasePersistable interface with stub method in order to be indexable for searching
+     * 
+     * @param array $properties
+     */
+    public function setState(array $properties)
+    {
+        $this->merge($properties);
+    }
     
     /**
      * Customized validation error messages. 

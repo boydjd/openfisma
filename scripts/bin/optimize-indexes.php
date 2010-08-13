@@ -32,49 +32,6 @@ $script->run();
 class OptimizeIndexes
 {
     /**
-     * A list of models which this script maintains the indexes for.
-     * 
-     * This list needs to be updated as new models are created.
-     * 
-     * @var array
-     */
-    private $_models = array(
-        'Asset',
-        'Finding',
-        'Incident',
-        'Network',
-        'Organization',
-        'Product',
-        'Role',
-        'SecurityControl',
-        'System',
-        'SystemDocument',
-        'Source',
-        'User'
-    );
-    
-    /**
-     * The number of records to fetch at a time when creating a new index
-     * 
-     * @var int
-     */
-    const FETCH_ROWS = 100;
-    
-    /**
-     * The number of seconds to wait between updating the status line on STDOUT
-     * 
-     * @var int
-     */
-    const STATUS_UPDATE_INTERVAL = 1;
-    
-    /**
-     * The number of records to process in between each index defragementation
-     * 
-     * @var int
-     */
-    const DEFRAG_RECORD_COUNT = 1000;
-    
-    /**
      * Create a script object and connect it to the Fisma library
      * 
      * @return void
@@ -84,10 +41,11 @@ class OptimizeIndexes
         require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+        Fisma::setConfiguration(new Fisma_Configuration_Database);
         Fisma::connectDb();
         
-        // Zend Search Lucene is a memory hog, esp. in php 5.2
-        ini_set('memory_limit', '256M');
+        // @todo Is this still needed?
+        ini_set('memory_limit', '512M');
     }
         
     /**
@@ -97,18 +55,23 @@ class OptimizeIndexes
      */
     public function run()
     {
-        print "This may take several minutes...\n";
+        print "This may take quite a long time...\n";
         $start = time();
+
+        // Enumerate and index the models which are eligible for indexing 
+        $indexEnumerator = new Fisma_Search_Index_Enumerator();
+
+        $searchableClasses = $indexEnumerator->getSearchableClasses(Fisma::getPath('model'));
         
-        // Process each model
-        foreach ($this->_models as $model) {
-            if (!is_dir(Fisma::getPath('index') . '/' . $model)) {
-                $this->_createIndex($model);
-            }
-            
-            $this->_optimizeIndex($model);
+        $indexBuilder = new Fisma_Search_Index_Builder();
+        
+        foreach ($searchableClasses as $searchableClass) {
+            echo "Indexing: $searchableClass\n";
+
+            $indexBuilder->buildIndexForClass($searchableClass);
         }
-        
+
+        // Calculate elapsed time
         $stop = time();
         $elapsed = $stop - $start;
         $minutes = floor($elapsed/60);

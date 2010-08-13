@@ -26,7 +26,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Doctrine_Table extends Doctrine_Table
+abstract class Fisma_Doctrine_Table extends Doctrine_Table
 {
     /**
      * Get a search session for this table
