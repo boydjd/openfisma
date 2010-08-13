@@ -214,7 +214,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    if ($objectId and is_int((int)$objectId)) {
+                    if (!empty($objectId)) {
                             $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
                     }
                 } catch (Doctrine_Validator_Exception $e) {
