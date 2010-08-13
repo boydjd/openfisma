@@ -233,7 +233,7 @@ abstract class Fisma_Inject_Abstract
      * Get a duplicate of the specified finding
      * 
      * @param $finding A finding to check for duplicates
-     * @return bool|Finding Return a duplicate finding or FALSE if none exists
+     * @return bool|Vulnerability Return a duplicate finding or FALSE if none exists
      */
     private function _getDuplicateFinding($finding)
     {
@@ -245,10 +245,9 @@ abstract class Fisma_Inject_Abstract
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
         
         $duplicateFindings = Doctrine_Query::create()
-            ->select('f.id, f.responsibleOrganizationId, f.type, f.status')
-            ->from('Finding f')
+            ->select('v.id, v.status')
+            ->from('Vulnerability v')
             ->where('description LIKE ?', $cleanDescription)
-            ->andWhere('status <> ?', 'PEND')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
@@ -258,32 +257,18 @@ abstract class Fisma_Inject_Abstract
     /**
      * Evaluate duplication rules for two findings
      * 
-     * @param Finding $newFinding
+     * @param Vulnerability $newFinding
      * @param Array $duplicateFinding
      * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
      */
     private function _getDuplicateAction(Vulnerability $newFinding, Array $duplicateFinding)
     {
         $action  = NULL;
-        $orgSame = ($newFinding->ResponsibleOrganization->id == $duplicateFinding['responsibleOrganizationId']) ? TRUE 
-            : FALSE;
         
-        switch ($duplicateFinding['type']) {
-            case 'CAP':
-            case 'FP':
-            case 'NONE':
-                if ($orgSame) {
-                    $action = ($duplicateFinding['status'] == 'CLOSED') ? self::CREATE_FINDING : self::DELETE_FINDING;
-                } else {
-                    $action = self::REVIEW_FINDING;
-                }
-                break;
-            case 'AR':
-                $action = ($orgSame) ? self::DELETE_FINDING : self::REVIEW_FINDING;
-                break;
-            default:
-                throw new Fisma_Zend_Exception('No duplicate finding action defined for mitigation type: '
-                    . $duplicateFinding['type']);
+        if ($duplicateFinding['status'] == 'CLOSED') {
+            $action = self::CREATE_FINDING;
+        } else {
+            $action = self::DELETE_FINDING;
         }
 
         return $action;
