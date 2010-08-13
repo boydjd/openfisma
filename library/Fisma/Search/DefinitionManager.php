@@ -34,7 +34,8 @@ class Fisma_Search_DefinitionManager implements ezcSearchDefinitionManager
      * @param string $type Name of the model to get the search definition for
      * @return ezcSearchDocumentDefinition
      */
-    public function fetchDefinition($type) {
+    public function fetchDefinition($type) 
+    {
         $table = Doctrine::getTable($type);
         
         if (!$table) {
@@ -85,11 +86,6 @@ class Fisma_Search_DefinitionManager implements ezcSearchDefinitionManager
     public function getSearchTypeFromColumnDefinition($columnDefinition)
     {
         $searchType = null;
-
-// @todo add other column types here
-if (0) {
-    exit;
-}
 
         switch ($columnDefinition['type']) {
 
