@@ -135,8 +135,9 @@
                           type="select" 
                           name="incident[organizationId]" 
                           href="/metainfo/list/o/organization/format/html/">
-                        <?php if (isset($this->incident['Organization'])): ?> 
-                        <a href="/system/view/id/<?php echo $this->escape($this->incident['Organization']['id']); ?>">
+                        <?php if (isset($this->incident['Organization'])): ?>
+                        <?php $orgId = $this->incident['Organization']['id']; ?>
+                        <a href="/organization/view/id/<?php echo $this->escape($orgId); ?>">
                             <?php echo $this->escape($this->incident['Organization']['nickname']);?> 
                             - <?php echo $this->escape($this->incident['Organization']['name']);?>
                         </a>

@@ -77,8 +77,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             unset($values['securityControlId']);
         }
 
+        $form->getElement('securityControlAutocomplete')->setValue($values['securityControlId'])
+                                                        ->setDisplayText($values['securityControlAutocomplete']);
+
         $subject->merge($values);
-        
+
         // If an asset is specified, then try to link the finding to that asset and assign
         // the responsible system automatically. Otherwise, link to the responsible system
         // that the user selected.
@@ -101,7 +104,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 
         return $subject->id;
     }
-    
+
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      * 
