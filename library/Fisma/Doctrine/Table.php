@@ -17,7 +17,7 @@
  */
 
 /**
- * Fisma_Doctrine_Table 
+ * Contain table-level functions that are common to all models
  * 
  * @uses Doctrine_Table
  * @package Fisma
@@ -28,5 +28,23 @@
  */
 class Fisma_Doctrine_Table extends Doctrine_Table
 {
-    
+    /**
+     * Get a search session for this table
+     * 
+     * Search sessions are used for both indexing and searching data
+     * 
+     * @return ezcSearchSession
+     */
+    public function getSearchSession()
+    {
+        $handlerFactory = new Fisma_Search_HandlerFactory();
+
+        $searchHandler = $handlerFactory->getSearchHandler($this->getOption('name'));
+
+        $searchManager = new Fisma_Search_DefinitionManager();
+
+        $session = new ezcSearchSession($searchHandler, $searchManager);
+        
+        return $session;
+    }
 }
