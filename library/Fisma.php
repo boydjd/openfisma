@@ -283,7 +283,10 @@ class Fisma
 
             // Session configuration
             $sessionOptions = self::$_appConf->session->toArray();
-            $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
+            $sessionOptions = array(
+                'save_path' => self::$_rootPath . '/' . $sessionOptions['save_path'],
+                'throw_startup_exceptions' => !Fisma::debug()
+            );
             Zend_Session::setOptions($sessionOptions);
             self::$_isInstall = true;
         } else {
