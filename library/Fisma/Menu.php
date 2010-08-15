@@ -288,9 +288,11 @@ class Fisma_Menu
      * @param Zend_Acl $acl
      * @return Fisma_Yui_Menu
      */
-    protected function buildVulnerabilitiesMenu(Zend_Acl $acl)
+    protected static function buildVulnerabilitiesMenu(Zend_Acl $acl)
     {
             $menu = new Fisma_Yui_Menu('Vulnerabilities');
+
+            $menu->add(new Fisma_Yui_MenuItem('List Vulnerabilities', '/vulnerability/list'));
 
             if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
                 $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vulnerability/create'));
