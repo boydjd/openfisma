@@ -11,6 +11,7 @@ Asset:
                 logicalName: Asset Name
                 searchIndex: unstored
                 notify: true
+                search: yes
             comment: The name of this asset
         source:
             type: enum

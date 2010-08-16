@@ -10,7 +10,8 @@ User:
             unique: true
             extra:
                 logicalName: User Name
-                searchIndex: unstored
+                search:
+                    tokenize: no
                 notify: true
             comment: This users unique authentication credential
         password: 
@@ -55,28 +56,29 @@ User:
             type: string(255)
             extra:
                 logicalName: Title
-                searchIndex: unstored
+                search: yes
                 notify: true
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
             extra:
                 logicalName: First Name
-                searchIndex: unstored
+                search: yes
                 notify: true
             comment: The users first name
         nameLast: 
             type: string(255)
             extra:
                 logicalName: Last Name
-                searchIndex: unstored
+                search: yes
                 notify: true
             comment: The users last name
         email: 
             type: string(255)
             extra:
                 logicalName: E-mail Address
-                searchIndex: unstored
+                search:
+                    tokenize: no
                 notify: true
             email: 
                 check_mx: false
@@ -90,7 +92,6 @@ User:
             fixed: true
             extra:
                 logicalName: Office Phone
-                searchIndex: keyword
                 notify: true
             Fisma_Doctrine_Validator_Phone: true
             comment: U.S. 10 digit phone number; stored without punctuation
@@ -99,7 +100,6 @@ User:
             fixed: true
             extra:
                 logicalName: Mobile Phone
-                searchIndex: keyword
                 notify: true
             Fisma_Doctrine_Validator_Phone: true
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation

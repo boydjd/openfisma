@@ -5,21 +5,22 @@ Source:
         name: 
             type: string(255)
             extra:
+                search: yes
                 logicalName: Source Name
-                searchIndex: unstored
                 notify: true
         nickname: 
             type: string(255)
             unique: true
             extra:
+                search:
+                    tokenize: no
                 logicalName: Source Nickname
-                searchIndex: unstored
                 notify: true    
         description: 
             type: string
             extra:
+                search: yes
                 logicalName: Description
                 purify: html
-                searchIndex: unstored
                 notify: true
             comment: Any extra information about this finding source
