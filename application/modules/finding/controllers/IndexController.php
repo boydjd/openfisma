@@ -389,7 +389,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             }
             // This is a hack to make the submit button work with YUI:
             /** @yui */ $uploadForm->upload->setValue('Upload');
-            $this->render(); // Not sure why this view doesn't auto-render?? It doesn't render when the POST is set.
             $this->_redirect('/finding/index/plugin');
         }
     }

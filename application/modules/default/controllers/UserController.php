@@ -354,7 +354,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user->lastRob = Fisma::now();
         $user->save();
         
-        $this->_forward('index', 'Index');
+        $this->_redirect('/Index/index');
     }
 
     /**
