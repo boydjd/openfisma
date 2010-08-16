@@ -132,7 +132,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
         if (is_null($step)) {
             $step = 0;
         } elseif ($this->getRequest()->getParam('irReportCancel')) {
-            $this->_forward('cancel-report', 'Incident');
+            $this->_redirect('/Incident/cancel-report');
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
@@ -181,7 +181,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
         if ($step < count($this->_formParts)) {
             $formPart = $this->getFormPart($step);            
         } else {
-            $this->_forward('review-report', 'Incident');
+            $this->_redirect('/Incident/review-report');
             return;
         }
         

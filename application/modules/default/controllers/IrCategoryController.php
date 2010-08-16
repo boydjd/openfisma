@@ -318,7 +318,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
             // Error message
             $this->view->priorityMessenger("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+            $this->_redirect("/ir-category/view/id/$id/v/edit");
         }
     }
 
@@ -532,7 +532,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
             // Error message
             $this->view->priorityMessenger("Unable to update category<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
-            $this->_forward('subview', null, null, array('id' => $id, 'v' => 'subedit'));
+            $this->_redirect("/ir-category/subview/id/$id/v/subedit");
         }
     }
     
