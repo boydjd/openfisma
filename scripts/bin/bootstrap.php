@@ -16,16 +16,13 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-/**
- * A class which performs index maintenance such as defragmentation for optimal performance
- * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_Search
- */
-class Fisma_Search_Index_Optimizer
-{
-    
+require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+
+Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+Fisma::setConfiguration(new Fisma_Configuration_Database);
+Fisma::connectDb();
+
+// Warning message if somebody tries to run the bootstrap file directly
+if (basename(__FILE__) == $_SERVER['SCRIPT_NAME']) {
+    fwrite(STDERR, basename(__FILE__) . " is not an executable script\n");
 }

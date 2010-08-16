@@ -17,7 +17,7 @@
  */
 
 /**
- * Enumerates classes that have search indexes
+ * Manages keyword search indexes
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
@@ -25,8 +25,31 @@
  * @package    Fisma
  * @subpackage Fisma_Search
  */
-class Fisma_Search_Index_Enumerator
+class Fisma_Search_IndexManager
 {
+    /**
+     * The number of records to fetch at a time when creating a new index
+     * 
+     * @var int
+     */
+    const FETCH_ROWS = 100;    
+
+    /**
+     * Delete the index for the specified class
+     * 
+     * @param string $className
+     */
+    public function deleteIndexForClass($className)
+    {
+        $table = Doctrine::getTable($className);
+
+        $session = $table->getSearchSession();
+
+        $deleteQuery = $session->createDeleteQuery($className);
+        
+        $session->delete($deleteQuery);
+    }
+
     /**
      * Return an array of all classes in OpenFISMA which are defined as searchable
      * 
@@ -70,7 +93,7 @@ class Fisma_Search_Index_Enumerator
             $columns = $table->getColumns();
             
             foreach ($columns as $column) {
-                if (isset($column['extra']['search'])) {
+                if ('string' == $column['type'] && isset($column['extra']['search'])) {
                     $modelNames[] = $modelName;
                     
                     break;
@@ -79,5 +102,53 @@ class Fisma_Search_Index_Enumerator
         }
         
         return $modelNames;
+    }
+
+    /**
+     * Builds an index for the specified class
+     * 
+     * This deletes any pre-existing documents in the index then indexes all of the data in this class's table
+     * 
+     * @param string $className
+     */
+    public function rebuildIndexForClass($className)
+    {
+        $table = Doctrine::getTable($className);
+        $session = $table->getSearchSession();
+        
+        $this->deleteIndexForClass($className);
+                
+        // Get a total count of all records
+        $allRecordsQuery = Doctrine_Query::create()
+                           ->from($className);
+
+        $totalRecords = $allRecordsQuery->count();
+        
+        $progressBar = new Zend_ProgressBar(new Zend_ProgressBar_Adapter_Console, 0, $totalRecords);
+        
+        // Create new documents and index them
+        $session->beginTransaction();
+        
+        $currentRecord = 0;
+        while ($currentRecord < $totalRecords) {
+            
+            // Get the next set of records and index them
+            $allRecordsQuery->limit(self::FETCH_ROWS)
+                            ->offset($currentRecord);
+
+            $recordSet = $allRecordsQuery->execute();
+            
+            foreach ($recordSet as $record) {
+                $session->index($record);
+                
+                $currentRecord++;
+            }
+
+            $recordSet->free();
+            
+            $progressBar->update($currentRecord);
+        }
+        
+        $session->commit();
     }
 }
