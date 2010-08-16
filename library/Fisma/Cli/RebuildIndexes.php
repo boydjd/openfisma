@@ -19,7 +19,7 @@
 /**
  * A command-line-oriented class for rebuilding search indexes
  * 
- * @author     Mark E. Haase
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
