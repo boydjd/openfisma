@@ -89,7 +89,8 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Re
         header("Content-Type: $this->mimeType", true);
         header('Content-Disposition: attachment; filename="' . basename($this->fileName) . '"', true);
         header('Expires: 0', true);
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0', true);
+        header('Cache-Control: none', true);
+        header('Pragma: none', true);
         header("Content-Length: $this->fileSize", true);
         
         readfile($path);

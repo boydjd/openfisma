@@ -77,8 +77,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             unset($values['securityControlId']);
         }
 
+        $form->getElement('securityControlAutocomplete')->setValue($values['securityControlId'])
+                                                        ->setDisplayText($values['securityControlAutocomplete']);
+
         $subject->merge($values);
-        
+
         // If an asset is specified, then try to link the finding to that asset and assign
         // the responsible system automatically. Otherwise, link to the responsible system
         // that the user selected.
@@ -101,7 +104,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 
         return $subject->id;
     }
-    
+
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      * 
@@ -389,7 +392,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             }
             // This is a hack to make the submit button work with YUI:
             /** @yui */ $uploadForm->upload->setValue('Upload');
-            $this->render(); // Not sure why this view doesn't auto-render?? It doesn't render when the POST is set.
             $this->_redirect('/finding/index/plugin');
         }
     }

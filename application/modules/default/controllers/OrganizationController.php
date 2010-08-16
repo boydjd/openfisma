@@ -414,14 +414,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Security
                 // Error message
                 $this->view->priorityMessenger("Unable to update organization<br>$errorString", 'warning');
                 // On error, redirect back to the edit action.
-                $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+                $this->_redirect("/organization/view/id/$id/v/edit");
             }
         } catch (Doctrine_Validator_Exception $e) {
             $msg = "Error while trying to save: " . $e->getMessage();
             $this->view->priorityMessenger($msg, 'warning');
         }
         // On error, redirect back to the edit action.
-        $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+        $this->_redirect("/organization/view/id/$id/v/edit");
     }
     
     /**

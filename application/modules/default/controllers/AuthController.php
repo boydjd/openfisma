@@ -146,7 +146,7 @@ class AuthController extends Zend_Controller_Action
                     $this->view->priorityMessenger($message, 'warning');
                     // reset default layout and forward to password change action
                     $this->_helper->layout->setLayout('layout');
-                    $this->_forward('password', 'user');
+                    $this->_redirect('/user/password');
                     return;
                 }
 
@@ -157,7 +157,7 @@ class AuthController extends Zend_Controller_Action
                     $this->view->priorityMessenger($message, 'warning');
                     // reset default layout
                     $this->_helper->layout->setLayout('layout');
-                    $this->_forward('password', 'User');
+                    $this->_redirect('/user/password');
                     return;
                 }
             }
@@ -181,7 +181,7 @@ class AuthController extends Zend_Controller_Action
                 $this->_response->setRedirect($path);
             } else {
                 $this->_helper->layout->setLayout('layout');
-                $this->_forward('index', 'index');
+                $this->_redirect('/index/index');
             }
         } catch(Zend_Auth_Exception $e) {
             // If any Auth exceptions are caught during login, 
@@ -241,7 +241,8 @@ class AuthController extends Zend_Controller_Action
         $auth = Zend_Auth::getInstance();
         $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
         $auth->clearIdentity();
-        $this->_forward('login');
+        $this->_redirect('/auth/login');
+
     }
 
     /**

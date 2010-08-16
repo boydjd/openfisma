@@ -220,7 +220,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                     $model = 'notice';
                 }
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('view', null, null, array('id' => $irworkflow->id));
+                $this->_redirect("/ir-workflow/view/id/{$irworkflow->id}");
                 return;
 
             } else {
@@ -334,7 +334,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             // Error message
             $this->view->priorityMessenger("Unable to update workflow<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
-            $this->_forward('view', null, null, array('id' => $id, 'v' => 'edit'));
+            $this->_redirect("/ir-workflow/view/id/$id/v/edit");
         }
     }
     
@@ -373,7 +373,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                     $model = 'notice';
                 }
                 $this->view->priorityMessenger($msg, $model);
-                $this->_forward('stepview', null, null, array('id' => $irworkflowstep->id));
+                $this->_redirect("/ir-workflow/stepview/id/{$irworkflowstep->id}");
                 return;
 
             } else {
@@ -541,7 +541,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             // Error message
             $this->view->priorityMessenger("Unable to update workflow step<br>$errorString", 'warning');
             // On error, redirect back to the edit action.
-            $this->_forward('stepview', null, null, array('id' => $id, 'v' => 'stepedit'));
+            $this->_redirect("/ir-workflow/stepview/id/$id/v/stepedit");
         }
     }
     
@@ -566,7 +566,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             }
             $this->view->priorityMessenger($msg, $model);
         }
-        $this->_forward('list');
+        $this->_redirect('/ir-workflow/list');
     }
     
     /**
@@ -589,7 +589,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             $this->view->priorityMessenger($msg, $model);
             $this->_sortSteps();
         }
-        $this->_forward('tree');
+        $this->_redirect('/ir-workflow/tree');
     }
 
     /**
