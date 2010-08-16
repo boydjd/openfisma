@@ -171,8 +171,12 @@ abstract class Fisma_Inject_Abstract
 
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
-        $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
-        $finding->duplicateVulnerabilityId = ($duplicateFinding) ? $duplicateFinding['id']: NULL;
+        if ($duplicateFinding) {
+            $action = $this->_getDuplicateAction($finding, $duplicateFinding);
+            $finding->duplicateVulnerabilityId = $duplicateFinding['id'];
+        } else {
+            $action = self::CREATE_FINDING;
+        }
 
         // Take the specified action on the current finding
         switch ($action) {
@@ -186,11 +190,6 @@ abstract class Fisma_Inject_Abstract
                 $finding->free();
                 unset($finding);
                 return;
-                break;
-            case self::REVIEW_FINDING:
-                $this->_totalFindings['reviewed']++;
-                $finding->status = 'PEND';
-                break;
         }
 
         // Store data in instance to be committed later
