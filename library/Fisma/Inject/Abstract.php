@@ -78,6 +78,13 @@ abstract class Fisma_Inject_Abstract
      */
     private $_findings = array();
 
+    /**
+     * collection of duplicates to be logged
+     * 
+     * @var array
+     */
+    private $_duplicates = array();
+
     /** 
      * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
      * then _commit() to commit to database.
@@ -173,7 +180,8 @@ abstract class Fisma_Inject_Abstract
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         if ($duplicateFinding) {
             $action = $this->_getDuplicateAction($finding, $duplicateFinding);
-            $finding->duplicateVulnerabilityId = $duplicateFinding['id'];
+            $finding->duplicateVulnerabilityId = $duplicateFinding->id;
+            $this->_duplicates[] = array('vulnerability' => $duplicateFinding, 'message' => 'Duplicate injected.');
         } else {
             $action = self::CREATE_FINDING;
         }
@@ -206,6 +214,7 @@ abstract class Fisma_Inject_Abstract
         Doctrine_Manager::connection()->beginTransaction();
 
         try {
+            // commit the new vulnerabilities
             foreach ($this->_findings as &$findingData) {
                 if (@!$findingData['asset']['productId'] && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
@@ -219,6 +228,13 @@ abstract class Fisma_Inject_Abstract
                 $findingData['finding']->save();
                 $findingData['finding']->free();
                 unset($findingData['finding']);
+            }
+
+            // append audit log messages
+            foreach ($this->_duplicates as $duplicate) {
+                $vuln = $duplicate['vulnerability'];
+                $mesg = $duplicate['message'];
+                $vuln->getAuditLog()->write($mesg);
             }
 
             Doctrine_Manager::connection()->commit();
@@ -247,10 +263,9 @@ abstract class Fisma_Inject_Abstract
             ->select('v.id, v.status')
             ->from('Vulnerability v')
             ->where('description LIKE ?', $cleanDescription)
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
-        return ($duplicateFindings) ? array_pop($duplicateFindings) : FALSE;
+        return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
     }
     
     /**
@@ -260,11 +275,11 @@ abstract class Fisma_Inject_Abstract
      * @param Array $duplicateFinding
      * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
      */
-    private function _getDuplicateAction(Vulnerability $newFinding, Array $duplicateFinding)
+    private function _getDuplicateAction(Vulnerability $newFinding, Vulnerability $duplicateFinding)
     {
         $action  = NULL;
         
-        if ($duplicateFinding['status'] == 'CLOSED') {
+        if ($duplicateFinding->status == 'CLOSED') {
             $action = self::CREATE_FINDING;
         } else {
             $action = self::DELETE_FINDING;
