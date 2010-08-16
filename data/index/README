@@ -1,0 +1,10 @@
+This directory contains Zend_Search_Lucene search indexes for all object types. Each object type stores its indexes in
+separate subdirectories.
+
+If an index is corrupted, you can fix that by deleting the entire directory that it's in and then re-building the index.
+For example, to remove a corrupted Asset index:
+
+    sudo rm -fr openfisma/data/index/Asset
+    sudo -u apache php openfisma/scripts/bin/optimize-indexes.php
+
+This directory is not used if the search provider is Solr, and it will be empty (except for this README file).
