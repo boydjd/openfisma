@@ -82,6 +82,7 @@ class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Secur
                            . "SUM(IF(s.piaRequired = 'YES' OR s.piaRequired IS NULL, 1, 0)) * 100, 1) AS current_pias"
                        )
                        ->whereIn('o.id', $userOrganizations)
+                       ->andWhere('s.sdlcPhase <> ?', 'disposal')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
         // This query returns one row because it uses aggregate functions and no GROUP BY clause

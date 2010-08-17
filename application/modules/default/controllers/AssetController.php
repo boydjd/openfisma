@@ -85,10 +85,12 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     protected function setForm($subject, $form)
     {
         $product = $subject->Product;
-        $form->getElement('product')->setValue($product->name);
 
         if ($this->getRequest()->getParam('sub') != 'edit') 
             $form->getElement('product')->setAttrib('readonly', true);
+
+        $form->getElement('product')->setValue($subject->productId)
+                                    ->setDisplayText($subject->Product->name);
 
         return parent::setForm($subject, $form);
     }
@@ -367,7 +369,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $msg = "Asset[s] deleted successfully";
             $this->view->priorityMessenger($msg, 'notice');
         }
-        $this->_forward('list');
+        $this->_redirect('/asset/list'); 
     }
 
     public function importAction()

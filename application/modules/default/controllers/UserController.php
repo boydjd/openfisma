@@ -154,7 +154,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
-            $this->view->id = $subject->id;
+            return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
             throw $e;
@@ -232,6 +232,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model       = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/profile');
         } else {
             $form->setDefaults($user->toArray());
         }
@@ -281,6 +282,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model       = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/password');
         }
         $this->view->form    =  $form;
     }
@@ -320,6 +322,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $model   = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
+            $this->_redirect('/user/notification');
         }
 
         $this->view->me = $user;
@@ -351,7 +354,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user->lastRob = Fisma::now();
         $user->save();
         
-        $this->_forward('index', 'Index');
+        $this->_redirect('/Index/index');
     }
 
     /**
@@ -526,11 +529,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         parent::createAction();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
-
-        if (!empty($this->view->id)) {
-            $this->_request->setParam('id', $this->view->id);
-            $this->_forward('view');
-        }
     }
 
     /**

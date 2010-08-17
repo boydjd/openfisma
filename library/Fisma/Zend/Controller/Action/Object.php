@@ -214,7 +214,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    $this->_forward('view', null, null, array('id' => $objectId));
+                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $msg   = $e->getMessage();
@@ -247,8 +247,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form   = $this->getForm();
 
         $this->view->assign('viewLink', "{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
-        $form->setAction("/{$this->_controllerName}/edit/id/$id");
-        $this->view->assign('deleteLink', "/{$this->_controllerName}/delete/id/$id");
+        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
         // Update the model
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
@@ -260,7 +260,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
-                    $this->_forward('view');
+                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
@@ -313,7 +313,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
         $this->view->priorityMessenger($msg, $type);
-        $this->_forward('list');
+        $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
     }
 
     /**

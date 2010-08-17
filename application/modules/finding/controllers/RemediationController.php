@@ -446,7 +446,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         'status' => '', 'ids' => '', 'assetOwner' => 0,
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
-                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null);
+                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null,
+                        'securityControl' => null);
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
@@ -783,6 +784,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
+            $this->_redirect("/finding/remediation/view/id/$id");
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Exception $e) {
@@ -1346,9 +1348,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                     } else {
                         $q->addWhere('ro.id = ?', $v);
                     }
+                } elseif ($k == 'securityControl' && !is_null($v)) {
+                    $q->andWhere('sc.code LIKE ?', $v);
                 } elseif ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
                     $q->andWhere("f.$k = ?", $v);
-                } 
+                }
             }
         }
         if ($format == 'json') {

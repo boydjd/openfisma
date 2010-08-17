@@ -77,6 +77,9 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             unset($values['securityControlId']);
         }
 
+        $form->getElement('securityControlAutocomplete')->setValue($values['securityControlId'])
+                                                        ->setDisplayText($values['securityControlAutocomplete']);
+
         $subject->merge($values);
         
         $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
@@ -91,7 +94,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 
         return $subject->id;
     }
-    
+
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      * 
@@ -282,7 +285,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     }
 
     /** 
-     * Allows a user to approve or delete pending findings
+    * Allows a user to approve or delete pending findings
      * 
      * @return void
      * @todo Use YUI pager
@@ -325,7 +328,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
                 }
             }
         }
-        $this->_forward('approve', 'index', 'finding');
+        $this->_redirect('/finding/index/approve');
     }
 
     /**
