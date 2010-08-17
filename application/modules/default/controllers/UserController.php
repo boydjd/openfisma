@@ -154,7 +154,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
-            $this->view->id = $subject->id;
+            return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
             throw $e;
@@ -529,11 +529,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         parent::createAction();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
-
-        if (!empty($this->view->id)) {
-            $this->_request->setParam('id', $this->view->id);
-            $this->_redirect("/user/view/id/{$this->view->id}");
-        }
     }
 
     /**
