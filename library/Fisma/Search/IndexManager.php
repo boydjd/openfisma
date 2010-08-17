@@ -150,7 +150,7 @@ class Fisma_Search_IndexManager
         foreach ($searchResults->documents as $result) {
             $ids[] = $result->document->id;
         }
-throw new ezcSearchException("testing!");
+
         return $ids;
     }
 }
