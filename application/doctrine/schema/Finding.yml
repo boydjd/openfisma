@@ -27,8 +27,7 @@ Finding:
             extra: 
                 auditLog: true
                 logicalName: Legacy Finding ID
-                search:
-                    tokenize: no
+                search: yes
             comment: This field can be used by end clients to track findings under a legacy tracking system
         
         type:

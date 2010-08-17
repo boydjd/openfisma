@@ -7,8 +7,7 @@ SecurityControl:
             fixed: true
             comment: The control number, e.g. AC-05
             extra:
-                search:
-                    tokenize: no
+                search: yes
         name:
             type: string(255)
             comment: Name of the control

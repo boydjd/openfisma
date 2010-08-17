@@ -18,8 +18,7 @@ Organization:
             unique: true
             extra:
                 logicalName: Nickname
-                search: 
-                    tokenize: no
+                search: yes
         orgType:
             type: enum
             values: [agency, bureau, organization, system]

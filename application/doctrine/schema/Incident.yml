@@ -83,8 +83,7 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's E-mail Address
-                search:
-                    tokenize: no
+                search: yes
         reporterIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
@@ -257,8 +256,7 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Host Name
-                search:
-                    tokenize: yes
+                search: yes
         hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]

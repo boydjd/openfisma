@@ -16,8 +16,7 @@ Role:
             unique: true
             extra:
                 logicalName: Role Nickname
-                search:
-                    tokenize: no
+                search: yes
                 notify: true      
             unique: true;
         description: 

@@ -10,8 +10,7 @@ User:
             unique: true
             extra:
                 logicalName: User Name
-                search:
-                    tokenize: no
+                search: yes
                 notify: true
             comment: This users unique authentication credential
         password: 
@@ -77,8 +76,7 @@ User:
             type: string(255)
             extra:
                 logicalName: E-mail Address
-                search:
-                    tokenize: no
+                search: yes
                 notify: true
             email: 
                 check_mx: false
