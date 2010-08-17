@@ -35,92 +35,54 @@ class Fisma_Search_IndexManager
     const FETCH_ROWS = 100;    
 
     /**
-     * Delete the index for the specified class
+     * The model that this manager is associated with
      * 
-     * @param string $className
+     * @var string
      */
-    public function deleteIndexForClass($className)
+    private $_modelName;
+
+    /**
+     * Constructor
+     * 
+     * @param string $modelName
+     */
+    public function __construct($modelName)
     {
-        $table = Doctrine::getTable($className);
+        if (empty($modelName)) {
+            throw new Fisma_Zend_Exception('$modelName is a required parameter');
+        }
+        
+        $this->_modelName = $modelName;
+    }
+
+    /**
+     * Delete the index for the model associated with this manager
+     */
+    public function deleteIndex()
+    {
+        $table = Doctrine::getTable($this->_modelName);
 
         $session = $table->getSearchSession();
 
-        $deleteQuery = $session->createDeleteQuery($className);
+        $deleteQuery = $session->createDeleteQuery($this->_modelName);
         
         $session->delete($deleteQuery);
     }
 
     /**
-     * Return an array of all classes in OpenFISMA which are defined as searchable
-     * 
-     * @param string $modelPath Path to model files
-     */
-    public function getSearchableClasses($modelPath)
-    {
-        $modelNames = array();
-        
-        $iterator = new DirectoryIterator($modelPath);        
-
-        foreach ($iterator as $file) {
-            
-            // Skip directories
-            if (!$file->isFile()) {
-                continue;
-            }
-            
-            $name = $file->getFilename();
-            
-            // Skip table classes
-            if (strpos($name, 'Table') !== false) {
-                continue;
-            }
-            
-            require_once(realpath($modelPath . '/' . $name));
-
-            // Strip off .php extension
-            $modelName = substr($name, 0, -4);
-            
-            // Check for Fisma_Doctrine_Record subclasses only
-            $reflection = new ReflectionClass($modelName);
-
-            if (!$reflection->isSubclassOf('Fisma_Doctrine_Record')) {
-                continue;
-            }
-
-            // Check if the model has search attributes
-            $table = Doctrine::getTable($modelName);
-
-            $columns = $table->getColumns();
-            
-            foreach ($columns as $column) {
-                if ('string' == $column['type'] && isset($column['extra']['search'])) {
-                    $modelNames[] = $modelName;
-                    
-                    break;
-                }
-            }
-        }
-        
-        return $modelNames;
-    }
-
-    /**
-     * Builds an index for the specified class
+     * Builds an index for the model associated with this manager
      * 
      * This deletes any pre-existing documents in the index then indexes all of the data in this class's table
-     * 
-     * @param string $className
      */
-    public function rebuildIndexForClass($className)
+    public function rebuildIndex()
     {
-        $table = Doctrine::getTable($className);
+        $table = Doctrine::getTable($this->_modelName);
         $session = $table->getSearchSession();
         
-        $this->deleteIndexForClass($className);
+        $this->deleteIndex();
                 
         // Get a total count of all records
-        $allRecordsQuery = Doctrine_Query::create()
-                           ->from($className);
+        $allRecordsQuery = Doctrine_Query::create()->from($this->_modelName);
 
         $totalRecords = $allRecordsQuery->count();
         
@@ -150,5 +112,45 @@ class Fisma_Search_IndexManager
         }
         
         $session->commit();
+    }
+    
+    /**
+     * Search all string fields on the associated model with a Lucene-syntax query
+     * 
+     * This is a convenience function because EZC does not provide any query which searches all fields by default. EZC
+     * only lets you search specific fields. So this method enumerates all fields for the current model and sends those
+     * to EZC.
+     * 
+     * @param string $luceneQuery A search query in lucene syntax
+     * @return array Array of IDs of matching objects
+     */
+    public function searchIndex($luceneQuery)
+    {
+        $searchSession = Doctrine::getTable($this->_modelName)->getSearchSession();
+        
+        // EZC expects an explicit list of all fields to search, so we want to enumerate all searchable fields
+        $definitionManager = new Fisma_Search_DefinitionManager;
+        $definition = $definitionManager->fetchDefinition($this->_modelName);
+
+        unset($definition->fields['primaryKey']);
+        
+        $searchFields = array_keys($definition->fields);
+
+        // EZC requies a query builder to parse Lucene syntax queries
+        $searchQuery = $searchSession->createFindQuery($this->_modelName);
+        
+        $queryBuilder = new ezcSearchQueryBuilder();
+        $queryBuilder->parseSearchQuery($searchQuery, $luceneQuery, $searchFields);
+        
+        // Execute query and collect results in an array
+        $searchResults = $searchSession->find($searchQuery);
+
+        $ids = array();
+    
+        foreach ($searchResults->documents as $result) {
+            $ids[] = $result->document->id;
+        }
+throw new ezcSearchException("testing!");
+        return $ids;
     }
 }

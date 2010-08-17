@@ -49,6 +49,10 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record implements ezcBaseP
     {
         $state = $this->toArray();
 
+        // EZC expects 'id' to be globally unique across all models, so stash the original ID in primaryKey
+        $state['primaryKey'] = $state['id'];
+        $state['id'] = get_class($this) . $state['primaryKey'];
+
         return $state;
     }
 
@@ -59,7 +63,7 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record implements ezcBaseP
      */
     public function setState(array $properties)
     {
-        $this->merge($properties);
+        $this->id = $properties['primaryKey'];
     }
     
     /**

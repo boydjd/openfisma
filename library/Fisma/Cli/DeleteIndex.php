@@ -43,13 +43,13 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
      * Drop the index specified on the command line, or if none is specified, drop and rebuild ALL indexes
      */
     protected function _run()
-    {
-        $indexManager = new Fisma_Search_IndexManager;
-     
+    {     
         $modelName = $this->getOption('model');
         
         if (!is_null($modelName)) {
-            $indexManager->deleteIndexForClass($modelName);            
+            $indexManager = new Fisma_Search_IndexManager($modelName);
+            
+            $indexManager->deleteIndex($modelName);
         } else {
             fwrite(STDERR, "Model name is a required argument\n");
         }

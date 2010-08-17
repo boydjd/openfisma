@@ -43,14 +43,14 @@ class Fisma_Cli_RebuildIndexes extends Fisma_Cli_Abstract
      * Drop the index specified on the command line, or if none is specified, drop and rebuild ALL indexes
      */
     protected function _run()
-    {
-        $indexManager = new Fisma_Search_IndexManager;
-     
+    {     
         // If one model specified, then rebuild that model only. Otherwise rebuild ALL model
         $modelName = $this->getOption('model');
         
         if (is_null($modelName)) {
-            $searchableClasses = $indexManager->getSearchableClasses(Fisma::getPath('model'));            
+            $indexEnumerator = new Fisma_Search_IndexEnumerator();
+            
+            $searchableClasses = $indexEnumerator->getSearchableClasses(Fisma::getPath('model'));            
         } else {
             $searchableClasses = array($modelName);
         }
@@ -59,7 +59,8 @@ class Fisma_Cli_RebuildIndexes extends Fisma_Cli_Abstract
         foreach ($searchableClasses as $searchableClass) {
             echo "Indexing: $searchableClass\n";
 
-            $indexManager->rebuildIndexForClass($searchableClass);
+            $indexManager = new Fisma_Search_IndexManager($searchableClass);
+            $indexManager->rebuildIndex();
         }
     }
 }

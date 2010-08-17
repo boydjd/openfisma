@@ -30,6 +30,8 @@ class Fisma_Search_DefinitionManager implements ezcSearchDefinitionManager
 {
     /**
      * Returns the search definition for a model named $type
+     * 
+     * Implements the required interface ezcSearchDefinitionManager
      *
      * @param string $type Name of the model to get the search definition for
      * @return ezcSearchDocumentDefinition
@@ -45,6 +47,11 @@ class Fisma_Search_DefinitionManager implements ezcSearchDefinitionManager
         $searchDefinition = new ezcSearchDocumentDefinition($type);
         $searchDefinition->idProperty = 'id';
 
+        // Add the 'databaseId' field which corresponds to the objects primary key
+        $pkField = new ezcSearchDefinitionDocumentField('primaryKey', ezcSearchDocumentDefinition::INT);
+        $searchDefinition->fields['primaryKey'] = $pkField;
+
+        // Now add any other eligible columns
         foreach ($table->getColumns() as $columnName => $columnDefinition) {
 
             $fieldName = $table->getFieldName($columnName);

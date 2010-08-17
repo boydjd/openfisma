@@ -336,63 +336,77 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /** 
      * Search the subject
-     *
-     * This outputs a json object. Allowing fulltext search from each record enpowered by lucene
      * 
      * @return string The encoded table data in json format
      */
     public function searchAction()
     {
         $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+
         $sortBy = $this->_request->getParam('sortby', 'id');
-        $order  = $this->_request->getParam('order');
-        $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
+        $keywords  = $this->_request->getParam('keywords');
 
-        //filter the sortby to prevent sqlinjection
-        $subjectTable = Doctrine::getTable($this->_modelName);
-        if (!in_array(strtolower($sortBy), $subjectTable->getColumnNames())) {
-            return $this->_helper->json('Invalid "sortBy" parameter');
-        }
+        // Ensure sort order is either ASC or DESC
+        $order = strtoupper($this->_request->getParam('order'));
 
-        $order = strtoupper($order);
         if ($order != 'DESC') {
-            $order = 'ASC'; //ignore other values
+            $order = 'ASC';
         }
         
         $query  = Doctrine_Query::create()
-                    ->select('*')->from($this->_modelName)
-                    ->orderBy("$sortBy $order")
-                    ->limit($this->_paging['count'])
-                    ->offset($this->_paging['startIndex']);
+                  ->select('*')
+                  ->from($this->_modelName)
+                  ->orderBy("$sortBy $order")
+                  ->limit($this->_paging['count'])
+                  ->offset($this->_paging['startIndex']);
 
         //initialize the data rows
-        $tableData    = array('table' => array(
-                            'recordsReturned' => 0,
-                            'totalRecords'    => 0,
-                            'startIndex'      => $this->_paging['startIndex'],
-                            'sort'            => $sortBy,
-                            'dir'             => $order,
-                            'pageSize'        => $this->_paging['count'],
-                            'records'         => array()
-                        ));
+        $tableData = array(
+            'table' => array(
+                'recordsReturned' => 0,
+                'totalRecords'    => 0,
+                'startIndex'      => $this->_paging['startIndex'],
+                'sort'            => $sortBy,
+                'dir'             => $order,
+                'pageSize'        => $this->_paging['count'],
+                'records'         => array()
+            )
+        );
+
+        // Handle keyword search
         if (!empty($keywords)) {
-            // lucene search 
-            $index = new Fisma_Index($this->_modelName);
-            $ids = $index->findIds($keywords);
-            if (!empty($ids)) {
-                $query->whereIn('id', $ids);
+            $keywordMatchIds = array();
+
+            try {
+                $indexManager = new Fisma_Search_IndexManager($this->_modelName);
+
+                $keywordMatchIds = $indexManager->searchIndex($keywords);
+            } catch (ezcSearchException $e) {
+                if (Fisma::debug()) {
+                    $tableData['table']['error'] = '(' . get_class($e) . ') ' . $e->getMessage();
+                } else {
+                    $tableData['table']['error'] = 'An error occured in the keyword search engine.';
+                }
+            }
+
+            if (count($keywordMatchIds)) {
+                $query->whereIn('id', $keywordMatchIds);    
             } else {
-                //no data
-                return $this->_helper->json($tableData);
+                // Add an impossible condition
+                $query->andWhere('1 = 2');
             }
         }
         
+        // Assemble view objects
         $totalRecords = $query->count();
-        $rows         = $query->execute();
-        $rows         = $this->handleCollection($rows);
+
+        $rows = $query->execute();
+        $rows = $this->handleCollection($rows);
+
         $tableData['table']['recordsReturned'] = count($rows);
         $tableData['table']['totalRecords'] = $totalRecords;
         $tableData['table']['records'] = $rows;
+
         return $this->_helper->json($tableData);
     }
 
