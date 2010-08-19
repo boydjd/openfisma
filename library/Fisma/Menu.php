@@ -302,6 +302,8 @@ class Fisma_Menu
                 $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vulnerability/plugin'));
             }
 
+            $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vulnerability-report/reopened/format/html'));
+
              return $menu;
     }
 }
