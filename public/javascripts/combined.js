@@ -3768,7 +3768,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Render the link
-            var uri = '/remediation/search'
+            var uri = '/finding/remediation/search'
                     + onTimeString
                     + statusString
                     + '/responsibleOrganizationId/'
@@ -3787,7 +3787,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/remediation/summary-data/format/'
+            var uri = '/finding/remediation/summary-data/format/'
                     + format
                     + this.listExpandedNodes(this.treeRoot, '');
 
@@ -4168,232 +4168,234 @@ Fisma.Module = {
  * @version   $Id$
  */
 
-/**
- * Popup a panel for upload evidence
- * 
- * @return {Boolean} False to interrupt consequent operations
- */
-function upload_evidence() {
-    if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
+Fisma.Remediation = {
+    /**
+     * Popup a panel for upload evidence
+     * 
+     * @return {Boolean} False to interrupt consequent operations
+     */
+    upload_evidence : function() {
+        if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
+            return false;
+        }
+        Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', Fisma.upload_evidence_form_init);
         return false;
-    }
-    Fisma.UrlPanel.showPanel('Upload Evidence', '/remediation/upload-form', upload_evidence_form_init);
-    return false;
-}
+    },
 
-/**
- * Initialize another form finding_detail_upload_evidence after panel loaded
- */
-function upload_evidence_form_init() {
-    // Initialize form action from finding_detail.action since they are separated forms and the form from
-    // from the panel belongs to document body rather than the form document.finding_detail.But they should
-    // have same target action. So set the latter`s action with the former`s.
-    document.finding_detail_upload_evidence.action = document.finding_detail.action;
-}
+    /**
+     * Initialize another form finding_detail_upload_evidence after panel loaded
+     */
+    upload_evidence_form_init : function() {
+        // Initialize form action from finding_detail.action since they are separated forms and the form from
+        // from the panel belongs to document body rather than the form document.finding_detail.But they should
+        // have same target action. So set the latter`s action with the former`s.
+        document.finding_detail_upload_evidence.action = document.finding_detail.action;
+    },
 
-/**
- * To approve evidence with optional comment
- * 
- * @param {String} formname The main form name from page
- * @return {Boolean} False if user gives up this operation
- */
-function ev_approve(formname){
-    if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
-    content.appendChild(p);
-    var dt = document.createElement('textarea');
-    dt.rows = 5;
-    dt.cols = 60;
-    dt.id = 'dialog_comment';
-    dt.name = 'comment';
-    content.appendChild(dt);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-
-    Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
+    /**
+     * To approve evidence with optional comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ev_approve : function(formname) {
+        if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
+            return false;
         }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'APPROVED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_ea';
-        submitMsa.value = 'APPROVED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
 
-/**
- * To deny evidence with comment
- * 
- * @param {String} formname The main form name from page
- * @return {Boolean} False if user gives up this operation
- */
-function ev_deny(formname){
-    if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
-        return false;
-    }
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
+        content.appendChild(p);
+        var dt = document.createElement('textarea');
+        dt.rows = 5;
+        dt.cols = 60;
+        dt.id = 'dialog_comment';
+        dt.name = 'comment';
+        content.appendChild(dt);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
 
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Comments:'));
-    content.appendChild(p);
-    var dt = document.createElement('textarea');
-    dt.rows = 5;
-    dt.cols = 60;
-    dt.id = 'dialog_comment';
-    dt.name = 'comment';
-    content.appendChild(dt);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-
-    Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
+        Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            if  (document.all) { // IE
+                var comment = document.getElementById('dialog_comment').innerHTML;
+            } else {// firefox
+                var comment = document.getElementById('dialog_comment').value;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'APPROVED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_ea';
+            submitMsa.value = 'APPROVED';
+            form2.appendChild(submitMsa);
+            form2.submit();
         }
-        if (comment.match(/^\s*$/)) {
-            alert('Comments are required in order to deny.');
-            return;
-        }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENIED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_ea';
-        submitMsa.value = 'DENIED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
+    },
 
-/**
- * To approve mitigation strategy with optional comment
- * 
- * @param {String} formname The main form name from page
- * @return {Boolean} False if user gives up this operation
- */
-function ms_approve(formname){
-    if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
-        return false;
-    }
-
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    var c_title = document.createTextNode('Comments (OPTIONAL):');
-    p.appendChild(c_title);
-    content.appendChild(p);
-    var textarea = document.createElement('textarea');
-    textarea.id = 'dialog_comment';
-    textarea.name = 'comment';
-    textarea.rows = 5;
-    textarea.cols = 60;
-    content.appendChild(textarea);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-    
-    Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
+    /**
+     * To deny evidence with comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ev_deny : function(formname) {
+        if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
+            return false;
         }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'APPROVED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_msa';
-        submitMsa.value = 'APPROVED';
-        form2.appendChild(submitMsa);
-        form2.submit();
-    }
-}
 
-/**
- * To deny mitigation strategy with comment
- * 
- * @param {String} formname The main form name from page
- * @return {Boolean} False if user gives up this operation
- */
-function ms_deny(formname){
-    if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
-        return false;
-    }
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        p.appendChild(document.createTextNode('Comments:'));
+        content.appendChild(p);
+        var dt = document.createElement('textarea');
+        dt.rows = 5;
+        dt.cols = 60;
+        dt.id = 'dialog_comment';
+        dt.name = 'comment';
+        content.appendChild(dt);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
 
-    var content = document.createElement('div');
-    var p = document.createElement('p');
-    var c_title = document.createTextNode('Comments:');
-    p.appendChild(c_title);
-    content.appendChild(p);
-    var textarea = document.createElement('textarea');
-    textarea.id = 'dialog_comment';
-    textarea.name = 'comment';
-    textarea.rows = 5;
-    textarea.cols = 60;
-    content.appendChild(textarea);
-    var div = document.createElement('div');
-    div.style.height = '20px';
-    content.appendChild(div);
-    var button = document.createElement('input');
-    button.type = 'button';
-    button.id = 'dialog_continue';
-    button.value = 'Continue';
-    content.appendChild(button);
-    
-    Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
-    document.getElementById('dialog_continue').onclick = function (){
-        var form2 = formname;
-        if  (document.all) { // IE
-            var comment = document.getElementById('dialog_comment').innerHTML;
-        } else {// firefox
-            var comment = document.getElementById('dialog_comment').value;
+        Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            if  (document.all) { // IE
+                var comment = document.getElementById('dialog_comment').innerHTML;
+            } else {// firefox
+                var comment = document.getElementById('dialog_comment').value;
+            }
+            if (comment.match(/^\s*$/)) {
+                alert('Comments are required in order to deny.');
+                return;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'DENIED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_ea';
+            submitMsa.value = 'DENIED';
+            form2.appendChild(submitMsa);
+            form2.submit();
         }
-        if (comment.match(/^\s*$/)) {
-            alert('Comments are required in order to submit.');
-            return;
+    },
+
+    /**
+     * To approve mitigation strategy with optional comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ms_approve : function(formname) {
+        if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
+            return false;
         }
-        form2.elements['comment'].value = comment;
-        form2.elements['decision'].value = 'DENIED';
-        var submitMsa = document.createElement('input');
-        submitMsa.type = 'hidden';
-        submitMsa.name = 'submit_msa';
-        submitMsa.value = 'DENIED';
-        form2.appendChild(submitMsa);
-        form2.submit();
+
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var c_title = document.createTextNode('Comments (OPTIONAL):');
+        p.appendChild(c_title);
+        content.appendChild(p);
+        var textarea = document.createElement('textarea');
+        textarea.id = 'dialog_comment';
+        textarea.name = 'comment';
+        textarea.rows = 5;
+        textarea.cols = 60;
+        content.appendChild(textarea);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
+        
+        Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            if  (document.all) { // IE
+                var comment = document.getElementById('dialog_comment').innerHTML;
+            } else {// firefox
+                var comment = document.getElementById('dialog_comment').value;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'APPROVED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_msa';
+            submitMsa.value = 'APPROVED';
+            form2.appendChild(submitMsa);
+            form2.submit();
+        }
+    },
+
+    /**
+     * To deny mitigation strategy with comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ms_deny : function(formname) {
+        if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
+            return false;
+        }
+
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var c_title = document.createTextNode('Comments:');
+        p.appendChild(c_title);
+        content.appendChild(p);
+        var textarea = document.createElement('textarea');
+        textarea.id = 'dialog_comment';
+        textarea.name = 'comment';
+        textarea.rows = 5;
+        textarea.cols = 60;
+        content.appendChild(textarea);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
+        
+        Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            if  (document.all) { // IE
+                var comment = document.getElementById('dialog_comment').innerHTML;
+            } else {// firefox
+                var comment = document.getElementById('dialog_comment').value;
+            }
+            if (comment.match(/^\s*$/)) {
+                alert('Comments are required in order to submit.');
+                return;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'DENIED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_msa';
+            submitMsa.value = 'DENIED';
+            form2.appendChild(submitMsa);
+            form2.submit();
+        }
     }
 }
 /**
@@ -4984,6 +4986,41 @@ Fisma.TableFormat = {
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
         el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    },
+
+    /**
+     * A formatter which displays the total of overdue findings that is linked to a finding search page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    overdueFinding : function (elCell, oRecord, oColumn, oData) {
+    	// The format of total overdue finding is id-total-sourceid.
+    	// Split the data to convert into responsibleOrganizationId, total number of overdue findings and soudce id.
+		dataParts = oData.split('-');
+
+		// Construct overdue finding search url
+		overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
+
+		if (dataParts[0].length > 0) {
+			overdueFindingSearchUrl += "/responsibleOrganizationId/" + dataParts[0];
+		}
+
+		if (dataParts[2].length > 0) {
+			overdueFindingSearchUrl += "/sourceId/" + dataParts[2];
+		}
+
+		if (oRecord.getData('Overdue_Action_Type').length > 0) {
+			overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(oRecord.getData('Overdue_Action_Type'));
+		}
+
+		elCell.innerHTML = "<a href="
+			             + overdueFindingSearchUrl
+			             + ">"
+			             + dataParts[1]
+			             + "</a>";
     }
 };/**
  * Copyright (c) 2008 Endeavor Systems, Inc.

@@ -55,8 +55,8 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
                 <input type="hidden" name="comment" value="" />
                 <input type="hidden" name="decision" value="APPROVED" />
                 <input name="submit_ea" type="button" value="APPROVED"
-                    onclick="ev_approve(document.finding_detail);"/>&nbsp;
-                <input type="button" value="DENIED" onclick="ev_deny(document.finding_detail);" />
+                    onclick="Fisma.Remediation.ev_approve(document.finding_detail);"/>&nbsp;
+                <input type="button" value="DENIED" onclick="Fisma.Remediation.ev_deny(document.finding_detail);" />
             </p>
         </div>
     <?php
