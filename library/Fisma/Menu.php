@@ -292,17 +292,17 @@ class Fisma_Menu
     {
             $menu = new Fisma_Yui_Menu('Vulnerabilities');
 
-            $menu->add(new Fisma_Yui_MenuItem('List Vulnerabilities', '/vulnerability/list'));
+            $menu->add(new Fisma_Yui_MenuItem('List Vulnerabilities', '/vm/vulnerability/list'));
 
             if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
-                $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vulnerability/create'));
+                $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vm/vulnerability/create'));
             }
             
             if ($acl->hasPrivilegeForClass('inject', 'Vulnerability')) {
-                $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vulnerability/plugin'));
+                $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
             }
 
-            $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vulnerability-report/reopened/format/html'));
+            $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vm/vulnerability-report/reopened/format/html'));
 
              return $menu;
     }
