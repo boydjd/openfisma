@@ -218,7 +218,7 @@ Fisma.TableFormat = {
 		dataParts = oData.split('-');
 
 		// Construct overdue finding search url
-		overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
+		overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/false';
 
 		if (dataParts[0].length > 0) {
 			overdueFindingSearchUrl += "/responsibleOrganizationId/" + dataParts[0];
