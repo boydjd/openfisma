@@ -5,6 +5,7 @@
 ; License   http://www.openfisma.org/mw/index.php?title=License
 
 [search_config]
+id = "search_config"
 method = "post"
 action = "/config/search"
 
@@ -30,6 +31,11 @@ elements.search_solr_path.type = "text"
 elements.search_solr_path.options.label = "Solr Path"
 elements.search_solr_path.options.tooltip = "<p>The path that Solr is running within its container (i.e. Tomcat or Jetty).</p><p><em>This value is ignored when using the Zend backend.</em></p>"
 displayGroups.general.elements.search_solr_path = "search_solr_path"
+
+elements.testConfiguration.type = "Form_Button"
+elements.testConfiguration.options.label = "Test Configuration"
+elements.testConfiguration.options.onClickFunction = "Fisma.Search.testConfiguration"
+displayGroups.general.elements.testConfiguration = "testConfiguration"
 
 elements.saveSearchConfiguration.type = "Form_Button_Submit"
 elements.saveSearchConfiguration.options.label = "Save"

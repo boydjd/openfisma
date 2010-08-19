@@ -45,9 +45,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         parent::init();
 
         $this->_helper->contextSwitch()
-                      ->setAutoJsonSerialization(false)
-                      ->addActionContext('test-email-config', 'json')
                       ->addActionContext('set-module', 'json')
+                      ->addActionContext('test-email-config', 'json')
+                      ->addActionContext('test-search', 'json')
                       ->addActionContext('validate-ldap', 'json')
                       ->initContext();
     }
@@ -336,8 +336,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $type = 'warning';
         }
 
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
-        $this->_helper->viewRenderer->setNoRender();
+        
+        $this->view->msg = $msg;
+        $this->view->type = $type;
     }
 
     /**
@@ -555,8 +556,54 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             /** @todo english */
             $msg  = "Invalid Parameters";
         }
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
-        $this->_helper->viewRenderer->setNoRender();
+        
+        $this->view->msg = $msg;
+        $this->view->type = $type;
+    }
+
+    /**
+     * Test search engine backend
+     */
+    public function testSearchAction()
+    {
+        $response = new Fisma_AsyncResponse;
+
+        // Get system search configuration
+        $configuration = Fisma::configuration();
+
+        $storedConfig = array(
+            'search_backend' => $configuration->getConfig('search_backend'),
+            'search_solr_host' => $configuration->getConfig('search_solr_host'),
+            'search_solr_port' => $configuration->getConfig('search_solr_port'),
+            'search_solr_path' => $configuration->getConfig('search_solr_path')
+        );
+        
+        // Get posted form configuration and strip out empty fields
+        $request = $this->getRequest();
+
+        $formConfig = array(
+            'search_backend' => $request->getParam('search_backend'),
+            'search_solr_host' => $request->getParam('search_solr_host'),
+            'search_solr_port' => $request->getParam('search_solr_port'),
+            'search_solr_path' => $request->getParam('search_solr_path')
+        );
+        
+        $formConfig = array_filter($formConfig);
+        
+        // Merge system configuration into form configuration and then validate the merged configuration
+        $searchConfiguration = array_merge($storedConfig, $formConfig);
+
+        $factory = new Fisma_Search_BackendFactory;
+        
+        $searchBackend = $factory->getSearchBackend($searchConfiguration);
+        
+        $result = $searchBackend->validateConfiguration();
+    
+        if ($result !== true) {
+            $response->fail($result);
+        }
+
+        $this->view->response = $response;        
     }
 
     /**
