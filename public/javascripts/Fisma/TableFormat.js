@@ -202,40 +202,5 @@ Fisma.TableFormat = {
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
         el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    },
-
-    /**
-     * A formatter which displays the total of overdue findings that is linked to a finding search page
-     * 
-     * @param elCell Reference to a container inside the <td> element
-     * @param oRecord Reference to the YUI row object
-     * @param oColumn Reference to the YUI column object
-     * @param oData The data stored in this cell
-     */
-    overdueFinding : function (elCell, oRecord, oColumn, oData) {
-    	// The format of total overdue finding is id-total-sourceid.
-    	// Split the data to convert into responsibleOrganizationId, total number of overdue findings and soudce id.
-		dataParts = oData.split('-');
-
-		// Construct overdue finding search url
-		overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/false';
-
-		if (dataParts[0].length > 0) {
-			overdueFindingSearchUrl += "/responsibleOrganizationId/" + dataParts[0];
-		}
-
-		if (dataParts[2].length > 0) {
-			overdueFindingSearchUrl += "/sourceId/" + dataParts[2];
-		}
-
-		if (oRecord.getData('Overdue_Action_Type').length > 0) {
-			overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(oRecord.getData('Overdue_Action_Type'));
-		}
-
-		elCell.innerHTML = "<a href="
-			             + overdueFindingSearchUrl
-			             + ">"
-			             + dataParts[1]
-			             + "</a>";
     }
 };
