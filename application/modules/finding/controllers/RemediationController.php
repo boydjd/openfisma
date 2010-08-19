@@ -447,7 +447,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
                         'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null,
-                        'securityControl' => null);
+                        'securityControl' => null, 'overdueActionType' => null);
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
@@ -1206,6 +1206,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                     break;
             }
         }
+
+        if (!empty($params['overdueActionType'])) {
+            switch ($params['overdueActionType']) {
+                case 'Mitigation Strategy': $params['status'] = array('NEW', 'DRAFT', 'MSA');
+                    break;
+                case 'Corrective Action': $params['status'] = array('EN','EA');
+                    break;
+            }
+            
+            unset($params['overdueActionType']);
+        }
+
         if ($params['ids']) {
             $params['ids'] = explode(',', $params['ids']);
         }

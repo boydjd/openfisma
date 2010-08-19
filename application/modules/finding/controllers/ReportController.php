@@ -223,6 +223,15 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         $toolbarForm->setDefaults($this->getRequest()->getParams());
 
+        // Need to pass responsibleOrganizationId and sourceId to build overdue finding search link
+        // when the context switch format is 'html'.
+        if (in_array($this->_request->getParam('format'), array('pdf', 'xls'))) {
+            $totalOverdueSql = 'IFNULL(COUNT(f.id), 0) total';
+        } else if ('html' == $this->_request->getParam('format')) {
+            $sourceId = !empty($sourceId) ? $sourceId : null;
+            $totalOverdueSql = "CONCAT_WS('-', o.id, IFNULL(COUNT(f.id), 0), '$sourceId') total";
+        }
+
         $overdueQuery = Doctrine_Query::create()
                         ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) orgSystemName")
                         ->addSelect(
@@ -232,7 +241,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 59, 1, 0)) lessThan30')
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 119, 1, 0)) moreThan60')
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) >= 120, 1, 0)) moreThan120')
-                        ->addSelect('IFNULL(COUNT(f.id), 0) total')
+                        ->addSelect($totalOverdueSql)
                         ->addSelect('IFNULL(ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))), 0) average')
                         ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
                         ->from('Finding f')
@@ -263,7 +272,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                ->addColumn(new Fisma_Report_Column('< 60 Days', true))
                ->addColumn(new Fisma_Report_Column('60-119 Days', true))
                ->addColumn(new Fisma_Report_Column('120+ Days', true))
-               ->addColumn(new Fisma_Report_Column('Total Overdue', true))
+               ->addColumn(new Fisma_Report_Column('Total Overdue', true, 'Fisma.TableFormat.overdueFinding'))
                ->addColumn(new Fisma_Report_Column('Average (Days)', true))
                ->addColumn(new Fisma_Report_Column('Maximum (Days)', true))
                ->setData($reportData);
