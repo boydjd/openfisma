@@ -40,7 +40,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     /**
      * Name to send to the browser in the Content-Disposition header.  Null means to use the contexts' defaults.
      *
-     * @property string
+     * @var string
      */
     protected $_dispositionFilename = null;
 
@@ -54,12 +54,13 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
         parent::init();
 
         if (!$this->hasContext('pdf')) {
+            $pdfFilename = empty($this->_dispositionFilename) ? 'Report.pdf' : $this->_dispositionFilename;
             $this->addContext(
                 'pdf',
                 array(
                     'suffix' => 'pdf',
                     'headers' => array(
-                        'Content-Disposition' => 'attachment; filename=Report.pdf',
+                        'Content-Disposition' => 'attachment; filename=' . $pdfFilename,
                         'Content-Type' => 'application/pdf'
                     ),
                     'callbacks' => array(
@@ -70,12 +71,13 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
         }
         
         if (!$this->hasContext('xls')) {
+            $xlsFilename = empty($this->_dispositionFilename) ? 'Report.xls' : $this->_dispositionFilename;
             $this->addContext(
                 'xls',
                 array(
                     'suffix' => 'xls',
                     'headers' => array(
-                        'Content-Disposition' => 'attachment; filename=Report.xls',
+                        'Content-Disposition' => 'attachment; filename=' . $xlsFilename,
                         'Content-Type' => 'application/vnd.ms-excel'
                     ),
                     'callbacks' => array(
@@ -121,7 +123,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
         $this->_dispositionFilename = $filename;
         // if current context is set, then the context has been initialized and the header will need to be set manually
         if ($this->_currentContext != null && $filename != null) {
-            $this->getResponse()->setHeader('Content-Disposition', 'filename='.$filename, true);
+            $this->getResponse()->setHeader('Content-Disposition', 'filename=' . $filename, true);
         }
     }
 }
