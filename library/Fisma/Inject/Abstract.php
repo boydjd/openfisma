@@ -142,9 +142,6 @@ abstract class Fisma_Inject_Abstract
         // Add data to provided assetData
         if (!empty($assetData)) {
             $assetData['networkId'] = $this->_networkId;
-            $assetData['orgSystemId'] = $this->_orgSystemId;
-            $assetData['source'] = 'SCAN';
-
             $assetData['id'] = $this->_prepareAsset($assetData);
         }
 
