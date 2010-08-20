@@ -204,11 +204,6 @@ class Fisma
         // Enable the Zend autoloader. This depends on the Zend library being in its expected place.
         require_once(self::$_rootPath . '/library/Zend/Loader/Autoloader.php');
         $loader = Zend_Loader_Autoloader::getInstance();
-        
-        // Enable ezComponents autoloading
-        require_once(self::$_rootPath . '/library/ezComponents/Base/src/base.php');
-        $loader->pushAutoloader(array('ezcBase', 'autoload'), 'ezc');
-
         $loader->registerNamespace('Fisma_');
         $loader->setFallbackAutoloader(true);
 
@@ -293,9 +288,8 @@ class Fisma
             self::$_isInstall = false;
         }
         
-        // Configure the autoloaders to suppress warnings in production mode, but enable them in development mode
+        // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
-        ezcBase::setRunMode(Fisma::debug() ? ezcBase::MODE_DEVELOPMENT : ezcBase::MODE_PRODUCTION);
     }
     
     /**

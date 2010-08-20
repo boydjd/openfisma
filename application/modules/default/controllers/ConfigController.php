@@ -335,7 +335,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $msg = Fisma_Zend_Form_Manager::getErrors($form);
             $type = 'warning';
         }
-
         
         $this->view->msg = $msg;
         $this->view->type = $type;
@@ -592,10 +591,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         
         // Merge system configuration into form configuration and then validate the merged configuration
         $searchConfiguration = array_merge($storedConfig, $formConfig);
-
-        $factory = new Fisma_Search_BackendFactory;
         
-        $searchBackend = $factory->getSearchBackend($searchConfiguration);
+        $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
         
         $result = $searchBackend->validateConfiguration();
     

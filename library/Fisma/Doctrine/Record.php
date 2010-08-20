@@ -31,7 +31,7 @@
  * @subpackage Fisma_Doctrine_Record
  * @version    $Id$
  */
-abstract class Fisma_Doctrine_Record extends Doctrine_Record implements ezcBasePersistable
+abstract class Fisma_Doctrine_Record extends Doctrine_Record
 {
     /**
      * Store the original values of this record.
@@ -39,32 +39,6 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record implements ezcBaseP
      * @var array
      */
     private $_originalValues = array();
-    
-    /**
-     * Implements ezcBasePersistable interface in order to be indexable for searching
-     * 
-     * @return array
-     */
-    public function getState()
-    {
-        $state = $this->toArray();
-
-        // EZC expects 'id' to be globally unique across all models, so stash the original ID in primaryKey
-        $state['primaryKey'] = $state['id'];
-        $state['id'] = get_class($this) . $state['primaryKey'];
-
-        return $state;
-    }
-
-    /**
-     * Implements ezcBasePersistable interface with stub method in order to be indexable for searching
-     * 
-     * @param array $properties
-     */
-    public function setState(array $properties)
-    {
-        $this->id = $properties['primaryKey'];
-    }
     
     /**
      * Customized validation error messages. 

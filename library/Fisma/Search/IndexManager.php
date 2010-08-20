@@ -79,7 +79,7 @@ class Fisma_Search_IndexManager
         $table = Doctrine::getTable($this->_modelName);
         $session = $table->getSearchSession();
         
-        $this->deleteIndex();
+        //$this->deleteIndex();
                 
         // Get a total count of all records
         $allRecordsQuery = Doctrine_Query::create()->from($this->_modelName);

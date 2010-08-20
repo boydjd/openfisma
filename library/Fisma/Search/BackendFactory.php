@@ -30,11 +30,17 @@ class Fisma_Search_BackendFactory
     /**
      * Construct a backend based on a configuration
      * 
-     * @param array $configuration
+     * The configuration array should include all of the search_* fields from the configuration table
+     * 
+     * @param array $configuration If null, then configuration is pulled from system's global configuration
      * @return Fisma_Search_Backend_Abstract
      */
-    public function getSearchBackend($configuration)
+    static public function getSearchBackend($configuration = null)
     {
+        if (is_null($configuration)) {
+            $configuration = self::getSearchConfiguration();
+        }
+
         switch ($configuration['search_backend']) {
             case 'solr':
                 $backend = new Fisma_Search_Backend_Solr(
@@ -53,5 +59,26 @@ class Fisma_Search_BackendFactory
         }
         
         return $backend;
+    }
+    
+    /**
+     * Gets search configuration from the system-wide configuration object
+     * 
+     * The configuration array should include all of the search_* fields from the configuration table
+     * 
+     * @return array
+     */
+    static public function getSearchConfiguration()
+    {
+        $configuration = Fisma::configuration();
+
+        $searchConfig = array(
+            'search_backend' => $configuration->getConfig('search_backend'),
+            'search_solr_host' => $configuration->getConfig('search_solr_host'),
+            'search_solr_port' => $configuration->getConfig('search_solr_port'),
+            'search_solr_path' => $configuration->getConfig('search_solr_path')
+        );
+
+        return $searchConfig;
     }
 }

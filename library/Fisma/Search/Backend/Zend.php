@@ -28,12 +28,40 @@
 class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 {
     /**
+     * Delete all documents of the specified type in the index
+     * 
+     * "Type" refers to a model, such as Asset, Finding, Incident, etc. 
+     * 
+     * @param string $type
+     */
+    public function deleteByType($type)
+    {
+        throw new Fisma_Zend_Exception('not implemented');
+    }
+
+    /**
+     * Add the specified object to the search engine index
+     * 
+     * @param Fisma_Doctrine_Record $object
+     */
+    public function indexObject(Fisma_Doctrine_Record $object)
+    {
+        throw new Fisma_Zend_Exception('not implemented');
+    }
+
+    /**
      * Validate that index directory exists and has reasonable permissions
      * 
      * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
      */
     public function validateConfiguration()
     {
-        return "ZSL layer not implemented";
+        $indexDir = Fisma::getPath('index');
+
+        if (!is_writeable($indexDir)) {
+            return "Index directory ($indexDir) is not writeable";
+        }
+
+        return true;
     }
 }

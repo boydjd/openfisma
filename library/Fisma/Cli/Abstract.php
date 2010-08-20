@@ -119,7 +119,13 @@ abstract class Fisma_Cli_Abstract
         }
 
         // Invoke subclass worker method
-        $this->_run();
+        try {
+            $this->_run();
+        } catch (Fisma_Zend_Exception_User $e) {
+            echo $e->getMessage() . "\n\n" . $this->getHelpText();
+            
+            return;
+        }
 
         // Calculate elapsed time
         $stop = time();

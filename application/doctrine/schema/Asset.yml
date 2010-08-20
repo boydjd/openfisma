@@ -2,8 +2,14 @@ Asset:
     listeners: [IndexListener, NotificationListener]
         
     columns:
-        createdTs: timestamp
-        modifiedTs: timestamp
+        createdTs: 
+            type: timestamp
+            extra:
+                search: yes
+        modifiedTs: 
+            type: timestamp
+            extra:
+                search: yes
 
         name:
             type: string(255)
@@ -19,7 +25,7 @@ Asset:
             default: manual
             extra:
                 logicalName: Asset Source
-                searchIndex: keyword
+                search: yes
                 notify: true
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
@@ -27,8 +33,7 @@ Asset:
             Fisma_Doctrine_Validator_Ip: true
             extra:
                 logicalName: IP Address
-                searchIndex: unstored
-                searchAlias: ip
+                search: yes
                 notify: true
             comment: The IP address for this asset
         addressPort:
@@ -37,8 +42,7 @@ Asset:
             unsigned: false
             extra:
                 logicalName: IP Port Number
-                searchIndex: unstored
-                searchAlias: port
+                search: yes
                 notify: true
             comment: The IP port for this asset
         

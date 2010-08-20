@@ -47,9 +47,9 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
         $modelName = $this->getOption('model');
         
         if (!is_null($modelName)) {
-            $indexManager = new Fisma_Search_IndexManager($modelName);
-            
-            $indexManager->deleteIndex($modelName);
+            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+            $searchEngine->deleteByType($modelName);
         } else {
             fwrite(STDERR, "Model name is a required argument\n");
         }

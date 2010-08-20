@@ -28,16 +28,27 @@
 abstract class Fisma_Search_Backend_Abstract
 {
     /**
-     * Delete all indexed documents of the specified type
+     * Delete all documents of the specified type in the index
      * 
-     * @param string $type E.g. Finding, Asset, etc.
+     * "Type" refers to a model, such as Asset, Finding, Incident, etc. 
+     * 
+     * @param string $type
      */
-    //abstract public function deleteAll($type);
+    abstract public function deleteByType($type);
 
     /**
-     * Delete all indexed documents of the specified type
+     * Index a Doctrine collection of objects
+     * 
+     * @param Doctrine_Collection $collection
      */
-    //abstract public function deleteOne($type, $id);
+    abstract public function indexCollection(Doctrine_Collection $collection);
+
+    /**
+     * Add the specified object to the search engine index
+     * 
+     * @param Fisma_Doctrine_Record $object
+     */
+    abstract public function indexObject(Fisma_Doctrine_Record $object);
 
     /**
      * Validate the backend's configuration
@@ -47,4 +58,19 @@ abstract class Fisma_Search_Backend_Abstract
      * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
      */
     abstract public function validateConfiguration();
+    
+    /**
+     * Escape a parameter for inclusion in a Lucene query
+     * 
+     * @see http://lucene.apache.org/java/2_4_0/queryparsersyntax.html#Escaping%20Special%20Characters
+     * 
+     * @param string $parameter
+     * @return string Escaped parameter
+     */
+    public function escape($parameter)
+    {
+        $specialChars = '+-!(){}[]^"~*?:\&|';
+        
+        return addcslashes($parameter, $specialChars);
+    }
 }

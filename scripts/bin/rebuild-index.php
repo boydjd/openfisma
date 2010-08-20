@@ -19,5 +19,5 @@
 
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-$cli = new Fisma_Cli_RebuildIndexes();
+$cli = new Fisma_Cli_RebuildIndex();
 $cli->run();
