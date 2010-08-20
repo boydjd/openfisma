@@ -118,6 +118,5 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         }
 
         print "\n";
-        //$session->commit();
     }
 }

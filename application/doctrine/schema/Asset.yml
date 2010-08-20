@@ -4,20 +4,14 @@ Asset:
     columns:
         createdTs: 
             type: timestamp
-            extra:
-                search: yes
         modifiedTs: 
             type: timestamp
-            extra:
-                search: yes
 
         name:
             type: string(255)
             extra:
                 logicalName: Asset Name
-                searchIndex: unstored
                 notify: true
-                search: yes
             comment: The name of this asset
         source:
             type: enum
@@ -25,7 +19,6 @@ Asset:
             default: manual
             extra:
                 logicalName: Asset Source
-                search: yes
                 notify: true
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
@@ -33,7 +26,6 @@ Asset:
             Fisma_Doctrine_Validator_Ip: true
             extra:
                 logicalName: IP Address
-                search: yes
                 notify: true
             comment: The IP address for this asset
         addressPort:
@@ -42,7 +34,6 @@ Asset:
             unsigned: false
             extra:
                 logicalName: IP Port Number
-                search: yes
                 notify: true
             comment: The IP port for this asset
         

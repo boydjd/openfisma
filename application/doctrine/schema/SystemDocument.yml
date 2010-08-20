@@ -17,16 +17,14 @@ SystemDocument:
             type: string(255)
             extra:
                 notify: true
-                search: yes
-            comment: Name of the uploaded file
+                            comment: Name of the uploaded file
         size:
             type: integer
             comment: Size of the file in bytes
         description:
             type: string
             extra:
-                search: yes
-            comment: A place for the user to enter version comments
+                            comment: A place for the user to enter version comments
 
         documentTypeId:
             type: integer

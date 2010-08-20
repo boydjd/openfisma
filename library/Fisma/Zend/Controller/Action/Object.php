@@ -342,24 +342,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function searchAction()
     {
         $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
-
-        $sortBy = $this->_request->getParam('sortby', 'id');
-        $keywords  = $this->_request->getParam('keywords');
-
-        // Ensure sort order is either ASC or DESC
-        $order = strtoupper($this->_request->getParam('order'));
-
-        if ($order != 'DESC') {
-            $order = 'ASC';
-        }
         
-        $query  = Doctrine_Query::create()
-                  ->select('*')
-                  ->from($this->_modelName)
-                  ->orderBy("$sortBy $order")
-                  ->limit($this->_paging['count'])
-                  ->offset($this->_paging['startIndex']);
-
         //initialize the data rows
         $tableData = array(
             'table' => array(
@@ -373,29 +356,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             )
         );
 
-        // Handle keyword search
-        if (!empty($keywords)) {
-            $keywordMatchIds = array();
-
-            try {
-                $indexManager = new Fisma_Search_IndexManager($this->_modelName);
-
-                $keywordMatchIds = $indexManager->searchIndex($keywords);
-            } catch (ezcSearchException $e) {
-                if (Fisma::debug()) {
-                    $tableData['table']['error'] = '(' . get_class($e) . ') ' . $e->getMessage();
-                } else {
-                    $tableData['table']['error'] = 'An error occured in the keyword search engine.';
-                }
-            }
-
-            if (count($keywordMatchIds)) {
-                $query->whereIn('id', $keywordMatchIds);    
-            } else {
-                // Add an impossible condition
-                $query->andWhere('1 = 2');
-            }
+        // Perform search
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        
+        if ($this->getRequest()->getParam('keywords')) {
+            $result = $searchEngine->searchByKeyword('Source', $this->getRequest()->getParam('keywords'));            
         }
+        
+//        var_dump($result->response);die;
         
         // Assemble view objects
         $totalRecords = $query->count();
@@ -403,9 +371,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $rows = $query->execute();
         $rows = $this->handleCollection($rows);
 
-        $tableData['table']['recordsReturned'] = count($rows);
-        $tableData['table']['totalRecords'] = $totalRecords;
-        $tableData['table']['records'] = $rows;
+        $tableData['table']['recordsReturned'] = count($result->response->docs);
+        $tableData['table']['totalRecords'] = $result->response->numFound;
+        $tableData['table']['records'] = $result->response->docs;
 
         return $this->_helper->json($tableData);
     }

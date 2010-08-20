@@ -51,6 +51,23 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function indexObject(Fisma_Doctrine_Record $object);
 
     /**
+     * Simple search: search all fields for the specified keyword
+     * 
+     * @param string $type Name of model index to search
+     * @param string $keyword
+     * @return array Rectangular array of search results
+     */
+    abstract public function searchByKeyword($type, $keyword);
+
+    /**
+     * Advanced search: search based on a customized Solr query
+     * 
+     * @param SolrQuery $keyword
+     * @return array Rectangular array of search results
+     */
+    abstract public function searchByQuery(SolrQuery $query);
+
+    /**
      * Validate the backend's configuration
      * 
      * The implementing class should use this to exercise basic diagnostics

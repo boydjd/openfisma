@@ -4,5 +4,4 @@ DocumentType:
             type: string(255)
             extra:
                 logicalName: Document Name
-                search: yes
-            comment: A human-readable description of the file type, e.g. System Security Plan
+                            comment: A human-readable description of the file type, e.g. System Security Plan

@@ -58,24 +58,11 @@ class Fisma_Search_IndexEnumerator
             // Strip off .php extension
             $modelName = substr($name, 0, -4);
             
-            // Check for Fisma_Doctrine_Record subclasses only
-            $reflection = new ReflectionClass($modelName);
-
-            if (!$reflection->isSubclassOf('Fisma_Doctrine_Record')) {
-                continue;
-            }
-
-            // Check if the model has search attributes
+            // Check for table classes that implement the Searchable interface
             $table = Doctrine::getTable($modelName);
 
-            $columns = $table->getColumns();
-            
-            foreach ($columns as $column) {
-                if ('string' == $column['type'] && isset($column['extra']['search'])) {
-                    $modelNames[] = $modelName;
-                    
-                    break;
-                }
+            if ($table instanceof Fisma_Search_Searchable) {
+                $modelNames[] = $modelName;
             }
         }
         

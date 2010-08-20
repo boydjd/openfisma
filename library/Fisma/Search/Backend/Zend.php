@@ -40,11 +40,43 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     }
 
     /**
+     * Index a Doctrine collection of objects
+     * 
+     * @param Doctrine_Collection $collection
+     */
+    public function indexCollection(Doctrine_Collection $collection)
+    {
+        throw new Fisma_Zend_Exception('not implemented');
+    }
+
+    /**
      * Add the specified object to the search engine index
      * 
      * @param Fisma_Doctrine_Record $object
      */
     public function indexObject(Fisma_Doctrine_Record $object)
+    {
+        throw new Fisma_Zend_Exception('not implemented');
+    }
+
+    /**
+     * Simple search: search all fields for the specified keyword
+     * 
+     * @param string $keyword
+     * @return array Rectangular array of search results
+     */
+    public function searchByKeyword($type, $keyword)
+    {
+        throw new Fisma_Zend_Exception('not implemented');
+    }
+
+    /**
+     * Advanced search: search based on a customized Solr query
+     * 
+     * @param SolrQuery $keyword
+     * @return array Rectangular array of search results
+     */
+    public function searchByQuery(SolrQuery $query)
     {
         throw new Fisma_Zend_Exception('not implemented');
     }

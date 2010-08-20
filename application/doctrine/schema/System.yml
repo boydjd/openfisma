@@ -20,8 +20,7 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
-        integrity:
+                        integrity:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 integrity impact
@@ -29,8 +28,7 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
-        availability:
+                        availability:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 availability impact
@@ -38,8 +36,7 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
-        fipsCategory:
+                        fipsCategory:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above

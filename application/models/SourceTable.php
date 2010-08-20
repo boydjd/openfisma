@@ -25,7 +25,13 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SourceTable extends Fisma_Doctrine_Table
+class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
-
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array ('name', 'nickname', 'description');
+    }
 }

@@ -9,23 +9,20 @@ Role:
             type: string(255)
             extra:
                 logicalName: Role Name
-                search: yes
-                notify: true
+                                notify: true
         nickname: 
             type: string(255)
             unique: true
             extra:
                 logicalName: Role Nickname
-                search: yes
-                notify: true      
+                                notify: true      
             unique: true;
         description: 
             type: string
             extra:
                 logicalName: Description
                 purify: html
-                search: yes
-                notify: true
+                                notify: true
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
 
     relations:

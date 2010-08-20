@@ -27,6 +27,12 @@
  */
 class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 {
+/*
+    public function debug() { 
+        echo("<pre style='white-space: pre-wrap;'>" . htmlspecialchars($this->_client->getDebug()) . "</pre>"); 
+    }
+*/
+
     /**
      * Client object is used for communicating with Solr server
      * 
@@ -93,6 +99,70 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
+     * Simple search: search all fields for the specified keyword
+     * 
+     * @param string $type Name of model index to search
+     * @param string $keyword
+     * @return array Rectangular array of search results
+     */
+    public function searchByKeyword($type, $keyword)
+    {
+        $query = new SolrQuery;
+   
+        // Filter query assists Solr with efficient caching
+        $query->setHighlight(true)
+              ->setHighlightSimplePre('***')
+              ->setHighlightSimplePost('***')
+              ->setHighlightRequireFieldMatch(true)
+              ->addFilterQuery('documentType:' . $type);
+
+        // Tokenize keyword on spaces and escape all tokens
+        $keywordTokens = split(' ', $keyword);
+        $keywordTokens = array_filter($keywordTokens);
+        $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
+
+        // For simple search, we want to search and highlight all fields
+        $searchableFields = Doctrine::getTable($type)->getSearchableFields();
+
+        $searchTerms = array();
+
+        $table = Doctrine::getTable($type);
+
+        foreach ($searchableFields as $searchableField) {
+            
+            // Some twiddling to convert Doctrine's field names to Solr's field names
+            $columnDefinition = $table->getColumnDefinition($table->getColumnName($searchableField));
+            $documentFieldName = $searchableField . '_' . $this->_getSuffixForColumn($columnDefinition);
+
+            $query->addField($documentFieldName)
+                  ->addHighlightField($documentFieldName);
+            
+            foreach ($keywordTokens as $keywordToken) {
+                $searchTerms[] = $documentFieldName . ':' . $keywordToken;                
+            }
+        }
+
+        $query->setQuery(implode(' OR ', $searchTerms));
+    
+        $response = $this->_client->query($query); 
+//        $this->debug();die;
+        $result = $response->getResponse();
+
+        return $result;
+    }
+
+    /**
+     * Advanced search: search based on a customized Solr query
+     * 
+     * @param SolrQuery $keyword
+     * @return array Rectangular array of search results
+     */
+    public function searchByQuery(SolrQuery $query)
+    {
+        
+    }
+
+    /**
      * Validate that PECL extension is installed and SOLR server responds to a Solr ping request (not an ICMP)
      * 
      * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
@@ -132,11 +202,20 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     /**
      * Convert a Fisma_Doctrine_Record object into an indexable Solr document
      * 
+     * The object's table must also implement Fisma_Search_Searchable so that this method can get its search metadata.
+     * 
      * @param Fisma_Doctrine_Record $object
      * @return SolrInputDocument
      */
     private function _convertObjectToDocument(Fisma_Doctrine_Record $object)
     {
+        if (!($object->getTable() instanceof Fisma_Search_Searchable)) {
+            $message = 'Objects which are to be indexed must have a table that implements'
+                     . ' the Fisma_Search_Searchable interface';
+
+            throw new Fisma_Zend_Exception($message);
+        }
+        
         $type = get_class($object);
 
         $document = new SolrInputDocument;
@@ -152,19 +231,19 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // Iterate over the model's columns and see which ones need to be indexed
         $table = Doctrine::getTable($type);
-        $columns = $table->getColumns();
+        $searchableFields = $object->getSearchableFields();
 
-        foreach ($columns as $columnName => $columnDefinition) {
-            if (isset($columnDefinition['extra']['search'])) {
-                $typeSuffix = $this->_getSuffixForColumn($columnDefinition);
+        foreach ($searchableFields as $doctrineFieldName) {
+            $doctrineColumnDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
-                $documentFieldName = $columnName . '_' . $typeSuffix;
+            $typeSuffix = $this->_getSuffixForColumn($doctrineColumnDefinition);
 
-                $rawValue = $object[$table->getFieldName($columnName)];
-                $documentFieldValue = $this->_getValueForColumn($rawValue, $columnDefinition);
+            $documentFieldName = $doctrineFieldName . '_' . $typeSuffix;
+
+            $rawValue = $object[$table->getFieldName($doctrineFieldName)];
+            $documentFieldValue = $this->_getValueForColumn($rawValue, $doctrineColumnDefinition);
                 
-                $document->addField($documentFieldName, $documentFieldValue);
-            }
+            $document->addField($documentFieldName, $documentFieldValue);
         }
 
         return $document;
@@ -223,9 +302,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                   'timestamp' == $columnDefinition['type']) {
 
             // Date fields need to be converted to UTC
-            $tempDate = new Zend_Date($value, 'YYYY-MM-dd HH:mm:ss');
+            $tempDate = new Zend_Date($rawValue, 'YYYY-MM-dd HH:mm:ss');
                         
-            $value = $rawValue;
+            $value = $tempDate->toString('YYYY-MM-ddTHH:mm:ss') . 'Z';
         } else {
             // By default, just index the raw value
             $value = $rawValue;

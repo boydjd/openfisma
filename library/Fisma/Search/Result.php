@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,21 +17,15 @@
  */
 
 /**
- * AssetTable 
+ * Represents a search result
  * 
- * @uses Fisma_Doctrine_Table
- * @package Model 
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
- * @license http://www.openfisma.org/content/license GPLv3
+ * @author     Mark E. Haase <mhaase@endeavorystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Search
  */
-class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class Fisma_Search_Result
 {
-    /**
-     * Implement the interface for Searchable
-     */
-    public function getSearchableFields()
-    {
-        return array ('name', 'source', 'addressIp', 'addressPort', 'modifiedTs');
-    }
+    
 }
