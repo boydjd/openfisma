@@ -32,7 +32,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
      * 
      * @var int
      */
-    const INDEX_CHUNK_SIZE = 100;
+    const INDEX_CHUNK_SIZE = 25;
 
     /**
      * Configure the arguments accepted for this CLI program
@@ -94,14 +94,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         $totalRecords = $allRecordsQuery->count();
 
         // Progress bar for console progress monitoring
-        $progressBar = new Zend_ProgressBar(new Zend_ProgressBar_Adapter_Console, 0, $totalRecords);
-        $elements = array(
-            Zend_ProgressBar_Adapter_Console::ELEMENT_TEXT,
-            Zend_ProgressBar_Adapter_Console::ELEMENT_BAR,
-            Zend_ProgressBar_Adapter_Console::ELEMENT_PERCENT,
-            Zend_ProgressBar_Adapter_Console::ELEMENT_ETA
-        );
-        $progressBar->getAdapter()->setElements($elements);
+        $progressBar = $this->_getProgressBar($totalRecords);
         $progressBar->update(0, $modelName);
 
         // Loop over chunks of records from this table and index each chunk in a single request

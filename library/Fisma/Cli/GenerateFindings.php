@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Generate random finding objects (for load testing)
- * 
+ *
  * @author     Joshua Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,7 +29,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
 {
     /**
      * Configure the arguments accepted for this CLI program
-     * 
+     *
      * @return array An array containing getopt long syntax
      */
     public function getArgumentsDefinitions()
@@ -37,8 +37,8 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         return array(
             'number|n=i' => "Number of finding objects to generate"
         );
-    }    
-    
+    }
+
     /**
      * Drop the index specified on the command line, or if none is specified, drop and rebuild ALL indexes
      */
@@ -51,15 +51,15 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $inMemoryConfig = new Fisma_Configuration_Array();
         $inMemoryConfig->setConfig('hash_type', 'sha1');
         $inMemoryConfig->setConfig('session_inactivity_period', '9999999');
-        Fisma::setConfiguration($inMemoryConfig, true);    
+        Fisma::setConfiguration($inMemoryConfig, true);
 
         $configuration = Zend_Registry::get('doctrine_config');
 
         $numFindings = $this->getOption('number');
-        
+
         if (is_null($numFindings)) {
-            fwrite(STDOUT, "Number is a required argument.\n");
-            
+            throw new Fisma_Zend_Exception_User("Number is a required argument.");
+
             return;
         }
 
@@ -107,7 +107,11 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $sourceIdsCount = count($sourceIds)-1;
         $securityControlIdsCount = count($securityControlIds)-1;
 
-        for ($numFindings; $numFindings > 0; $numFindings--) {
+        // Progress bar for console progress monitoring
+        $generateProgressBar = $this->_getProgressBar($numFindings);
+        $generateProgressBar->update(0, "Generate Findings");
+
+        for ($i = 0; $i <= $numFindings; $i++) {
             $discoveredDate = rand(0, time());
 
             $finding = array();
@@ -130,7 +134,16 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             $finding['ecdLocked'] = FALSE;
             $findings[] = $finding;
             unset($finding);
+
+            $generateProgressBar->update($i);
         }
+
+        print "\n";
+
+        $saveProgressBar = $this->_getProgressBar($numFindings);
+        $saveProgressBar->update(0, "Save Findings");
+
+        $currentFinding = 0;
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
@@ -141,12 +154,15 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                 $f->save();
                 $f->free();
                 unset($f);
+
+                $currentFinding++;
+                $saveProgressBar->update($currentFinding);
             }
 
             Doctrine_Manager::connection()->commit();
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
             throw $e;
-        }    
+        }
     }
 }

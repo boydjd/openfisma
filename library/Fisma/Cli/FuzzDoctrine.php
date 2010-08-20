@@ -74,7 +74,7 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
 
         // Script does not run in production mode, just to be safe
         if (!Fisma::debug()) {
-            fwrite(STDOUT, "This script only runs in debug mode, not in production mode.\n");
+            throw new Fisma_Zend_Exception_User("This script only runs in debug mode, not in production mode.");
             
             return;
         }

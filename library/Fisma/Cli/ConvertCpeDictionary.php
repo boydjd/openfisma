@@ -56,7 +56,7 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
 
         // Check required options
         if (empty($dictionary) || empty($output)) {
-            fwrite(STDERR, "Dictionary and Output are both required fields\n");
+            throw new Fisma_Zend_Exception_User("Dictionary and Output are both required fields");
             
             return;
         }

@@ -51,7 +51,7 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
 
             $searchEngine->deleteByType($modelName);
         } else {
-            fwrite(STDERR, "Model name is a required argument\n");
+            throw new Fisma_Zend_Exception_User("Model name is a required argument");
         }
     }
 }

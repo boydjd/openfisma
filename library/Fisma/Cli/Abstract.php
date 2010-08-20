@@ -91,6 +91,29 @@ abstract class Fisma_Cli_Abstract
     }
     
     /**
+     * Get a standardized progress bar (with a console driver)
+     * 
+     * @param int $total The total number of items this progress bar represents
+     * @return Zend_ProgressBar
+     */
+    protected function _getProgressBar($total)
+    {
+        // Progress bar for console progress monitoring
+        $progressBar = new Zend_ProgressBar(new Zend_ProgressBar_Adapter_Console, 0, $total);
+
+        $elements = array(
+            Zend_ProgressBar_Adapter_Console::ELEMENT_TEXT,
+            Zend_ProgressBar_Adapter_Console::ELEMENT_BAR,
+            Zend_ProgressBar_Adapter_Console::ELEMENT_PERCENT,
+            Zend_ProgressBar_Adapter_Console::ELEMENT_ETA
+        );
+
+        $progressBar->getAdapter()->setElements($elements);
+
+        return $progressBar;
+    }
+    
+    /**
      * A generic run method which handles options and times the length of execution
      */
     final public function run()
