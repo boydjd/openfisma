@@ -32,9 +32,9 @@ var myColumnDefs = [
     var myDataSource = new YAHOO.util.DataSource('/finding/source/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
-        resultsList: "table.records",
+        resultsList: "records",
         metaFields: {
-            totalRecords: "table.totalRecords"
+            totalRecords: "totalRecords"
         }
     };
     

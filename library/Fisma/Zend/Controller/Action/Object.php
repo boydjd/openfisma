@@ -344,16 +344,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
         
         //initialize the data rows
-        $tableData = array(
-            'table' => array(
-                'recordsReturned' => 0,
-                'totalRecords'    => 0,
-                'startIndex'      => $this->_paging['startIndex'],
-                'sort'            => $sortBy,
-                'dir'             => $order,
-                'pageSize'        => $this->_paging['count'],
-                'records'         => array()
-            )
+        $searchResults = array(
+            'recordsReturned' => 0,
+            'totalRecords'    => 0,
+            'startIndex'      => $this->_paging['startIndex'],
+            'sort'            => $sortBy,
+            'dir'             => $order,
+            'pageSize'        => $this->_paging['count'],
+            'records'         => array()
         );
 
         // Perform search
@@ -361,35 +359,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         if ($this->getRequest()->getParam('keywords')) {
             $result = $searchEngine->searchByKeyword('Source', $this->getRequest()->getParam('keywords'));            
-        }
-        
-//        var_dump($result->response);die;
-        
-        // Assemble view objects
-        $totalRecords = $query->count();
 
-        $rows = $query->execute();
-        $rows = $this->handleCollection($rows);
+            $searchResults['recordsReturned'] = $result->getNumberReturned();
+            $searchResults['totalRecords'] = $result->getNumberFound();
+            $searchResults['records'] = $result->getTableData();
+        }        
 
-        $tableData['table']['recordsReturned'] = count($result->response->docs);
-        $tableData['table']['totalRecords'] = $result->response->numFound;
-        $tableData['table']['records'] = $result->response->docs;
-
-        return $this->_helper->json($tableData);
-    }
-
-    /**
-     * Return array of the collection.
-     * 
-     * If an collection need to change its keys to some other value, please override it
-     * in the controller which is inherited from this Controller
-     * 
-     * @param Doctrine_Collections $rows The spepcific Doctrine_Collections object
-     * @return array The array representation of the specified Doctrine_Collections object
-     */
-    public function handleCollection($rows)
-    {
-        return $rows->toArray();
+        return $this->_helper->json($searchResults);
     }
 
     /**

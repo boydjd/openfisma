@@ -28,7 +28,8 @@
 class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 {
 /*
-    public function debug() { 
+    public function debug() 
+    { 
         echo("<pre style='white-space: pre-wrap;'>" . htmlspecialchars($this->_client->getDebug()) . "</pre>"); 
     }
 */
@@ -103,7 +104,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * 
      * @param string $type Name of model index to search
      * @param string $keyword
-     * @return array Rectangular array of search results
+     * @return Fisma_Search_Result
      */
     public function searchByKeyword($type, $keyword)
     {
@@ -113,7 +114,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $query->setHighlight(true)
               ->setHighlightSimplePre('***')
               ->setHighlightSimplePost('***')
-              ->setHighlightRequireFieldMatch(true)
+              ->addField('id')
+              ->addField('documentId')
               ->addFilterQuery('documentType:' . $type);
 
         // Tokenize keyword on spaces and escape all tokens
@@ -144,11 +146,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $query->setQuery(implode(' OR ', $searchTerms));
     
-        $response = $this->_client->query($query); 
-//        $this->debug();die;
-        $result = $response->getResponse();
-
-        return $result;
+        $response = $this->_client->query($query)->getResponse(); 
+        
+        return $this->_convertSolrResultToStandardResult($response);
     }
 
     /**
@@ -159,7 +159,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function searchByQuery(SolrQuery $query)
     {
-        
+        throw new Fisma_Zend_Exception("not implemented");
     }
 
     /**
@@ -234,6 +234,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $searchableFields = $object->getSearchableFields();
 
         foreach ($searchableFields as $doctrineFieldName) {
+
+            if ('documentId' == $doctrineFieldName) {
+                throw new Fisma_Search_Exception("Model columns cannot be named documentId");
+            }
+            
             $doctrineColumnDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
             $typeSuffix = $this->_getSuffixForColumn($doctrineColumnDefinition);
@@ -249,6 +254,61 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         return $document;
     }
     
+    /**
+     * Converts a Solr query result into the system's standard result format
+     * 
+     * Solr does some weird stuff with object storage, so this method is a little hard to understand. var_dump'ing
+     * each variable will help to sort through the structure for debugging purposes.
+     * 
+     * @param SolrResult $solrResult
+     * @return Fisma_Search_Result
+     */
+    public function _convertSolrResultToStandardResult($solrResult)
+    {
+        $numberFound = $solrResult->response->numFound;
+//        $numberReturned = 10; if (0) {exit;}
+        $highlighting = (array)$solrResult->highlighting;
+        
+        $tableData = array();
+
+        // Construct initial table data from documents part of the response
+        foreach ($solrResult->response->docs as $document) {
+
+            $row = array();
+
+            // Solr has a weird format. Each field is an array with length 1, so we take index 0
+            foreach ($document as $columnName => $columnValue) {
+                $newColumnName = $this->_removeSuffixFromColumnName($columnName);
+                
+                $row[$newColumnName] = $columnValue[0];
+            }
+
+            $documentId = $row['documentId'];
+
+            $tableData[$documentId] = $row;
+        }
+        
+        // Now merge any highlighted fields into the table data
+        foreach ($highlighting as $documentId => $row) {
+            foreach ($row as $fieldName => $fieldValue) {
+                $newFieldName = $this->_removeSuffixFromColumnName($fieldName);
+
+                // Solr stores each field as an array with length 1, so we take index 0
+                $tableData[$documentId][$newFieldName] = $fieldValue[0];
+            }
+        }
+        
+        // Remove the documentId from each field
+        foreach ($tableData as &$document) {
+            unset($document['documentId']);
+        }
+        
+        // Discard the row IDs
+        $tableData = array_values($tableData);
+
+        return new Fisma_Search_Result($numberReturned, $numberFound, $tableData);
+    }
+
     /**
      * Return the suffix for the field name based on the column's definition
      * 
@@ -285,6 +345,23 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
     
     /**
+     * Remove the type suffix (e.g. _text, _date, etc.) from a columnName
+     * 
+     * @param string $columnName
+     * @return string
+     */
+    private function _removeSuffixFromColumnName($columnName)
+    {
+        $suffixPosition = strpos($columnName, '_');
+
+        if ($suffixPosition) {
+            return substr($columnName, 0, strpos($columnName, '_'));
+        } else {
+            return $columnName;
+        }
+    }
+    
+    /**
      * Create the field value for an object based on its type and other metadata
      * 
      * @param mixed $value
@@ -296,7 +373,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         if (isset($columnDefinition['extra']['purify']) && 'html' == $columnDefinition['extra']['purify']) {
             // HTML fields need HTML stripped            
-            $value = strip_tags($rawValue);
+            $value = Fisma_string::htmlToPlainText($rawValue);
         } elseif ('date' == $columnDefinition['type'] || 
                   'datetime' == $columnDefinition['type'] || 
                   'timestamp' == $columnDefinition['type']) {

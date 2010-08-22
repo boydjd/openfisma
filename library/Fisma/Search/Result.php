@@ -27,5 +27,70 @@
  */
 class Fisma_Search_Result
 {
+    /**
+     * The total number of documents found in the index
+     * 
+     * @var int
+     */
+    private $_numberFound;
+
+    /**
+     * The number of documents returned in this result (less than or equal to $_numberFound)
+     * 
+     * @var int
+     */
+    private $_numberReturned;
     
+    /**
+     * Rectangular array of search results
+     * 
+     * Each row represents a document, and each row contains keys that correspond to fields in that row
+     * 
+     * @var string
+     */
+    private $_tableData;
+    
+    /**
+     * Create a new search result
+     * 
+     * @param int $numberFound
+     * @param int $numberReturned
+     * @param array $tableData
+     */
+    public function __construct($numberFound, $numberReturned, $tableData)
+    {
+        $this->_numberFound = $numberFound;
+        $this->_numberReturned = $numberReturned;
+        $this->_tableData = $tableData;
+    }
+    
+    /**
+     * Accessor for $_numberFound
+     * 
+     * @return int
+     */
+    public function getNumberFound()
+    {
+        return $this->_numberFound;
+    }
+
+    /**
+     * Accessor for $_numberReturned
+     * 
+     * @return int
+     */
+    public function getNumberReturned()
+    {
+        return $this->_numberReturned;
+    }
+
+    /**
+     * Accessor for $_tableData
+     * 
+     * @return string
+     */
+    public function getTableData()
+    {
+        return $this->_tableData;
+    }
 }
