@@ -228,9 +228,9 @@ if ($finding->status != 'NEW'
             echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
             echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
             echo $this->escape('<input name="submit_msa" type="button" value="APPROVED" ', 'none');
-            echo $this->escape('onclick="ms_approve(document.finding_detail);"/>&nbsp;', 'none');
+            echo $this->escape('onclick="Fisma.Remediation.ms_approve(document.finding_detail);"/>&nbsp;', 'none');
             echo $this->escape(
-                '<input type="button" value="DENIED" onclick="ms_deny(document.finding_detail);" />',
+                '<input type="button" value="DENIED" onclick="Fisma.Remediation.ms_deny(document.finding_detail);" />',
                 'none'
             );
         } else {

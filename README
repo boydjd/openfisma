@@ -6,15 +6,16 @@ Technology (NIST) Risk Management Framework (RMF).
 Please see the following resources for more information:
 
 Installation:
-http://documentation.openfisma.org/current-release/documentation/Manual/Installation/Installation.html
+http://manual.openfisma.org/display/OPENFISMA/Installation+Guide
 
 Website:
-http://www.openfisma.org
+http://openfisma.org
 
 License: 
-http://www.openfisma.org/content/license
+http://openfisma.org/content/license
 
 Documentation: 
+http://manual.openfisma.org
 http://documentation.openfisma.org
 http://api.openfisma.org
 
@@ -24,4 +25,4 @@ http://crucible.openfisma.org (Peer code review, source code browser)
 http://bamboo.openfisma.org (Continuous Integration)
 
 Help:
-Please visit the forums at http://www.openfisma.org/forum or email openfisma@endeavorsystems.com
+Please visit the forums at http://openfisma.org/forum or email openfisma@endeavorsystems.com

@@ -51,31 +51,6 @@ class Fisma_Zend_Mail extends Zend_Mail
         $this->setFrom(Fisma::configuration()->getConfig('sender'), Fisma::configuration()->getConfig('system_name'));
     }
 
-   /**
-     * Validate the user's e-mail change.
-     *
-     * @param User $user The specified user
-     * @param string $email The email to be validated
-     * @return boolean True if the changed email is valid, false otherwise
-     */
-    public function validateEmail($user, $email)
-    {
-        $this->addTo($email);
-        $this->setSubject("Confirm Your E-mail Address");
-        $this->_contentTpl->validationLink = Fisma_Url::customUrl(
-            "/auth/emailvalidate/id/" . $user->id . "/code/" . $user->EmailValidation->getLast()->validationCode
-        );
-        $content    = $this->_contentTpl->render('validate.phtml');
-        $this->setBodyText($content);
-        
-        try {
-            $this->send($this->_getTransport());
-            return true;
-        } catch (Exception $excetpion) {
-            return false;
-        }
-    }
-
     /**
      * Compose and send the notification email for user.
      * 
@@ -120,9 +95,6 @@ class Fisma_Zend_Mail extends Zend_Mail
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
         $this->setSubject("Your new account for $systemName has been created");
         $this->_contentTpl->user = $user;
-        $this->_contentTpl->validationLink = Fisma_Url::customUrl(
-            "/auth/emailvalidate/id/" . $user->id . "/code/" . $user->EmailValidation->getLast()->validationCode
-        );
         $this->_contentTpl->loginLink = Fisma_Url::customUrl("/auth/login");
         $content = $this->_contentTpl->render('sendaccountinfo.phtml');
         $this->setBodyText($content);

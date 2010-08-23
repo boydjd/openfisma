@@ -267,30 +267,4 @@ class AuthController extends Zend_Controller_Action
     {
     }
 
-    /**
-     * Validate the user's e-mail change.
-     * 
-     * @return void
-     * @todo Cleanup this method: comments and formatting
-     */
-    public function emailvalidateAction()
-    {
-        $userId = $this->_request->getParam('id');
-        $code   = $this->_request->getParam('code');
-        $error  = true;
-
-        $user   = Doctrine::getTable('User')->find($userId);
-        if (!empty($user)) {
-            if ($user->validateEmail($code)) {
-                $message =  'Your e-mail address has been validated. You may close this window ' .
-                  'or click <a href="/">here</a> to enter ' . Fisma::configuration()->getConfig('system_name');
-                $error = false;
-            }
-        }
-        
-        if ($error) {
-            $message = "Error: Your e-mail address can not be confirmed. Please contact an administrator.";
-        }
-        $this->view->msg = $message;
-    }
 }

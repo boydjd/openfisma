@@ -389,30 +389,6 @@ class User extends BaseUser
     }
 
     /**
-     * Validate the user's e-mail change.
-     * 
-     * @param string $validateCode The validate code
-     * @return bool If validation successful
-     */
-    public function validateEmail($validateCode)
-    {
-        $emailValidation = $this->EmailValidation->getLast();
-        if ($validateCode == $emailValidation->validationCode) {
-            $this->emailValidate = true;
-            $emailValidation->delete();
-            $this->save();
-
-            $this->getAuditLog()->write('Validated e-mail address');
-
-            return true;
-        } else {
-            $this->getAuditLog()->write('E-mail validation failed');
-
-            return false;
-        }
-    }
-
-    /**
      * Performs house keeping that needs to run at log in
      * 
      * @return void
@@ -606,14 +582,9 @@ class User extends BaseUser
      */
     public function postInsert($event)
     {
-        //Send account creation and email validation email during user creation
+        //Send account creation email during user creation
         // OFJ-435: quick hack for release 2.5, only send emails in web app mode
         if (isset($this->email) && !empty($this->email) && Fisma::RUN_MODE_WEB_APP == Fisma::mode()) {
-            $this->emailValidate = false;
-            $emailValidation  = new EmailValidation();
-            $emailValidation->email = $this->email;
-            $emailValidation->validationCode = md5(rand());
-            $this->EmailValidation[] = $emailValidation;
             $mail = new Fisma_Zend_Mail();
             $mail->sendAccountInfo($this);
         }
@@ -634,17 +605,6 @@ class User extends BaseUser
         if (isset($modified['password'])) {
             $mail = new Fisma_Zend_Mail();
             $mail->sendPassword($this);
-        }
-
-        // Send validation email after email updated
-        if (isset($modified['email'])) {
-            $this->emailValidate = false;
-            $emailValidation  = new EmailValidation();
-            $emailValidation->email = $this->email;
-            $emailValidation->validationCode = md5(rand());
-            $this->EmailValidation[] = $emailValidation;
-            $mail = new Fisma_Zend_Mail();
-            $mail->validateEmail($this, $emailValidation->email);
         }
 
         // Ensure that any user can not change root username
