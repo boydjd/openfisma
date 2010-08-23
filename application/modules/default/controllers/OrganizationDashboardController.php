@@ -32,14 +32,14 @@ class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Secur
      * 
      * Anything below this is yellow or red.
      */
-    const METRIC_GREEN_THRESHOLD = 95.0;
+    const METRIC_GREEN_THRESHOLD = 90.0;
 
     /**
      * The threshold (as a percentage) for which a metric becomes yellow. 
      * 
      * Anything below this is red.
      */
-    const METRIC_YELLOW_THRESHOLD = 80.0;
+    const METRIC_YELLOW_THRESHOLD = 70.0;
     
     /**
      * Verify that this module is enabled
