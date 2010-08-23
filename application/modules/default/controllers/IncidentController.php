@@ -819,7 +819,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
 
             try {
                 $incidentActor->save();
-            } catch (Doctrine_Exception $e) {
+            } catch (Doctrine_Connection_Exception $e) {
                 $portableCode = $e->getPortableCode();
                 
                 if (Doctrine::ERR_ALREADY_EXISTS == $portableCode) {
