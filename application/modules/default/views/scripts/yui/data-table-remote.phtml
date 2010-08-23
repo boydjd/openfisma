@@ -65,10 +65,27 @@
             tableConfiguration
         );
         
+        // Add data table to the registry in Fisma.Search -- this allows it to be found after this scope disappears
+        Fisma.Search.yuiDataTables['searchResultsTable'] = dataTable;
+        
         // Update number of returned records
         dataTable.handleDataReturnPayload = function(request, response, payload) { 
             payload.totalRecords = response.meta.totalRecords; 
-            
+
+            // Display total records in the search results header
+            var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+            if (searchResultsHeader) {
+                var totalRecords = response.meta.totalRecords ? response.meta.totalRecords : 0;
+                var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+                var currentChild = searchResultsTotalFound.firstChild;
+                
+                if (currentChild) {
+                    searchResultsTotalFound.removeChild(searchResultsTotalFound.firstChild);
+                }
+                
+                searchResultsHeader.appendChild(searchTotalFound);
+            }
+
             return payload; 
         }
         
@@ -86,5 +103,8 @@
                     
             document.location = url;
         });
+        
+        // Enable keyword highlighting
+        dataTable.subscribe("renderEvent", Fisma.Search.highlightSearchResultsTable);
     });
 </script>

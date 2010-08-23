@@ -89,6 +89,7 @@ See http://manual.openfisma.org/display/OPENFISMA/Search+Configuration
         <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
         <dynamicField name="*_enum" type="string" indexed="true" stored="true"/>
         <dynamicField name="*_int" type="integer" indexed="true" stored="true"/>
+        <dynamicField name="*_str" type="string" indexed="true" stored="true"/>
         <dynamicField name="*_text" type="text" indexed="true" stored="true"/>
     </fields>
 

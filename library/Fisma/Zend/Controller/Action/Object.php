@@ -34,7 +34,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     protected $_paging = array(
         'startIndex' => 0,
-        'count' => 20
+        'count' => 10
     );
     
     /**
@@ -74,6 +74,53 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * @see getAclResourceName
      */
     protected $_aclResource;
+
+    /**
+     * Subclasses should override this if they want to use different buttons
+     * 
+     * Default buttons are (subject to ACL):
+     * 
+     * 1) <model name> List
+     * 2) Create New <List>
+     * 
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = array();
+
+        //
+        $buttons[] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton', 
+            array(
+                'value' => 'List All ' . $this->getPluralModelName(), 
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+
+        if ($this->_acl->hasPrivilegeForClass('create', 'Source')) {
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
+                'toolbarCreateButton', 
+                array(
+                    'value' => 'Create New ' . $this->_modelName, 
+                    'href' => $this->getBaseUrl() . '/create'
+                )
+            );
+        }
+         
+        return $buttons;
+    }
+
+    /**
+     * Return a plural form of the model name. 
+     * 
+     * This is used for UI purposes. Subclasses should override for model names 
+     * which do not pluralize by adding an 's' to the end.
+     */
+    public function getPluralModelName()
+    {
+        return $this->_modelName . 's';
+    }
 
     /**
      *  Initialize model and make sure the model has been properly set
@@ -192,7 +239,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->form = $form;
         $this->view->id   = $id;
         $this->view->subject = $subject;
-        $this->render();
+
+        $this->view->searchForm = $this->getSearchForm();
+        $this->view->modelName = $this->_modelName;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
+        // Setup ACL view variables
+        $this->view->canEditObject = $this->_acl->hasPrivilegeForObject('update', $subject);
+        $this->view->canDeleteObject = $this->_acl->hasPrivilegeForObject('delete', $subject);
+
+        $this->renderScript('object/view.phtml');
     }
 
     /**
@@ -228,7 +284,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $this->view->priorityMessenger("Unable to create the {$this->_modelName}:<br>$errorString", 'warning');
             }
         }
+
         $this->view->form = $form;
+
+        $this->view->searchForm = $this->getSearchForm();
+        $this->view->modelName = $this->_modelName;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
+        $this->renderScript('object/create.phtml');
     }
 
     /**
@@ -276,10 +339,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $this->view->priorityMessenger($error, 'warning');
             }
         }
-        
+
+        $this->view->searchForm = $this->getSearchForm();
+        $this->view->modelName = $this->_modelName;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
+        
+        $this->renderScript('object/edit.phtml');
     }
 
     /**
@@ -326,12 +395,41 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function listAction()
     {
         $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+
         $keywords = trim($this->_request->getParam('keywords'));
-        $link = empty($keywords) ? '' :'/keywords/' . $this->view->escape($keywords, 'url');
-        $this->view->link     = $link;
-        $this->view->pageInfo = $this->_paging;
-        $this->view->keywords = $keywords;
-        $this->render('list');
+
+        // Create the YUI table that will display results
+        $searchResultsTable = new Fisma_Yui_DataTable_Remote();
+        
+        $searchResultsTable->setResultVariable('records') // Matches searchAction()
+                           ->setDataUrl($this->getBaseUrl() . '/search')
+                           ->setInitialSortColumn('name')
+                           ->setSortAscending(true)
+                           ->setRowCount($this->_paging['count'])
+                           ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
+                           ->setClickEventVariableName('id');
+
+        // Look up searchable columns and add them to the table
+        $table = Doctrine::getTable($this->_modelName);
+        $searchableFields = $table->getSearchableFields();
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        
+        foreach ($searchableFields as $fieldName => $searchParams) {
+
+            $displayName = $searchParams['displayName'];
+            $sortable = $searchEngine->isColumnSortable($table->getColumnDefinition($table->getColumnName($fieldName)));
+
+            $column = new Fisma_Yui_DataTable_Column($displayName, $sortable, null, $fieldName);
+
+            $searchResultsTable->addColumn($column);
+        }
+
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->pluralModelName = $this->getPluralModelName();
+        $this->view->searchForm = $this->getSearchForm();
+        $this->view->searchResultsTable = $searchResultsTable;
+
+        $this->renderScript('object/list.phtml');
     }
 
     /** 
@@ -345,25 +443,43 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         //initialize the data rows
         $searchResults = array(
-            'recordsReturned' => 0,
-            'totalRecords'    => 0,
             'startIndex'      => $this->_paging['startIndex'],
             'sort'            => $sortBy,
             'dir'             => $order,
-            'pageSize'        => $this->_paging['count'],
-            'records'         => array()
+            'pageSize'        => $this->_paging['count']
         );
 
-        // Perform search
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        // Setup search parameters
+        $keywords = $this->getRequest()->getParam('keywords');
+        $sortColumn = $this->getRequest()->getParam('sort');
         
-        if ($this->getRequest()->getParam('keywords')) {
-            $result = $searchEngine->searchByKeyword('Source', $this->getRequest()->getParam('keywords'));            
+        if (empty($sortColumn)) {
+            // Pick the first searchable column as the default sort column
+            $searchableFields = array_keys(Doctrine::getTable($this->_modelName)->getSearchableFields());
+            
+            $sortColumn = $searchableFields[0];
+        }
+        
+        $sortDirection = $this->getRequest()->getParam('dir', 'asc');
+        $sortBoolean = ('asc' == $sortDirection);
+        $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
+        $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
 
-            $searchResults['recordsReturned'] = $result->getNumberReturned();
-            $searchResults['totalRecords'] = $result->getNumberFound();
-            $searchResults['records'] = $result->getTableData();
-        }        
+        // Execute search
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+        $result = $searchEngine->searchByKeyword(
+            $this->_modelName, 
+            $keywords,
+            $sortColumn,
+            $sortBoolean,
+            $start,
+            $rows
+        );       
+
+        $searchResults['recordsReturned'] = $result->getNumberReturned();
+        $searchResults['totalRecords'] = $result->getNumberFound();
+        $searchResults['records'] = $result->getTableData();
 
         return $this->_helper->json($searchResults);
     }
@@ -393,5 +509,48 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             return '';
         }
+    }
+    
+    /**
+     * Get a base URL that points to this module and controller
+     * 
+     * return string
+     */
+    public function getBaseUrl()
+    {
+        $module = $this->getModuleNameForLink();
+        
+        $controller = $this->getRequest()->getControllerName();
+        
+        return $module . '/' . $controller;
+    }
+    
+    /**
+     * Get the search form and decorate it
+     * 
+     * @return Zend_Form
+     */
+    public function getSearchForm()
+    {
+        $searchForm = Fisma_Zend_Form_Manager::loadForm('simple_search');
+        
+        $searchForm->setAction($this->getBaseUrl() . '/list');
+        
+        // This form doesn't actually get submitted. It calls a JS handler which dynamically refreshes a YUI table.
+        $searchBaseUrl = $this->getBaseUrl() . '/search';
+        $javascript = "Fisma.Search.handleSimpleSearchClickEvent(this, '$searchBaseUrl'); return false;";
+        $searchForm->setAttrib('onsubmit', $javascript);
+        
+        $searchForm->setDecorators(
+            array(
+                'FormElements',
+                array('HtmlTag', array('tag' => 'span')),
+                'Form'
+            )
+        );
+        
+        $searchForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
+        
+        return $searchForm;
     }
 }

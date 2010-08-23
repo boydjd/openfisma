@@ -1,0 +1,25 @@
+<?php
+
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+
+$actions = '';
+
+if ($this->canEditObject) {
+    $actions .= "&nbsp;&nbsp;[<a href='{$this->editLink}'>Edit</a>]";
+}
+
+if ($this->canDeleteObject) {
+    $actions .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
+}
+
+Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions); 
+
+?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php
+Fisma_Format_Section::stopSection(); 
+?>

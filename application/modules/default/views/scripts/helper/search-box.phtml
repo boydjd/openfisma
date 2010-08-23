@@ -1,0 +1,17 @@
+<div class="searchBox">
+    <div class="left">
+        <?php
+        foreach ($this->toolbarButtons as $button):
+            echo $this->escape($button, 'none');
+        endforeach;
+        ?>
+    </div>
+    
+    <div class="right">
+        <?php
+        echo $this->escape($this->searchForm, 'none');
+        ?>
+    </div>
+
+    <div class="clear"></div>
+</div>

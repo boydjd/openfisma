@@ -68,11 +68,26 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function deleteByType($type)
     {
-        $deleteTypeQuery = new SolrQuery('documentType\:test');
-
-        $this->_client->deleteByQuery($deleteTypeQuery);
+        $this->_client->deleteByQuery('documentType:' . $type);
 
         $this->_client->commit();
+    }
+    
+    /**
+     * Delete the specified object from the index
+     * 
+     * The $object needs to belong to a table which implements Fisma_Search_Searchable
+     * 
+     * @param Fisma_Doctrine_Record $object
+     */
+    public function deleteObject($object)
+    {
+        $documentId = get_class($object) . $object->id;
+        
+        $this->_client->deleteById($documentId);
+
+        $this->_client->commit();
+        
     }
 
     /**
@@ -85,10 +100,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $documents = $this->_convertCollectionToDocumentArray($collection);
         
         $this->_client->addDocuments($documents);
+
+        $this->_client->commit();
     }
     
     /**
      * Add the specified object to the search engine index
+     * 
+     * The client library will overwrite any document with a matching documentId automatically
      * 
      * @param Fisma_Doctrine_Record $object
      */
@@ -97,54 +116,132 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $document = $this->_convertObjectToDocument($object);
         
         $this->_client->addDocument($document);
+        
+        $this->_client->commit();
+    }
+
+    /**
+     * Returns true if the specified column is sortable
+     * 
+     * This is defined in the search abstraction layer since ultimately the sorting capability is determined by the
+     * search engine implementation.
+     * 
+     * In Solr, sorting is only available for stored, un-analyzed, single-valued fields.
+     * 
+     * @param array $columnDefinition A doctrine column definition
+     * @return bool
+     */
+    public function isColumnSortable($columnDefinition)
+    {
+        $suffix = $this->_getSuffixForColumn($columnDefinition);
+        
+        switch ($suffix) {
+            case 'text':
+                $sortable = false;
+                break;
+            
+            // Following conditions all fall through
+            case 'str':
+            case 'enum':
+            case 'date':
+            case 'int':
+                $sortable = true;
+                break;
+            
+            default:
+                throw new Fisma_Search_Exception("Sortability not defined for suffix ($suffix)");
+                break;
+        }
+
+        return $sortable;
+    }
+
+    /**
+     * Optimize the index (degfragments the index)
+     */
+    public function optimizeIndex()
+    {
+        $this->_client->optimize();
     }
 
     /**
      * Simple search: search all fields for the specified keyword
      * 
+     * If keyword is null, then this is just a listing of all documents of a specific type
+     * 
      * @param string $type Name of model index to search
      * @param string $keyword
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
      * @return Fisma_Search_Result
      */
-    public function searchByKeyword($type, $keyword)
+    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows)
     {
         $query = new SolrQuery;
-   
-        // Filter query assists Solr with efficient caching
-        $query->setHighlight(true)
-              ->setHighlightSimplePre('***')
-              ->setHighlightSimplePost('***')
-              ->addField('id')
+
+        // @todo fix this awkwardness
+        // Getting the column name is a little awkward:
+        $table = Doctrine::getTable($type);
+        $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
+        $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+
+        $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
+
+        // Add required fields to query. The rest of the fields are added below.
+        $query->addField('id')
               ->addField('documentId')
-              ->addFilterQuery('documentType:' . $type);
+              ->addSortField($sortColumnParam, $sortDirectionParam)
+              ->setStart($start)
+              ->setRows($rows);
 
-        // Tokenize keyword on spaces and escape all tokens
-        $keywordTokens = split(' ', $keyword);
-        $keywordTokens = array_filter($keywordTokens);
-        $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
+        if (is_null($keyword)) {
+            // Without keywords, this is just a listing of all documents of a specific type
+            $query->setQuery('documentType:' . $type);
+        } else {
+            // For keyword searches, use the filter query (for efficient caching) and enable highlighting
+            $query->setHighlight(true)
+                  ->setHighlightSimplePre('***')
+                  ->setHighlightSimplePost('***')
+                  ->addFilterQuery('documentType:' . $type);
+                  
+            // Tokenize keyword on spaces and escape all tokens
+            $keywordTokens = split(' ', $keyword);
+            $keywordTokens = array_filter($keywordTokens);
+            $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
+        }
 
-        // For simple search, we want to search and highlight all fields
+        // Enumerate all fields so they can be included in search results
         $searchableFields = Doctrine::getTable($type)->getSearchableFields();
 
         $searchTerms = array();
 
         $table = Doctrine::getTable($type);
 
-        foreach ($searchableFields as $searchableField) {
+        foreach (array_keys($searchableFields) as $searchableField) {
             
             // Some twiddling to convert Doctrine's field names to Solr's field names
             $columnDefinition = $table->getColumnDefinition($table->getColumnName($searchableField));
             $documentFieldName = $searchableField . '_' . $this->_getSuffixForColumn($columnDefinition);
 
-            $query->addField($documentFieldName)
-                  ->addHighlightField($documentFieldName);
+            $query->addField($documentFieldName);
             
-            foreach ($keywordTokens as $keywordToken) {
-                $searchTerms[] = $documentFieldName . ':' . $keywordToken;                
-            }
+            if (!is_null($keyword)) {
+                // Add highlighting only if there is a search term.
+                $query->addHighlightField($documentFieldName);
+
+                // Add query parts for each search term
+                foreach ($keywordTokens as $keywordToken) {
+                    $searchTerms[] = $documentFieldName . ':' . $keywordToken;                
+                }
+            }            
         }
 
-        $query->setQuery(implode(' OR ', $searchTerms));
+        if (!is_null($keyword)) {
+            // If there are search terms, then combine them with the logical OR operator
+            $query->setQuery(implode(' OR ', $searchTerms));
+        }
     
         $response = $this->_client->query($query)->getResponse(); 
         
@@ -231,9 +328,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // Iterate over the model's columns and see which ones need to be indexed
         $table = Doctrine::getTable($type);
-        $searchableFields = $object->getSearchableFields();
+        $searchableFields = $object->getTable()->getSearchableFields();
 
-        foreach ($searchableFields as $doctrineFieldName) {
+        foreach (array_keys($searchableFields) as $doctrineFieldName) {
 
             if ('documentId' == $doctrineFieldName) {
                 throw new Fisma_Search_Exception("Model columns cannot be named documentId");
@@ -265,8 +362,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function _convertSolrResultToStandardResult($solrResult)
     {
-        $numberFound = $solrResult->response->numFound;
-//        $numberReturned = 10; if (0) {exit;}
+        $numberFound = count($solrResult->response->docs);
+        $numberReturned = $solrResult->response->numFound;
         $highlighting = (array)$solrResult->highlighting;
         
         $tableData = array();
@@ -318,27 +415,35 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _getSuffixForColumn($columnDefinition)
     {
-        switch ($columnDefinition['type']) {
-            case 'date': // falls through
-            case 'datetime': // falls through
-            case 'timestamp':
-                $suffix = 'date';
-                break;
+        if ('string' == $columnDefinition['type']) {
 
-            case 'integer':
-                $suffix = 'int';
-                break;
-
-            case 'enum':
-                $suffix = 'enum';
-                break;
-
-            case 'string':
+            /* 
+             * The 'str' suffix results in an untokenized value that is sortable. By default, this is applied to all
+             * length-restricted string fields. Length-restricted fields will get a 'text' suffix which is tokenized 
+             * but NOT SORTABLE. Solr cannot sort a tokenized value.
+             */
+            if (is_null($columnDefinition['length'])) {
                 $suffix = 'text';
-                break;
+            } else {
+                $suffix = 'str';
+            }
 
-            default:
-                throw new Fisma_Search_Exception("No suffix defined for column type ({$columnDefinition['type']})");
+        } elseif ('enum' == $columnDefinition['type']) {
+            
+            $suffix = 'enum';
+            
+        } elseif ('date' == $columnDefinition['type'] ||
+                  'datetime' == $columnDefinition['type'] ||
+                  'timestamp' == $columnDefinition['type']) {
+
+            $suffix = 'date';
+
+        } elseif ('integer' == $columnDefinition['type']) {
+            
+            $suffix = 'int';
+            
+        } else {
+            throw new Fisma_Search_Exception("No suffix defined for column type ({$columnDefinition['type']})");
         }
         
         return $suffix;
@@ -373,7 +478,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         if (isset($columnDefinition['extra']['purify']) && 'html' == $columnDefinition['extra']['purify']) {
             // HTML fields need HTML stripped            
-            $value = Fisma_string::htmlToPlainText($rawValue);
+            $value = $this->_convertHtmlToIndexString($rawValue);
         } elseif ('date' == $columnDefinition['type'] || 
                   'datetime' == $columnDefinition['type'] || 
                   'timestamp' == $columnDefinition['type']) {

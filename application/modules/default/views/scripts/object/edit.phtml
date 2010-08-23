@@ -1,0 +1,15 @@
+<?php
+
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+
+Fisma_Format_Section::startSection('View: ' . $this->modelName . "&nbsp;&nbsp;[<a href='{$this->viewLink}'>View</a>]");
+
+?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php
+Fisma_Format_Section::stopSection(); 
+?>

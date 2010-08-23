@@ -41,8 +41,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         
         $record = $event->getInvoker();
 
-        $index = new Fisma_Index(get_class($record));
-        $index->update($record);
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+        $searchEngine->indexObject($record);
     }
 
     /**
@@ -67,19 +68,23 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         // Determine whether any of the indexable fields have changed
         $needsIndex = false;
+        
         $table = $record->getTable();
-        foreach ($modified as $modifiedField => $modifiedValue) {
-            $columnDef = $table->getColumnDefinition($modifiedField);
-            if (isset($columnDef['extra']['searchIndex'])) {
+        $searchableFields = array_keys($table->getSearchableFields());
+        
+        foreach (array_keys($modified) as $modifiedField) {
+            if (in_array($modifiedField, $searchableFields)) {
                 $needsIndex = true;
+                
                 break;
             }
         }
 
         // If an indexed field changed, then update the index
         if ($needsIndex) {
-            $index = new Fisma_Index(get_class($record));
-            $index->update($record);
+            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+            $searchEngine->indexObject($record);
         }
     }
     
@@ -97,7 +102,8 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         $record = $event->getInvoker();
 
-        $index = new Fisma_Index(get_class($record));
-        $index->delete($record);
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+        $searchEngine->deleteObject($record);
     }
 }

@@ -57,15 +57,17 @@ class Fisma_Search_IndexEnumerator
 
             // Strip off .php extension
             $modelName = substr($name, 0, -4);
-            
+                        
             // Check for table classes that implement the Searchable interface
-            $table = Doctrine::getTable($modelName);
+            if (is_file($modelPath . '/' . $modelName . 'Table.php')) {
+                $table = Doctrine::getTable($modelName);
 
-            if ($table instanceof Fisma_Search_Searchable) {
-                $modelNames[] = $modelName;
+                if ($table instanceof Fisma_Search_Searchable) {
+                    $modelNames[] = $modelName;
+                }
             }
         }
-        
+
         return $modelNames;
     }
 }

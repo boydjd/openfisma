@@ -37,6 +37,13 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function deleteByType($type);
 
     /**
+     * Delete the specified object from the index
+     * 
+     * @param object $object
+     */
+    abstract public function deleteObject($object);
+
+    /**
      * Index a Doctrine collection of objects
      * 
      * @param Doctrine_Collection $collection
@@ -46,18 +53,29 @@ abstract class Fisma_Search_Backend_Abstract
     /**
      * Add the specified object to the search engine index
      * 
+     * This should overwrite any existing object with the same documentId
+     * 
      * @param Fisma_Doctrine_Record $object
      */
     abstract public function indexObject(Fisma_Doctrine_Record $object);
+
+    /**
+     * Optimize the index (degfragments the index)
+     */
+    abstract public function optimizeIndex();
 
     /**
      * Simple search: search all fields for the specified keyword
      * 
      * @param string $type Name of model index to search
      * @param string $keyword
-     * @return array Rectangular array of search results
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @return Fisma_Search_Result
      */
-    abstract public function searchByKeyword($type, $keyword);
+    abstract public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows);
 
     /**
      * Advanced search: search based on a customized Solr query
@@ -89,5 +107,43 @@ abstract class Fisma_Search_Backend_Abstract
         $specialChars = '+-!(){}[]^"~*?:\&|';
         
         return addcslashes($parameter, $specialChars);
+    }
+    
+    /**
+     * Convert HTML string to a form that is ideal for text indexing
+     * 
+     * This removes tags but ensures that the removal of tags does not result in separate words being concatenated
+     * together.
+     * 
+     * Notice that malformed HTML inputs may be mangled by this method.
+     * 
+     * @param string $htmlString
+     * @return string
+     */
+    protected function _convertHtmlToIndexString($html)
+    {
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $html = str_replace(chr(10), ' ', $html);
+        $html = str_replace(chr(13), ' ', $html);
+
+        // Remove tags, but be careful not to concatenate together two words that were split by a tag
+        $html = preg_replace('/(\w)<.*?>(\W)/', '$1$2', $html);
+        $html = preg_replace('/(\W)<.*?>(\w)/', '$1$2', $html);
+        $html = preg_replace('/<.*?>/', ' ', $html);
+        
+        // Decode entities (this way we don't index words like 'lt', 'rt', and 'amp')
+        $html = html_entity_decode($html);
+        
+        // Remove excess whitespace
+        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
+        $html = preg_replace('/^\s+/', '', $html);
+        $html = preg_replace('/\s+$/', '', $html);
+        $html = preg_replace('/ +/', ' ', $html);
+
+        // Character set encoding -- input charset is a guess
+        $html = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html);
+
+        return $html;
     }
 }

@@ -201,7 +201,7 @@ div#footerLinks {
 }
 
 /* Used to display search criteria & filters at the top of various pages */
-.searchFilters {
+.searchBox {
 	text-align: center;
     background-color: #ebebeb;
     margin: 10px auto;

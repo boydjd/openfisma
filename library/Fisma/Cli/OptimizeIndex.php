@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,25 +17,23 @@
  */
 
 /**
- * SourceTable 
+ * A command-line-oriented class for rebuilding search indexes
  * 
- * @uses Fisma_Doctrine_Table
- * @package Model 
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
- * @license http://www.openfisma.org/content/license GPLv3
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Cli
  */
-class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class Fisma_Cli_OptimizeIndex extends Fisma_Cli_Abstract
 {
     /**
-     * Implement the interface for Searchable
+     * Run the search engine's optimize routine
      */
-    public function getSearchableFields()
-    {
-        return array (
-            'name' => array('displayName' => 'Name'), 
-            'nickname' => array('displayName' => 'Nickname'), 
-            'description' => array('displayName' => 'Description')
-        );
+    protected function _run()
+    {     
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        
+        $searchEngine->optimizeIndex();
     }
 }
