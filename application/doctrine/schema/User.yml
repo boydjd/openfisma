@@ -81,10 +81,6 @@ User:
             email: 
                 check_mx: false
             comment: The users primary e-mail address
-        emailValidate: 
-            type: boolean
-            default: false
-            comment: Whether the user has validated their e-mail address
         phoneOffice: 
             type: string(15)
             fixed: true
