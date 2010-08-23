@@ -27,7 +27,7 @@
  * 
  * @see        Zend_View_Helper_Abstract
  */
-class AssetController extends Fisma_Zend_Controller_Action_Object
+class Vm_AssetController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -369,7 +369,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $msg = "Asset[s] deleted successfully";
             $this->view->priorityMessenger($msg, 'notice');
         }
-        $this->_redirect('/asset/list'); 
+        $this->_redirect('/vm/asset/list'); 
     }
 
     public function importAction()

@@ -8,7 +8,7 @@
                     <?php 
                     if ($this->acl()->hasPrivilegeForClass('create', 'Product')) { 
                     ?>
-                    [<a id="add_product" href="/product/create" title="Add Product">Add Product</a>]
+                    [<a id="add_product" href="/vm/product/create" title="Add Product">Add Product</a>]
                     <?php 
                     } 
                     ?>
@@ -52,7 +52,7 @@
                         <input id="search_product" 
                                type="button" 
                                value="Search Product" 
-                               url="/product/advancesearch/format/html" />
+                               url="/vm/product/advancesearch/format/html" />
                     </td>
                     <td><input type="reset" name="button2" id="button" value="Reset" /></td>
                 </tr>

@@ -1,0 +1,156 @@
+<?php 
+Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotalFound'></span>"); ?>
+<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>
+<script type="text/javascript">
+    function deleteSelectedAssets() {
+        document.forms.assetresult.submit();
+    }
+</script>
+<form id="assetresult" method="post" action="/vm/asset/multidelete">
+    <div class="buttonBar">
+    <?php
+        if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
+            $importButton = new Fisma_Yui_Form_Button_Link('import',
+                                                array('value' => 'Import Assets',
+                                                      'href' => '/vm/asset/import'));
+            echo $this->escape($importButton, 'none');
+        }
+
+        $pdfButton = new Fisma_Yui_Form_Button_Link('pdf', 
+                                      array('value' => 'Export PDF', 
+                                            'href' => "/vm/asset/search$this->url/format/pdf",
+                                            'imageSrc' => '/images/pdf.gif'));
+        echo $this->escape($pdfButton, 'none');
+
+        if ($this->acl()->hasPrivilegeForClass('delete', 'Asset')) {
+            $selectAllButton = new Fisma_Yui_Form_Button('selectAll', 
+                                                   array('label' => 'Select All', 
+                                                         'onClickFunction' => 'selectAllUnsafe'));
+            echo $this->escape($selectAllButton, 'none');
+
+            $selectNoneButton = new Fisma_Yui_Form_Button('selectNone',
+                                                    array('label' => 'Select None', 
+                                                          'onClickFunction' => 'selectNoneUnsafe'));
+            echo $this->escape($selectNoneButton, 'none');
+
+            $deleteButton = new Fisma_Yui_Form_Button('deleteSelected',
+                                                array('label' => 'Delete Selected', 
+                                                      'onClickFunction' => 'deleteSelectedAssets'));
+            echo $this->escape($deleteButton, 'none');
+        }
+        if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
+            $createAssetButton = new Fisma_Yui_Form_Button_Link(
+                'createAsset', 
+                array(
+                    'value' => 'Create Asset', 
+                    'href' => '/vm/asset/create'
+                )
+            );
+            echo $this->escape($createAssetButton, 'none');
+        }
+    ?>
+</div>
+<div id="list"></div>
+<script type="text/javascript">
+    var checkboxList = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<input type='checkbox' name='aid[]' value='" + oRecord.getData("id") + "' />";
+    };
+    var operation = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = "<a href='/vm/asset/view/id/"+oRecord.getData("id")+"'>"
+                         + "<img src='/images/view.gif' /></a>";
+    };
+    // Column definitions
+    var myColumnDefs = [{key: 'id', label:'', formatter: checkboxList}
+    <?php
+    foreach ($this->columns as $k => $v) {
+        echo $this->escape(',{key:"', 'none');
+        echo $this->escape($k, 'javascript');
+        echo $this->escape('", label:"', 'none');
+        echo $this->escape($v, 'javascript');
+        echo $this->escape('", formatter:"text"}', 'none');
+    }
+    ?>, {key: 'id', label:'View', formatter: operation}];
+
+    // A function which builds the query string
+    var myRequestBuilder = function(oState, oSelf) {
+        // Get states or use defaults
+        oState = oState || {pagination:null, sortedBy:null};
+        var startIndex = oState.pagination.recordOffset;
+        var count = oState.pagination.rowsPerPage;
+    
+        // Build custom request
+        var request = "<?php echo $this->escape($this->url, 'none') ?>" + 
+                      "/startIndex/" + startIndex +
+                      "/count/" + count;
+        return request;
+    };
+
+    var myDataSource = new YAHOO.util.DataSource('/vm/asset/search');
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    myDataSource.responseSchema = {
+        resultsList: "table.records",
+        metaFields: {
+            totalRecords: "table.totalRecords"
+        }
+    };
+    
+    // DataTable configuration
+    var myConfigs = {
+        initialRequest: "<?php echo $this->escape($this->url, 'none')?>/startIndex/0/count/10",
+        dynamicData: true, 
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage:10,
+                template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ),
+        generateRequest : myRequestBuilder
+    };
+    
+    var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
+    // Update totalRecords on the fly with value from server
+    myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        oPayload.totalRecords = oResponse.meta.totalRecords;
+        // display total records in the search results header, if not already present
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (!searchResultsHeader.firstChild) {
+            var totalRecords = oResponse.meta.totalRecords ? oResponse.meta.totalRecords : 0;
+            var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+            searchResultsHeader.appendChild(searchTotalFound);
+        }
+        return oPayload;
+    }
+    
+    myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+    myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+    
+    var contextMenuItems = ["View"];
+    var contextMenu = new YAHOO.widget.ContextMenu( 
+        "contextMenu", 
+        { 
+            trigger:  myDataTable.getTbodyEl(), 
+            itemdata: contextMenuItems, 
+            lazyload: true 
+        }
+    );
+    
+    contextMenu.subscribe("click", contextMenuHandler);
+    
+    function contextMenuHandler(event, eventArgs) {
+        var targetElement = this.contextEventTarget;
+        var rowElement = myDataTable.getTrEl(targetElement);
+        var rowRecord = myDataTable.getRecord(rowElement);
+        var menuItem = eventArgs[1];
+        var actionUrl = '';
+        switch (menuItem.index) {
+            case 0 :
+                actionUrl = "/vm/asset/view/id/" + rowRecord.getData("id");
+                break;
+        }
+        if (actionUrl != '') {
+            window.open(actionUrl);
+        }
+    }
+    
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>

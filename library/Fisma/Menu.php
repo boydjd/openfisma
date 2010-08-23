@@ -115,11 +115,7 @@ class Fisma_Menu
 
         if ($acl->hasArea('system_inventory')) {
             $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
-            
-            if ($acl->hasPrivilegeForClass('read', 'Asset')) {
-                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
-            }
-            
+                       
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
 
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
@@ -140,10 +136,6 @@ class Fisma_Menu
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'Product')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
@@ -301,6 +293,22 @@ class Fisma_Menu
             if ($acl->hasPrivilegeForClass('inject', 'Vulnerability')) {
                 $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
             }
+ 
+            $canReadAsset = $acl->hasPrivilegeForClass('read', 'Asset');
+            $canReadProduct = $acl->hasPrivilegeForClass('read', 'Product');
+
+            if ($canReadAsset || $canReadProduct) {
+                $menu->addSeparator();
+            }
+            if ($canReadAsset) {
+                $menu->add(new Fisma_Yui_MenuItem('Assets', '/vm/asset/list'));
+            }
+            if ($canReadProduct) {
+                $menu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
+
+            }
+
+            $menu->addSeparator();
 
             $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vm/vulnerability-report/reopened/format/html'));
             $menu->add(new Fisma_Yui_MenuItem('Aggregated Risk Report', '/vm/vulnerability-report/risk/format/html'));

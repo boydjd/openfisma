@@ -3,7 +3,7 @@
         <?php
         $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
                                                array('value' => 'Product List', 
-                                                     'href' => '/product/list'));
+                                                     'href' => '/vm/product/list'));
         echo $this->escape($listButton, 'none');
         ?>
 
@@ -11,13 +11,13 @@
         if ($this->acl()->hasPrivilegeForClass('create', 'Product')) {
             $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
                                                    array('value' => 'Add Product', 
-                                                         'href' => '/product/create'));
+                                                         'href' => '/vm/product/create'));
             echo $this->escape($createButton, 'none');
         } 
         ?>
     </div>
     <div class="right">
-        <form name="query" method="post" action="/product/list" style="display:inline">
+        <form name="query" method="post" action="/vm/product/list" style="display:inline">
         <b><label for="keywords">Search:</label>&nbsp;</b>
         <input id="keywords" 
                name="keywords" 
