@@ -303,6 +303,7 @@ class Fisma_Menu
             }
 
             $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vm/vulnerability-report/reopened/format/html'));
+            $menu->add(new Fisma_Yui_MenuItem('Aggregated Risk Report', '/vm/vulnerability-report/risk/format/html'));
 
              return $menu;
     }

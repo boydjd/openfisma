@@ -143,6 +143,7 @@ abstract class Fisma_Inject_Abstract
         if (!empty($assetData)) {
             $assetData['networkId'] = $this->_networkId;
             $assetData['id'] = $this->_prepareAsset($assetData);
+            $findingData['assetId'] = $assetData['id'];
         }
 
         // Add data to provided productData
@@ -249,6 +250,11 @@ abstract class Fisma_Inject_Abstract
      */
     private function _getDuplicateFinding($finding)
     {
+        // a vulnerability can't be a duplicate if it has no assetId
+        if (empty($finding->assetId)) {
+            return false;
+        }
+
         /**
          * In order to properly compare the current finding against persisted findings, we need to apply the same html
          * purification that the Xss Listener applies
@@ -259,7 +265,10 @@ abstract class Fisma_Inject_Abstract
         $duplicateFindings = Doctrine_Query::create()
             ->select('v.id, v.status')
             ->from('Vulnerability v')
-            ->where('description LIKE ?', $cleanDescription)
+            ->leftJoin('v.DuplicatedBy dup')
+            ->where('dup.id IS NULL')
+            ->andWhere('v.description LIKE ?', $cleanDescription)
+            ->andWhere('v.assetId = ?', $finding->assetId)
             ->execute();
 
         return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
@@ -294,14 +303,22 @@ abstract class Fisma_Inject_Abstract
     private function _prepareAsset($assetData)
     {
         // Verify whether asset exists or not
-        $assetRecord = Doctrine_Query::create()
+        $assetQuery = Doctrine_Query::create()
                         ->select('id')
                         ->from('Asset a')
-                        ->where('a.networkId = ?', $assetData['networkId'])
-                        ->andWhere('a.addressIp = ?', $assetData['addressIp'])
-                        ->andWhere('a.addressPort = ?', $assetData['addressPort'])
-                        ->setHydrationMode(Doctrine::HYDRATE_NONE)
-                        ->execute();
+                        ->where('a.networkId = ?', $assetData['networkId']);
+        if (empty($assetData['addressIp'])) {
+            $assetQuery->andWhere('a.addressIp IS NULL');
+        } else {
+            $assetQuery->andWhere('a.addressIp = ?', $assetData['addressIp']);
+        }
+        if (empty($assetData['addressPort'])) {
+            $assetQuery->andWhere('a.addressPort IS NULL');
+        } else {
+            $assetQuery->andWhere('a.addressPort = ?', $assetData['addressPort']);
+        }
+        $assetRecord = $assetQuery->setHydrationMode(Doctrine::HYDRATE_NONE)
+                                  ->execute();
 
         return ($assetRecord) ? $assetRecord[0][0] : FALSE;
     }
