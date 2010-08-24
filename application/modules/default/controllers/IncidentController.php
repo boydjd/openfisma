@@ -817,7 +817,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
             $incidentActor->incidentId = $incidentId;
             $incidentActor->accessType = strtoupper($type);
 
-            $incidentActor->save();
+            try {
+                $incidentActor->save();
+            } catch (Doctrine_Connection_Exception $e) {
+                $portableCode = $e->getPortableCode();
+                
+                if (Doctrine::ERR_ALREADY_EXISTS == $portableCode) {
+                    $message = 'A user cannot have both the actor and observer role for the same incident.';
+                    $this->view->priorityMessenger($message, 'warning'); 
+                } else {
+                    throw $e;
+                }
+            }
 
             // Send e-mail
             $mail = new Fisma_Zend_Mail();
