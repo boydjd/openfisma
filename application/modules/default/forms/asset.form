@@ -17,6 +17,8 @@ displayGroups.assetInfo.elements.name = "name"
 elements.addressIp.type = "text"
 elements.addressIp.options.label = "Address IP"
 elements.addressIp.options.validators.addressIp.validator = "ip"
+elements.addressIp.options.filters.stringtrim.filter = "StringTrim"
+elements.addressIp.options.filters.addressIp.filter = "Null"
 displayGroups.assetInfo.elements.addressIp = "addressIp"
 
 elements.addressPort.type = "text"
