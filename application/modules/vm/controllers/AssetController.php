@@ -110,8 +110,8 @@ class Vm_AssetController extends Fisma_Zend_Controller_Action_Object
         } elseif (!$subject instanceof Doctrine_Record) {
             throw new Fisma_Zend_Exception('Invalid parameter: Expected a Doctrine_Record');
         }
-        $values = $this->getRequest()->getPost();
 
+        $values = $form->getValues();
         if (empty($values['productId'])) {
             unset($values['productId']);
         }
@@ -198,15 +198,10 @@ class Vm_AssetController extends Fisma_Zend_Controller_Action_Object
      */
     protected function _getSystemSelectOptions()
     {
-        $query = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', 'disposal');
-        $systems = $query->execute();
-        $systemList[''] = "--select--";
-        foreach ($systems as $system) {
-            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
-        }
-        return $systemList;
+        $systems = $this->_me->getSystemsByPrivilege('asset', 'read');
+        $selectOption[''] = "-- select --";
+        $systemSelect = $this->view->systemSelect($systems);
+        return $systemList = (array)$selectOption + (array)$systemSelect;
     }
 
     /**

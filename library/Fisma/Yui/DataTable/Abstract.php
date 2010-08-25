@@ -79,7 +79,8 @@ abstract class Fisma_Yui_DataTable_Abstract
             $columnDefinition = array(
                 'key' => $column->getName(),
                 'label' => $column->getLabel(),
-                'sortable' => $column->getSortable()
+                'sortable' => $column->getSortable(),
+                'hidden' => $column->getHidden()
             );
 
             // Add the formatter key only if the column has a formatter

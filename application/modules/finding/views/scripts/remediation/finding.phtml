@@ -72,7 +72,8 @@
                 <span id="organization" 
                       type="select" 
                       name="finding[responsibleOrganizationId]" 
-                      href="/metainfo/list/o/organization/format/html/">
+                      href="/metainfo/list/o/system/format/html/"
+                      value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                      <a href="/organization/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                          <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
                          - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
