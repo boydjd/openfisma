@@ -273,7 +273,9 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                 $yuiColumn = new Fisma_Yui_DataTable_Column(
                     $reportColumn->getName(), 
                     $reportColumn->isSortable(), 
-                    $reportColumn->getFormatter()
+                    $reportColumn->getFormatter(),
+                    null,
+                    $reportColumn->isHidden()
                 );
                 
                 $dataTable->addColumn($yuiColumn);

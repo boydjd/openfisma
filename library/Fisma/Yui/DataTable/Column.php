@@ -57,7 +57,14 @@ class Fisma_Yui_DataTable_Column
      * @var string
      */
     private $_name;
-    
+
+    /**
+     * Whether this column is hidden or not
+     * 
+     * @var bool
+     */
+    private $_hidden;
+
     /**
      * Create a column with a human-friendly name
      * 
@@ -65,12 +72,14 @@ class Fisma_Yui_DataTable_Column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
+     * @param bool $hidden
      */
-    public function __construct($label, $sortable, $formatter = null, $name = null)
+    public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false)
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
         $this->_formatter = $formatter;
+        $this->_hidden = $hidden;
         
         if (is_null($name)) {
             $this->_name = Fisma_String::convertToJavascriptName($label);
@@ -115,5 +124,15 @@ class Fisma_Yui_DataTable_Column
     public function getName()
     {
         return $this->_name;
+    }
+
+    /**
+     * True if this column is hidden, false otherwise
+     * 
+     * @return bool
+     */
+    public function getHidden()
+    {
+        return $this->_hidden;
     }
 }
