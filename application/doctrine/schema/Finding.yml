@@ -27,7 +27,8 @@ Finding:
             extra: 
                 auditLog: true
                 logicalName: Legacy Finding ID
-                            comment: This field can be used by end clients to track findings under a legacy tracking system
+                search: yes
+            comment: This field can be used by end clients to track findings under a legacy tracking system
         
         type:
             type: enum
@@ -52,28 +53,32 @@ Finding:
                 purify: html
                 auditLog: true
                 logicalName: Finding Description
-                            comment: Description of the finding
+                search: yes
+            comment: Description of the finding
         recommendation:
             type: string
             extra: 
                 purify: html
                 auditLog: true
                 logicalName: Recommendation
-                            comment: The auditors recommendation to remediate this finding
+                search: yes
+            comment: The auditors recommendation to remediate this finding
         mitigationStrategy:
             type: string
             extra: 
                 purify: html
                 auditLog: true
                 logicalName: Mitigation Strategy
-                            comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
+                search: yes
+            comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
             type: string
             extra: 
                 purify: html
                 auditLog: true
                 logicalName: Resources Required
-                            comment: Any additional resources (financial) required to complete this course of action
+                search: yes
+            comment: Any additional resources (financial) required to complete this course of action
         originalEcd:
             type: date
             extra:
@@ -105,7 +110,8 @@ Finding:
                 purify: html
                 auditLog: true
                 logicalName: Description of Threat Source
-                            comment: Description of the threat source which affects this finding
+                search: yes
+            comment: Description of the threat source which affects this finding
         threatLevel:
             type: enum
             values: [LOW, MODERATE, HIGH]
@@ -119,7 +125,8 @@ Finding:
                 purify: html
                 auditLog: true
                 logicalName: Description of Countermeasures
-                            comment: The countermeasures in place against the threat source
+                search: yes
+            comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
             type: enum
             values: [LOW, MODERATE, HIGH]

@@ -10,7 +10,8 @@ User:
             unique: true
             extra:
                 logicalName: User Name
-                                notify: true
+                search: yes
+                notify: true
             comment: This users unique authentication credential
         password: 
             type: string(255)
@@ -54,25 +55,29 @@ User:
             type: string(255)
             extra:
                 logicalName: Title
-                                notify: true
+                search: yes
+                notify: true
             comment: The users position or title within the agency
         nameFirst: 
             type: string(255)
             extra:
                 logicalName: First Name
-                                notify: true
+                search: yes
+                notify: true
             comment: The users first name
         nameLast: 
             type: string(255)
             extra:
                 logicalName: Last Name
-                                notify: true
+                search: yes
+                notify: true
             comment: The users last name
         email: 
             type: string(255)
             extra:
                 logicalName: E-mail Address
-                                notify: true
+                search: yes
+                notify: true
             email: 
                 check_mx: false
             comment: The users primary e-mail address

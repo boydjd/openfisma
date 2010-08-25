@@ -7,29 +7,35 @@ SecurityControl:
             fixed: true
             comment: The control number, e.g. AC-05
             extra:
-                        name:
+                search: yes
+        name:
             type: string(255)
             comment: Name of the control
             extra:
-                        class:
+                search: yes
+        class:
             type: enum
             values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
         family: 
             type: string(255)
             extra:
-                                
+                search: yes
+                
         control: 
             type: string
             extra:
-                                purify: html
+                search: yes
+                purify: html
         supplementalGuidance: 
             type: string
             extra:
-                                purify: html
+                search: yes
+                purify: html
         externalReferences:
             type: string
             extra:
-                                purify: html
+                search: yes
+                purify: html
         priorityCode:
             type: enum
             values: [P0, P1, P2, P3]

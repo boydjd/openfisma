@@ -15,7 +15,8 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's First Name
-                            comment: >
+                search: yes
+            comment: >
                 The reporter is the user who reports the incident to the organization. The report can be made directly
                 (by logging into OpenFISMA) or can be made indirectly by reporting to an intermediary authority (such
                 as the customer service desk) which has the privilege to enter data into OpenFISMA.
@@ -24,33 +25,39 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's Last Name
-                        reporterOrganization: 
+                search: yes
+        reporterOrganization: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Organization
-                
+                search: yes
+
         reporterAddress1: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 1
-                        reporterAddress2: 
+                search: yes
+        reporterAddress2: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 2
-                        reporterCity: 
+                search: yes
+        reporterCity: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's City
-                        reporterState: 
+                search: yes
+        reporterState: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's State
-                        reporterZip: 
+                search: yes
+        reporterZip: 
             type: string(10)
             extra:
                 auditLog: true
@@ -76,7 +83,8 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's E-mail Address
-                        reporterIp:
+                search: yes
+        reporterIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
             extra:
@@ -89,13 +97,15 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Building
-                            comment: The building in which the incident is believed to have occurred
+                search: yes
+            comment: The building in which the incident is believed to have occurred
         locationRoom: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Room
-                            comment: The room in which the incident is believed to have occurred
+                search: yes
+            comment: The room in which the incident is believed to have occurred
 
         incidentDate: 
             type: date
@@ -135,7 +145,8 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Incident Description
-                
+                search: yes
+
         piiInvolved:
             type: enum
             values: ["YES", "NO"]
@@ -149,7 +160,8 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional PII Details
-                            comment: Additional space to explain the nature of PII involved
+                search: yes
+            comment: Additional space to explain the nature of PII involved
         piiMobileMedia:
             type: enum
             values: ["YES", "NO"]
@@ -216,19 +228,22 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Name Of Shipping Company
-                        piiShipmentTimeline:
+                search: yes
+        piiShipmentTimeline:
             type: string
             extra:
                 auditLog: true
                 purify: html
                 logicalName: Description Of Shipment Timeline
-                        piiShipmentTrackingNumbers:
+                search: yes
+        piiShipmentTrackingNumbers:
             type: string
             extra:
                 auditLog: true
                 purify: html
                 logicalName: Shipment Tracking Numbers
-                
+                search: yes
+
         hostIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
@@ -241,7 +256,8 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Host Name
-                        hostOs:
+                search: yes
+        hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]
             extra:
@@ -253,7 +269,8 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional Host Details
-                        
+                search: yes
+        
         sourceIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
@@ -267,7 +284,8 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional Details About Incident Source
-                            comment: Additional description of the source or origin of the incident
+                search: yes
+            comment: Additional description of the source or origin of the incident
         
         actionsTaken:
             type: string
@@ -275,7 +293,8 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Actions That Were Taken Prior To Incident Report
-                            comment: What actions were taken prior to reporting the incident?
+                search: yes
+            comment: What actions were taken prior to reporting the incident?
         
         status:
             type: enum
