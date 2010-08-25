@@ -20,7 +20,6 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
         integrity:
             type: enum
             values: [LOW, MODERATE, HIGH]
@@ -29,7 +28,6 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
         availability:
             type: enum
             values: [LOW, MODERATE, HIGH]
@@ -38,7 +36,6 @@ System:
             type: string
             extra:
                 purify: html
-                search: yes
         fipsCategory:
             type: enum
             values: [LOW, MODERATE, HIGH]

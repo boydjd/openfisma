@@ -15,7 +15,6 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's First Name
-                search: yes
             comment: >
                 The reporter is the user who reports the incident to the organization. The report can be made directly
                 (by logging into OpenFISMA) or can be made indirectly by reporting to an intermediary authority (such
@@ -25,38 +24,32 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's Last Name
-                search: yes
         reporterOrganization: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Organization
-                search: yes
 
         reporterAddress1: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 1
-                search: yes
         reporterAddress2: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 2
-                search: yes
         reporterCity: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's City
-                search: yes
         reporterState: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's State
-                search: yes
         reporterZip: 
             type: string(10)
             extra:
@@ -83,7 +76,6 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Reporter's E-mail Address
-                search: yes
         reporterIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
@@ -97,14 +89,12 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Building
-                search: yes
             comment: The building in which the incident is believed to have occurred
         locationRoom: 
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Room
-                search: yes
             comment: The room in which the incident is believed to have occurred
 
         incidentDate: 
@@ -145,7 +135,6 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Incident Description
-                search: yes
 
         piiInvolved:
             type: enum
@@ -160,7 +149,6 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional PII Details
-                search: yes
             comment: Additional space to explain the nature of PII involved
         piiMobileMedia:
             type: enum
@@ -228,21 +216,18 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Name Of Shipping Company
-                search: yes
         piiShipmentTimeline:
             type: string
             extra:
                 auditLog: true
                 purify: html
                 logicalName: Description Of Shipment Timeline
-                search: yes
         piiShipmentTrackingNumbers:
             type: string
             extra:
                 auditLog: true
                 purify: html
                 logicalName: Shipment Tracking Numbers
-                search: yes
 
         hostIp:
             type: string(15)
@@ -256,7 +241,6 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Host Name
-                search: yes
         hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]
@@ -269,7 +253,6 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional Host Details
-                search: yes
         
         sourceIp:
             type: string(15)
@@ -284,7 +267,6 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Additional Details About Incident Source
-                search: yes
             comment: Additional description of the source or origin of the incident
         
         actionsTaken:
@@ -293,7 +275,6 @@ Incident:
                 auditLog: true
                 purify: html
                 logicalName: Actions That Were Taken Prior To Incident Report
-                search: yes
             comment: What actions were taken prior to reporting the incident?
         
         status:

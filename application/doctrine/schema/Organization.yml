@@ -8,29 +8,21 @@ Organization:
             type: string(255)
             notblank: true
             notnull: true
-            extra:
-                search: yes
         nickname:
             type: string(255)
             unique: true
             notblank: true
             notnull: true
             unique: true
-            extra:
-                logicalName: Nickname
-                search: yes
         orgType:
             type: enum
             values: [agency, bureau, organization, system]
-            extra:
-                search: yes
         systemId:
             type: integer
         description: 
             type: string
             extra:
                 purify: html
-                search: yes
 
     relations:
         System:
