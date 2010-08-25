@@ -231,6 +231,17 @@ $style = $flag == ''
                         <img id="createdDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar">
                     </td>
                 </tr>
+                <?php if ($this->acl()->hasPrivilegeForClass('delete', 'Finding')) : ?>
+                <tr>
+                    <td>
+                        <label for="deleted_at"><b>Deleted:</b></label><br />
+                        <select name="deleted_at" id="findingDeleted">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </td>
+                </tr>
+                <?php endif; ?>
             </table>
         </td>
     </tr>

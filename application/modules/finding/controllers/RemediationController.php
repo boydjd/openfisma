@@ -447,7 +447,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
                         'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null,
-                        'securityControl' => null, 'overdueActionType' => null);
+                        'securityControl' => null, 'overdueActionType' => null, 'deleted_at' => '');
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
@@ -455,6 +455,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                 $v = $tmp[$k];
             }
         }
+
         if (is_numeric($params['responsibleOrganizationId'])) {
             $params['responsibleOrganizationId'] = $params['responsibleOrganizationId'];
         }
@@ -1308,7 +1309,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
 
         foreach ($params as $k => $v) {
             if ($v) {
-                if ($k == 'estDateBegin') {
+                if ($k == 'deleted_at') {
+                    if ($v) {
+                        $q->andWhere('f.deleted_at = f.deleted_at');
+                    }
+                } elseif ($k == 'estDateBegin') {
                     $v = $v->toString('Y-m-d H:i:s');
                     $q->andWhere("f.currentEcd > ?", $v);
                 } elseif ($k == 'estDateEnd') {
@@ -1368,6 +1373,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                 }
             }
         }
+
+        unset($params['deleted_at']);
+
         if ($format == 'json') {
             $q->limit($this->_paging['count'])->offset($this->_paging['startIndex']);
         }
