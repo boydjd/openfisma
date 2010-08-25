@@ -39,7 +39,11 @@ $uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
                                             array('label' => 'Upload Evidence', 
                                                   'onClickFunction' => 'Fisma.Remediation.upload_evidence'));
 
-if ('EN' != $this->finding->status || !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)):
+if (
+    $this->finding->isDeleted() || 
+    'EN' != $this->finding->status || 
+    !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
+):
     $uploadEvidenceButton->readOnly = true;
 endif;
 ?>

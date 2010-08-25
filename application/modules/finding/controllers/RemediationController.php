@@ -702,7 +702,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
     {
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-        $finding = Doctrine::getTable('Finding')->find($id);
+        $finding = $this->_getFinding($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -724,7 +724,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             )
         );
 
-        if (!$this->_acl->hasPrivilegeForObject('comment', $finding)) {
+        if (!$this->_acl->hasPrivilegeForObject('comment', $finding) || $finding->isDeleted()) {
             $commentButton->readOnly = true;
         }
 
@@ -766,7 +766,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $finding = $this->_getFinding($id);
-        
+
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.
         if (empty($findingData['securityControlId'])) {
@@ -855,6 +855,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
     {
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
+
+        if ($finding->isDeleted()) {
+            $message = "Evidence cannot be uploaded to a deleted finding.";
+            throw new Fisma_Zend_Exception($message);
+        }
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
@@ -1485,6 +1490,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             )
         );
         
+        if ($this->view->finding->isDeleted()) {
+            $securityControlSearchButton->readOnly = true;
+        }
+
         if ($this->view->finding->status != 'NEW' &&  $this->view->finding->status != 'DRAFT') {
             $securityControlSearchButton->readOnly = true;
         }
@@ -1528,7 +1537,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
      */
     private function _getFinding($id)
     {
-        $finding = Doctrine::getTable('Finding')->find($id);
+        $finding = Doctrine_Query::create()->from('Finding f')->where('f.id = ?', $id);
+
+        // If user has the delete privilege, then allow viewing of deleted findings
+        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
+            $finding->andWhere('(f.deleted_at = f.deleted_at OR f.deleted_at IS NULL)');
+        }
+
+        $finding = $finding->fetchOne();
 
         if (false == $finding) {
              throw new Fisma_Zend_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");

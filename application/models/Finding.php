@@ -502,6 +502,10 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $modified = $this->getModified(true);
 
         if (!empty($modified)) {
+            if ($this->isDeleted()) {
+                throw new Fisma_Zend_Exception_User('The finding cannot be modified since it has been deleted.');
+            }
+
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
                 if (isset(self::$_requiredPrivileges[$key])) {
@@ -634,7 +638,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public function isEcdEditable()
     {
         // The ECD is only editable in NEW or DRAFT state
-        if (in_array($this->status, array('NEW', 'DRAFT'))) {
+        if (!$this->isDeleted() && in_array($this->status, array('NEW', 'DRAFT'))) {
 
             // If the ECD is unlocked, then you need the update_ecd privilege
             if (!$this->ecdLocked && CurrentUser::getInstance()->acl()->hasPrivilegeForObject('update_ecd', $this)) {
@@ -680,5 +684,17 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             
             $this->getErrorStack()->add('ResponsibleOrganization', $message);
         }
+    }
+
+    /**
+     * Check to see if the finding has been soft deleted or not. Only existing deletions are checked, 
+     * and not pending deletes!
+     * 
+     * @return boolean True if the finding is soft deleted, false if it is not. 
+     */
+    public function isDeleted()
+    {
+        $oldValues = $this->getModified(true);
+        return ($this->deleted_at && !array_key_exists('deleted_at', $oldValues));
     }
 }
