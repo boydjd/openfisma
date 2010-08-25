@@ -152,6 +152,12 @@ Finding:
                 auditLog: true
                 logicalName: CVSS Vector
                 searchIndex: unstored
+        deletedAt:
+            type: timestamp
+            comment: Column for soft-delete
+            extra:
+                auditLog: true
+                logicalName: Date Deleted
 
         duplicateFindingId:
             type: integer
