@@ -198,15 +198,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     protected function _getSystemSelectOptions()
     {
-        $query = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', 'disposal');
-        $systems = $query->execute();
-        $systemList[''] = "--select--";
-        foreach ($systems as $system) {
-            $systemList[$system['id']] = $system['nickname'].'-'.$system['name'];
-        }
-        return $systemList;
+        $systems = $this->_me->getSystemsByPrivilege('asset', 'read');
+        $selectOption[''] = "-- select --";
+        $systemSelect = $this->view->systemSelect($systems);
+        return $systemList = (array)$selectOption + (array)$systemSelect;
     }
 
     /**

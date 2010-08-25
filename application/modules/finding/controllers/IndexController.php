@@ -319,8 +319,8 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
         $uploadForm->findingSource->addMultiOption('', '');
         $uploadForm->findingSource->addMultiOptions($sourceList);
         
-        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'inject');
-        $selectArray = $this->view->treeToSelect($systems, 'nickname');
+        $systems = $this->_me->getSystemsByPrivilege('finding', 'inject');
+        $selectArray = $this->view->systemSelect($systems, 'nickname');
         $uploadForm->system->addMultiOptions(array('' => ''));
         $uploadForm->system->addMultiOptions($selectArray);
 

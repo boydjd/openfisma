@@ -621,13 +621,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->view->assign('columns', $this->_getColumns());
 
         // These variables go into the search box view
-        $systemList = array();
-        foreach ($this->_organizations as $system) {
-            if ($system->orgType != 'system' || $system->System->sdlcPhase != 'disposal') {
-                $systemList[$system->id] = "$system->nickname - $system->name";
-            }
-        }
-        asort($systemList);
+        $systemList = $this->view->systemSelect($this->_me->getSystemsByPrivilege('finding', 'read'));
         $this->view->assign('params', $params);
         $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
