@@ -1,0 +1,21 @@
+; This is the form for changing a vulnerability's state. It is currently displayed at the top of the vulnerability
+; view page.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+; License   http://www.openfisma.org/content/license GPLv3
+
+[state_transitions]
+method = "post"
+action = "/vm/vulnerability/change-state"
+
+elements.id.type = "hidden"
+
+elements.acceptRisk.type = "Form_Button_Submit"
+elements.acceptRisk.options.label = "Accept This Risk"
+
+elements.falsePositive.type = "Form_Button_Submit"
+elements.falsePositive.options.label = "Identify False Positive"
+
+elements.close.type = "Form_Button_Submit"
+elements.close.options.label = "Close"
