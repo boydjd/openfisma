@@ -556,7 +556,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
                 $portableCode = $e->getPortableCode();
 
                 if (Doctrine::ERR_CONSTRAINT == $portableCode) {
-                    $msg = 'The subcategory cannot be deleted because there incidents using this subcategory.';
+                    $msg = 'The subcategory cannot be deleted because there are incidents using this subcategory.';
                     $model = 'warning';                    
                 } else {
                     throw $e;
