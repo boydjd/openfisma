@@ -41,7 +41,7 @@ div.approvalStep:first-child{border-top:none;}
 div.approval b{margin-right:10px;}
 div.approval span.approved{background-color:lightgreen;padding:3px;}
 div.approval span.denied{background-color:#fcc;padding:3px;}
-div.formValue{background-color:#EBEBE4;border:1px solid #bebebe;padding:5px;color:#404040;font-weight:normal;}
+div.formValue{background-color:#fff;border:1px solid #bebebe;padding:5px;color:black;font-weight:normal;}
 div.subform{margin:15px 0;float:left;}
 table.fisma_crud{margin:0 15px;background-color:#f0f0f0;border:1px dotted #c0c0c0;}
 table.fisma_crud tr td,table.fisma_crud tr td input{font-family:'Verdana','Arial','Helvetica';color:#404040;font-weight:bold;font-size:12px;padding:3px 5px;}

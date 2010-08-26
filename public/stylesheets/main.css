@@ -305,10 +305,10 @@ div.form {
 }
 
 div.formValue {
-    background-color: #EBEBE4;
+    background-color: #ffffff;
     border: 1px solid #bebebe;
     padding: 5px;
-    color: #404040;
+    color: black;
     font-weight: normal;
 }
 
