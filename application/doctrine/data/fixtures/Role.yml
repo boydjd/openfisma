@@ -27,6 +27,14 @@ Role:
             - organization_update
             - asset_read
             - asset_update
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_close
+            - vulnerability_accept_risk
+            - notification_vulnerability
 
     reviewer_role:
         name: Reviewer
@@ -40,6 +48,10 @@ Role:
             - asset_read
             - notification_asset
             - notification_finding
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_read
+            - notification_vulnerability
         
     ivv_role:
         name: Independent Verification and Validation
@@ -76,6 +88,15 @@ Role:
             - notification_asset
             - notification_finding
             - product_read
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_close
+            - vulnerability_accept_risk
+            - vulnerability_false_positive
+            - notification_vulnerability         
 
     saiso_role:
         name: Senior Agency Information Security Officer
@@ -112,6 +133,15 @@ Role:
             - notification_asset
             - notification_finding
             - product_read
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_close
+            - vulnerability_accept_risk
+            - vulnerability_false_positive
+            - notification_vulnerability
     
     admin_role:
         name: Application Administrator
@@ -200,7 +230,17 @@ Role:
             - ir_category_update
             - ir_category_create
             - ir_category_delete
-            - user_read
+            - vulnerability_area
+            - vulnerability_admin_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_delete
+            - vulnerability_close
+            - vulnerability_accept_risk
+            - vulnerability_false_positive
+            - notification_vulnerability
 
     certagent_role:
         name: Certification Agent
@@ -214,7 +254,13 @@ Role:
             - findings_update_threat
             - findings_update_finding_recommendation
             - findings_comment
-            - notification_finding      
+            - notification_finding
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - notification_vulnerability
 
     iso_role:
         name: Information System Owner
@@ -239,6 +285,12 @@ Role:
             - organization_read
             - notification_asset
             - notification_finding
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - notification_vulnerability
 
     ao_role:
         name: Authorizing Official
@@ -253,6 +305,11 @@ Role:
             - organization_read
             - notification_asset
             - notification_finding
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_read
+            - vulnerability_accept_risk
+            - notification_vulnerability
 
     oss_role:
         name: Operational Support Staff
@@ -274,6 +331,15 @@ Role:
             - asset_read
             - notification_asset
             - notification_finding
+            - vulnerability_area
+            - vulnerability_admin_area
+            - vulnerability_report_area
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_close
+            - vulnerability_accept_risk
+            - notification_vulnerability
 
     oig_role:
         name: OIG Representative
@@ -283,6 +349,10 @@ Role:
             - incident_area
             - incident_create
             - incident_lock
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_read
+            - notification_vulnerability
 
     irc_role:
         name: Incident Response Coordinator

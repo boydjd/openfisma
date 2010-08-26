@@ -22,6 +22,19 @@ Privilege:
         action: finding_report
         description: Finding Module Reports
 
+    vulnerability_area:
+        resource: area
+        action: vulnerability
+        description: Vulnerability Module
+    vulnerability_admin_area:
+        resource: area
+        action: vulnerability_admin
+        description: Vulnerability Module Administration
+    vulnerability_report_area:
+        resource: area
+        action: vulnerability_report
+        description: Vulnerability Module Reports
+
     system_inventory_area:
         resource: area
         action: system_inventory
@@ -151,6 +164,40 @@ Privilege:
         resource: finding
         action: evidence_ivv
         description: Evidence Artifacts - IV&V Approval
+
+    # Vulnerability CRUD
+    vulnerability_create:
+        resource: vulnerability
+        action: create
+        description: Create Vulnerabilities
+    vulnerability_read:
+        resource: vulnerability
+        action: read
+        description: View Vulnerabilities
+    # Update doesn't have much meaning for this module (as of 2.10), but its reserved for future use
+    vulnerability_update: 
+        resource: vulnerability
+        action: update
+        description: Edit Vulnerabilities
+    # Delete doesn't have much meaning for this module (as of 2.10), but its reserved for future use
+    vulnerability_delete:
+        resource: vulnerability
+        action: delete
+        description: Delete Vulnerabilities
+
+    # Vulnerability state transitions
+    vulnerability_close:
+        resource: vulnerability
+        action: close
+        description: Close Vulnerabilities
+    vulnerability_accept_risk:
+        resource: vulnerability
+        action: accept_risk
+        description: Accept Risk On Vulnerabilities
+    vulnerability_false_positive:
+        resource: vulnerability
+        action: false_positive
+        description: Set Vulnerabilities To False Positive
 
     # Assets CRUD
     asset_create:
