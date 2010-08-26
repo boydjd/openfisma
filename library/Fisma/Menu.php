@@ -115,7 +115,11 @@ class Fisma_Menu
 
         if ($acl->hasArea('system_inventory')) {
             $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
-                       
+            
+            if ($acl->hasPrivilegeForClass('read', 'Asset')) {
+                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
+            }
+            
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
 
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
@@ -303,10 +307,6 @@ class Fisma_Menu
         if ($acl->hasArea('vulnerability_admin')) {
             $adminMenu = new Fisma_Yui_Menu('Administration');
 
-            if ($acl->hasPrivilegeForClass('read', 'Asset')) {
-                $adminMenu->add(new Fisma_Yui_MenuItem('Assets', '/vm/asset/list'));
-            }
-
             if ($acl->hasPrivilegeForClass('read', 'Product')) {
                 $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
             }
@@ -320,7 +320,7 @@ class Fisma_Menu
             $reportsMenu->add(
                 new Fisma_Yui_MenuItem('Aggregated Risk', '/vm/vulnerability-report/risk/format/html')
             );
-
+            
             $reportsMenu->add(
                 new Fisma_Yui_MenuItem('Reopened Vulnerabilities', '/vm/vulnerability-report/reopened/format/html')
             );
