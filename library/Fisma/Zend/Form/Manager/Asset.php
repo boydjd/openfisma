@@ -36,11 +36,8 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
     {
         $form = $this->getForm();
 
-        $systems = $this->_me->getOrganizationsByPrivilegeQuery('asset', 'read')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
-            ->execute();
-        $selectArray = $this->_view->treeToSelect($systems, 'nickname');
+        $systems = $this->_me->getSystemsByPrivilege('asset', 'read');
+        $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
         
         $networks = Doctrine::getTable('Network')->findAll()->toArray();

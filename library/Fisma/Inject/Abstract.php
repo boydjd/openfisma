@@ -179,7 +179,10 @@ abstract class Fisma_Inject_Abstract
         if ($duplicateFinding) {
             $action = $this->_getDuplicateAction($finding, $duplicateFinding);
             $finding->duplicateVulnerabilityId = $duplicateFinding->id;
-            $this->_duplicates[] = array('vulnerability' => $duplicateFinding, 'message' => 'Duplicate injected.');
+            $this->_duplicates[] = array(
+                'vulnerability' => $duplicateFinding,
+                'message' => 'This vulnerability was discovered again during a subsequent scan.'
+            );
         } else {
             $action = self::CREATE_FINDING;
         }

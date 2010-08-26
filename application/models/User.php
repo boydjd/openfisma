@@ -501,6 +501,32 @@ class User extends BaseUser
     }
 
     /**
+     * Get the user's systems for a specific privilege resource and action
+     * If the user is root, then this ends up returning all of the systems
+     * 
+     * @param string $resource 
+     * @param string $action 
+     * @param boolean $includeDisposal Indicates whether to include systems in the disposal phase, default is false
+     * @return Doctrine_Collection The collection of systems
+     */
+    public function getSystemsByPrivilege($resource, $action, $includeDisposal = false)
+    {
+        return $this->getSystemsByPrivilegeQuery($resource, $action, $includeDisposal)
+                    ->orderBy('o.nickname')
+                    ->execute();
+    }
+
+    /**
+     * Get the user's systems
+     * 
+     * @return Doctrine_Collection The collection of systems
+     */
+    public function getSystems()
+    {
+        return $this->getSystemsQuery()->orderBy('o.nickname')->execute();
+    }
+
+    /**
      * Get the roles associated with a user for a specific privilege resource and action. 
      * 
      * @param string $resource 
@@ -572,6 +598,35 @@ class User extends BaseUser
         }
 
         return $query;
+    }
+
+    /**
+     * Get a query which will select this user's systems by privilege resource and action 
+     * 
+     * @param string $resource 
+     * @param string $action 
+     * @param boolean $includeDisposal Flag to indicate whether to include systems in the disposal phase, default false
+     * @return Doctrine_Query 
+     */
+    public function getSystemsByPrivilegeQuery($resource, $action, $includeDisposal = false)
+    {
+        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action)
+                      ->innerJoin('o.System s');
+        if (!$includeDisposal) {
+            $query->andWhere('s.sdlcPhase <> ?', 'disposal');
+        }
+        return $query;
+    }
+
+     /**
+     * Get a query which will select this user's systems
+     * 
+     * @return Doctrine_Query 
+     */
+    public function getSystemsQuery()
+    {
+        return $this->getOrganizationsQuery()
+                    ->innerJoin('o.System s');
     }
 
     /**

@@ -285,7 +285,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     }
 
     /** 
-    * Allows a user to approve or delete pending findings
+     * Allows a user to approve or delete pending findings
      * 
      * @return void
      * @todo Use YUI pager

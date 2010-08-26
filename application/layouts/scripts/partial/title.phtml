@@ -5,7 +5,9 @@ $controllerName = ucwords(str_replace('-', ' ', $request->getControllerName()));
 $actionName = ucwords(str_replace('-', ' ', $request->getActionName()));
 $systemName = Fisma::configuration()->getConfig('system_name');
 
-$moduleName = ($moduleName == 'Default') ? '' : $moduleName;
+$moduleNameMap = array('Default' => '', 'Vm' => 'Vulnerability Management');
+
+$moduleName = isset($moduleNameMap[$moduleName]) ? $moduleNameMap[$moduleName] : $moduleName;
 $controllerName = ($controllerName == 'Index') ? '' : $controllerName;
 $actionName = ($actionName == 'Index') ? '' : $actionName;
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,15 +17,26 @@
  */
 
 /**
- * EmailValidation
+ * Dashboard for vulnerabilities
  * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
- * @version    $Id$
+ * @package    Vulnerability
  */
-class EmailValidation extends BaseEmailValidation
+class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
+    /**
+     * Restrict permissions
+     */
+    public function preDispatch()
+    {
+        parent::preDispatch();
 
+        $this->_acl->requireArea('vulnerability');
+    }
+
+    public function indexAction()
+    {
+    }
 }

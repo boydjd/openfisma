@@ -33,6 +33,7 @@ displayGroups.product.elements.version = "version"
 
 elements.cpeName.type = "text"
 elements.cpeName.options.label = "CPE ID"
+elementFilters.cpeName.emptyToNull = "Null"
 displayGroups.product.elements.cpeName = "cpeName"
 
 elements.save.type = "Form_Button_Submit"
