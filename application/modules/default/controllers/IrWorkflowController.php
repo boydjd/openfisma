@@ -533,8 +533,6 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             }
             $this->view->priorityMessenger($msg, $model);
 
-            $this->_sortSteps();
-        
             $this->_redirect("/ir-workflow/stepview/id/{$irworkflowstep->id}");
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
@@ -587,41 +585,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $model = 'warning';
             }
             $this->view->priorityMessenger($msg, $model);
-            $this->_sortSteps();
         }
         $this->_redirect('/ir-workflow/tree');
-    }
-
-    /**
-     * Resort all the workflow steps so that the sort orders start at 1 and don't skip any numbers
-     */
-    private function _sortSteps() 
-    {
-        $q = Doctrine_Query::create()
-             ->select('s.id, s.workflowId')
-             ->from('IrStep s')
-             ->orderBy('s.workflowId, s.cardinality');
-
-        $wfs = $q->execute()->toArray();
-
-        $count = 1;
-        $oldWf = -1;
-
-        foreach ($wfs as $key => $val) {
-            if (!($oldWf == $val['workflowId'])) {
-                $oldWf = $val['workflowId'];
-                $count = 1;
-            }
-
-            $updates[$val['id']] = $count;
-            
-            $count += 1;
-        }
-           
-        foreach ($updates as $key => $val) {
-            $irworkflow = Doctrine::getTable('IrStep')->find($key);
-            $irworkflow->cardinality = $val;
-            $irworkflow->save();
-        }
     }
 }
