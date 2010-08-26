@@ -284,7 +284,9 @@ class Fisma_Menu
     {
             $menu = new Fisma_Yui_Menu('Vulnerabilities');
 
-            $menu->add(new Fisma_Yui_MenuItem('List Vulnerabilities', '/vm/vulnerability/list'));
+            $menu->add(new Fisma_Yui_MenuItem('Search', '/vm/vulnerability/list'));
+
+            $menu->addSeparator();
 
             if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
                 $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vm/vulnerability/create'));
@@ -294,24 +296,28 @@ class Fisma_Menu
                 $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
             }
  
+            $menu->addSeparator();
+
+            $menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
+
             $canReadAsset = $acl->hasPrivilegeForClass('read', 'Asset');
             $canReadProduct = $acl->hasPrivilegeForClass('read', 'Product');
 
             if ($canReadAsset || $canReadProduct) {
-                $menu->addSeparator();
+                $adminMenu = new Fisma_Yui_Menu('Administration');
+                if ($canReadAsset) {
+                    $adminMenu->add(new Fisma_Yui_MenuItem('Assets', '/vm/asset/list'));
+                }
+                if ($canReadProduct) {
+                    $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
+                }
+                $menu->add($adminMenu);
             }
-            if ($canReadAsset) {
-                $menu->add(new Fisma_Yui_MenuItem('Assets', '/vm/asset/list'));
-            }
-            if ($canReadProduct) {
-                $menu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
 
-            }
-
-            $menu->addSeparator();
-
-            $menu->add(new Fisma_Yui_MenuItem('Reopened Report', '/vm/vulnerability-report/reopened/format/html'));
-            $menu->add(new Fisma_Yui_MenuItem('Aggregated Risk Report', '/vm/vulnerability-report/risk/format/html'));
+            $reportsMenu = new Fisma_Yui_Menu('Reports');
+            $reportsMenu->add(new Fisma_Yui_MenuItem('Reopened Vulnerabilities', '/vm/vulnerability-report/reopened/format/html'));
+            $reportsMenu->add(new Fisma_Yui_MenuItem('Aggregated Risk', '/vm/vulnerability-report/risk/format/html'));
+            $menu->add($reportsMenu);
 
              return $menu;
     }
