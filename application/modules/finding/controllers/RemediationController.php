@@ -538,6 +538,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $columns = array(
+            'checked' => array('label' => '<input id="dt-checkbox" type="checkbox" />',
+                               'width' => '30',
+                               'sortable' => false,
+                               'hidden' => false,
+                               'formatter' => 'checkbox'),
             'id' => array('label' => 'ID', 
                           'sortable' => true, 
                           'hidden' => ($visibleColumns & 1) == 0),
