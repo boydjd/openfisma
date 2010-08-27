@@ -178,7 +178,6 @@ abstract class Fisma_Inject_Abstract
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         if ($duplicateFinding) {
             $action = $this->_getDuplicateAction($finding, $duplicateFinding);
-            $finding->duplicateVulnerabilityId = $duplicateFinding->id;
             $this->_duplicates[] = array(
                 'vulnerability' => $duplicateFinding,
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
@@ -190,7 +189,6 @@ abstract class Fisma_Inject_Abstract
         // Take the specified action on the current finding
         switch ($action) {
             case self::CREATE_FINDING:
-                $finding->status = 'OPEN';
                 $this->_totalFindings['created']++;
                 break;
             case self::DELETE_FINDING:
