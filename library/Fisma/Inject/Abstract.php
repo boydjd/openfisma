@@ -266,9 +266,7 @@ abstract class Fisma_Inject_Abstract
         $duplicateFindings = Doctrine_Query::create()
             ->select('v.id, v.status')
             ->from('Vulnerability v')
-            ->leftJoin('v.DuplicatedBy dup')
-            ->where('dup.id IS NULL')
-            ->andWhere('v.description LIKE ?', $cleanDescription)
+            ->where('v.description LIKE ?', $cleanDescription)
             ->andWhere('v.assetId = ?', $finding->assetId)
             ->execute();
 
