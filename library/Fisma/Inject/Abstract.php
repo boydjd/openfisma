@@ -32,10 +32,6 @@
  */
 abstract class Fisma_Inject_Abstract
 {
-    const CREATE_FINDING = 1;
-    const DELETE_FINDING = 2;
-    const REVIEW_FINDING = 3;
-
     /**
      * The full xml file path to be used to the injection plugin
      * 
@@ -85,6 +81,30 @@ abstract class Fisma_Inject_Abstract
      */
     private $_duplicates = array();
 
+    /**
+     * Keep track of the uploadId passed into parse()
+     *
+     * @var integer
+     */
+    protected $_uploadId;
+
+    /** 
+     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
+     * then _commit() to commit to database.
+     *
+     * This method wraps the protected override _parse()
+     *
+     * Throws an exception if the file is an invalid format.
+     *
+     * @param string $uploadId The primary key for the upload object associated with this file
+     * @throws Fisma_Inject_Exception
+     */
+    public function parse($uploadId)
+    {
+        $this->_uploadId = $uploadId;
+        return $this->_parse($uploadId);
+    }
+
     /** 
      * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
      * then _commit() to commit to database.
@@ -94,7 +114,7 @@ abstract class Fisma_Inject_Abstract
      * @param string $uploadId The primary key for the upload object associated with this file
      * @throws Fisma_Inject_Exception
      */
-    abstract public function parse($uploadId);
+    abstract protected function _parse($uploadId);
 
     /**
      * Create and initialize a new plug-in instance for the specified file
@@ -177,30 +197,21 @@ abstract class Fisma_Inject_Abstract
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
         if ($duplicateFinding) {
-            $action = $this->_getDuplicateAction($finding, $duplicateFinding);
             $this->_duplicates[] = array(
                 'vulnerability' => $duplicateFinding,
+                'action' => $duplicateFinding->status == 'CLOSED' ? 'REOPEN' : 'SUPPRESS',
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
             );
+            $this->_totalFindings['deleted']++;
+            // Deleted findings are not saved, so we exit the _save routine
+            $finding->free();
+            unset($finding);
+            return;
         } else {
-            $action = self::CREATE_FINDING;
+            // Store data in instance to be committed later
+            $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
+            $this->_totalFindings['created']++;
         }
-
-        // Take the specified action on the current finding
-        switch ($action) {
-            case self::CREATE_FINDING:
-                $this->_totalFindings['created']++;
-                break;
-            case self::DELETE_FINDING:
-                $this->_totalFindings['deleted']++;
-                // Deleted findings are not saved, so we exit the _save routine
-                $finding->free();
-                unset($finding);
-                return;
-        }
-
-        // Store data in instance to be committed later
-        $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
     }
 
     /**
@@ -225,6 +236,15 @@ abstract class Fisma_Inject_Abstract
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
                 $findingData['finding']->save();
+
+                $vUpload = new VulnerabilityUpload();
+                $vUpload->vulnerabilityId = $findingData['finding']->id;
+                $vUpload->uploadId = $this->_uploadId;
+                $vUpload->action = 'CREATE';
+                $vUpload->save();
+                $vUpload->free();
+                unset($vUpload);
+
                 $findingData['finding']->free();
                 unset($findingData['finding']);
             }
@@ -233,7 +253,23 @@ abstract class Fisma_Inject_Abstract
             foreach ($this->_duplicates as $duplicate) {
                 $vuln = $duplicate['vulnerability'];
                 $mesg = $duplicate['message'];
+                $action = $duplicate['action'];
                 $vuln->getAuditLog()->write($mesg);
+                if ($action == 'REOPEN') {
+                    $vuln->status = 'OPEN';
+                    $vuln->save();
+                }
+
+                $vUpload = new VulnerabilityUpload();
+                $vUpload->vulnerabilityId = $vuln->id;
+                $vUpload->uploadId = $this->_uploadId;
+                $vUpload->action = $action;
+                $vUpload->save();
+                $vUpload->free();
+                unset($vUpload);
+
+                $vuln->free();
+                unset($vuln);
             }
 
             Doctrine_Manager::connection()->commit();
@@ -273,26 +309,6 @@ abstract class Fisma_Inject_Abstract
         return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
     }
     
-    /**
-     * Evaluate duplication rules for two findings
-     * 
-     * @param Vulnerability $newFinding
-     * @param Array $duplicateFinding
-     * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
-     */
-    private function _getDuplicateAction(Vulnerability $newFinding, Vulnerability $duplicateFinding)
-    {
-        $action  = NULL;
-        
-        if ($duplicateFinding->status == 'CLOSED') {
-            $action = self::CREATE_FINDING;
-        } else {
-            $action = self::DELETE_FINDING;
-        }
-
-        return $action;
-    }
-
     /**
      * Get the existing asset id if it exists 
      * 

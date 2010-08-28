@@ -34,7 +34,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * 
      * @param string $uploadId The id of upload Nessus xml file
      */
-    public function parse($uploadId)
+    protected function _parse($uploadId)
     {
         $grammar = new Fisma_Inject_Grammar('Nessus');
         $report  = new XMLReader();

@@ -74,7 +74,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * @return void
      * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not an App Detective report
      */
-    public function parse($uploadId)
+    protected function _parse($uploadId)
     {
         // Parse the XML file
         $report = simplexml_load_file($this->_file);
