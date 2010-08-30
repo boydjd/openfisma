@@ -18,7 +18,7 @@ class IrStep extends BaseIrStep
      * @param Doctrine_Event $event
      * @param return void
      */
-    public function preInsert(Doctrine_Event $event)
+    public function preInsert($event)
     {
         $this->_openGap($this->workflowId, $this->cardinality);
     }
@@ -30,7 +30,7 @@ class IrStep extends BaseIrStep
      * @param Doctrine_Event $event
      * @return void
      */
-    public function preUpdate(Doctrine_Event $event)
+    public function preUpdate($event)
     {
         $oldValues = $this->getModified(true);
         $wfChanged = isset($oldValues['workflowId']);
@@ -52,7 +52,7 @@ class IrStep extends BaseIrStep
      * @param Doctrine_Event $event
      * @return void
      */
-    public function postDelete(Doctrine_Event $event)
+    public function postDelete($event)
     {
         $i = $event->getInvoker();
         $this->_closeGap($i->workflowId, $i->cardinality);

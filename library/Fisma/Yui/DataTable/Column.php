@@ -72,7 +72,7 @@ class Fisma_Yui_DataTable_Column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
-     * @param bool $hidden
+     * @param bool $hidden Whether column should be hidden
      */
     public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false)
     {
