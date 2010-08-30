@@ -538,11 +538,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $columns = array(
-            'checked' => array('label' => '<input id="dt-checkbox" type="checkbox" />',
-                               'width' => '30',
-                               'sortable' => false,
-                               'hidden' => false,
-                               'formatter' => 'checkbox'),
             'id' => array('label' => 'ID', 
                           'sortable' => true, 
                           'hidden' => ($visibleColumns & 1) == 0),
@@ -605,6 +600,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                                            'hidden' => ($visibleColumns & (1 << 16)) == 0,
                                            'formatter' => 'text')
         );
+
         return $columns;
     }
     
@@ -624,8 +620,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/finding/remediation/search2' . $link);
         Fisma_Cookie::set('lastSearchUrl', "/finding/remediation/searchbox$link");
-        $this->view->assign('columns', $this->_getColumns());
 
+        $columns = $this->_getColumns();
+
+        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
+            $columns = array(
+                'checked' => array(
+                                    'label' => '<input id="dt-checkbox" type="checkbox" />',
+                                    'width' => '30',
+                                    'sortable' => false,
+                                    'hidden' => false,
+                                    'formatter' => 'checkbox'
+                )
+            ) + $columns;
+        }
+
+        $this->view->assign('columns', $columns);
         // These variables go into the search box view
         $systemList = $this->view->systemSelect($this->_me->getSystemsByPrivilege('finding', 'read'));
         $this->view->assign('params', $params);
