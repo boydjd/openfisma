@@ -33,6 +33,12 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
     {
         parent::preDispatch();
 
+        $module = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+
+        if (!$module->enabled) {
+            throw new Fisma_Zend_Exception('This module is not enabled.');
+        }
+
         $this->_acl->requireArea('vulnerability');
     }
 

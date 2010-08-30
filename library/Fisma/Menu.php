@@ -109,7 +109,8 @@ class Fisma_Menu
             $mainMenuBar->add($findings);
         }
 
-        if ($acl->hasArea('vulnerability')) {
+        $vmModule = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+        if ($vmModule && $vmModule->enabled && $acl->hasArea('vulnerability')) {
             $mainMenuBar->add(self::buildVulnerabilitiesMenu($acl));
         }
 
