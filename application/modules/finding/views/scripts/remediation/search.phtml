@@ -132,12 +132,30 @@ myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
 // Enable row highlighting and clicking
 myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
 myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-myDataTable.subscribe("rowClickEvent", 
+myDataTable.subscribe("cellClickEvent", 
     function (oArgs) {
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
+        var oColumn = this.getColumn(elTarget);
+        if (oColumn.key == 'checked') return;
         var keywords = "<?php echo $this->escape(isset($this->keywords) ? "/keywords/{$this->keywords}" : ''); ?>";
         document.location = "/finding/remediation/view/id/" + oRecord.getData("id") + keywords;
+    }
+);
+
+
+// Enable select-all/none
+myDataTable.subscribe("theadCellClickEvent",
+    function (oArgs) {
+        var oColumn = this.getColumn(oArgs.target);
+        if (oColumn.key == 'checked') {
+            checkbox = YAHOO.util.Dom.get('dt-checkbox');
+            records = this.getRecordSet().getRecords();
+            for (i = 0; i < records.length; i++) {
+                this.getRecordSet().updateRecordValue(records[i], 'checked', checkbox.checked);
+            }
+            this.render();
+        }
     }
 );
 

@@ -538,6 +538,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $columns = array(
+            'checked' => array('label' => '<input id="dt-checkbox" type="checkbox" />',
+                               'width' => '30',
+                               'sortable' => false,
+                               'hidden' => false,
+                               'formatter' => 'checkbox'),
             'id' => array('label' => 'ID', 
                           'sortable' => true, 
                           'hidden' => ($visibleColumns & 1) == 0),
@@ -1187,20 +1192,23 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         if (!empty($params['status'])) {
             $now = new Zend_Date();
             switch ($params['status']) {
-                case 'TOTAL': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
+                case 'TOTAL':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
                     break;
-                case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
+                case 'NOT-CLOSED':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
-                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(30);
+                case 'NOUP-30':
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(30);
                     break;
                 case 'NOUP-60':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(60);
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(60);
                     break;
                 case 'NOUP-90':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(90);
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(90);
                     break;
                 case 'NEW':  case 'DRAFT':  case 'EN': case 'CLOSED': default : 
                     break;
@@ -1210,9 +1218,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         // Convert overdue action type to correspond finding status for overdue finding search
         if (!empty($params['overdueActionType'])) {
             switch ($params['overdueActionType']) {
-                case 'Mitigation Strategy': $params['status'] = array('NEW', 'DRAFT', 'MSA');
+                case 'Mitigation Strategy':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA');
                     break;
-                case 'Corrective Action': $params['status'] = array('EN','EA');
+                case 'Corrective Action':
+                    $params['status'] = array('EN','EA');
                     break;
             }
 

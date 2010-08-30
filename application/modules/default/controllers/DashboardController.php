@@ -132,7 +132,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $url = '/finding/remediation/searchbox/status/';
 
         $this->view->url = $url;
-        $this->view->pendingUrl = '/finding/approve';
+        $this->view->pendingUrl = '/finding/index/approve';
         $this->view->alert = $alert;
         
         // Look up the last login information. If it's their first time logging in, then the view
