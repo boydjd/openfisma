@@ -1,6 +1,14 @@
 <?php Fisma_Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="buttonBar">
-        <?php 
+        <?php
+            if ($this->acl()->hasPrivilegeForClass('delete', 'Finding')) {
+                $deleteButton = new Fisma_Yui_Form_Button('delete',
+                                                           array('label' => 'Delete Selected', 
+                                                                 'onClickFunction' => 'deleteSelected',
+                                                                 'imageSrc' => '/images/del.png'));
+                echo $this->escape($deleteButton, 'none');
+            }
+
             $exportPdfButton = new Fisma_Yui_Form_Button_Link('exportPdf',
                                           array('value' => 'Export PDF', 
                                                 'href' => "{$this->attachUrl}/format/pdf", 
@@ -27,6 +35,17 @@
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <script type="text/javascript">
+// delete the selected findings
+function deleteSelected() {
+    checked = [];
+
+    for (i = 0; i < myDataTable.getSelectedRows().length; i++) {
+        checked.push(myDataTable.getRecord(myDataTable.getSelectedRows()[i]).getData('id'));
+    }
+
+    console.log(checked);
+}
+
 // Column definitions
 var myColumnDefs = [
     <?php 
@@ -151,11 +170,42 @@ myDataTable.subscribe("theadCellClickEvent",
         if (oColumn.key == 'checked') {
             checkbox = YAHOO.util.Dom.get('dt-checkbox');
             records = this.getRecordSet().getRecords();
+
             for (i = 0; i < records.length; i++) {
+                if (checkbox.checked) {
+                    this.selectRow(records[i]);
+                } else {
+                    this.unselectRow(records[i]);
+                }
+
                 this.getRecordSet().updateRecordValue(records[i], 'checked', checkbox.checked);
             }
+
             this.render();
         }
+    }
+);
+
+// Select/unselect row when checkbox click event fires
+myDataTable.subscribe("checkboxClickEvent", 
+    function(oArgs) {
+        checked = oArgs.target.checked;
+        record = this.getRecord(oArgs.target);
+        this.getRecordSet().updateRecordValue(record, 'checked', checked);
+
+        if (oArgs.target.checked) {
+            this.selectRow(record);
+        } else {
+            this.unselectRow(record);
+        }
+    }
+);
+
+// Make sure that the header checkbox is unchecked on page changes
+myDataTable.get("paginator").subscribe("pageChange",
+    function(oArgs) {
+        checkbox = YAHOO.util.Dom.get('dt-checkbox');
+        checkbox.checked = false;
     }
 );
 
