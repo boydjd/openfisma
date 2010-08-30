@@ -65,7 +65,7 @@ abstract class Fisma_Inject_Abstract
      * 
      * @var array
      */
-    private $_totalFindings = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
+    private $_totals = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
 
     /**
      * collection of findings to be created 
@@ -143,7 +143,7 @@ abstract class Fisma_Inject_Abstract
      */
     public function __get($field) 
     {
-        return (!empty($this->_totalFindings[$field])) ? $this->_totalFindings[$field] : 0;
+        return (!empty($this->_totals[$field])) ? $this->_totals[$field] : 0;
     }
 
     /**
@@ -202,7 +202,6 @@ abstract class Fisma_Inject_Abstract
                 'action' => $duplicateFinding->status == 'CLOSED' ? 'REOPEN' : 'SUPPRESS',
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
             );
-            $this->_totalFindings['deleted']++;
             // Deleted findings are not saved, so we exit the _save routine
             $finding->free();
             unset($finding);
@@ -210,7 +209,6 @@ abstract class Fisma_Inject_Abstract
         } else {
             // Store data in instance to be committed later
             $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
-            $this->_totalFindings['created']++;
         }
     }
 
@@ -236,6 +234,7 @@ abstract class Fisma_Inject_Abstract
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
                 $findingData['finding']->save();
+                $this->totals['created']++;
 
                 $vUpload = new VulnerabilityUpload();
                 $vUpload->vulnerabilityId = $findingData['finding']->id;
@@ -256,8 +255,11 @@ abstract class Fisma_Inject_Abstract
                 $action = $duplicate['action'];
                 $vuln->getAuditLog()->write($mesg);
                 if ($action == 'REOPEN') {
+                    $this->_totals['reopened']++;
                     $vuln->status = 'OPEN';
                     $vuln->save();
+                } else {
+                    $this->_totals['suppressed']++;
                 }
 
                 $vUpload = new VulnerabilityUpload();
