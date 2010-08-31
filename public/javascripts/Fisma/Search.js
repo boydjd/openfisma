@@ -38,6 +38,11 @@ Fisma.Search = function() {
          * True if the test configuration process is currently running
          */
         testConfigurationActive : false,
+        
+        /**
+         * The base URL for search queries
+         */
+        baseUrl : '',
 
         /**
          * Test the current system configuration
@@ -92,9 +97,8 @@ Fisma.Search = function() {
          * Fisma_Zend_Controller_Action_Object.
          * 
          * @param form Reference to the search form
-         * @param baseUrl The base URL for searching. Query arguments will be appended to this.
          */
-        handleSimpleSearchClickEvent : function (form, baseUrl) {
+        handleSimpleSearchClickEvent : function (form) {
             try {                
                 var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
 
@@ -104,11 +108,18 @@ Fisma.Search = function() {
                     scope : dataTable,
                     argument : dataTable.getState()
                 }
-
-                searchUrl = baseUrl + '/keywords/' + form.keywords.value;
                 
+                // Update base URL with keyword parameter
+                var urlMatches = Fisma.Search.baseUrl.match(/(^.*)\/keywords\/\w*(.*)$/);
+
+                if (urlMatches) {
+                    Fisma.Search.baseUrl = urlMatches[1] + '/keywords/' + form.keywords.value;
+                } else {
+                    Fisma.Search.baseUrl += '/keywords/' + form.keywords.value;
+                }
+               
                 dataTable.showTableMessage(YAHOO.widget.DataTable.MSG_LOADING);
-                dataTable.getDataSource().sendRequest(searchUrl, onDataTableRefresh);
+                dataTable.getDataSource().sendRequest(Fisma.Search.baseUrl, onDataTableRefresh);
             } catch (error) {
                 ; // Nothing we can really do here, but catching the error prevents a page refresh b/c we return false
             }
@@ -123,7 +134,7 @@ Fisma.Search = function() {
          * Due to a quirk in Solr, highlights are indicated by three asterisks ***. This method just has to go 
          * through and find the asterisks, strip them out, and replace the content between them with highlighted text.
          * 
-         * @param The YUI data table to perform highlighting on
+         * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
             var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
@@ -202,6 +213,24 @@ Fisma.Search = function() {
                     }
                 }
             }
+        },
+        
+        /**
+         * Sets the base URL for search queries
+         * 
+         * @param url The base URL (parameters will be appended onto the end of this)
+         */
+        setBaseUrl : function (url) {
+            Fisma.Search.baseUrl = url;
+        },
+        
+        /**
+         * Get the base URL for search queries
+         * 
+         * @return string
+         */
+        getBaseUrl : function () {
+            return Fisma.Search.baseUrl;
         }
     }
 }();

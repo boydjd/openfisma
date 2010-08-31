@@ -17,11 +17,13 @@
             }
         }
 
+        Fisma.Search.setBaseUrl("<?php echo $this->escape($this->dataUrl, 'javascript'); ?>");
+
         // A function which builds the query string
         var constructUrlFunction = function (tableState, self) {    
 
             // Build custom request
-            var request = "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>" + 
+            var request = Fisma.Search.getBaseUrl() +
                           "/sort/" + tableState.sortedBy.key +
                           "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
                           "/start/" + tableState.pagination.recordOffset +

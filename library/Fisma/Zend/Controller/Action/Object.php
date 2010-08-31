@@ -535,8 +535,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchForm->setAction($this->getBaseUrl() . '/list');
         
         // This form doesn't actually get submitted. It calls a JS handler which dynamically refreshes a YUI table.
-        $searchBaseUrl = $this->getBaseUrl() . '/search';
-        $javascript = "Fisma.Search.handleSimpleSearchClickEvent(this, '$searchBaseUrl'); return false;";
+        $javascript = "Fisma.Search.handleSimpleSearchClickEvent(this); return false;";
         $searchForm->setAttrib('onsubmit', $javascript);
         
         $searchForm->setDecorators(
