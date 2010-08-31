@@ -474,8 +474,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     public function multiDeleteAction()
     {
         $this->_acl->requirePrivilegeForClass('delete', 'Finding');
-
         $findingIds = Zend_Json::decode($this->_request->getParam('findings'));
+
+        if (empty($findingIds)) {
+            return $this->_helper->json(array('msg' => 'An error has occured.', 'status' => 'warning'));
+        }
 
         $findings = Doctrine_Query::create()
                     ->from('Finding f')
