@@ -294,10 +294,6 @@ class Fisma_Menu
         $menu->addSeparator();
 
         if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
-            $menu->add(new Fisma_Yui_MenuItem('Create New Vulnerability', '/vm/vulnerability/create'));
-        }
-        
-        if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
             $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
         }
 
