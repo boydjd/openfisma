@@ -322,6 +322,10 @@ class Fisma_Menu
                 new Fisma_Yui_MenuItem('Reopened Vulnerabilities', '/vm/vulnerability-report/reopened/format/html')
             );
 
+            $reportsMenu->add(
+                new Fisma_Yui_MenuItem('Vulnerable Services', '/vm/vulnerability-report/vulnerable-service/format/html')
+            );
+
             $menu->add($reportsMenu);
         }
         
