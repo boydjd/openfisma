@@ -464,4 +464,41 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_forward('searchbox', 'remediation');
     }
+
+    /**
+     * Delete multiple findings by ID. 
+     * 
+     * @access public
+     * @return string JSON string 
+     */
+    public function multiDeleteAction()
+    {
+        $this->_acl->requirePrivilegeForClass('delete', 'Finding');
+
+        $findingIds = Zend_Json::decode($this->_request->getParam('findings'));
+
+        $findings = Doctrine_Query::create()
+                    ->from('Finding f')
+                    ->whereIn('f.id', $findingIds)
+                    ->execute();
+
+        $numFindings = $findings->count();
+
+        try {
+            Doctrine_Manager::connection()->beginTransaction();
+
+            foreach ($findings as $finding) {
+                $this->_acl->requirePrivilegeForObject('delete', $finding);
+                $finding->delete();
+                $finding->free();
+                unset($finding);
+            }
+
+            Doctrine_Manager::connection()->commit();
+            return json_encode(array('status' => $numFindings . ' findings were deleted.'));
+        } catch (Exception $e) {
+            Doctrine_Manager::connection()->rollBack();
+            return json_encode(array('status' => $e->getMessage()));
+        }
+    }
 }
