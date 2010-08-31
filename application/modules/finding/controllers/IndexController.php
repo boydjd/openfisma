@@ -495,10 +495,16 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             }
 
             Doctrine_Manager::connection()->commit();
-            return json_encode(array('status' => $numFindings . ' findings were deleted.'));
+
+            $message = $numFindings . ' findings were deleted.';
+            $status = 'notice';
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
-            return json_encode(array('status' => $e->getMessage()));
+
+            $message = $e->getMessage();
+            $status = 'warning';
         }
+
+        return $this->_helper->json(array('msg' => $message, 'status' => $status));
     }
 }

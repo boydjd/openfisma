@@ -53,16 +53,17 @@ function deleteSelected() {
             success: function(o) {
                 messages = [];
 
-                    if (o.resposneText !== undefined) {
-                        messages = YAHOO.lang.JSON.parse(o.reponseText);
-                        message(messages.status);
+                    if (o.responseText !== undefined) {
+                        messages = YAHOO.lang.JSON.parse(o.responseText);
+                        message(messages.msg, messages.status);
                     }
 
                 myDataTable.getDataSource().flushCache();
                 myDataTable.initializeTable();
+                myDataTable.render();
             },
             failure: function(o) {
-                message('The system was unable to delete the findings, please try again later.');
+                message('The system was unable to delete the findings, please try again later.', 'warning');
             }
         },
         YAHOO.lang.JSON.stringify(postData)
