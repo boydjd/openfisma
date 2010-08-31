@@ -85,7 +85,8 @@ class OptimizeIndexes
 
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
         Fisma::connectDb();
-        
+        Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);
+
         // Zend Search Lucene is a memory hog, esp. in php 5.2
         ini_set('memory_limit', '256M');
     }
