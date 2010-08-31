@@ -43,7 +43,30 @@ function deleteSelected() {
         checked.push(myDataTable.getRecord(myDataTable.getSelectedRows()[i]).getData('id'));
     }
 
-    console.log(checked);
+    postData = [];
+    postData['findings'] = checked;
+
+    YAHOO.util.Connect.asyncRequest(
+        'POST', 
+        '/finding/index/multiDelete',
+        {
+            success: function(o) {
+                messages = [];
+
+                    if (o.resposneText !== undefined) {
+                        messages = YAHOO.lang.JSON.parse(o.reponseText);
+                        message(messages.status);
+                    }
+
+                myDataTable.getDataSource().flushCache();
+                myDataTable.initializeTable();
+            },
+            failure: function(o) {
+                message('The system was unable to delete the findings, please try again later.');
+            }
+        },
+        YAHOO.lang.JSON.stringify(postData)
+    );
 }
 
 // Column definitions
