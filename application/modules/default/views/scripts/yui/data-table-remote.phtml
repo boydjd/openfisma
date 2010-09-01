@@ -23,7 +23,7 @@
         var constructUrlFunction = function (tableState, self) {    
 
             // Build custom request
-            var request = Fisma.Search.getBaseUrl() +
+            var request = Fisma.Search.getSearchActionUrl() +
                           "/sort/" + tableState.sortedBy.key +
                           "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
                           "/start/" + tableState.pagination.recordOffset +

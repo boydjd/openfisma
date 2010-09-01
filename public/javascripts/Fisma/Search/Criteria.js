@@ -33,14 +33,15 @@ Fisma.Search.Criteria = function (searchPanel, fields) {
         throw "Field array cannot be empty";
     }
 
-    this.currentField = fields[0];
+    this.currentFieldType = null;
+    this.currentFieldName = null;
     this.currentQueryType = null;
     this.fields = fields;
     this.searchPanel = searchPanel;
 
     this.container = null;
 
-    this.selectContainer = null;
+    this.queryFieldContainer = null;
     this.queryTypeContainer = null;
     this.queryInputContainer = null;
     this.buttonsContainer = null;
@@ -51,16 +52,16 @@ Fisma.Search.Criteria.prototype = {
     /**
      * Render the criteria widget
      * 
-     * @param parentContainer The HTML element that contains this widget
+     * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
      * @return An HTML element containing the search criteria widget
      */
-    render : function () {
+    render : function (defaultFieldIndex) {
         
         this.container = document.createElement('div');
         
         this.container.className = "searchCriteria";
         
-        this.selectContainer = this.renderSelect(this.container);
+        this.queryFieldContainer = this.renderQueryField(this.container, defaultFieldIndex);
         this.queryTypeContainer = this.renderQueryType(this.container);
         this.queryInputContainer = this.renderQueryInput(this.container);
         this.buttonsContainer = this.renderButtons(this.container);
@@ -79,9 +80,12 @@ Fisma.Search.Criteria.prototype = {
      * to query on.
      * 
      * @param The HTML element that contains the select widget
+     * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
      */
-    renderSelect : function (container) {
+    renderQueryField : function (container, defaultFieldIndex) {
         
+        var that = this;
+
         var spanEl = document.createElement('span');
         
         var menuItems = new Array();
@@ -90,6 +94,16 @@ Fisma.Search.Criteria.prototype = {
         // This event handler makes the menu button behave like a popup menu
         var menuClickHandler = function (type, args, item) {
             var newLabel = item.cfg.getProperty("text");
+
+            that.currentFieldName = item.value;
+
+            for (var index in this.fields) {
+                var field = this.fields[index];
+                
+                that.currentFieldType = field.type;
+                
+                break;
+            }
 
             menuButton.set("label", newLabel);
         };
@@ -106,9 +120,14 @@ Fisma.Search.Criteria.prototype = {
         }
 
         // Render menu button
+        var initialFieldIndex = defaultFieldIndex % this.fields.length;
+        
+        this.currentFieldName = this.fields[initialFieldIndex].name;
+        this.currentFieldType = this.fields[initialFieldIndex].type;
+
         menuButton = new YAHOO.widget.Button({
             type : "menu", 
-            label : this.fields[0].label, 
+            label : this.fields[initialFieldIndex].label, 
             menu : menuItems,
             container : spanEl
         });
@@ -127,13 +146,13 @@ Fisma.Search.Criteria.prototype = {
 
         var spanEl = document.createElement('span');
 
-        switch (this.currentField.type) {
+        switch (this.currentFieldType) {
             case "text":
                 this.renderQueryTypeText(spanEl);
                 break;
                 
             default:
-                throw "Undefined search field type: " + this.currentField.type;
+                throw "Undefined search field type: " + this.currentFieldType;
         }
         
         container.appendChild(spanEl);
@@ -221,10 +240,14 @@ Fisma.Search.Criteria.prototype = {
 
         var menuItems = new Array();
         var menuButton;
+        
+        var that = this;
 
         // This event handler makes the menu button behave like a popup menu
         var menuClickHandler = function (type, args, item) {
             var newLabel = item.cfg.getProperty("text");
+
+            that.currentQueryType = item.value;
 
             menuButton.set("label", newLabel);
         };
@@ -253,15 +276,18 @@ Fisma.Search.Criteria.prototype = {
             }
         ];
 
+        // The default selection is "Contains"
+        var defaultMenuItemIndex = 1;
+
+        this.currentQueryType = menuItems[defaultMenuItemIndex].value;
+
         // Render menu button
         menuButton = new YAHOO.widget.Button({
             type : "menu", 
-            label : menuItems[0].text,
+            label : menuItems[defaultMenuItemIndex].text,
             menu : menuItems,
             container : container
         });
-
-        this.currentQueryType = menuItems[0].value;
     },
     
     /**
@@ -273,5 +299,36 @@ Fisma.Search.Criteria.prototype = {
         textEl.type = "text";
         
         container.appendChild(textEl);
+    },
+    
+    /**
+     * Get the URL query string for this criteria in its current state
+     * 
+     * The URL query string has one URL parameter for each of the criteria fields for the current query type. The name 
+     * of the parameter is formed by concatenating the field name with a dot and the query type. For example, the 
+     * following query string is returned for a query on "Creation Date Between Jan 1 2010 and Jun 30 2010":
+     * 
+     *     /creationDate.greaterThan/2010-01-01/creationDate.lessThan/2010-06-30/
+     */
+    getQueryString : function () {
+        
+        var queryString = '';
+
+        switch (this.currentQueryType) {
+            // These cases all intentionally fall through
+            case 'beginsWith':
+            case 'contains':
+            case 'endsWith':
+            case 'is':
+                var inputs = this.queryInputContainer.getElementsByTagName('input');
+
+                queryString = '/' + this.currentFieldName + '.' + this.currentQueryType + '/' + inputs[0].value;
+                break;
+            
+            default:
+                throw "No query string is implemented for the following query type: " + this.currentQueryType;
+        }
+
+        return queryString;
     }
 };

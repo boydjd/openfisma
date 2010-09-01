@@ -19,10 +19,9 @@
 }
 
 .searchCriteria {    
-
-    border-top: 1px dotted #bfbfbf;
+    border-top: 1px dashed #bfbfbf;
     padding-top: 5px;
-    padding-bottom: 5px;
+    padding-bottom: 3px;
 }
 
 .searchCriteria:first-child {

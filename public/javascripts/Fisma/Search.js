@@ -1,27 +1,24 @@
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Functions related to the search engine and search UI
- *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Various client side behaviors related to search functionality
+ * 
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @package   Fisma
  */
 
 Fisma.Search = function() {
@@ -40,14 +37,26 @@ Fisma.Search = function() {
         testConfigurationActive : false,
         
         /**
-         * The base URL for search queries
+         * The base URL to the controller action for searching
          */
         baseUrl : '',
+        
+        /**
+         * A URL which builds on the base URL to pass arguments to the search controller action
+         * 
+         * This is used by YUI data table to build its own queries with sorting added
+         */
+        searchActionUrl : '',
         
         /**
          * Field definitions for the advanced search interface
          */
         fields : null,
+        
+        /**
+         * Advanced search panel
+         */
+        advancedSearchPanel : null,
 
         /**
          * Test the current system configuration
@@ -98,12 +107,14 @@ Fisma.Search = function() {
         },
         
         /**
-         * Executes a simple search. This works in tandem with the search-simple.form and 
-         * Fisma_Zend_Controller_Action_Object.
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * 
+         * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the 
+         * two to use while handling this event.
          * 
          * @param form Reference to the search form
          */
-        handleSimpleSearchClickEvent : function (form) {
+        handleSearchEvent : function (form) {
             try {                
                 var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
 
@@ -114,17 +125,26 @@ Fisma.Search = function() {
                     argument : dataTable.getState()
                 }
                 
-                // Update base URL with keyword parameter
-                var urlMatches = Fisma.Search.baseUrl.match(/(^.*)\/keywords\/\w*(.*)$/);
+                // Construct a query URL based on whether this is a simple or advanced search
+                var searchType = document.getElementById('searchType').value;
+                var urlQueryString = Fisma.Search.baseUrl;
 
-                if (urlMatches) {
-                    Fisma.Search.baseUrl = urlMatches[1] + '/keywords/' + form.keywords.value;
+                if ('simple' == searchType) {
+                    
+                    urlQueryString += '/queryType/simple/keywords/' + form.keywords.value;
+
+                } else if ('advanced' == searchType) {
+                    
+                    urlQueryString += '/queryType/advanced' + this.advancedSearchPanel.getUrlQuery();
+                    
                 } else {
-                    Fisma.Search.baseUrl += '/keywords/' + form.keywords.value;
+                    throw "Invalid value for search type: " + searchType;
                 }
-               
+
+                this.searchActionUrl = urlQueryString;
+                
                 dataTable.showTableMessage(YAHOO.widget.DataTable.MSG_LOADING);
-                dataTable.getDataSource().sendRequest(Fisma.Search.baseUrl, onDataTableRefresh);
+                dataTable.getDataSource().sendRequest(this.searchActionUrl, onDataTableRefresh);
             } catch (error) {
                 ; // Nothing we can really do here, but catching the error prevents a page refresh b/c we return false
             }
@@ -132,11 +152,11 @@ Fisma.Search = function() {
             // Return false to prevent the form from actually being submitted
             return false;
         },
-    
+
         /**
          * Highlight marked words in the search results table
          * 
-         * Due to a quirk in Solr, highlights are indicated by three asterisks ***. This method just has to go 
+         * Due to a quirk in Solr, highlights are delimited by three asterisks ***. This method just has to go 
          * through and find the asterisks, strip them out, and replace the content between them with highlighted text.
          * 
          * @param dataTable The YUI data table to perform highlighting on
@@ -148,76 +168,9 @@ Fisma.Search = function() {
             
             var cells = tbody.getElementsByTagName('td');
 
-            var regex = /^(.*?)(\*\*\*)(.*?)(\*\*\*)(.*)$/;
+            var delimiter = '***';
 
-            for (var i in cells) {
-                var cell = cells[i];
-
-                var parentNode = cell.firstChild;
-                var textNode = parentNode.firstChild;
-                var cellText = textNode.nodeValue;
-
-                var highlightMatches;
-
-                // Stores all of the matched text snippets
-                var matches = [];
-                
-                do {
-
-                    highlightMatches = cellText.match(regex);
-
-                    // Match 5 subexpressions plus the overall match -> 6 total matches
-                    if (highlightMatches && highlightMatches.length == 6) {
-
-                        var preMatch = highlightMatches[1];
-                        var highlightMatch = highlightMatches[3];
-                        var postMatch = highlightMatches[5];
-                        
-                        matches.push(preMatch);
-                        matches.push(highlightMatch);
-                        
-                        cellText = postMatch;
-                    } else {
-                        
-                        // Any remaining text gets pushed onto the matches list
-                        matches.push(cellText);
-                        
-                        // If the user text happens to contain *** that will throw the highlighter off, potentially
-                        // creating a denial of service. To prevent that, we short circuit the loop right here.
-                        highlightMatches = null;
-                    }
-                    
-                } while (highlightMatches);
-                
-                // If matches contains more than 1 item, then it must contain an odd number of items. Even numbered
-                // indices are plain text and odd numbered indices are highlighted text. Manipulate the DOM to reflect
-                // this.
-                if ((matches.length > 1) && (matches.length % 2 == 1)) {
-                    
-                    // Remove current text
-                    parentNode.removeChild(textNode);
-                    
-                    // Iterate over matches and create new text nodes (for plain text) and new spans (for highlighted
-                    // text)
-                    for (var j in matches) {
-                        var match = matches[j];
-
-                        var newTextNode = document.createTextNode(match);
-
-                        if (j % 2 == 0) {
-                            // This is a plaintext node
-                            parentNode.appendChild(newTextNode);
-                        } else {
-                            // This is a highlighted node
-                            var newSpan = document.createElement('span');
-                            newSpan.className = 'highlight';
-                            newSpan.appendChild(newTextNode);
-                            
-                            parentNode.appendChild(newSpan);
-                        }
-                    }
-                }
-            }
+            Fisma.Highlighter.highlightDelimitedText(cells, delimiter);
         },
         
         /**
@@ -226,16 +179,16 @@ Fisma.Search = function() {
          * @param url The base URL (parameters will be appended onto the end of this)
          */
         setBaseUrl : function (url) {
-            Fisma.Search.baseUrl = url;
+            this.baseUrl = url;
         },
         
         /**
-         * Get the base URL for search queries
+         * Get the search action URL for search queries
          * 
          * @return string
          */
-        getBaseUrl : function () {
-            return Fisma.Search.baseUrl;
+        getSearchActionUrl : function () {
+            return this.searchActionUrl;
         },
         
         /**

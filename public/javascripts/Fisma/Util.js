@@ -25,6 +25,20 @@
 Fisma.Util = {
     
     /**
+     * Escapes the specified string so that it can be included in a regex without special characters affecting
+     * the regex's meaning
+     * 
+     * Special characters are: .*+?|()[]{}\
+     * 
+     * @param rawValue Unescaped input
+     */
+    escapeRegexValue : function (rawValue) {
+        var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g");
+        
+        return rawValue.replace(specials, "\\$&");
+    },
+
+    /**
      * Convert a string name of an object into a reference to that object.
      * 
      * For example, "Fisma.Foo.myFoo" returns a reference to the actual Fisma.Foo.myFoo object, if it exists, 

@@ -456,7 +456,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         );
 
         // Setup search parameters
-        $keywords = $this->getRequest()->getParam('keywords');
         $sortColumn = $this->getRequest()->getParam('sort');
         
         if (empty($sortColumn)) {
@@ -471,17 +470,24 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
         $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
 
-        // Execute search
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        // Execute simple search (default) or advanced search (if explicitly requested)
+        $queryType = $this->getRequest()->getParam('queryType');
 
-        $result = $searchEngine->searchByKeyword(
-            $this->_modelName, 
-            $keywords,
-            $sortColumn,
-            $sortBoolean,
-            $start,
-            $rows
-        );       
+        if ('advanced' == $queryType) {
+        } else {
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+            $result = $searchEngine->searchByKeyword(
+                $this->_modelName, 
+                $keywords,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows
+            );       
+        }
 
         $searchResults['recordsReturned'] = $result->getNumberReturned();
         $searchResults['totalRecords'] = $result->getNumberFound();
@@ -538,13 +544,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function getSearchForm()
     {
-        $searchForm = Fisma_Zend_Form_Manager::loadForm('simple_search');
-        
-        $searchForm->setAction($this->getBaseUrl() . '/list');
-        
-        // This form doesn't actually get submitted. It calls a JS handler which dynamically refreshes a YUI table.
-        $javascript = "Fisma.Search.handleSimpleSearchClickEvent(this); return false;";
-        $searchForm->setAttrib('onsubmit', $javascript);
+        $searchForm = Fisma_Zend_Form_Manager::loadForm('search');
         
         $searchForm->setDecorators(
             array(

@@ -29,6 +29,8 @@
             var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
             var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
+            
+            Fisma.Search.advancedSearchPanel = searchPanel;
 
             searchPanel.render(document.getElementById('advancedSearch'));
         }
