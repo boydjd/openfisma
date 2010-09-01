@@ -208,9 +208,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             $this->_acl->requirePrivilegeForClass('read', 'Organization');
         }
 
-        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'read');
-        $systemList = array('' => '') + $systems->toKeyValueArray('id', 'nickname');
-        asort($systemList);
+        $systems = $this->_me->getSystemsByPrivilege('finding', 'read');
+        $systemList = array('' => '') + $this->view->systemSelect($systems);
 
         $sourceList = array('' => '') + Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         asort($sourceList);

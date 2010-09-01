@@ -1,24 +1,32 @@
 <?php Fisma_Format_Section::startSection("Search Results <span id='searchResultsTotalFound'></span>"); ?>
     <div class="buttonBar">
-        <?php 
+        <?php
+            if ($this->acl()->hasPrivilegeForClass('delete', 'Finding')) {
+                $deleteButton = new Fisma_Yui_Form_Button('delete',
+                                                           array('label' => 'Delete Selected',
+                                                                 'onClickFunction' => 'deleteSelected',
+                                                                 'imageSrc' => '/images/del.png'));
+                echo $this->escape($deleteButton, 'none');
+            }
+
             $exportPdfButton = new Fisma_Yui_Form_Button_Link('exportPdf',
-                                          array('value' => 'Export PDF', 
-                                                'href' => "{$this->attachUrl}/format/pdf", 
+                                          array('value' => 'Export PDF',
+                                                'href' => "{$this->attachUrl}/format/pdf",
                                                 'imageSrc' => '/images/pdf.gif'));
             echo $this->escape($exportPdfButton, 'none');
             $exportExcelButton = new Fisma_Yui_Form_Button_Link('exportExcel',
-                                          array('value' => 'Export Excel', 
-                                                'href' => "{$this->attachUrl}/format/xls", 
+                                          array('value' => 'Export Excel',
+                                                'href' => "{$this->attachUrl}/format/xls",
                                                 'imageSrc' => '/images/xls.gif'));
             echo $this->escape($exportExcelButton, 'none');
             $columnOptionsButton = new Fisma_Yui_Form_Button('columnOptions',
-                                                       array('label' => 'Options', 
+                                                       array('label' => 'Options',
                                                              'onClickFunction' => 'showColumnOptions',
                                                              'imageSrc' => '/images/options.png'));
             echo $this->escape($columnOptionsButton, 'none');
         ?>
     </div>
-    <div id="dynamicdata"></div> 
+    <div id="dynamicdata"></div>
     <div id="columnOptionsPanelDiv">
         <div id="columnOptionsPanelBody" class="bd">
             <!-- YUI fills in the body -->
@@ -27,9 +35,63 @@
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <script type="text/javascript">
+YAHOO.widget.DataTable.prototype.requery = function(newRequest) {
+    var ds = this.getDataSource(), req;
+    if (this.get('dynamicData')) {
+        // For dynamic data, newRequest is ignored since the request is built by function generateRequest.
+        var paginator = this.get('paginator');
+        this.onPaginatorChangeRequest(paginator.getState({'page':paginator.getCurrentPage()}));
+    } else {
+        // The LocalDataSource needs to be treated different
+        if (ds instanceof YAHOO.util.LocalDataSource) {
+            ds.liveData = newRequest;
+            req = "";
+        } else {
+            req = (newRequest === undefined?this.get('initialRequest'):newRequest);
+        }
+        ds.sendRequest(req,
+            {
+                success: this.onDataReturnInitializeTable,
+                failure: this.onDataReturnInitializeTable,
+                scope: this,
+                argument: this.getState()
+            }
+        );
+    }
+};
+
+// delete the selected findings
+function deleteSelected() {
+    checked = [];
+
+    for (i = 0; i < myDataTable.getSelectedRows().length; i++) {
+        checked.push(myDataTable.getRecord(myDataTable.getSelectedRows()[i]).getData('id'));
+    }
+    checked = 'findings=' + YAHOO.lang.JSON.stringify(checked);
+    YAHOO.util.Connect.asyncRequest(
+        'POST',
+        '/finding/index/multi-delete',
+        {
+            success: function(o) {
+                messages = [];
+
+                    if (o.responseText !== undefined) {
+                        messages = YAHOO.lang.JSON.parse(o.responseText);
+                        message(messages.msg, messages.status);
+                        myDataTable.requery();
+                    }
+            },
+            failure: function(o) {
+                message('The system was unable to delete the findings, please try again later.', 'warning');
+            }
+        },
+        checked
+    );
+}
+
 // Column definitions
 var myColumnDefs = [
-    <?php 
+    <?php
     // PHP is used to populate this javascript array with the column values defined in the controller
     $defs = array();
     foreach ($this->columns as $columnName => $columnDef) {
@@ -73,7 +135,7 @@ var myRequestBuilder = function(oState, oSelf) {
     var count = oState.pagination.rowsPerPage;
 
     // Build custom request
-    var request = "<?php echo $this->escape($this->link, 'none') ?>" + 
+    var request = "<?php echo $this->escape($this->link, 'none') ?>" +
                   "/sortby/" + sort +
                   "/dir/" + dir +
                   "/startIndex/" + startIndex +
@@ -86,17 +148,17 @@ var myConfigs = {
     initialRequest: "<?php echo $this->escape($this->link, 'none'); ?>"
                   + "/sortby/id/dir/asc/startIndex/0/count/"
                   + "<?php echo $this->escape($this->pageInfo['count']) ?>",
-    dynamicData: true, 
+    dynamicData: true,
     sortedBy : {key:"id", dir:YAHOO.widget.DataTable.CLASS_ASC},
     paginator: new YAHOO.widget.Paginator(
-        { 
+        {
             rowsPerPage:<?php echo $this->escape($this->pageInfo['count']) ?>,
             template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
         }
-    ), 
+    ),
     generateRequest : myRequestBuilder
 };
-    
+
 // DataTable instance
 var myDataTable = new YAHOO.widget.DataTable("dynamicdata", myColumnDefs, myDataSource, myConfigs);
 
@@ -115,7 +177,7 @@ myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
         searchResultsHeader.appendChild(searchTotalFound);
     }
-    
+
     // If an exception occurred, then display that to the user
     if (!YAHOO.lang.isUndefined(oResponse.meta.exception)) {
         var alertEl = document.getElementById('msgbar');
@@ -125,14 +187,14 @@ myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
         alertEl.style.display = "block";
         alertEl.innerHTML = "<b>" + oResponse.meta.exception + "</b>";
     }
-    
+
     return oPayload;
 }
 
 // Enable row highlighting and clicking
-myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
+myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
 myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-myDataTable.subscribe("cellClickEvent", 
+myDataTable.subscribe("cellClickEvent",
     function (oArgs) {
         var elTarget = oArgs.target;
         var oRecord = this.getRecord(elTarget);
@@ -151,21 +213,52 @@ myDataTable.subscribe("theadCellClickEvent",
         if (oColumn.key == 'checked') {
             checkbox = YAHOO.util.Dom.get('dt-checkbox');
             records = this.getRecordSet().getRecords();
+
             for (i = 0; i < records.length; i++) {
+                if (checkbox.checked) {
+                    this.selectRow(records[i]);
+                } else {
+                    this.unselectRow(records[i]);
+                }
+
                 this.getRecordSet().updateRecordValue(records[i], 'checked', checkbox.checked);
             }
+
             this.render();
         }
     }
 );
 
+// Select/unselect row when checkbox click event fires
+myDataTable.subscribe("checkboxClickEvent",
+    function(oArgs) {
+        checked = oArgs.target.checked;
+        record = this.getRecord(oArgs.target);
+        this.getRecordSet().updateRecordValue(record, 'checked', checked);
+
+        if (oArgs.target.checked) {
+            this.selectRow(record);
+        } else {
+            this.unselectRow(record);
+        }
+    }
+);
+
+// Make sure that the header checkbox is unchecked on page changes
+myDataTable.get("paginator").subscribe("pageChange",
+    function(oArgs) {
+        checkbox = YAHOO.util.Dom.get('dt-checkbox');
+        checkbox.checked = false;
+    }
+);
+
 var contextMenuItems = ["View"];
-var contextMenu = new YAHOO.widget.ContextMenu( 
-    "contextMenu", 
-    { 
-        trigger:  myDataTable.getTbodyEl(), 
-        itemdata: contextMenuItems, 
-        lazyload: true 
+var contextMenu = new YAHOO.widget.ContextMenu(
+    "contextMenu",
+    {
+        trigger:  myDataTable.getTbodyEl(),
+        itemdata: contextMenuItems,
+        lazyload: true
     }
 );
 
@@ -189,10 +282,10 @@ function contextMenuHandler(event, eventArgs) {
 
 
 // Enable keyword highlighting when loading data from the data source
-myDataTable.subscribe("renderEvent", 
+myDataTable.subscribe("renderEvent",
     function (oArgs) {
         var tableElement = YAHOO.util.Selector.query('.yui-dt-data', 'dynamicdata', true);
-        highlight(tableElement, highlightWords);        
+        highlight(tableElement, highlightWords);
     }
 );
 
@@ -200,7 +293,7 @@ var columnOptionsShowing = false;
 var columnOptionsPanel;
 /* A function which displays the buttons for showing/hiding columns in the search table */
 function showColumnOptions() {
-    if (!columnOptionsPanel) {        
+    if (!columnOptionsPanel) {
         // Add the buttons to the panel
         for (column in myColumnDefs) {
             var title = "";
@@ -211,9 +304,9 @@ function showColumnOptions() {
                 title = myColumnDefs[column].label + " Button UnChecked. Click to Check.";
             }
 
-            var oCheckButton9 = new YAHOO.widget.Button({  
-                type: "checkbox",  
-                label: myColumnDefs[column].label,  
+            var oCheckButton9 = new YAHOO.widget.Button({
+                type: "checkbox",
+                label: myColumnDefs[column].label,
                 container: "columnOptionsPanelBody",
                 checked: !myColumnDefs[column].hidden,
                 onclick: {
@@ -231,12 +324,12 @@ function showColumnOptions() {
                 fn: saveColumnPreference
             }
         });
-        
+
         // Setup the panel
-        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} ); 
+        columnOptionsPanel = new YAHOO.widget.Panel('columnOptionsPanelDiv', {width:"300px"} );
         columnOptionsPanel.setHeader('Show/Hide Columns');
         columnOptionsPanel.setFooter('Tip: Click "Save" to make this your default column preference.');
-        columnOptionsPanel.render(document.body); 
+        columnOptionsPanel.render(document.body);
         columnOptionsPanel.center();
     }
     columnOptionsPanel.show();
@@ -270,7 +363,7 @@ function saveColumnPreference(event, obj) {
             success : function (response) {
                 alert('Your preference has been saved. These columns will be visible whenever you log in.');
             },
-            
+
             failure : function (response) {
                 alert('An error occurred and your preference could not be saved.');
             }
