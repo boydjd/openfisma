@@ -60,6 +60,8 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
+                                      '/javascripts/Fisma/Search/Criteria.js',
+                                      '/javascripts/Fisma/Search/Panel.js',
                                       '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
@@ -80,6 +82,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/Modules.css',
+                                      '/stylesheets/Search.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css'

@@ -427,6 +427,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchForm = $this->getSearchForm();
         $this->view->searchResultsTable = $searchResultsTable;
 
+        $advancedSearchOptions = array(
+            array('name' => 'name', 'label' => 'Name', 'type' => 'text'),
+            array('name' => 'nickname', 'label' => 'Nickname', 'type' => 'text'),
+            array('name' => 'description', 'label' => 'Description', 'type' => 'text')
+        );
+
+        $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
+
         $this->renderScript('object/list.phtml');
     }
 

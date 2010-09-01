@@ -32,6 +32,12 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
      */
     public function getSearchableFields()
     {
-        return array ('name', 'source', 'addressIp', 'addressPort', 'modifiedTs');
+        return array (
+            'name' => array('displayName' => 'Name'), 
+            'source' => array('displayName' => 'Nickname'), 
+            'addressIp' => array('displayName' => 'IP Address'),
+            'addressPort' => array('displayName' => 'IP Port'),
+            'modifiedTs' => array('displayName' => 'Last Modified')
+        );
     }
 }

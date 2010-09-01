@@ -43,6 +43,11 @@ Fisma.Search = function() {
          * The base URL for search queries
          */
         baseUrl : '',
+        
+        /**
+         * Field definitions for the advanced search interface
+         */
+        fields : null,
 
         /**
          * Test the current system configuration
@@ -231,6 +236,36 @@ Fisma.Search = function() {
          */
         getBaseUrl : function () {
             return Fisma.Search.baseUrl;
+        },
+        
+        /**
+         * Show or hide the advanced search options UI
+         */
+        toggleAdvancedSearchPanel : function () {
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+
+                document.getElementById('advancedSearch').style.display = 'block';
+                document.getElementById('keywords').style.visibility = 'hidden';
+                document.getElementById('searchType').value = 'advanced';
+
+            } else {
+
+                document.getElementById('advancedSearch').style.display = 'none';
+                document.getElementById('keywords').style.visibility = 'visible';
+                document.getElementById('searchType').value = 'simple';
+
+            }
+        },
+        
+        /**
+         * Show or hide the search columns UI
+         */
+        toggleSearchColumnsPanel : function () {
+            if (document.getElementById('searchColumns').style.display == 'none') {
+                document.getElementById('searchColumns').style.display = 'block';
+            } else {
+                document.getElementById('searchColumns').style.display = 'none';
+            }            
         }
     }
 }();

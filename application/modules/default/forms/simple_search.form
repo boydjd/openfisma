@@ -13,9 +13,20 @@
 
 [simple_search]
 
+elements.searchType.type = "hidden"
+elements.searchType.options.value = "simple"
+
 elements.keywords.type = "text"
 elements.keywords.options.attribs.size = 25
 elements.keywords.options.attribs.title = "Keyword Search"
 
 elements.search.type = "Form_Button_Submit"
 elements.search.options.label = "Search"
+
+elements.columns.type = "Form_Button"
+elements.columns.options.onClickFunction = "Fisma.Search.toggleSearchColumnsPanel"
+elements.columns.options.label = "Columns"
+
+elements.advanced.type = "Form_Button"
+elements.advanced.options.onClickFunction = "Fisma.Search.toggleAdvancedSearchPanel"
+elements.advanced.options.label = "Advanced"
