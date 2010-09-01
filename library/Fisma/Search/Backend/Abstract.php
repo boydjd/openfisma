@@ -78,12 +78,24 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows);
 
     /**
-     * Advanced search: search based on a customized Solr query
+     * Advanced search: search based on a list of specific field criteria
      * 
-     * @param SolrQuery $keyword
-     * @return array Rectangular array of search results
+     * @param string $type Name of model index to search
+     * @param Fisma_Search_Criteria $criteria
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @return Fisma_Search_Result Rectangular array of search results
      */
-    abstract public function searchByQuery(SolrQuery $query);
+    abstract public function searchByCriteria(
+        $type, 
+        Fisma_Search_Criteria $criteria, 
+        $sortColumn, 
+        $sortDirection, 
+        $start, 
+        $rows
+    );
 
     /**
      * Validate the backend's configuration

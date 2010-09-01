@@ -27,13 +27,6 @@
  */
 class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 {
-/*
-    public function debug() 
-    { 
-        echo("<pre style='white-space: pre-wrap;'>" . htmlspecialchars($this->_client->getDebug()) . "</pre>"); 
-    }
-*/
-
     /**
      * Client object is used for communicating with Solr server
      * 
@@ -249,14 +242,82 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
-     * Advanced search: search based on a customized Solr query
+     * Advanced search: search based on a list of specific field criteria
      * 
-     * @param SolrQuery $keyword
-     * @return array Rectangular array of search results
+     * @param string $type Name of model index to search
+     * @param Fisma_Search_Criteria $criteria
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @return Fisma_Search_Result Rectangular array of search results
      */
-    public function searchByQuery(SolrQuery $query)
+    public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection, $start, $rows)
     {
-        throw new Fisma_Zend_Exception("not implemented");
+        $query = new SolrQuery;
+
+        // @todo fix this awkwardness
+        // Getting the column name is a little awkward:
+        $table = Doctrine::getTable($type);
+        $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
+        $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+
+        $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
+
+        // Add required fields to query. The rest of the fields are added below.
+        $query->addField('id')
+              ->addField('documentId')
+              ->addSortField($sortColumnParam, $sortDirectionParam)
+              ->setStart($start)
+              ->setRows($rows);
+
+        // Use the filter query (for efficient caching) and enable highlighting
+        $query->setHighlight(true)
+              ->setHighlightSimplePre('***')
+              ->setHighlightSimplePost('***')
+              ->setHighlightRequireFieldMatch(true)
+              ->addFilterQuery('documentType:' . $type);
+
+        // Enumerate all fields so they can be included in search results
+        $searchableFields = Doctrine::getTable($type)->getSearchableFields();
+
+        $table = Doctrine::getTable($type);
+
+        foreach (array_keys($searchableFields) as $searchableField) {
+            
+            // Some twiddling to convert Doctrine's field names to Solr's field names
+            $columnDefinition = $table->getColumnDefinition($table->getColumnName($searchableField));
+            $documentFieldName = $searchableField . '_' . $this->_getSuffixForColumn($columnDefinition);
+
+            $query->addField($documentFieldName);
+            $query->addHighlightField($documentFieldName);
+        }
+
+        $searchTerms = array();
+
+        foreach ($criteria as $criterion) {
+            // Some twiddling to convert Doctrine's field names to Solr's field names
+            $columnDefinition = $table->getColumnDefinition($table->getColumnName($criterion->fieldName));
+            $rawFieldName = $criterion->fieldName . '_' . $this->_getSuffixForColumn($columnDefinition);
+
+            $fieldName = $this->escape($rawFieldName);
+            $operand = $this->escape($criterion->operand);
+
+            switch ($criterion->operator) {
+                case 'contains':
+                    $searchTerms[] = $fieldName . ':' . $operand;
+                    break;
+                
+                default:
+                    throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->operator);
+            }
+        }
+
+        $query->setQuery(implode($searchTerms, ' OR '));
+
+        $response = $this->_client->query($query)->getResponse(); 
+
+        return $this->_convertSolrResultToStandardResult($response);
     }
 
     /**

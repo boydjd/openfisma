@@ -471,14 +471,52 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
 
         // Execute simple search (default) or advanced search (if explicitly requested)
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
         $queryType = $this->getRequest()->getParam('queryType');
 
         if ('advanced' == $queryType) {
+            
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+            
+            $urlParams = $this->getRequest()->getParams();
+            
+            foreach ($urlParams as $parameterName => $operand) {
+
+                // Only interested in parameters that have a dot in the name -- these indicate search criteria
+                if (false === strpos($parameterName, '.')) {
+                    continue;
+                }
+                
+                // Use the dot to split the parameter name into its 2 parts: field name and operator
+                $parts = explode('.', $parameterName);
+                
+                if (2 != count($parts)) {
+                    throw new Fisma_Zend_Exception("Invalid search criteria: " . $parameterName);
+                }
+
+                $fieldName = $parts[0];
+                $operator = $parts[1];
+                
+                $searchCriteria->add($fieldName, $operator, $operand);
+            }
+
+            // Run advanced search
+            $result = $searchEngine->searchByCriteria(
+                $this->_modelName, 
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows
+            );
         } else {
             $keywords = $this->getRequest()->getParam('keywords');
 
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
+            // Run simple search
             $result = $searchEngine->searchByKeyword(
                 $this->_modelName, 
                 $keywords,
