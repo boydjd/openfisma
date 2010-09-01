@@ -4,7 +4,7 @@ Configuration:
 
         failure_threshold: 3
 
-        session_inactivity_period: 5400
+        session_inactivity_period: 1200 
 
         auth_type: database
 
