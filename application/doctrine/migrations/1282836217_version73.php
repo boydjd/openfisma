@@ -101,6 +101,13 @@ class Version73 extends Doctrine_Migration_Base
             $falsePositiveVulnerability->action = 'false_positive';
             $falsePositiveVulnerability->description = 'Set Vulnerabilities To False Positive';
             $privileges[] = $falsePositiveVulnerability;
+            
+            // Create the new "Unaffiliated Asset" privilege
+            $unaffiliatedAsset = new Privilege();
+            $unaffiliatedAsset->resource = 'asset';
+            $unaffiliatedAsset->action = 'unaffiliated';
+            $unaffiliatedAsset->description = 'Unaffiliated Assets';
+            $privileges[] = $unaffiliatedAsset;
 
             $privileges->save();
 
@@ -134,6 +141,13 @@ class Version73 extends Doctrine_Migration_Base
                                             ->where('resource = ?', 'vulnerability');
 
             $deleteVulnerabilityCrudQuery->execute();
+
+            $deleteUnaffiliatedAssetQuery = Doctrine_Query::create()
+                                            ->delete('Privilege')
+                                            ->where('resource = ?', 'asset')
+                                            ->andWhere('action = ?', 'unaffiliated');
+
+            $deleteUnaffiliatedAssetQuery->execute();
 
             $conn->commit();
         } catch (Doctrine_Exception $e) {

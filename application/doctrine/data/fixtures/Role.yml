@@ -84,6 +84,7 @@ Role:
             - asset_create
             - asset_read
             - asset_update
+            - asset_unaffiliated
             - organization_read
             - notification_asset
             - notification_finding
@@ -128,6 +129,7 @@ Role:
             - asset_create
             - asset_read
             - asset_update
+            - asset_unaffiliated
             - organization_read
             - notification_admin
             - notification_asset
@@ -184,6 +186,7 @@ Role:
             - asset_read
             - asset_update
             - asset_delete
+            - asset_unaffiliated
             - user_create
             - user_read
             - user_update

@@ -243,14 +243,19 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         if (!empty($params['version'])) {
             $q->andWhere('p.version LIKE ?', $params['version'] . '%');
         }
-        // get the assets whitch are belongs to current user's systems
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('asset', 'read')->toArray();
-        $orgSystemIds = array();
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemIds[] = $orgSystem['id'];
+
+        // Filter by what systems the user is allowed to see
+        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read')->toKeyValueArray('id', 'id');
+
+        // DQL doesn't allow us to easily create a parenthetical expression, so here's a quick workaround
+        $inString = implode(',', array_filter($systems, 'is_numeric'));
+
+        if ($this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
+            $q->andWhere("(a.orgSystemId IN ($inString) OR a.orgSystemId IS NULL)");
+        } else {
+            $q->andWhere("a.orgSystemId IN ($inString)");
         }
-        $q->andWhereIn('a.orgSystemId', $orgSystemIds);
-        
+
         if ($this->_request->getParam('format') == null) {
             $q->limit($this->_paging['count'])
             ->offset($this->_paging['startIndex']);

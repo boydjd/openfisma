@@ -216,6 +216,14 @@ Privilege:
         resource: asset
         action: delete
         description: Delete Assets
+    # Asset ACL is based on systems, but not all assets will be connected to systems. This privilege is a special
+    # privilege that is orthogonal to the CRUD above; it adds the capability to use the CRUD privileges above on
+    # unaffiliated assets. E.g. if you have asset_read AND asset_unaffiliated, then you can view unaffiliated assets,
+    # but that doesn't mean that you can delete unaffiliated assets.
+    asset_unaffiliated:
+        resource: asset
+        action: unaffiliated
+        description: Unaffiliated Assets
 
     # Users CRUD
     user_create:
