@@ -165,7 +165,7 @@ class AuthController extends Zend_Controller_Action
             // Check to see if the user needs to review the rules of behavior.
             // If they do, then send them to that page. Otherwise, send them to
             // the dashboard.
-            $nextRobReview = new Zend_Date($user->lastRob);
+            $nextRobReview = new Zend_Date($user->lastRob, Zend_Date::ISO_8601);
             $nextRobReview->add(Fisma::configuration()->getConfig('rob_duration'), Zend_Date::DAY);
             if (is_null($user->lastRob) || $nextRobReview->isEarlier(new Zend_Date())) {
                 $this->_helper->layout->setLayout('notice');
