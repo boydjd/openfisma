@@ -69,12 +69,12 @@ See http://manual.openfisma.org/display/OPENFISMA/Search+Configuration
         The Document ID is a globally unique ID formed by merging the type and the primary key together, e.g.
         an Asset object with PK 112 would be Asset112.
         -->
-        <field name="documentId" type="string" indexed="true" stored="true" required="true"/>
+        <field name="luceneDocumentId" type="string" indexed="true" stored="true" required="true"/>
 
         <!--
         The Document Type represents the OpenFISMA data model which a particular document was generated from
         -->
-        <field name="documentType" type="string" indexed="true" stored="true" required="true"/>
+        <field name="luceneDocumentType" type="string" indexed="true" stored="true" required="true"/>
 
         <!--
         Each document also requires the primary key to be stored in the id field.
@@ -93,7 +93,7 @@ See http://manual.openfisma.org/display/OPENFISMA/Search+Configuration
         <dynamicField name="*_textsort" type="string" indexed="true" stored="true"/>
     </fields>
 
-    <uniqueKey>documentId</uniqueKey>
+    <uniqueKey>luceneDocumentId</uniqueKey>
     <defaultSearchField>id</defaultSearchField>
     <solrQueryParser defaultOperator="OR"/>
 </schema>

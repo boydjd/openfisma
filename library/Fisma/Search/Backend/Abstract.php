@@ -53,7 +53,7 @@ abstract class Fisma_Search_Backend_Abstract
     /**
      * Add the specified object to the search engine index
      * 
-     * This should overwrite any existing object with the same documentId
+     * This should overwrite any existing object with the same luceneDocumentId
      * 
      * @param Fisma_Doctrine_Record $object
      */

@@ -61,7 +61,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function deleteByType($type)
     {
-        $this->_client->deleteByQuery('documentType:' . $type);
+        $this->_client->deleteByQuery('luceneDocumentType:' . $type);
 
         $this->_client->commit();
     }
@@ -75,9 +75,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function deleteObject($object)
     {
-        $documentId = get_class($object) . $object->id;
+        $luceneDocumentId = get_class($object) . $object->id;
         
-        $this->_client->deleteById($documentId);
+        $this->_client->deleteById($luceneDocumentId);
 
         $this->_client->commit();
         
@@ -100,7 +100,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     /**
      * Add the specified object to the search engine index
      * 
-     * The client library will overwrite any document with a matching documentId automatically
+     * The client library will overwrite any document with a matching luceneDocumentId automatically
      * 
      * @param Fisma_Doctrine_Record $object
      */
@@ -184,20 +184,20 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // Add required fields to query. The rest of the fields are added below.
         $query->addField('id')
-              ->addField('documentId')
+              ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam)
               ->setStart($start)
               ->setRows($rows);
 
         if (is_null($keyword)) {
             // Without keywords, this is just a listing of all documents of a specific type
-            $query->setQuery('documentType:' . $type);
+            $query->setQuery('luceneDocumentType:' . $type);
         } else {
             // For keyword searches, use the filter query (for efficient caching) and enable highlighting
             $query->setHighlight(true)
                   ->setHighlightSimplePre('***')
                   ->setHighlightSimplePost('***')
-                  ->addFilterQuery('documentType:' . $type);
+                  ->addFilterQuery('luceneDocumentType:' . $type);
                   
             // Tokenize keyword on spaces and escape all tokens
             $keywordTokens = split(' ', $keyword);
@@ -277,7 +277,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // Add required fields to query. The rest of the fields are added below.
         $query->addField('id')
-              ->addField('documentId')
+              ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam)
               ->setStart($start)
               ->setRows($rows);
@@ -287,7 +287,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->setHighlightSimplePre('***')
               ->setHighlightSimplePost('***')
               ->setHighlightRequireFieldMatch(true)
-              ->addFilterQuery('documentType:' . $type);
+              ->addFilterQuery('luceneDocumentType:' . $type);
 
         // Enumerate all fields so they can be included in search results
         $searchableFields = Doctrine::getTable($type)->getSearchableFields();
@@ -391,8 +391,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // All documents have the following three fields
         if (isset($object->id)) {
-            $document->addField('documentId', $type . $object->id);
-            $document->addField('documentType', $type);
+            $document->addField('luceneDocumentId', $type . $object->id);
+            $document->addField('luceneDocumentType', $type);
             $document->addField('id', $object->id);
         } else {
             throw new Fisma_Search_Exception("Cannot index object type ($type) because it does not have an id field.");
@@ -404,8 +404,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         foreach ($searchableFields as $doctrineFieldName => $searchFieldDefinition) {
 
-            if ('documentId' == $doctrineFieldName) {
-                throw new Fisma_Search_Exception("Model columns cannot be named documentId");
+            if ('luceneDocumentId' == $doctrineFieldName) {
+                throw new Fisma_Search_Exception("Model columns cannot be named luceneDocumentId");
             }
             
             $doctrineColumnDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
@@ -457,24 +457,24 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 $row[$newColumnName] = $columnValue[0];
             }
 
-            $documentId = $row['documentId'];
+            $luceneDocumentId = $row['luceneDocumentId'];
 
-            $tableData[$documentId] = $row;
+            $tableData[$luceneDocumentId] = $row;
         }
         
         // Now merge any highlighted fields into the table data
-        foreach ($highlighting as $documentId => $row) {
+        foreach ($highlighting as $luceneDocumentId => $row) {
             foreach ($row as $fieldName => $fieldValue) {
                 $newFieldName = $this->_removeSuffixFromColumnName($fieldName);
 
                 // Solr stores each field as an array with length 1, so we take index 0
-                $tableData[$documentId][$newFieldName] = $fieldValue[0];
+                $tableData[$luceneDocumentId][$newFieldName] = $fieldValue[0];
             }
         }
         
-        // Remove the documentId from each field
+        // Remove the luceneDocumentId from each field
         foreach ($tableData as &$document) {
-            unset($document['documentId']);
+            unset($document['luceneDocumentId']);
         }
         
         // Discard the row IDs
