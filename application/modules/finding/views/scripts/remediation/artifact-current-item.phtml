@@ -32,7 +32,7 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
             </p>
         <?php 
             if (!empty($findingEvaluation->comment)):
-                    echo $this->escape($this->textToHtml($findingEvaluation->comment), 'none');
+                    echo $this->escape($findingEvaluation->comment);
             endif;
         ?>
         </div>
