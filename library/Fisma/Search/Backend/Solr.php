@@ -121,32 +121,21 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * 
      * In Solr, sorting is only available for stored, un-analyzed, single-valued fields.
      * 
-     * @param array $columnDefinition A doctrine column definition
+     * @param string $type The class containing the column
+     * @param string $columnName
      * @return bool
      */
-    public function isColumnSortable($columnDefinition)
+    public function isColumnSortable($type, $columnName)
     {
-        $suffix = $this->_getSuffixForColumn($columnDefinition);
+        $table = Doctrine::getTable($type);
         
-        switch ($suffix) {
-            case 'text':
-                $sortable = false;
-                break;
-            
-            // Following conditions all fall through
-            case 'str':
-            case 'enum':
-            case 'date':
-            case 'int':
-                $sortable = true;
-                break;
-            
-            default:
-                throw new Fisma_Search_Exception("Sortability not defined for suffix ($suffix)");
-                break;
+        if (!($table instanceof Fisma_Search_Searchable)) {
+            throw new Fisma_Search_Exception("This table is not searchable: $type");
         }
 
-        return $sortable;
+        $searchableFields = $table->getSearchableFields();
+
+        return $searchableFields['sortable'];
     }
 
     /**
@@ -178,7 +167,18 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         // Getting the column name is a little awkward:
         $table = Doctrine::getTable($type);
         $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
-        $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+        $searchableFields = $table->getSearchableFields();
+        
+        if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
+            throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
+        }
+        
+        // Text columns have different sorting rules (see design document)
+        if ('string' == $sortColumnDefinition['type']) {
+            $sortColumnParam = $this->escape($sortColumn) . '_textsort';
+        } else {
+            $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+        }
 
         $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
 
@@ -260,7 +260,18 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         // Getting the column name is a little awkward:
         $table = Doctrine::getTable($type);
         $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
-        $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+        $searchableFields = $table->getSearchableFields();
+
+        if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
+            throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
+        }
+        
+        // Text columns have different sorting rules (see design document)
+        if ('string' == $sortColumnDefinition['type']) {
+            $sortColumnParam = $this->escape($sortColumn) . '_textsort';
+        } else {
+            $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+        }
 
         $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
 
@@ -313,7 +324,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             }
         }
 
-        $query->setQuery(implode($searchTerms, ' OR '));
+        $query->setQuery(implode($searchTerms, ' AND '));
 
         $response = $this->_client->query($query)->getResponse(); 
 
@@ -391,7 +402,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $table = Doctrine::getTable($type);
         $searchableFields = $object->getTable()->getSearchableFields();
 
-        foreach (array_keys($searchableFields) as $doctrineFieldName) {
+        foreach ($searchableFields as $doctrineFieldName => $searchFieldDefinition) {
 
             if ('documentId' == $doctrineFieldName) {
                 throw new Fisma_Search_Exception("Model columns cannot be named documentId");
@@ -407,6 +418,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $documentFieldValue = $this->_getValueForColumn($rawValue, $doctrineColumnDefinition);
                 
             $document->addField($documentFieldName, $documentFieldValue);
+            
+            // For sortable text columns, add a separate 'textsort' column (see design document)
+            if ('string' == $doctrineColumnDefinition['type'] && $searchFieldDefinition['sortable']) {
+                $document->addField($doctrineFieldName . '_textsort', $documentFieldValue);
+            }
         }
 
         return $document;
@@ -476,35 +492,28 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _getSuffixForColumn($columnDefinition)
     {
-        if ('string' == $columnDefinition['type']) {
-
-            /* 
-             * The 'str' suffix results in an untokenized value that is sortable. By default, this is applied to all
-             * length-restricted string fields. Length-restricted fields will get a 'text' suffix which is tokenized 
-             * but NOT SORTABLE. Solr cannot sort a tokenized value.
-             */
-            if (is_null($columnDefinition['length'])) {
+        switch ($columnDefinition['type']) {
+            case 'string':
                 $suffix = 'text';
-            } else {
-                $suffix = 'str';
-            }
-
-        } elseif ('enum' == $columnDefinition['type']) {
+                break;
+                
+            case 'enum':
+                $suffix = 'enum';
+                break;
             
-            $suffix = 'enum';
+            // These cases intentionally fall through
+            case 'date':
+            case 'datetime':
+            case 'timestamp':
+                $suffix = 'date';
+                break;
+                
+            case 'integer':
+                $suffix = 'int';
+                break;
             
-        } elseif ('date' == $columnDefinition['type'] ||
-                  'datetime' == $columnDefinition['type'] ||
-                  'timestamp' == $columnDefinition['type']) {
-
-            $suffix = 'date';
-
-        } elseif ('integer' == $columnDefinition['type']) {
-            
-            $suffix = 'int';
-            
-        } else {
-            throw new Fisma_Search_Exception("No suffix defined for column type ({$columnDefinition['type']})");
+            default:
+                throw new Fisma_Search_Exception("No suffix defined for column type ({$columnDefinition['type']})");
         }
         
         return $suffix;
@@ -526,9 +535,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             return $columnName;
         }
     }
-    
+
     /**
      * Create the field value for an object based on its type and other metadata
+     * 
+     * This includes transformations such as correctly formatting dates, times, and stripping HTML content
      * 
      * @param mixed $value
      * @param array $columnDefinition
@@ -536,7 +547,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _getValueForColumn($rawValue, $columnDefinition)
     {
-
         if (isset($columnDefinition['extra']['purify']) && 'html' == $columnDefinition['extra']['purify']) {
             // HTML fields need HTML stripped            
             $value = $this->_convertHtmlToIndexString($rawValue);
@@ -552,7 +562,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             // By default, just index the raw value
             $value = $rawValue;
         }        
-        
+
         return $value;
     }
 }

@@ -415,7 +415,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         foreach ($searchableFields as $fieldName => $searchParams) {
 
             $displayName = $searchParams['displayName'];
-            $sortable = $searchEngine->isColumnSortable($table->getColumnDefinition($table->getColumnName($fieldName)));
+            $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
             $column = new Fisma_Yui_DataTable_Column($displayName, $sortable, null, $fieldName);
 
@@ -427,11 +427,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchForm = $this->getSearchForm();
         $this->view->searchResultsTable = $searchResultsTable;
 
-        $advancedSearchOptions = array(
-            array('name' => 'name', 'label' => 'Name', 'type' => 'text'),
-            array('name' => 'nickname', 'label' => 'Nickname', 'type' => 'text'),
-            array('name' => 'description', 'label' => 'Description', 'type' => 'text')
-        );
+        // Construct options for advanced search
+        $advancedSearchOptions = array();
+
+        foreach ($searchableFields as $fieldName => $fieldDefinition) {
+            $advancedSearchOptions[] = array(
+                'name' => $fieldName,
+                'label' => $fieldDefinition['displayName'],
+                'type' => 'text' // @todo
+            );
+        }
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
 

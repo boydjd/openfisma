@@ -33,11 +33,26 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     public function getSearchableFields()
     {
         return array (
-            'name' => array('displayName' => 'Name'), 
-            'source' => array('displayName' => 'Nickname'), 
-            'addressIp' => array('displayName' => 'IP Address'),
-            'addressPort' => array('displayName' => 'IP Port'),
-            'modifiedTs' => array('displayName' => 'Last Modified')
+            'name' => array(
+                'displayName' => 'Name',
+                'sortable' => true
+            ), 
+            'source' => array(
+                'displayName' => 'Nickname',
+                'sortable' => true
+            ), 
+            'addressIp' => array(
+                'displayName' => 'IP Address',
+                'sortable' => true
+            ),
+            'addressPort' => array(
+                'displayName' => 'IP Port',
+                'sortable' => true
+            ),
+            'modifiedTs' => array(
+                'displayName' => 'Last Modified',
+                'sortable' => true
+            )
         );
     }
 }
