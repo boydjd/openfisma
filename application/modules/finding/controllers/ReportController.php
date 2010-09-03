@@ -208,9 +208,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             $this->_acl->requirePrivilegeForClass('read', 'Organization');
         }
 
-        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'read');
-        $systemList = array('' => '') + $systems->toKeyValueArray('id', 'nickname');
-        asort($systemList);
+        $systems = $this->_me->getSystemsByPrivilege('finding', 'read');
+        $systemList = array('' => '') + $this->view->systemSelect($systems);
 
         $sourceList = array('' => '') + Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         asort($sourceList);
@@ -241,6 +240,12 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->groupBy('o.id, actionType')
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+        // Get organization id for the url of overdue finding search link
+        // when the context format is 'html'.
+        if ('html' == $this->_helper->reportContextSwitch()->getCurrentContext()) {
+            $overdueQuery->addSelect("o.id id");
+        }
+
         // If the user selects one organization then display that one only. Otherwise display all of this users systems.
         if (!empty($systemId)) {
             $overdueQuery->andWhere('o.id = ?', $systemId);
@@ -263,10 +268,15 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                ->addColumn(new Fisma_Report_Column('< 60 Days', true))
                ->addColumn(new Fisma_Report_Column('60-119 Days', true))
                ->addColumn(new Fisma_Report_Column('120+ Days', true))
-               ->addColumn(new Fisma_Report_Column('Total Overdue', true))
+               ->addColumn(new Fisma_Report_Column('Total Overdue', true, 'Fisma.TableFormat.overdueFinding'))
                ->addColumn(new Fisma_Report_Column('Average (Days)', true))
                ->addColumn(new Fisma_Report_Column('Maximum (Days)', true))
                ->setData($reportData);
+
+        // Add organization id column  and set it to hide with true param when the context format is 'html'.
+        if ('html' == $this->_helper->reportContextSwitch()->getCurrentContext()) {
+            $report->addColumn(new Fisma_Report_Column('Organization Id', true, null, true));
+        }
 
         $this->_helper->reportContextSwitch()
                       ->setReport($report)

@@ -27,13 +27,6 @@
  *            Eventually this file needs to be removed 
  */
 
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
-
 var Fisma = {};
 
 $P = new PHP_JS();

@@ -72,7 +72,8 @@
                 <span id="organization" 
                       type="select" 
                       name="finding[responsibleOrganizationId]" 
-                      href="/metainfo/list/o/organization/format/html/">
+                      href="/metainfo/list/o/system/format/html/"
+                      value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                      <a href="/organization/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                          <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
                          - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
@@ -80,7 +81,7 @@
                 </span>
 
                 <?php
-                if (('NEW' == $status || 'DRAFT' == $status)
+                if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
                      && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)):
                 ?>
                     <span class="editable" target="organization">&nbsp;</span>
@@ -185,7 +186,7 @@
 <div class="clear"></div>
 
 <?php 
-if ($this->acl()->hasPrivilegeForObject('update_description', $finding)
+if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_description', $finding)
     && ('NEW' == $status || 'DRAFT' == $status)) {
     Fisma_Format_Section::startSection('Description', 'finding_description');
 } else {
@@ -198,7 +199,7 @@ if ($this->acl()->hasPrivilegeForObject('update_description', $finding)
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php
-if (('NEW' == $status || 'DRAFT' == $status)
+if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
     && $this->acl()->hasPrivilegeForObject('update_recommendation', $finding)) {
     Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {

@@ -762,10 +762,10 @@ div.form {
 }
 
 div.formValue {
-    background-color: #ffffff;
+    background-color: #EBEBE4;
     border: 1px solid #bebebe;
     padding: 5px;
-    color: black;
+    color: #404040;
     font-weight: normal;
 }
 

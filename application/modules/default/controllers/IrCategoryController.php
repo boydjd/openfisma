@@ -547,13 +547,22 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
         $id = $this->_request->getParam('id');
         $irsubcategory = Doctrine::getTable('IrSubCategory')->find($id);
         if ($irsubcategory) {
-            if ($irsubcategory->delete()) {
+            try {
+                $irsubcategory->delete();
+
                 $msg = "Sub Category deleted successfully";
                 $model = 'notice';
-            } else {
-                $msg = "Failed to delete the Sub Category";
-                $model = 'warning';
+            } catch (Doctrine_Connection_Exception $e) {
+                $portableCode = $e->getPortableCode();
+
+                if (Doctrine::ERR_CONSTRAINT == $portableCode) {
+                    $msg = 'The subcategory cannot be deleted because there are incidents using this subcategory.';
+                    $model = 'warning';                    
+                } else {
+                    throw $e;
+                }
             }
+
             $this->view->priorityMessenger($msg, $model);
         }
         $this->_redirect('/ir-category/tree');

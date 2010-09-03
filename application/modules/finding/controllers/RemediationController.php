@@ -447,7 +447,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         'estDateBegin' => '', 'estDateEnd' => '',
                         'createdDateBegin' => '', 'createdDateEnd' => '',
                         'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null,
-                        'securityControl' => null);
+                        'securityControl' => null, 'overdueActionType' => null, 'deleted_at' => '');
         $req = $this->getRequest();
         $tmp = $req->getParams();
         foreach ($params as $k => &$v) {
@@ -455,6 +455,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                 $v = $tmp[$k];
             }
         }
+
         if (is_numeric($params['responsibleOrganizationId'])) {
             $params['responsibleOrganizationId'] = $params['responsibleOrganizationId'];
         }
@@ -599,6 +600,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                                            'hidden' => ($visibleColumns & (1 << 16)) == 0,
                                            'formatter' => 'text')
         );
+
         return $columns;
     }
     
@@ -618,16 +620,24 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->view->assign('link', $link);
         $this->view->assign('attachUrl', '/finding/remediation/search2' . $link);
         Fisma_Cookie::set('lastSearchUrl', "/finding/remediation/searchbox$link");
-        $this->view->assign('columns', $this->_getColumns());
 
-        // These variables go into the search box view
-        $systemList = array();
-        foreach ($this->_organizations as $system) {
-            if ($system->orgType != 'system' || $system->System->sdlcPhase != 'disposal') {
-                $systemList[$system->id] = "$system->nickname - $system->name";
-            }
+        $columns = $this->_getColumns();
+
+        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
+            $columns = array(
+                'checked' => array(
+                                    'label' => '<input id="dt-checkbox" type="checkbox" />',
+                                    'width' => '30',
+                                    'sortable' => false,
+                                    'hidden' => false,
+                                    'formatter' => 'checkbox'
+                )
+            ) + $columns;
         }
-        asort($systemList);
+
+        $this->view->assign('columns', $columns);
+        // These variables go into the search box view
+        $systemList = $this->view->systemSelect($this->_me->getSystemsByPrivilege('finding', 'read'));
         $this->view->assign('params', $params);
         $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
@@ -708,7 +718,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
     {
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-        $finding = Doctrine::getTable('Finding')->find($id);
+        $finding = $this->_getFinding($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -730,7 +740,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             )
         );
 
-        if (!$this->_acl->hasPrivilegeForObject('comment', $finding)) {
+        if (!$this->_acl->hasPrivilegeForObject('comment', $finding) || $finding->isDeleted()) {
             $commentButton->readOnly = true;
         }
 
@@ -772,7 +782,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $finding = $this->_getFinding($id);
-        
+
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.
         if (empty($findingData['securityControlId'])) {
@@ -861,6 +871,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
     {
         $id = $this->_request->getParam('id');
         $finding = $this->_getFinding($id);
+
+        if ($finding->isDeleted()) {
+            $message = "Evidence cannot be uploaded to a deleted finding.";
+            throw new Fisma_Zend_Exception($message);
+        }
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
@@ -1187,25 +1202,43 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         if (!empty($params['status'])) {
             $now = new Zend_Date();
             switch ($params['status']) {
-                case 'TOTAL': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
+                case 'TOTAL':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
                     break;
-                case 'NOT-CLOSED': $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
+                case 'NOT-CLOSED':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
                     break;
-                case 'NOUP-30': $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(30);
+                case 'NOUP-30':
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(30);
                     break;
                 case 'NOUP-60':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(60);
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(60);
                     break;
                 case 'NOUP-90':
-                     $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                     $params['modify_ts'] = $now->subDay(90);
+                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
+                    $params['modify_ts'] = $now->subDay(90);
                     break;
                 case 'NEW':  case 'DRAFT':  case 'EN': case 'CLOSED': default : 
                     break;
             }
         }
+
+        // Convert overdue action type to correspond finding status for overdue finding search
+        if (!empty($params['overdueActionType'])) {
+            switch ($params['overdueActionType']) {
+                case 'Mitigation Strategy':
+                    $params['status'] = array('NEW', 'DRAFT', 'MSA');
+                    break;
+                case 'Corrective Action':
+                    $params['status'] = array('EN','EA');
+                    break;
+            }
+
+            unset($params['overdueActionType']);
+        }
+
         if ($params['ids']) {
             $params['ids'] = explode(',', $params['ids']);
         }
@@ -1296,7 +1329,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
 
         foreach ($params as $k => $v) {
             if ($v) {
-                if ($k == 'estDateBegin') {
+                if ($k == 'deleted_at') {
+                    if ($v) {
+                        $q->andWhere('f.deleted_at = f.deleted_at');
+                    }
+                } elseif ($k == 'estDateBegin') {
                     $v = $v->toString('Y-m-d H:i:s');
                     $q->andWhere("f.currentEcd > ?", $v);
                 } elseif ($k == 'estDateEnd') {
@@ -1356,6 +1393,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                 }
             }
         }
+
+        unset($params['deleted_at']);
+
         if ($format == 'json') {
             $q->limit($this->_paging['count'])->offset($this->_paging['startIndex']);
         }
@@ -1478,6 +1518,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             )
         );
         
+        if ($this->view->finding->isDeleted()) {
+            $securityControlSearchButton->readOnly = true;
+        }
+
         if ($this->view->finding->status != 'NEW' &&  $this->view->finding->status != 'DRAFT') {
             $securityControlSearchButton->readOnly = true;
         }
@@ -1521,7 +1565,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
      */
     private function _getFinding($id)
     {
-        $finding = Doctrine::getTable('Finding')->find($id);
+        $finding = Doctrine_Query::create()->from('Finding f')->where('f.id = ?', $id);
+
+        // If user has the delete privilege, then allow viewing of deleted findings
+        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
+            $finding->andWhere('(f.deleted_at = f.deleted_at OR f.deleted_at IS NULL)');
+        }
+
+        $finding = $finding->fetchOne();
 
         if (false == $finding) {
              throw new Fisma_Zend_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");

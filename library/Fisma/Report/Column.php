@@ -50,17 +50,26 @@ class Fisma_Report_Column
     private $_formatter;
 
     /**
+     * Whether this column is hidden or not
+     * 
+     * @var bool
+     */
+    private $_isHidden;
+
+    /**
      * Constructor
      * 
      * @param string $name Name of column
      * @param string $sortable Whether column should be sortable (only applies in some reporting contexts)
      * @param string $formatter Name of a Javascript/YUI formatter function
+     * @param string $hidden Whether column should be hidden
      */
-    public function __construct($name, $sortable = false, $formatter = null)
+    public function __construct($name, $sortable = false, $formatter = null, $hidden = false)
     {
         $this->_name = $name;
         $this->_isSortable = $sortable;
         $this->_formatter = $formatter;
+        $this->_isHidden = $hidden;
     }
 
     /**
@@ -91,5 +100,15 @@ class Fisma_Report_Column
     public function getFormatter()
     {
         return $this->_formatter;
+    }
+
+    /**
+     * Returns true if this column is hidden, false otherwise
+     * 
+     * @return bool
+     */
+    public function isHidden()
+    {
+        return $this->_isHidden;
     }
 }

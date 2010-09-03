@@ -100,10 +100,15 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             return;
         }
 
-        $record = $event->getInvoker();
+        $record   = $event->getInvoker();
+        $index    = new Fisma_Index(get_class($record));
+        $modified = $record->getLastModified();
 
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        // If the record is softDeleted, do nothing. Otherwise, delete the record from the index.
+        if (!in_array('deleted_at', $modified)) {
+            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
-        $searchEngine->deleteObject($record);
+            $searchEngine->deleteObject($record);
+        }
     }
 }

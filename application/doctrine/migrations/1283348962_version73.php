@@ -26,7 +26,7 @@
  * @author        Mark Ma <markjtma@users.sourceforge.net>
  * @license       http://www.openfisma.org/content/license GPLv3
  */
-class Version72 extends Doctrine_Migration_Base
+class Version73 extends Doctrine_Migration_Base
 {
     /**
      * Drop email_validation table and drop emailvalidate column in user table

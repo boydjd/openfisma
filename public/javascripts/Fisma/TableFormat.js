@@ -202,5 +202,41 @@ Fisma.TableFormat = {
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
         el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    },
+
+    /**
+     * A formatter which displays the total of overdue findings that is linked to a finding search page
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    overdueFinding : function (elCell, oRecord, oColumn, oData) {
+
+        // Construct overdue finding search url
+        overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
+
+        var organizationId = oRecord.getData('Organization_Id');
+        var sourceId = YAHOO.util.History.getQueryStringParameter('sourceId');
+        var overdueActionType = oRecord.getData('Overdue_Action_Type');
+
+        if (organizationId != null) {
+            overdueFindingSearchUrl += "/responsibleOrganizationId/" + organizationId;
+        }
+
+        if (sourceId != null) {
+            overdueFindingSearchUrl += "/sourceId/" + sourceId;
+        }
+
+        if (overdueActionType.length > 0) {
+            overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(overdueActionType);
+        }
+
+        elCell.innerHTML = "<a href="
+                         + overdueFindingSearchUrl
+                         + ">"
+                         + oData
+                         + "</a>";
     }
 };

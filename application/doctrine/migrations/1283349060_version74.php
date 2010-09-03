@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,15 +17,32 @@
  */
 
 /**
- * IrIncidentObserverTable 
+ * Update app version 
  * 
- * @uses Fisma_Doctrine_Table
- * @package Model 
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IrIncidentObserverTable extends Fisma_Doctrine_Table
+class Version74 extends Doctrine_Migration_Base
 {
+    /**
+     * Add configuration
+     */
+    public function up()
+    {
+        $pdo = Doctrine_Manager::connection()->getDbh();
+        $conn = Doctrine_Manager::connection();
 
+        $updateSql = "UPDATE configuration SET app_version = '2.9.0'";
+        $conn->exec($updateSql);
+
+    }
+
+    /**
+     * Remove configuration 
+     */
+    public function down()
+    {
+    }
 }

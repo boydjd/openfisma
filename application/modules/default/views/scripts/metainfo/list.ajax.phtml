@@ -1,6 +1,6 @@
 <?php
 foreach ($this->list as $k=>$s) {
-    if ( $s == $this->selected ) {
+    if ( $k == $this->selected || $s == $this->selected ) {
         $select = 'selected="selected"';
     } else {
         $select = '';

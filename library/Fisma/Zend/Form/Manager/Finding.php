@@ -45,11 +45,8 @@ class Fisma_Zend_Form_Manager_Finding extends Fisma_Zend_Form_Manager_Abstract
             $form->getElement('sourceId')->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
         }
 
-        $systems = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')
-            ->leftJoin('o.System system')
-            ->andWhere('system.sdlcPhase <> ?', array('disposal'))
-            ->execute();
-        $selectArray = $this->_view->treeToSelect($systems, 'nickname');
+        $systems = $this->_me->getSystemsByPrivilege('finding', 'create');
+        $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
         // fix: Zend_Form can not support the values which are not in its configuration

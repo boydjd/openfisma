@@ -808,13 +808,6 @@ tinyMCE.init({
  *            Eventually this file needs to be removed 
  */
 
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
-
 var Fisma = {};
 
 $P = new PHP_JS();
@@ -4997,30 +4990,31 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
-    	// The format of total overdue finding is id-total-sourceid.
-    	// Split the data to convert into responsibleOrganizationId, total number of overdue findings and soudce id.
-		dataParts = oData.split('-');
 
-		// Construct overdue finding search url
-		overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
+        // Construct overdue finding search url
+        overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
 
-		if (dataParts[0].length > 0) {
-			overdueFindingSearchUrl += "/responsibleOrganizationId/" + dataParts[0];
-		}
+        var organizationId = oRecord.getData('Organization_Id');
+        var sourceId = YAHOO.util.History.getQueryStringParameter('sourceId');
+        var overdueActionType = oRecord.getData('Overdue_Action_Type');
 
-		if (dataParts[2].length > 0) {
-			overdueFindingSearchUrl += "/sourceId/" + dataParts[2];
-		}
+        if (organizationId != null) {
+            overdueFindingSearchUrl += "/responsibleOrganizationId/" + organizationId;
+        }
 
-		if (oRecord.getData('Overdue_Action_Type').length > 0) {
-			overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(oRecord.getData('Overdue_Action_Type'));
-		}
+        if (sourceId != null) {
+            overdueFindingSearchUrl += "/sourceId/" + sourceId;
+        }
 
-		elCell.innerHTML = "<a href="
-			             + overdueFindingSearchUrl
-			             + ">"
-			             + dataParts[1]
-			             + "</a>";
+        if (overdueActionType.length > 0) {
+            overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(overdueActionType);
+        }
+
+        elCell.innerHTML = "<a href="
+                         + overdueFindingSearchUrl
+                         + ">"
+                         + oData
+                         + "</a>";
     }
 };/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
