@@ -29,10 +29,10 @@ Fisma.Calendar = function () {
          * @param textEl
          */
         addCalendarPopupToTextField : function (textEl) {
-            console.log(1);
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
-            document.body.appendChild(popupCalendarDiv);
+            popupCalendarDiv.style.zIndex = 99;
+            textEl.parentNode.appendChild(popupCalendarDiv);
 
             var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
             var calendarPosition = [

@@ -127,24 +127,21 @@ Fisma.Search = function() {
                 
                 // Construct a query URL based on whether this is a simple or advanced search
                 var searchType = document.getElementById('searchType').value;
-                var urlQueryString = Fisma.Search.baseUrl;
+                var postData;
 
                 if ('simple' == searchType) {
-                    
-                    urlQueryString += '/queryType/simple/keywords/' + form.keywords.value;
-
+                    postData = "queryType=simple&keywords=" + form.keywords.value;
                 } else if ('advanced' == searchType) {
-                    
-                    urlQueryString += '/queryType/advanced' + this.advancedSearchPanel.getUrlQuery();
-                    
+                    var queryData = this.advancedSearchPanel.getQuery();
+
+                    postData = "queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
 
-                this.searchActionUrl = urlQueryString;
-                
                 dataTable.showTableMessage(YAHOO.widget.DataTable.MSG_LOADING);
-                dataTable.getDataSource().sendRequest(this.searchActionUrl, onDataTableRefresh);
+                dataTable.getDataSource().connMethodPost = true;
+                dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
             } catch (error) {
                 ; // Nothing we can really do here, but catching the error prevents a page refresh b/c we return false
             }

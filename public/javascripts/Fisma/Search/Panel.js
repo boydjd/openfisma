@@ -120,15 +120,17 @@ Fisma.Search.Panel.prototype = {
     /**
      * Get the URL query string for the current filter status
      */
-    getUrlQuery : function () {
-        var queryString = '';
+    getQuery : function () {
+        var query = new Array();
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
 
-            queryString += criterion.getQueryString();
+            queryPart = criterion.getQuery();
+            
+            query.push(queryPart);
         }
         
-        return queryString;
+        return query;
     }
 };

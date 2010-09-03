@@ -75,7 +75,7 @@ Fisma.Search.CriteriaRenderer = function () {
          * @param container The HTML element to render into
          */
         none : function (container) {
-            console.log('test');
+
         },
 
         /**

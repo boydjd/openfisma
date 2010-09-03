@@ -445,7 +445,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /** 
-     * Search the subject
+     * Apply a user query to the search engine and return the results in JSON format
      * 
      * @return string The encoded table data in json format
      */
@@ -486,26 +486,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             // Extract search criteria from URL query string
             $searchCriteria = new Fisma_Search_Criteria;
             
-            $urlParams = $this->getRequest()->getParams();
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
             
-            foreach ($urlParams as $parameterName => $operand) {
-
-                // Only interested in parameters that have a dot in the name -- these indicate search criteria
-                if (false === strpos($parameterName, '.')) {
-                    continue;
-                }
-                
-                // Use the dot to split the parameter name into its 2 parts: field name and operator
-                $parts = explode('.', $parameterName);
-                
-                if (2 != count($parts)) {
-                    throw new Fisma_Zend_Exception("Invalid search criteria: " . $parameterName);
-                }
-
-                $fieldName = $parts[0];
-                $operator = $parts[1];
-                
-                $searchCriteria->add($fieldName, $operator, $operand);
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'], 
+                    $queryItem['operator'], 
+                    $queryItem['operands']
+                );
+    
+                $searchCriteria->add($searchCriterion);
             }
 
             // Run advanced search

@@ -24,27 +24,26 @@
 Fisma.Search.CriteriaDefinition = function () {
     return {
         date : {
-            dateAfter : {label : "After", renderer : 'singleDate'},
-            dateBefore : {label : "Before", renderer : 'singleDate'},
-            dateBetween : {label : "Between", renderer : 'betweenDate'},
-            singleDate : {label : "Is", renderer : 'singleDate', isDefault : true},
-            dateToday : {label : "Today", renderer : 'none'},
-            dateThisWeek : {label : "This Week", renderer : 'none'},
-            dateThisMonth : {label : "This Month", renderer : 'none'},
-            dateThisYear : {label : "This Year", renderer : 'none'}
+            dateAfter : {label : "After", renderer : 'singleDate', query : 'oneInput'},
+            dateBefore : {label : "Before", renderer : 'singleDate', query : 'oneInput'},
+            dateBetween : {label : "Between", renderer : 'betweenDate', query : 'twoInputs'},
+            dateDay : {label : "Is", renderer : 'singleDate', isDefault : true},
+            dateThisMonth : {label : "This Month", renderer : 'none', query : 'noInputs'},
+            dateThisYear : {label : "This Year", renderer : 'none', query : 'noInputs'},
+            dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}
         },
 
         integer : {
-            integerBetween : {label : "Between", renderer : 'betweenInteger'},
-            integerDoesNotEqual : {label : "Does Not Equal", renderer : 'singleInteger'},
-            integerEquals : {label : "Equals", renderer : 'singleInteger', isDefault : true},
-            integerGreaterThan : {label : "Greater Than", renderer : 'singleInteger'},
-            integerLessThan : {label : "Less Than", renderer : 'singleInteger'}
+            integerBetween : {label : "Between", renderer : 'betweenInteger', query : 'twoInputs'},
+            integerDoesNotEqual : {label : "Does Not Equal", renderer : 'singleInteger', query : 'oneInput'},
+            integerEquals : {label : "Equals", renderer : 'singleInteger', query : 'oneInput', isDefault : true},
+            integerGreaterThan : {label : "Greater Than", renderer : 'singleInteger', query : 'oneInput'},
+            integerLessThan : {label : "Less Than", renderer : 'singleInteger', query : 'oneInput'}
         },
 
         text : {
-            textContains : {label : "Contains", renderer : 'text', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text'}
+            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
+            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
         }
     };
 }();

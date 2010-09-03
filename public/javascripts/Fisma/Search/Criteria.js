@@ -317,32 +317,27 @@ Fisma.Search.Criteria.prototype = {
     },
     
     /**
-     * Get the URL query string for this criteria in its current state
+     * Get the query data for this criteria in its current state
      * 
-     * The URL query string has one URL parameter for each of the criteria fields for the current query type. The name 
-     * of the parameter is formed by concatenating the field name with a dot and the query type. For example, the 
-     * following query string is returned for a query on "Description contains the word 'password'":
-     * 
-     *     /description.textContains/password
+     * The query is returned as an object including the field name, the operator, and 0-n operands
      */
-    getQueryString : function () {
-        
+    getQuery : function () {
+
         var queryString = '';
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentFieldType);
 
-        switch (this.currentQueryType) {
-            // These cases all intentionally fall through
-            case 'contains':
-            case 'doesNotContain':
-                var inputs = this.queryInputContainer.getElementsByTagName('input');
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
 
-                queryString = '/' + this.currentFieldName + '.' + this.currentQueryType + '/' + inputs[0].value;
-                break;
-            
-            default:
-                throw "No query string is implemented for the following query type: " + this.currentQueryType;
+        var query = queryGenerator(this.queryInputContainer);
+
+        var response = {
+            field : this.currentFieldName,
+            operator : this.currentQueryType,
+            operands : query
         }
 
-        return queryString;
+        return response;
     },
     
     /**

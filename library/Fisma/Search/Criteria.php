@@ -17,8 +17,7 @@
  */
 
 /**
- * An abstraction for constructing a query based on specific, pre-defined criteria that are applied on a per-field
- * basis.
+ * A collection of Fisma_Search_Criterion objects.
  * 
  * This class supports OpenFISMA's "Advanced Search" mode. It implements the Iterator interface so that criteria can
  * easily be traversed with 'foreach'.
@@ -32,26 +31,14 @@
 class Fisma_Search_Criteria implements Iterator
 {
     /**
-     * A list of valid operators that are allowed in search criteria
-     * 
-     * This mirrors operators defined in Fisma/Search/Criteria.js
-     * 
-     * @var array
-     */
-    static private $_validOperators = array(
-        'contains',
-        'doesNotContain'
-    );
-
-    /**
      * Used for iterator interface
+     * 
+     * @var int
      */
     private $_iteratorIndex;
     
     /**
-     * A numerically-indexed array of criteria. 
-     * 
-     * See addCriterion() for description of the objects in this array.
+     * A numerically-indexed array of Fisma_Search_Criterion. 
      * 
      * @var array
      */
@@ -60,23 +47,11 @@ class Fisma_Search_Criteria implements Iterator
     /**
      * Add search criteria for a specific field
      * 
-     * @param string $fieldName Name of the field that the criteria applies to
-     * @param string $operator The name of the operator to be applied (must be in the $_validOperators list)
-     * @param string $operand The value that is applied by the operator to the specified field
+     * @param Fisma_Search_Criterion $criterion
      */
-    public function add($fieldName, $operator, $operand)
+    public function add(Fisma_Search_Criterion $criterion)
     {
-        if (in_array($operator, self::$_validOperators)) {
-            $newCriterion = new stdClass;
-            
-            $newCriterion->fieldName = $fieldName;
-            $newCriterion->operator = $operator;
-            $newCriterion->operand = $operand;
-            
-            $this->_criteria[] = $newCriterion;
-        } else {
-            throw new Fisma_Search_Exception("Invalid search criterion operator: " . $operator);
-        }
+        $this->_criteria[] = $criterion;
     }
     
     /**

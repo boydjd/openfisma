@@ -21,7 +21,7 @@
 
         // A function which builds the query string
         var constructUrlFunction = function (tableState, self) {    
-
+//@todo does this need to get posted?
             // Build custom request
             var request = Fisma.Search.getSearchActionUrl() +
                           "/sort/" + tableState.sortedBy.key +
@@ -33,7 +33,7 @@
         };
 
         // DataSource instance
-        var dataSource = new YAHOO.util.XHRDataSource();
+        var dataSource = new YAHOO.util.XHRDataSource('<?php echo $this->escape($this->dataUrl); ?>');
         dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         dataSource.responseSchema = {
             resultsList : "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>",

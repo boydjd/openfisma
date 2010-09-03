@@ -300,8 +300,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $query->addField($documentFieldName);
             
-            // Highlighting doesn't work for date fields in Solr 4.1
-            if ('date' != $fieldDefinition['type'] && 'datetime' != $fieldDefinition['type']) {
+            // Highlighting doesn't work for date or integerfields in Solr 4.1
+            if ('date' != $fieldDefinition['type'] && 
+                'datetime' != $fieldDefinition['type'] &&
+                'integer' != $fieldDefinition['type']) {
+
                 $query->addHighlightField($documentFieldName);
             }
         }
@@ -311,25 +314,92 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         foreach ($criteria as $criterion) {
             // Some twiddling to convert Doctrine's field names to Solr's field names
-            $rawFieldName = $criterion->fieldName . '_' . $searchableFields[$criterion->fieldName]['type'];
+            $doctrineFieldName = $criterion->getField();
+
+            if (!isset($searchableFields[$doctrineFieldName])) {
+                throw new Fisma_Search_Exception("Invalid field name: " . $doctrineFieldName);
+            }
+
+            $rawFieldName = $doctrineFieldName . '_' . $searchableFields[$doctrineFieldName]['type'];
 
             $fieldName = $this->escape($rawFieldName);
-            $operand = $this->escape($criterion->operand);
+            $operands = array_map('addslashes', $criterion->getOperands());
 
-            switch ($criterion->operator) {
+            switch ($criterion->getOperator()) {
+                // These cases intentionally fall through
+
+                case 'dateAfter':
+                    $afterDate = $this->_convertToSolrDate($operands[0]);
+                    $searchTerms[] = "$fieldName:[$afterDate TO *]";
+                    break;
+
+                case 'dateBefore':
+                    $beforeDate = $this->_convertToSolrDate($operands[0]);
+                    $searchTerms[] = "$fieldName:[* TO $beforeDate]";
+                    break;
+
+                case 'dateBetween':
+                    $afterDate = $this->_convertToSolrDate($operands[0]);
+                    $beforeDate = $this->_convertToSolrDate($operands[1]);
+                    $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
+                    break;
+
+                case 'dateDay':
+                    $date = $this->_convertToSolrDate($operands[0]);
+                    $searchTerms[] = "$fieldName:[$date/DAY TO $date/DAY+1DAY]";
+                    break;
+
+                case 'dateThisMonth':
+                    $searchTerms[] = "$fieldName:[NOW/MONTH TO NOW/MONTH+1MONTH]";
+                    break;
+
+                case 'dateThisYear':
+                    $searchTerms[] = "$fieldName:[NOW/YEAR TO NOW/YEAR+1YEAR]";
+                    break;
+
+                case 'dateToday':
+                    $searchTerms[] = "$fieldName:[NOW/DAY TO NOW/DAY+1DAY]";
+                    break;
+
+                case 'integerBetween':
+                    $lowEndIntValue = intval($operands[0]);
+                    $highEndIntValue = intval($operands[1]);
+                    $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
+                    break;
+
+                case 'integerDoesNotEqual':
+                    $intValue = intval($operands[0]);
+                    $searchTerms[] = "-$fieldName:$intValue";
+                    break;
+
+                case 'integerEquals':
+                    $intValue = intval($operands[0]);
+                    $searchTerms[] = "$fieldName:$intValue";
+                    break;
+
+                case 'integerGreaterThan':
+                    $intValue = intval($operands[0]);
+                    $searchTerms[] = "$fieldName:[$intValue TO *]";
+                    break;
+
+                case 'integerLessThan':
+                    $intValue = intval($operands[0]);
+                    $searchTerms[] = "$fieldName:[* TO $intValue]";
+                    break;
+
                 case 'textContains':
-                    $searchTerms[] = $fieldName . ':' . $operand;
+                    $searchTerms[] = "$fieldName:\"{$operands[0]}\"";
                     break;
                     
                 case 'textDoesNotContain':
-                    $searchTerms[] = '-' . $fieldName . ':' . $operand;
+                    $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
                     break;
                 
                 default:
-                    throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->operator);
+                    throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
             }
         }
-
+//var_dump($searchTerms);die;
         $query->setQuery(implode($searchTerms, ' AND '));
 
         $response = $this->_client->query($query)->getResponse(); 
@@ -543,19 +613,32 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     {
         if ('text' == $type && $html) {
             $value = $this->_convertHtmlToIndexString($rawValue);
+        } elseif ('integer' == $type) {
+            $value = intval($rawValue);
         } elseif ('date' == $type || 'datetime' == $type) {
-            // @todo set global timestamp options
-            Zend_Date::setOptions(array('format_type' => 'iso'));
-            
-            // Date fields need to be converted to UTC
-            $tempDate = new Zend_Date($rawValue, 'YYYY-MM-dd HH:mm:ss');
-                        
-            $value = $tempDate->toString('YYYY-MM-ddTHH:mm:ss') . 'Z';
+            $value = $this->_convertToSolrDate($rawValue);
         } else {
             // By default, just index the raw value
             $value = $rawValue;
         }        
 
         return $value;
+    }
+
+    /**
+     * Convert a database format date or date time (2010-01-01 12:00:00) to Solr's ISO-8601 UTC format
+     * 
+     * @param string $date
+     * @return string 
+     */
+    private function _convertToSolrDate($date)
+    {
+        // @todo set global timestamp options
+        Zend_Date::setOptions(array('format_type' => 'iso'));
+        
+        // Date fields need to be converted to UTC
+        $tempDate = new Zend_Date($date, 'YYYY-MM-dd HH:mm:ss');
+
+        return $tempDate->toString('YYYY-MM-ddTHH:mm:ss') . 'Z';
     }
 }
