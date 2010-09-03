@@ -21,7 +21,7 @@
 .searchBox input[type=text].date {
     background: url(/images/calendar.png) no-repeat 98%;
     background-color: white;
-    width: 15em;
+    width: 10em;
 }
 
 .searchBox input[type=text].integer {

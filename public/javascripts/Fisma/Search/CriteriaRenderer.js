@@ -35,6 +35,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "date";
             container.appendChild(lowEnd);
+            Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -43,6 +44,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "date";
             container.appendChild(highEnd);
+            Fisma.Calendar.addCalendarPopupToTextField(highEnd);
         },
 
         /**
@@ -84,12 +86,16 @@ Fisma.Search.CriteriaRenderer = function () {
          * @param container The HTML element to render into
          */
         singleDate : function (container) {
+            
+            // Create the input field
             var textEl = document.createElement('input');
 
             textEl.type = "text";
             textEl.className = "date";
 
             container.appendChild(textEl);
+            
+            Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
         
         /**
