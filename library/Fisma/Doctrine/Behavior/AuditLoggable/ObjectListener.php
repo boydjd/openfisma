@@ -114,14 +114,29 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                     // The log always shows the old and new values for the field.
                     $oldValue = $invoker->getOriginalValue($field);
                     $newValue = $invoker->$field;
-                    
+
+                    // if the field is a foreign key, it will get name value from foreign table 
+                    if ($relation = $this->_fieldHasForeignRelation($invoker->getTable(), $field)) {
+                        if ($oldValue) { 
+                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $oldValue)) {
+                                $oldValue = $nameValue;
+                            }
+                        }
+ 
+                        if ($newValue) { 
+                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $newValue)) {
+                                $newValue = $nameValue;
+                            }
+                        }
+                    }
+                  
                     if ($this->_fieldIsHtml($invoker->getTable(), $field)) {
                         $oldValue = Fisma_String::htmlToPlainText($oldValue);
                         $newValue = Fisma_String::htmlToPlainText($newValue);
                     }
                     $oldValue = htmlspecialchars($oldValue);
                     $newValue = htmlspecialchars($newValue);
-
+                    
                     if (empty($oldValue)) {
                         $oldValue = "<em>No value</em>";
                     }
@@ -205,4 +220,63 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
             return null;
         }
     }
+
+    /**
+     * Determine whether a particular field on a particular table should be a foreign key
+     * 
+     * @param Doctrine_Table $table The specified doctrine table object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return relation if found relation property 'local' and 'foreign' is id type, null otherwise
+     */
+    private function _fieldHasForeignRelation(Doctrine_Table $table, $field)
+    {
+        $relations = $table->getRelations();
+
+        foreach ($relations as $name => $relation) {
+            if (strtolower($field) === strtolower($relation->getLocal()) 
+                && 'id' === strtolower($relation->getForeign())) {
+
+               return $relation;
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * A helper to derive value of 'name' column by a key in a particular table
+     * 
+     * @param Doctrine_Relation $relation The specified doctrine relation object to be checked
+     * @param string $foreignkey The key of table to be checked
+     * @return value of 'name' column if found 'name' column, null otherwise
+     */
+    private function _getOriginalNameByForeignkey(Doctrine_Relation $relation, $foreignkey)
+    {
+        // For SecurityControl table, name is not unique. It needs to combine with name of
+        // SecurityControlCatalog to be an unique name.
+        $secondTable = array(
+            'SecurityControl' => array(
+                'SecurityControlCatalog' => 'securityControlCatalogId'
+            )
+        );
+
+        $originalValue = $relation->getTable()->findOneById($foreignkey);
+
+        if ($originalValue->contains('name')) {
+            if (array_key_exists($relation->getClass(), $secondTable)) {
+                list($table, $id) = each($secondTable[$relation->getClass()]);
+                $secondTableValue = Doctrine::getTable($table)
+                                   ->findOneById($originalValue->$id);
+            
+                if ($secondTableValue->contains('name')) {
+                    return $originalValue->name . ' [' . $secondTableValue->name . ']';
+                }
+            }
+
+            return $originalValue->name;
+        }
+
+        return null;
+    }
+    
 }
