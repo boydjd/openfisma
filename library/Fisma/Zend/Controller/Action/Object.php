@@ -404,6 +404,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                            ->setDataUrl($this->getBaseUrl() . '/search')
                            ->setInitialSortColumn('name')
                            ->setSortAscending(true)
+                           ->setRequestConstructor('Fisma.Search.handleYuiDataTableEvent')
                            ->setRowCount($this->_paging['count'])
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');

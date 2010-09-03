@@ -85,6 +85,13 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * @var string
      */
     private $_clickEventVariableName;
+
+    /**
+     * The name of a Javascript function which can build POST requests for this data table's data source
+     * 
+     * @var string
+     */
+    private $_requestConstructor;    
     
     /**
      * Render the datatable with HTML and/or Javascript
@@ -107,6 +114,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'containerId' => $uniqueId . "_container",
             'dataUrl' => $this->_dataUrl,
             'initialSortColumn' => $this->_initialSortColumn,
+            'requestConstructor' => $this->_requestConstructor,
             'resultVariable' => $this->_resultVariable,
             'rowCount' => $this->_rowCount,
             'sortDirection' => ($this->_sortAscending ? 'asc' : 'desc')
@@ -187,6 +195,20 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setInitialSortColumn($initialSortColumn)
     {
         $this->_initialSortColumn = $initialSortColumn;
+        
+        return $this;
+    }
+
+    /**
+     * Mutator for $_requestConstructor
+     * 
+     * Fluent interface
+     * 
+     * @param string $requestConstructor
+     */
+    public function setRequestConstructor($requestConstructor)
+    {
+        $this->_requestConstructor = $requestConstructor;
         
         return $this;
     }

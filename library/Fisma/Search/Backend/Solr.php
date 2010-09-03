@@ -188,7 +188,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->setStart($start)
               ->setRows($rows);
 
-        if (is_null($keyword)) {
+        $trimmedKeyword = trim($keyword);
+
+        if (empty($trimmedKeyword)) {
             // Without keywords, this is just a listing of all documents of a specific type
             $query->setQuery('luceneDocumentType:' . $type);
         } else {
@@ -199,7 +201,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                   ->addFilterQuery('luceneDocumentType:' . $type);
                   
             // Tokenize keyword on spaces and escape all tokens
-            $keywordTokens = split(' ', $keyword);
+            $keywordTokens = split(' ', $trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }
@@ -218,25 +220,32 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $query->addField($documentFieldName);
             
             // Add keyword terms and highlighting to all non-date fields
-            if (!is_null($keyword) && 
+            if (!empty($trimmedKeyword) && 
                 'date' != $fieldDefinition['type'] &&
                 'datetime' != $fieldDefinition['type']) {
 
-                $query->addHighlightField($documentFieldName);
+                // Solr can't highlight sortable integer fields
+                if ('integer' != $fieldDefinition['type']) {
+                    $query->addHighlightField($documentFieldName);
+                }
 
                 foreach ($keywordTokens as $keywordToken) {
-                    $searchTerms[] = $documentFieldName . ':' . $keywordToken;
+                    
+                    // Don't search for strings in integer fields (Solr emits an error)
+                    if ( !('integer' == $fieldDefinition['type'] && !is_numeric($keywordToken)) ) {
+                        $searchTerms[] = $documentFieldName . ':' . $keywordToken;
+                    }
                 }
             }            
         }
 
-        if (!is_null($keyword)) {
+        if (!empty($trimmedKeyword) > 0) {
             // If there are search terms, then combine them with the logical OR operator
             $query->setQuery(implode(' OR ', $searchTerms));
         }
-    
+
         $response = $this->_client->query($query)->getResponse(); 
-        
+
         return $this->_convertSolrResultToStandardResult($type, $response);
     }
 

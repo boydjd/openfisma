@@ -17,23 +17,27 @@
             }
         }
 
-        Fisma.Search.setBaseUrl("<?php echo $this->escape($this->dataUrl, 'javascript'); ?>");
+        // A function which constructs POST requests for this data table
+        var requestConstructor;
 
-        // A function which builds the query string
-        var constructUrlFunction = function (tableState, self) {    
-//@todo does this need to get posted?
-            // Build custom request
-            var request = Fisma.Search.getSearchActionUrl() +
-                          "/sort/" + tableState.sortedBy.key +
-                          "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
-                          "/start/" + tableState.pagination.recordOffset +
-                          "/count/" + tableState.pagination.rowsPerPage;
+        <?php if (isset($this->requestConstructor)): ?>
+            var requestConstructorName = "<?php echo $this->escape($this->requestConstructor); ?>";
+            requestConstructor = Fisma.Util.getObjectFromName(requestConstructorName);
+        <?php else: ?>
+            requestConstructor = function (tableState, self) {    
+                // Build custom request
+                var request = "sort=" + tableState.sortedBy.key +
+                              "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
+                              "&start=" + tableState.pagination.recordOffset +
+                              "&count=" + tableState.pagination.rowsPerPage;
 
-            return request;
-        };
+                return request;
+            };
+        <?php endif; ?>
 
         // DataSource instance
         var dataSource = new YAHOO.util.XHRDataSource('<?php echo $this->escape($this->dataUrl); ?>');
+        dataSource.connMethodPost = true;
         dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         dataSource.responseSchema = {
             resultsList : "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>",
@@ -56,7 +60,7 @@
                     template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                 }
             ), 
-            generateRequest : constructUrlFunction
+            generateRequest : requestConstructor
         };
 
         // The actual DataTable instance

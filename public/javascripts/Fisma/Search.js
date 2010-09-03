@@ -115,39 +115,60 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent : function (form) {
-            try {                
-                var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
+            var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
 
-                var onDataTableRefresh = {
-                    success : dataTable.onDataReturnReplaceRows,
-                    failure : dataTable.onDataReturnReplaceRows,
-                    scope : dataTable,
-                    argument : dataTable.getState()
-                }
-                
-                // Construct a query URL based on whether this is a simple or advanced search
-                var searchType = document.getElementById('searchType').value;
-                var postData;
+            var onDataTableRefresh = {
+                success : dataTable.onDataReturnReplaceRows,
+                failure : dataTable.onDataReturnReplaceRows,
+                scope : dataTable,
+                argument : dataTable.getState()
+            }
+            
+            // Construct a query URL based on whether this is a simple or advanced search
+            var searchType = document.getElementById('searchType').value;
+            var postData;
 
-                if ('simple' == searchType) {
-                    postData = "queryType=simple&keywords=" + form.keywords.value;
-                } else if ('advanced' == searchType) {
-                    var queryData = this.advancedSearchPanel.getQuery();
+            if ('simple' == searchType) {
+                postData = "queryType=simple&keywords=" + form.keywords.value;
+            } else if ('advanced' == searchType) {
+                var queryData = this.advancedSearchPanel.getQuery();
 
-                    postData = "queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
-
-                dataTable.showTableMessage(YAHOO.widget.DataTable.MSG_LOADING);
-                dataTable.getDataSource().connMethodPost = true;
-                dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
-            } catch (error) {
-                ; // Nothing we can really do here, but catching the error prevents a page refresh b/c we return false
+                postData = "queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
+            } else {
+                throw "Invalid value for search type: " + searchType;
             }
 
-            // Return false to prevent the form from actually being submitted
-            return false;
+            dataTable.showTableMessage("Loading...");
+            dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
+        },
+        
+        /**
+         * Handle YUI data table events (such as sort)
+         * 
+         * @param tableState From YUI
+         * @param self From YUI
+         * @return string URL encoded post data
+         */
+        handleYuiDataTableEvent : function (tableState, self) {
+
+            var searchType = document.getElementById('searchType').value;
+
+            var postData = "sort=" + tableState.sortedBy.key +
+                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
+                           "&start=" + tableState.pagination.recordOffset +
+                           "&count=" + tableState.pagination.rowsPerPage;
+
+            if ('simple' == searchType) {
+                postData += "&queryType=simple&keywords=" + document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
+
+                postData += "&queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+
+            return postData;
         },
 
         /**
