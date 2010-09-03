@@ -135,7 +135,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $searchableFields = $table->getSearchableFields();
 
-        return $searchableFields['sortable'];
+        return $searchableFields[$columnName]['sortable'];
     }
 
     /**
@@ -163,21 +163,20 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     {
         $query = new SolrQuery;
 
-        // @todo fix this awkwardness
-        // Getting the column name is a little awkward:
         $table = Doctrine::getTable($type);
-        $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
         $searchableFields = $table->getSearchableFields();
         
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
         }
         
+        $sortColumnDefinition = $searchableFields[$sortColumn];
+
         // Text columns have different sorting rules (see design document)
-        if ('string' == $sortColumnDefinition['type']) {
+        if ('text' == $sortColumnDefinition['type']) {
             $sortColumnParam = $this->escape($sortColumn) . '_textsort';
         } else {
-            $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+            $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
         }
 
         $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
@@ -212,21 +211,21 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $table = Doctrine::getTable($type);
 
-        foreach (array_keys($searchableFields) as $searchableField) {
+        foreach ($searchableFields as $fieldName => $fieldDefinition) {
             
-            // Some twiddling to convert Doctrine's field names to Solr's field names
-            $columnDefinition = $table->getColumnDefinition($table->getColumnName($searchableField));
-            $documentFieldName = $searchableField . '_' . $this->_getSuffixForColumn($columnDefinition);
+            $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
 
             $query->addField($documentFieldName);
             
-            if (!is_null($keyword)) {
-                // Add highlighting only if there is a search term.
+            // Add keyword terms and highlighting to all non-date fields
+            if (!is_null($keyword) && 
+                'date' != $fieldDefinition['type'] &&
+                'datetime' != $fieldDefinition['type']) {
+
                 $query->addHighlightField($documentFieldName);
 
-                // Add query parts for each search term
                 foreach ($keywordTokens as $keywordToken) {
-                    $searchTerms[] = $documentFieldName . ':' . $keywordToken;                
+                    $searchTerms[] = $documentFieldName . ':' . $keywordToken;
                 }
             }            
         }
@@ -238,7 +237,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     
         $response = $this->_client->query($query)->getResponse(); 
         
-        return $this->_convertSolrResultToStandardResult($response);
+        return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
     /**
@@ -256,21 +255,20 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     {
         $query = new SolrQuery;
 
-        // @todo fix this awkwardness
-        // Getting the column name is a little awkward:
         $table = Doctrine::getTable($type);
-        $sortColumnDefinition = $table->getColumnDefinition($table->getColumnName($sortColumn));
         $searchableFields = $table->getSearchableFields();
-
+        
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
         }
         
+        $sortColumnDefinition = $searchableFields[$sortColumn];
+
         // Text columns have different sorting rules (see design document)
-        if ('string' == $sortColumnDefinition['type']) {
+        if ('text' == $sortColumnDefinition['type']) {
             $sortColumnParam = $this->escape($sortColumn) . '_textsort';
         } else {
-            $sortColumnParam = $this->escape($sortColumn) . '_' . $this->_getSuffixForColumn($sortColumnDefinition);
+            $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
         }
 
         $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
@@ -294,29 +292,37 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $table = Doctrine::getTable($type);
 
-        foreach (array_keys($searchableFields) as $searchableField) {
+        // Add the fields which should be returned in the result set and indicate which should be highlighted
+        foreach ($searchableFields as $fieldName => $fieldDefinition) {
             
             // Some twiddling to convert Doctrine's field names to Solr's field names
-            $columnDefinition = $table->getColumnDefinition($table->getColumnName($searchableField));
-            $documentFieldName = $searchableField . '_' . $this->_getSuffixForColumn($columnDefinition);
+            $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
 
             $query->addField($documentFieldName);
-            $query->addHighlightField($documentFieldName);
+            
+            // Highlighting doesn't work for date fields in Solr 4.1
+            if ('date' != $fieldDefinition['type'] && 'datetime' != $fieldDefinition['type']) {
+                $query->addHighlightField($documentFieldName);
+            }
         }
 
+        // Add specific query terms based on the user's request
         $searchTerms = array();
 
         foreach ($criteria as $criterion) {
             // Some twiddling to convert Doctrine's field names to Solr's field names
-            $columnDefinition = $table->getColumnDefinition($table->getColumnName($criterion->fieldName));
-            $rawFieldName = $criterion->fieldName . '_' . $this->_getSuffixForColumn($columnDefinition);
+            $rawFieldName = $criterion->fieldName . '_' . $searchableFields[$criterion->fieldName]['type'];
 
             $fieldName = $this->escape($rawFieldName);
             $operand = $this->escape($criterion->operand);
 
             switch ($criterion->operator) {
-                case 'contains':
+                case 'textContains':
                     $searchTerms[] = $fieldName . ':' . $operand;
+                    break;
+                    
+                case 'textDoesNotContain':
+                    $searchTerms[] = '-' . $fieldName . ':' . $operand;
                     break;
                 
                 default:
@@ -328,7 +334,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $response = $this->_client->query($query)->getResponse(); 
 
-        return $this->_convertSolrResultToStandardResult($response);
+        return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
     /**
@@ -407,20 +413,21 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             if ('luceneDocumentId' == $doctrineFieldName) {
                 throw new Fisma_Search_Exception("Model columns cannot be named luceneDocumentId");
             }
-            
-            $doctrineColumnDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
-            $typeSuffix = $this->_getSuffixForColumn($doctrineColumnDefinition);
-
-            $documentFieldName = $doctrineFieldName . '_' . $typeSuffix;
+            $documentFieldName = $doctrineFieldName . '_' . $searchFieldDefinition['type'];
 
             $rawValue = $object[$table->getFieldName($doctrineFieldName)];
-            $documentFieldValue = $this->_getValueForColumn($rawValue, $doctrineColumnDefinition);
+
+            $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
+
+            $containsHtml = isset($doctrineDefinition['purify']['html']) && $doctrineDefinition['purify']['html'];
+
+            $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
                 
             $document->addField($documentFieldName, $documentFieldValue);
             
             // For sortable text columns, add a separate 'textsort' column (see design document)
-            if ('string' == $doctrineColumnDefinition['type'] && $searchFieldDefinition['sortable']) {
+            if ('text' == $searchFieldDefinition['type'] && $searchFieldDefinition['sortable']) {
                 $document->addField($doctrineFieldName . '_textsort', $documentFieldValue);
             }
         }
@@ -434,16 +441,23 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * Solr does some weird stuff with object storage, so this method is a little hard to understand. var_dump'ing
      * each variable will help to sort through the structure for debugging purposes.
      * 
+     * @param string $type
      * @param SolrResult $solrResult
      * @return Fisma_Search_Result
      */
-    public function _convertSolrResultToStandardResult($solrResult)
+    public function _convertSolrResultToStandardResult($type, SolrResult $solrResult)
     {
+        // @todo set global timestamp options
+        Zend_Date::setOptions(array('format_type' => 'iso'));
+
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
         $highlighting = (array)$solrResult->highlighting;
         
         $tableData = array();
+
+        $table = Doctrine::getTable($type);
+        $searchableFields = $table->getSearchableFields();
 
         // Construct initial table data from documents part of the response
         foreach ($solrResult->response->docs as $document) {
@@ -457,11 +471,26 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 $row[$newColumnName] = $columnValue[0];
             }
 
+            // Convert any dates or datetimes from Solr's UTC format back to native format
+            foreach ($row as $fieldName => $fieldValue) {
+                $fieldDefinition = $searchableFields[$fieldName];
+
+                if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
+                    $date = new Zend_Date($fieldValue, 'YYYY-MM-ddTHH:mm:ssZ');
+                    
+                    if ('date' == $fieldDefinition['type']) {
+                        $row[$fieldName] = $date->toString('YYYY-MM-dd');
+                    } else {
+                        $row[$fieldName] = $date->toString('YYYY-MM-dd HH:mm:ss');
+                    }
+                }
+            }
+
             $luceneDocumentId = $row['luceneDocumentId'];
 
             $tableData[$luceneDocumentId] = $row;
         }
-        
+
         // Now merge any highlighted fields into the table data
         foreach ($highlighting as $luceneDocumentId => $row) {
             foreach ($row as $fieldName => $fieldValue) {
@@ -471,7 +500,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 $tableData[$luceneDocumentId][$newFieldName] = $fieldValue[0];
             }
         }
-        
+
         // Remove the luceneDocumentId from each field
         foreach ($tableData as &$document) {
             unset($document['luceneDocumentId']);
@@ -483,42 +512,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         return new Fisma_Search_Result($numberReturned, $numberFound, $tableData);
     }
 
-    /**
-     * Return the suffix for the field name based on the column's definition
-     * 
-     * Solr distinguishes field types based on the field names' suffixes
-     * 
-     * @param array $columnDefinition
-     */
-    private function _getSuffixForColumn($columnDefinition)
-    {
-        switch ($columnDefinition['type']) {
-            case 'string':
-                $suffix = 'text';
-                break;
-                
-            case 'enum':
-                $suffix = 'enum';
-                break;
-            
-            // These cases intentionally fall through
-            case 'date':
-            case 'datetime':
-            case 'timestamp':
-                $suffix = 'date';
-                break;
-                
-            case 'integer':
-                $suffix = 'int';
-                break;
-            
-            default:
-                throw new Fisma_Search_Exception("No suffix defined for column type ({$columnDefinition['type']})");
-        }
-        
-        return $suffix;
-    }
-    
     /**
      * Remove the type suffix (e.g. _text, _date, etc.) from a columnName
      * 
@@ -535,25 +528,25 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             return $columnName;
         }
     }
-
+    
     /**
      * Create the field value for an object based on its type and other metadata
      * 
      * This includes transformations such as correctly formatting dates, times, and stripping HTML content
      * 
      * @param mixed $value
-     * @param array $columnDefinition
+     * @param string $type
+     * @param bool $html True if the value contains HTML
      * @return mixed
      */
-    private function _getValueForColumn($rawValue, $columnDefinition)
+    private function _getValueForColumn($rawValue, $type, $html)
     {
-        if (isset($columnDefinition['extra']['purify']) && 'html' == $columnDefinition['extra']['purify']) {
-            // HTML fields need HTML stripped            
+        if ('text' == $type && $html) {
             $value = $this->_convertHtmlToIndexString($rawValue);
-        } elseif ('date' == $columnDefinition['type'] || 
-                  'datetime' == $columnDefinition['type'] || 
-                  'timestamp' == $columnDefinition['type']) {
-
+        } elseif ('date' == $type || 'datetime' == $type) {
+            // @todo set global timestamp options
+            Zend_Date::setOptions(array('format_type' => 'iso'));
+            
             // Date fields need to be converted to UTC
             $tempDate = new Zend_Date($rawValue, 'YYYY-MM-dd HH:mm:ss');
                         

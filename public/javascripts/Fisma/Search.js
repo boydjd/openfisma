@@ -180,6 +180,9 @@ Fisma.Search = function() {
          */
         setBaseUrl : function (url) {
             this.baseUrl = url;
+            
+            // The search action should always be based on the base URL
+            this.searchActionUrl = url;
         },
         
         /**

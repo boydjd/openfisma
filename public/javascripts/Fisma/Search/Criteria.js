@@ -28,26 +28,70 @@
  * @param fields List of fields and data types that are searchable
  */
 Fisma.Search.Criteria = function (searchPanel, fields) {
-
-    if (0 == fields.length) {
-        throw "Field array cannot be empty";
-    }
-
-    this.currentFieldType = null;
-    this.currentFieldName = null;
-    this.currentQueryType = null;
     this.fields = fields;
     this.searchPanel = searchPanel;
-
-    this.container = null;
-
-    this.queryFieldContainer = null;
-    this.queryTypeContainer = null;
-    this.queryInputContainer = null;
-    this.buttonsContainer = null;
 };
 
 Fisma.Search.Criteria.prototype = {
+
+    /**
+     * The HTML element to render this widget into
+     */
+    container : null,
+
+    /**
+     * The name of the currently selected field
+     */
+    currentFieldName : null,    
+
+    /**
+     * The type of the currently selected field
+     */
+    currentFieldType : null,
+    
+    /**
+     * The type of the currently selected query
+     */
+    currentQueryType : null,
+
+    /**
+     * An array of field descriptions
+     */
+    fields : null,
+    
+    /**
+     * A reference to the search panel that this criteria widget is a part of
+     */
+    searchPanel : null,
+    
+    /**
+     * The HTML element that holds the query field selection UI.
+     * 
+     * The query field is the field on the model which this criteria applies to.
+     */
+    queryFieldContainer : null,
+    
+    /**
+     * The HTML element that the holds query type selection UI.
+     * 
+     * The query type refers to the type of criteria applied to the current field, such as "Contains" or 
+     * "Greater Than".
+     */
+    queryTypeContainer : null,
+    
+    /**
+     * The HTML element that holds the query input parameter UI.
+     * 
+     * The query input is the user-supplied value to search for, such as a keyword or a range of date values
+     */
+    queryInputContainer : null,
+    
+    /**
+     * The HTML element that holds the add/remove buttons UI.
+     * 
+     * These buttons are used to add and remove criteria rows, respectively.
+     */
+    buttonsContainer : null,
     
     /**
      * Render the criteria widget
@@ -61,10 +105,22 @@ Fisma.Search.Criteria.prototype = {
         
         this.container.className = "searchCriteria";
         
-        this.queryFieldContainer = this.renderQueryField(this.container, defaultFieldIndex);
-        this.queryTypeContainer = this.renderQueryType(this.container);
-        this.queryInputContainer = this.renderQueryInput(this.container);
-        this.buttonsContainer = this.renderButtons(this.container);
+        this.queryFieldContainer = document.createElement('span');
+        this.renderQueryField(this.queryFieldContainer, defaultFieldIndex);
+        this.container.appendChild(this.queryFieldContainer);
+
+        this.queryTypeContainer = document.createElement('span');
+        this.renderQueryType(this.queryTypeContainer);
+        this.container.appendChild(this.queryTypeContainer);
+        
+        this.queryInputContainer = document.createElement('span');
+        this.renderQueryInput(this.queryInputContainer);
+        this.container.appendChild(this.queryInputContainer);
+        
+        this.buttonsContainer = document.createElement('span');
+        this.buttonsContainer.className = "searchQueryButtons";
+        this.renderButtons(this.buttonsContainer);
+        this.container.appendChild(this.buttonsContainer);
         
         var clearDiv = document.createElement('div');
         
@@ -79,33 +135,39 @@ Fisma.Search.Criteria.prototype = {
      * Renders a YUI menu button that behaves like a select element. This element is where the user selects the field
      * to query on.
      * 
-     * @param The HTML element that contains the select widget
+     * @param container The HTML element to render into
      * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
      */
     renderQueryField : function (container, defaultFieldIndex) {
         
         var that = this;
-
-        var spanEl = document.createElement('span');
         
         var menuItems = new Array();
         var menuButton;
 
         // This event handler makes the menu button behave like a popup menu
         var menuClickHandler = function (type, args, item) {
+
             var newLabel = item.cfg.getProperty("text");
 
-            that.currentFieldName = item.value;
+            for (var index in that.fields) {
+                var field = that.fields[index];
 
-            for (var index in this.fields) {
-                var field = this.fields[index];
-                
-                that.currentFieldType = field.type;
-                
-                break;
+                if (item.value == field.name) {
+
+                    that.currentFieldName = field.name;
+
+                    if (that.currentFieldType != field.type) {
+                        that.currentFieldType = field.type;
+
+                        that.renderQueryType(that.queryTypeContainer);
+                    }
+
+                    break;
+                }
             }
 
-            menuButton.set("label", newLabel);
+            menuButton.set("label", field.label);
         };
 
         // Convert field list to menu items
@@ -129,35 +191,72 @@ Fisma.Search.Criteria.prototype = {
             type : "menu", 
             label : this.fields[initialFieldIndex].label, 
             menu : menuItems,
-            container : spanEl
+            container : container
         });
-
-        container.appendChild(spanEl);
-        
-        return spanEl;
     },
     
     /**
      * Render the query type menu based on the current item's type
      * 
-     * @param container The HTML element that contains the query fields
+     * @param container The HTML element to render into
      */
     renderQueryType : function (container) {
 
-        var spanEl = document.createElement('span');
-
-        switch (this.currentFieldType) {
-            case "text":
-                this.renderQueryTypeText(spanEl);
-                break;
-                
-            default:
-                throw "Undefined search field type: " + this.currentFieldType;
+        // Remove any existing content in this container
+        if (container.firstChild) {
+            while (container.hasChildNodes()) {
+                container.removeChild(container.firstChild);
+            }
         }
+
+        var that = this;
+
+        // This event handler makes the menu button behave like a popup menu
+        var handleQueryTypeSelectionEvent = function (type, args, item) {
+            var newLabel = item.cfg.getProperty("text");
+
+            that.currentQueryType = item.value;
+            that.renderQueryInput(that.queryInputContainer);
+
+            menuButton.set("label", newLabel);
+        };
+
+        // Load the criteria definition
+        var criteriaType = this.currentFieldType;
         
-        container.appendChild(spanEl);
-        
-        return spanEl;
+        if ('datetime' == criteriaType) {
+            // 'datetime' is aliased to 'date' since they behave the same
+            criteriaType = 'date';
+        }
+
+        var criteriaDefinitions = this.getCriteriaDefinition(criteriaType);
+
+        // Create the select menu
+        var menuItems = new Array();
+
+        for (var criteriaType in criteriaDefinitions) {
+            var criteriaDefinition = criteriaDefinitions[criteriaType];
+            
+            menuItem = {
+                text : criteriaDefinition.label,
+                value : criteriaType,
+                onclick : {fn : handleQueryTypeSelectionEvent}
+            };
+            
+            menuItems.push(menuItem);
+            
+            if (criteriaDefinition.isDefault) {
+                this.currentQueryType = criteriaType;
+            }
+        }
+
+        // Render menu button
+        var menuButton = new YAHOO.widget.Button({
+            type : "menu", 
+            label : criteriaDefinitions[this.currentQueryType].label,
+            menu : menuItems,
+            container : container
+        });
     },
 
     /**
@@ -166,43 +265,33 @@ Fisma.Search.Criteria.prototype = {
      * @param container The HTML element that contains the query fields
      */
     renderQueryInput : function (container) {
-        var spanEl = document.createElement('span');
 
-        switch (this.currentQueryType) {
-            
-            // These cases intentionally fall through
-            case "beginsWith":
-            case "contains":
-            case "endsWith":
-            case "is":
-                this.renderQueryInputText(spanEl);
-                break;
-                
-            default:
-                throw "Undefined query type: " + this.currentQueryType;
+        // Remove any existing content in this container
+        if (container.firstChild) {
+            while (container.hasChildNodes()) {
+                container.removeChild(container.firstChild);
+            }
         }
-        
-        container.appendChild(spanEl);
-        
-        return spanEl;
-        
+
+        // Call the defined renderer for the selected query type
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentFieldType);
+        var rendererName = criteriaDefinitions[this.currentQueryType].renderer;
+        var render = Fisma.Search.CriteriaRenderer[rendererName];
+
+        render(container);
     },
 
     /**
      * Render the add/remove buttons that the user uses to create additional search criteria or remove existing 
      * criteria
      * 
-     * @param The HTML element that contains the add/remove buttons
+     * @param The HTML element to render into
      */
     renderButtons : function (container) {
 
         var that = this;
 
-        var spanEl = document.createElement('span');
-
-        spanEl.className = "searchQueryButtons";
-        
-        var addButton = new YAHOO.widget.Button({container : spanEl});
+        var addButton = new YAHOO.widget.Button({container : container});
 
         addButton._button.className = "searchAddCriteriaButton";
         addButton._button.title = "Click to add another search criteria";
@@ -214,7 +303,7 @@ Fisma.Search.Criteria.prototype = {
             }
         );
 
-        var removeButton = new YAHOO.widget.Button({container : spanEl});
+        var removeButton = new YAHOO.widget.Button({container : container});
 
         removeButton._button.className = "searchRemoveCriteriaButton";
         removeButton._button.title = "Click to remove this search criteria";
@@ -225,80 +314,6 @@ Fisma.Search.Criteria.prototype = {
                 that.searchPanel.removeCriteria(that.container);
             }
         );
-
-        container.appendChild(spanEl);
-
-        return spanEl;
-    },
-    
-    /**
-     * Render text field query options
-     * 
-     * @param The HTML element that contains the add/remove buttons
-     */
-    renderQueryTypeText : function (container) {
-
-        var menuItems = new Array();
-        var menuButton;
-        
-        var that = this;
-
-        // This event handler makes the menu button behave like a popup menu
-        var menuClickHandler = function (type, args, item) {
-            var newLabel = item.cfg.getProperty("text");
-
-            that.currentQueryType = item.value;
-
-            menuButton.set("label", newLabel);
-        };
-
-        // Create menu from the available query types
-        menuItems = [
-            {
-                text : "Begins With",
-                value : "beginsWith",
-                onclick : {fn : menuClickHandler}                
-            },
-            {
-                text : "Contains",
-                value : "contains",
-                onclick : {fn : menuClickHandler}
-            },
-            {
-                text : "Ends With",
-                value : "endsWith",
-                onclick : {fn : menuClickHandler}                
-            },
-            {
-                text : "Is",
-                value : "is",
-                onclick : {fn : menuClickHandler}
-            }
-        ];
-
-        // The default selection is "Contains"
-        var defaultMenuItemIndex = 1;
-
-        this.currentQueryType = menuItems[defaultMenuItemIndex].value;
-
-        // Render menu button
-        menuButton = new YAHOO.widget.Button({
-            type : "menu", 
-            label : menuItems[defaultMenuItemIndex].text,
-            menu : menuItems,
-            container : container
-        });
-    },
-    
-    /**
-     * Render the search criteria as a single text input
-     */
-    renderQueryInputText : function (container) {
-        var textEl = document.createElement('input');
-        
-        textEl.type = "text";
-        
-        container.appendChild(textEl);
     },
     
     /**
@@ -306,9 +321,9 @@ Fisma.Search.Criteria.prototype = {
      * 
      * The URL query string has one URL parameter for each of the criteria fields for the current query type. The name 
      * of the parameter is formed by concatenating the field name with a dot and the query type. For example, the 
-     * following query string is returned for a query on "Creation Date Between Jan 1 2010 and Jun 30 2010":
+     * following query string is returned for a query on "Description contains the word 'password'":
      * 
-     *     /creationDate.greaterThan/2010-01-01/creationDate.lessThan/2010-06-30/
+     *     /description.textContains/password
      */
     getQueryString : function () {
         
@@ -316,10 +331,8 @@ Fisma.Search.Criteria.prototype = {
 
         switch (this.currentQueryType) {
             // These cases all intentionally fall through
-            case 'beginsWith':
             case 'contains':
-            case 'endsWith':
-            case 'is':
+            case 'doesNotContain':
                 var inputs = this.queryInputContainer.getElementsByTagName('input');
 
                 queryString = '/' + this.currentFieldName + '.' + this.currentQueryType + '/' + inputs[0].value;
@@ -330,5 +343,22 @@ Fisma.Search.Criteria.prototype = {
         }
 
         return queryString;
+    },
+    
+    /**
+     * Returns the criteria definition for a given field type
+     * 
+     * This covers up the fact that 'date' and 'datetime' behave the same way
+     * 
+     * @param fieldType
+     */
+    getCriteriaDefinition : function (fieldType) {
+        var tempType = fieldType;
+
+        if ('datetime' == tempType) {
+            tempType = 'date';
+        }
+        
+        return Fisma.Search.CriteriaDefinition[tempType];
     }
 };

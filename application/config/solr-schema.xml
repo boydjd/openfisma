@@ -87,8 +87,9 @@ See http://manual.openfisma.org/display/OPENFISMA/Search+Configuration
         long as there are a sufficient number of types available to describe everything that OpenFISMA models.
         -->
         <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
+        <dynamicField name="*_datetime" type="date" indexed="true" stored="true"/>
         <dynamicField name="*_enum" type="string" indexed="true" stored="true"/>
-        <dynamicField name="*_int" type="integer" indexed="true" stored="true"/>
+        <dynamicField name="*_integer" type="integer" indexed="true" stored="true"/>
         <dynamicField name="*_text" type="text" indexed="true" stored="true"/>
         <dynamicField name="*_textsort" type="string" indexed="true" stored="true"/>
     </fields>

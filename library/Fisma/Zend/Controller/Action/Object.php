@@ -209,6 +209,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } elseif (!$subject instanceof Doctrine_Record) {
             throw new Fisma_Zend_Exception('Expected a Doctrine_Record object');
         }
+
         $subject->merge($form->getValues());
         $subject->save();
 
@@ -398,7 +399,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Create the YUI table that will display results
         $searchResultsTable = new Fisma_Yui_DataTable_Remote();
-        
+
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
                            ->setInitialSortColumn('name')
@@ -434,7 +435,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $advancedSearchOptions[] = array(
                 'name' => $fieldName,
                 'label' => $fieldDefinition['displayName'],
-                'type' => 'text' // @todo
+                'type' => $fieldDefinition['type']
             );
         }
 

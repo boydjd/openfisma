@@ -39,10 +39,8 @@ class Fisma_Search_Criteria implements Iterator
      * @var array
      */
     static private $_validOperators = array(
-        'beginsWith',
         'contains',
-        'endsWith',
-        'is'
+        'doesNotContain'
     );
 
     /**

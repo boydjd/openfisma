@@ -62,6 +62,8 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
+                                      '/javascripts/Fisma/Search/CriteriaDefinition.js',
+                                      '/javascripts/Fisma/Search/CriteriaRenderer.js',
                                       '/javascripts/Fisma/Search/Panel.js',
                                       '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/System.js',

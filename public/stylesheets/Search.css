@@ -10,12 +10,22 @@
 
 .searchBox input[type=text] {
 	position: relative;
-	top: -5px;
+	top: -.4em;
     border: 1px solid #808080;
     background-color: white;
-    height: 1.5em;
+    height: 1.7em;
     margin-left: 2px;
-    width: 200px;
+    width: 20em;
+}
+
+.searchBox input[type=text].date {
+    background: url(/images/calendar.png) no-repeat 98%;
+    background-color: white;
+    width: 15em;
+}
+
+.searchBox input[type=text].integer {
+	width: 10em;
 }
 
 .searchCriteria {    
