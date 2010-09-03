@@ -91,7 +91,14 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * @var string
      */
-    private $_requestConstructor;    
+    private $_requestConstructor;
+    
+    /**
+     * A function which is called by YUI after the table is rendered (after data updates, for example)
+     * 
+     * @var string
+     */
+    private $_renderEventFunction;
     
     /**
      * Render the datatable with HTML and/or Javascript
@@ -114,6 +121,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'containerId' => $uniqueId . "_container",
             'dataUrl' => $this->_dataUrl,
             'initialSortColumn' => $this->_initialSortColumn,
+            'renderEventFunction' => $this->_renderEventFunction,
             'requestConstructor' => $this->_requestConstructor,
             'resultVariable' => $this->_resultVariable,
             'rowCount' => $this->_rowCount,
@@ -153,6 +161,20 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setDataUrl($dataUrl)
     {
         $this->_dataUrl = $dataUrl;
+        
+        return $this;
+    }
+
+    /**
+     * Mutator for $_renderEventFunction
+     * 
+     * Fluent interface
+     * 
+     * @param string $renderEventFunction
+     */
+    public function setRenderEventFunction($renderEventFunction)
+    {
+        $this->_renderEventFunction = $renderEventFunction;
         
         return $this;
     }
