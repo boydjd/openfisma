@@ -28,6 +28,11 @@
 abstract class Fisma_Search_Backend_Abstract
 {
     /**
+     * Delete all documents in the index
+     */
+    abstract public function deleteAll();
+
+    /**
      * Delete all documents of the specified type in the index
      * 
      * "Type" refers to a model, such as Asset, Finding, Incident, etc. 

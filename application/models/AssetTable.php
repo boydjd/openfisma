@@ -62,18 +62,33 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'displayName' => 'IP Port',
                 'sortable' => true,
                 'type' => 'integer'
-/*            ),
-            'product' => array(
-                'displayName' => 'Product',
-                'join' => array('relation' => 'Product', 'fields' => array('name', 'vendor', 'version'));
-                'sortable' => true,
-                'type' => 'text'
             ),
             'network' => array(
                 'displayName' => 'Network',
-                'join' => array('relation' => 'Product', 'fields' => array('name', 'vendor', 'version'));
+                'join' => array(
+                    'relation' => 'Network', 
+                    'field' => 'nickname'
+                ),
                 'sortable' => true,
-                'type' => 'text'*/
+                'type' => 'text'
+            ),
+            'system' => array(
+                'displayName' => 'System',
+                'join' => array(
+                    'relation' => 'Organization', 
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'product' => array(
+                'displayName' => 'Product',
+                'join' => array(
+                    'relation' => 'Product', 
+                    'field' => 'name'
+                ),
+                'sortable' => false,
+                'type' => 'text'
             )
         );
     }

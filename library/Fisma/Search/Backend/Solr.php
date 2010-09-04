@@ -53,6 +53,16 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
+     * Delete all documents in the index
+     */
+    public function deleteAll()
+    {
+        $this->_client->deleteByQuery('*:*');
+
+        $this->_client->commit();
+    }
+
+    /**
      * Delete all documents of the specified type in the index
      * 
      * "Type" refers to a model, such as Asset, Finding, Incident, etc. 
@@ -495,15 +505,23 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $documentFieldName = $doctrineFieldName . '_' . $searchFieldDefinition['type'];
 
-            $rawValue = $object[$table->getFieldName($doctrineFieldName)];
+            // @todo move this block to abstract class
+            // Values can come from the main model as well as related model
+            if (!isset($searchFieldDefinition['join'])) {
+                $rawValue = $object[$table->getFieldName($doctrineFieldName)];
+            } else {
+                $relation = $object[$searchFieldDefinition['join']['relation']];
+
+                $rawValue = $relation[$searchFieldDefinition['join']['field']];
+            }
 
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
             $containsHtml = isset($doctrineDefinition['purify']['html']) && $doctrineDefinition['purify']['html'];
 
             $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
-                
-            $document->addField($documentFieldName, $documentFieldValue);
+            
+            $document->addField($documentFieldName, $documentFieldValue);   
             
             // For sortable text columns, add a separate 'textsort' column (see design document)
             if ('text' == $searchFieldDefinition['type'] && $searchFieldDefinition['sortable']) {

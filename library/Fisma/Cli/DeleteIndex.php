@@ -35,7 +35,8 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
     public function getArgumentsDefinitions()
     {
         return array(
-            'model|m=w' => "Name of model to delete index for"
+            'model|m=w' => "Name of model to delete index for",
+            'all|a' => 'Delete ALL models\' indexes. Mutually exclusive with --model option.'
         );
     }    
     
@@ -45,13 +46,20 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
     protected function _run()
     {     
         $modelName = $this->getOption('model');
-        
-        if (!is_null($modelName)) {
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $allModels = $this->getOption('all');
 
-            $searchEngine->deleteByType($modelName);
+        // The two options are mutually exclusive
+        if ( (is_null($modelName) && is_null($allModels)) || (!is_null($modelName) && !is_null($allModels)) ) {
+
+            throw new Fisma_Zend_Exception_User("You must specify either a model or the all option, but not both.");
+        }
+
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+
+        if (!is_null($allModels)) {
+            $searchEngine->deleteAll($modelName);
         } else {
-            throw new Fisma_Zend_Exception_User("Model name is a required argument");
+            $searchEngine->deleteByType($modelName);
         }
     }
 }
