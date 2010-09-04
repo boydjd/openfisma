@@ -34,37 +34,44 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     {
         return array (
             'name' => array(
-                'displayName' => 'Name',
+                'initiallyVisible' => true,
+                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text'
             ), 
             'source' => array(
-                'displayName' => 'Source',
+                'initiallyVisible' => true,
+                'label' => 'Source',
                 'sortable' => true,
                 'type' => 'text'
             ), 
             'createdTs' => array(
-                'displayName' => 'Creation Date',
+                'initiallyVisible' => false,
+                'label' => 'Creation Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ), 
             'modifiedTs' => array(
-                'displayName' => 'Modification Date',
+                'initiallyVisible' => false,
+                'label' => 'Modification Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ), 
             'addressIp' => array(
-                'displayName' => 'IP Address',
+                'initiallyVisible' => true,
+                'label' => 'IP Address',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'addressPort' => array(
-                'displayName' => 'IP Port',
+                'initiallyVisible' => true,
+                'label' => 'IP Port',
                 'sortable' => true,
                 'type' => 'integer'
             ),
             'network' => array(
-                'displayName' => 'Network',
+                'initiallyVisible' => true,
+                'label' => 'Network',
                 'join' => array(
                     'relation' => 'Network', 
                     'field' => 'nickname'
@@ -73,7 +80,8 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'type' => 'text'
             ),
             'system' => array(
-                'displayName' => 'System',
+                'initiallyVisible' => true,
+                'label' => 'System',
                 'join' => array(
                     'relation' => 'Organization',
                     'field' => 'nickname'
@@ -82,7 +90,8 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'type' => 'text'
             ),
             'product' => array(
-                'displayName' => 'Product',
+                'initiallyVisible' => true,
+                'label' => 'Product',
                 'join' => array(
                     'relation' => 'Product', 
                     'field' => 'name'

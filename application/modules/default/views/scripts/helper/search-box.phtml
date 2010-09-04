@@ -16,13 +16,25 @@
     <div class="clear"></div>
 </div>
 
-<div id="searchColumns" class="searchBox" style="display: none;">
-    SEARCH COLUMNS
+<div id="searchColumns" class="searchBox">
+    <div id="searchColumnsButtons"></div>
 </div>
 
-<div id="advancedSearch" class="searchBox"></div>
+<div id="advancedSearch" class="searchBox"  style="display: none;"></div>
 
 <script>
+    YAHOO.util.Event.onContentReady (
+        "searchColumns", 
+        function () {
+            var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+        
+            Fisma.Search.initializeSearchColumnsPanel(
+                document.getElementById('searchColumnsButtons'), 
+                advancedSearchOptions
+            );
+        }
+    );
+
     YAHOO.util.Event.onContentReady (
         "advancedSearch", 
         function () {

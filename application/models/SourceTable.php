@@ -34,17 +34,20 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
     {
         return array (
             'name' => array(
-                'displayName' => 'Name', 
+                'initiallyVisible' => true,
+                'label' => 'Name', 
                 'sortable' => true,
                 'type' => 'text'
             ), 
             'nickname' => array(
-                'displayName' => 'Nickname', 
+                'initiallyVisible' => true,
+                'label' => 'Nickname', 
                 'sortable' => true,
                 'type' => 'text'
             ), 
             'description' => array(
-                'displayName' => 'Description', 
+                'initiallyVisible' => true,
+                'label' => 'Description', 
                 'sortable' => false,
                 'type' => 'text'
             )

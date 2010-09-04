@@ -80,8 +80,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * 
      * Default buttons are (subject to ACL):
      * 
-     * 1) <model name> List
-     * 2) Create New <List>
+     * 1) List All <model name>s
+     * 2) Create New <model name>
      * 
      * @return array Array of Fisma_Yui_Form_Button
      */
@@ -89,7 +89,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $buttons = array();
 
-        //
         $buttons[] = new Fisma_Yui_Form_Button_Link(
             'toolbarListButton', 
             array(
@@ -98,7 +97,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             )
         );
 
-        if ($this->_acl->hasPrivilegeForClass('create', 'Source')) {
+        if ($this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons[] = new Fisma_Yui_Form_Button_Link(
                 'toolbarCreateButton', 
                 array(
@@ -417,10 +416,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         foreach ($searchableFields as $fieldName => $searchParams) {
 
-            $displayName = $searchParams['displayName'];
+            $label = $searchParams['label'];
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
-            $column = new Fisma_Yui_DataTable_Column($displayName, $sortable, null, $fieldName);
+            $column = new Fisma_Yui_DataTable_Column(
+                $label, 
+                $sortable, 
+                null, 
+                $fieldName, 
+                !$searchParams['initiallyVisible']
+            );
 
             $searchResultsTable->addColumn($column);
         }
@@ -430,15 +435,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchForm = $this->getSearchForm();
         $this->view->searchResultsTable = $searchResultsTable;
 
-        // Construct options for advanced search
+        // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
+        // the name as an array element instead
         $advancedSearchOptions = array();
 
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
-            $advancedSearchOptions[] = array(
-                'name' => $fieldName,
-                'label' => $fieldDefinition['displayName'],
-                'type' => $fieldDefinition['type']
-            );
+            $advancedSearchOptions[] = array_merge(array('name' => $fieldName), $fieldDefinition);
         }
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
