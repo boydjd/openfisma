@@ -48,6 +48,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->contextSwitch()
                       ->setAutoJsonSerialization(false)
                       ->addActionContext('check-account', 'json')
+                      ->addActionContext('set-cookie', 'json')
                       ->initContext();
     }
     
@@ -326,18 +327,53 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Set cloumn preference
+     * Set a cookie that will be reloaded whenever this user logs in
      * 
      * @return void
      */
-    public function setColumnPreferenceAction()
+    public function setCookieAction()
     {
-        $me = Doctrine::getTable('User')->find($this->_me->id);
-        $me->searchColumnsPref = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
-        $me->getTable()->getRecordListener()->setOption('disabled', true);
-        $me->save();
+        $response = new Fisma_AsyncResponse();
+        
+        $cookieName = $this->getRequest()->getParam('name');
+        $cookieValue = $this->getRequest()->getParam('value');
+
+        if (empty($cookieName) || is_null($cookieValue)) {
+            throw new Fisma_Zend_Exception("Cookie name and/or cookie value cannot be null");
+        }
+
+        // See if a cookie exists already
+        $query = Doctrine_Query::create()
+                 ->from('Cookie c')
+                 ->where('c.userId = ? AND c.name = ?', array($this->_me->id, $cookieName))
+                 ->limit(1);
+
+        $result = $query->execute();
+
+        if (0 == count($result)) {
+            // Insert new cookie
+            $cookie = new Cookie;
+
+            $cookie->name = $cookieName;
+            $cookie->value = $cookieValue;
+            $cookie->userId = $this->_me->id;
+        } else {
+            // Update existing cookie
+            $cookie = $result[0];
+
+            $cookie->value = $cookieValue;
+        }
+        
+        try {
+            $cookie->save();
+        } catch (Doctrine_Validator_Exception $e) {
+            $response->fail($e->getMessage());
+        }
+
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
+
+        echo Zend_Json::encode($response);
     }
     
     /**

@@ -54,14 +54,13 @@ Fisma.Search = function() {
         advancedSearchPanel : null,
 
         /**
-         * True if search columns UI has been initialized
+         * A spinner that is display while persising the user's column preferences cookie
          */
-        searchColumnsInitialized : false,
+        columnPreferencesSpinner : null,
 
         /**
          * Test the current system configuration
          */
-
         testConfiguration : function () {
 
             if (Fisma.Search.testConfigurationActive) {
@@ -228,10 +227,24 @@ Fisma.Search = function() {
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
          */
         initializeSearchColumnsPanel : function (container, searchOptions) {
+
+            // Set up the cookie used for tracking which columns are visible
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+            var currentColumn = 0;
+
             for (var index in searchOptions) {
                 var searchOption = searchOptions[index];
-
+                
+                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
                 var checked = searchOption.initiallyVisible;
+
+                if (cookie) {
+                    checked = (cookie & 1 << currentColumn) != 0;
+                }
+
+                currentColumn++;
 
                 // Title elements used for accessibility
                 var checkedTitle = "Column is visible. Click to hide column.";
@@ -254,6 +267,8 @@ Fisma.Search = function() {
                             } else {
                                 table.hideColumn(column);
                             }
+                            
+                            Fisma.Search.saveColumnCookies();
                         },
                         obj : searchOption.name
                     }
@@ -261,6 +276,26 @@ Fisma.Search = function() {
 
                 columnToggleButton.set("title", checked ? checkedTitle : uncheckedTitle);
             }
+            
+            var saveDiv = document.createElement('div');
+            saveDiv.style.marginLeft = '20px';
+            saveDiv.style.float = 'right';
+
+            // Create the Save button
+            var saveButton = new YAHOO.widget.Button({
+                type : "button",
+                label : "Save Column Preferences",
+                container : saveDiv,
+                onclick : {
+                    fn : Fisma.Search.persistColumnCookie
+                }
+            });
+
+            if (!Fisma.Search.columnPreferencesSpinner) {
+                Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(saveDiv);
+            }
+            
+            container.appendChild(saveDiv);
         },
         
         /**
@@ -274,6 +309,74 @@ Fisma.Search = function() {
             } else {
                 document.getElementById('moreSearchOptions').style.display = 'none';
             }
+        },
+        
+        /**
+         * Save the currently visible columns into a cookie
+         * 
+         * @param table YUI Table
+         */
+        saveColumnCookies : function () {
+            var table = Fisma.Search.yuiDataTables['searchResultsTable'];
+            var columnKeys = table.getColumnSet().keys;
+
+            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
+            var prefBitmap = 0;
+
+            for (var column in columnKeys) {
+              if (!columnKeys[column].hidden) {
+                prefBitmap |= 1 << column;
+              }
+            }
+
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+
+            YAHOO.util.Cookie.set(
+                cookieName, 
+                prefBitmap, 
+                {
+                    path : "/",
+                    secure : location.protocol == 'https'
+                }
+            );
+        },
+        
+        /**
+         * Persist the column cookie into the user's profile
+         */
+        persistColumnCookie : function () {
+            Fisma.Search.saveColumnCookies();
+
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+
+            Fisma.Search.columnPreferencesSpinner.show();
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
+                {
+                    success : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
+
+                        var response = YAHOO.lang.JSON.parse(o.responseText);
+
+                        if (response.success) {
+                            message("Your column preferences have been saved", "notice");
+                        } else {
+                            message(response.message, "warning");
+                        }
+                    },
+
+                    failure : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
+
+                        message('Error: ' + o.statusText, 'warning');
+                    }
+                }
+            );
         }
     }
 }();

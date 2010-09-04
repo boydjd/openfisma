@@ -12,6 +12,9 @@ attribs.onsubmit = "Fisma.Search.handleSearchEvent(this); return false;"
 elements.searchType.type = "hidden"
 elements.searchType.options.value = "simple"
 
+elements.modelName.type = "hidden"
+; The value of model name is filled in by the controller
+
 elements.keywords.type = "text"
 elements.keywords.options.attribs.size = 25
 elements.keywords.options.attribs.title = "Keyword Search"

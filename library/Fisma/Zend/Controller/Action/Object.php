@@ -409,6 +409,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
 
+        // Check if the user has a cookie describing his search column preferences
+        $cookieName = $this->_modelName . 'Columns';
+
+        if (isset($_COOKIE[$cookieName])) {
+            $visibleColumns = $_COOKIE[$cookieName];
+        }
+
+        $currentColumn = 0;
+
         // Look up searchable columns and add them to the table
         $table = Doctrine::getTable($this->_modelName);
         $searchableFields = $table->getSearchableFields();
@@ -419,21 +428,27 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $label = $searchParams['label'];
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
-            $column = new Fisma_Yui_DataTable_Column(
-                $label, 
-                $sortable, 
-                null, 
-                $fieldName, 
-                !$searchParams['initiallyVisible']
-            );
+            // Column visibility is determined by cookie (if available) or by metadata otherwise
+            if (isset($visibleColumns)) {
+                $visible = (bool)($visibleColumns & (1 << $currentColumn));
+            } else {
+                $visible = $searchParams['initiallyVisible'];
+            }
+
+            $currentColumn++;
+
+            $column = new Fisma_Yui_DataTable_Column($label, $sortable, null, $fieldName, !$visible);
 
             $searchResultsTable->addColumn($column);
         }
 
+        $searchForm = $this->getSearchForm();
+        $searchForm->getElement('modelName')->setValue($this->_modelName);
+        $this->view->searchForm = $searchForm;
+        $this->view->searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
+
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();
-        $this->view->searchForm = $this->getSearchForm();
-        $this->view->searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
         $this->view->searchResultsTable = $searchResultsTable;
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
