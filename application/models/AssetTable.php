@@ -75,7 +75,7 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             'system' => array(
                 'displayName' => 'System',
                 'join' => array(
-                    'relation' => 'Organization', 
+                    'relation' => 'Organization',
                     'field' => 'nickname'
                 ),
                 'sortable' => true,

@@ -90,16 +90,36 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         $searchEngine->deleteByType($modelName);
 
         // Get a total count of all records
-        $allRecordsQuery = Doctrine_Query::create()->from("$modelName m");
+        $allRecordsQuery = Doctrine_Query::create()
+                           ->from("$modelName a")
+                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         
         // Add relations (if any) to the query -- this results in more efficient indexing of related records
         $searchableFields = Doctrine::getTable($modelName)->getSearchableFields();
 
-        foreach ($searchableFields as $searchableField) {
-            if (isset($searchableField['join'])) {
-                $relation = $searchableField['join']['relation'];
+        $currentAlias = 'a';
+        $relationAliases = array();
 
-                $allRecordsQuery->leftJoin("m.$relation");
+        foreach ($searchableFields as $fieldName => $fieldDefinition) {
+            if (isset($fieldDefinition['join'])) {
+                $relation = $fieldDefinition['join']['relation'];
+                
+                // Create a new relation alias if needed
+                if (!isset($relationAliases[$relation])) {
+                    $currentAlias = chr(ord($currentAlias) + 1);
+
+                    $relationAliases[$relation] = $currentAlias;
+
+                    $allRecordsQuery->leftJoin("a.$relation $currentAlias");
+                }
+                
+                $relationAlias = $relationAliases[$relation];
+
+                $name = $fieldDefinition['join']['field'];
+
+                $allRecordsQuery->addSelect("$relationAlias.$name");
+            } else {
+                $allRecordsQuery->addSelect("a.$fieldName");
             }
         }
 
@@ -120,11 +140,9 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
 
             $recordSet = $allRecordsQuery->execute();
 
-            $searchEngine->indexCollection($recordSet);
+            $searchEngine->indexCollection($modelName, $recordSet);
 
             $currentRecord += count($recordSet);
-
-            $recordSet->free();
 
             $progressBar->update($currentRecord);
         }

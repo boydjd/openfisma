@@ -49,20 +49,22 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function deleteObject($object);
 
     /**
-     * Index a Doctrine collection of objects
+     * Index an array of objects
      * 
-     * @param Doctrine_Collection $collection
+     * @param string $type The class of the object
+     * @param array $collection
      */
-    abstract public function indexCollection(Doctrine_Collection $collection);
+    abstract public function indexCollection($type, $collection);
 
     /**
-     * Add the specified object to the search engine index
+     * Add the specified object (in array format) to the search engine index
      * 
-     * This should overwrite any existing object with the same luceneDocumentId
+     * This will overwrite any existing object with the same luceneDocumentId
      * 
-     * @param Fisma_Doctrine_Record $object
+     * @param string $type The class of the object
+     * @param array $object
      */
-    abstract public function indexObject(Fisma_Doctrine_Record $object);
+    abstract public function indexObject($type, $object);
 
     /**
      * Optimize the index (degfragments the index)

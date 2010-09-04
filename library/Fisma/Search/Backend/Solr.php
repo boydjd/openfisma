@@ -94,13 +94,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
-     * Index a Doctrine collection of objects
+     * Index an array of objects
      * 
-     * @param Doctrine_Collection $collection
+     * @param string $type The class of the object
+     * @param array $collection
      */
-    public function indexCollection(Doctrine_Collection $collection)
+    public function indexCollection($type, $collection)
     {
-        $documents = $this->_convertCollectionToDocumentArray($collection);
+        $documents = $this->_convertCollectionToDocumentArray($type, $collection);
         
         $this->_client->addDocuments($documents);
 
@@ -108,15 +109,16 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
     
     /**
-     * Add the specified object to the search engine index
+     * Add the specified object (in array format) to the search engine index
      * 
-     * The client library will overwrite any document with a matching luceneDocumentId automatically
+     * This will overwrite any existing object with the same luceneDocumentId
      * 
-     * @param Fisma_Doctrine_Record $object
+     * @param string $type The class of the object
+     * @param array $object
      */
-    public function indexObject(Fisma_Doctrine_Record $object)
+    public function indexObject($type, $object)
     {
-        $document = $this->_convertObjectToDocument($object);
+        $document = $this->_convertObjectToDocument($type, $object);
         
         $this->_client->addDocument($document);
         
@@ -447,55 +449,55 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
-     * Convert a Doctrine_Collection object into an array of indexable Solr documents
+     * Convert an array of objects into an array of indexable Solr documents
      * 
-     * @param Doctrine_Collection $collection
+     * @param array $collection
      * @return array Array of SolrInputDocument
      */
-    private function _convertCollectionToDocumentArray(Doctrine_Collection $collection)
+    private function _convertCollectionToDocumentArray($type, $collection)
     {
         $documents = array();
 
         foreach ($collection as $object) {
-            $documents[] = $this->_convertObjectToDocument($object);
+            $documents[] = $this->_convertObjectToDocument($type, $object);
         }
 
         return $documents;
     }
     
     /**
-     * Convert a Fisma_Doctrine_Record object into an indexable Solr document
+     * Convert an object (in array format) into an indexable Solr document
      * 
      * The object's table must also implement Fisma_Search_Searchable so that this method can get its search metadata.
      * 
-     * @param Fisma_Doctrine_Record $object
+     * @param string $type The class of the object
+     * @param array $object
      * @return SolrInputDocument
      */
-    private function _convertObjectToDocument(Fisma_Doctrine_Record $object)
+    private function _convertObjectToDocument($type, $object)
     {
-        if (!($object->getTable() instanceof Fisma_Search_Searchable)) {
+        $table = Doctrine::getTable($type);
+
+        if (!($table instanceof Fisma_Search_Searchable)) {
             $message = 'Objects which are to be indexed must have a table that implements'
                      . ' the Fisma_Search_Searchable interface';
 
             throw new Fisma_Zend_Exception($message);
         }
-        
-        $type = get_class($object);
 
         $document = new SolrInputDocument;
 
         // All documents have the following three fields
-        if (isset($object->id)) {
-            $document->addField('luceneDocumentId', $type . $object->id);
+        if (isset($object['id'])) {
+            $document->addField('luceneDocumentId', $type . $object['id']);
             $document->addField('luceneDocumentType', $type);
-            $document->addField('id', $object->id);
+            $document->addField('id', $object['id']);
         } else {
             throw new Fisma_Search_Exception("Cannot index object type ($type) because it does not have an id field.");
         }
 
         // Iterate over the model's columns and see which ones need to be indexed
-        $table = Doctrine::getTable($type);
-        $searchableFields = $object->getTable()->getSearchableFields();
+        $searchableFields = $table->getSearchableFields();
 
         foreach ($searchableFields as $doctrineFieldName => $searchFieldDefinition) {
 
