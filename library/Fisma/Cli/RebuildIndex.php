@@ -90,7 +90,19 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         $searchEngine->deleteByType($modelName);
 
         // Get a total count of all records
-        $allRecordsQuery = Doctrine_Query::create()->from($modelName);
+        $allRecordsQuery = Doctrine_Query::create()->from("$modelName m");
+        
+        // Add relations (if any) to the query -- this results in more efficient indexing of related records
+        $searchableFields = Doctrine::getTable($modelName)->getSearchableFields();
+
+        foreach ($searchableFields as $searchableField) {
+            if (isset($searchableField['join'])) {
+                $relation = $searchableField['join']['relation'];
+
+                $allRecordsQuery->leftJoin("m.$relation");
+            }
+        }
+
         $totalRecords = $allRecordsQuery->count();
 
         // Progress bar for console progress monitoring
