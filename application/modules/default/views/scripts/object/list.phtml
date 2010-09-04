@@ -1,6 +1,14 @@
 <?php 
 
-echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->advancedSearchOptions), 'none');
+echo $this->escape(
+    $this->searchBox(
+        $this->toolbarButtons, 
+        $this->searchForm, 
+        $this->searchMoreOptionsForm,
+        $this->advancedSearchOptions
+    ), 
+    'none'
+);
 
 Fisma_Format_Section::startSection($this->pluralModelName . " <span id='searchResultsTotalFound'></span>"); 
 

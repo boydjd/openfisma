@@ -1,0 +1,23 @@
+; This form displays additional search options, such as advanced search, column toggles, and help
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[search_more_options]
+
+elements.exportPdf.type = "Form_Button"
+elements.exportPdf.options.onClickFunction = "alert"
+elements.exportPdf.options.label = "Export To PDF"
+
+elements.exportXls.type = "Form_Button"
+elements.exportXls.options.onClickFunction = "alert"
+elements.exportXls.options.label = "Export To Excel"
+
+elements.advanced.type = "Form_Button_Checkbox"
+elements.advanced.options.onClickFunction = "Fisma.Search.toggleAdvancedSearchPanel"
+elements.advanced.options.label = "Advanced Search"
+
+elements.columns.type = "Form_Button_Checkbox"
+elements.columns.options.onClickFunction = "Fisma.Search.toggleSearchColumnsPanel"
+elements.columns.options.label = "Toggle Column Visibility"

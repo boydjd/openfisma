@@ -261,6 +261,19 @@ Fisma.Search = function() {
 
                 columnToggleButton.set("title", checked ? checkedTitle : uncheckedTitle);
             }
+        },
+        
+        /**
+         * Toggles the display of the "more" options for search
+         * 
+         * This includes things like help, column toggles, and advanced search
+         */
+        toggleMoreButton : function () {
+            if (document.getElementById('moreSearchOptions').style.display == 'none') {
+                document.getElementById('moreSearchOptions').style.display = 'block';
+            } else {
+                document.getElementById('moreSearchOptions').style.display = 'none';
+            }
         }
     }
 }();

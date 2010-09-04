@@ -433,6 +433,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->searchForm = $this->getSearchForm();
+        $this->view->searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
         $this->view->searchResultsTable = $searchResultsTable;
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
@@ -584,6 +585,28 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getSearchForm()
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search');
+        
+        $searchForm->setDecorators(
+            array(
+                'FormElements',
+                array('HtmlTag', array('tag' => 'span')),
+                'Form'
+            )
+        );
+        
+        $searchForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
+        
+        return $searchForm;
+    }
+    
+    /**
+     * Get the "more search options" form and decorate it
+     * 
+     * @return Zend_Form
+     */
+    public function getSearchMoreOptionsForm()
+    {
+        $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
         
         $searchForm->setDecorators(
             array(

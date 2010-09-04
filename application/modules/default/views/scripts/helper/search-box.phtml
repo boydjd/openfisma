@@ -16,11 +16,26 @@
     <div class="clear"></div>
 </div>
 
-<div id="searchColumns" class="searchBox">
-    <div id="searchColumnsButtons"></div>
+<div id="moreSearchOptions" class="searchBox searchBoxAdditional" style="display: none;">
+    <p>More Search Options:</p>
+    <div class="centerButtons">
+        <?php 
+        if (isset($this->searchMoreOptionsForm)):
+            echo $this->escape($this->searchMoreOptionsForm, 'none'); 
+        endif;
+        ?>
+    </div>
 </div>
 
-<div id="advancedSearch" class="searchBox"  style="display: none;"></div>
+<div id="searchColumns" class="searchBox searchBoxAdditional" style="display: none;">
+    <p>Toggle Column Visibility:</p>
+    <div id="searchColumnsButtons" class="centerButtons"></div>
+</div>
+
+<div id="advancedSearch" class="searchBox searchBoxAdditional"  style="display: none;">
+    <p>Advanced Search:</p>
+    <div id="advancedSearchCriteria"></div>
+</div>
 
 <script>
     YAHOO.util.Event.onContentReady (
@@ -44,7 +59,7 @@
             
             Fisma.Search.advancedSearchPanel = searchPanel;
 
-            searchPanel.render(document.getElementById('advancedSearch'));
+            searchPanel.render(document.getElementById('advancedSearchCriteria'));
         }
     );
 </script>
