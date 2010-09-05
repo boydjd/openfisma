@@ -42,7 +42,6 @@ Fisma.Spinner = function (container) {
     this.spinner.style.visibility = "hidden";
     
     // Append spinner to end of container element
-    console.log(this.container);
     this.container.appendChild(this.spinner);
 }
 

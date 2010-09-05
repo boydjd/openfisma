@@ -519,7 +519,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
-            $containsHtml = isset($doctrineDefinition['purify']['html']) && $doctrineDefinition['purify']['html'];
+            $containsHtml = isset($doctrineDefinition['extra']['purify']['html']) &&
+                                  $doctrineDefinition['extra']['purify']['html'];
 
             $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
             
@@ -563,11 +564,24 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $row = array();
 
-            // Solr has a weird format. Each field is an array with length 1, so we take index 0
             foreach ($document as $columnName => $columnValue) {
                 $newColumnName = $this->_removeSuffixFromColumnName($columnName);
                 
-                $row[$newColumnName] = $columnValue[0];
+                if (strlen($columnValue[0]) > self::MAX_ROW_LENGTH) {
+                    $shortValue = substr($columnValue[0], 0, self::MAX_ROW_LENGTH);
+
+                    // Trim after the last white space (so as not to break in the middle of a word)
+                    $spacePosition = strrpos($shortValue, ' ');
+
+                    if ($spacePosition) {
+                        $shortValue = substr($shortValue, 0, $spacePosition);
+                    }
+
+                    // Solr has a weird format. Each field is an array with length 1, so we take index 0
+                    $row[$newColumnName] = $shortValue . '...';
+                } else {
+                    $row[$newColumnName] = $columnValue[0];
+                }
             }
 
             // Convert any dates or datetimes from Solr's UTC format back to native format

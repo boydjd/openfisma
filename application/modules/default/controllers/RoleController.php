@@ -35,19 +35,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Role';
-    
-    /**
-     * View a role
-     * 
-     * @return void
-     */
-    public function viewAction()
-    {
-        $id = $this->_request->getParam('id');
-        $this->view->assign('rightLink', "/Role/right/id/$id");
-        parent::viewAction();
-    }
-    
+
     /**
      * Assign privileges to a single role
      * 

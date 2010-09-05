@@ -16,7 +16,6 @@ elements.modelName.type = "hidden"
 ; The value of model name is filled in by the controller
 
 elements.keywords.type = "text"
-elements.keywords.options.attribs.size = 25
 elements.keywords.options.attribs.title = "Keyword Search"
 
 elements.search.type = "Form_Button_Submit"

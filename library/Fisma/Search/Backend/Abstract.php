@@ -28,6 +28,13 @@
 abstract class Fisma_Search_Backend_Abstract
 {
     /**
+     * Search results longer than this number of characters will be truncated to this length
+     * 
+     * @var int
+     */
+    const MAX_ROW_LENGTH = 100;
+
+    /**
      * Delete all documents in the index
      */
     abstract public function deleteAll();
