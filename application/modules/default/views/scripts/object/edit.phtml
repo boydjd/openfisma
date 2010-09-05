@@ -2,7 +2,13 @@
 
 echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-Fisma_Format_Section::startSection('Edit: ' . $this->modelName . "&nbsp;&nbsp;[<a href='{$this->viewLink}'>View</a>]");
+$actions = '';
+
+foreach ($this->links as $label => $url) {
+    $actions .= "&nbsp;&nbsp;[<a href='$url'>$label</a>]";
+}
+
+Fisma_Format_Section::startSection('Edit: ' . $this->modelName . $actions); 
 
 ?>
 

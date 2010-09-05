@@ -4,20 +4,20 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * Base controller to handle CRUD 
+ * Base controller to handle CRUD
  *
  * @author     Jim Chen <xhorse@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -29,47 +29,47 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 {
     /**
      * Default pagination parameters
-     * 
+     *
      * @var array
      */
     protected $_paging = array(
         'startIndex' => 0,
         'count' => 10
     );
-    
+
     /**
      * The main name of the model.
-     * 
+     *
      * This model is the main subject which the controller operates on.
-     * 
+     *
      * @var string
      */
     protected $_modelName = null;
 
     /**
-     * The name of the module the controller is in. 
-     * 
+     * The name of the module the controller is in.
+     *
      * @var string
      * @access protected
      */
     protected $_moduleName = '';
 
     /**
-     * _controllerName 
-     * 
+     * _controllerName
+     *
      * @var string
      * @access protected
      */
     protected $_controllerName = '';
 
     /**
-     * The name of the class which this class's ACL is based off of. 
-     * 
-     * For example, system document objects don't have their own ACL items, instead they are based on the privileges 
+     * The name of the class which this class's ACL is based off of.
+     *
+     * For example, system document objects don't have their own ACL items, instead they are based on the privileges
      * the user has to the parent system objects which own those documents.
-     * 
+     *
      * If null, then the ACL resource is based on the _modelName
-     * 
+     *
      * @var string
      * @see getAclResourceName
      */
@@ -77,12 +77,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * Subclasses should override this if they want to use different buttons
-     * 
+     *
      * Default buttons are (subject to ACL):
-     * 
+     *
      * 1) List All <model name>s
      * 2) Create New <model name>
-     * 
+     *
      * @return array Array of Fisma_Yui_Form_Button
      */
     public function getToolbarButtons()
@@ -90,30 +90,30 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
 
         $buttons[] = new Fisma_Yui_Form_Button_Link(
-            'toolbarListButton', 
+            'toolbarListButton',
             array(
-                'value' => 'List All ' . $this->getPluralModelName(), 
+                'value' => 'List All ' . $this->getPluralModelName(),
                 'href' => $this->getBaseUrl() . '/list'
             )
         );
 
         if ($this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons[] = new Fisma_Yui_Form_Button_Link(
-                'toolbarCreateButton', 
+                'toolbarCreateButton',
                 array(
-                    'value' => 'Create New ' . $this->_modelName, 
+                    'value' => 'Create New ' . $this->_modelName,
                     'href' => $this->getBaseUrl() . '/create'
                 )
             );
         }
-         
+
         return $buttons;
     }
 
     /**
-     * Return a plural form of the model name. 
-     * 
-     * This is used for UI purposes. Subclasses should override for model names 
+     * Return a plural form of the model name.
+     *
+     * This is used for UI purposes. Subclasses should override for model names
      * which do not pluralize by adding an 's' to the end.
      */
     public function getPluralModelName()
@@ -123,7 +123,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      *  Initialize model and make sure the model has been properly set
-     * 
+     *
      * @return void
      * @throws Fisma_Zend_Exception if model name is null
      */
@@ -132,17 +132,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         parent::init();
 
         $this->_moduleName = $this->getModuleNameForLink();
-        $this->_controllerName = $this->getRequest()->getControllerName(); 
+        $this->_controllerName = $this->getRequest()->getControllerName();
         if (is_null($this->_modelName)) {
             //Actually user should not be able to see this error message
             throw new Fisma_Zend_Exception('Internal error. Subclasses of the BaseController'
                                     . ' must specify the _modelName field');
         }
     }
-    
+
     /**
      * Invoked before each Actions
-     * 
+     *
      * @return void
      */
     public function preDispatch()
@@ -154,7 +154,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * Get the specified form of the subject model
-     * 
+     *
      * @param string|null $formName The name of the specified form
      * @return Zend_Form The specified form of the subject model
      */
@@ -167,12 +167,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
             $form = Fisma_Zend_Form_Manager::loadForm($formName);
             $form = Fisma_Zend_Form_Manager::prepareForm(
-                $form, 
+                $form,
                 array(
-                    'formName' => ucfirst($formName), 
-                    'view' => $this->view, 
-                    'request' => $this->_request, 
-                    'acl' => $this->_acl, 
+                    'formName' => ucfirst($formName),
+                    'view' => $this->view,
+                    'request' => $this->_request,
+                    'acl' => $this->_acl,
                     'user' => $this->_me
                 )
             );
@@ -198,7 +198,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved. 
+     * @return integer ID of the object saved.
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -217,7 +217,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * View detail information of the subject model
-     * 
+     *
      * @return void
      * @throws Fisma_Zend_Exception if the model id is invalid
      */
@@ -225,41 +225,39 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
+
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
+
         $this->_acl->requirePrivilegeForObject('read', $subject);
 
+        // Load the object's form
         $form   = $this->getForm();
-
-        $this->view->assign('editLink', "{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
-        $form->setReadOnly(true);            
-        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
+        $form->setReadOnly(true);
         $this->setForm($subject, $form);
         $this->view->form = $form;
+
         $this->view->id   = $id;
         $this->view->subject = $subject;
+        $this->view->links = $this->getViewLinks($subject);
 
         $this->view->searchForm = $this->getSearchForm();
         $this->view->modelName = $this->_modelName;
         $this->view->toolbarButtons = $this->getToolbarButtons();
-
-        // Setup ACL view variables
-        $this->view->canEditObject = $this->_acl->hasPrivilegeForObject('update', $subject);
-        $this->view->canDeleteObject = $this->_acl->hasPrivilegeForObject('delete', $subject);
 
         $this->renderScript('object/view.phtml');
     }
 
     /**
      * Create a subject model/record
-     * 
+     *
      * @return void
      */
     public function createAction()
     {
         $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
-        
+
         // Get the subject form
         $form   = $this->getForm();
         $form->setAction("{$this->_moduleName}/{$this->_controllerName}/create");
@@ -294,7 +292,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * Edit a subject model
-     * 
+     *
      * @return void
      * @throws Fisma_Zend_Exception if the model id is invalid
      */
@@ -307,11 +305,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         $this->_acl->requirePrivilegeForObject('update', $subject);
         $this->view->subject = $subject;
-        $form   = $this->getForm();
 
-        $this->view->assign('viewLink', "{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
+        $form   = $this->getForm();
         $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
-        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
+
+        $this->view->links = $this->getEditLinks($subject);
+
         // Update the model
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
@@ -345,13 +344,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
-        
+
         $this->renderScript('object/edit.phtml');
     }
 
     /**
      * Delete a subject model
-     * 
+     *
      * @return void
      */
     public function deleteAction()
@@ -387,7 +386,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * List the subjects
-     * 
+     *
      * @return void
      */
     public function listAction()
@@ -422,7 +421,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $table = Doctrine::getTable($this->_modelName);
         $searchableFields = $table->getSearchableFields();
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
-        
+
         foreach ($searchableFields as $fieldName => $searchParams) {
 
             $label = $searchParams['label'];
@@ -464,15 +463,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->renderScript('object/list.phtml');
     }
 
-    /** 
+    /**
      * Apply a user query to the search engine and return the results in JSON format
-     * 
+     *
      * @return string The encoded table data in json format
      */
     public function searchAction()
     {
         $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
-        
+
         //initialize the data rows
         $searchResults = array(
             'startIndex'      => $this->_paging['startIndex'],
@@ -483,14 +482,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Setup search parameters
         $sortColumn = $this->getRequest()->getParam('sort');
-        
+
         if (empty($sortColumn)) {
             // Pick the first searchable column as the default sort column
             $searchableFields = array_keys(Doctrine::getTable($this->_modelName)->getSearchableFields());
-            
+
             $sortColumn = $searchableFields[0];
         }
-        
+
         $sortDirection = $this->getRequest()->getParam('dir', 'asc');
         $sortBoolean = ('asc' == $sortDirection);
         $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
@@ -502,26 +501,26 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $queryType = $this->getRequest()->getParam('queryType');
 
         if ('advanced' == $queryType) {
-            
+
             // Extract search criteria from URL query string
             $searchCriteria = new Fisma_Search_Criteria;
-            
+
             $queryJson = $this->getRequest()->getParam('query');
             $query = Zend_Json::decode($queryJson);
-            
+
             foreach ($query as $queryItem) {
                 $searchCriterion = new Fisma_Search_Criterion(
-                    $queryItem['field'], 
-                    $queryItem['operator'], 
+                    $queryItem['field'],
+                    $queryItem['operator'],
                     $queryItem['operands']
                 );
-    
+
                 $searchCriteria->add($searchCriterion);
             }
 
             // Run advanced search
             $result = $searchEngine->searchByCriteria(
-                $this->_modelName, 
+                $this->_modelName,
                 $searchCriteria,
                 $sortColumn,
                 $sortBoolean,
@@ -535,13 +534,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             // Run simple search
             $result = $searchEngine->searchByKeyword(
-                $this->_modelName, 
+                $this->_modelName,
                 $keywords,
                 $sortColumn,
                 $sortBoolean,
                 $start,
                 $rows
-            );       
+            );
         }
 
         $searchResults['recordsReturned'] = $result->getNumberReturned();
@@ -553,9 +552,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * Returns the ACL class name for this controller.
-     * 
+     *
      * This is based on the _modelName and _aclResource variables defined by child classes.
-     * 
+     *
      * @return string
      */
     public function getAclResourceName()
@@ -564,10 +563,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * getModuleNameForLink 
-     * 
+     * getModuleNameForLink
+     *
      * @access public
-     * @return string 
+     * @return string
      */
     public function getModuleNameForLink()
     {
@@ -577,30 +576,30 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             return '';
         }
     }
-    
+
     /**
      * Get a base URL that points to this module and controller
-     * 
+     *
      * return string
      */
     public function getBaseUrl()
     {
         $module = $this->getModuleNameForLink();
-        
+
         $controller = $this->getRequest()->getControllerName();
-        
+
         return $module . '/' . $controller;
     }
-    
+
     /**
      * Get the search form and decorate it
-     * 
+     *
      * @return Zend_Form
      */
     public function getSearchForm()
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search');
-        
+
         $searchForm->setDecorators(
             array(
                 'FormElements',
@@ -608,21 +607,21 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'Form'
             )
         );
-        
+
         $searchForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
-        
+
         return $searchForm;
     }
-    
+
     /**
      * Get the "more search options" form and decorate it
-     * 
+     *
      * @return Zend_Form
      */
     public function getSearchMoreOptionsForm()
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
-        
+
         $searchForm->setDecorators(
             array(
                 'FormElements',
@@ -630,9 +629,55 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'Form'
             )
         );
-        
+
         $searchForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
-        
+
         return $searchForm;
+    }
+
+    /**
+     * Return an array of links that are displayed on the object edit page
+     *
+     * The keys are link labels and the values are the URLs
+     *
+     * @param Fisma_Record $subject
+     * @return array
+     */
+    public function getEditLinks(Fisma_Record $subject)
+    {
+        $links = array();
+
+        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
+            $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
+        }
+
+        if ($this->_acl->hasPrivilegeForObject('delete', $subject)) {
+            $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
+        }
+
+        return $links;
+    }
+
+    /**
+     * Return an array of links that are displayed on the object view page
+     *
+     * The keys are link labels and the values are the URLs
+     *
+     * @param Fisma_Record $subject
+     * @return array
+     */
+    public function getViewLinks(Fisma_Record $subject)
+    {
+        $links = array();
+
+        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
+            $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
+        }
+
+        if ($this->_acl->hasPrivilegeForObject('delete', $subject)) {
+            $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
+        }
+
+        return $links;
     }
 }
