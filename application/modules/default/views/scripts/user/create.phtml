@@ -1,5 +1,15 @@
 <?php
-echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
+
+echo $this->escape(
+    $this->searchBox(
+        $this->toolbarButtons, 
+        $this->searchForm, 
+        $this->searchMoreOptionsForm,
+        $this->advancedSearchOptions
+    ), 
+    'none'
+);
+
 Fisma_Format_Section::startSection('User Account Information'); ?>
 
 <?php 

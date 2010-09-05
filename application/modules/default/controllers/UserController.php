@@ -391,14 +391,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Override parent to add a link for audit logs
+     * Override parent to add roles interface
      *
      * @return void
      */
     public function viewAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $this->view->auditLogLink = "/user/log/id/$id";
 
         $tabView = new Fisma_Yui_TabView('UserView');
 
@@ -420,9 +419,27 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->tabView = $tabView;
 
-        parent::viewAction();
+        parent::_viewObject();
     }
     
+    /**
+     * Override parent to add an audit log link
+     * 
+     * @param Fisma_Doctrine_Record $subject
+     */
+    public function getViewLinks(Fisma_Doctrine_Record $subject)
+    {
+        $links = array();
+        
+        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
+            $links['Audit Log'] = "/user/log/id/{$subject->id}";
+        }
+        
+        $links = array_merge($links, parent::getViewLinks($subject));
+
+        return $links;
+    }
+
     /**
      * Displays user info in a small pop-up box. No layout.
      */
@@ -539,7 +556,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
-        parent::editAction();
+        parent::_editObject();
+
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
 

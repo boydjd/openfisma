@@ -216,12 +216,24 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * View detail information of the subject model
+     * Display details for a single record.
+     *
+     * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
+     * default logic but still render their own views.
      *
      * @return void
-     * @throws Fisma_Zend_Exception if the model id is invalid
      */
     public function viewAction()
+    {
+        $this->_viewObject();
+
+        $this->renderScript('object/view.phtml');
+    }
+
+    /**
+     * A protected method which holds all of the logic for the view action, but does not actually render a view
+     */
+    protected function _viewObject()
     {
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
@@ -245,8 +257,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchForm = $this->getSearchForm();
         $this->view->modelName = $this->_modelName;
         $this->view->toolbarButtons = $this->getToolbarButtons();
-
-        $this->renderScript('object/view.phtml');
     }
 
     /**
@@ -291,18 +301,32 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Edit a subject model
+     * Display an edit page for a single record.
+     *
+     * All of the default logic for editing a record is performed in _editObject, so that child classes can use the
+     * default logic but still render their own views.
      *
      * @return void
-     * @throws Fisma_Zend_Exception if the model id is invalid
      */
     public function editAction()
     {
+        $this->_editObject();
+
+        $this->renderScript('object/edit.phtml');
+    }
+
+    /**
+     * A protected method which holds all of the logic for the edit page but does not actually render a view
+     */
+    protected function _editObject()
+    {
         $id     = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
+
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
+
         $this->_acl->requirePrivilegeForObject('update', $subject);
         $this->view->subject = $subject;
 
@@ -344,8 +368,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
-
-        $this->renderScript('object/edit.phtml');
     }
 
     /**
@@ -395,18 +417,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $keywords = trim($this->_request->getParam('keywords'));
 
+        $table = Doctrine::getTable($this->_modelName);
+        $searchableFields = $table->getSearchableFields();
+
         // Create the YUI table that will display results
         $searchResultsTable = new Fisma_Yui_DataTable_Remote();
 
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
-                           ->setInitialSortColumn('name')
                            ->setSortAscending(true)
                            ->setRenderEventFunction('Fisma.Search.highlightSearchResultsTable')
                            ->setRequestConstructor('Fisma.Search.handleYuiDataTableEvent')
                            ->setRowCount($this->_paging['count'])
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
+
+        // The initial sort column is the first column (by convention)
+        $firstColumn = each($searchableFields);
+        $searchResultsTable->setInitialSortColumn($firstColumn['key']);
+        reset($searchableFields);
 
         // Check if the user has a cookie describing his search column preferences
         $cookieName = $this->_modelName . 'Columns';
@@ -418,8 +447,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $currentColumn = 0;
 
         // Look up searchable columns and add them to the table
-        $table = Doctrine::getTable($this->_modelName);
-        $searchableFields = $table->getSearchableFields();
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
         foreach ($searchableFields as $fieldName => $searchParams) {
@@ -640,10 +667,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * The keys are link labels and the values are the URLs
      *
-     * @param Fisma_Record $subject
+     * @param Fisma_Doctrine_Record $subject
      * @return array
      */
-    public function getEditLinks(Fisma_Record $subject)
+    public function getEditLinks(Fisma_Doctrine_Record $subject)
     {
         $links = array();
 
@@ -663,15 +690,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * The keys are link labels and the values are the URLs
      *
-     * @param Fisma_Record $subject
+     * @param Fisma_Doctrine_Record $subject
      * @return array
      */
-    public function getViewLinks(Fisma_Record $subject)
+    public function getViewLinks(Fisma_Doctrine_Record $subject)
     {
         $links = array();
 
         if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
+            $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
         if ($this->_acl->hasPrivilegeForObject('delete', $subject)) {

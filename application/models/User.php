@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,11 +28,6 @@
  */
 class User extends BaseUser
 {
-    /**
-     * The name of the cookie in which the search preference bitmask is stored.
-     */
-    const SEARCH_PREF_COOKIE = 'search_columns_pref';
-
     /**
      * Account was manually locked by an administrator
      */
@@ -60,7 +55,7 @@ class User extends BaseUser
 
     /**
      * Doctrine hook which is used to set up mutators
-     * 
+     *
      * @return void
      */
     public function setUp()
@@ -77,7 +72,7 @@ class User extends BaseUser
     public function construct()
     {
         /*
-         * This mapped value is not persistent, but it will be stored in memory for the duration of the request 
+         * This mapped value is not persistent, but it will be stored in memory for the duration of the request
          * whenever the password is modified.
          */
         $this->mapValue('plainTextPassword');
@@ -85,7 +80,7 @@ class User extends BaseUser
 
     /**
      * Lock an account, which will prevent a user from logging in.
-     * 
+     *
      * @param string $lockType One specified lock type from manual, password, inactive, or expired
      * @return void
      */
@@ -100,7 +95,7 @@ class User extends BaseUser
         $this->lockType = $lockType;
         $this->save();
 
-        // Invalidating the ACL will make the lock effective on the next page refresh. Otherwise the user 
+        // Invalidating the ACL will make the lock effective on the next page refresh. Otherwise the user
         // would be able to continue using the app for the rest of his session.
         if ($this->locked) {
             $this->invalidateAcl();
@@ -112,7 +107,7 @@ class User extends BaseUser
             $message = 'Locked: ' . $this->getLockReason();
             $this->getAuditLog()->write($message);
         } else {
-            $message = 'Locked by unknown user (' 
+            $message = 'Locked by unknown user ('
                     . $_SERVER['REMOTE_ADDR']
                     . '): '
                 . $this->getLockReason();
@@ -124,7 +119,7 @@ class User extends BaseUser
 
     /**
      * Unlock this account, which will allow a user to login again.
-     * 
+     *
      * @return void
      */
     public function unlockAccount()
@@ -152,7 +147,7 @@ class User extends BaseUser
         if (CurrentUser::getInstance()) {
             $this->getAuditLog()->write('Unlocked');
         } else {
-            $message = 'Unlocked by unknown user (' 
+            $message = 'Unlocked by unknown user ('
                     . $_SERVER['REMOTE_ADDR']
                     . '): '
                 . $this->getLockReason();
@@ -162,7 +157,7 @@ class User extends BaseUser
 
     /**
      * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
-     * 
+     *
      * @return void
      * @throws Fisma_Zend_Exception_AccountLocked if the account is locked
      */
@@ -187,22 +182,22 @@ class User extends BaseUser
     /**
      * Returns the number of minutes until this account is automatically unlocked. Could be negative if the lock already
      * expired but has not actually been removed yet.
-     * 
+     *
      * Throws an exception if the account is not eligible for automatic unlock (due to system configuration, or the
      * lock type on the account).
-     * 
+     *
      * @return int The remaining minutes to be unlocked automatically
      * @throws Fisma_Zend_Exception if the account is not eligible for automatic unlock
      */
     public function getLockRemainingMinutes()
     {
-        if ($this->locked 
+        if ($this->locked
                 && self::LOCK_TYPE_PASSWORD == $this->lockType
                 && Fisma::configuration()->getConfig('unlock_enabled')) {
 
             $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
             $lockTs->addMinute(Fisma::configuration()->getConfig('unlock_duration'));
-            $now = Zend_Date::now();            
+            $now = Zend_Date::now();
             $lockTs->sub($now);
             // ceil() so that 1 second remaining is rounded up to 1 minute, rather than rounded down to 0 minute
             // (otherwise the lock would be released early)
@@ -216,7 +211,7 @@ class User extends BaseUser
 
     /**
      * Returns a human-readable explanation of why the account was locked
-     * 
+     *
      * @return string The human-readable explanation of why the account was locked
      * @throws Fisma_Zend_Exception if the lock type is unexcepted
      */
@@ -256,16 +251,16 @@ class User extends BaseUser
     /**
      * Returns this user's access control list (ACL) object. It will initialize the ACL first,
      * if necessary.
-     * 
+     *
      * OpenFISMA authorization allows a user to possess one role across a range of information
      * systems. In order to translate this into an ACL, OpenFISMA produces the equivalent of a
      * cartesian join between the roles and systems table. In the future, roles will be assigned
      * to individual systems.
-     * 
+     *
      * @return Zend_Acl The Fisma ACL
-     * @todo Create separate roles for separate systems. This requires the user interface to be 
+     * @todo Create separate roles for separate systems. This requires the user interface to be
      * upgraded to make it possible to configure this.
-     * 
+     *
      * Example ACL tree for a user who has ISSO access to system 1 & 2, and ADMIN access to system 1:
      * <pre>
      * username
@@ -344,14 +339,14 @@ class User extends BaseUser
                             }
                             $acl->allow($newRole, $systemResource, $privilege->action);
 
-                            // The wildcard resources indicates whether a user has this privilege on *any* 
+                            // The wildcard resources indicates whether a user has this privilege on *any*
                             // system. This is useful for knowing when to show certain user interface elements
                             // like menu items.
                             $wildcardResource = "$privilege->resource";
                             if (!$acl->has($wildcardResource)) {
                                 $acl->add(new Zend_Acl_Resource($wildcardResource));
                             }
-                            $acl->allow($newRole, $wildcardResource, $privilege->action); 
+                            $acl->allow($newRole, $wildcardResource, $privilege->action);
                         }
                     } else {
                         // Create a resource and grant it to the current role
@@ -377,9 +372,9 @@ class User extends BaseUser
     }
 
     /**
-     * Mark's the user's current ACL object as "dirty", indicating that it needs to be re-generated. 
-     * 
-     * This should be called if a user's privileges are changed during a request and the effects of that change need to 
+     * Mark's the user's current ACL object as "dirty", indicating that it needs to be re-generated.
+     *
+     * This should be called if a user's privileges are changed during a request and the effects of that change need to
      * be visible within the current response.
      */
     public function invalidateAcl()
@@ -390,7 +385,7 @@ class User extends BaseUser
 
     /**
      * Performs house keeping that needs to run at log in
-     * 
+     *
      * @return void
      */
     public function login()
@@ -453,14 +448,14 @@ class User extends BaseUser
 
     /**
      * Get the user's organizations.
-     * 
+     *
      * Unlike using $this->Organizations, this method implements the correct business logic for the root user,
      * who won't have any joins in the UserOrganization model, but should still have access to all organizations
      * anyway.
-     * 
+     *
      * @return Doctrine_Collection The collection of user`s organizations
      */
-    public function getOrganizations() 
+    public function getOrganizations()
     {
         $query = $this->getOrganizationsQuery();
         $result = $query->execute();
@@ -469,18 +464,18 @@ class User extends BaseUser
     }
 
     /**
-     * Get the user's organizations for a specific role 
+     * Get the user's organizations for a specific role
      * If the user is root, then we ignore the roleId
      *
-     * @param int $roleId 
-     * @return Doctrine_Collection THe collection of user's organizations 
+     * @param int $roleId
+     * @return Doctrine_Collection THe collection of user's organizations
      */
     public function getOrganizationsByRole($roleId)
     {
         $query = $this->getOrganizationsQuery();
 
-        if ($this->username != 'root') { 
-            $query->where("ur.roleid = $roleId"); 
+        if ($this->username != 'root') {
+            $query->where("ur.roleid = $roleId");
         }
 
         return $query->execute();
@@ -489,10 +484,10 @@ class User extends BaseUser
     /**
      * Get the user's organizations for a specific privilege resource and action
      * If the user is root, then this ends up returning all of the organizations
-     * 
-     * @param string $resource 
-     * @param string $action 
-     * @return Doctrine_Collection The collection of organizations 
+     *
+     * @param string $resource
+     * @param string $action
+     * @return Doctrine_Collection The collection of organizations
      */
     public function getOrganizationsByPrivilege($resource, $action)
     {
@@ -503,9 +498,9 @@ class User extends BaseUser
     /**
      * Get the user's systems for a specific privilege resource and action
      * If the user is root, then this ends up returning all of the systems
-     * 
-     * @param string $resource 
-     * @param string $action 
+     *
+     * @param string $resource
+     * @param string $action
      * @param boolean $includeDisposal Indicates whether to include systems in the disposal phase, default is false
      * @return Doctrine_Collection The collection of systems
      */
@@ -518,7 +513,7 @@ class User extends BaseUser
 
     /**
      * Get the user's systems
-     * 
+     *
      * @return Doctrine_Collection The collection of systems
      */
     public function getSystems()
@@ -527,11 +522,11 @@ class User extends BaseUser
     }
 
     /**
-     * Get the roles associated with a user for a specific privilege resource and action. 
-     * 
-     * @param string $resource 
-     * @param string $action 
-     * @return Doctrine_Collection The collection of user roles 
+     * Get the roles associated with a user for a specific privilege resource and action.
+     *
+     * @param string $resource
+     * @param string $action
+     * @return Doctrine_Collection The collection of user roles
      */
     public function getRolesByPrivilege($resource, $action)
     {
@@ -551,16 +546,16 @@ class User extends BaseUser
 
     /**
      * Get a query which will select this user's organizations.
-     * 
+     *
      * This could be useful if you want to do something more advanced with the user's organizations,
      * such as using aggregation functions or joining to another model. You can extend the query returned
      * by this function to do so.
-     * 
+     *
      * @return Doctrine_Query The doctrine query object which selects this user's organizations
      */
     public function getOrganizationsQuery()
     {
-        // The base query grabs all organizations and sorts by 'lft', which will put the records into 
+        // The base query grabs all organizations and sorts by 'lft', which will put the records into
         // tree order.
         if ($this->username == 'root') {
             $query = Doctrine_Query::create()
@@ -579,11 +574,11 @@ class User extends BaseUser
     }
 
     /**
-     * Get a query which will select this user's organizations by privilege resource and action 
-     * 
-     * @param string $resource 
-     * @param string $action 
-     * @return Doctrine_Query 
+     * Get a query which will select this user's organizations by privilege resource and action
+     *
+     * @param string $resource
+     * @param string $action
+     * @return Doctrine_Query
      */
     public function getOrganizationsByPrivilegeQuery($resource, $action)
     {
@@ -601,12 +596,12 @@ class User extends BaseUser
     }
 
     /**
-     * Get a query which will select this user's systems by privilege resource and action 
-     * 
-     * @param string $resource 
-     * @param string $action 
+     * Get a query which will select this user's systems by privilege resource and action
+     *
+     * @param string $resource
+     * @param string $action
      * @param boolean $includeDisposal Flag to indicate whether to include systems in the disposal phase, default false
-     * @return Doctrine_Query 
+     * @return Doctrine_Query
      */
     public function getSystemsByPrivilegeQuery($resource, $action, $includeDisposal = false)
     {
@@ -620,8 +615,8 @@ class User extends BaseUser
 
      /**
      * Get a query which will select this user's systems
-     * 
-     * @return Doctrine_Query 
+     *
+     * @return Doctrine_Query
      */
     public function getSystemsQuery()
     {
@@ -631,7 +626,7 @@ class User extends BaseUser
 
     /**
      * Doctrine hook for post-insert
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
@@ -647,7 +642,7 @@ class User extends BaseUser
 
     /**
      * Doctrine hook for post-update
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      * @todo this needs to go into some sort of observer class
@@ -670,7 +665,7 @@ class User extends BaseUser
 
     /**
      * Prevent the root user from being deleted
-     * 
+     *
      * @param Doctrine_Event $event
      * @return void
      */
@@ -683,7 +678,7 @@ class User extends BaseUser
 
     /**
      * Set the last rules of behavior acceptance timestamp
-     * 
+     *
      * @params string $value
      */
     public function setLastRob($value)
@@ -695,7 +690,7 @@ class User extends BaseUser
 
     /**
      * Password mutator to handle password management
-     * 
+     *
      * @param string $value The value of password to encrypt and set
      * @return void
      * @throws Doctrine_Exception if your password is in password history
@@ -733,7 +728,7 @@ class User extends BaseUser
         // passwords are currently stored.
         $oldPasswords = explode(':', $this->passwordHistory);
         array_unshift($oldPasswords, $this->password);
-        $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);        
+        $oldPasswords = array_slice($oldPasswords, 0, self::PASSWORD_HISTORY_LIMIT);
         $this->passwordHistory = implode(':', $oldPasswords);
 
         /*
@@ -745,10 +740,10 @@ class User extends BaseUser
 
     /**
      * Retrieve user assigned roles.
-     * 
-     * The doctrine hydration constant can indicate what data type this method returns. By default, the 
+     *
+     * The doctrine hydration constant can indicate what data type this method returns. By default, the
      * hydrator is assigned as Doctrine::HYDRATE_SCALAR data type.
-     * 
+     *
      * @param int $hydrationMode A doctrine hydrator
      * @return mixed The roles of user
      */

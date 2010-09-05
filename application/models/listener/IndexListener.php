@@ -41,6 +41,12 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         
         $record = $event->getInvoker();
 
+        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
+            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
+
+            throw new Fisma_Search_Exception($message);
+        }
+
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
         $searchEngine->indexObject($record);
@@ -60,6 +66,12 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         $record = $event->getInvoker();
         $modified = $record->getLastModified();
+
+        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
+            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
+
+            throw new Fisma_Search_Exception($message);
+        }
 
         // A quick shortcut:
         if (0 == count($modified)) {
@@ -103,6 +115,12 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $record   = $event->getInvoker();
         $index    = new Fisma_Index(get_class($record));
         $modified = $record->getLastModified();
+
+        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
+            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
+
+            throw new Fisma_Search_Exception($message);
+        }
 
         // If the record is softDeleted, do nothing. Otherwise, delete the record from the index.
         if (!in_array('deleted_at', $modified)) {

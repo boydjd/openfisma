@@ -1,16 +1,23 @@
 <?php
-echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
-$operation = '';
-if ($this->acl()->hasPrivilegeForObject('update', $this->subject)) {
-    $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
+
+echo $this->escape(
+    $this->searchBox(
+        $this->toolbarButtons, 
+        $this->searchForm, 
+        $this->searchMoreOptionsForm,
+        $this->advancedSearchOptions
+    ), 
+    'none'
+);
+
+$actions = '';
+
+foreach ($this->links as $label => $url) {
+    $actions .= "&nbsp;&nbsp;[<a href='$url'>$label</a>]";
 }
-if ($this->acl()->hasPrivilegeForObject('delete', $this->subject)) {
-    $operation .= "&nbsp;&nbsp;[<a href='{$this->deleteLink}'>Delete</a>]";
-}
-if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
-    $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
-}
-Fisma_Format_Section::startSection("User Account Information $operation"); ?>
+
+Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions); 
+?>
 
 <div>
     <?php echo $this->escape($this->form, 'none'); ?>

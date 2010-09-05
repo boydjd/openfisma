@@ -39,9 +39,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override the parent class to add a link for editing privileges
      * 
-     * @param Fisma_Record $subject
+     * @param Fisma_Doctrine_Record $subject
      */
-    public function getViewLinks(Fisma_Record $subject)
+    public function getViewLinks(Fisma_Doctrine_Record $subject)
     {
         $links = array();
         
