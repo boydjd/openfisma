@@ -25,18 +25,8 @@
  * @package    Controller
  * @version    $Id$
  */
-class SystemDocumentController extends Fisma_Zend_Controller_Action_Security
+class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 {
-    /**
-     * Default pagination parameters
-     * 
-     * @var array
-     */
-    protected $_paging = array(
-        'startIndex' => 0,
-        'count' => 20
-    );
-
     /**
      * Invoked before each Actions
      * 

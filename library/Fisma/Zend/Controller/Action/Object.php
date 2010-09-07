@@ -89,13 +89,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $buttons = array();
 
-        $buttons[] = new Fisma_Yui_Form_Button_Link(
-            'toolbarListButton',
-            array(
-                'value' => 'List All ' . $this->getPluralModelName(),
-                'href' => $this->getBaseUrl() . '/list'
-            )
-        );
+        if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
+                'toolbarListButton',
+                array(
+                    'value' => 'List All ' . $this->getPluralModelName(),
+                    'href' => $this->getBaseUrl() . '/list'
+                )
+            );
+        }
 
         if ($this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons[] = new Fisma_Yui_Form_Button_Link(
@@ -158,9 +160,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * @param string|null $formName The name of the specified form
      * @return Zend_Form The specified form of the subject model
      */
-    public function getForm($formName=null)
+    public function getForm($formName = null)
     {
         static $form = null;
+
         if (is_null($form)) {
             if (is_null($formName)) {
                 $formName = strtolower((string) $this->_modelName);
@@ -177,6 +180,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 )
             );
         }
+
         return $form;
     }
 
@@ -190,6 +194,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function setForm($subject, $form)
     {
         $form->setDefaults($subject->toArray());
+
         return $form;
     }
 
@@ -271,8 +276,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Get the subject form
         $form   = $this->getForm();
         $form->setAction("{$this->_moduleName}/{$this->_controllerName}/create");
+
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
+
             if ($form->isValid($post)) {
                 try {
                     Doctrine_Manager::connection()->beginTransaction();

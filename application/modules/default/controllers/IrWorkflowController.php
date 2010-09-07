@@ -4,42 +4,36 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * CRUD behavior for incident workflows
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  * @version    $Id$
  */
-class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
+class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 {
-
-    private $_paging = array(
-        'startIndex' => 0,
-        'count' => 20,
-    );
-    
     /**
      * Invoked before each Action
      */
     public function preDispatch()
     {
         parent::preDispatch();
-        
+
         $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if (!$module->enabled) {
@@ -57,66 +51,66 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('tree-data', 'json')
                       ->initContext();
     }
-    
-    public function listAction() 
+
+    public function listAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
-        
+
         $this->view->readIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('read', 'IrWorkflowDef');
-        
+
         $value = trim($this->_request->getParam('keywords'));
         empty($value) ? $link = '' : $link = '/keywords/' . $value;
         $this->searchbox();
         $this->view->assign('pageInfo', $this->_paging);
         $this->view->assign('link', $link);
-        
+
         $this->view->initialReqestUrl = $link
                                       . '/sortby/name/order/asc/startIndex/0/count/'
                                       . $this->_paging['count'];
 
         $this->render('list');
     }
-    
+
     /**
      *  Render the form for searching the ir workflows
      */
     public function searchbox()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
-        
+
         $this->createIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('create', 'IrWorkflowDef');
-        
+
         $keywords = trim($this->_request->getParam('keywords'));
         $this->view->assign('keywords', $keywords);
         $this->render('searchbox');
     }
-    
+
     /**
-     * list workflows from the search, 
+     * list workflows from the search,
      * if search none, it list all categories
-     * 
+     *
      */
     public function searchAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
-        
+
         $value = trim($this->_request->getParam('keywords'));
 
         $this->_helper->layout->setLayout('ajax');
         $this->_helper->viewRenderer->setNoRender();
         $sortBy = $this->_request->getParam('sortby', 'name');
         $order = $this->_request->getParam('order');
-        
+
         $organization = Doctrine::getTable('IrWorkflowDef');
         if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
             throw new Fisma_Zend_Exception('Invalid "sortBy" parameter');
-        }        
-        
+        }
+
         $order = strtoupper($order);
         if ($order != 'DESC') {
             $order = 'ASC'; //ignore other values
         }
-        
+
         $q = Doctrine_Query::create()
              ->select('*')
              ->from('IrWorkflowDef w')
@@ -133,7 +127,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         }
         $totalRecords = $q->count();
         $wfs = $q->execute();
-        
+
         $tableData = array('table' => array(
             'recordsReturned' => count($wfs->toArray()),
             'totalRecords' => $totalRecords,
@@ -143,38 +137,38 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             'pageSize' => $this->_paging['count'],
             'records' => $wfs->toArray()
         ));
-        
+
         echo json_encode($tableData);
     }
-    
+
     /**
-     * Display workflows and steps in tree mode 
+     * Display workflows and steps in tree mode
      */
-    public function treeAction() 
+    public function treeAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
 
         $this->searchbox();
-        $this->render('tree');        
+        $this->render('tree');
     }
-    
+
     /**
      * Returns a JSON object that describes the workflows and workflow steps
      */
-    public function treeDataAction() 
+    public function treeDataAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
-               
-        /* Get all categories */ 
+
+        /* Get all categories */
         $q = Doctrine_Query::create()
              ->select('w.name')
              ->from('IrWorkflowDef w');
-        
-        $wfs = $q->execute()->toArray();        
+
+        $wfs = $q->execute()->toArray();
 
         /* For each workflow, get the related workflow steps and format them so they will work as a tree */
         foreach ($wfs as $key => $val) {
-            $wfs[$key]['children'] =  ''; 
+            $wfs[$key]['children'] =  '';
 
             $q2 = Doctrine_Query::create()
                   ->select('s.name, s.cardinality, s.workflowId')
@@ -187,19 +181,19 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $wfs[$key]['children'][$key2]['children'] = array();
             }
         }
-        
+
         $this->view->treeData = $wfs;
     }
-    
+
     /**
      * Display the form for creating a new workflow.
      */
     public function createAction()
     {
         $this->_acl->requirePrivilegeForClass('create', 'IrWorkflowDef');
-        
+
         $form = $this->_getWorkflowForm();
-        
+
         $wfValues = $this->_request->getPost();
 
         if ($wfValues) {
@@ -207,7 +201,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $wfValues = $form->getValues();
                 $irworkflow = new IrWorkflowDef();
                 $irworkflow->merge($wfValues);
-                
+
                 // save the data, if failure then return false
                 if (!$irworkflow->trySave()) {
                     $msg = "Failure in creation";
@@ -215,7 +209,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 } else {
                     /* TODO: ask mark to explain this */
                     $irworkflow->getTable()->getRecordListener()->setOption('disabled', true);
-                    
+
                     $msg = "The workflow is created";
                     $model = 'notice';
                 }
@@ -229,7 +223,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $this->view->priorityMessenger("Unable to create workflow:<br>$errorString", 'warning');
             }
         }
-        
+
         //Display searchbox template
         $this->searchbox();
 
@@ -238,11 +232,11 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->render('create');
 
     }
-    
+
     /**
      * Returns the standard form for creating, reading, and
      * updating workflows.
-     * 
+     *
      * @return Zend_Form
      */
     private function _getWorkflowForm()
@@ -250,7 +244,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         $form = Fisma_Zend_Form_Manager::loadForm('irworkflow');
         return Fisma_Zend_Form_Manager::prepareForm($form);
     }
-    
+
     /**
      * Display a single irworkflow record with all details.
      */
@@ -260,15 +254,15 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
 
         $this->updateIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('update', 'IrWorkflowDef');
         $this->deleteIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('delete', 'IrWorkflowDef');
-        
+
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'view');
-        
+
         $irworkflow = Doctrine::getTable('IrWorkflowDef')->find($id);
-        
+
         $form = $this->_getWorkflowForm($irworkflow);
-        
+
         if (!$irworkflow) {
             throw new Fisma_Zend_Exception('Invalid workflow ID');
         } else {
@@ -289,7 +283,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->view->assign('id', $id);
         $this->render($v);
     }
-    
+
     /**
      * Update workflow information after submitting an edit form.
      *
@@ -298,7 +292,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
     public function updateAction()
     {
         $this->_acl->requirePrivilegeForClass('update', 'IrWorkflowDef');
-        
+
         $id = $this->_request->getParam('id', 0);
         $irworkflow = new IrWorkflowDef();
         $irworkflow = $irworkflow->getTable()->find($id);
@@ -306,10 +300,10 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         if (!$irworkflow) {
             throw new Exception_General("Invalid workflow ID");
         }
-        
+
         $form = $this->_getWorkflowForm($irworkflow);
         $wfValues = $this->_request->getPost();
-        
+
         if ($form->isValid($wfValues)) {
             $isModify = false;
             $wfValues = $form->getValues();
@@ -319,7 +313,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $irworkflow->save();
                 $isModify = true;
             }
-            
+
             if ($isModify) {
                 $msg = "The workflow is saved";
                 $model = 'notice';
@@ -337,19 +331,19 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             $this->_redirect("/ir-workflow/view/id/$id/v/edit");
         }
     }
-    
+
     /**
      * Display the form for creating a new workflow step.
-     * 
+     *
      * @todo there is a bug in this method. it doesn't move other steps around in order to make room for adding
      * this one into the middle of a workflow
      */
     public function stepcreateAction()
     {
         $this->_acl->requirePrivilegeForClass('create', 'IrWorkflowDef');
-        
+
         $form = $this->_getWorkflowStepForm();
-        
+
         $wfsValues = $this->_request->getPost();
 
         if ($wfsValues) {
@@ -360,7 +354,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                     unset($wfsValues['roleId']);
                 }
                 $irworkflowstep->merge($wfsValues);
-                
+
                 // save the data, if failure then return false
                 if (!$irworkflowstep->trySave()) {
                     $msg = "Failure in creation";
@@ -368,7 +362,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 } else {
                     /* TODO: ask mark to explain this */
                     $irworkflowstep->getTable()->getRecordListener()->setOption('disabled', true);
-                    
+
                     $msg = "The workflow step is created";
                     $model = 'notice';
                 }
@@ -382,7 +376,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $this->view->priorityMessenger("Unable to create workflow step:<br>$errorString", 'warning');
             }
         }
-        
+
         //Display searchbox template
         $this->searchbox();
 
@@ -391,29 +385,29 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->render('stepcreate');
 
     }
-    
+
     /**
      * Returns the standard form for creating, reading, and
      * updating workflow steps.
-     * 
+     *
      * @return Zend_Form
      */
     private function _getWorkflowStepForm()
     {
         $form = Fisma_Zend_Form_Manager::loadForm('irworkflowstep');
-        
-        /* Get all workflows */ 
+
+        /* Get all workflows */
         $q = Doctrine_Query::create()
              ->select('w.id, w.name')
              ->from('IrWorkflowDef w')
-             ->orderby('w.name');          
- 
-        $wfs = $q->execute()->toArray();        
+             ->orderby('w.name');
+
+        $wfs = $q->execute()->toArray();
 
         foreach ($wfs as $key => $val) {
-            $workflows[$val['id']] = $val['name']; 
-        } 
-        
+            $workflows[$val['id']] = $val['name'];
+        }
+
         $form->getElement('workflowId')->addMultiOptions($workflows);
 
         /* Get roles*/
@@ -421,56 +415,56 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
              ->select('r.id, r.name')
              ->from('Role r')
              ->where('r.nickname IN ("ISSO", "ISO", "OIG", "ED-CIRC", "IRC", "DBR", "PA", "IRS")')
-             ->orderby('r.name');          
- 
-        $role = $q->execute()->toArray();        
+             ->orderby('r.name');
+
+        $role = $q->execute()->toArray();
 
         foreach ($role as $key => $val) {
-            $roles[$val['id']] = $val['name']; 
-        } 
-        
+            $roles[$val['id']] = $val['name'];
+        }
+
         $form->getElement('roleId')
              ->addMultiOptions(array('' => ''))
              ->addMultiOptions($roles);
 
-        /** @todo bug here also... it gets the table's max cardinality, not the workflow's */ 
+        /** @todo bug here also... it gets the table's max cardinality, not the workflow's */
         $q = Doctrine_Query::create()
              ->select('max(s.cardinality) as cardinality')
              ->from('IrStep s');
- 
-        $max = $q->execute()->toArray();        
+
+        $max = $q->execute()->toArray();
 
         for ($x=1; $x <= $max[0]['cardinality']; $x+=1) {
             $cardinalitys[$x] = $x;
         }
 
         foreach ($wfs as $key => $val) {
-            $workflows[$val['id']] = $val['name']; 
-        } 
-        
+            $workflows[$val['id']] = $val['name'];
+        }
+
         $form->getElement('cardinality')->addMultiOptions($cardinalitys);
 
         return Fisma_Zend_Form_Manager::prepareForm($form);
     }
-    
+
     /**
      * Display a single irworkflow step record with all details.
      */
     public function stepviewAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'IrWorkflowDef');
-        
+
         $this->updateIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('update', 'IrWorkflowDef');
         $this->deleteIrWorkflowDefPrivilege = $this->_acl->hasPrivilegeForClass('delete', 'IrWorkflowDef');
-        
+
         $this->searchbox();
         $id = $this->_request->getParam('id');
         $v = $this->_request->getParam('v', 'stepview');
-        
+
         $irworkflowstep = Doctrine::getTable('IrStep')->find($id);
-        
+
         $form = $this->_getWorkflowStepForm($irworkflowstep);
-        
+
         if (!$irworkflowstep) {
             throw new Fisma_Zend_Exception('Invalid workflow step ID');
         } else {
@@ -491,7 +485,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->view->assign('id', $id);
         $this->render($v);
     }
-    
+
     /**
      * Update workflow step information after submitting an edit form.
      *
@@ -500,7 +494,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
     public function stepupdateAction()
     {
         $this->_acl->requirePrivilegeForClass('update', 'IrWorkflowDef');
-        
+
         $id = $this->_request->getParam('id', 0);
         $irworkflowstep = new IrStep();
         $irworkflowstep = $irworkflowstep->getTable()->find($id);
@@ -508,10 +502,10 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         if (!$irworkflowstep) {
             throw new Exception_General("Invalid workflow step ID");
         }
-        
+
         $form = $this->_getWorkflowForm($irworkflowstep);
         $wfsValues = $this->_request->getPost();
-       
+
         if ($form->isValid($wfsValues)) {
             $isModify = false;
             if (empty($wfsValues['roleId'])) {
@@ -523,7 +517,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
                 $irworkflowstep->save();
                 $isModify = true;
             }
-            
+
             if ($isModify) {
                 $msg = "The workflow step is saved";
                 $model = 'notice';
@@ -542,14 +536,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             $this->_redirect("/ir-workflow/stepview/id/$id/v/stepedit");
         }
     }
-    
+
     /**
      * Delete a specified workflow.
      */
     public function deleteAction()
     {
         $this->_acl->requirePrivilegeForClass('delete', 'IrWorkflowDef');
-        
+
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrWorkflowDef')->find($id);
         if ($irworkflow) {
@@ -566,14 +560,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
         }
         $this->_redirect('/ir-workflow/list');
     }
-    
+
     /**
      * Delete a specified workflow step
      */
     public function stepdeleteAction()
     {
         $this->_acl->requirePrivilegeForClass('delete', 'IrWorkflowDef');
-        
+
         $id = $this->_request->getParam('id');
         $irworkflow = Doctrine::getTable('IrStep')->find($id);
         if ($irworkflow) {

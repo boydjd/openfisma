@@ -25,13 +25,8 @@
  * @package    Controller
  * @version    $Id: IncidentDashboardController.php 3257 2010-04-26 17:49:51Z mhaase $
  */
-class IrCategoryController extends Fisma_Zend_Controller_Action_Security
+class IrCategoryController extends Fisma_Zend_Controller_Action_Object
 {
-    private $_paging = array(
-        'startIndex' => 0,
-        'count' => 20,
-    );
-    
     /**
      * Invoked before each Action
      */

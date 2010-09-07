@@ -25,7 +25,50 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class OrganizationTable extends Fisma_Doctrine_Table
+class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
-
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'name' => array(
+                'initiallyVisible' => true,
+                'label' => 'Name',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'nickname' => array(
+                'initiallyVisible' => true,
+                'label' => 'Nickname',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'createdTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Creation Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ), 
+            'modifiedTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Modification Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ), 
+            'orgType' => array(
+                'initiallyVisible' => true,
+                'label' => 'Type',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'description' => array(
+                'initiallyVisible' => true,
+                'label' => 'Description',
+                'sortable' => false,
+                'type' => 'text'
+            )
+        );
+    }
 }

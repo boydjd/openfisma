@@ -25,7 +25,7 @@
  * @package    Controller
  * @version    $Id$
  */
-class IncidentController extends Fisma_Zend_Controller_Action_Security
+class IncidentController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -79,9 +79,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
     public function init()
     {
         parent::init();
-        
-        $this->_paging['count'] = 10;
-        $this->_paging['startIndex'] = 0;
     }
    
    /**
@@ -313,7 +310,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
      * 
      * @return Zend_Form
      */
-    public function getForm()
+    public function getIncidentForm()
     {
         $form = new Fisma_Zend_Form();
         

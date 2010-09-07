@@ -24,10 +24,8 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  * @version    $Id$
- * 
- * @todo       As part of the ongoing refactoring, this class should probably be merged with the FindingController.
  */
-class Finding_RemediationController extends Fisma_Zend_Controller_Action_Security
+class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The orgSystems which are belongs to current user.
@@ -35,16 +33,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
      * @var Doctrine_Collection
      */
     protected $_organizations = null;
-    
-    /**
-     * Default pagination parameters
-     * 
-     * @var array
-     */
-    protected $_paging = array(
-        'startIndex' => 0,
-        'count' => 20
-    );
     
     /**
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
