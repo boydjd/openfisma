@@ -7,11 +7,13 @@
         ?>
     </div>
     
-    <div class="right">
-        <?php
-        echo $this->escape($this->searchForm, 'none');
-        ?>
-    </div>
+    <?php if(isset($this->searchForm)): ?>
+        <div class="right">
+            <?php
+            echo $this->escape($this->searchForm, 'none');
+            ?>
+        </div>
+    <?php endif; ?>
 
     <div class="clear"></div>
 </div>

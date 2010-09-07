@@ -259,7 +259,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->subject = $subject;
         $this->view->links = $this->getViewLinks($subject);
 
-        $this->view->searchForm = $this->getSearchForm();
         $this->view->modelName = $this->_modelName;
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
@@ -300,7 +299,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->form = $form;
 
-        $this->view->searchForm = $this->getSearchForm();
         $this->view->modelName = $this->_modelName;
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
@@ -368,7 +366,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
-        $this->view->searchForm = $this->getSearchForm();
         $this->view->modelName = $this->_modelName;
         $this->view->toolbarButtons = $this->getToolbarButtons();
 

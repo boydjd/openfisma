@@ -325,7 +325,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->searchForm = $this->getSearchForm();
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
         $this->render('tree');
