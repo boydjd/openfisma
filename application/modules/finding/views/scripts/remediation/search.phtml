@@ -95,12 +95,14 @@ var myColumnDefs = [
     // PHP is used to populate this javascript array with the column values defined in the controller
     $defs = array();
     foreach ($this->columns as $columnName => $columnDef) {
-        $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
-               . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
-               . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
-               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false')
-               . (!empty($columnDef['formatter']) ? ', formatter: "'. $columnDef['formatter'] . '"' : '')
-               . '}';
+        if ($columnName != 'checked') {
+            $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
+                   . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
+                   . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
+                   . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false')
+                   . (!empty($columnDef['formatter']) ? ', formatter: "'. $columnDef['formatter'] . '"' : '')
+                   . '}';
+        }
     }
     $defs = implode(',', $defs);
     echo $this->escape($defs, 'none');
