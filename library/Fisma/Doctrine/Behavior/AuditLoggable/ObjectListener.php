@@ -117,21 +117,14 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 
                     // if the field is a foreign key, it will get name value from foreign table 
                     if ($relation = $this->_fieldHasForeignRelation($invoker->getTable(), $field)) {
-
-                        // For SecurityControl table, name is not unique. It needs to combine with name of
-                        // SecurityControlCatalog to be an unique name.
-                        if ('SecurityControl' == $relation->getClass()) { 
-                            $secondTable = array('SecurityControlCatalog' => 'securityControlCatalogId');
-                        }       
-
-                        if ($oldValue) {
-                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $oldValue, $secondTable)) {
+                        if ($oldValue) { 
+                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $oldValue)) {
                                 $oldValue = $nameValue;
                             }
                         }
  
                         if ($newValue) { 
-                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $newValue, $secondTable)) {
+                            if ($nameValue = $this->_getOriginalNameByForeignkey($relation, $newValue)) {
                                 $newValue = $nameValue;
                             }
                         }
@@ -255,16 +248,23 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
      * 
      * @param Doctrine_Relation $relation The specified doctrine relation object to be checked
      * @param string $foreignkey The key of table to be checked
-     * @param array $secondTable The name and foreign key of another foreign table to get name
      * @return value of 'name' column if found 'name' column, null otherwise
      */
-    private function _getOriginalNameByForeignkey(Doctrine_Relation $relation, $foreignkey, $secondTable = null)
+    private function _getOriginalNameByForeignkey(Doctrine_Relation $relation, $foreignkey)
     {
+        // For SecurityControl table, name is not unique. It needs to combine with name of
+        // SecurityControlCatalog to be an unique name.
+        $secondTable = array(
+            'SecurityControl' => array(
+                'SecurityControlCatalog' => 'securityControlCatalogId'
+            )
+        );
+
         $originalValue = $relation->getTable()->findOneById($foreignkey);
 
         if ($originalValue->contains('name')) {
-            if ($secondTable) {
-                list($table, $id) = each($secondTable);
+            if (array_key_exists($relation->getClass(), $secondTable)) {
+                list($table, $id) = each($secondTable[$relation->getClass()]);
                 $secondTableValue = Doctrine::getTable($table)
                                    ->findOneById($originalValue->$id);
             
