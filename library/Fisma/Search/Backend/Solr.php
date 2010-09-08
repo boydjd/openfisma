@@ -408,11 +408,15 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $searchTerms[] = "$fieldName:[* TO $intValue]";
                     break;
 
+                // The following cases intentionally fall through
                 case 'textContains':
+                case 'enumIs':
                     $searchTerms[] = "$fieldName:\"{$operands[0]}\"";
                     break;
-                    
+
+                // The following cases intentionally fall through                    
                 case 'textDoesNotContain':
+                case 'enumIsNot':
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
                     break;
                 
@@ -420,7 +424,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
             }
         }
-//var_dump($searchTerms);die;
+
         $query->setQuery(implode($searchTerms, ' AND '));
 
         $response = $this->_client->query($query)->getResponse(); 

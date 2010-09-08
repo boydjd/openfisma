@@ -44,6 +44,11 @@ Fisma.Search.CriteriaDefinition = function () {
         text : {
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
+        },
+        
+        "enum" : {
+            enumIs : {label : "Is", renderer : "enumSelect", query : "enumSelect", isDefault : true},
+            enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"}
         }
     };
 }();

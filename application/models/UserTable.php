@@ -94,6 +94,7 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'type' => 'datetime'
             ),
             'lockType' => array(
+                'enumValues' => $this->getEnumValues('lockType'),
                 'initiallyVisible' => false,
                 'label' => 'Account Lock',
                 'sortable' => true,

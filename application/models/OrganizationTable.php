@@ -32,6 +32,10 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     public function getSearchableFields()
     {
+        // The org type should show all values *except* system
+        $orgTypeEnumValues = $this->getEnumValues('orgType');
+        unset($orgTypeEnumValues[array_search('system', $orgTypeEnumValues)]);
+
         return array (
             'name' => array(
                 'initiallyVisible' => true,
@@ -58,6 +62,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                 'type' => 'datetime'
             ), 
             'orgType' => array(
+                'enumValues' => $orgTypeEnumValues,
                 'initiallyVisible' => true,
                 'label' => 'Type',
                 'sortable' => true,

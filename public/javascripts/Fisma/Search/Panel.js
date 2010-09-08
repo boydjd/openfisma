@@ -35,9 +35,9 @@ Fisma.Search.Panel = function (searchableFields) {
     // Sort fields by name
     searchableFields.sort(
         function (a, b) {
-            if (a.name < b.name) {
+            if (a.label < b.label) {
                 return -1;
-            } else if (a.name > b.name) {
+            } else if (a.label > b.label) {
                 return 1;
             } else {
                 return 0;

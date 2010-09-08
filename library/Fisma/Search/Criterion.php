@@ -42,6 +42,8 @@ class Fisma_Search_Criterion
         'dateThisMonth',
         'dateThisYear',
         'dateToday',
+        'enumIs',
+        'enumIsNot',
         'integerBetween',
         'integerDoesNotEqual',
         'integerEquals',

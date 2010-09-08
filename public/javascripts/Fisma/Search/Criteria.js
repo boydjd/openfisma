@@ -40,16 +40,6 @@ Fisma.Search.Criteria.prototype = {
     container : null,
 
     /**
-     * The name of the currently selected field
-     */
-    currentFieldName : null,
-
-    /**
-     * The type of the currently selected field
-     */
-    currentFieldType : null,
-
-    /**
      * The type of the currently selected query
      */
     currentQueryType : null,
@@ -58,6 +48,11 @@ Fisma.Search.Criteria.prototype = {
      * An array of field descriptions
      */
     fields : null,
+
+    /**
+     * Metadata about the currently selected field
+     */
+    currentField : null,
 
     /**
      * A reference to the search panel that this criteria widget is a part of
@@ -97,6 +92,11 @@ Fisma.Search.Criteria.prototype = {
      * A reference to the remove button
      */
     removeButton : null,
+
+    /**
+     * Holds current enum values if the currently selected criterion is an enum field (null otherwise)
+     */
+    enumValues : null,
 
     /**
      * Render the criteria widget
@@ -160,12 +160,29 @@ Fisma.Search.Criteria.prototype = {
 
                 if (item.value == field.name) {
 
-                    that.currentFieldName = field.name;
+                    // If a widget is already displayed that still applies to this new field, then leave it alone
+                    // (Re-rendering it will set it back to its initial state, which is an annoying behavior.)
+                    var refreshQueryType = true;
+                    var refreshQueryInput = true;
 
-                    if (that.currentFieldType != field.type) {
-                        that.currentFieldType = field.type;
+                    if (field.type == that.currentField.type) {
+                        refreshQueryType = false;
+                    }
+                    
+                    if ('enum' == field.type) {
+                        refreshQueryInput = true;
+                    }
 
+                    that.currentField = field;
+
+                    that.enumValues = field.enumValues;
+
+                    if (refreshQueryType) {
                         that.renderQueryType(that.queryTypeContainer);
+                    }
+                    
+                    if (refreshQueryInput) {
+                        that.renderQueryInput(that.queryInputContainer);
                     }
 
                     break;
@@ -189,12 +206,11 @@ Fisma.Search.Criteria.prototype = {
         // Render menu button
         var initialFieldIndex = defaultFieldIndex % this.fields.length;
 
-        this.currentFieldName = this.fields[initialFieldIndex].name;
-        this.currentFieldType = this.fields[initialFieldIndex].type;
+        this.currentField = this.fields[initialFieldIndex];
 
         menuButton = new YAHOO.widget.Button({
             type : "menu",
-            label : this.fields[initialFieldIndex].label,
+            label : this.currentField.label,
             menu : menuItems,
             container : container
         });
@@ -220,14 +236,21 @@ Fisma.Search.Criteria.prototype = {
         var handleQueryTypeSelectionEvent = function (type, args, item) {
             var newLabel = item.cfg.getProperty("text");
 
+            var criteria = that.getCriteriaDefinition(that.currentField.type);
+            var oldRenderer = criteria[that.currentQueryType].renderer;
+            var newRenderer = criteria[item.value].renderer;
+
             that.currentQueryType = item.value;
-            that.renderQueryInput(that.queryInputContainer);
+
+            if (oldRenderer != newRenderer || 'enum' == that.currentField.type) {
+                that.renderQueryInput(that.queryInputContainer);
+            }
 
             menuButton.set("label", newLabel);
         };
 
         // Load the criteria definition
-        var criteriaType = this.currentFieldType;
+        var criteriaType = this.currentField.type;
 
         if ('datetime' == criteriaType) {
             // 'datetime' is aliased to 'date' since they behave the same
@@ -279,11 +302,16 @@ Fisma.Search.Criteria.prototype = {
         }
 
         // Call the defined renderer for the selected query type
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentFieldType);
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField.type);
+
         var rendererName = criteriaDefinitions[this.currentQueryType].renderer;
         var render = Fisma.Search.CriteriaRenderer[rendererName];
 
-        render(container);
+        if ('enum' == this.currentField.type) {
+            render(container, this.currentField.enumValues);
+        } else {
+            render(container);
+        }
     },
 
     /**
@@ -331,7 +359,7 @@ Fisma.Search.Criteria.prototype = {
     getQuery : function () {
 
         var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentFieldType);
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField.type);
 
         var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
         var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
@@ -339,7 +367,7 @@ Fisma.Search.Criteria.prototype = {
         var query = queryGenerator(this.queryInputContainer);
 
         var response = {
-            field : this.currentFieldName,
+            field : this.currentField.name,
             operator : this.currentQueryType,
             operands : query
         }
@@ -355,6 +383,7 @@ Fisma.Search.Criteria.prototype = {
      * @param fieldType
      */
     getCriteriaDefinition : function (fieldType) {
+
         var tempType = fieldType;
 
         if ('datetime' == tempType) {

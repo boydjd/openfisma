@@ -279,6 +279,7 @@ Fisma.Search = function() {
             
             var saveDiv = document.createElement('div');
             saveDiv.style.marginLeft = '20px';
+            saveDiv.style.marginBottom = '20px';
             saveDiv.style.float = 'right';
 
             // Create the Save button

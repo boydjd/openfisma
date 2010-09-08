@@ -48,12 +48,25 @@ Fisma.Search.CriteriaQuery = function () {
         /**
          * Generates a query based on two input fields
          * 
-         * @param container The HTML element that contains the input fields
+         * @param container The HTML element that contains the input fieldss
          */
         twoInputs : function (container) {
             var inputs = container.getElementsByTagName('input');
             
             var values = [inputs[0].value, inputs[1].value];
+            
+            return values;
+        },
+        
+        /**
+         * Generate a query based on a YUI menu button
+         * 
+         * @param container the HTML element that contains the input fields
+         */
+        enumSelect : function (container) {
+            var inputs = container.getElementsByTagName('button');
+
+            var values = [inputs[0].firstChild.nodeValue];
             
             return values;
         }

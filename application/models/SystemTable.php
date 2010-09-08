@@ -25,7 +25,176 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SystemTable extends Fisma_Doctrine_Table
+class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
-
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'nickname' => array(
+                'initiallyVisible' => true,
+                'label' => 'Nickname',
+                'join' => array(
+                    'relation' => 'Organization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'name' => array(
+                'initiallyVisible' => true,
+                'label' => 'Name',
+                'join' => array(
+                    'relation' => 'Organization',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'description' => array(
+                'initiallyVisible' => false,
+                'label' => 'Description',
+                'join' => array(
+                    'relation' => 'Organization',
+                    'field' => 'description'
+                ),
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'type' => array(
+                'enumValues' => $this->getEnumValues('type'),
+                'initiallyVisible' => true,
+                'label' => 'Type',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'sdlcPhase' => array(
+                'enumValues' => $this->getEnumValues('sdlcPhase'),
+                'initiallyVisible' => true,
+                'label' => 'SDLC Phase',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'confidentiality' => array(
+                'enumValues' => $this->getEnumValues('confidentiality'),
+                'initiallyVisible' => true,
+                'label' => 'Confidentiality',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'confidentialityDescription' => array(
+                'initiallyVisible' => false,
+                'label' => 'Confidentiality Description',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'integrity' => array(
+                'enumValues' => $this->getEnumValues('integrity'),
+                'initiallyVisible' => true,
+                'label' => 'Integrity',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'integrityDescription' => array(
+                'initiallyVisible' => false,
+                'label' => 'Integrity Description',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'availability' => array(
+                'enumValues' => $this->getEnumValues('availability'),
+                'initiallyVisible' => true,
+                'label' => 'Availability',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'availabilityDescription' => array(
+                'initiallyVisible' => false,
+                'label' => 'Availability Description',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'fipsCategory' => array(
+                'enumValues' => $this->getEnumValues('fipsCategory'),
+                'initiallyVisible' => true,
+                'label' => 'FIPS 199 Category',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'controlledBy' => array(
+                'enumValues' => $this->getEnumValues('controlledBy'),
+                'initiallyVisible' => false,
+                'label' => 'Controlled By',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'securityAuthorizationDt' => array(
+                'initiallyVisible' => false,
+                'label' => 'Security Authorization Date',
+                'sortable' => true,
+                'type' => 'date'
+            ), 
+            'contingencyPlanTestDt' => array(
+                'initiallyVisible' => false,
+                'label' => 'Contingency Plan Test Date',
+                'sortable' => true,
+                'type' => 'date'
+            ), 
+            'controlAssessmentDt' => array(
+                'initiallyVisible' => false,
+                'label' => 'Control Self-assessment Date',
+                'sortable' => true,
+                'type' => 'date'
+            ), 
+            'hasFiif' => array(
+                'enumValues' => $this->getEnumValues('hasFiif'),
+                'initiallyVisible' => false,
+                'label' => 'Contains FIIF',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'hasPii' => array(
+                'enumValues' => $this->getEnumValues('hasPii'),
+                'initiallyVisible' => false,
+                'label' => 'Contains PII',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'piaRequired' => array(
+                'enumValues' => $this->getEnumValues('piaRequired'),
+                'initiallyVisible' => false,
+                'label' => 'PIA Required',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'piaUrl' => array(
+                'initiallyVisible' => false,
+                'label' => 'PIA URL',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'sornRequired' => array(
+                'enumValues' => $this->getEnumValues('sornRequired'),
+                'initiallyVisible' => false,
+                'label' => 'SORN Required',
+                'sortable' => true,
+                'type' => 'enum'
+            ), 
+            'sornUrl' => array(
+                'enumValues' => $this->getEnumValues('sornUrl'),
+                'initiallyVisible' => false,
+                'label' => 'SORN URL',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'uniqueProjectId' => array(
+                'initiallyVisible' => false,
+                'label' => 'Unique Project Identifier',
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
+    }
 }
