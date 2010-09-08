@@ -64,9 +64,9 @@ class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
      */
     public function preDelete($event)
     {
-        if (count($this->Findings) > 0) {
+        if (count($this->Vulnerabilities) > 0) {
             throw new Fisma_Zend_Exception_User(
-                'This asset cannot be deleted because it has findings against it'
+                'This asset cannot be deleted because it has vulnerabilities against it'
             );
         }
     }
