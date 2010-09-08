@@ -557,13 +557,15 @@ class User extends BaseUser
      * by this function to do so.
      * 
      * @return Doctrine_Query The doctrine query object which selects this user's organizations
+     * @param boolean $includeDisposal Flag to indicate whether to include systems in the disposal phase, default false
      */
-    public function getOrganizationsQuery()
+    public function getOrganizationsQuery($includeDisposal = false)
     {
         // The base query grabs all organizations and sorts by 'lft', which will put the records into 
         // tree order.
         if ($this->username == 'root') {
             $query = Doctrine_Query::create()
+                ->select('o.*')
                 ->from('Organization o')
                 ->orderBy('o.lft');
         } else {
@@ -573,6 +575,11 @@ class User extends BaseUser
                 ->select('o.*')
                 ->from("Organization o, o.UserRole ur WITH ur.userid = $this->id")
                 ->orderBy('o.lft');
+        }
+
+        if (!$includeDisposal) {
+            $query->leftJoin("o.System s");
+            $query->andWhere("s.sdlcPhase IS NULL OR s.sdlcPhase <> 'disposal'");
         }
 
         return $query;
@@ -625,8 +632,7 @@ class User extends BaseUser
      */
     public function getSystemsQuery()
     {
-        return $this->getOrganizationsQuery()
-                    ->innerJoin('o.System s');
+        return $this->getOrganizationsQuery();
     }
 
     /**
