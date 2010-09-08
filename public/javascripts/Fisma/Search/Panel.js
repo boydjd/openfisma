@@ -76,6 +76,7 @@ Fisma.Search.Panel.prototype = {
         var defaultFieldIndex = this.criteria.length - 1;
 
         var criteriaElement = initialCriteria.render(defaultFieldIndex);
+        initialCriteria.setRemoveButtonEnabled(false);
         this.container.appendChild(criteriaElement);
     },
   
@@ -86,6 +87,10 @@ Fisma.Search.Panel.prototype = {
      */
     addCriteria : function (currentRow) {
         // Update internal state
+        if (1 == this.criteria.length) {
+            this.criteria[0].setRemoveButtonEnabled(true);
+        }
+
         var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
         this.criteria.push(criteria);
         
@@ -111,6 +116,11 @@ Fisma.Search.Panel.prototype = {
                 
                 break;
             }
+        }
+        
+        // Disable the remove button when there is only 1 criterion left
+        if (1 == this.criteria.length) {
+            this.criteria[0].setRemoveButtonEnabled(false);
         }
 
         // Update DOM

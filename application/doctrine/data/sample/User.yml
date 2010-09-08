@@ -5,7 +5,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Sample
         nameLast: User
-        phoneOffice: 2025557261
+        phoneOffice: (202) 555-7261
         hashType: sha1
     irc_user:
         username: irc
@@ -13,7 +13,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Incident Response
         nameLast: Coordinator
-        phoneOffice: 2025559271
+        phoneOffice: (202) 555-9271
         Roles: [irc_role]
     oig_user:
         username: oig
@@ -21,7 +21,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Inspector
         nameLast: General
-        phoneOffice: 2025559627
+        phoneOffice: (202) 555-9627
         Roles: [oig_role]
     dbr_user:
         username: dbr
@@ -29,7 +29,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Data Breach
         nameLast: Representative
-        phoneOffice: 3015551462
+        phoneOffice: (301) 555-1462
         Roles: [dbr_role]
     pa_user:
         username: pa
@@ -37,7 +37,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Privacy
         nameLast: Advocate
-        phoneOffice: 5715555821
+        phoneOffice: (571) 555-5821
         Roles: [pa_role]
     irs_user:
         username: irs
@@ -45,7 +45,7 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Incident Response
         nameLast: Specialist
-        phoneOffice: 3015557751
+        phoneOffice: (301) 555-7751
         Roles: [irs_role]
     hdr_user:
         username: hdr
@@ -53,5 +53,5 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Help Desk
         nameLast: Representative
-        phoneOffice: 5715558129
+        phoneOffice: (571) 555-8129
         Roles: [hdr_role]

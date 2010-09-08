@@ -3,19 +3,19 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Implements a single criteria row in the advanced search interface
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
@@ -23,7 +23,7 @@
 
 /**
  * Constructor
- * 
+ *
  * @param searchPanel The search panel object that created this criteria object
  * @param fields List of fields and data types that are searchable
  */
@@ -42,13 +42,13 @@ Fisma.Search.Criteria.prototype = {
     /**
      * The name of the currently selected field
      */
-    currentFieldName : null,    
+    currentFieldName : null,
 
     /**
      * The type of the currently selected field
      */
     currentFieldType : null,
-    
+
     /**
      * The type of the currently selected query
      */
@@ -58,53 +58,58 @@ Fisma.Search.Criteria.prototype = {
      * An array of field descriptions
      */
     fields : null,
-    
+
     /**
      * A reference to the search panel that this criteria widget is a part of
      */
     searchPanel : null,
-    
+
     /**
      * The HTML element that holds the query field selection UI.
-     * 
+     *
      * The query field is the field on the model which this criteria applies to.
      */
     queryFieldContainer : null,
-    
+
     /**
      * The HTML element that the holds query type selection UI.
-     * 
-     * The query type refers to the type of criteria applied to the current field, such as "Contains" or 
+     *
+     * The query type refers to the type of criteria applied to the current field, such as "Contains" or
      * "Greater Than".
      */
     queryTypeContainer : null,
-    
+
     /**
      * The HTML element that holds the query input parameter UI.
-     * 
+     *
      * The query input is the user-supplied value to search for, such as a keyword or a range of date values
      */
     queryInputContainer : null,
-    
+
     /**
      * The HTML element that holds the add/remove buttons UI.
-     * 
+     *
      * These buttons are used to add and remove criteria rows, respectively.
      */
     buttonsContainer : null,
-    
+
+    /**
+     * A reference to the remove button
+     */
+    removeButton : null,
+
     /**
      * Render the criteria widget
-     * 
+     *
      * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
      * @return An HTML element containing the search criteria widget
      */
     render : function (defaultFieldIndex) {
-        
+
         this.container = document.createElement('div');
-        
+
         this.container.className = "searchCriteria";
-        
+
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, defaultFieldIndex);
         this.container.appendChild(this.queryFieldContainer);
@@ -112,36 +117,36 @@ Fisma.Search.Criteria.prototype = {
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer);
         this.container.appendChild(this.queryTypeContainer);
-        
+
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer);
         this.container.appendChild(this.queryInputContainer);
-        
+
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
         this.container.appendChild(this.buttonsContainer);
-        
+
         var clearDiv = document.createElement('div');
-        
+
         clearDiv.className = "clear";
-        
+
         this.container.appendChild(clearDiv);
 
         return this.container;
     },
-    
+
     /**
      * Renders a YUI menu button that behaves like a select element. This element is where the user selects the field
      * to query on.
-     * 
+     *
      * @param container The HTML element to render into
      * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
      */
     renderQueryField : function (container, defaultFieldIndex) {
-        
+
         var that = this;
-        
+
         var menuItems = new Array();
         var menuButton;
 
@@ -183,21 +188,21 @@ Fisma.Search.Criteria.prototype = {
 
         // Render menu button
         var initialFieldIndex = defaultFieldIndex % this.fields.length;
-        
+
         this.currentFieldName = this.fields[initialFieldIndex].name;
         this.currentFieldType = this.fields[initialFieldIndex].type;
 
         menuButton = new YAHOO.widget.Button({
-            type : "menu", 
-            label : this.fields[initialFieldIndex].label, 
+            type : "menu",
+            label : this.fields[initialFieldIndex].label,
             menu : menuItems,
             container : container
         });
     },
-    
+
     /**
      * Render the query type menu based on the current item's type
-     * 
+     *
      * @param container The HTML element to render into
      */
     renderQueryType : function (container) {
@@ -223,7 +228,7 @@ Fisma.Search.Criteria.prototype = {
 
         // Load the criteria definition
         var criteriaType = this.currentFieldType;
-        
+
         if ('datetime' == criteriaType) {
             // 'datetime' is aliased to 'date' since they behave the same
             criteriaType = 'date';
@@ -236,15 +241,15 @@ Fisma.Search.Criteria.prototype = {
 
         for (var criteriaType in criteriaDefinitions) {
             var criteriaDefinition = criteriaDefinitions[criteriaType];
-            
+
             menuItem = {
                 text : criteriaDefinition.label,
                 value : criteriaType,
                 onclick : {fn : handleQueryTypeSelectionEvent}
             };
-            
+
             menuItems.push(menuItem);
-            
+
             if (criteriaDefinition.isDefault) {
                 this.currentQueryType = criteriaType;
             }
@@ -252,7 +257,7 @@ Fisma.Search.Criteria.prototype = {
 
         // Render menu button
         var menuButton = new YAHOO.widget.Button({
-            type : "menu", 
+            type : "menu",
             label : criteriaDefinitions[this.currentQueryType].label,
             menu : menuItems,
             container : container
@@ -261,7 +266,7 @@ Fisma.Search.Criteria.prototype = {
 
     /**
      * Render the actual query criteria fields based on the query's type
-     * 
+     *
      * @param container The HTML element that contains the query fields
      */
     renderQueryInput : function (container) {
@@ -282,9 +287,9 @@ Fisma.Search.Criteria.prototype = {
     },
 
     /**
-     * Render the add/remove buttons that the user uses to create additional search criteria or remove existing 
+     * Render the add/remove buttons that the user uses to create additional search criteria or remove existing
      * criteria
-     * 
+     *
      * @param The HTML element to render into
      */
     renderButtons : function (container) {
@@ -297,7 +302,7 @@ Fisma.Search.Criteria.prototype = {
         addButton._button.title = "Click to add another search criteria";
 
         addButton.on(
-            "click", 
+            "click",
             function () {
                 that.searchPanel.addCriteria(that.container);
             }
@@ -309,16 +314,18 @@ Fisma.Search.Criteria.prototype = {
         removeButton._button.title = "Click to remove this search criteria";
 
         removeButton.on(
-            "click", 
+            "click",
             function () {
                 that.searchPanel.removeCriteria(that.container);
             }
         );
+
+        this.removeButton = removeButton;
     },
-    
+
     /**
      * Get the query data for this criteria in its current state
-     * 
+     *
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
@@ -339,12 +346,12 @@ Fisma.Search.Criteria.prototype = {
 
         return response;
     },
-    
+
     /**
      * Returns the criteria definition for a given field type
-     * 
+     *
      * This covers up the fact that 'date' and 'datetime' behave the same way
-     * 
+     *
      * @param fieldType
      */
     getCriteriaDefinition : function (fieldType) {
@@ -353,7 +360,20 @@ Fisma.Search.Criteria.prototype = {
         if ('datetime' == tempType) {
             tempType = 'date';
         }
-        
+
         return Fisma.Search.CriteriaDefinition[tempType];
+    },
+
+    /**
+     * Enable or disable the remove button
+     *
+     * The button is disabled when there is only 1 criterion left in the panel, so that the user cannot remove ALL
+     * of the criteria. (This would put the UI into an unusable state since there is no way to add criteria at
+     * that point.)
+     *
+     * @param bool enabled
+     */
+    setRemoveButtonEnabled : function (enabled) {
+        this.removeButton.set("disabled", !enabled);
     }
 };
