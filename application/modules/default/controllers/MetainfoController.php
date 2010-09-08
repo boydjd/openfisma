@@ -67,7 +67,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
 
             $this->view->selected = $organization;
         } elseif ($module == 'system') {
-            $systems = CurrentUser::getInstance()->getSystems();
+            $systems = CurrentUser::getInstance()->getSystemsByPrivilege('finding', 'update');
             $list = $this->view->systemSelect($systems);
         } elseif ($module == 'security_control') {
             $securityControls = Doctrine::getTable('SecurityControl')->findAll();
