@@ -165,9 +165,6 @@ Finding:
         responsibleOrganizationId:
             type: integer
             comment: Foreign key to the organization which is responsible for addressing this finding
-            extra:
-                auditLog: true
-                logicalName: Responsible Organization            
         assetId:
             type: integer
             comment: Foreign key to the asset which this finding is against
@@ -177,9 +174,6 @@ Finding:
         securityControlId:
             type: integer
             comment: Foreign key to the security control associated with this finding
-            extra:
-                auditLog: true
-                logicalName: Security Control            
         createdByUserId:
             type: integer
             comment: Foreign key to the user who created this finding
