@@ -444,21 +444,4 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msgs);
         }
     }
-
-    /**
-     * Override method from parent to assert that the user has the given privilege for the given object.
-     *
-     * @param string $privilege
-     * @param object $object
-     * @return void
-     * @throws Fisma_Zend_Exception_InvalidPrivilege
-     */
-    public function requirePrivilegeForObject($privilege, $object)
-    {
-        if (empty($object->Organization)) {
-            $this->_acl->requirePrivilegeForClass('unaffiliated', 'asset');
-        } else {
-            parent::requirePrivilegeForObject($privilege, $object);
-        }
-    }
 }

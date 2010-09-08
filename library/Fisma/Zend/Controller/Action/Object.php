@@ -181,7 +181,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        $this->requirePrivilegeForObject('read', $subject);
+        $this->_acl->requirePrivilegeForObject('read', $subject);
 
         $form   = $this->getForm();
 
@@ -242,7 +242,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (!$subject) {
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
-        $this->requirePrivilegeForObject('update', $subject);
+        $this->_acl->requirePrivilegeForObject('update', $subject);
         $this->view->subject = $subject;
         $form   = $this->getForm();
 
@@ -289,7 +289,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
-        $this->requirePrivilegeForObject('delete', $subject);
+        $this->_acl->requirePrivilegeForObject('delete', $subject);
 
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -444,20 +444,5 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             return '';
         }
-    }
-
-    /**
-     * Overridable method to assert that the user has the given privilege for the given object.
-     *
-     * This implementation simply calls the ACL method, but some controllers may require more advanced logic.
-     *
-     * @param string $privilege
-     * @param object $object
-     * @return void
-     * @throws Fisma_Zend_Exception_InvalidPrivilege
-     */
-    public function requirePrivilegeForObject($privilege, $object)
-    {
-        $this->_acl->requirePrivilegeForObject($privilege, $object);
     }
 }
