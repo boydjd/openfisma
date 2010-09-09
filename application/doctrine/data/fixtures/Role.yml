@@ -15,6 +15,7 @@ Role:
             - findings_update_countermeasures
             - findings_update_finding_resources
             - findings_update_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -63,6 +64,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_locked_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -100,6 +102,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_locked_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment            
             - findings_mitigation_strategy_submit
@@ -142,6 +145,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_locked_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -213,6 +217,7 @@ Role:
             - findings_update_description
             - findings_update_threat
             - findings_update_finding_recommendation
+            - findings_update_legacy_finding_key
             - findings_comment
             - notification_finding      
 
@@ -232,6 +237,7 @@ Role:
             - findings_update_finding_recommendation
             - findings_update_finding_resources
             - findings_update_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -267,6 +273,7 @@ Role:
             - findings_update_countermeasures
             - findings_update_finding_resources
             - findings_update_ecd
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit

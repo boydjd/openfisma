@@ -130,6 +130,9 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $list = System::getSdlcPhaseMap();
             $selected = $this->getRequest()->getParam('value');
             $this->view->selected = $list[$selected];
+        } elseif ($module == 'source') {
+            $sources = Doctrine::getTable('Source')->getSources();
+            $list = $this->view->sourceSelect($sources);
         }
 
         $this->view->list = $list;
