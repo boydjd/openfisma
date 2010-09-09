@@ -46,6 +46,7 @@ elements.auth_type.options.multiOptions.ldap = "ldap"
 elements.auth_type.options.validators.notEmpty.validator = "NotEmpty"
 elements.auth_type.options.required = true
 displayGroups.general.elements.auth_type = "auth_type"
+elements.auth_type.options.tooltip = "<p><b>Authentication Method</b></p><p>OpenFISMA can authenticate users using an internal database or via an external LDAP provider such as Microsoft's Active Directory of IBM's Tivoli Directory Server. If you select the default option for database, OpenFISMA will use an internal database for authentication based on industry best-practices for identity management. NIST 800-53 security controls are built-into the authentication mechanism, such as consecutive password failure lockout and account expiration. If you choose LDAP, OpenFISMA will authenticate users with an external LDAP provider. You will need to configure the LDAP settings under the administration menu. </p>"
 
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
