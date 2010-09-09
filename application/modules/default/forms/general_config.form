@@ -47,15 +47,6 @@ elements.auth_type.options.validators.notEmpty.validator = "NotEmpty"
 elements.auth_type.options.required = true
 displayGroups.general.elements.auth_type = "auth_type"
 
-elements.rob_duration.type = "text"
-elements.rob_duration.options.label = "Rules Of Behavior Period (days)"
-elements.rob_duration.options.validators.digits.validator = "Digits"
-elements.rob_duration.options.validators.greaterThan.validator = "GreaterThan"
-elements.rob_duration.options.validators.greaterThan.options.min = 0
-elements.rob_duration.options.required = true
-elements.rob_duration.options.tooltip = "<p><b>Rules of Behavior Period</b></p><p>OpenFISMA requires users to accept a rules of behavior agreement before logging onto the application. OpenFISMA stores this acceptance in its database for compliance purposes. Please enter the period in which users need to re-accept the rules of behavior. For example, if you enter 365, the user will be able to use OpenFISMA for one year, at which time, they will need to read the rules of behavior again and re-accept the agreement.</p>"
-displayGroups.general.elements.rob_duration = "rob_duration"
-
 elements.use_notification.type = "textarea"
 elements.use_notification.options.label = "Warning Banner"
 elements.use_notification.options.validators.mceNotEmpty.validator = "MceNotEmpty"
@@ -73,6 +64,15 @@ elements.behavior_rule.options.rows = "7"
 elements.behavior_rule.options.required = true
 elements.behavior_rule.options.tooltip = "<p><b>Rules of Behavior</b></p><p>The Office of Management and Budget (OMB) Circular A-130, Appendix III, Security of Federal Automated Information Resources requires that "Rules of Behavior" be established for each general support information technology (IT) system and major application processing government information.</p>"
 displayGroups.general.elements.behavior_rule = "behavior_rule"
+
+elements.rob_duration.type = "text"
+elements.rob_duration.options.label = "Rules Of Behavior Period (days)"
+elements.rob_duration.options.validators.digits.validator = "Digits"
+elements.rob_duration.options.validators.greaterThan.validator = "GreaterThan"
+elements.rob_duration.options.validators.greaterThan.options.min = 0
+elements.rob_duration.options.required = true
+elements.rob_duration.options.tooltip = "<p><b>Rules of Behavior Period</b></p><p>OpenFISMA requires users to accept a rules of behavior agreement before logging onto the application. OpenFISMA stores this acceptance in its database for compliance purposes. Please enter the period in which users need to re-accept the rules of behavior. For example, if you enter 365, the user will be able to use OpenFISMA for one year, at which time, they will need to read the rules of behavior again and re-accept the agreement.</p>"
+displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.saveGeneral.type = "Form_Button_Submit"
 elements.saveGeneral.options.label = "Save Changes"
