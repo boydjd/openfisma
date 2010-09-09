@@ -17,22 +17,23 @@
  */
 
 /**
- * SecurityControl
+ * An encapsulation for audit log that is a proxy for getting the audit log value 
  * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
+ * @author     Mark Ma <markjtma@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
+ * @package    Fisma
+ * @subpackage Fisma_Doctrine_Behavior_AuditLoggable
  * @version    $Id$
  */
-class SecurityControl extends BaseSecurityControl implements Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
+interface Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
 {
-
-    //implement the function in Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider 
-    //For audit log, it needs to combine  the name in SecurityControl and SecurityControlCatalog tables
-    //to be a unique name 
-    function getAuditLogValue()
-    {
-       return $this->name . ' [' . $this->Catalog->name . ']';
-    }
+   
+    /**
+     * Proxy method for getting audit log value 
+     * 
+     * @return string 
+     */
+    function getAuditLogValue();
+    
 }
