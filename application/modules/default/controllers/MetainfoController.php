@@ -50,7 +50,11 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
         $module = $this->_request->getParam('o');
         $this->view->selected = $this->_request->getParam('value', '');
         if ($module == 'organization') {
-            $organizations  = CurrentUser::getInstance()->getOrganizations();
+            $organizations  = CurrentUser::getInstance()
+                ->getOrganizationsQuery()
+                ->leftJoin('o.System s')
+                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->execute();
             $list = $this->view->treeToSelect($organizations, 'nickname');
 
             // Since the list for organizations is prepended with dashes, we need to do some
@@ -67,7 +71,12 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
 
             $this->view->selected = $organization;
         } elseif ($module == 'system') {
-            $systems = CurrentUser::getInstance()->getSystems();
+            $systems = CurrentUser::getInstance()
+                ->getSystemsQuery()
+                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->orderBy('o.nickname')
+                ->execute();
+
             $list = $this->view->systemSelect($systems);
         } elseif ($module == 'security_control') {
             $securityControls = Doctrine::getTable('SecurityControl')->findAll();
