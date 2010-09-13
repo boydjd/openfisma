@@ -5303,8 +5303,8 @@ Fisma.User = {
                                                      'title');
 
                     // LDAP account column's name
-                    var ldapColumns = new Array('sn',
-                                                'givenname',
+                    var ldapColumns = new Array('givenname',
+                                                'sn',
                                                 'telephonenumber',
                                                 'mobile',
                                                 'mail',
