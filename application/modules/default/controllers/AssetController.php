@@ -112,6 +112,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
 
         $values = $form->getValues();
+
+        $productIdField = $form->getElement('product')->getAttrib('hiddenField');
+        $values['productId'] = $this->getRequest()->getParam($productIdField);
+
         if (empty($values['productId'])) {
             unset($values['productId']);
         }
