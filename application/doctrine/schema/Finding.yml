@@ -152,7 +152,7 @@ Finding:
                 auditLog: true
                 logicalName: CVSS Vector
                 searchIndex: unstored
-        deletedAt:
+        deleted_at:
             type: timestamp
             comment: Column for soft-delete
             extra:
