@@ -95,14 +95,12 @@ var myColumnDefs = [
     // PHP is used to populate this javascript array with the column values defined in the controller
     $defs = array();
     foreach ($this->columns as $columnName => $columnDef) {
-        if ($columnName != 'checked') {
-            $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
-                   . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
-                   . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
-                   . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false')
-                   . (!empty($columnDef['formatter']) ? ', formatter: "'. $columnDef['formatter'] . '"' : '')
-                   . '}';
-        }
+        $defs[] = '{key:"' . $this->escape($columnName, 'javascript') . '", '
+               . 'label:"' . $this->escape($columnDef['label'], 'javascript') . '", '
+               . 'sortable: ' . ($columnDef['sortable'] ? 'true' : 'false') . ', '
+               . 'hidden: ' . ($columnDef['hidden'] ? 'true' : 'false')
+               . (!empty($columnDef['formatter']) ? ', formatter: "'. $columnDef['formatter'] . '"' : '')
+               . '}';
     }
     $defs = implode(',', $defs);
     echo $this->escape($defs, 'none');
@@ -298,25 +296,27 @@ function showColumnOptions() {
     if (!columnOptionsPanel) {
         // Add the buttons to the panel
         for (column in myColumnDefs) {
-            var title = "";
+            if (myColumnDefs[column].key !== 'checked') {
+                var title = "";
 
-            if (!myColumnDefs[column].hidden) {
-                title = myColumnDefs[column].label + " Button Checked. Click to UnCheck.";
-            } else {
-                title = myColumnDefs[column].label + " Button UnChecked. Click to Check.";
+                if (!myColumnDefs[column].hidden) {
+                    title = myColumnDefs[column].label + " Button Checked. Click to UnCheck.";
+                } else {
+                    title = myColumnDefs[column].label + " Button UnChecked. Click to Check.";
+                }
+
+                var oCheckButton9 = new YAHOO.widget.Button({
+                    type: "checkbox",
+                    label: myColumnDefs[column].label,
+                    container: "columnOptionsPanelBody",
+                    checked: !myColumnDefs[column].hidden,
+                    onclick: {
+                        fn: toggleColumn,
+                        obj: myColumnDefs[column].key
+                    },
+                    title: title
+                });
             }
-
-            var oCheckButton9 = new YAHOO.widget.Button({
-                type: "checkbox",
-                label: myColumnDefs[column].label,
-                container: "columnOptionsPanelBody",
-                checked: !myColumnDefs[column].hidden,
-                onclick: {
-                    fn: toggleColumn,
-                    obj: myColumnDefs[column].key
-                },
-                title: title
-            });
         }
         var saveButton = new YAHOO.widget.Button({
             type: "button",

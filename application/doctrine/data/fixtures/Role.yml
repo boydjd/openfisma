@@ -49,6 +49,8 @@ Role:
             - areas_dashboard
             - finding_report_area
             - system_inventory_report_area
+            - finding_area
+            - system_inventory_area
             - findings_create
             - findings_read
             - findings_update_description
