@@ -11,6 +11,26 @@
             <td><?php echo $this->escape($finding->id)?></td>
         </tr>
         <tr>
+            <td>Legacy Finding Key:</td>
+            <td>
+                <span 
+                    <?php
+                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status) &&
+                        $this->acl()->hasPrivilegeForObject('update_legacy_finding_key', $finding)) {
+                    ?>
+                        id="legacyFindingKey" 
+                        class="editable" 
+                        target="legacyFindingKey" 
+                        name="finding[legacyFindingKey]" 
+                        type="text"
+                    <?php 
+                    }
+                    ?>>
+                    <?php echo $this->escape($finding->legacyFindingKey); ?>&nbsp;
+                </span>
+            </td>
+        </tr>
+        <tr>
             <td>Date Discovered:</td>
             <td><?php echo $this->escape($finding->discoveredDate)?></td>
         </tr>
@@ -33,8 +53,26 @@
         <tr>
             <td>Source:</td>
             <td>
-                (<?php echo $this->escape($finding->Source->nickname)?>)
-                <?php echo $this->escape($finding->Source->name)?>
+                <span id="source" 
+                      type="select" 
+                      name="finding[sourceId]" 
+                      href="/metainfo/list/o/source/format/html/"
+                      value="<?php echo $this->escape($finding->Source->id); ?>">
+                     <a href="/finding/source/view/id/<?php echo $this->escape($finding->Source-id); ?>">
+                         <?php echo $this->escape($finding->Source->nickname);?> 
+                         - <?php echo $this->escape($finding->Source->name);?>
+                    </a>
+                </span>
+
+                <?php
+                if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
+                     && $this->acl()->hasPrivilegeForClass('update', 'Source')):
+                ?>
+                    <span class="editable" target="source">&nbsp;</span>
+                <?php 
+                endif;
+                ?>
+                
             <?php if ($finding->uploadId): ?>
                 <br><?php echo $this->escape($finding->Upload->fileName)?>
             <?php endif; ?>
