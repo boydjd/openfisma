@@ -209,10 +209,13 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
          * the spreadsheet isn't available.
          */
         try {
-            $systems = array();
-            foreach ($this->_me->getOrganizationsByPrivilege('finding', 'inject') as $orgSystem) {
-                $systems[$orgSystem['id']] = $orgSystem['nickname'];
-            }
+            $systems = $this->_me
+                ->getOrganizationsByPrivilegeQuery('finding', 'inject')
+                ->leftJoin('o.System s')
+                ->select('o.id, o.nickname')
+                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->execute()
+                ->toKeyValueArray('id', 'nickname');
             if (count($systems) == 0) {
                 throw new Fisma_Zend_Exception("The spreadsheet template can not be
                     prepared because there are no systems defined.");

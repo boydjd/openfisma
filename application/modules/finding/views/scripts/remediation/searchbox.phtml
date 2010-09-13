@@ -235,10 +235,15 @@ $style = $flag == ''
                 <tr>
                     <td>
                         <label for="deleted_at"><b>Deleted:</b></label><br />
-                        <select name="deleted_at" id="findingDeleted">
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
-                        </select>
+                        <?php
+                                $deletedSelect = $this->formSelect(
+                                    'deleted_at',
+                                    $this->params['deleted_at'],
+                                    null,
+                                    array(0 => 'No', 1 => 'Yes') 
+                                );
+                                echo $this->escape($deletedSelect, 'none');
+                        ?>
                     </td>
                 </tr>
                 <?php endif; ?>

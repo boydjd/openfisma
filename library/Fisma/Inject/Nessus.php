@@ -76,7 +76,8 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 if ($oXml->name == 'ReportHost') {
                     $parsedData[$hostCounter] = array();
                     $parsedData[$hostCounter]['findings'] = array();
-                    $parsedData[$hostCounter]['ip'] = $oXml->getAttribute('name');
+                } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'host-ip') {
+                    $parsedData[$hostCounter]['ip'] = $oXml->readString();
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'HOST_END') {
                     $parsedData[$hostCounter]['startTime'] = $oXml->readString();
                 } elseif ($oXml->name == 'ReportItem') {
