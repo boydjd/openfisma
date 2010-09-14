@@ -234,7 +234,7 @@ abstract class Fisma_Inject_Abstract
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
                 $findingData['finding']->save();
-                $this->totals['created']++;
+                $this->_totals['created']++;
 
                 $vUpload = new VulnerabilityUpload();
                 $vUpload->vulnerabilityId = $findingData['finding']->id;
