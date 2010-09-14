@@ -25,7 +25,78 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SystemDocumentTable extends Fisma_Doctrine_Table
+class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
-
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'organization' => array(
+                'initiallyVisible' => true,
+                'label' => 'Organization',
+                'join' => array(
+                    'relation' => 'System.Organization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'documentType' => array(
+                'initiallyVisible' => true,
+                'label' => 'Document Type',
+                'join' => array(
+                    'relation' => 'DocumentType',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'version' => array(
+                'initiallyVisible' => true,
+                'label' => 'Current Version',
+                'sortable' => true,
+                'type' => 'integer'
+            ),
+            'description' => array(
+                'initiallyVisible' => true,
+                'label' => 'Version Notes',
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'size' => array(
+                'initiallyVisible' => true,
+                'label' => 'Size (bytes)',
+                'sortable' => true,
+                'type' => 'integer'
+            ),
+            'createdTs' => array(
+                'initiallyVisible' => true,
+                'label' => 'Last Modification Date',
+                'sortable' => true,
+                'type' => 'date'
+            ),
+            'documentType' => array(
+                'initiallyVisible' => true,
+                'label' => 'Document Type',
+                'join' => array(
+                    'relation' => 'DocumentType',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'lastModifiedUser' => array(
+                'initiallyVisible' => true,
+                'label' => 'Last Modified By User',
+                'join' => array(
+                    'relation' => 'User',
+                    'field' => 'username'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
+    }
 }

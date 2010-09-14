@@ -90,7 +90,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
 
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
                     'value' => 'List All ' . $this->getPluralModelName(),
@@ -100,10 +100,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         if ($this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $buttons['create'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarCreateButton',
                 array(
-                    'value' => 'Create New ' . $this->_modelName,
+                    'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create'
                 )
             );
@@ -113,7 +113,18 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Return a plural form of the model name.
+     * Return a human-readable, singular form of the model name.
+     * 
+     * In many cases the physical model name is also a suitable human-readable model name, but in outlier cases 
+     * subclasses can override this method.
+     */
+    public function getSingularModelName()
+    {
+        return $this->_modelName;
+    }    
+
+    /**
+     * Return a human-readable, plural form of the model name.
      *
      * This is used for UI purposes. Subclasses should override for model names
      * which do not pluralize by adding an 's' to the end.

@@ -516,9 +516,16 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             if (!isset($searchFieldDefinition['join'])) {
                 $rawValue = $object[$table->getFieldName($doctrineFieldName)];
             } else {
-                $relation = $object[$searchFieldDefinition['join']['relation']];
+                // Handle nested relations                
+                $relationParts = explode('.', $searchFieldDefinition['join']['relation']);
+                
+                $relatedObject = $object;
+                
+                foreach ($relationParts as $relationPart) {
+                    $relatedObject = $relatedObject[$relationPart];
+                }
 
-                $rawValue = $relation[$searchFieldDefinition['join']['field']];
+                $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
             }
 
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));

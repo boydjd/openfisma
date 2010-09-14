@@ -108,9 +108,25 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
                 if (!isset($relationAliases[$relation])) {
                     $currentAlias = chr(ord($currentAlias) + 1);
 
-                    $relationAliases[$relation] = $currentAlias;
+                    // Nested relations are allowed, ie. "System.Organization"
+                    $relationParts = explode('.', $relation);
 
-                    $allRecordsQuery->leftJoin("a.$relation $currentAlias");
+                    // First relation is related directly to the base table
+                    $allRecordsQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
+                    $allRecordsQuery->addSelect("$currentAlias.id");
+                    
+                    // Remaining relations are recursively related to each other
+                    for ($i = 1; $i < count($relationParts); $i++) {
+                        $previousAlias = $currentAlias;
+                        $currentAlias = chr(ord($currentAlias) + 1);
+                        
+                        $relationPart = $relationParts[$i];
+                        
+                        $allRecordsQuery->leftJoin("$previousAlias.$relationPart $currentAlias");
+                        $allRecordsQuery->addSelect("$currentAlias.id");
+                    }
+                    
+                    $relationAliases[$relation] = $currentAlias;
                 }
                 
                 $relationAlias = $relationAliases[$relation];
