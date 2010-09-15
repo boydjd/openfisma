@@ -65,6 +65,36 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         return parent::setForm($subject, $form);
     }
+
+    /**
+     * Hooks for manipulating and saving the values retrieved by Forms
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return integer Asset ID
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif (!$subject instanceof Doctrine_Record) {
+            throw new Fisma_Zend_Exception('Invalid parameter: Expected a Doctrine_Record');
+        }
+
+        $values = $form->getValues();
+
+        $productIdField = $form->getElement('product')->getAttrib('hiddenField');
+        $values['productId'] = $this->getRequest()->getParam($productIdField);
+
+        if (empty($values['productId'])) {
+            unset($values['productId']);
+        }
+
+        $subject->merge($values);
+        $subject->save();
+        return $subject->id;
+    }
     
     /**
      * Import assets from an uploaded XML file using an import plugin

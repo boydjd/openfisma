@@ -25,7 +25,14 @@
  * @package    Model
  * @version    $Id$
  */
-class SecurityControl extends BaseSecurityControl
+class SecurityControl extends BaseSecurityControl implements Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
 {
 
+    //implement the function in Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider 
+    //For audit log, it needs to combine  the name in SecurityControl and SecurityControlCatalog tables
+    //to be a unique name 
+    function getAuditLogValue()
+    {
+       return $this->name . ' [' . $this->Catalog->name . ']';
+    }
 }

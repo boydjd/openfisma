@@ -162,15 +162,24 @@ Finding:
         responsibleOrganizationId:
             type: integer
             comment: Foreign key to the organization which is responsible for addressing this finding
+            extra:
+                auditLog: true
+                logicalName: Responsible Organization  
         assetId:
             type: integer
             comment: Foreign key to the asset which this finding is against
         sourceId:
             type: integer
             comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
+            extra:
+                auditLog: true
+                logicalName: Source
         securityControlId:
             type: integer
             comment: Foreign key to the security control associated with this finding
+            extra:
+                auditLog: true
+                logicalName: Security Control
         createdByUserId:
             type: integer
             comment: Foreign key to the user who created this finding

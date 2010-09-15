@@ -133,6 +133,10 @@ Privilege:
         resource: finding
         action: comment
         description: Comment on Finding
+    findings_update_legacy_finding_key:
+        resource: finding
+        action: update_legacy_finding_key
+        description: Update Legacy Finding Key
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:

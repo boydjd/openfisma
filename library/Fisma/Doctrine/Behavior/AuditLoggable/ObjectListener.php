@@ -114,7 +114,35 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                     // The log always shows the old and new values for the field.
                     $oldValue = $invoker->getOriginalValue($field);
                     $newValue = $invoker->$field;
-                    
+
+                    //if the field is a foreign key and an id type, then get the name from foreign table
+                    if ($relation = $this->_fieldHasRelation($invoker->getTable(), $field)) {
+                        if ($oldValue) {
+                            $record = $relation->getTable()->findOneById($oldValue);
+
+                            // For SecurityControl name, it needs to combine the names in SecurityControl table and
+                            // SecurityControlCatalog table to be an unique name.
+                            if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
+                                $oldValue = $record->getAuditLogValue();
+                            } else { 
+                                if ($record->contains('name')) {
+                                    $oldValue = $record->name;
+                                }
+                            }
+                        }
+
+                        if ($newValue) {
+                            $record = $relation->getTable()->findOneById($newValue);
+                            if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
+                                $newValue = $record->getAuditLogValue();
+                            } else { 
+                                if ($record->contains('name')) {
+                                    $newValue = $record->name;
+                                }
+                            }
+                        }
+                    }
+
                     if ($this->_fieldIsHtml($invoker->getTable(), $field)) {
                         $oldValue = Fisma_String::htmlToPlainText($oldValue);
                         $newValue = Fisma_String::htmlToPlainText($newValue);
@@ -205,4 +233,27 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
             return null;
         }
     }
+
+    /**
+     * Determine whether a particular field on a particular table should be a foreign key and an id type
+     * 
+     * @param Doctrine_Table $table The specified doctrine table object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return relation if found relation property 'local' and 'foreign' is id type, null otherwise
+     */
+    private function _fieldHasRelation(Doctrine_Table $table, $field)
+    {
+        $relations = $table->getRelations();
+
+        foreach ($relations as $name => $relation) {
+            if (strtolower($field) === strtolower($relation->getLocal()) 
+                && 'id' === strtolower($relation->getForeign())) {
+
+               return $relation;
+            }
+        }
+
+        return null;
+    }
+    
 }

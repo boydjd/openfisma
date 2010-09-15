@@ -53,4 +53,18 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             )
         );
     }
+
+    /**
+     * Get sources
+     * 
+     * @return Doctrine_Collection The collection of sources
+     */
+    public function getSources()
+    {
+        $sourceQuery = Doctrine_Query::create()
+                       ->from('Source s')
+                       ->orderBy('s.nickname');
+                      
+        return  $sourceQuery->execute();
+    }
 }
