@@ -480,51 +480,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Displays the incident search page
-     * 
-     * No access control required here, because this doesn't display any incident data
-     *
-     * @return string the rendered page
-     */
-    public function listAction() 
-    {        
-        $this->searchboxAction();
-        
-        $value = trim($this->_request->getParam('keywords'));
-        empty($value) ? $link = '' : $link = '/keywords/' . $value;
-        
-        $this->view->assign('pageInfo', $this->_paging);
-        $this->view->assign('link', $link);
-        $this->view->allIncidentsUrl = $link
-                                     . '/status/all/sortby/i_reportTs/order/asc/startIndex/0/count/'
-                                     . $this->_paging['count'];
-        
-        $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
-        $this->view->assign('status', $status);
-
-        $this->view->assign('keywords', $this->_request->getParam('keywords'));
-
-        $this->render('list');
-    }
-
-    /**
-     * This action does not require access control; it doesn't display any data
-     */
-    public function searchboxAction() 
-    {        
-        $status = ($this->_request->getParam('status')) ? $this->_request->getParam('status') : 'new';
-        $this->view->assign('status', $status);
-        
-        $this->view->assign('startDt', $this->_request->getParam('startDt'));
-        
-        $this->view->assign('endDt', $this->_request->getParam('endDt'));
-        
-        $this->view->assign('keywords', $this->_request->getParam('keywords'));
-    
-        $this->render('searchbox');
-    }
-
-    /**
      * Displays information for editing or viewing a particular incident
      *
      * @return string the rendered page
@@ -559,6 +514,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
+        
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
     
     /**
@@ -1255,81 +1212,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Send artifact to browser
         $incident->getArtifacts()->find($artifactId)->send();
     }
-    
-    /**
-     * Send search results in JSON format.
-     * 
-     * If no search parameters, then lists all incidents visible to the current user
-     * 
-     * Access control is handled in the query itself, which is returned from _getUserIncidentQuery
-     */
-    public function searchAction()
-    {
-        $keywords = trim($this->_request->getParam('keywords'));
-
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
-        $sortBy = $this->_request->getParam('sortby', 'i_reportTs');
-        $order = $this->_request->getParam('order');
-        $status = array($this->_request->getParam('status'));
-
-        // Convert YUI column name to Doctrine column name
-        $sortBy{strpos('_', $sortBy) + 1} = '.';
-
-        if ($status[0] == 'resolved') {
-            $status[] = 'rejected';
-        }  
-       
-        $organization = Doctrine::getTable('Incident');
-        
-        $order = strtoupper($order);
-        if ($order != 'DESC') {
-            $order = 'ASC'; //ignore other values
-        }
-        
-        $q = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
-             ->select('i.id, i.additionalInfo, i.status, i.piiInvolved, i.reportTs, c.name')
-             ->leftJoin('i.Category c')
-             ->orderBy("$sortBy $order")
-             ->offset($this->_paging['startIndex'])
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        if ($status[0] != 'all') {
-            $q->whereIn('i.status', $status);
-        }
-
-        if ($this->_request->getParam('startDt')) {
-            $q->andWhere('i.reportTs > ?', $this->_request->getParam('startDt'));
-        }
-        
-        if ($this->_request->getParam('endDt')) {
-            $q->andWhere('i.reportTs < ?', $this->_request->getParam('endDt'));
-        }
-        
-        if ($keywords) {
-            // lucene search 
-            $index = new Fisma_Index('Incident');
-            $ids = $index->findIds($keywords);
-            if (!empty($ids)) {
-                $q->whereIn('id', $ids);
-            }
-        }
-
-        $totalRecords = $q->count();
-        $incidents = $q->execute();
- 
-        $tableData = array('table' => array(
-            'recordsReturned' => count($incidents),
-            'totalRecords' => $totalRecords,
-            'startIndex' => $this->_paging['startIndex'],
-            'sort' => $sortBy,
-            'dir' => $order,
-            'pageSize' => $this->_paging['count'],
-            'records' => $incidents,
-        ));
-        
-        echo json_encode($tableData);
-    }
 
     public function updateAction() 
     {
@@ -1698,5 +1580,27 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $list = array('users' => array_values($users));
 
         return $this->_helper->json($list);
+    }
+    
+    /**
+     * Replace the default "Create" button with a "Report Incident" button
+     *
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = parent::getToolbarButtons();
+
+        unset($buttons['create']);
+
+        $buttons['repot'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarReportIncidentButton',
+            array(
+                'value' => 'Report New Incident',
+                'href' => $this->getBaseUrl() . '/report'
+            )
+        );
+
+        return $buttons;
     }
 }

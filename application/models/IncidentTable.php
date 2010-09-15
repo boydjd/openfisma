@@ -25,7 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IncidentTable extends Fisma_Doctrine_Table
+class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
     /**
      * Returns a query which matches all of the current user's viewable incidents
@@ -49,5 +49,96 @@ class IncidentTable extends Fisma_Doctrine_Table
         }
 
         return $incidentQuery;
+    }
+    
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'id' => array(
+                'initiallyVisible' => true,
+                'label' => 'ID',
+                'sortable' => true,
+                'type' => 'integer'
+            ), 
+            'reportTs' => array(
+                'initiallyVisible' => true,
+                'label' => 'Report Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ), 
+            'modifiedTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Modification Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ), 
+            'closedTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Closed Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ), 
+            'status' => array(
+                'enumValues' => $this->getEnumValues('status'),
+                'initiallyVisible' => true,
+                'label' => 'Status',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'resolution' => array(
+                'enumValues' => $this->getEnumValues('resolution'),
+                'initiallyVisible' => true,
+                'label' => 'Resolution',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'incidentDate' => array(
+                'initiallyVisible' => false,
+                'label' => 'Incident Date',
+                'sortable' => true,
+                'type' => 'date'
+            ),
+            'additionalInfo' => array(
+                'initiallyVisible' => true,
+                'label' => 'Description',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'piiInvolved' => array(
+                'enumValues' => $this->getEnumValues('piiInvolved'),
+                'initiallyVisible' => true,
+                'label' => 'PII Involved',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'hostIp' => array(
+                'initiallyVisible' => false,
+                'label' => 'Host IP',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'hostName' => array(
+                'initiallyVisible' => false,
+                'label' => 'Host Name',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'hostOs' => array(
+                'enumValues' => $this->getEnumValues('hostOs'),
+                'initiallyVisible' => false,
+                'label' => 'Host OS',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'sourceIp' => array(
+                'initiallyVisible' => false,
+                'label' => 'Source IP',
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
     }
 }
