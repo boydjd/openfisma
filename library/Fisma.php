@@ -105,21 +105,52 @@ class Fisma
     /**
      * An array of include paths for the application. This is where PHP will search for include
      * files, such as autoloaded classes.
+     * These are relative to the root path. The most used paths should be at the top.
      * 
      * @see $_includePath;
      * @var array;
      */
-    private static $_includePath;
-    
+    private static $_includePath = array(
+        'doctrine-models' => 'application/models/generated',
+        'model' => 'application/models',
+        'controller' => 'application/controllers',
+        'listener' => 'application/models/listener',
+        'library' => 'library',
+        'pear' => 'library/Pear'
+    );
+   
     /**
-     * An array of paths to special parts of the application, such as the log directory, cache directory,
-     * etc. This is separate from $_includePath because 
+     * An array of paths to special parts of the application, such as the log directory, cache directory, etc.
+     * These are relative to the root path.
      * 
      * @see $_includePath;
      * @var array;
      */
-    private static $_applicationPath;
-    
+    private static $_applicationPath = array(
+        'application' => 'application',
+        'cache' => 'data/cache',
+        'config' => 'application/config',
+        'data' => 'data',
+        'fixture' => 'application/doctrine/data/fixtures',
+        'form' => 'application/modules/default/forms',
+        'image' => 'public/images',
+        'index' => 'data/index',
+        'layout' => 'application/layouts/scripts',
+        'listener' => 'application/models/listener',
+        'log' => 'data/logs',
+        'migration' => 'application/doctrine/migrations',
+        'sampleData' => 'application/doctrine/data/sample',
+        'sampleDataBuild' => 'application/doctrine/data/sample-build',
+        'schema' => 'application/doctrine/schema',
+        'scripts' => 'scripts',
+        'systemDocument' => 'data/uploads/system-document',
+        'temp' => 'data/temp',
+        'test' => 'tests',
+        'uploads' => 'data/uploads',
+        'viewHelper' => 'application/modules/default/views/helpers',
+        'yui' => 'public/yui'
+    );
+   
     /**
      * A single instance of Zend_Log which the application components share
      * 
@@ -180,16 +211,6 @@ class Fisma
         // Determine the root path of the application. This is based on knowing where this file is relative
         // to the root. So if this file moves, then this logic won't work anymore.
         self::$_rootPath = realpath(dirname(__FILE__) . '/../');
-
-        // Set up include paths. These are relative to the root path. The most used paths should be at the top.
-        self::$_includePath = array(
-            'doctrine-models' => 'application/models/generated',
-            'model' => 'application/models',
-            'controller' => 'application/controllers',
-            'listener' => 'application/models/listener',
-            'library' => 'library',
-            'pear' => 'library/Pear'
-        );
         
         // Prepend the include paths to PHP's path.
         // I discovered that PEAR has a class called "System". If the user has this class, then PEAR's System
@@ -210,32 +231,6 @@ class Fisma
         // Set the initialized flag
         self::$_initialized = true;
         
-        // Set up application paths. These are relative to the root path.
-        self::$_applicationPath = array(
-            'application' => 'application',
-            'cache' => 'data/cache',
-            'config' => 'application/config',
-            'data' => 'data',
-            'fixture' => 'application/doctrine/data/fixtures',
-            'form' => 'application/modules/default/forms',
-            'image' => 'public/images',
-            'index' => 'data/index',
-            'layout' => 'application/layouts/scripts',
-            'listener' => 'application/models/listener',
-            'log' => 'data/logs',
-            'migration' => 'application/doctrine/migrations',
-            'sampleData' => 'application/doctrine/data/sample',
-            'sampleDataBuild' => 'application/doctrine/data/sample-build',
-            'schema' => 'application/doctrine/schema',
-            'scripts' => 'scripts',
-            'systemDocument' => 'data/uploads/system-document',
-            'temp' => 'data/temp',
-            'test' => 'tests',
-            'uploads' => 'data/uploads',
-            'viewHelper' => 'application/modules/default/views/helpers',
-            'yui' => 'public/yui'
-        );
-
         // Load the system configuration
         $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/application.ini';
         if (file_exists($appConfFile)) {
