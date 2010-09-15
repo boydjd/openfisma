@@ -25,7 +25,72 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SecurityControlTable extends Fisma_Doctrine_Table
+class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
-
+    /**
+     * Implement the interface for Searchable
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'code' => array(
+                'initiallyVisible' => true,
+                'label' => 'Code',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'name' => array(
+                'initiallyVisible' => true,
+                'label' => 'Name',
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'class' => array(
+                'initiallyVisible' => true,
+                'label' => 'Class',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'family' => array(
+                'initiallyVisible' => true,
+                'label' => 'Family',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'control' => array(
+                'initiallyVisible' => true,
+                'label' => 'Control',
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'supplementalGuidance' => array(
+                'initiallyVisible' => false,
+                'label' => 'Supplemental Guidance',
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'externalReferences' => array(
+                'initiallyVisible' => false,
+                'label' => 'External References',
+                'sortable' => false,
+                'type' => 'text'
+            ),
+            'priorityCode' => array(
+                'initiallyVisible' => true,
+                'label' => 'Priority Code',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'catalog' => array(
+                'initiallyVisible' => true,
+                'label' => 'Supplemental Guidance',
+                'join' => array(
+                    'relation' => 'Catalog',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
+    }
 }

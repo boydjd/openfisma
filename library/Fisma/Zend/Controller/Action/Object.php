@@ -76,6 +76,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected $_aclResource;
 
     /**
+     * If true, then ACL checks are enforced in the controller. If false, ACL checks are skipped
+     */
+    protected $_enforceAcl = true;
+
+    /**
      * Subclasses should override this if they want to use different buttons
      *
      * Default buttons are (subject to ACL):
@@ -89,7 +94,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $buttons = array();
 
-        if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
@@ -99,7 +104,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             );
         }
 
-        if ($this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons['create'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarCreateButton',
                 array(
@@ -114,14 +119,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * Return a human-readable, singular form of the model name.
-     * 
-     * In many cases the physical model name is also a suitable human-readable model name, but in outlier cases 
+     *
+     * In many cases the physical model name is also a suitable human-readable model name, but in outlier cases
      * subclasses can override this method.
      */
     public function getSingularModelName()
     {
         return $this->_modelName;
-    }    
+    }
 
     /**
      * Return a human-readable, plural form of the model name.
@@ -146,10 +151,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->_moduleName = $this->getModuleNameForLink();
         $this->_controllerName = $this->getRequest()->getControllerName();
+
         if (is_null($this->_modelName)) {
-            //Actually user should not be able to see this error message
-            throw new Fisma_Zend_Exception('Internal error. Subclasses of the BaseController'
-                                    . ' must specify the _modelName field');
+            throw new Fisma_Zend_Exception('Subclasses of the BaseController must specify the _modelName field');
         }
     }
 
@@ -258,7 +262,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
 
-        $this->_acl->requirePrivilegeForObject('read', $subject);
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForObject('read', $subject);
+        }
 
         // Load the object's form
         $form   = $this->getForm();
@@ -281,7 +287,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function createAction()
     {
-        $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
+        }
 
         // Get the subject form
         $form   = $this->getForm();
@@ -343,7 +351,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
         }
 
-        $this->_acl->requirePrivilegeForObject('update', $subject);
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForObject('update', $subject);
+        }
+
         $this->view->subject = $subject;
 
         $form   = $this->getForm();
@@ -394,7 +405,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
-        $this->_acl->requirePrivilegeForObject('delete', $subject);
+        
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForObject('delete', $subject);
+        }
 
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
@@ -428,7 +442,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function listAction()
     {
-        $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        }
 
         $keywords = trim($this->_request->getParam('keywords'));
 
@@ -512,7 +528,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function searchAction()
     {
-        $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        }
 
         //initialize the data rows
         $searchResults = array(
@@ -689,11 +707,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $links = array();
 
-        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('read', $subject)) {
             $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
         }
 
-        if ($this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
@@ -712,11 +730,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $links = array();
 
-        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('read', $subject)) {
             $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
-        if ($this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 

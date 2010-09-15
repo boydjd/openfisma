@@ -35,7 +35,10 @@ class View_Helper_SearchBox extends Zend_View_Helper_Abstract
      * @param array $advancedSearchOptions An array specifying the fields and data types in the advanced search UI
      * @return string
      */
-    public function searchBox($toolbarButtons, $searchForm, $searchMoreOptionsForm, $advancedSearchOptions)
+    public function searchBox($toolbarButtons, 
+                              $searchForm = null, 
+                              $searchMoreOptionsForm = null, 
+                              $advancedSearchOptions = null)
     {
         $view = Zend_Layout::getMvcInstance()->getView();
         

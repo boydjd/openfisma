@@ -62,6 +62,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->document = $document;
         $this->view->versionHistory = $versionHistory;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
