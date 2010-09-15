@@ -1,13 +1,3 @@
-<script type="text/javascript">
-function backToSearch(event) {
-    var location = YAHOO.util.Cookie.get('lastSearchUrl');
-    if (location) {
-        window.location = location;
-    } else {
-        window.location = '/finding/remediation/searchbox';
-    }
-}
-</script>
 <form enctype="multipart/form-data"
       action="/finding/remediation/modify/id/<?php echo $this->escape($this->finding->id)?>" 
       method="post" 
@@ -15,11 +5,6 @@ function backToSearch(event) {
       name="finding_detail">
     <div class="buttonBar">
         <?php
-            $backToSearchButton = new Fisma_Yui_Form_Button('backToSearch',
-                                                      array('label' => 'Back To Search Results', 
-                                                            'onClickFunction' => 'backToSearch'));
-            echo $this->escape($backToSearchButton, 'none');
-
             // Only display controls if the finding has not been deleted
             if (!$this->finding->isDeleted()) {
                 // Display the delete finding button if the user has the delete finding privilege

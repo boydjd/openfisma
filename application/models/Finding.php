@@ -68,20 +68,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     );
 
     /**
-     * Declares fields stored in related records that should be indexed along with records in this table
-     * 
-     * @var array
-     * @see Asset.php
-     * @todo Doctrine 2.0 might provide a nicer approach for this
-     */
-    public $relationIndex = array(
-        'Source' => array('nickname' => array('type' => 'keyword', 'alias' => 'source')),
-        'ResponsibleOrganization' => array('nickname' => array('type' => 'unstored', 'alias' => 'system')),
-        'Asset' => array('name' => array('type' => 'unstored', 'alias' => 'asset')),
-        'SecurityControl' => array('code' => array('type' => 'keyword', 'alias' => 'securitycontrol'))
-    );
-
-    /**
      * Threshold of overdue for various status
      * 
      * @var array
@@ -695,6 +681,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public function isDeleted()
     {
         $oldValues = $this->getModified(true);
-        return ($this->deleted_at && !array_key_exists('deleted_at', $oldValues));
+        return ($this['deleted_at'] && !array_key_exists('deleted_at', $oldValues));
     }
 }

@@ -1,9 +1,9 @@
 Finding:
     listeners: [XssListener, IndexListener, NotificationListener]
-    
+
     columns:
         createdTs: timestamp
-    
+
         discoveredDate:
             type: date
             comment: The date when the finding was discovered. This is self-reported by users
@@ -19,16 +19,16 @@ Finding:
             type: date
             comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
             extra:
-                logicalName: Next Action Due Date        
-            
+                logicalName: Next Action Due Date
+
         legacyFindingKey:
             type: string(255)
             unique: true
-            extra: 
+            extra:
                 auditLog: true
                 logicalName: Legacy Finding ID
             comment: This field can be used by end clients to track findings under a legacy tracking system
-        
+
         type:
             type: enum
             values: [NONE, CAP, AR, FP]
@@ -42,34 +42,37 @@ Finding:
             type: enum
             values: [PEND, NEW, DRAFT, MSA, EN, EA, CLOSED]
             comment: The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user
+        denormalizedStatus:
+            type: string(255)
+            comment: A denormalized status field that is used for search engine indexing
         currentEvaluationId:
             type: integer
             comment: Points to the current evaluation level when the status is MSA or EA. Null otherwise.
-            
+
         description:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Finding Description
             comment: Description of the finding
         recommendation:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Recommendation
             comment: The auditors recommendation to remediate this finding
         mitigationStrategy:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Mitigation Strategy
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Resources Required
@@ -98,10 +101,10 @@ Finding:
                 logicalName: Justification for modifying ECD
             comment: If the current ECD needs to be changed, then this field holds the users justification for changing it
         actualCompletionDate:
-            type: date                              
+            type: date
         threat:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Description of Threat Source
@@ -115,7 +118,7 @@ Finding:
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
             type: string
-            extra: 
+            extra:
                 purify: html
                 auditLog: true
                 logicalName: Description of Countermeasures
@@ -125,8 +128,15 @@ Finding:
             values: [LOW, MODERATE, HIGH]
             extra:
                 auditLog: true
-                logicalName: Effectiveness of Countermeasures            
+                logicalName: Effectiveness of Countermeasures
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
+        residualRisk:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                auditLog: true
+                logicalName: Residual Risk
+            comment: The risk that remains after combining the threat level with countermeasures effectiveness
         cvssBaseScore:
            type: float
            comment: The CVSS Base Score of the finding
@@ -241,12 +251,12 @@ Finding:
             updated:
                 name: modifiedTs
                 type: timestamp
-        
+
         Fisma_Doctrine_Behavior_AuditLoggable:
             logCreateObject: true
             logUpdateField: true
             logDeleteObject: true
-        
+
         Fisma_Doctrine_Behavior_Commentable: true
-        
+
         SoftDelete: true
