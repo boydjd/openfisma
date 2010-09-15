@@ -46,6 +46,7 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 'type' => 'text'
             ),
             'class' => array(
+                'enumValues' => $this->getEnumValues('class'),
                 'initiallyVisible' => true,
                 'label' => 'Class',
                 'sortable' => true,
@@ -76,14 +77,15 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 'type' => 'text'
             ),
             'priorityCode' => array(
-                'initiallyVisible' => true,
+                'enumValues' => $this->getEnumValues('priorityCode'),
+                'initiallyVisible' => false,
                 'label' => 'Priority Code',
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'catalog' => array(
                 'initiallyVisible' => true,
-                'label' => 'Supplemental Guidance',
+                'label' => 'Catalog',
                 'join' => array(
                     'relation' => 'Catalog',
                     'field' => 'name'

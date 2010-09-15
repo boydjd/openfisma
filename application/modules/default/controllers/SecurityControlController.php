@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
  */
-class SecurityControlCatalogController extends Fisma_Zend_Controller_Action_Object
+class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -119,5 +119,21 @@ class SecurityControlCatalogController extends Fisma_Zend_Controller_Action_Obje
         $securityControlId = $this->getRequest()->getParam('id');
 
         $this->view->securityControl = Doctrine::getTable('SecurityControl')->find($securityControlId);
+    }
+    
+    /**
+     * Override parent to provide proper human-readable name for SystemDocument class
+     */
+    public function getSingularModelName()
+    {
+        return 'Security Control';
+    }
+
+    /**
+     * Override parent to provide proper human-readable name for SystemDocument class
+     */
+    public function getPluralModelName()
+    {
+        return 'Security Controls';
     }
 }

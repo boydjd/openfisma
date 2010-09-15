@@ -25,7 +25,7 @@
  * @package    Controllers
  * @version    $Id$
  */
-class SecurityControlCatalogChartController extends Fisma_Zend_Controller_Action_Security
+class SecurityControlChartController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Set contexts for this controller's actions

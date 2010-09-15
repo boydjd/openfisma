@@ -116,7 +116,7 @@ class Fisma_Menu
                 $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
             }
             
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control/list'));
 
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
 
@@ -132,7 +132,7 @@ class Fisma_Menu
             if ($acl->hasArea('system_inventory_admin')) {
                 $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
 
-                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
+                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-admin'));
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));

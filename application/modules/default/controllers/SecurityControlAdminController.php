@@ -26,7 +26,7 @@
  * @subpackage SUBPACKAGE
  * @version    $Id$
  */
-class SecurityControlCatalogAdminController extends Fisma_Zend_Controller_Action_Security
+class SecurityControlAdminController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Check ACL and setup header/footer
@@ -74,6 +74,6 @@ class SecurityControlCatalogAdminController extends Fisma_Zend_Controller_Action
             $this->view->priorityMessenger("Invalid catalog id ($newDefaultCatalogId)", 'warning');
         }
         
-        $this->_redirect('/security-control-catalog-admin/index');
+        $this->_redirect('/security-control-admin/index');
     }
 }
