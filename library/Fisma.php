@@ -399,6 +399,8 @@ class Fisma
             $frontController->registerPlugin($debug);
         }
 
+        $frontController->registerPlugin(new Fisma_Zend_Controller_Plugin_CsrfProtect());
+
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
         Zend_Date::setOptions(array('format_type' => 'php'));
