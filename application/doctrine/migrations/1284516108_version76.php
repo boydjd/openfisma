@@ -25,7 +25,7 @@
  * @package    Migration
  * @version    $Id$
  */
-class Version75 extends Doctrine_Migration_Base
+class Version76 extends Doctrine_Migration_Base
 {
     /**
      * Insert privilege
