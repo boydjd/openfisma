@@ -17,7 +17,7 @@
  */
 
 /**
- * Insert update legacy finding key privilege
+ * Insert update legacy finding key and finding source privileges
  * 
  * @author     Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -32,24 +32,34 @@ class Version76 extends Doctrine_Migration_Base
      */
     public function up()
     {
+        $privileges = new Doctrine_Collection('Privilege');
+
         $updateLegacyFindingkey = new Privilege();
         $updateLegacyFindingkey->resource = 'finding';
         $updateLegacyFindingkey->action = 'update_legacy_finding_key';
         $updateLegacyFindingkey->description = 'Update Legacy Finding Key';
-        $updateLegacyFindingkey->save();
-        
-        // Assign update legacy finding key privileges to any role which has the update finding privilege
+        $privileges[] = $updateLegacyFindingkey;
+
+        $updateFindingSource = new Privilege();
+        $updateFindingSource->resource = 'finding';
+        $updateFindingSource->action = 'update_finding_source';
+        $updateFindingSource->description = 'Update Finding Source';
+        $privileges[] = $updateFindingSource;
+
+        $privileges->save();
+
+        // Assign update legacy finding key and source privileges to any role which has the update finding privilege
         $updateFindingRolesQuery = Doctrine_Query::create()
                                       ->from('Role r')
                                       ->innerJoin('r.Privileges p')
                                       ->where('p.resource = ? AND p.action like ?', array('finding', 'update_%'));
 
         $updateFindingRoles = $updateFindingRolesQuery->execute();
-        
+
         foreach ($updateFindingRoles as $updateFindingRole) {
-            $updateFindingRole->link('Privileges', array( $updateLegacyFindingkey->id));
+            $updateFindingRole->link('Privileges', array($updateLegacyFindingkey->id, $updateFindingSource->id));
         }
-        
+
         $updateFindingRoles->save();
     }
 
@@ -61,7 +71,8 @@ class Version76 extends Doctrine_Migration_Base
         // Delete privilege
         $privilegeQuery = Doctrine_Query::create()
                           ->from('Privilege')
-                          ->where('resource = ? AND action = ?', array('finding', 'update_legacy_finding_key'));
+                          ->where('resource = ? AND (action = ? OR action = ?)', 
+                                  array('finding','update_legacy_finding_key','update_finding_source'));
         
         $findingPrivileges = $privilegeQuery->execute();
         

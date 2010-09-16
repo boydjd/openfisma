@@ -137,6 +137,10 @@ Privilege:
         resource: finding
         action: update_legacy_finding_key
         description: Update Legacy Finding Key
+    findings_update_finding_source:
+        resource: finding
+        action: update_finding_source
+        description: Update Finding Source
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:

@@ -84,6 +84,16 @@ Event:
         description: A Locked ECD Was Overridden
         Privilege: notification_finding
 
+    UPDATE_LEGACY_FINDING_KEY:
+        name: UPDATE_LEGACY_FINDING_KEY
+        description: Legacy Finding Key For Finding Updated
+        Privilege: notification_finding
+
+    UPDATE_FINDING_SOURCE:
+        name: UPDATE_FINDING_SOURCE
+        description: Source For Finding Updated
+        Privilege: notification_finding
+
     FINDING_CLOSED:
         name: FINDING_CLOSED
         description: Finding Was Closed
