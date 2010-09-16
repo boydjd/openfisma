@@ -56,12 +56,18 @@ bootstrap.path = APPLICATION_PATH "/Bootstrap.php"
 bootstrap.class = "Bootstrap"
 bootstrap.container.type = symfony
 bootstrap.container.symfony.configPaths[] = APPLICATION_PATH "/services"
-resources.frontController.controllerDirectory.default = APPLICATION_PATH "modules/default/controllers"
-resources.frontController.controllerDirectory.finding = APPLICATION_PATH "modules/finding/controllers"
 resources.frontController.moduleDirectory = APPLICATION_PATH "/modules"
 resources.frontController.prefixDefaultModule = false 
 resources.frontController.defaultModule = "default"
+
+autoloadernamespaces.fisma = "Fisma_"
+
 includePaths.library = APPLICATION_PATH "/../library"
+includePaths.doctrine-models = APPLICATION_PATH "/models/generated"
+includePaths.model = APPLICATION_PATH "/models"
+includePaths.controller = APPLICATION_PATH "/controllers"
+includePaths.listener = APPLICATION_PATH "/models/listener"
+includePaths.pear = APPLICATION_PATH "/../library/Pear"
 
 ; Development mode displays error messages to the user and enables some features that aid 
 ; debugging but reduce performance. Development mode inherits all properties from production
