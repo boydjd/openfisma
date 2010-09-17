@@ -18,7 +18,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
 
         $pdfButton = new Fisma_Yui_Form_Button_Link('pdf', 
                                       array('value' => 'Export PDF', 
-                                            'href' => "/asset/search$this->url/format/pdf",
+                                            'href' => "/asset/search/format/pdf$this->url",
                                             'imageSrc' => '/images/pdf.gif'));
         echo $this->escape($pdfButton, 'none');
 
@@ -79,9 +79,9 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
         var count = oState.pagination.rowsPerPage;
     
         // Build custom request
-        var request = "<?php echo $this->escape($this->url, 'none') ?>" + 
-                      "/startIndex/" + startIndex +
-                      "/count/" + count;
+        var request = "/startIndex/" + startIndex +
+                      "/count/" + count + 
+                      "<?php echo $this->escape($this->url, 'none') ?>";
         return request;
     };
 
@@ -96,7 +96,7 @@ Fisma_Format_Section::startSection("Asset Inventory <span id='searchResultsTotal
     
     // DataTable configuration
     var myConfigs = {
-        initialRequest: "<?php echo $this->escape($this->url, 'none')?>/startIndex/0/count/10",
+        initialRequest: "/startIndex/0/count/10<?php echo $this->escape($this->url, 'none')?>",
         dynamicData: true, 
         paginator: new YAHOO.widget.Paginator(
             {
