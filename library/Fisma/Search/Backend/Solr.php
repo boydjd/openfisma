@@ -334,16 +334,15 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $searchTerms = array();
 
         foreach ($criteria as $criterion) {
-            // Some twiddling to convert Doctrine's field names to Solr's field names
-            $doctrineFieldName = $criterion->getField();
+
+            $doctrineFieldName = $this->escape($criterion->getField());
 
             if (!isset($searchableFields[$doctrineFieldName])) {
                 throw new Fisma_Search_Exception("Invalid field name: " . $doctrineFieldName);
             }
 
-            $rawFieldName = $doctrineFieldName . '_' . $searchableFields[$doctrineFieldName]['type'];
+            $fieldName = $doctrineFieldName . '_' . $searchableFields[$doctrineFieldName]['type'];
 
-            $fieldName = $this->escape($rawFieldName);
             $operands = array_map('addslashes', $criterion->getOperands());
 
             switch ($criterion->getOperator()) {
@@ -418,6 +417,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 case 'textDoesNotContain':
                 case 'enumIsNot':
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
+                    break;
+                
+                // Exact text match is a little different. It uses a separate field and it only works for sortable
+                // fields. Because the sort field is unanalyzed, this is a case sensitive operator.
+                case 'textExactMatch':
+                    $searchTerms[] = "{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
                     break;
                 
                 default:

@@ -41,7 +41,13 @@ Fisma.Search.CriteriaDefinition = function () {
             integerLessThan : {label : "Less Than", renderer : 'singleInteger', query : 'oneInput'}
         },
 
-        text : {
+        nonSortableText : {
+            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
+            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
+        },
+
+        sortableText : {
+            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
         },

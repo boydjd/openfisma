@@ -50,7 +50,8 @@ class Fisma_Search_Criterion
         'integerGreaterThan',
         'integerLessThan',
         'textContains',
-        'textDoesNotContain'
+        'textDoesNotContain',
+        'textExactMatch'
     );
     
     /**

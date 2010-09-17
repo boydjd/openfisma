@@ -151,7 +151,7 @@ Fisma.Search.Criteria.prototype = {
         var menuButton;
 
         // This event handler makes the menu button behave like a popup menu
-        var menuClickHandler = function (type, args, item) {
+        var handleQueryFieldSelectionEvent = function (type, args, item) {
 
             var newLabel = item.cfg.getProperty("text");
 
@@ -165,7 +165,7 @@ Fisma.Search.Criteria.prototype = {
                     var refreshQueryType = true;
                     var refreshQueryInput = true;
 
-                    if (field.type == that.currentField.type) {
+                    if (that.getCriteriaDefinition(field) == that.getCriteriaDefinition(that.currentField)) {
                         refreshQueryType = false;
                     }
                     
@@ -199,7 +199,7 @@ Fisma.Search.Criteria.prototype = {
             menuItems.push({
                 text : field.label,
                 value : field.name,
-                onclick : {fn : menuClickHandler}
+                onclick : {fn : handleQueryFieldSelectionEvent}
             });
         }
 
@@ -236,7 +236,7 @@ Fisma.Search.Criteria.prototype = {
         var handleQueryTypeSelectionEvent = function (type, args, item) {
             var newLabel = item.cfg.getProperty("text");
 
-            var criteria = that.getCriteriaDefinition(that.currentField.type);
+            var criteria = that.getCriteriaDefinition(that.currentField);
             var oldRenderer = criteria[that.currentQueryType].renderer;
             var newRenderer = criteria[item.value].renderer;
 
@@ -250,14 +250,7 @@ Fisma.Search.Criteria.prototype = {
         };
 
         // Load the criteria definition
-        var criteriaType = this.currentField.type;
-
-        if ('datetime' == criteriaType) {
-            // 'datetime' is aliased to 'date' since they behave the same
-            criteriaType = 'date';
-        }
-
-        var criteriaDefinitions = this.getCriteriaDefinition(criteriaType);
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
 
         // Create the select menu
         var menuItems = new Array();
@@ -302,7 +295,7 @@ Fisma.Search.Criteria.prototype = {
         }
 
         // Call the defined renderer for the selected query type
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField.type);
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
 
         var rendererName = criteriaDefinitions[this.currentQueryType].renderer;
         var render = Fisma.Search.CriteriaRenderer[rendererName];
@@ -359,7 +352,7 @@ Fisma.Search.Criteria.prototype = {
     getQuery : function () {
 
         var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField.type);
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
 
         var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
         var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
@@ -376,18 +369,22 @@ Fisma.Search.Criteria.prototype = {
     },
 
     /**
-     * Returns the criteria definition for a given field type
+     * Returns the criteria definition for a given field
      *
-     * This covers up the fact that 'date' and 'datetime' behave the same way
-     *
-     * @param fieldType
+     * @param field
      */
-    getCriteriaDefinition : function (fieldType) {
+    getCriteriaDefinition : function (field) {
 
-        var tempType = fieldType;
+        var tempType = field.type;
 
         if ('datetime' == tempType) {
             tempType = 'date';
+        } else if ('text' == tempType) {
+            if (field.sortable) {
+                tempType = 'sortableText';
+            } else {
+                tempType = 'nonSortableText';
+            }
         }
 
         return Fisma.Search.CriteriaDefinition[tempType];
