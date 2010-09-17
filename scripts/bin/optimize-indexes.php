@@ -81,7 +81,11 @@ class OptimizeIndexes
      */
     public function __construct() 
     {
-        defined('APPLICATION_ENV') || define('APPLICATION_ENV', 'production');
+        defined('APPLICATION_ENV')
+            || define(
+                'APPLICATION_ENV',
+                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+            );
         defined('APPLICATION_PATH') || define(
             'APPLICATION_PATH',
             realpath(dirname(__FILE__) . '/../../application')
