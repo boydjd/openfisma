@@ -101,25 +101,27 @@ Fisma.Search.Criteria.prototype = {
     /**
      * Render the criteria widget
      *
-     * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
+     * @param fieldName The name of the field to select (Required)
+     * @param operator The name of the operator to select (Optional)
+     * @param operands Values of operands to fill in (Optional)
      * @return An HTML element containing the search criteria widget
      */
-    render : function (defaultFieldIndex) {
+    render : function (fieldName, operator, operands) {
 
         this.container = document.createElement('div');
 
         this.container.className = "searchCriteria";
 
         this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, defaultFieldIndex);
+        this.renderQueryField(this.queryFieldContainer, fieldName);
         this.container.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer);
+        this.renderQueryType(this.queryTypeContainer, operator);
         this.container.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer);
+        this.renderQueryInput(this.queryInputContainer, operands);
         this.container.appendChild(this.queryInputContainer);
 
         this.buttonsContainer = document.createElement('span');
@@ -141,9 +143,9 @@ Fisma.Search.Criteria.prototype = {
      * to query on.
      *
      * @param container The HTML element to render into
-     * @param defaultFieldIndex An integer index into the searchable fields array which indicates the default field
+     * @param fieldName The name of the default field
      */
-    renderQueryField : function (container, defaultFieldIndex) {
+    renderQueryField : function (container, fieldName) {
 
         var that = this;
 
@@ -204,9 +206,7 @@ Fisma.Search.Criteria.prototype = {
         }
 
         // Render menu button
-        var initialFieldIndex = defaultFieldIndex % this.fields.length;
-
-        this.currentField = this.fields[initialFieldIndex];
+        this.currentField = this.getField(fieldName);
 
         menuButton = new YAHOO.widget.Button({
             type : "menu",
@@ -220,8 +220,9 @@ Fisma.Search.Criteria.prototype = {
      * Render the query type menu based on the current item's type
      *
      * @param container The HTML element to render into
+     * @param operator The default operator (optional)
      */
-    renderQueryType : function (container) {
+    renderQueryType : function (container, operator) {
 
         // Remove any existing content in this container
         if (container.firstChild) {
@@ -271,6 +272,11 @@ Fisma.Search.Criteria.prototype = {
             }
         }
 
+        // If the operator is specified, it overrules the 'default' designation in the criteria definitions
+        if (operator) {
+            this.currentQueryType = operator;
+        }
+
         // Render menu button
         var menuButton = new YAHOO.widget.Button({
             type : "menu",
@@ -284,8 +290,9 @@ Fisma.Search.Criteria.prototype = {
      * Render the actual query criteria fields based on the query's type
      *
      * @param container The HTML element that contains the query fields
+     * @param operands An array of operands to set the inputs' values to
      */
-    renderQueryInput : function (container) {
+    renderQueryInput : function (container, operands) {
 
         // Remove any existing content in this container
         if (container.firstChild) {
@@ -301,9 +308,9 @@ Fisma.Search.Criteria.prototype = {
         var render = Fisma.Search.CriteriaRenderer[rendererName];
 
         if ('enum' == this.currentField.type) {
-            render(container, this.currentField.enumValues);
+            render(container, operands, this.currentField.enumValues);
         } else {
-            render(container);
+            render(container, operands);
         }
     },
 
@@ -401,5 +408,20 @@ Fisma.Search.Criteria.prototype = {
      */
     setRemoveButtonEnabled : function (enabled) {
         this.removeButton.set("disabled", !enabled);
+    },
+    
+    /**
+     * Fields is numerically indexed. This is a helper function to find a field by name.
+     */
+    getField : function (fieldName) {
+        for (var index in this.fields) {
+            var field = this.fields[index];
+            
+            if (field.name == fieldName) {
+                return field;
+            }
+        }
+        
+        throw "No field found with this name: " + fieldName;
     }
 };

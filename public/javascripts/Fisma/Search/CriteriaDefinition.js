@@ -47,9 +47,9 @@ Fisma.Search.CriteriaDefinition = function () {
         },
 
         sortableText : {
-            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
+            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
+            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'}
         },
         
         "enum" : {

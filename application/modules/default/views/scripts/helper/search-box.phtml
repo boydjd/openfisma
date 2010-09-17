@@ -34,7 +34,7 @@
     <div id="searchColumnsButtons" class="centerButtons"></div>
 </div>
 
-<div id="advancedSearch" class="searchBox searchBoxAdditional"  style="display: none;">
+<div id="advancedSearch" class="searchBox searchBoxAdditional"  style="display: block;">
     <p>Advanced Search:</p>
     <div id="advancedSearchCriteria"></div>
 </div>
@@ -57,7 +57,7 @@
         function () {
             var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
-            var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
+            var searchPanel = new Fisma.Search.Panel(advancedSearchOptions, document.location.pathname);
             
             Fisma.Search.advancedSearchPanel = searchPanel;
 

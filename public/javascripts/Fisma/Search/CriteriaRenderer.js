@@ -29,9 +29,15 @@ Fisma.Search.CriteriaRenderer = function () {
          * @todo Add date picker
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        betweenDate : function (container) {
+        betweenDate : function (container, operands) {
             var lowEnd = document.createElement('input');
+
+            if (operands.length > 0) {
+                lowEnd.value = operands[0];
+            }
+
             lowEnd.type = "text";
             lowEnd.className = "date";
             container.appendChild(lowEnd);
@@ -41,6 +47,11 @@ Fisma.Search.CriteriaRenderer = function () {
             container.appendChild(text);
 
             var highEnd = document.createElement('input');
+            
+            if (operands.length > 1) {
+                highEnd.value = operands[1];
+            }
+
             highEnd.type = "text";
             highEnd.className = "date";
             container.appendChild(highEnd);
@@ -51,9 +62,15 @@ Fisma.Search.CriteriaRenderer = function () {
          * Renders two integer fields with the word "And" between them
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        betweenInteger : function (container) {
+        betweenInteger : function (container, operands) {
             var lowEnd = document.createElement('input');
+
+            if (operands.length > 0) {
+                lowEnd.value = operands[0];
+            }
+
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
@@ -62,6 +79,11 @@ Fisma.Search.CriteriaRenderer = function () {
             container.appendChild(text);
 
             var highEnd = document.createElement('input');
+
+            if (operands.length > 1) {
+                highEnd.value = operands[1];
+            }
+
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
@@ -73,8 +95,9 @@ Fisma.Search.CriteriaRenderer = function () {
          * This is useful for search criteria that don't take any parameters
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        none : function (container) {
+        none : function (container, operands) {
 
         },
 
@@ -84,14 +107,19 @@ Fisma.Search.CriteriaRenderer = function () {
          * @todo Add date picker
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        singleDate : function (container) {
+        singleDate : function (container, operands) {
 
             // Create the input field
             var textEl = document.createElement('input');
 
             textEl.type = "text";
             textEl.className = "date";
+
+            if (operands.length > 0) {
+                textEl.value = operands[0];
+            }
 
             container.appendChild(textEl);
 
@@ -102,12 +130,17 @@ Fisma.Search.CriteriaRenderer = function () {
          * Renders a single integer input field
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        singleInteger : function (container) {
+        singleInteger : function (container, operands) {
             var textEl = document.createElement('input');
 
             textEl.type = "text";
             textEl.className = "integer";
+
+            if (operands.length > 0) {
+                textEl.value = operands[0];
+            }
 
             container.appendChild(textEl);
         },
@@ -116,11 +149,16 @@ Fisma.Search.CriteriaRenderer = function () {
          * Renders a plain old text field
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          */
-        text : function (container) {
+        text : function (container, operands) {
             var textEl = document.createElement('input');
 
             textEl.type = "text";
+
+            if (operands.length > 0) {
+                textEl.value = operands[0];
+            }
 
             container.appendChild(textEl);
         },
@@ -129,9 +167,10 @@ Fisma.Search.CriteriaRenderer = function () {
          * Render an enumeration field as a select menu
          *
          * @param container The HTML element to render into
+         * @param operands An array of default values
          * @param enumValues An array of enumeration values
          */
-        enumSelect : function (container, enumValues) {
+        enumSelect : function (container, operands, enumValues) {
 
             // This event handler makes the menu button behave like a popup menu
             var handleEnumSelectionEvent = function (type, args, item) {
@@ -155,10 +194,13 @@ Fisma.Search.CriteriaRenderer = function () {
                 menuItems.push(menuItem);
             }
 
+            // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
+            var defaultValue = (operands.length > 0) ? operands[0] : enumValues[0];
+
             // Render menu button
             var menuButton = new YAHOO.widget.Button({
                 type : "menu",
-                label : enumValues[0],
+                label : defaultValue,
                 menu : menuItems,
                 container : container
             });
