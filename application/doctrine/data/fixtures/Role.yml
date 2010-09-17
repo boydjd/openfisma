@@ -211,6 +211,10 @@ Role:
             - ir_category_create
             - ir_category_delete
             - user_read
+            - document_type_create
+            - document_type_read
+            - document_type_update
+            - document_type_delete
 
     certagent_role:
         name: Certification Agent

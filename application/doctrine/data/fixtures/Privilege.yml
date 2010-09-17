@@ -374,3 +374,20 @@ Privilege:
         action: delete
         description: Delete IR Categories and IR Sub Categories
 
+    # Document Type CRUD
+    document_type_create:
+        resource: document_type
+        action: create
+        description: Create Document Type
+    document_type_read:
+        resource: document_type
+        action: read
+        description: View Document Type
+    document_type_update:
+        resource: document_type
+        action: update
+        description: Edit Document Type
+    document_type_delete:
+        resource: document_type
+        action: delete
+        description: Delete Document Type

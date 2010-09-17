@@ -1,7 +1,18 @@
 DocumentType:
+    listeners: [IndexListener, NotificationListener]
+
     columns:
         name: 
             type: string(255)
             extra:
                 logicalName: Document Name
+                searchIndex: unstored
+                notify: true
             comment: A human-readable description of the file type, e.g. System Security Plan
+        required:
+            type: boolean
+            notblank: true
+            comment: Indicates whether the document type is required or not
+            default: 0
+            extra:
+                notify: true

@@ -1,0 +1,42 @@
+<div class="searchFilters">
+    <div class="left">
+        <?php
+        $listButton = new Fisma_Yui_Form_Button_Link('listButton', 
+                                               array('value' => 'Document Type List', 
+                                                     'href' => '/document-type/list'));
+        echo $this->escape($listButton, 'none');
+        ?>
+
+        <?php 
+        if ($this->acl()->hasPrivilegeForClass('create', 'DocumentType')) {
+            $createButton = new Fisma_Yui_Form_Button_Link('createButton', 
+                                                   array('value' => 'Add Document Type', 
+                                                         'href' => '/document-type/create'));
+            echo $this->escape($createButton, 'none');
+        } 
+        ?>
+    </div>
+    <div class="right">
+        <form name="query" method="post" action="/document-type/list" style="display:inline">
+        <b><label for="keywords">Search:</label>&nbsp;</b>
+        <input id="keywords" 
+               name="keywords" 
+               value="<?php echo $this->escape($this->keywords);?>" 
+               title="Input your query value" 
+               size="20" 
+               maxlength="40" 
+               type="text">
+        <span id="searchContainer"></span>
+        <script type='text/javascript'>
+           var save = new YAHOO.widget.Button({
+               type: "submit",
+               label: "Search",
+               value: "Search",
+               container: "searchContainer",
+               disabled: false
+           });
+        </script>
+        </form>
+    </div>
+    <div class="clear"></div>
+</div>
