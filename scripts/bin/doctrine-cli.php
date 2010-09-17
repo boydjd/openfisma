@@ -52,8 +52,8 @@ try {
         APPLICATION_ENV,
         APPLICATION_PATH . '/config/application.ini'
     );
-    Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     Fisma::setAppConfig($application->getOptions());
+    Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     $application->bootstrap();
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
