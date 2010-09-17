@@ -34,7 +34,7 @@ Fisma.Search.CriteriaRenderer = function () {
         betweenDate : function (container, operands) {
             var lowEnd = document.createElement('input');
 
-            if (operands.length > 0) {
+            if (operands && operands.length > 0) {
                 lowEnd.value = operands[0];
             }
 
@@ -48,7 +48,7 @@ Fisma.Search.CriteriaRenderer = function () {
 
             var highEnd = document.createElement('input');
             
-            if (operands.length > 1) {
+            if (operands && operands.length > 1) {
                 highEnd.value = operands[1];
             }
 
@@ -67,7 +67,7 @@ Fisma.Search.CriteriaRenderer = function () {
         betweenInteger : function (container, operands) {
             var lowEnd = document.createElement('input');
 
-            if (operands.length > 0) {
+            if (operands && operands.length > 0) {
                 lowEnd.value = operands[0];
             }
 
@@ -80,7 +80,7 @@ Fisma.Search.CriteriaRenderer = function () {
 
             var highEnd = document.createElement('input');
 
-            if (operands.length > 1) {
+            if (operands && operands.length > 1) {
                 highEnd.value = operands[1];
             }
 
@@ -117,7 +117,7 @@ Fisma.Search.CriteriaRenderer = function () {
             textEl.type = "text";
             textEl.className = "date";
 
-            if (operands.length > 0) {
+            if (operands && operands.length > 0) {
                 textEl.value = operands[0];
             }
 
@@ -138,7 +138,7 @@ Fisma.Search.CriteriaRenderer = function () {
             textEl.type = "text";
             textEl.className = "integer";
 
-            if (operands.length > 0) {
+            if (operands && operands.length > 0) {
                 textEl.value = operands[0];
             }
 
@@ -156,7 +156,7 @@ Fisma.Search.CriteriaRenderer = function () {
 
             textEl.type = "text";
 
-            if (operands.length > 0) {
+            if (operands && operands.length > 0) {
                 textEl.value = operands[0];
             }
 
@@ -195,7 +195,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = (operands.length > 0) ? operands[0] : enumValues[0];
+            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
 
             // Render menu button
             var menuButton = new YAHOO.widget.Button({

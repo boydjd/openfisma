@@ -157,7 +157,8 @@ Fisma.Search.Panel.prototype = {
         // Update DOM
         var defaultFieldIndex = this.criteria.length - 1;
 
-        var criteriaElement = criteria.render(defaultFieldIndex);
+        var criteriaElement = criteria.render(this.searchableFields[defaultFieldIndex].name);
+
         this.container.insertBefore(criteriaElement, currentRow.nextSibling);
     },
     
