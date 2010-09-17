@@ -185,4 +185,80 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         $finding->status = 'EN';
         $this->assertNull($finding->actualCompletionDate);
     }
+    
+    /**
+     * Test the setting of the "Denormalized Status" field
+     */
+    public function testDenormalizedStatus()
+    {
+        $finding = new Finding();
+
+        $finding->status = 'DRAFT';
+        
+        $this->assertEquals('DRAFT', $finding->denormalizedStatus);
+    }
+    
+    /**
+     * Test residual risk calculation
+     */
+    public function testResidualRiskCalculation()
+    {
+        $finding = new Finding();
+        
+        // If no threat, then there is no risk
+        $this->assertNull($finding->calculateResidualRisk(null, null));
+        
+        // If no countermeasures, then risk=threat
+        $this->assertEquals('HIGH', $finding->calculateResidualRisk('HIGH', null));
+        
+        // Nine cases where risk is mapped to threat and countermeasures
+        $this->assertEquals('LOW', $finding->calculateResidualRisk('HIGH', 'HIGH'));
+        $this->assertEquals('MODERATE', $finding->calculateResidualRisk('HIGH', 'MODERATE'));
+        $this->assertEquals('HIGH', $finding->calculateResidualRisk('HIGH', 'LOW'));
+
+        $this->assertEquals('LOW', $finding->calculateResidualRisk('MODERATE', 'HIGH'));
+        $this->assertEquals('MODERATE', $finding->calculateResidualRisk('MODERATE', 'MODERATE'));
+        $this->assertEquals('MODERATE', $finding->calculateResidualRisk('MODERATE', 'LOW'));
+
+        $this->assertEquals('LOW', $finding->calculateResidualRisk('LOW', 'HIGH'));
+        $this->assertEquals('LOW', $finding->calculateResidualRisk('LOW', 'MODERATE'));
+        $this->assertEquals('LOW', $finding->calculateResidualRisk('LOW', 'LOW'));
+    }
+    
+    /**
+     * Test residual risk calculation error
+     * 
+     * @expectedException Fisma_Zend_Exception
+     */
+    public function testResidualRiskCalculationError()
+    {
+        $finding = new Finding();
+        
+        $finding->calculateResidualRisk('Bogus', 'Parameters');
+    }
+
+    /**
+     * Test the residual risk field
+     */
+    public function testResidualRisk()
+    {
+        $finding = new Finding();
+        
+        // Test with non-null countermeasures
+        $finding->threatLevel = 'HIGH';
+        $finding->countermeasuresEffectiveness = 'HIGH';
+        $this->assertEquals('LOW', $finding->residualRisk);
+    }
+
+    /**
+     * Test the residual risk field
+     */
+    public function testResidualRiskNullCountermeasures()
+    {
+        $finding = new Finding();
+        
+        // Test null countermeasures
+        $finding->threatLevel = 'HIGH';
+        $this->assertEquals('HIGH', $finding->residualRisk);
+    }
 }

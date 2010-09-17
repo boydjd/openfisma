@@ -97,11 +97,13 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     {
         parent::setUp();
         
+        $this->hasMutator('countermeasuresEffectiveness', 'setCountermeasuresEffectiveness');
         $this->hasMutator('currentEcd', 'setCurrentEcd');
         $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');
         $this->hasMutator('nextDueDate', 'setNextDueDate');
         $this->hasMutator('originalEcd', 'setOriginalEcd');
         $this->hasMutator('status', 'setStatus');
+        $this->hasMutator('threatLevel', 'setThreatLevel');
         $this->hasMutator('type', 'setType');
     }
 
@@ -164,6 +166,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
+
+        $this->updateDenormalizedStatus();
+
         $this->save();
 
         $this->getAuditLog()->write('Submitted Mitigation Strategy');
@@ -245,7 +250,61 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $this->CurrentEvaluation = null;
         }
         $this->_updateNextDueDate();
+        
+        $this->updateDenormalizedStatus();
+
         $this->save();
+    }
+
+    /**
+     * Calculate the residual risk based on threat level and taking into account the countermeasures' effectiveness
+     * 
+     * Based on NIST 800-30 risk analysis method.
+     * 
+     * @param string $threatLevel HIGH, MODERATE, or LOW
+     * @param string $countermeasuresEffectiveness HIGH, MODERATE, LOW, or null
+     * @return string HIGH, MODERATE, LOW, or null
+     */
+    public function calculateResidualRisk($threatLevel, $countermeasuresEffectiveness)
+    {
+        if (empty($threatLevel)) {
+            return null;
+        }
+
+        if (empty($countermeasuresEffectiveness)) {
+            return $threatLevel;
+        }
+
+        /* 
+         * This 2d array has threat level as the outer key and cmeasures as the inner key. The value is 
+         * the residual risk.
+         */
+        $riskMatrix = array(
+            'HIGH' => array(
+                'LOW' => 'HIGH',
+                'MODERATE' => 'MODERATE',
+                'HIGH' => 'LOW'
+            ),
+            'MODERATE' => array(
+                'LOW' => 'MODERATE',
+                'MODERATE' => 'MODERATE',
+                'HIGH' => 'LOW'
+            ),
+            'LOW' => array(
+                'LOW' => 'LOW',
+                'MODERATE' => 'LOW',
+                'HIGH' => 'LOW'
+            ),
+        );
+
+        if (isset($riskMatrix[$threatLevel][$countermeasuresEffectiveness])) {
+            return $riskMatrix[$threatLevel][$countermeasuresEffectiveness];
+        } else {
+            $message = "Invalid threat level ($threatLevel) or countermeasures effectiveness "
+                     . " ($countermeasuresEffectiveness).";
+
+            throw new Fisma_Zend_Exception($message);
+        }
     }
 
     /**
@@ -292,6 +351,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 break;
         }
         $this->_updateNextDueDate();
+        
+        $this->updateDenormalizedStatus();
+
         $this->save();
     }
 
@@ -320,6 +382,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $evidence->Finding  = $this;
         $evidence->User     = $user;
         $this->Evidence[]   = $evidence;
+
+        $this->updateDenormalizedStatus();
 
         $this->getAuditLog()->write('Upload evidence: ' . $fileName);
         $this->save();
@@ -513,6 +577,18 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
     
     /**
+     * Update the residual risk when countermeasures effectiveness changes
+     * 
+     * @param string $value
+     */
+    public function setCountermeasuresEffectiveness($value)
+    {
+        $this->_set('countermeasuresEffectiveness', $value);
+
+        $this->residualRisk = $this->calculateResidualRisk($this->threatLevel, $this->countermeasuresEffectiveness);
+    }
+    
+    /**
      * Logic for updating the current expected completion date
      * 
      * @param string $value The specified value of current ECD to set
@@ -596,6 +672,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         // Update the value
         $this->_set('status', $value);
         
+        $this->updateDenormalizedStatus();
+        
         // Next due date is always affected by status changes
         $this->_updateNextDueDate();
     }
@@ -614,6 +692,18 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         }
         
         $this->_set('type', $value);
+    }
+
+    /**
+     * Update the residual risk when threat level changes
+     * 
+     * @param string $value
+     */
+    public function setThreatLevel($value)
+    {
+        $this->_set('threatLevel', $value);
+
+        $this->residualRisk = $this->calculateResidualRisk($this->threatLevel, $this->countermeasuresEffectiveness);
     }
     
     /**
@@ -682,5 +772,18 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     {
         $oldValues = $this->getModified(true);
         return ($this['deleted_at'] && !array_key_exists('deleted_at', $oldValues));
+    }
+    
+    /**
+     * Update the denormalized status field, which is a string field that contains the logical value for the status
+     * as derived from the actual status field and the currentEvaluationId
+     */
+    public function updateDenormalizedStatus()
+    {
+        if ($this->status == 'MSA' || $this->status == 'EA') {
+            $this->denormalizedStatus = $this->CurrentEvaluation->nickname;
+        } else {
+            $this->denormalizedStatus = $this->status;
+        }
     }
 }
