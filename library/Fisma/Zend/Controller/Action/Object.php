@@ -502,7 +502,19 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchForm = $this->getSearchForm();
         $searchForm->getElement('modelName')->setValue($this->_modelName);
         $this->view->searchForm = $searchForm;
-        $this->view->searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
+        
+        $searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
+        $this->view->searchMoreOptionsForm = $searchMoreOptionsForm;
+        
+        // If there is an advanced parameter, switch the form default from simple to advanced.
+        if ($this->getRequest()->getParam('advanced')) {
+            $searchForm->getElement('searchType')->setValue('advanced');
+            $searchForm->getElement('keywords')->setAttrib('style', 'visibility: hidden;');
+            
+            $searchMoreOptionsForm->getElement('advanced')->setAttrib('checked', 'true');
+            
+            $searchResultsTable->setDeferData(true);
+        }
 
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();

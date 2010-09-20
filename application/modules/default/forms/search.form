@@ -8,6 +8,7 @@
 [search]
 
 attribs.onsubmit = "Fisma.Search.handleSearchEvent(this); return false;"
+attribs.id = searchForm
 
 elements.searchType.type = "hidden"
 elements.searchType.options.value = "simple"

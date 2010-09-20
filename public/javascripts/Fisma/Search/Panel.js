@@ -128,6 +128,17 @@ Fisma.Search.Panel.prototype = {
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
             }
+            
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+            Fisma.Search.onSetTable(function () {
+                var searchForm = document.getElementById('searchForm');
+                
+                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
+                // event in the dispatch queue)
+                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
+            });
         } else {
             // If not default query is specified, then just show 1 default criterion
             var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);

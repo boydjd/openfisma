@@ -25,11 +25,14 @@ Fisma.Search = function() {
     return {
 
         /**
-         * A registry (..kind of..) for YUI data tables
-         *
-         * Keys are names of YUI data tables and values are references to those actual tables
+         * A reference to the YUI data table which is used for displaying search results
          */
-        yuiDataTables : {},
+        yuiDataTable : null,
+        
+        /**
+         * A callback function which is called when the YUI data table reference is set
+         */
+        onSetTableCallback : null,
 
         /**
          * True if the test configuration process is currently running
@@ -114,7 +117,7 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent : function (form) {
-            var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
+            var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : dataTable.onDataReturnReplaceRows,
@@ -179,7 +182,7 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTables['searchResultsTable'];
+            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -259,7 +262,7 @@ Fisma.Search = function() {
                         fn : function (event, columnKey) {
                             this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
 
-                            var table = Fisma.Search.yuiDataTables['searchResultsTable'];
+                            var table = Fisma.Search.yuiDataTable;
                             var column = table.getColumn(columnKey);
 
                             if (this.get('checked')) {
@@ -318,7 +321,7 @@ Fisma.Search = function() {
          * @param table YUI Table
          */
         saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTables['searchResultsTable'];
+            var table = Fisma.Search.yuiDataTable;
             var columnKeys = table.getColumnSet().keys;
 
             // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
@@ -378,6 +381,26 @@ Fisma.Search = function() {
                     }
                 }
             );
+        },
+        
+        /**
+         * A method to add a YUI table to the "registry" that this object keeps track of
+         * 
+         * @var table A YUI table
+         */
+        setTable : function (table) {
+            this.yuiDataTable = table;
+            
+            if (this.onSetTableCallback) {
+                this.onSetTableCallback();
+            }
+        },
+        
+        /**
+         * Set a callback function to call when the YUI table gets set (see setTable)
+         */
+        onSetTable : function(callback) {
+            this.onSetTableCallback = callback;
         }
     }
 }();
