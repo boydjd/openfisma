@@ -4,6 +4,7 @@ DocumentType:
     columns:
         name: 
             type: string(255)
+            unique: true
             extra:
                 logicalName: Document Name
                 searchIndex: unstored
