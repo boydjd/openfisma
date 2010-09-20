@@ -494,7 +494,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             $currentColumn++;
 
-            $column = new Fisma_Yui_DataTable_Column($label, $sortable, null, $fieldName, !$visible);
+            $column = new Fisma_Yui_DataTable_Column($label, $sortable, null, null, $fieldName, !$visible);
 
             $searchResultsTable->addColumn($column);
         }

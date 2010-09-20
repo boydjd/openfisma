@@ -65,8 +65,6 @@ Fisma.Search.Panel = function (searchableFields, pathname) {
                 
                 pathTokens.splice(0, start + 1);
                 
-                pathTokens = pathTokens.map(escape);
-                
                 this.defaultQueryTokens = pathTokens;
                 
                 break;

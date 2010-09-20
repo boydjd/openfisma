@@ -274,6 +274,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                     $reportColumn->getName(), 
                     $reportColumn->isSortable(), 
                     $reportColumn->getFormatter(),
+                    $reportColumn->getFormatterParameters(),
                     null,
                     $reportColumn->isHidden()
                 );

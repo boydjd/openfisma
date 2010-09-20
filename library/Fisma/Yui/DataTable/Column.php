@@ -52,6 +52,13 @@ class Fisma_Yui_DataTable_Column
     private $_formatter;
 
     /**
+     * An array of parameters passed to the formatter function
+     *
+     * @var array
+     */
+    private $_formatterParameters;
+
+    /**
      * A javascript-friendly name for this column. If not specified, this is automatically derived from the _label.
      * 
      * @var string
@@ -74,11 +81,17 @@ class Fisma_Yui_DataTable_Column
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      * @param bool $hidden Whether column should be hidden
      */
-    public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false)
+    public function __construct($label, 
+                                $sortable, 
+                                $formatter = null, 
+                                $formatterParams = null, 
+                                $name = null, 
+                                $hidden = false)
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
         $this->_formatter = $formatter;
+        $this->_formatterParameters = $formatterParams;
         $this->_hidden = $hidden;
         
         if (is_null($name)) {
@@ -114,6 +127,16 @@ class Fisma_Yui_DataTable_Column
     public function getFormatter()
     {
         return $this->_formatter;
+    }
+
+    /**
+     * Accessor for $_formatterParameters
+     *
+     * @return string
+     */
+    public function getFormatterParameters()
+    {
+        return $this->_formatterParameters;
     }
 
     /**
