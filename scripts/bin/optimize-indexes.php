@@ -106,7 +106,6 @@ class OptimizeIndexes
         );
         Fisma::setAppConfig($application->getOptions());
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        $application->bootstrap();
 
         Fisma::connectDb();
         Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);

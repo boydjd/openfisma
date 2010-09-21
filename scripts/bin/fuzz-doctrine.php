@@ -97,7 +97,6 @@ try {
     );
     Fisma::setAppConfig($application->getOptions());
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-    $application->bootstrap();
 
     // Script does not run in production mode, just to be safe
     if (!Fisma::debug()) {
