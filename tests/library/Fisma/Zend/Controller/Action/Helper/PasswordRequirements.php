@@ -41,15 +41,14 @@ class Test_Library_Fisma_Zend_Controller_Action_Helper_PasswordRequirements exte
     }
 
     /**
-     * testMaximumRequirements 
+     * testAllRequirements 
      * 
      * @access public
      * @return void
      */
-    public function testMaximumRequirements()
+    public function testAllRequirements()
     {
         Fisma::configuration()->setConfig('pass_min_length', 1);
-        Fisma::configuration()->setConfig('pass_max_length', 10);
         Fisma::configuration()->setConfig('pass_uppercase', 1);
         Fisma::configuration()->setConfig('pass_lowercase', 1);
         Fisma::configuration()->setConfig('pass_numerical', 1);
@@ -61,15 +60,14 @@ class Test_Library_Fisma_Zend_Controller_Action_Helper_PasswordRequirements exte
     }
 
     /**
-     * testMinAndMaxOnly 
+     * testMinOnly 
      * 
      * @access public
      * @return void
      */
-    public function testMinAndMaxOnly()
+    public function testMinOnly()
     {
         Fisma::configuration()->setConfig('pass_min_length', 1);
-        Fisma::configuration()->setConfig('pass_max_length', 10);
 
         $passwordRequirements = $this->_getPasswordRequirements();
 
