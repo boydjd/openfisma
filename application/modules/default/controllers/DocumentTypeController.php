@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,7 +19,7 @@
 /**
  * CRUD behavior for document type
  * 
- * @author     Ben Zheng <benzheng@users.sourceforge.net>
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller

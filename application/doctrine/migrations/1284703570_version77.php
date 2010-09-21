@@ -19,8 +19,8 @@
 /**
  * Insert CRUD document type privileges, 'required' column and relative events
  * 
- * @author     Ben Zheng <benzheng@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  * @version    $Id$
@@ -32,96 +32,94 @@ class Version77 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
+        // Add unique for name column
+        $definition = array(
+            'fields' => array(
+                'name' => array()
+            ),
+            'unique' => true
+        );
 
-        $conn->beginTransaction();
+        $this->createConstraint('document_type', 'constraint_name', $definition);
 
-        try {
-            // Add required column for document type
-            $options = array(
-                'notblank' => true,
-                'comment' => 'Indicates whether the document type is required or not',
-                'default' => '0',
-                'extra' => array(
-                  'notify' => '1'
-                )
-            );
-            $this->addColumn('document_type', 'required', 'boolean', '25', $options);
+        // Add required column for document type
+        $options = array(
+            'notblank' => true,
+            'comment' => 'Indicates whether the document type is required or not',
+            'default' => '0',
+            'extra' => array(
+              'notify' => '1'
+            )
+        );
+        $this->addColumn('document_type', 'required', 'boolean', '25', $options);
 
-            $privileges = new Doctrine_Collection('Privilege');
+        $privileges = new Doctrine_Collection('Privilege');
 
-            $docTypeCreate = new Privilege();
-            $docTypeCreate->resource = 'document_type';
-            $docTypeCreate->action = 'create';
-            $docTypeCreate->description = 'Create Document Type';
-            $privileges[] = $docTypeCreate;
+        $docTypeCreate = new Privilege();
+        $docTypeCreate->resource = 'document_type';
+        $docTypeCreate->action = 'create';
+        $docTypeCreate->description = 'Create Document Type';
+        $privileges[] = $docTypeCreate;
 
-            $docTypeRead = new Privilege();
-            $docTypeRead->resource = 'document_type';
-            $docTypeRead->action = 'read';
-            $docTypeRead->description = 'View Document Type';
-            $privileges[] = $docTypeRead;
+        $docTypeRead = new Privilege();
+        $docTypeRead->resource = 'document_type';
+        $docTypeRead->action = 'read';
+        $docTypeRead->description = 'View Document Type';
+        $privileges[] = $docTypeRead;
 
-            $docTypeUpdate = new Privilege();
-            $docTypeUpdate->resource = 'document_type';
-            $docTypeUpdate->action = 'update';
-            $docTypeUpdate->description = 'Edit Document Type';
-            $privileges[] = $docTypeUpdate;
+        $docTypeUpdate = new Privilege();
+        $docTypeUpdate->resource = 'document_type';
+        $docTypeUpdate->action = 'update';
+        $docTypeUpdate->description = 'Edit Document Type';
+        $privileges[] = $docTypeUpdate;
 
-            $docTypeDelete = new Privilege();
-            $docTypeDelete->resource = 'document_type';
-            $docTypeDelete->action = 'delete';
-            $docTypeDelete->description = 'Delete Document Type';
-            $privileges[] = $docTypeDelete;
+        $docTypeDelete = new Privilege();
+        $docTypeDelete->resource = 'document_type';
+        $docTypeDelete->action = 'delete';
+        $docTypeDelete->description = 'Delete Document Type';
+        $privileges[] = $docTypeDelete;
 
-            $privileges->save();
+        $privileges->save();
 
-            // Assign CRUD for document type privileges to admin role
-            $adminRole = Doctrine_Query::create()
-                         ->from('Role r')
-                         ->where('r.nickname = ?', 'ADMIN')
-                         ->fetchOne();
+        // Assign CRUD for document type privileges to admin role
+        $adminRole = Doctrine_Query::create()
+                     ->from('Role r')
+                     ->where('r.nickname = ?', 'ADMIN')
+                     ->fetchOne();
 
-            foreach ($privileges as $privilege) {
-                $adminRole->Privileges[] = $privilege;
-            }
-
-            $adminRole->save();
-
-            // Add event
-            $events = new Doctrine_Collection('Event');
-
-            $adminNoticationPrivilege = Doctrine_Query::create()
-                                        ->from('Privilege p')
-                                        ->where('p.resource = ? AND p.action = ?', array('notification', 'admin'))
-                                        ->fetchOne();
-
-            $docTypeCreatedEvent = new Event();
-            $docTypeCreatedEvent->name = 'DOCUMENT_TYPE_CREATED';
-            $docTypeCreatedEvent->description = 'Document Type Created';
-            $docTypeCreatedEvent->Privilege = $adminNoticationPrivilege;
-            $events[] = $docTypeCreatedEvent;
-
-            $docTypeUpdatedEvent = new Event();
-            $docTypeUpdatedEvent->name = 'DOCUMENT_TYPE_UPDATED';
-            $docTypeUpdatedEvent->description = 'Document Type Modified';
-            $docTypeUpdatedEvent->Privilege = $adminNoticationPrivilege;
-            $events[] = $docTypeUpdatedEvent;
-
-            $docTypeDeletedEvent = new Event();
-            $docTypeDeletedEvent->name = 'DOCUMENT_TYPE_DELETED';
-            $docTypeDeletedEvent->description = 'Document Type Deleted';
-            $docTypeDeletedEvent->Privilege = $adminNoticationPrivilege;
-            $events[] = $docTypeDeletedEvent;
-
-            $events->save();
-
-            $conn->commit();
-        } catch (Doctrine_Exception $e) {
-            $conn->rollback();
-
-            throw $e;
+        foreach ($privileges as $privilege) {
+            $adminRole->Privileges[] = $privilege;
         }
+
+        $adminRole->save();
+
+        // Add event
+        $events = new Doctrine_Collection('Event');
+
+        $adminNoticationPrivilege = Doctrine_Query::create()
+                                    ->from('Privilege p')
+                                    ->where('p.resource = ? AND p.action = ?', array('notification', 'admin'))
+                                    ->fetchOne();
+
+        $docTypeCreatedEvent = new Event();
+        $docTypeCreatedEvent->name = 'DOCUMENT_TYPE_CREATED';
+        $docTypeCreatedEvent->description = 'Document Type Created';
+        $docTypeCreatedEvent->Privilege = $adminNoticationPrivilege;
+        $events[] = $docTypeCreatedEvent;
+
+        $docTypeUpdatedEvent = new Event();
+        $docTypeUpdatedEvent->name = 'DOCUMENT_TYPE_UPDATED';
+        $docTypeUpdatedEvent->description = 'Document Type Modified';
+        $docTypeUpdatedEvent->Privilege = $adminNoticationPrivilege;
+        $events[] = $docTypeUpdatedEvent;
+
+        $docTypeDeletedEvent = new Event();
+        $docTypeDeletedEvent->name = 'DOCUMENT_TYPE_DELETED';
+        $docTypeDeletedEvent->description = 'Document Type Deleted';
+        $docTypeDeletedEvent->Privilege = $adminNoticationPrivilege;
+        $events[] = $docTypeDeletedEvent;
+
+        $events->save();
     }
 
     /**
@@ -129,61 +127,52 @@ class Version77 extends Doctrine_Migration_Base
      */
     public function down()
     {
-        $conn = Doctrine_Manager::connection();
+        // Remove contraint name
+        $this->dropConstraint('document_type', 'constraint_name');
+        
+        // Remove column
+        $this->removeColumn('document_type', 'required');
 
-        $conn->beginTransaction();
+        // Delete privilege
+        $privilegeQuery = Doctrine_Query::create()
+                          ->from('Privilege')
+                          ->where('resource = ?', 'document_type')
+                          ->andWhereIn('action', array('create', 'read', 'update', 'delete'));
 
-        try {
-            // Remove column
-            $this->removeColumn('document_type', 'required');
+        $docTypePrivileges = $privilegeQuery->execute();
 
-            // Delete privilege
-            $privilegeQuery = Doctrine_Query::create()
-                              ->from('Privilege')
-                              ->where('resource = ?', 'document_type')
-                              ->andWhereIn('action', array('create', 'read', 'update', 'delete'));
+        // Delete any associations those privileges have to roles
+        $deleteRolePrivilegesQuery = Doctrine_Query::create()
+                                     ->delete('RolePrivilege')
+                                     ->whereIn('privilegeid', $docTypePrivileges->getPrimaryKeys());
 
-            $docTypePrivileges = $privilegeQuery->execute();
+        $deleteRolePrivilegesQuery->execute();
 
-            // Delete any associations those privileges have to roles
-            $deleteRolePrivilegesQuery = Doctrine_Query::create()
-                                         ->delete('RolePrivilege')
-                                         ->whereIn('privilegeid', $docTypePrivileges->getPrimaryKeys());
+        // Delete the privileges themselves
+        $docTypePrivileges->delete();
 
-            $deleteRolePrivilegesQuery->execute();
+        // Delete events
+        $events = Doctrine_Query::create()
+                  ->from('Event')
+                  ->whereIn('name',
+                            array('DOCUMENT_TYPE_CREATED', 'DOCUMENT_TYPE_UPDATED', 'DOCUMENT_TYPE_DELETED'))
+                  ->execute();
 
-            // Delete the privileges themselves
-            $docTypePrivileges->delete();
+        // Delete any associations those events have to users
+        $deleteUserEventsQuery = Doctrine_Query::create()
+                                ->delete('UserEvent')
+                                ->whereIn('eventid', $events->getPrimaryKeys());
 
-            // Delete events
-            $events = Doctrine_Query::create()
-                      ->from('Event')
-                      ->whereIn('name',
-                                array('DOCUMENT_TYPE_CREATED', 'DOCUMENT_TYPE_UPDATED', 'DOCUMENT_TYPE_DELETED'))
-                      ->execute();
+        $deleteUserEventsQuery->execute();
 
-            // Delete any associations those events have to users
-            $deleteUserEventsQuery = Doctrine_Query::create()
-                                    ->delete('UserEvent')
-                                    ->whereIn('eventid', $events->getPrimaryKeys());
+        // Delete any associations those events have to notifications
+        $deleteNotificationsQuery = Doctrine_Query::create()
+                                   ->delete('Notification')
+                                   ->whereIn('eventid', $events->getPrimaryKeys());
 
-            $deleteUserEventsQuery->execute();
+        $deleteNotificationsQuery->execute();
 
-            // Delete any associations those events have to notifications
-            $deleteNotificationsQuery = Doctrine_Query::create()
-                                       ->delete('Notification')
-                                       ->whereIn('eventid', $events->getPrimaryKeys());
-
-            $deleteNotificationsQuery->execute();
-
-            // Delete the events themselves
-            $events->delete();
-
-            $conn->commit();
-        } catch (Doctrine_Exception $e) {
-            $conn->rollback();
-
-            throw $e;
-        }
+        // Delete the events themselves
+        $events->delete();
     }
 }

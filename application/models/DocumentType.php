@@ -38,7 +38,6 @@ class DocumentType extends BaseDocumentType
     {
         if (count($this->Uploads) > 0) {
             throw new Fisma_Zend_Exception_User(
-                /*@todo english*/
                 'This document type cannot be deleted because it is already associated with '
                 . 'one or more system documents.'
             );
