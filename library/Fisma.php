@@ -220,31 +220,12 @@ class Fisma
         // Set the initialized flag
         self::$_initialized = true;
         
-        // Load the system configuration
-        // PHP configuration
-        $phpOptions = self::$_appConf['php'];
-        foreach ($phpOptions as $param => $value) {
-            ini_set($param, $value);
-        }
-    
-        // Xdebug configuration
-        if (isset(self::$_appConf->xdebug)) {
-            foreach (self::$_appConf->xdebug as $param => $value) {
-                ini_set("xdebug.$param", $value);
-            }
-        }
-
         // Timezone configuration
         if (isset(self::$_appConf['timezone'])) {
             ini_set("date.timezone", self::$_appConf['timezone']);
         } else {
             ini_set("date.timezone", "America/New_York");
         }
-
-        // Log all PHP errors
-        ini_set('error_reporting', E_ALL | E_STRICT);
-        ini_set('log_errors', TRUE);
-        ini_set('error_log', self::$_rootPath . '/data/logs/php.log');
 
         // Session configuration
         $sessionOptions = self::$_appConf['session'];
