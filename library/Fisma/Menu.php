@@ -168,6 +168,13 @@ class Fisma_Menu
                     )
                 );
 
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem(
+                        'Documentation Compliance', 
+                        '/organization-report/documentation-compliance/format/html'
+                    )
+                );
+
                 $systemInventoryMenu->add($systemInventoryReportsMenu);
             }
 

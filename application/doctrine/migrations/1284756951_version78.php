@@ -17,22 +17,28 @@
  */
 
 /**
- * CRUD behavior for document type
+ * Remove pass_max_length column from configuration
  * 
- * @author     Ben Zheng <ben.zheng@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Controller
- * @version    $Id$
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class DocumentTypeController extends Fisma_Zend_Controller_Action_Object
+class Version78 extends Doctrine_Migration_Base
 {
     /**
-     * The main name of the model.
-     * 
-     * This model is the main subject which the controller operates on.
-     * 
-     * @var string
+     * Remove pass_max_length column
      */
-    protected $_modelName = 'DocumentType';
+    public function up()
+    {
+        $this->removeColumn('configuration', 'pass_max_length');
+    }
+
+    /**
+     * No reverse migration
+     */
+    public function down()
+    {
+        throw new Doctrine_Migration_IrreversibleMigrationException();
+    }
 }

@@ -65,15 +65,20 @@ class ECDNotifier
      */
     static function run() 
     {
+        $expirationDates = array(
+            date('Y-m-d'),
+            date('Y-m-d', time() + 7 * 3600 * 24),
+            date('Y-m-d', time() + 14 * 3600 * 24),
+            date('Y-m-d', time() + 21 * 3600 * 24)
+        );
+
         // Get all findings which expire today, or 7/14/21 days from now
         $query = Doctrine_Query::create()
                     ->select('f.id, f.currentEcd, f.responsibleOrganizationId')
                     ->from('Finding f')
                     ->where('f.status != ?', 'CLOSED')
-                    ->addWhere('f.currentEcd = ?', date('Y-m-d'))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 7 * 3600 * 24))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 14 * 3600 * 24))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 21 * 3600 * 24));
+                    ->andWhereIn('f.currentEcd', $expirationDates);
+
         $expiringFindings = $query->execute();
         // Now iterate through the findings and create the appropriate
         // notifications

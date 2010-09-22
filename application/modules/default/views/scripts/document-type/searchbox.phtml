@@ -17,15 +17,17 @@
         ?>
     </div>
     <div class="right">
-        <form name="query" method="post" action="/document-type/list" style="display:inline">
-        <b><label for="keywords">Search:</label>&nbsp;</b>
-        <input id="keywords" 
-               name="keywords" 
-               value="<?php echo $this->escape($this->keywords);?>" 
-               title="Input your query value" 
-               size="20" 
-               maxlength="40" 
-               type="text">
+        <form class="searchForm" name="query" method="post" action="/document-type/list">
+        <span class="searchField">
+            <b><label for="keywords">Search:</label>&nbsp;</b>
+            <input id="keywords" 
+                   name="keywords" 
+                   value="<?php echo $this->escape($this->keywords);?>" 
+                   title="Input your query value" 
+                   size="20" 
+                   maxlength="40" 
+                   type="text">
+        </span>
         <span id="searchContainer"></span>
         <script type='text/javascript'>
            var save = new YAHOO.widget.Button({
