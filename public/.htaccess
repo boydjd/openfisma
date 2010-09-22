@@ -2,8 +2,6 @@
 # privileges for this htaccess file to work, this is set in the
 # apache httpd.conf file.
 
-SetEnv APPLICATION_ENV development
-
 RewriteEngine On
 
 # This rewrite rule allow us to version static files
