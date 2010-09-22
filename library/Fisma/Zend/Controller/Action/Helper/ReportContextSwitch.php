@@ -228,69 +228,74 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      */
     public function renderHtml()
     {
-        if (!$this->_isRendered) {
-            // Ensure that a report object has been provided
-            if (is_null($this->_report)) {
-                throw new Fisma_Zend_Exception('Report context switch has no report object');
-            }
+        // postDispatch callbacks can't throw exceptions
+        try {
+            if (!$this->_isRendered) {
+                // Ensure that a report object has been provided
+                if (is_null($this->_report)) {
+                    throw new Fisma_Zend_Exception('Report context switch has no report object');
+                }
                 
-            // Create a view and render it to the response body
-            $view = Zend_Layout::getMvcInstance()->getView();
+                // Create a view and render it to the response body
+                $view = Zend_Layout::getMvcInstance()->getView();
 
-            /*
-             * Create "Export to Excel" and "Export to PDF" buttons conditionally on whether the action has those 
-             * contexts.
-             */
-            if ($this->hasActionContext($this->getRequest()->getActionName(), 'xls')) {
-                $view->exportXlsButton = new Fisma_Yui_Form_Button_Link(
-                    'exportXls',
-                    array(
-                        'value' => 'Export Excel',
-                        'href' => $this->_getFormatUrl('xls'),
-                        'imageSrc' => '/images/xls.gif'
-                    )
-                );                
-            }
+                /*
+                 * Create "Export to Excel" and "Export to PDF" buttons conditionally on whether the action has those 
+                 * contexts.
+                 */
+                if ($this->hasActionContext($this->getRequest()->getActionName(), 'xls')) {
+                    $view->exportXlsButton = new Fisma_Yui_Form_Button_Link(
+                        'exportXls',
+                        array(
+                            'value' => 'Export Excel',
+                            'href' => $this->_getFormatUrl('xls'),
+                            'imageSrc' => '/images/xls.gif'
+                        )
+                    );
+                }
 
-            if ($this->hasActionContext($this->getRequest()->getActionName(), 'pdf')) {              
-                $view->exportPdfButton = new Fisma_Yui_Form_Button_Link(
-                    'exportPdf',
-                    array(
-                        'value' => 'Export PDF',
-                        'href' => $this->_getFormatUrl('pdf'),
-                        'imageSrc' => '/images/pdf.gif'
-                    )
-                );
-            }
+                if ($this->hasActionContext($this->getRequest()->getActionName(), 'pdf')) {              
+                    $view->exportPdfButton = new Fisma_Yui_Form_Button_Link(
+                        'exportPdf',
+                        array(
+                            'value' => 'Export PDF',
+                            'href' => $this->_getFormatUrl('pdf'),
+                            'imageSrc' => '/images/pdf.gif'
+                        )
+                    );
+                }
         
-            $view->title = $this->_report->getTitle();
+                $view->title = $this->_report->getTitle();
 
-            $dataTable = new Fisma_Yui_DataTable_Local();
+                $dataTable = new Fisma_Yui_DataTable_Local();
 
-            $dataTable->setData($this->_report->getData());
+                $dataTable->setData($this->_report->getData());
 
-            foreach ($this->_report->getColumns() as $reportColumn) {
-                $yuiColumn = new Fisma_Yui_DataTable_Column(
-                    $reportColumn->getName(), 
-                    $reportColumn->isSortable(), 
-                    $reportColumn->getFormatter(),
-                    null,
-                    $reportColumn->isHidden()
-                );
-                
-                $dataTable->addColumn($yuiColumn);
+                foreach ($this->_report->getColumns() as $reportColumn) {
+                    $yuiColumn = new Fisma_Yui_DataTable_Column(
+                        $reportColumn->getName(), 
+                        $reportColumn->isSortable(), 
+                        $reportColumn->getFormatter(),
+                        null,
+                        $reportColumn->isHidden()
+                    );
+ 
+                    $dataTable->addColumn($yuiColumn);
+                }
+
+                $view->dataTable = $dataTable;
+ 
+                $view->partialViews = $this->_partialViews;
+
+                $view->form = $this->_toolbarForm;
+
+                $this->_getViewRenderer()->renderScript('/report/report.phtml');
+ 
+                // Prevent this from being rendered multiple times if there are multiple dispatches (e.g. action stacks)
+                $this->_isRendered = true;
             }
-
-            $view->dataTable = $dataTable;
-            
-            $view->partialViews = $this->_partialViews;
-
-            $view->form = $this->_toolbarForm;
-
-            $this->_getViewRenderer()->renderScript('/report/report.phtml');
-            
-            // Prevent this from being rendered multiple times if there are multiple dispatches (e.g. action stacks)
-            $this->_isRendered = true;
+        } catch (Exception $d) {
+            // nothing to do
         }
     }
 
