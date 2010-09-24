@@ -46,5 +46,5 @@ interface Fisma_Search_Searchable
      * 
      * @return array
      */
-//    public function getAclFields();
+    public function getAclFields();
 }
