@@ -46,8 +46,17 @@ Fisma.Search.Panel = function (searchableFields, pathname) {
         }
     );
 
-    this.searchableFields = searchableFields;
+    // Copy all visible (non-hidden) fields into this panel
+    this.searchableFields = {};
     
+    for (var index in searchableFields) {
+        var searchableField = searchableFields[index];
+
+        if (searchableField.hidden !== true) {
+            this.searchableFields[index] = searchableField;
+        }
+    }
+
     // A pathname can contain default query criteria if it contains the keyword 'advanced'
     this.defaultQueryTokens = null;
     

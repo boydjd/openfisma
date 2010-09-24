@@ -41,6 +41,15 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ), 
             'organization' => array(
                 'initiallyVisible' => true,
+                'extraCriteria' => array(
+                    // This criterion requires the lft and rgt fields of the Organization model to be indexed on finding
+                    'organizationSubtree' => array(
+                        'callback' => 'OrganizationTable::getOrganizationSubtreeLuceneQuery',
+                        'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    )
+                ),
                 'label' => 'Responsible Organization',
                 'join' => array(
                     'relation' => 'ResponsibleOrganization', 
@@ -184,7 +193,23 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 ),
                 'sortable' => true,
                 'type' => 'text'
-            )
+            ),
+            'lft' => array(
+                'hidden' => true,
+                'join' => array(
+                    'relation' => 'ResponsibleOrganization',
+                    'field' => 'lft'
+                ),
+                'type' => 'integer'
+            ),
+            'rgt' => array(
+                'hidden' => true,
+                'join' => array(
+                    'relation' => 'ResponsibleOrganization',
+                    'field' => 'rgt'
+                ),
+                'type' => 'integer'
+            ),
         );
     }
 }

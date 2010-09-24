@@ -513,7 +513,7 @@ Fisma.FindingSummary = function() {
             if (expanded) {
                 uri += '/organization/textExactMatch/' + orgName;
             } else {
-                uri += '/organization/textExactMatch/BOGUS';
+                uri += '/organization/organizationSubtree/' + orgName;
             }
 
             return uri;            

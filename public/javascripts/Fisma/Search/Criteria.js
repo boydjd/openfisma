@@ -382,6 +382,7 @@ Fisma.Search.Criteria.prototype = {
      */
     getCriteriaDefinition : function (field) {
 
+        // Some mapping between the field's declared type and its inferred type
         var tempType = field.type;
 
         if ('datetime' == tempType) {
@@ -394,7 +395,16 @@ Fisma.Search.Criteria.prototype = {
             }
         }
 
-        return Fisma.Search.CriteriaDefinition[tempType];
+        var definition = Fisma.Search.CriteriaDefinition[tempType];
+        
+        // Fields can define extra criteria that should be merged in
+        if (field.extraCriteria) {
+            for (var index in field.extraCriteria) {
+                definition[index] = field.extraCriteria[index];
+            }
+        }
+
+        return definition;
     },
 
     /**

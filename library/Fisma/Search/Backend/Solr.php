@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Search engine backend based on the PECL solr extension
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,14 +29,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 {
     /**
      * Client object is used for communicating with Solr server
-     * 
+     *
      * @var SolrClient
      */
     private $_client;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param string $hostname Hostname or IP address where Solr's servlet container is running
      * @param int $port The port that Solr's servlet container is listening on
      * @param string $path The path within the servlet container that Solr is running on
@@ -48,7 +48,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             'port' => $port,
             'path' => $path
         );
-        
+
         $this->_client = new SolrClient($clientConfig);
     }
 
@@ -64,9 +64,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
     /**
      * Delete all documents of the specified type in the index
-     * 
-     * "Type" refers to a model, such as Asset, Finding, Incident, etc. 
-     * 
+     *
+     * "Type" refers to a model, such as Asset, Finding, Incident, etc.
+     *
      * @param string $type
      */
     public function deleteByType($type)
@@ -75,64 +75,64 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $this->_client->commit();
     }
-    
+
     /**
      * Delete the specified object from the index
-     * 
+     *
      * The $object needs to belong to a table which implements Fisma_Search_Searchable
-     * 
+     *
      * @param Fisma_Doctrine_Record $object
      */
     public function deleteObject($object)
     {
         $luceneDocumentId = get_class($object) . $object->id;
-        
+
         $this->_client->deleteById($luceneDocumentId);
 
         $this->_client->commit();
-        
+
     }
 
     /**
      * Index an array of objects
-     * 
+     *
      * @param string $type The class of the object
      * @param array $collection
      */
     public function indexCollection($type, $collection)
     {
         $documents = $this->_convertCollectionToDocumentArray($type, $collection);
-        
+
         $this->_client->addDocuments($documents);
 
         $this->_client->commit();
     }
-    
+
     /**
      * Add the specified object (in array format) to the search engine index
-     * 
+     *
      * This will overwrite any existing object with the same luceneDocumentId
-     * 
+     *
      * @param string $type The class of the object
      * @param array $object
      */
     public function indexObject($type, $object)
     {
         $document = $this->_convertObjectToDocument($type, $object);
-        
+
         $this->_client->addDocument($document);
-        
+
         $this->_client->commit();
     }
 
     /**
      * Returns true if the specified column is sortable
-     * 
+     *
      * This is defined in the search abstraction layer since ultimately the sorting capability is determined by the
      * search engine implementation.
-     * 
+     *
      * In Solr, sorting is only available for stored, un-analyzed, single-valued fields.
-     * 
+     *
      * @param string $type The class containing the column
      * @param string $columnName
      * @return bool
@@ -140,7 +140,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     public function isColumnSortable($type, $columnName)
     {
         $table = Doctrine::getTable($type);
-        
+
         if (!($table instanceof Fisma_Search_Searchable)) {
             throw new Fisma_Search_Exception("This table is not searchable: $type");
         }
@@ -160,9 +160,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
     /**
      * Simple search: search all fields for the specified keyword
-     * 
+     *
      * If keyword is null, then this is just a listing of all documents of a specific type
-     * 
+     *
      * @param string $type Name of model index to search
      * @param string $keyword
      * @param string $sortColumn Name of column to sort on
@@ -177,11 +177,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $table = Doctrine::getTable($type);
         $searchableFields = $table->getSearchableFields();
-        
+
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
         }
-        
+
         $sortColumnDefinition = $searchableFields[$sortColumn];
 
         // Text columns have different sorting rules (see design document)
@@ -211,7 +211,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                   ->setHighlightSimplePre('***')
                   ->setHighlightSimplePost('***')
                   ->addFilterQuery('luceneDocumentType:' . $type);
-                  
+
             // Tokenize keyword on spaces and escape all tokens
             $keywordTokens = split(' ', $trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
@@ -226,13 +226,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $table = Doctrine::getTable($type);
 
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
-            
+
             $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
 
             $query->addField($documentFieldName);
-            
+
             // Add keyword terms and highlighting to all non-date fields
-            if (!empty($trimmedKeyword) && 
+            if (!empty($trimmedKeyword) &&
                 'date' != $fieldDefinition['type'] &&
                 'datetime' != $fieldDefinition['type']) {
 
@@ -242,13 +242,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 }
 
                 foreach ($keywordTokens as $keywordToken) {
-                    
+
                     // Don't search for strings in integer fields (Solr emits an error)
                     if ( !('integer' == $fieldDefinition['type'] && !is_numeric($keywordToken)) ) {
                         $searchTerms[] = $documentFieldName . ':' . $keywordToken;
                     }
                 }
-            }            
+            }
         }
 
         if (!empty($trimmedKeyword) > 0) {
@@ -256,14 +256,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $query->setQuery(implode(' OR ', $searchTerms));
         }
 
-        $response = $this->_client->query($query)->getResponse(); 
+        $response = $this->_client->query($query)->getResponse();
 
         return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
     /**
      * Advanced search: search based on a list of specific field criteria
-     * 
+     *
      * @param string $type Name of model index to search
      * @param Fisma_Search_Criteria $criteria
      * @param string $sortColumn Name of column to sort on
@@ -278,11 +278,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $table = Doctrine::getTable($type);
         $searchableFields = $table->getSearchableFields();
-        
+
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
         }
-        
+
         $sortColumnDefinition = $searchableFields[$sortColumn];
 
         // Text columns have different sorting rules (see design document)
@@ -315,14 +315,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         // Add the fields which should be returned in the result set and indicate which should be highlighted
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
-            
+
             // Some twiddling to convert Doctrine's field names to Solr's field names
             $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
 
             $query->addField($documentFieldName);
-            
+
             // Highlighting doesn't work for date or integerfields in Solr 4.1
-            if ('date' != $fieldDefinition['type'] && 
+            if ('date' != $fieldDefinition['type'] &&
                 'datetime' != $fieldDefinition['type'] &&
                 'integer' != $fieldDefinition['type']) {
 
@@ -345,7 +345,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $operands = array_map('addslashes', $criterion->getOperands());
 
-            switch ($criterion->getOperator()) {
+            $operator = $criterion->getOperator();
+
+            switch ($operator) {
                 // These cases intentionally fall through
 
                 case 'dateAfter':
@@ -413,33 +415,52 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $searchTerms[] = "$fieldName:\"{$operands[0]}\"";
                     break;
 
-                // The following cases intentionally fall through                    
+                // The following cases intentionally fall through
                 case 'textDoesNotContain':
                 case 'enumIsNot':
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
                     break;
-                
+
                 // Exact text match is a little different. It uses a separate field and it only works for sortable
                 // fields. Because the sort field is unanalyzed, this is a case sensitive operator.
                 case 'textExactMatch':
                     $searchTerms[] = "{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
                     break;
-                
+
                 default:
-                    throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
+                    // Fields can define custom criteria (that wouldn't match any of the above cases)
+                    if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
+                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['callback'];
+
+                        $customTerms = call_user_func_array($callback, $operands);
+
+                        if ($customTerms === false) {
+                            throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
+                        }
+
+                        foreach ($customTerms as $termName => $termExpression) {
+                            $fieldType = $searchableFields[$termName]['type'];
+
+                            $searchTerms[] = "{$termName}_{$fieldType}:$termExpression";
+                        }
+                    } else {
+                        throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
+                    }
             }
         }
 
-        $query->setQuery(implode($searchTerms, ' AND '));
+        $queryString = implode($searchTerms, ' AND ');
 
-        $response = $this->_client->query($query)->getResponse(); 
+        $query->setQuery($queryString);
+
+        $response = $this->_client->query($query)->getResponse();
 
         return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
     /**
      * Validate that PECL extension is installed and SOLR server responds to a Solr ping request (not an ICMP)
-     * 
+     *
      * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
      */
     public function validateConfiguration()
@@ -453,13 +474,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         } catch (SolrClientException $e) {
             return 'Not able to reach Solr server: ' . $e->getMessage();
         }
-        
+
         return true;
     }
 
     /**
      * Convert an array of objects into an array of indexable Solr documents
-     * 
+     *
      * @param array $collection
      * @return array Array of SolrInputDocument
      */
@@ -473,12 +494,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         return $documents;
     }
-    
+
     /**
      * Convert an object (in array format) into an indexable Solr document
-     * 
+     *
      * The object's table must also implement Fisma_Search_Searchable so that this method can get its search metadata.
-     * 
+     *
      * @param string $type The class of the object
      * @param array $object
      * @return SolrInputDocument
@@ -521,11 +542,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             if (!isset($searchFieldDefinition['join'])) {
                 $rawValue = $object[$table->getFieldName($doctrineFieldName)];
             } else {
-                // Handle nested relations                
+                // Handle nested relations
                 $relationParts = explode('.', $searchFieldDefinition['join']['relation']);
-                
+
                 $relatedObject = $object;
-                
+
                 foreach ($relationParts as $relationPart) {
                     $relatedObject = $relatedObject[$relationPart];
                 }
@@ -539,9 +560,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                                   $doctrineDefinition['extra']['purify']['html'];
 
             $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
-            
-            $document->addField($documentFieldName, $documentFieldValue);   
-            
+
+            $document->addField($documentFieldName, $documentFieldValue);
+
             // For sortable text columns, add a separate 'textsort' column (see design document)
             if ('text' == $searchFieldDefinition['type'] && $searchFieldDefinition['sortable']) {
                 $document->addField($doctrineFieldName . '_textsort', $documentFieldValue);
@@ -550,13 +571,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         return $document;
     }
-    
+
     /**
      * Converts a Solr query result into the system's standard result format
-     * 
+     *
      * Solr does some weird stuff with object storage, so this method is a little hard to understand. var_dump'ing
      * each variable will help to sort through the structure for debugging purposes.
-     * 
+     *
      * @param string $type
      * @param SolrResult $solrResult
      * @return Fisma_Search_Result
@@ -569,7 +590,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
         $highlighting = (array)$solrResult->highlighting;
-        
+
         $tableData = array();
 
         $table = Doctrine::getTable($type);
@@ -582,7 +603,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             foreach ($document as $columnName => $columnValue) {
                 $newColumnName = $this->_removeSuffixFromColumnName($columnName);
-                
+
                 if (strlen($columnValue[0]) > self::MAX_ROW_LENGTH) {
                     $shortValue = substr($columnValue[0], 0, self::MAX_ROW_LENGTH);
 
@@ -606,7 +627,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
                 if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
                     $date = new Zend_Date($fieldValue, 'YYYY-MM-ddTHH:mm:ssZ');
-                    
+
                     if ('date' == $fieldDefinition['type']) {
                         $row[$fieldName] = $date->toString('YYYY-MM-dd');
                     } else {
@@ -634,7 +655,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         foreach ($tableData as &$document) {
             unset($document['luceneDocumentId']);
         }
-        
+
         // Discard the row IDs
         $tableData = array_values($tableData);
 
@@ -643,7 +664,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
     /**
      * Remove the type suffix (e.g. _text, _date, etc.) from a columnName
-     * 
+     *
      * @param string $columnName
      * @return string
      */
@@ -657,12 +678,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             return $columnName;
         }
     }
-    
+
     /**
      * Create the field value for an object based on its type and other metadata
-     * 
+     *
      * This includes transformations such as correctly formatting dates, times, and stripping HTML content
-     * 
+     *
      * @param mixed $value
      * @param string $type
      * @param bool $html True if the value contains HTML
@@ -679,22 +700,22 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         } else {
             // By default, just index the raw value
             $value = $rawValue;
-        }        
+        }
 
         return $value;
     }
 
     /**
      * Convert a database format date or date time (2010-01-01 12:00:00) to Solr's ISO-8601 UTC format
-     * 
+     *
      * @param string $date
-     * @return string 
+     * @return string
      */
     private function _convertToSolrDate($date)
     {
         // @todo set global timestamp options
         Zend_Date::setOptions(array('format_type' => 'iso'));
-        
+
         // Date fields need to be converted to UTC
         $tempDate = new Zend_Date($date, 'YYYY-MM-dd HH:mm:ss');
 
