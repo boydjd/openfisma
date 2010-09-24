@@ -99,4 +99,39 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
             )
         );
     }
+    
+    /*
+     * Get an array of system documents including system id, name and percentage
+     * 
+     * @return array
+     */
+    public function getSystemDocuments()
+    {
+        $organizationIds = CurrentUser::getInstance()
+                           ->getOrganizationsByPrivilege('organization', 'read')
+                           ->toKeyValueArray('id', 'id');
+
+        $docTypeRequiredCount = Doctrine::getTable('DocumentType')->getRequiredDocTypeCount();
+
+        // Get data for the report
+        $systemDocumentQuery = Doctrine_Query::create()
+                               ->select('s.id As id')
+                               ->addSelect('o.name AS name')
+                               ->addSelect(
+                                   "CONCAT(ROUND(SUM(IF(dt.required = true, 1, 0)) / "
+                                   . "($docTypeRequiredCount)*100, 1), '%') AS percentage"
+                               )
+                               ->from('SystemDocument sd')
+                               ->innerJoin('sd.DocumentType dt')
+                               ->innerJoin('sd.System s')
+                               ->innerJoin('s.Organization o')
+                               ->whereIn('o.id', $organizationIds)
+                               ->andWhere('o.orgType = ?', array('system'))
+                               ->andWhere('s.sdlcPhase <> ?', 'disposal')
+                               ->andWhere('dt.required = ?', true)
+                               ->groupBy('o.name')
+                               ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        return $systemDocumentQuery->execute();
+    }
 }

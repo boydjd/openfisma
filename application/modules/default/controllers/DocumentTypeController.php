@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,30 +17,22 @@
  */
 
 /**
- * DocumentType
+ * CRUD behavior for document type
  * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Model
+ * @package    Controller
  * @version    $Id$
  */
-class DocumentType extends BaseDocumentType
+class DocumentTypeController extends Fisma_Zend_Controller_Action_Object
 {
     /**
-     * preDelete 
+     * The main name of the model.
      * 
-     * @param Doctrine_Event $event 
-     * @access public
-     * @return void
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
      */
-    public function preDelete($event)
-    {
-        if (count($this->Uploads) > 0) {
-            throw new Fisma_Zend_Exception_User(
-                'This document type cannot be deleted because it is already associated with '
-                . 'one or more system documents.'
-            );
-        }
-    }
+    protected $_modelName = 'DocumentType';
 }

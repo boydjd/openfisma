@@ -1,7 +1,8 @@
 <?php
 echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
 
-$sectionName = "{$this->document->DocumentType->name} for {$this->document->System->Organization->name}";
+$sectionName = "{$this->escape($this->document->DocumentType->name)} "
+             . "for {$this->escape($this->document->System->Organization->name)}";
 Fisma_Format_Section::startSection($sectionName);
 ?>
     

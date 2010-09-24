@@ -17,23 +17,28 @@
  */
 
 /**
- * An encapsulation for audit log that is a proxy for getting the audit log value 
+ * Remove pass_max_length column from configuration
  * 
- * @author     Mark Ma <mark.ma@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_Doctrine_Behavior_AuditLoggable
- * @version    $Id$
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-interface Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
+class Version78 extends Doctrine_Migration_Base
 {
-   
     /**
-     * Proxy method for getting audit log value 
-     * 
-     * @return string 
+     * Remove pass_max_length column
      */
-    function getAuditLogValue();
-    
+    public function up()
+    {
+        $this->removeColumn('configuration', 'pass_max_length');
+    }
+
+    /**
+     * No reverse migration
+     */
+    public function down()
+    {
+        throw new Doctrine_Migration_IrreversibleMigrationException();
+    }
 }

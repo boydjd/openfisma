@@ -590,7 +590,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function generatePasswordAction()
     {
         $passLengthMin = Fisma::configuration()->getConfig('pass_min_length');
-        $passLengthMax = Fisma::configuration()->getConfig('pass_max_length');
         $passNum = Fisma::configuration()->getConfig('pass_numerical');
         $passUpper = Fisma::configuration()->getConfig('pass_uppercase');
         $passLower = Fisma::configuration()->getConfig('pass_lowercase');
@@ -598,7 +597,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         
         $flag = 0;
         $password = "";
-        $length = $passLengthMax;
+        $length = 2 * $passLengthMin;
 
         if (true == $passUpper) {
             $possibleCharactors[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

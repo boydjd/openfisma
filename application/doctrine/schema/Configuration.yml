@@ -155,12 +155,6 @@ Configuration:
             unsigned: true
             comment: Minimum password length
             default: 0
-        pass_max_length:
-            type: integer(1)
-            notblank: true
-            unsigned: true
-            comment: Maximum password length
-            default: 0
         pass_expire:
             type: integer(2)
             notblank: true

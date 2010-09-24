@@ -1,10 +1,14 @@
-<?php Fisma_Format_Section::startSection("Incident Workflows: List View <span id='searchResultsTotalFound'></span>"); ?>
+<?php 
+echo $this->escape($this->partial('document-type/searchbox.phtml', array('keywords' => $this->keywords)), 'none');
+Fisma_Format_Section::startSection("Document Type List <span id='searchResultsTotalFound'></span>"); 
+?>
 <div id="list"></div>
 <script type="text/javascript">
 // Column definitions
 var myColumnDefs = [
     {key:"id", label:"id", hidden: true}
-    ,{key:"name", label:"Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"name", label:"Document Type Name", sortable: true, hidden: false, formatter: "text"}
+    ,{key:"required", label:"Required", sortable: true, hidden: false}
 ];
 
     // A function which builds the query string
@@ -15,9 +19,9 @@ var myColumnDefs = [
         var dir = (oState.sortedBy && oState.sortedBy.dir == 'yui-dt-asc') ? "asc" : "desc";
         var startIndex = oState.pagination.recordOffset;
         var count = oState.pagination.rowsPerPage;
-    
+
         // Build custom request
-        var request = "<?php echo $this->escape($this->link, 'none'); ?>" + 
+        var request = "<?php echo $this->escape($this->link, 'none') ?>" + 
                       "/sortby/" + sort +
                       "/order/" + dir +
                       "/startIndex/" + startIndex +
@@ -25,8 +29,7 @@ var myColumnDefs = [
         return request;
     };
 
-    // DataSource instance
-    var myDataSource = new YAHOO.util.DataSource("/ir-workflow/search");
+    var myDataSource = new YAHOO.util.DataSource('/document-type/search');
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
     myDataSource.responseSchema = {
         resultsList: "table.records",
@@ -34,10 +37,12 @@ var myColumnDefs = [
             totalRecords: "table.totalRecords"
         }
     };
+    
     // DataTable configuration
     var myConfigs = {
-        //dynamicData: false
-        initialRequest: "<?php echo $this->escape($this->initialReqestUrl, 'none'); ?>",
+        initialRequest: "<?php echo $this->escape($this->link, 'none') ?>" + 
+                        "/sortby/name/dir/asc/startIndex/0/count/" + 
+                        "<?php echo $this->escape($this->pageInfo['count'])?>",
         dynamicData: true, 
         sortedBy : {key:"name", dir:YAHOO.widget.DataTable.CLASS_ASC},
         paginator: new YAHOO.widget.Paginator(
@@ -45,9 +50,10 @@ var myColumnDefs = [
                 rowsPerPage:<?php echo $this->escape($this->pageInfo['count'])?>,
                 template:"{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
             }
-        ), 
+        ),
         generateRequest : myRequestBuilder
     };
+    
     var myDataTable = new YAHOO.widget.DataTable("list", myColumnDefs, myDataSource, myConfigs);
     // Update totalRecords on the fly with value from server
     myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
@@ -64,14 +70,15 @@ var myColumnDefs = [
     
     myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow); 
     myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
+
     <?php 
-    if ($this->readIrWorkflowDefPrivilege):
+    if ($this->acl()->hasPrivilegeForClass('read', 'DocumentType')): 
     ?>
         myDataTable.subscribe("rowClickEvent", 
             function (oArgs) {
                 var elTarget = oArgs.target;
                 var oRecord = this.getRecord(elTarget);
-                document.location = "/ir-workflow/view/v/view/id/" + oRecord.getData("id");
+                document.location = "/document-type/view/id/" + oRecord.getData("id");
             }
         );
     <?php 
@@ -98,7 +105,7 @@ var myColumnDefs = [
         var actionUrl = '';
         switch (menuItem.index) {
             case 0 :
-                actionUrl = "/ir-workflow/view/v/view/id/" + rowRecord.getData("id");
+                actionUrl = "/document-type/view/id/" + rowRecord.getData("id");
                 break;
         }
         if (actionUrl != '') {

@@ -27,5 +27,61 @@
  */
 class DocumentTypeTable extends Fisma_Doctrine_Table
 {
+    /**
+     * Return the count of required document types
+     * 
+     * @return integer
+     */
+    public function getRequiredDocTypeCount()
+    {
+        $requiredDocTypeQuery = Doctrine_Query::create()
+                                ->from('DocumentType')
+                                ->where('required = ?', true);
 
+        return $requiredDocTypeQuery->count();
+    }
+
+    /**
+     * Return a list of missing document type names for specify systemid
+     * 
+     * @param  string $id The specified system id to get missing document types
+     * @return string
+     */
+    public function getMissingDocumentTypeName($systemId)
+    {
+        if (empty($systemId)) {
+            return null;
+        }
+
+        $documentTypes = Doctrine_Query::create()
+                         ->select('IFNULL(GROUP_CONCAT(dt.name), \'N/A\') AS name')
+                         ->from('DocumentType dt')
+                         ->where('dt.required = ?', true)
+                         ->andWhereNotIn('dt.id', $this->_getDocumentTypeIds($systemId))
+                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                         ->fetchOne();
+
+        return $documentTypes['name'];
+    }
+
+    /**
+     * Return a list of document type ids for specify systemid from system document table
+     * 
+     * @param  string $id The specified system id to get the array of document type id
+     * @return array
+     */
+    protected function _getDocumentTypeIds($systemId)
+    {
+        if (empty($systemId)) {
+            return null;
+        }
+
+        $documentTypeIds = Doctrine_Query::create()
+                           ->select('sd.documenttypeid AS id')
+                           ->from('SystemDocument sd')
+                           ->where('sd.systemid = ?', $systemId)
+                           ->execute();
+
+        return $documentTypeIds->toKeyValueArray('id', 'id');
+    }
 }

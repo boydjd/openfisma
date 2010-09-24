@@ -93,6 +93,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
+
+        $this->_paging['startIndex'] = $this->getRequest()->getParam('startIndex', 0);
     }
 
     /**
