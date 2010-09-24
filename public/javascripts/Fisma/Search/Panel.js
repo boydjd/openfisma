@@ -24,10 +24,12 @@
 /**
  * Constructor
  * 
- * @param searchableFields Names and data types for searchable fields
+ * @param advancedSearchOptions Contains searchable fields and pre-defined filters
  * @param pathname The URL path, used to generate default search filters
  */
-Fisma.Search.Panel = function (searchableFields, pathname) {
+Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
+
+    var searchableFields = advancedSearchOptions.searchFields;
 
     if (0 == searchableFields.length) {
         throw "Field array cannot be empty";
@@ -112,6 +114,18 @@ Fisma.Search.Panel.prototype = {
                 
                 var operator = this.defaultQueryTokens[index];
                 index++;
+                
+                // Skip filters, those are handled after this loop
+                if ('filter' == field) {
+                    // Move index forward to filter name
+                    index++;
+                    var filterName = this.defaultQueryTokens[index];
+                    console.log(index);
+                    console.log(filterName);
+                    index += this.filters[filterName].numberOfParameters;
+                    
+                    continue;
+                }
 
                 // Load up this criteria definition and see how many operands it takes
                 var fieldDefinition = this.getFieldDefinition(field);

@@ -32,9 +32,19 @@
 interface Fisma_Search_Searchable
 {
     /**
-     * Return an array of search configuration options
+     * Return an array of fields (and definitions) which are searchable
      * 
      * @return array
      */
     public function getSearchableFields();
+    
+    /**
+     * Return an array of fields which are used to test access control
+     * 
+     * Each key is the name of a field and each value is a callback function which provides a list of values to match
+     * against that field.
+     * 
+     * @return array
+     */
+//    public function getAclFields();
 }

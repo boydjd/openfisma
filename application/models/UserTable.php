@@ -108,4 +108,14 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             )
         );
     }
+
+    /**
+     * Implement required interface, but there is no field-level ACL in this model
+     *
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array();
+    }
 }

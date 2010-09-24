@@ -139,6 +139,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
             }
         }
 
+        // Execute query
         $totalRecords = $allRecordsQuery->count();
 
         // Progress bar for console progress monitoring

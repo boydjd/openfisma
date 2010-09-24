@@ -147,7 +147,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $searchableFields = $table->getSearchableFields();
 
-        return $searchableFields[$columnName]['sortable'];
+        return isset($searchableFields[$columnName]['sortable']) && $searchableFields[$columnName]['sortable'];
     }
 
     /**
@@ -202,15 +202,26 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $trimmedKeyword = trim($keyword);
 
+        $filterQuery = 'luceneDocumentType:' . $this->escape($type);
+
+        // Add ACL constraints to filter query
+        $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
+
+        if (!empty($aclQueryFilter)) {
+            $filterQuery .= ' AND (' 
+                          . $aclQueryFilter
+                          . ')';
+        }
+
         if (empty($trimmedKeyword)) {
             // Without keywords, this is just a listing of all documents of a specific type
-            $query->setQuery('luceneDocumentType:' . $type);
+            $query->setQuery($filterQuery);
         } else {
             // For keyword searches, use the filter query (for efficient caching) and enable highlighting
             $query->setHighlight(true)
                   ->setHighlightSimplePre('***')
                   ->setHighlightSimplePost('***')
-                  ->addFilterQuery('luceneDocumentType:' . $type);
+                  ->addFilterQuery($filterQuery);
 
             // Tokenize keyword on spaces and escape all tokens
             $keywordTokens = split(' ', $trimmedKeyword);
@@ -219,11 +230,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         }
 
         // Enumerate all fields so they can be included in search results
-        $searchableFields = Doctrine::getTable($type)->getSearchableFields();
-
         $searchTerms = array();
-
-        $table = Doctrine::getTable($type);
 
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
 
@@ -301,17 +308,23 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->setStart($start)
               ->setRows($rows);
 
+        $filterQuery = 'luceneDocumentType:' . $this->escape($type);
+
+        // Add ACL constraints to filter query
+        $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
+
+        if (!empty($aclQueryFilter)) {
+            $filterQuery .= ' AND (' 
+                          . $aclQueryFilter
+                          . ')';
+        }
+
         // Use the filter query (for efficient caching) and enable highlighting
         $query->setHighlight(true)
               ->setHighlightSimplePre('***')
               ->setHighlightSimplePost('***')
               ->setHighlightRequireFieldMatch(true)
-              ->addFilterQuery('luceneDocumentType:' . $type);
-
-        // Enumerate all fields so they can be included in search results
-        $searchableFields = Doctrine::getTable($type)->getSearchableFields();
-
-        $table = Doctrine::getTable($type);
+              ->addFilterQuery($filterQuery);
 
         // Add the fields which should be returned in the result set and indicate which should be highlighted
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -349,7 +362,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             switch ($operator) {
                 // These cases intentionally fall through
-
                 case 'dateAfter':
                     $afterDate = $this->_convertToSolrDate($operands[0]);
                     $searchTerms[] = "$fieldName:[$afterDate TO *]";
@@ -720,5 +732,38 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $tempDate = new Zend_Date($date, 'YYYY-MM-dd HH:mm:ss');
 
         return $tempDate->toString('YYYY-MM-ddTHH:mm:ss') . 'Z';
+    }
+
+    /**
+     * Returns query terms to limit the search results on 
+     * 
+     * @param Doctrine_Table $table
+     * @param array $searchableFields
+     */
+    private function _getAclQueryFilter($table, $searchableFields)
+    {
+        $aclFields = $table->getAclFields();
+
+        $ids = array();
+
+        foreach ($aclFields as $aclFieldName => $callback) {                
+            $aclIds = call_user_func($callback);
+                
+            if ($aclIds === false) {
+                $message = "Could not call ACL ID provider ($callback) for ACL field ($name).";
+
+                throw new Fisma_Zend_Exception($message);
+            }
+
+            $aclFieldType = $searchableFields[$aclFieldName]['type'];
+
+            foreach ($aclIds as &$aclId) {
+                $aclId = "{$aclFieldName}_{$aclFieldType}:" . $this->escape($aclId);
+            }
+
+            $ids = array_merge($ids, $aclIds);
+        }
+        
+        return implode(' OR ', $ids);
     }
 }

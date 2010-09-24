@@ -60,6 +60,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
      */
     public function postUpdate(Doctrine_Event $event)
     {
+        return;
         if (!self::$_listenerEnabled) {
             return;
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -210,6 +210,34 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 ),
                 'type' => 'integer'
             ),
+            'responsibleOrganizationId' => array(
+                'hidden' => true,
+                'type' => 'integer'
+            )
         );
+    }
+    
+    /**
+     * Return a list of fields which are used for access control
+     * 
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array('responsibleOrganizationId' => 'FindingTable::getOrganizationIds');
+    }
+
+    /**
+     * Provide ID list for ACL filter
+     * 
+     * @return array
+     */
+    static function getOrganizationIds()
+    {
+        $currentUser = CurrentUser::getInstance();
+        
+        $organizationIds = $currentUser->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
+
+        return $organizationIds;
     }
 }
