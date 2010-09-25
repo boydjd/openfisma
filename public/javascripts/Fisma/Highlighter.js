@@ -53,6 +53,11 @@ Fisma.Highlighter = function() {
             for (var i in elements) {
                 var element = elements[i];
 
+                if (!element.firstChild.firstChild) {
+                    // Skip empty table cells
+                    continue;
+                }
+
                 var parentNode = element.firstChild;
                 var textNode = parentNode.firstChild;
                 var cellText = textNode.nodeValue;
