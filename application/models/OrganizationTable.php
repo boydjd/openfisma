@@ -73,8 +73,37 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                 'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
+            ),
+            'id' => array(
+                'hidden' => true,
+                'type' => 'integer'
             )
         );
+    }
+
+    /**
+     * Return a list of fields which are used for access control
+     * 
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array('id' => 'OrganizationTable::getOrganizationIds');
+    }
+
+    /**
+     * Provide ID list for ACL filter
+     * 
+     * @return array
+     */
+    static function getOrganizationIds()
+    {
+        $currentUser = CurrentUser::getInstance();
+        
+        $organizationIds = $currentUser->getOrganizationsByPrivilege('organization', 'read')
+                                       ->toKeyValueArray('id', 'id');
+
+        return $organizationIds;
     }
 
     /**

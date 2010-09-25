@@ -29,7 +29,7 @@
  */
 Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
 
-    var searchableFields = advancedSearchOptions.searchFields;
+    var searchableFields = advancedSearchOptions;
 
     if (0 == searchableFields.length) {
         throw "Field array cannot be empty";
@@ -115,18 +115,6 @@ Fisma.Search.Panel.prototype = {
                 var operator = this.defaultQueryTokens[index];
                 index++;
                 
-                // Skip filters, those are handled after this loop
-                if ('filter' == field) {
-                    // Move index forward to filter name
-                    index++;
-                    var filterName = this.defaultQueryTokens[index];
-                    console.log(index);
-                    console.log(filterName);
-                    index += this.filters[filterName].numberOfParameters;
-                    
-                    continue;
-                }
-
                 // Load up this criteria definition and see how many operands it takes
                 var fieldDefinition = this.getFieldDefinition(field);
                 
@@ -154,7 +142,7 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
             Fisma.Search.onSetTable(function () {
                 var searchForm = document.getElementById('searchForm');
-                
+            
                 // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
                 // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
                 // event in the dispatch queue)

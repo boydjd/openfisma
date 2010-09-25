@@ -240,6 +240,10 @@ Fisma.Search = function() {
             for (var index in searchOptions) {
                 var searchOption = searchOptions[index];
                 
+                if (searchOption['hidden'] === true) {
+                    continue;
+                }
+                
                 // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
                 var checked = searchOption.initiallyVisible;
 

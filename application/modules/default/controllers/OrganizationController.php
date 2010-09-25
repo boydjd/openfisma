@@ -119,84 +119,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Show the list page, not for data
-     * 
-     * @return void
-     */
-    public function listAction()
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Organization');
-        $value = htmlentities(trim($this->_request->getParam('keywords')));
-        empty($value) ? $link = '' : $link = '/keywords/' . $value;
-        $this->searchbox();
-        $this->view->assign('pageInfo', $this->_paging);
-        $this->view->assign('link', $link);
-        $this->render('list');
-    }
-    
-    /**
-     * List the organizations from the search. If search none, it list all organizations
-     * 
-     * @return void
-     * @throws Fisma_Zend_Exception if the 'sortBy' parameter is invalid
-     */
-    public function searchAction()
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Organization');
-        $keywords = html_entity_decode(trim($this->_request->getParam('keywords')));
-        
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
-        $sortBy = $this->_request->getParam('sortby', 'name');
-        $order = $this->_request->getParam('order');
-        
-        $organization = Doctrine::getTable('Organization');
-        if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
-            throw new Fisma_Zend_Exception('Invalid "sortBy" parameter');
-        }
-        
-        $order = strtoupper($order);
-        if ($order != 'DESC') {
-            $order = 'ASC'; //ignore other values
-        }
-        
-        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
-        $userOrgQuery->andWhere("o.orgType IS NULL")
-                     ->orWhere("o.orgType != 'system'")
-                     ->orderBy("o.$sortBy $order")
-                     ->limit('?', $this->_paging['count'])
-                     ->offset($this->_paging['startIndex']);
-        if (!empty($keywords)) {
-            $index = new Fisma_Index('Organization');
-            $organizationIds = $index->findIds($keywords);
-            if (empty($organizationIds)) {
-                $organizationIds = array(-1);
-            }
-            $implodedOrganizationIds = implode(',', $organizationIds);
-            $userOrgQuery->andWhere("o.id IN ($implodedOrganizationIds)");
-        }
-        $totalRecords = $userOrgQuery->count();
-        $organizations = $userOrgQuery->execute();
-        
-        $tableData = array('table' => array(
-            'recordsReturned' => count($organizations->toArray()),
-            'totalRecords' => $totalRecords,
-            'startIndex' => $this->_paging['startIndex'],
-            'sort' => $sortBy,
-            'dir' => $order,
-            'pageSize' => $this->_paging['count'],
-            'records' => $organizations->toArray()
-        ));
-        
-        echo json_encode($tableData);
-    }
-    
-    /**
-     * Display a single organization record with all details.
-     * 
-     * @return void
-     * @throws Fisma_Zend_Exception if organization id is invalid
->>>>>>> master
+     * Override the hook to handle the "parent" field
+     *
+     * @param Doctrine_Record $subject The specified subject model
+     * @param Zend_Form $form The specified form
+     * @return Zend_Form The manipulated form
      */
     protected function setForm($subject, $form)
     {

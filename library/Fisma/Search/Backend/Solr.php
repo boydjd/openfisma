@@ -746,9 +746,14 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $ids = array();
 
+        if (count($aclFields) == 0) {
+            // This model doesn't specify any ACL constraints
+            return '';
+        }
+        
         foreach ($aclFields as $aclFieldName => $callback) {                
             $aclIds = call_user_func($callback);
-                
+
             if ($aclIds === false) {
                 $message = "Could not call ACL ID provider ($callback) for ACL field ($name).";
 
@@ -763,7 +768,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $ids = array_merge($ids, $aclIds);
         }
-        
-        return implode(' OR ', $ids);
+
+        if (count($ids)) {
+            return implode(' OR ', $ids);
+        } else {
+            // If no IDs match, then return an impossible condition
+            return ('id:0');
+        }
     }
 }

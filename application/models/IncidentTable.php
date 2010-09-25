@@ -4,25 +4,25 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * IncidentTable 
- * 
+ * IncidentTable
+ *
  * @uses Fisma_Doctrine_Table
- * @package Models 
+ * @package Models
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
@@ -37,12 +37,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
     public function getUserIncidentQuery(User $user, Fisma_Zend_Acl $acl)
     {
         /*
-         * A user can read *all* incidents if he has the "incident read" privilege. Otherwise, he is only allowed to 
+         * A user can read *all* incidents if he has the "incident read" privilege. Otherwise, he is only allowed to
          * view those incidents for which he is an actor or an observer.
          */
         $incidentQuery = Doctrine_Query::create()
                          ->from('Incident i');
-        
+
         if (!$acl->hasPrivilegeForClass('read', 'Incident')) {
             $incidentQuery->leftJoin('i.Users u')
                           ->where('u.id = ?', $user->id);
@@ -50,7 +50,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
 
         return $incidentQuery;
     }
-    
+
     /**
      * Implement the interface for Searchable
      */
@@ -62,25 +62,25 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'label' => 'ID',
                 'sortable' => true,
                 'type' => 'integer'
-            ), 
+            ),
             'reportTs' => array(
                 'initiallyVisible' => true,
                 'label' => 'Report Date',
                 'sortable' => true,
                 'type' => 'datetime'
-            ), 
+            ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Modification Date',
                 'sortable' => true,
                 'type' => 'datetime'
-            ), 
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Closed Date',
                 'sortable' => true,
                 'type' => 'datetime'
-            ), 
+            ),
             'status' => array(
                 'enumValues' => $this->getEnumValues('status'),
                 'initiallyVisible' => true,
@@ -140,5 +140,37 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'type' => 'text'
             )
         );
+    }
+
+    /**
+     * Return a list of fields which are used for access control
+     *
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array('id' => 'IncidentTable::getIncidentIds');
+    }
+
+    /**
+     * Provide ID list for ACL filter
+     *
+     * @return array
+     */
+    static function getIncidentIds()
+    {
+        $currentUser = CurrentUser::getInstance();
+
+        $incidentAccessQuery = Doctrine_Query::create()
+                               ->select('incidentId')
+                               ->from('IrIncidentUser INDEXBY incidentId')
+                               ->where('userId = ?', $currentUser->id)
+                               ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        $results = $incidentAccessQuery->execute();
+        
+        $incidentIds = array_keys($results);
+
+        return $incidentIds;
     }
 }

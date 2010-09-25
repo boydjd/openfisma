@@ -481,7 +481,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
         foreach ($searchableFields as $fieldName => $searchParams) {
-            
+
             if (isset($searchParams['hidden']) && $searchParams['hidden'] === true) {
                 continue;
             }
@@ -526,15 +526,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
         // the name as an array element instead
-        $searchFields = array();
+        $advancedSearchOptions = array();
 
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
-            $searchFields[] = array_merge(array('name' => $fieldName), $fieldDefinition);
+            $advancedSearchOptions[] = array_merge(array('name' => $fieldName), $fieldDefinition);
         }
 
-        $filters = $table->getFilters();
-        
-        $advancedSearchOptions = array('searchFields' => $searchFields, 'filters' => $filters);
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
 
         $this->renderScript('object/list.phtml');
