@@ -105,6 +105,17 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
         return $organizationIds;
     }
+    
+    /**
+     * Modifies the search index collection query to filter out system objects
+     * 
+     * @param Doctrine_Query $query
+     * @return Doctrine_Query
+     */
+    public function getSearchIndexQuery(Doctrine_Query $query)
+    {
+        return $query->where('a.orgType <> ?', 'system');
+    }
 
     /**
      * A callback for lucene searches that involve searching an organization subtree

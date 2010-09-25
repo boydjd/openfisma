@@ -95,7 +95,13 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         
         // Add relations (if any) to the query -- this results in more efficient indexing of related records
-        $searchableFields = Doctrine::getTable($modelName)->getSearchableFields();
+        $table = Doctrine::getTable($modelName);
+        $searchableFields = $table->getSearchableFields();
+        
+        // Implementers can tweak the selection query to filter out undesired records
+        if (method_exists($table, 'getSearchIndexQuery')) {
+            $allRecordsQuery = call_user_func(array($table, 'getSearchIndexQuery'), $allRecordsQuery);
+        }
 
         $currentAlias = 'a';
         $relationAliases = array();
