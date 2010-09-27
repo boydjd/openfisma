@@ -1044,8 +1044,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
                     $incidentActor->userId = $user->id;
                     $incidentActor->incidentId = $incident->id;
                     $incidentActor->accessType = 'ACTOR';
-                                        
-                    $incidentActor->save();
+
+                    $incidentActor->replace();
                 }            
 
                 // Success message
