@@ -2,9 +2,6 @@
 # privileges for this htaccess file to work, this is set in the
 # apache httpd.conf file.
 
-# Uncomment the following line to put the application into development mode.
-#SetEnv APPLICATION_ENV development
-
 RewriteEngine On
 
 # This rewrite rule allow us to version static files

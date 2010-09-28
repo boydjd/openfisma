@@ -38,7 +38,9 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
 
         Fisma::setConfiguration(new Fisma_Configuration_Database());
 
-        Fisma::connectDb();
+        if (Fisma::isInstall()) {
+            Fisma::connectDb();
+        }
 
         Fisma::dispatch();
 
