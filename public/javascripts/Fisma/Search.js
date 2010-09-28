@@ -120,7 +120,13 @@ Fisma.Search = function() {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
-                success : dataTable.onDataReturnReplaceRows,
+                success : function (request, response, payload) {
+                    dataTable.onDataReturnReplaceRows(request, response, payload);
+
+                    // Update YUI's visual state to show sort on first column
+                    var firstColumn = dataTable.getColumn(0);
+                    dataTable.set("sortedBy", firstColumn);
+                },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
