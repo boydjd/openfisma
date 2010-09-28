@@ -47,16 +47,10 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
     protected $_keyName = 'csrf';
     
     /**
-     * How long until the csrf key expires (in seconds)
-     * @var int
-     */
-    protected $_expiryTime = 300;
-    
-    /**
-     * The previous request's token, set by _initializeToken
+     * The session's token, set by _initializeToken
      * @var string
      */
-    protected $_previousToken = '';
+    protected $_token = '';
     
     /**
      * __construct 
@@ -65,26 +59,15 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
      */
     public function __construct(array $params = array())
     {
-        if(isset($params['expiryTime']))
-            $this->setExpiryTime($params['expiryTime']);
-        
-        if(isset($params['keyName']))
+        if (isset($params['keyName'])) {
             $this->setKeyName($params['keyName']);  
+        }
 
         $this->_session = new Zend_Session_Namespace('CsrfProtect');
+
+        $this->_initializeTokens();
     }
     
-    /**
-     * Set the expiry time of the csrf key
-     * @param int $seconds expiry time in seconds. Set 0 for no expiration
-     * @return CU_Controller_Plugin_CsrfProtect implements fluent interface
-     */
-    public function setExpiryTime($seconds)
-    {
-        $this->_expiryTime = $seconds;
-        return $this;
-    }
-
     /**
      * Set the name of the csrf form element
      * @param string $name
@@ -102,10 +85,8 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {   
-        $this->_initializeTokens();
-            
         if ($request->isPost() === true) {           
-            if(empty($this->_previousToken))
+            if(empty($this->_token))
                 throw new RuntimeException('A possible CSRF attack detected - no token received');
 
             $value = $request->getPost($this->_keyName);
@@ -121,7 +102,7 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
      */
     public function isValidToken($value)
     {
-        if($value != $this->_previousToken)
+        if($value != $this->_token)
             return false;
             
         return true;
@@ -168,18 +149,16 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
     }
     
     /**
-     * Initializes a new token
+     * Initializes a new token if a token isn't already set in the session
      */
     protected function _initializeTokens()
     {
-        $this->_previousToken = $this->_session->key;
-        
-        $newKey = sha1(microtime() . mt_rand());
-        
-        $this->_session->key = $newKey;
-        if($this->_expiryTime > 0)
-            $this->_session->setExpirationSeconds($this->_expiryTime);
-        
-        $this->_token = $newKey;
+        if (!isset($this->_session->key)) {
+            $newKey = sha1(microtime() . mt_rand());
+            $this->_session->key = $newKey;
+            $this->_token = $newKey;
+        } else {
+            $this->_token = $this->_session->key;
+        }
     }   
 }
