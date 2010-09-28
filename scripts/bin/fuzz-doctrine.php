@@ -69,7 +69,33 @@ $skipFields = array(
 );
 
 try {
-    // The application must be initialized before we can check debug mode.
+    // The rest of this script is timed
+    $startTime = time();
+    
+    defined('APPLICATION_ENV')
+        || define(
+            'APPLICATION_ENV',
+            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+        );
+    defined('APPLICATION_PATH') || define(
+        'APPLICATION_PATH',
+        realpath(dirname(__FILE__) . '/../../application')
+    );
+
+    set_include_path(
+        APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
+        APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
+        get_include_path()
+    );
+
+    require_once 'Fisma.php';
+    require_once 'Zend/Application.php';
+
+    $application = new Zend_Application(
+        APPLICATION_ENV,
+        APPLICATION_PATH . '/config/application.ini'
+    );
+    Fisma::setAppConfig($application->getOptions());
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
 
     // Script does not run in production mode, just to be safe
@@ -92,9 +118,6 @@ try {
     if ('yes' != strtolower(trim($response))) {
         return;
     }
-    
-    // The rest of this script is timed
-    $startTime = time();
     
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
@@ -121,7 +144,17 @@ try {
         }
                 
         $modelName = substr($modelFileName, 0, -4);
+
+        // Skip Table classes
+        if ( substr($modelName, -5) == 'Table' ) {
+            continue;
+        }
         
+        // CurrentUser is not a model, skip it
+        if ($modelName == 'CurrentUser') {
+            continue;
+        }
+
         fwrite(STDOUT, "Model: $modelName ");
         
         $table = Doctrine::getTable($modelName);

@@ -81,9 +81,32 @@ class OptimizeIndexes
      */
     public function __construct() 
     {
-        require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+        defined('APPLICATION_ENV')
+            || define(
+                'APPLICATION_ENV',
+                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+            );
+        defined('APPLICATION_PATH') || define(
+            'APPLICATION_PATH',
+            realpath(dirname(__FILE__) . '/../../application')
+        );
 
+        set_include_path(
+            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
+            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
+            get_include_path()
+        );
+
+        require_once 'Fisma.php';
+        require_once 'Zend/Application.php';
+
+        $application = new Zend_Application(
+            APPLICATION_ENV,
+            APPLICATION_PATH . '/config/application.ini'
+        );
+        Fisma::setAppConfig($application->getOptions());
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
+
         Fisma::connectDb();
         Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);
 
