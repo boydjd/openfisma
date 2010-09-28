@@ -50,10 +50,13 @@ abstract class Fisma_Search_Backend_Abstract
 
     /**
      * Delete the specified object from the index
-     * 
-     * @param object $object
+     *
+     * $type must have a corresponding table class which implements Fisma_Search_Searchable
+     *
+     * @param string $type The class of the object
+     * @param array $object
      */
-    abstract public function deleteObject($object);
+    abstract public function deleteObject($type, $object);
 
     /**
      * Index an array of objects

@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Listener
- * @version    $Id$
  */
 class IndexListener extends Fisma_Doctrine_Record_Listener
 {
@@ -38,7 +37,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         if (!self::$_listenerEnabled) {
             return;
         }
-        
+
         $record = $event->getInvoker();
 
         if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
@@ -49,7 +48,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
-        $searchEngine->indexObject($record);
+        $searchEngine->indexObject(get_class($record), $record->toArray());
     }
 
     /**
@@ -60,7 +59,6 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
      */
     public function postUpdate(Doctrine_Event $event)
     {
-        return;
         if (!self::$_listenerEnabled) {
             return;
         }
@@ -97,7 +95,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         if ($needsIndex) {
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
-            $searchEngine->indexObject($record);
+            $searchEngine->indexObject(get_class($record), $record->toArray());
         }
     }
     
@@ -127,7 +125,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         if (!in_array('deleted_at', $modified)) {
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
-            $searchEngine->deleteObject($record);
+            $searchEngine->deleteObject(get_class($record), $record->toArray());
         }
     }
 }

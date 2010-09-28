@@ -79,18 +79,18 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     /**
      * Delete the specified object from the index
      *
-     * The $object needs to belong to a table which implements Fisma_Search_Searchable
+     * $type must have a corresponding table class which implements Fisma_Search_Searchable
      *
-     * @param Fisma_Doctrine_Record $object
+     * @param string $type The class of the object
+     * @param array $object
      */
-    public function deleteObject($object)
+    public function deleteObject($type, $object)
     {
-        $luceneDocumentId = get_class($object) . $object->id;
+        $luceneDocumentId = $type . $object['id'];
 
         $this->_client->deleteById($luceneDocumentId);
 
         $this->_client->commit();
-
     }
 
     /**
