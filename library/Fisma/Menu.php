@@ -143,7 +143,7 @@ class Fisma_Menu
                 }
 
                 if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Type', '/document-type/list'));
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
