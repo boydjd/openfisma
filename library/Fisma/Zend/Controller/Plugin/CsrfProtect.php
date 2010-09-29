@@ -84,14 +84,14 @@ class Fisma_Zend_Controller_Plugin_CsrfProtect extends Zend_Controller_Plugin_Ab
      * @param Zend_Controller_Request_Abstract $request
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
-    {   
-        if ($request->isPost() === true) {           
+    {  
+        if ($request->isPost()) {           
             if(empty($this->_token))
-                throw new RuntimeException('A possible CSRF attack detected - no token received');
+                trigger_error('A possible CSRF attack detected - no token received', E_USER_ERROR);
 
             $value = $request->getPost($this->_keyName);
             if(!$this->isValidToken($value))
-                throw new RuntimeException('A possible CSRF attack detected - tokens do not match');
+                trigger_error('A possible CSRF attack detected - tokens do not match', E_USER_ERROR);
         }           
     }
 
