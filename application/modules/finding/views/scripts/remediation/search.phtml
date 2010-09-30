@@ -67,7 +67,7 @@ function deleteSelected() {
     for (i = 0; i < myDataTable.getSelectedRows().length; i++) {
         checked.push(myDataTable.getRecord(myDataTable.getSelectedRows()[i]).getData('id'));
     }
-    checked = 'findings=' + YAHOO.lang.JSON.stringify(checked);
+    checked = 'findings=' + YAHOO.lang.JSON.stringify(checked) + '&csrf=<?php echo $this->escape($this->csrfToken); ?>';
     YAHOO.util.Connect.asyncRequest(
         'POST',
         '/finding/index/multi-delete',
