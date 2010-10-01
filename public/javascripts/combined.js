@@ -4171,7 +4171,7 @@ Fisma.Remediation = {
         if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
             return false;
         }
-        Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', Fisma.upload_evidence_form_init);
+        Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', Fisma.Remediation.upload_evidence_form_init);
         return false;
     },
 
@@ -5015,6 +5015,50 @@ Fisma.TableFormat = {
                          + ">"
                          + oData
                          + "</a>";
+    },
+
+    /**
+     * A formatter which colors the the percentage of the required documents 
+     * which system has completed in red, yellow, or green (or not at all)
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = oData;
+
+        percentage = parseInt(oData.replace(/%/g, ''));
+
+        if (percentage != null) {
+            if (percentage >= 95 && percentage <= 100) {
+                Fisma.TableFormat.green(elCell.parentNode);
+            } else if (percentage >= 80 && percentage < 95) {
+                Fisma.TableFormat.yellow(elCell.parentNode);
+            } else if (percentage >= 0 && percentage < 80) {
+                Fisma.TableFormat.red(elCell.parentNode);
+            }
+        }
+    },
+
+    /**
+     * A formatter which displays the missing document type name
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
+        var docTypeNames = '';
+        if (oData.length > 0) {
+            docTypeNames += '<ul><li>'
+                          + oData.replace(/,/g, '</li><li>')
+                          + '</li></ul>';
+        }
+
+        elCell.innerHTML = docTypeNames;
     }
 };/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
