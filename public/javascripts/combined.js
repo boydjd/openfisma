@@ -808,6 +808,13 @@ tinyMCE.init({
  *            Eventually this file needs to be removed 
  */
 
+// Required for AC_RunActiveContent
+// @TODO Move into own file
+
+var requiredMajorVersion = 9;
+var requiredMinorVersion = 0;
+var requiredRevision = 45;
+
 var Fisma = {};
 
 $P = new PHP_JS();
@@ -1031,29 +1038,30 @@ function asset_detail() {
     });
 }
 
-function message( msg ,model){
-    msg = $P.stripslashes(msg);
+function message(msg, model, clear) {
+    clear = clear || false;
 
+    msg = $P.stripslashes(msg);
     if (document.getElementById('msgbar')) {
         var msgbar = document.getElementById('msgbar'); 
     } else {
         return;
     }
-
-    msgbar.innerHTML = msg;
+    if (msgbar.innerHTML && !clear) {
+        msgbar.innerHTML = msgbar.innerHTML + msg;
+    } else {
+        msgbar.innerHTML = msg;
+    }
 
     msgbar.style.fontWeight = 'bold';
     
-    if (model == 'warning')  {
+    if( model == 'warning')  {
         msgbar.style.color = 'red';
-        msgbar.style.borderColor = 'red';
-        msgbar.style.backgroundColor = 'pink';
     } else {
         msgbar.style.color = 'green';
         msgbar.style.borderColor = 'green';
         msgbar.style.backgroundColor = 'lightgreen';
     }
-
     msgbar.style.display = 'block';
 }
 
@@ -3098,7 +3106,7 @@ Fisma.Email = function() {
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type);
+                    message(data.msg, data.type, true);
                     spinner.hide();
                 },
                 failure : function(o) {
@@ -4044,7 +4052,7 @@ Fisma.Ldap = {
                 success : function (o) {
                     var response = YAHOO.lang.JSON.parse(o.responseText);
                     
-                    message(response.msg, response.type);
+                    message(response.msg, response.type, true);
 
                     validateButton.className = "yui-button yui-push-button";
                     Fisma.Ldap.validateLdapBusy = false;
@@ -4052,14 +4060,15 @@ Fisma.Ldap = {
                 },
 
                 failure : function (o) {
-                    message('Validation failed: ' + o.statusText, 'warning');
+                    message('Validation failed: ' + o.statusText, 'warning', true);
 
                     spinner.hide();
                 }
             }
         );
     }  
-};/**
+};
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5336,7 +5345,7 @@ Fisma.User = {
             {
                 success : function (o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type);
+                    message(data.msg, data.type, true);
 
                     // Openfisma column's name is corresponding to LDAP account column's name
                     var openfismaColumns = new Array('nameFirst',
