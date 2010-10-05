@@ -43,6 +43,12 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
+    var logReader = new YAHOO.widget.LogReader(document.body, {footerEnabled : false, width : '500px'});
+    logReader.hideCategory("info");
+    logReader.hideCategory("time");
+    logReader.hideCategory("window");
+    logReader.hideCategory("iframe");
+    
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));

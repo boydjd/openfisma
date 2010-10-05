@@ -155,18 +155,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (is_null($this->_modelName)) {
             throw new Fisma_Zend_Exception('Subclasses of the BaseController must specify the _modelName field');
         }
-    }
-
-    /**
-     * Invoked before each Actions
-     *
-     * @return void
-     */
-    public function preDispatch()
-    {
-        /* Setting the first index of the page/table */
-        $this->_paging['startIndex'] = $this->_request->getParam('startIndex', 0);
-        parent::preDispatch();
+        
+        $this->_helper->reportContextSwitch()
+                      ->addActionContext('search', array('pdf', 'xls'))
+                      ->initContext();
     }
 
     /**

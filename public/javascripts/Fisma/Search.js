@@ -28,7 +28,7 @@ Fisma.Search = function() {
          * A reference to the YUI data table which is used for displaying search results
          */
         yuiDataTable : null,
-        
+
         /**
          * A callback function which is called when the YUI data table reference is set
          */
@@ -133,21 +133,97 @@ Fisma.Search = function() {
             }
 
             // Construct a query URL based on whether this is a simple or advanced search
+            var query = this.getQuery(form);
+            var postData = this.convertQueryToPostData(query);
+
+            dataTable.showTableMessage("Loading...");
+            dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
+        },
+
+        /**
+         * Returns a POST request suitable for submitting a search query
+         *
+         * @var form A reference to the form
+         * @return Key value pairs (object) of query data
+         */
+        getQuery : function (form) {
             var searchType = document.getElementById('searchType').value;
-            var postData;
+            var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                postData = "queryType=simple&keywords=" + form.keywords.value;
+                query['keywords'] = form.keywords.value
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
-                postData = "queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
+                query['query'] = YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
 
-            dataTable.showTableMessage("Loading...");
-            dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
+            return query;
+        },
+
+        /**
+         * Convert an array of key value pairs into URL encoded post data
+         *
+         * @var object
+         * @return string
+         */
+        convertQueryToPostData : function (object) {
+
+            var uriComponents = Array();
+
+            for (var key in object) {
+                var value = object[key];
+
+                uriComponents.push(key + "=" + encodeURIComponent(value));
+            }
+
+            var postData = uriComponents.join('&');
+
+            return postData;
+        },
+
+        /**
+         * Download current search results into a file attachment (such as PDF or Excel)
+         *
+         * This function operates by creating a hidden form on the page and then calling submit() on that form.
+         *
+         * @var event Provided by YUI
+         * @var format Either "pdf" or "xls"
+         */
+        exportToFile : function (event, format) {
+            var searchForm = document.getElementById('searchForm');
+
+            // The form's action is based on the data table's data source
+            var table = Fisma.Search.yuiDataTable;
+            var dataSource = table.getDataSource();
+            var baseUrl = dataSource.liveData;
+
+            // Create a hidden form for submitting the request
+            var tempForm = document.createElement('form');
+
+            tempForm.method = 'post';
+            tempForm.action = baseUrl + '/format/' + format;
+            tempForm.style.display = 'none';
+
+            var query = Fisma.Search.getQuery(searchForm);
+
+            // Create a hidden form element for each piece of post data
+            for (var key in query) {
+                var value = query[key];
+
+                var hiddenField = document.createElement('input');
+
+                hiddenField.type = 'hidden';
+                hiddenField.name = key;
+                hiddenField.value = value;
+
+                tempForm.appendChild(hiddenField);
+            }
+
+            document.body.appendChild(tempForm);
+            tempForm.submit();
         },
 
         /**
@@ -245,11 +321,11 @@ Fisma.Search = function() {
 
             for (var index in searchOptions) {
                 var searchOption = searchOptions[index];
-                
+
                 if (searchOption['hidden'] === true) {
                     continue;
                 }
-                
+
                 // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
                 var checked = searchOption.initiallyVisible;
 
@@ -280,7 +356,7 @@ Fisma.Search = function() {
                             } else {
                                 table.hideColumn(column);
                             }
-                            
+
                             Fisma.Search.saveColumnCookies();
                         },
                         obj : searchOption.name
@@ -289,7 +365,7 @@ Fisma.Search = function() {
 
                 columnToggleButton.set("title", checked ? checkedTitle : uncheckedTitle);
             }
-            
+
             var saveDiv = document.createElement('div');
             saveDiv.style.marginLeft = '20px';
             saveDiv.style.marginBottom = '20px';
@@ -308,13 +384,13 @@ Fisma.Search = function() {
             if (!Fisma.Search.columnPreferencesSpinner) {
                 Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(saveDiv);
             }
-            
+
             container.appendChild(saveDiv);
         },
-        
+
         /**
          * Toggles the display of the "more" options for search
-         * 
+         *
          * This includes things like help, column toggles, and advanced search
          */
         toggleMoreButton : function () {
@@ -324,10 +400,10 @@ Fisma.Search = function() {
                 document.getElementById('moreSearchOptions').style.display = 'none';
             }
         },
-        
+
         /**
          * Save the currently visible columns into a cookie
-         * 
+         *
          * @param table YUI Table
          */
         saveColumnCookies : function () {
@@ -347,15 +423,15 @@ Fisma.Search = function() {
             var cookieName = modelName + "Columns";
 
             YAHOO.util.Cookie.set(
-                cookieName, 
-                prefBitmap, 
+                cookieName,
+                prefBitmap,
                 {
                     path : "/",
                     secure : location.protocol == 'https'
                 }
             );
         },
-        
+
         /**
          * Persist the column cookie into the user's profile
          */
@@ -392,20 +468,20 @@ Fisma.Search = function() {
                 }
             );
         },
-        
+
         /**
          * A method to add a YUI table to the "registry" that this object keeps track of
-         * 
+         *
          * @var table A YUI table
          */
         setTable : function (table) {
             this.yuiDataTable = table;
-            
+
             if (this.onSetTableCallback) {
                 this.onSetTableCallback();
             }
         },
-        
+
         /**
          * Set a callback function to call when the YUI table gets set (see setTable)
          */

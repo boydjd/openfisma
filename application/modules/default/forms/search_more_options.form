@@ -7,11 +7,13 @@
 [search_more_options]
 
 elements.exportPdf.type = "Form_Button"
-elements.exportPdf.options.onClickFunction = "alert"
+elements.exportPdf.options.onClickFunction = "Fisma.Search.exportToFile"
+elements.exportPdf.options.onClickArgument = "pdf"
 elements.exportPdf.options.label = "Export To PDF"
 
 elements.exportXls.type = "Form_Button"
-elements.exportXls.options.onClickFunction = "alert"
+elements.exportXls.options.onClickFunction = "Fisma.Search.exportToFile"
+elements.exportXls.options.onClickArgument = "xls"
 elements.exportXls.options.label = "Export To Excel"
 
 elements.advanced.type = "Form_Button_Checkbox"
