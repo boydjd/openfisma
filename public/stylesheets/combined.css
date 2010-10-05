@@ -1032,3 +1032,8 @@ form dl.zend_form dt, form dl.zend_form dd {
     font-weight: bold;
     margin: 5px;
 }
+
+/* Style for displaying search from*/
+form .searchForm {
+    display: inline;
+}

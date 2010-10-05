@@ -40,7 +40,7 @@ class Version77 extends Doctrine_Migration_Base
             'unique' => true
         );
 
-        $this->createConstraint('document_type', 'constraint_name', $definition);
+        $this->createConstraint('document_type', 'name', $definition);
 
         // Add required column for document type
         $options = array(
@@ -128,7 +128,7 @@ class Version77 extends Doctrine_Migration_Base
     public function down()
     {
         // Remove contraint name
-        $this->dropConstraint('document_type', 'constraint_name');
+        $this->dropConstraint('document_type', 'name');
         
         // Remove column
         $this->removeColumn('document_type', 'required');

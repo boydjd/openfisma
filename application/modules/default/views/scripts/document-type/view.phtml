@@ -1,5 +1,5 @@
 <?php
-echo $this->escape($this->partial('document-type/searchbox.phtml'), 'none');
+echo $this->partial('document-type/searchbox.phtml');
 
 $operation = '';
 if ($this->acl()->hasPrivilegeForObject('update', $this->subject)) {

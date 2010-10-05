@@ -5,6 +5,10 @@
 # Uncomment the following line to put the application into development mode.
 #SetEnv APPLICATION_ENV development
 
+SetEnvIf User-Agent ".*MSIE.*" \
+nokeepalive ssl-unclean-shutdown \
+downgrade-1.0 force-response-1.0
+
 RewriteEngine On
 
 # This rewrite rule allow us to version static files

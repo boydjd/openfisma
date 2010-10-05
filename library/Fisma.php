@@ -103,23 +103,6 @@ class Fisma
     private static $_rootPath;
     
     /**
-     * An array of include paths for the application. This is where PHP will search for include
-     * files, such as autoloaded classes.
-     * These are relative to the root path. The most used paths should be at the top.
-     * 
-     * @see $_includePath;
-     * @var array;
-     */
-    private static $_includePath = array(
-        'doctrine-models' => 'application/models/generated',
-        'model' => 'application/models',
-        'controller' => 'application/controllers',
-        'listener' => 'application/models/listener',
-        'library' => 'library',
-        'pear' => 'library/Pear'
-    );
-   
-    /**
      * An array of paths to special parts of the application, such as the log directory, cache directory, etc.
      * These are relative to the root path.
      * 
@@ -490,8 +473,8 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
         
-        if (isset(self::$_includePath[$key])) {
-            return self::$_rootPath . '/' . self::$_includePath[$key];
+        if (isset(self::$_appConf['includePaths'][$key])) {
+            return self::$_appConf['includePaths'][$key];
         } elseif (isset(self::$_applicationPath[$key])) {
             return self::$_rootPath . '/' . self::$_applicationPath[$key];
         } else {

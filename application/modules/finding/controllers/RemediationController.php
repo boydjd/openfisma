@@ -430,7 +430,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
         return $organizations;
     }
-    
+
     /**
      * View details of a finding object
      * 

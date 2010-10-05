@@ -149,7 +149,7 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: CVSS Vector
-        deletedAt:
+        deleted_at:
             type: timestamp
             comment: Column for soft-delete
             extra:
