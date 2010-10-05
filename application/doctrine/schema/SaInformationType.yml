@@ -1,0 +1,24 @@
+SaInformationType:
+    listeners: [IndexListener]
+
+    columns:
+        name:
+            type: string
+            notnull: true
+        description:
+            type: string 
+        category:
+            type: string
+            notnull: true
+        confidentiality:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            notnull: true
+        integrity:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            notnull: true
+        availability:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            notnull: true

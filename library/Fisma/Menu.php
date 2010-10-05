@@ -181,6 +181,15 @@ class Fisma_Menu
             $mainMenuBar->add($systemInventoryMenu);
         }
 
+        // Security Authorization submenu
+        if ($acl->hasArea('security_authorization')) {
+            $saMenu = new Fisma_Yui_Menu('Security Authorization');
+            $saMenu->add(
+                new Fisma_Yui_MenuItem('Information Types', '/sa/informationType')
+            );
+            $mainMenuBar->add($saMenu);
+        }
+
         $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
 
         if ($incidentModule && $incidentModule->enabled && $acl->hasArea('incident')) {

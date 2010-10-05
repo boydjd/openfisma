@@ -1,0 +1,253 @@
+SaInformationType:
+    coca:
+        name: Corrective Action (Policy/Regulation)
+        category: Controls and Oversight
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    cope:
+        name: Program Evaluation
+        category: Controls and Oversight
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    copm:
+        name: Program Monitoring
+        category: Controls and Oversight
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    rdpgd:
+        name: Policy and Guidance Development
+        category: Regulatory Development
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    rdpct:
+        name: Public Comment Tracking
+        category: Regulatory Development
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    rdrc:
+        name: Regulatory Creation
+        category: Regulatory Development
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    rdrp:
+        name: Rule Publication
+        category: Regulatory Development
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbbf:
+        name: Budget Formulation
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbcp:
+        name: Capital Planning
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbea:
+        name: Enterprise Architecture
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbsp:
+        name: Strategic Planning
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbbe:
+        name: Budget Execution
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbwp:
+        name: Workforce Planning
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbmi:
+        name: Management Improvement
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbbpi:
+        name: "Budgeting & Performance Integration"
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    pbtfp:
+        name: Tax and Fiscal Policy
+        category: Planning and Budgeting
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    irmmcp:
+        name: Contingency Planning
+        category: Internal Risk Management and Mitigation
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    irmmco:
+        name: Continuity of Operations
+        category: Internal Risk Management and Mitigation
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    irmmsr:
+        name: Service Recovery
+        category: Internal Risk Management and Mitigation
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    rcdc:
+        name: Debt Collection
+        category: Revenue Collection
+        confidentiality: MODERATE
+        integrity: LOW
+        availability: LOW
+    rcufc:
+        name: User Fee Collection
+        category: Revenue Collection
+        confidentiality: LOW
+        integrity: LOW
+        availability: MODERATE
+    rcfas:
+        name: Federal Asset Sales
+        category: Revenue Collection
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: LOW
+    pacs:
+        name: Customer Services
+        category: Public Affairs
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    paoid:
+        name: Official Information Dissemination
+        category: Public Affairs
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    papo:
+        name: Product Outreach
+        category: Public Affairs
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    papr:
+        name: Public Relations
+        category: Public Affairs
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    lrlt:
+        name: Legislation Tracking
+        category: Legislative Relations
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    lrlte:
+        name: Legislation Testimony
+        category: Legislative Relations
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    lrpd:
+        name: Proposal Development
+        category: Legislative Relations
+        confidentiality: MODERATE 
+        integrity: LOW
+        availability: LOW
+    lrclo:
+        name: Congressional Liason Operations
+        category: Legislative Relations
+        confidentiality: MODERATE
+        integrity: LOW
+        availability: LOW
+    ggcfo:
+        name: Central Fiscal Operations
+        category: General Government
+        confidentiality: MODERATE
+        integrity: LOW
+        availability: LOW
+    gglf:
+        name: Legislative Functions
+        category: General Government
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    ggef:
+        name: Executive Functions
+        category: General Government
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    ggcpropm:
+        name: Central Property Management
+        category: General Government
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    ggcpersm:
+        name: Central Personnel Management
+        category: General Government
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+    ggtm:
+        name: Taxation Management
+        category: General Government
+        confidentiality: MODERATE 
+        integrity: LOW
+        availability: LOW
+    ggcrsm:
+        name: Central Records and Statistics Management
+        category: General Government
+        confidentiality: MODERATE 
+        integrity: LOW
+        availability: LOW
+    ggii:
+        name: Income Information
+        category: General Government
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    ggpia:
+        name: Personal Identity and Authentication
+        category: General Government
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    ggeei:
+        name: Entitlement Event Information
+        category: General Government
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    ggrpi:
+        name: Representative Payee Information
+        category: General Government
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: MODERATE
+    gggi:
+        name: General Information
+        category: General Government
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
