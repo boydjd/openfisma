@@ -105,7 +105,7 @@ Fisma.Email = function() {
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type);
+                    message(data.msg, data.type, true);
                     spinner.hide();
                 },
                 failure : function(o) {

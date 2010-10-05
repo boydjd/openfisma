@@ -50,8 +50,30 @@ class ECDNotifier
      */
     public function __construct()
     {
-        require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+        defined('APPLICATION_ENV')
+            || define(
+                'APPLICATION_ENV',
+                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+            );
+        defined('APPLICATION_PATH') || define(
+            'APPLICATION_PATH',
+            realpath(dirname(__FILE__) . '/../../application')
+        );
 
+        set_include_path(
+            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
+            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
+            get_include_path()
+        );
+
+        require_once 'Fisma.php';
+        require_once 'Zend/Application.php';
+
+        $application = new Zend_Application(
+            APPLICATION_ENV,
+            APPLICATION_PATH . '/config/application.ini'
+        );
+        Fisma::setAppConfig($application->getOptions());
         Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
         Fisma::setConfiguration(new Fisma_Configuration_Database());
         Fisma::connectDb();
@@ -65,15 +87,20 @@ class ECDNotifier
      */
     static function run() 
     {
+        $expirationDates = array(
+            date('Y-m-d'),
+            date('Y-m-d', time() + 7 * 3600 * 24),
+            date('Y-m-d', time() + 14 * 3600 * 24),
+            date('Y-m-d', time() + 21 * 3600 * 24)
+        );
+
         // Get all findings which expire today, or 7/14/21 days from now
         $query = Doctrine_Query::create()
                     ->select('f.id, f.currentEcd, f.responsibleOrganizationId')
                     ->from('Finding f')
                     ->where('f.status != ?', 'CLOSED')
-                    ->addWhere('f.currentEcd = ?', date('Y-m-d'))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 7 * 3600 * 24))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 14 * 3600 * 24))
-                    ->orWhere('f.currentEcd = ?', date('Y-m-d', time() + 21 * 3600 * 24));
+                    ->andWhereIn('f.currentEcd', $expirationDates);
+
         $expiringFindings = $query->execute();
         // Now iterate through the findings and create the appropriate
         // notifications

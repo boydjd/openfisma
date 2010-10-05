@@ -23,6 +23,13 @@ try {
             realpath(dirname(__FILE__) . '/../application')
         );
 
+    // Define application environment
+    defined('APPLICATION_ENV')
+        || define(
+            'APPLICATION_ENV',
+            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+        );
+
     set_include_path(
         APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR . 
         APPLICATION_PATH . '/../library' .  PATH_SEPARATOR . 
@@ -32,41 +39,13 @@ try {
     require_once 'Fisma.php';
     require_once 'Zend/Application.php';
 
-    Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
-    
-    if (Fisma::isInstall()) {
-        $application = new Zend_Application(
-            'production',
-            APPLICATION_PATH . '/config/application.ini'
-        );
-    } else {
-        // If the application isn't installed, we need to create a basic configuration to allow the application to
-        // bootstrap and install.
-        $config = array(
-            'bootstrap' => array(
-                'path' => APPLICATION_PATH . "/Bootstrap.php",
-                'class' => 'Bootstrap',
-                'container' => array(
-                    'type' => 'symfony'
-                )
-             ),
-             'resources' =>
-                array(
-                   'frontcontroller' => array(
-                       'controllerdirectory' => APPLICATION_PATH . '/controllers'
-                   )
-                ),
-             'includePaths' =>
-                array(
-                    'library' => APPLICATION_PATH . '/../library'
-                ),
-        );
+    $application = new Zend_Application(
+        APPLICATION_ENV,
+        APPLICATION_PATH . '/config/application.ini'
+    );
 
-        $application = new Zend_Application(
-            'production',
-            new Zend_Config($config)
-        );
-    }
+    Fisma::setAppConfig($application->getOptions());
+    Fisma::initialize(Fisma::RUN_MODE_WEB_APP);
 
     $application->bootstrap()->run();
 } catch (Zend_Config_Exception $zce) {

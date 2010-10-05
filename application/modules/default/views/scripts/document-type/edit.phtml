@@ -1,0 +1,12 @@
+<?php 
+echo $this->partial('document-type/searchbox.phtml');
+
+$operation = "[<a href='{$this->escape($this->viewLink)}'>View</a>]";
+Fisma_Format_Section::startSection("Document Type Information</b> $operation");
+?>
+
+<div class="form_box">
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>

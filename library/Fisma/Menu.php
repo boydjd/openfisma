@@ -143,6 +143,14 @@ class Fisma_Menu
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
 
+                if ($acl->hasPrivilegeForClass('read', 'Product')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
+                }
+
+                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
+                }
+
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
@@ -162,6 +170,13 @@ class Fisma_Menu
                     new Fisma_Yui_MenuItem(
                         'Security Authorizations', 
                         '/organization-report/security-authorization/format/html'
+                    )
+                );
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem(
+                        'Documentation Compliance', 
+                        '/organization-report/documentation-compliance/format/html'
                     )
                 );
 

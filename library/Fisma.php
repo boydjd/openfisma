@@ -103,23 +103,37 @@ class Fisma
     private static $_rootPath;
     
     /**
-     * An array of include paths for the application. This is where PHP will search for include
-     * files, such as autoloaded classes.
+     * An array of paths to special parts of the application, such as the log directory, cache directory, etc.
+     * These are relative to the root path.
      * 
      * @see $_includePath;
      * @var array;
      */
-    private static $_includePath;
-    
-    /**
-     * An array of paths to special parts of the application, such as the log directory, cache directory,
-     * etc. This is separate from $_includePath because 
-     * 
-     * @see $_includePath;
-     * @var array;
-     */
-    private static $_applicationPath;
-    
+    private static $_applicationPath = array(
+        'application' => 'application',
+        'cache' => 'data/cache',
+        'config' => 'application/config',
+        'data' => 'data',
+        'fixture' => 'application/doctrine/data/fixtures',
+        'form' => 'application/modules/default/forms',
+        'image' => 'public/images',
+        'index' => 'data/index',
+        'layout' => 'application/layouts/scripts',
+        'listener' => 'application/models/listener',
+        'log' => 'data/logs',
+        'migration' => 'application/doctrine/migrations',
+        'sampleData' => 'application/doctrine/data/sample',
+        'sampleDataBuild' => 'application/doctrine/data/sample-build',
+        'schema' => 'application/doctrine/schema',
+        'scripts' => 'scripts',
+        'systemDocument' => 'data/uploads/system-document',
+        'temp' => 'data/temp',
+        'test' => 'tests',
+        'uploads' => 'data/uploads',
+        'viewHelper' => 'application/modules/default/views/helpers',
+        'yui' => 'public/yui'
+    );
+   
     /**
      * A single instance of Zend_Log which the application components share
      * 
@@ -180,110 +194,26 @@ class Fisma
         // Determine the root path of the application. This is based on knowing where this file is relative
         // to the root. So if this file moves, then this logic won't work anymore.
         self::$_rootPath = realpath(dirname(__FILE__) . '/../');
-
-        // Set up include paths. These are relative to the root path. The most used paths should be at the top.
-        self::$_includePath = array(
-            'doctrine-models' => 'application/models/generated',
-            'model' => 'application/models',
-            'controller' => 'application/controllers',
-            'listener' => 'application/models/listener',
-            'library' => 'library',
-            'pear' => 'library/Pear'
-        );
         
-        // Prepend the include paths to PHP's path.
-        // I discovered that PEAR has a class called "System". If the user has this class, then PEAR's System
-        // may override OpenFISMA's. For this reason, OpenFISMA's include path is prepended to the user's default
-        // path, instead of appended... to prevent any user libraries from clashing with our own.
-        $currentPath = '';
-        foreach (self::$_includePath as $path) {
-            $currentPath .= PATH_SEPARATOR . realpath(self::$_rootPath . '/' . $path);
-        }
-        set_include_path($currentPath . PATH_SEPARATOR . get_include_path());
-
         // Enable the Zend autoloader. This depends on the Zend library being in its expected place.
         require_once(self::$_rootPath . '/library/Zend/Loader/Autoloader.php');
         $loader = Zend_Loader_Autoloader::getInstance();
-        $loader->registerNamespace('Fisma_');
         $loader->setFallbackAutoloader(true);
 
         // Set the initialized flag
         self::$_initialized = true;
         
-        // Set up application paths. These are relative to the root path.
-        self::$_applicationPath = array(
-            'application' => 'application',
-            'cache' => 'data/cache',
-            'config' => 'application/config',
-            'data' => 'data',
-            'fixture' => 'application/doctrine/data/fixtures',
-            'form' => 'application/modules/default/forms',
-            'image' => 'public/images',
-            'index' => 'data/index',
-            'layout' => 'application/layouts/scripts',
-            'listener' => 'application/models/listener',
-            'log' => 'data/logs',
-            'migration' => 'application/doctrine/migrations',
-            'sampleData' => 'application/doctrine/data/sample',
-            'sampleDataBuild' => 'application/doctrine/data/sample-build',
-            'schema' => 'application/doctrine/schema',
-            'scripts' => 'scripts',
-            'systemDocument' => 'data/uploads/system-document',
-            'temp' => 'data/temp',
-            'test' => 'tests',
-            'uploads' => 'data/uploads',
-            'viewHelper' => 'application/modules/default/views/helpers',
-            'yui' => 'public/yui'
-        );
-
-        // Load the system configuration
-        $appConfFile = self::$_rootPath . '/' . self::$_applicationPath['config'] . '/application.ini';
-        if (file_exists($appConfFile)) {
-            $conf = new Zend_Config_Ini($appConfFile);
-            if ('production' == $conf->environment) {
-                self::$_appConf = $conf->production;
-            } elseif ('development' == $conf->environment) {
-                self::$_appConf = $conf->development;
-            } else {
-                throw new Fisma_Zend_Exception(
-                    "The environment parameter in application.ini must be either \"production\""
-                                        . " or \"development\" but it's actually \"$conf->environment\""
-                );
-            }
-    
-            // PHP configuration
-            $phpOptions = self::$_appConf->php->toArray();
-            foreach ($phpOptions as $param => $value) {
-                ini_set($param, $value);
-            }
-    
-            // Xdebug configuration
-            if (isset(self::$_appConf->xdebug)) {
-                foreach (self::$_appConf->xdebug as $param => $value) {
-                    ini_set("xdebug.$param", $value);
-                }
-            }
-
-            // Timezone configuration
-            if (isset(self::$_appConf->timezone)) {
-                ini_set("date.timezone", self::$_appConf->timezone);
-            } else {
-                ini_set("date.timezone", "America/New_York");
-            }
-
-            // Log all PHP errors
-            ini_set('error_reporting', E_ALL | E_STRICT);
-            ini_set('log_errors', TRUE);
-            ini_set('error_log', self::$_rootPath . '/data/logs/php.log');
-
-            // Session configuration
-            $sessionOptions = self::$_appConf->session->toArray();
-            $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
-            Zend_Session::setOptions($sessionOptions);
-            self::$_isInstall = true;
+        // Timezone configuration
+        if (isset(self::$_appConf['timezone'])) {
+            ini_set("date.timezone", self::$_appConf['timezone']);
         } else {
-            self::$_isInstall = false;
+            ini_set("date.timezone", "America/New_York");
         }
+
+        // Session configuration
+        $sessionOptions = self::$_appConf['session'];
+        $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
+        Zend_Session::setOptions($sessionOptions);
         
         // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
@@ -296,7 +226,7 @@ class Fisma
      */
     public static function isInstall()
     {
-        return self::$_isInstall;
+        return true;
     }
     
     /**
@@ -322,13 +252,13 @@ class Fisma
     {
         // Connect to the database
         if (self::mode() != self::RUN_MODE_TEST) {
-            $db = self::$_appConf->db;
+            $db = self::$_appConf['db'];
         } else {
-            $db = self::$_appConf->testdb;
+            $db = self::$_appConf['testdb'];
         }
-        $connectString = $db->adapter . '://' . $db->username . ':' 
-                         . $db->password . '@' . $db->host 
-                         . ($db->port ? ':' . $db->port : '') . '/' . $db->schema;
+        $connectString = $db['adapter'] . '://' . $db['username'] . ':' 
+                         . $db['password'] . '@' . $db['host'] 
+                         . ($db['port'] ? ':' . $db['port'] : '') . '/' . $db['schema'];
 
         Doctrine_Manager::connection($connectString);
         $manager = Doctrine_Manager::getInstance();
@@ -519,10 +449,10 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
 
-        if (!isset(self::$_appConf->debug)) {
+        if (!isset(self::$_appConf['debug'])) {
             return false;
         } else {
-            return (self::$_appConf->debug == 1);
+            return (self::$_appConf['debug'] == 1);
         }
     }
    
@@ -543,8 +473,8 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
         
-        if (isset(self::$_includePath[$key])) {
-            return self::$_rootPath . '/' . self::$_includePath[$key];
+        if (isset(self::$_appConf['includePaths'][$key])) {
+            return self::$_appConf['includePaths'][$key];
         } elseif (isset(self::$_applicationPath[$key])) {
             return self::$_rootPath . '/' . self::$_applicationPath[$key];
         } else {
@@ -714,5 +644,13 @@ class Fisma
     public static function htmlentities($value)
     {
         return htmlentities($value, ENT_COMPAT, 'UTF-8', FALSE);
+    }
+
+    /**
+     * @todo
+     */
+    public static function setAppConfig(array $config)
+    {
+        self::$_appConf = $config;
     }
 }

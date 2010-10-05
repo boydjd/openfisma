@@ -217,9 +217,6 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
      */
     public function disableLayout()
     {    
-        // Session cache limiter fixes bugs in IE6 and IE7 when sending files over SSL connection
-        session_cache_limiter(false);
-
         Zend_Layout::getMvcInstance()->disableLayout();
     }
     

@@ -33,11 +33,11 @@
 class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Action_Helper_Abstract
 {
     /**
-     * Overridden preDispatch hook to do security checking
+     * Overridden init hook to do security checking
      *
      * @return void
      */
-    public function preDispatch()
+    public function init()
     {
         if (!$this->_authenticationRequired()) {
             return;
@@ -45,18 +45,27 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
 
         $currentUser = CurrentUser::getInstance();
 
-        $controller = $this->getActionController();
-
-        if ($currentUser != null) {
-            // Setup the ACL view helper
-            $controller->view->getHelper('acl')->setAcl($currentUser->acl());
-        } else {
+        if (is_null($currentUser)) {
             // store original requested URL in session for the login script to redirect to
             $session = Fisma::getSession();
             $session->redirectPage = $_SERVER['REQUEST_URI'];
 
             $message = 'Your session has expired. Please log in again to begin a new session.';
             throw new Fisma_Zend_Exception_InvalidAuthentication($message);
+        }
+    }
+
+    /**
+     * Overridden preDispatch hook to set user's ACL 
+     * 
+     * @return void
+     */
+    public function preDispatch()
+    {
+        $currentUser = CurrentUser::getInstance();
+
+        if ($currentUser != null) {
+            $this->getActionController()->view->getHelper('acl')->setAcl($currentUser->acl());
         }
     }
 

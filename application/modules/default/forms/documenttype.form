@@ -1,0 +1,32 @@
+; This is the form for documenttype.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ben Zheng <ben.zheng@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[documenttype]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.name.type = "text"
+elements.name.options.label = "Document Type Name"
+elements.name.options.validators.alnum.validator = "NotEmpty"
+elements.name.options.required = true
+displayGroups.document_type.elements.name = "name"
+
+elements.required.type = "checkbox"
+elements.required.options.label = "Required"
+elements.required.options.validators.alnum.validator = "Digits"
+elements.required.options.validators.between.validator = "between"
+elements.required.options.validators.between.options.min = "0"
+elements.required.options.validators.between.options.max = "1"
+displayGroups.document_type.elements.required = "required"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.document_type.elements.save = "save"
+

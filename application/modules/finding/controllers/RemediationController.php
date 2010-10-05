@@ -642,6 +642,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->view->assign('systems', $systemList);
         $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
         $this->view->assign('pageInfo', $this->_paging);
+        $this->view->assign('csrfToken', $this->_helper->csrf->getToken());
 
         $this->render('searchbox');
         $this->render('search');
