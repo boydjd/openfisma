@@ -155,7 +155,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (is_null($this->_modelName)) {
             throw new Fisma_Zend_Exception('Subclasses of the BaseController must specify the _modelName field');
         }
-        
+
         $this->_helper->reportContextSwitch()
                       ->addActionContext('search', array('pdf', 'xls'))
                       ->initContext();
@@ -397,7 +397,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
-        
+
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('delete', $subject);
         }
@@ -490,11 +490,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             $currentColumn++;
 
-            $column = new Fisma_Yui_DataTable_Column($label, 
-                                                     $sortable, 
-                                                     "YAHOO.widget.DataTable.formatText", 
-                                                     null, 
-                                                     $fieldName, 
+            $column = new Fisma_Yui_DataTable_Column($label,
+                                                     $sortable,
+                                                     "YAHOO.widget.DataTable.formatText",
+                                                     null,
+                                                     $fieldName,
                                                      !$visible);
 
             $searchResultsTable->addColumn($column);
@@ -503,17 +503,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchForm = $this->getSearchForm();
         $searchForm->getElement('modelName')->setValue($this->_modelName);
         $this->view->searchForm = $searchForm;
-        
+
         $searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
         $this->view->searchMoreOptionsForm = $searchMoreOptionsForm;
-        
+
         // If there is an advanced parameter, switch the form default from simple to advanced.
         if ($this->getRequest()->getParam('advanced')) {
             $searchForm->getElement('searchType')->setValue('advanced');
             $searchForm->getElement('keywords')->setAttrib('style', 'visibility: hidden;');
-            
+
             $searchMoreOptionsForm->getElement('advanced')->setAttrib('checked', 'true');
-            
+
             $searchResultsTable->setDeferData(true);
         }
 
@@ -556,11 +556,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Setup search parameters
         $sortColumn = $this->getRequest()->getParam('sort');
 
+        $searchableFields = Doctrine::getTable($this->_modelName)->getSearchableFields();
+
         if (empty($sortColumn)) {
             // Pick the first searchable column as the default sort column
-            $searchableFields = array_keys(Doctrine::getTable($this->_modelName)->getSearchableFields());
+            $fieldNames = array_keys($searchableFields);
 
-            $sortColumn = $searchableFields[0];
+            $sortColumn = $fieldNames[0];
         }
 
         $sortDirection = $this->getRequest()->getParam('dir', 'asc');
@@ -616,11 +618,64 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             );
         }
 
-        $searchResults['recordsReturned'] = $result->getNumberReturned();
-        $searchResults['totalRecords'] = $result->getNumberFound();
-        $searchResults['records'] = $result->getTableData();
+        // Handle JSON (default), XLS, or PDF requests
+        $format = $this->getRequest()->getParam('format');
 
-        return $this->_helper->json($searchResults);
+        if (empty($format)) {
+            $searchResults['recordsReturned'] = $result->getNumberReturned();
+            $searchResults['totalRecords'] = $result->getNumberFound();
+            $searchResults['records'] = $result->getTableData();
+
+            return $this->_helper->json($searchResults);
+        } else {
+            $report = new Fisma_Report;
+            
+            $cookieName = $this->_modelName . 'Columns';
+
+            if (isset($_COOKIE[$cookieName])) {
+                $visibleColumns = $_COOKIE[$cookieName];
+            }
+
+            $currentColumn = 0;
+
+            // Columns are returned in wrong order and need to be re-arranged
+            $rawSearchData = $result->getTableData();
+            $reformattedSearchData = array();
+            
+            // Create a place holder for each table row. This gets filled in during the following loop.
+            foreach ($rawSearchData as $rawDatum) {
+                $reformattedSearchData[] = array();
+            }
+
+            foreach ($searchableFields as $fieldName => $searchableField) {
+                
+                // Visibility is determined by stored cookie, with fallback to search field definition
+                if (isset($visibleColumns)) {
+                    $visible = (bool)($visibleColumns & (1 << $currentColumn));
+                } else {
+                    $visible = $searchableField['initiallyVisible'];
+                }
+                
+                // For visible columns, display the column in the report and add data from the 
+                // raw result for that column
+                if ($visible) {
+                    $report->addColumn(
+                        new Fisma_Report_Column($searchableField['label'], $searchableFields['sortable'])
+                    );
+
+                    foreach ($rawSearchData as $index => $datum) {
+                        $reformattedSearchData[$index][$fieldName] = $rawSearchData[$index][$fieldName];
+                    }
+                }
+                
+                $currentColumn++;                
+            }
+
+            $report->setTitle('Search Results for ' . $this->getPluralModelName())
+                   ->setData($reformattedSearchData);
+
+            $this->_helper->reportContextSwitch()->setReport($report);
+        }
     }
 
     /**
