@@ -1,0 +1,9 @@
+SecurityAuthorization:
+    columns:
+        systemId: 
+            type: integer
+    relations:
+        System:
+            local: systemId
+            foreign: id
+            foreignAlias: SecurityAuthorizations
