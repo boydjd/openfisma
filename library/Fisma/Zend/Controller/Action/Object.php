@@ -386,7 +386,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         
         $totalRecords = $query->count();
-        $rows         = $query->execute();
+        $rows         = $this->executeSearchQuery($query);
         $rows         = $this->handleCollection($rows);
         $tableData['table']['recordsReturned'] = count($rows);
         $tableData['table']['totalRecords'] = $totalRecords;
@@ -406,6 +406,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function handleCollection($rows)
     {
         return $rows->toArray();
+    }
+
+    /**
+     * Overridable method to execute search query
+     *
+     * @param Doctrine_Query $query The query to be executed
+     * @return Doctrine_Collection Results of the query
+     */
+    public function executeSearchQuery(Doctrine_Query $query)
+    {
+        return $query->execute();
     }
 
     /**
