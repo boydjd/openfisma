@@ -545,6 +545,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
         }
 
+        $format = $this->getRequest()->getParam('format');
+
         //initialize the data rows
         $searchResults = array(
             'startIndex'      => $this->_paging['startIndex'],
@@ -572,6 +574,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Execute simple search (default) or advanced search (if explicitly requested)
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        
+        // For exports, disable highlighting and result length truncation
+        if (!empty($format)) {
+            $searchEngine->setHighlightingEnabled(false);
+            $searchEngine->setMaxRowLength(null);
+        }
 
         $queryType = $this->getRequest()->getParam('queryType');
 
@@ -605,8 +613,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             $keywords = $this->getRequest()->getParam('keywords');
 
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
-
             // Run simple search
             $result = $searchEngine->searchByKeyword(
                 $this->_modelName,
@@ -617,9 +623,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $rows
             );
         }
-
-        // Handle JSON (default), XLS, or PDF requests
-        $format = $this->getRequest()->getParam('format');
+        
+        // Create the appropriate output for the requested format
 
         if (empty($format)) {
             $searchResults['recordsReturned'] = $result->getNumberReturned();

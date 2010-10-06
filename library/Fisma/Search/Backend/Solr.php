@@ -217,11 +217,15 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             // Without keywords, this is just a listing of all documents of a specific type
             $query->setQuery($filterQuery);
         } else {
-            // For keyword searches, use the filter query (for efficient caching) and enable highlighting
-            $query->setHighlight(true)
-                  ->setHighlightSimplePre('***')
-                  ->setHighlightSimplePost('***')
-                  ->addFilterQuery($filterQuery);
+
+            if ($this->getHighlightingEnabled()) {
+                
+                $query->setHighlight(true)
+                      ->setHighlightSimplePre('***')
+                      ->setHighlightSimplePost('***');
+            }            
+
+            $query->addFilterQuery($filterQuery);
 
             // Tokenize keyword on spaces and escape all tokens
             $keywordTokens = split(' ', $trimmedKeyword);
@@ -319,12 +323,17 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                           . ')';
         }
 
-        // Use the filter query (for efficient caching) and enable highlighting
-        $query->setHighlight(true)
-              ->setHighlightSimplePre('***')
-              ->setHighlightSimplePost('***')
-              ->setHighlightRequireFieldMatch(true)
-              ->addFilterQuery($filterQuery);
+        // Enable highlighting
+        if ($this->getHighlightingEnabled()) {
+            
+            $query->setHighlight(true)
+                  ->setHighlightSimplePre('***')
+                  ->setHighlightSimplePost('***')
+                  ->setHighlightRequireFieldMatch(true);
+        }
+            
+        // The filter query is used for efficiency (parts of the query that don't change can be cached separately)
+        $this->addFilterQuery($filterQuery);
 
         // Add the fields which should be returned in the result set and indicate which should be highlighted
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -616,8 +625,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             foreach ($document as $columnName => $columnValue) {
                 $newColumnName = $this->_removeSuffixFromColumnName($columnName);
 
-                if (strlen($columnValue[0]) > self::MAX_ROW_LENGTH) {
-                    $shortValue = substr($columnValue[0], 0, self::MAX_ROW_LENGTH);
+                $maxRowLength = $this->getMaxRowLength();
+
+                if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
+                    $shortValue = substr($columnValue[0], 0, $maxRowLength);
 
                     // Trim after the last white space (so as not to break in the middle of a word)
                     $spacePosition = strrpos($shortValue, ' ');
