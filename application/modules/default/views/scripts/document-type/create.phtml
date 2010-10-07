@@ -1,0 +1,10 @@
+<?php 
+echo $this->partial('document-type/searchbox.phtml');
+
+Fisma_Format_Section::startSection("Create Document Type Information"); ?>
+
+<div class="form_box">
+    <?php echo $this->escape($this->form, 'none');?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>

@@ -160,12 +160,13 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->columns = $this->_assetColumns;
 
         $params = $this->parseCriteria();
-        $this->view->url = '';
+        $parray = array();
         foreach ($params as $k => $v) {
             if (!empty($v)) {
-                $this->view->url .= '/'.$k.'/'.$v;
+                $parray[] = $this->view->escape($k, 'url') . '=' . $this->view->escape($v, 'url');
             }
         }
+        $this->view->url = '?' . implode('&', $parray);
         parent::listAction();
     }
     

@@ -58,15 +58,23 @@
                       name="finding[sourceId]" 
                       href="/metainfo/list/o/source/format/html/"
                       value="<?php echo $this->escape($finding->Source->id); ?>">
-                     <a href="/finding/source/view/id/<?php echo $this->escape($finding->Source-id); ?>">
-                         <?php echo $this->escape($finding->Source->nickname);?> 
-                         - <?php echo $this->escape($finding->Source->name);?>
-                    </a>
+                      <?php
+                      $sourceName = $finding->Source->nickname . ' - ' . $finding->Source->name;
+                      if ($this->acl()->hasPrivilegeForObject('read', $finding->Source)):
+                      ?>
+                          <a href="/finding/source/view/id/<?php echo $this->escape($finding->Source->id); ?>">
+                             <?php echo $this->escape($sourceName);?>
+                          </a>
+                      <?php
+                      else:
+                          echo $this->escape($sourceName);
+                      endif;
+                      ?>
                 </span>
 
                 <?php
                 if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-                     && $this->acl()->hasPrivilegeForClass('update', 'Source')):
+                     && $this->acl()->hasPrivilegeForObject('update_finding_source', $finding)):
                 ?>
                     <span class="editable" target="source">&nbsp;</span>
                 <?php 

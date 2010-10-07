@@ -93,15 +93,32 @@ class Test_Library_Fisma_Cookie extends Test_FismaUnitTest
      */
     public function testPrepareCookieWithoutSecureOptions($name, $value, $secure, array $expected)
     {
+        if (Zend_Session::getOptions('cookie_secure')) {
+            $this->markTestSkipped(
+                'Secure cookies are enabled, so this test cannot be run.'
+            );
+        }
         $cookie = Fisma_Cookie::prepare($name, $value);
         $this->assertFalse((boolean) $cookie['secure']);
     }
 
+    /**
+     * testSet 
+     * 
+     * @access public
+     * @return void
+     */
     public function testSet()
     {
         Fisma_Cookie::set('hi', 'there');
     }
 
+    /**
+     * testSetInWebAppMode 
+     * 
+     * @access public
+     * @return void
+     */
     public function testSetInWebAppMode()
     {
         Fisma::initialize(Fisma::RUN_MODE_WEB_APP);

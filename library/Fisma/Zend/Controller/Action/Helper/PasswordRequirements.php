@@ -34,10 +34,8 @@ class Fisma_Zend_Controller_Action_Helper_PasswordRequirements extends Zend_Cont
      */
     public function direct()
     {
-        $requirements[] = "Length must be between "
+        $requirements[] = "Length must be at least "
         . Fisma::configuration()->getConfig('pass_min_length')
-        . " and "
-        . Fisma::configuration()->getConfig('pass_max_length')
         . " characters long.";
         if (Fisma::configuration()->getConfig('pass_uppercase') == 1) {
             $requirements[] = "Must contain at least 1 upper case character (A-Z)";

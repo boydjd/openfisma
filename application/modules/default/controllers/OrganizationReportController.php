@@ -35,6 +35,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('personnel', array('html', 'pdf', 'xls'))
                       ->addActionContext('privacy', array('html', 'pdf', 'xls'))
                       ->addActionContext('security-authorization', array('html', 'pdf', 'xls'))
+                      ->addActionContext('documentation-compliance', array('html', 'pdf', 'xls'))
                       ->initContext();
     }
 
@@ -191,5 +192,45 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);        
-    }    
+    }
+
+    /**
+     * Generate documentation compliance report
+     */
+    public function documentationComplianceAction()
+    {
+        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocuments();
+
+        $systemData = array();
+        $documentType = Doctrine::getTable('DocumentType');
+        foreach ($systemDocuments as $systemDocument) {
+            $systemData[] = array(
+                $systemDocument['o_name'],
+                $systemDocument['dt_percentage'],
+                $documentType->getMissingDocumentTypeName($systemDocument['s_id'])
+            );
+        }
+
+        $report = new Fisma_Report();
+                
+        $report->setTitle('Documentation Compliance Report')
+               ->addColumn(new Fisma_Report_Column('System', true))
+               ->addColumn(
+                   new Fisma_Report_Column(
+                       'Percentage',
+                       true,
+                       'Fisma.TableFormat.completeDocTypePercentage'
+                   )
+               )
+               ->addColumn(
+                   new Fisma_Report_Column(
+                       'Incomplete', 
+                       true,
+                       'Fisma.TableFormat.incompleteDocumentType'
+                   )
+               )
+               ->setData($systemData);
+
+        $this->_helper->reportContextSwitch()->setReport($report);
+    }
 }

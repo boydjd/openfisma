@@ -94,6 +94,16 @@ Event:
         description: A Locked ECD Was Overridden
         Privilege: notification_finding
 
+    UPDATE_LEGACY_FINDING_KEY:
+        name: UPDATE_LEGACY_FINDING_KEY
+        description: Legacy Finding Key For Finding Updated
+        Privilege: notification_finding
+
+    UPDATE_FINDING_SOURCE:
+        name: UPDATE_FINDING_SOURCE
+        description: Source For Finding Updated
+        Privilege: notification_finding
+
     FINDING_CLOSED:
         name: FINDING_CLOSED
         description: Finding Was Closed
@@ -304,3 +314,18 @@ Event:
         # Obviously not ideal to tie this to a finding privilege, but we need to reorganize the notifications and that
         # is out of scope for the time being.
         Privilege: notification_finding
+
+    DOCUMENT_TYPE_UPDATED:
+        name: DOCUMENT_TYPE_UPDATED
+        description: Document Type Modified
+        Privilege: notification_admin
+
+    DOCUMENT_TYPE_CREATED:
+        name: DOCUMENT_TYPE_CREATED
+        description: Document Type Created
+        Privilege: notification_admin
+
+    DOCUMENT_TYPE_DELETED:
+        name: DOCUMENT_TYPE_DELETED
+        description: Document Type Deleted
+        Privilege: notification_admin

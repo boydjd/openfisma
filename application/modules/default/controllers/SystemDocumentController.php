@@ -105,8 +105,8 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Security
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
 
         // Convert YUI column name to Doctrine column name
-        $sortBy{strpos('_', $sortBy) + 1} = '.';
-        
+        $sortBy{strpos($sortBy, '_')} = '.';
+
         if ($order != 'desc') {
             $order = 'asc'; //ignore other values
         }

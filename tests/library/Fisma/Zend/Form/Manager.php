@@ -38,7 +38,7 @@ class Test_Library_Fisma_Zend_Form_Manager extends Test_FismaUnitTest
     public function testPrepareForm()
     {
         // test that the StringTrim filter is added to each form element
-        $form = new Zend_Form('myform');
+        $form = new Fisma_Zend_Form('myform');
         $form->addElement(new Zend_Form_Element('myelem'));
         $formResult = Fisma_Zend_Form_Manager::prepareForm($form);
         foreach ($formResult->getElements() as $element) {

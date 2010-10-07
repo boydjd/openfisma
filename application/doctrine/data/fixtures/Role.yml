@@ -16,6 +16,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -79,6 +80,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -127,6 +129,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment            
             - findings_mitigation_strategy_submit
@@ -180,6 +183,7 @@ Role:
             - findings_update_ecd
             - findings_update_locked_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -250,6 +254,11 @@ Role:
             - vulnerability_accept_risk
             - vulnerability_false_positive
             - notification_vulnerability
+            - user_read
+            - document_type_create
+            - document_type_read
+            - document_type_update
+            - document_type_delete
 
     certagent_role:
         name: Certification Agent
@@ -263,6 +272,7 @@ Role:
             - findings_update_threat
             - findings_update_finding_recommendation
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_comment
             - notification_finding
             - vulnerability_area
@@ -289,6 +299,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit
@@ -336,6 +347,7 @@ Role:
             - findings_update_finding_resources
             - findings_update_ecd
             - findings_update_legacy_finding_key
+            - findings_update_finding_source
             - findings_upload_evidence
             - findings_comment
             - findings_mitigation_strategy_submit

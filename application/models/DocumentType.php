@@ -27,5 +27,20 @@
  */
 class DocumentType extends BaseDocumentType
 {
-
+    /**
+     * preDelete 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if (count($this->Uploads) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This document type cannot be deleted because it is already associated with '
+                . 'one or more system documents.'
+            );
+        }
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,8 +19,8 @@
 /**
  * An encapsulation for audit log that is a proxy for getting the audit log value 
  * 
- * @author     Mark Ma <markjtma@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Mark Ma <mark.ma@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_AuditLoggable

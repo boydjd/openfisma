@@ -96,9 +96,6 @@ class Fisma_Zend_Form_Validate_Password extends Zend_Validate_Abstract
             self::PASS_MIN => 'must be at least ' 
                             . Fisma::configuration()->getConfig('pass_min_length') 
                             . ' characters long',
-            self::PASS_MAX => 'must not be more than ' 
-                            . Fisma::configuration()->getConfig('pass_max_length') 
-                            . ' characters long',
             self::PASS_UPPERCASE=>'must contain at least 1 uppercase letter (A-Z)',
             self::PASS_LOWERCASE=>'must contain at least 1 lowercase letter (a-z)',
             self::PASS_NUMERICAL=>'must contain at least 1 numeric digit (0-9)',
@@ -120,10 +117,6 @@ class Fisma_Zend_Form_Validate_Password extends Zend_Validate_Abstract
         if (strlen($pass) < Fisma::configuration()->getConfig('pass_min_length')) {
             $errno++;
             $this->_error(self::PASS_MIN);
-        }
-        if (strlen($pass) > Fisma::configuration()->getConfig('pass_max_length')) {
-            $errno++;
-            $this->_error(self::PASS_MAX);
         }
         if (true == Fisma::configuration()->getConfig('pass_uppercase')) {
             if ( false == preg_match("/[A-Z]+/", $pass)) {

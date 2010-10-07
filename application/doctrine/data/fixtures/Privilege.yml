@@ -150,6 +150,10 @@ Privilege:
         resource: finding
         action: update_legacy_finding_key
         description: Update Legacy Finding Key
+    findings_update_finding_source:
+        resource: finding
+        action: update_finding_source
+        description: Update Finding Source
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
@@ -429,3 +433,20 @@ Privilege:
         action: delete
         description: Delete IR Categories and IR Sub Categories
 
+    # Document Type CRUD
+    document_type_create:
+        resource: document_type
+        action: create
+        description: Create Document Type
+    document_type_read:
+        resource: document_type
+        action: read
+        description: View Document Type
+    document_type_update:
+        resource: document_type
+        action: update
+        description: Edit Document Type
+    document_type_delete:
+        resource: document_type
+        action: delete
+        description: Delete Document Type

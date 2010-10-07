@@ -81,7 +81,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
         parent::init();
         
         $this->_paging['count'] = 10;
-        $this->_paging['startIndex'] = 0;
     }
    
    /**
@@ -96,6 +95,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
         if (!$module->enabled) {
             throw new Fisma_Zend_Exception('This module is not enabled.');
         }
+
+        $this->_paging['startIndex'] = $this->getRequest()->getParam('startIndex', 0);
     }
 
     /**
@@ -1043,8 +1044,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
                     $incidentActor->userId = $user->id;
                     $incidentActor->incidentId = $incident->id;
                     $incidentActor->accessType = 'ACTOR';
-                                        
-                    $incidentActor->save();
+
+                    $incidentActor->replace();
                 }            
 
                 // Success message

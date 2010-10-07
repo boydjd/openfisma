@@ -116,30 +116,14 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                     $newValue = $invoker->$field;
 
                     //if the field is a foreign key and an id type, then get the name from foreign table
-                    if ($relation = $this->_fieldHasRelation($invoker->getTable(), $field)) {
+                    $relation = $this->_fieldHasRelation($invoker->getTable(), $field);
+                    if ($relation) {
                         if ($oldValue) {
-                            $record = $relation->getTable()->findOneById($oldValue);
-
-                            // For SecurityControl name, it needs to combine the names in SecurityControl table and
-                            // SecurityControlCatalog table to be an unique name.
-                            if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
-                                $oldValue = $record->getAuditLogValue();
-                            } else { 
-                                if ($record->contains('name')) {
-                                    $oldValue = $record->name;
-                                }
-                            }
+                            $oldValue = $this->_getRelationFieldName($relation, $oldValue);
                         }
 
                         if ($newValue) {
-                            $record = $relation->getTable()->findOneById($newValue);
-                            if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
-                                $newValue = $record->getAuditLogValue();
-                            } else { 
-                                if ($record->contains('name')) {
-                                    $newValue = $record->name;
-                                }
-                            }
+                            $newValue = $this->_getRelationFieldName($relation, $newValue);
                         }
                     }
 
@@ -256,4 +240,27 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         return null;
     }
     
+    /**
+     * A helper to derive a field name from a relation and a field id in a particular table
+     * 
+     * @param Doctrine_Relation $relation The specified doctrine relation object to be checked
+     * @param string $field The specified field of table to be checked
+     * @return string|null The defined value if name field found, null otherwise
+     */
+    private function _getRelationFieldName(Doctrine_Relation $relation, $field)
+    {
+
+        $record = $relation->getTable()->findOneById($field);
+
+        // For SecurityControl name, it needs to combine the names in SecurityControl table and
+        // SecurityControlCatalog table to be an unique name.
+        if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
+            return $record->getAuditLogValue();
+        } else { 
+            if ($record->contains('name')) {
+                return $record->name;
+            }
+        }
+        return null;
+    }
 }
