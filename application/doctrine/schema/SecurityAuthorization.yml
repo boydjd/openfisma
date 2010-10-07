@@ -12,6 +12,16 @@ SecurityAuthorization:
             local: sysOrgId
             foreign: id
             foreignAlias: SecurityAuthorizations
+        SecurityControls:
+            class: SecurityControl
+            local: securityAuthorizationId
+            foreign: securityControlId
+            refClass: saSecurityControl
+        SecurityControlEnhancements:
+            class: SecurityControlEnhancement
+            local: securityAuthorizationId
+            foreign: securityControlEnhancementId
+            refClass: saSecurityControlEnhancement
     actAs:
         Timestampable:
             created:

@@ -1,0 +1,6 @@
+SaSecurityControl:
+    columns:
+        securityAuthorizationId:
+            type: integer
+        securityControlId:
+            type: integer
