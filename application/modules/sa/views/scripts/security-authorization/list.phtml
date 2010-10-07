@@ -23,7 +23,9 @@ Fisma_Format_Section::startSection("Security Authorizations <span id='searchResu
     // Column definitions
     var myColumnDefs = [
         {key:"id", label:"ID", formatter:"text"},
-        {key:"System", label:"System", formatter:"text"},
+        {key:"system", label:"System", formatter:"text"},
+        {key:"impact", label:"Impact", formatter:"text"},
+        {key:"createdTs", label:"Created", formatter:"text"},
         {key: 'id', label:'View', formatter: operation}];
 
     // A function which builds the query string

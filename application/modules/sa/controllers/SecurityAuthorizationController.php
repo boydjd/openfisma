@@ -43,4 +43,36 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $this->_forward('list');
     }
+
+    /**
+     * Return array of the collection.
+     * 
+     * @param Doctrine_Collections $rows The spepcific Doctrine_Collections object
+     * @return array The array representation of the specified Doctrine_Collections object
+     */
+    public function handleCollection($rows)
+    {
+        $result = $rows->toArray();
+        foreach ($rows as $k => $v) {
+            $result[$k]['system'] = $v->System->Organization->name;
+        }
+        return $result;
+    }
+
+    /**
+     * Override parent to add in extra relations
+     *
+     * @param Doctrine_Query $query Query to be modified
+     * @return Doctrine_Collection Results of search query
+     */
+    public function executeSearchQuery(Doctrine_Query $query)
+    {
+        // join in System relation
+        $alias = $query->getRootAlias();
+        $query->leftJoin($alias . '.System system');
+        $query->leftJoin('system.Organization org');
+        $query->addSelect('system.id, org.id, org.name');
+        return parent::executeSearchQuery($query);
+    }
+
 }

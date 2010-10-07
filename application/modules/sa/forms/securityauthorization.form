@@ -11,6 +11,11 @@
 method = "post"
 elementFilters.trim = "StringTrim"
 
+elements.sysOrgId.type = "select"
+elements.sysOrgId.options.label = "System"
+elements.sysOrgId.options.required = true
+displayGroups.sa.elements.sysOrgId = "sysOrgId"
+
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
 displayGroups.sa.elements.save = "save"
