@@ -54,7 +54,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $result = $rows->toArray();
         foreach ($rows as $k => $v) {
-            $result[$k]['system'] = $v->System->Organization->name;
+            $result[$k]['system'] = $v->Organization->name;
         }
         return $result;
     }
@@ -69,9 +69,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         // join in System relation
         $alias = $query->getRootAlias();
-        $query->leftJoin($alias . '.System system');
-        $query->leftJoin('system.Organization org');
-        $query->addSelect('system.id, org.id, org.name');
+        $query->leftJoin($alias . '.Organization org');
+        $query->addSelect('org.id, org.name');
         return parent::executeSearchQuery($query);
     }
 
