@@ -1,0 +1,59 @@
+; This is the form for CVSS Base Scores
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Christian Smith <christian.smith@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[cvss_base]
+
+elements.AV.type = "select"
+elements.AV.options.size = "3"
+elements.AV.options.label = "Access Vector"
+elements.AV.options.multiOptions.L = "Local"
+elements.AV.options.multiOptions.A = "Adjacent Network"
+elements.AV.options.multiOptions.N = "Network"
+displayGroups.cvssBase.elements.AV = "AV"
+
+elements.AC.type = "select"
+elements.AC.options.size = "3"
+elements.AC.options.label = "Access Complexity"
+elements.AC.options.multiOptions.H = "High"
+elements.AC.options.multiOptions.M = "Medium"
+elements.AC.options.multiOptions.L = "Low"
+displayGroups.cvssBase.elements.AC = "AC"
+
+elements.Au.type = "select"
+elements.Au.options.size = "3"
+elements.Au.options.label = "Authentication Values"
+elements.Au.options.multiOptions.M = "Multiple"
+elements.Au.options.multiOptions.S = "Single"
+elements.Au.options.multiOptions.N = "None"
+displayGroups.cvssBase.elements.AuthenticationValues = "Au"
+
+elements.C.type = "select"
+elements.C.options.size = "3"
+elements.C.options.label = "Confidentiality Impact"
+elements.C.options.multiOptions.N = "None"
+elements.C.options.multiOptions.P = "Partial"
+elements.C.options.multiOptions.C = "Complete"
+displayGroups.cvssBase.elements.C = "C"
+
+elements.I.type = "select"
+elements.I.options.size = "3"
+elements.I.options.label = "Integrity Impact"
+elements.I.options.multiOptions.N = "None"
+elements.I.options.multiOptions.P = "Partial"
+elements.I.options.multiOptions.C = "Complete"
+displayGroups.cvssBase.elements.I = "I"
+
+elements.A.type = "select"
+elements.A.options.size = "3"
+elements.A.options.label = "Availability Impact"
+elements.A.options.multiOptions.N = "None"
+elements.A.options.multiOptions.P = "Partial"
+elements.A.options.multiOptions.C = "Complete"
+displayGroups.cvssBase.elements.A = "A"

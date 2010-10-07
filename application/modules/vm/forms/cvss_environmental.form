@@ -1,0 +1,63 @@
+; This is the form for CVSS Environmental Scores
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Christian Smith <christian.smith@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[cvss_environmental]
+
+;Environmental
+elements.CDP.type = "select"
+elements.CDP.options.size = "6"
+elements.CDP.options.label = "Collateral Damage Potential"
+elements.CDP.options.multiOptions.ND = "Not Defined"
+elements.CDP.options.multiOptions.N = "None"
+elements.CDP.options.multiOptions.L = "Low"
+elements.CDP.options.multiOptions.LM = "Low-Medium"
+elements.CDP.options.multiOptions.MH = "Medium-High"
+elements.CDP.options.multiOptions.H = "High"
+displayGroups.cvssEnv.elements.CDP = "CDP"
+
+elements.TD.type = "select"
+elements.TD.options.size = "5"
+elements.TD.options.label = "Target Distribution"
+elements.TD.options.multiOptions.ND = "Not Defined"
+elements.TD.options.multiOptions.N = "None"
+elements.TD.options.multiOptions.L = "Low"
+elements.TD.options.multiOptions.M = "Medium"
+elements.TD.options.multiOptions.H = "High"
+displayGroups.cvssEnv.elements.TD = "TD"
+
+elements.CR.type = "select"
+elements.CR.options.size = "5"
+elements.CR.options.label = "Security Requirements"
+elements.CR.options.multiOptions.ND = "Not Defined"
+elements.CR.options.multiOptions.N = "None"
+elements.CR.options.multiOptions.L = "Low"
+elements.CR.options.multiOptions.M = "Medium"
+elements.CR.options.multiOptions.H = "High"
+displayGroups.cvssEnv.elements.CR = "CR"
+
+elements.IR.type = "select"
+elements.IR.options.size = "5"
+elements.IR.options.label = "Security Requirements"
+elements.IR.options.multiOptions.ND = "Not Defined"
+elements.IR.options.multiOptions.N = "None"
+elements.IR.options.multiOptions.L = "Low"
+elements.IR.options.multiOptions.M = "Medium"
+elements.IR.options.multiOptions.H = "High"
+displayGroups.cvssEnv.elements.IR = "IR"
+
+elements.AR.type = "select"
+elements.AR.options.size = "5"
+elements.AR.options.label = "Security Requirements"
+elements.AR.options.multiOptions.ND = "Not Defined"
+elements.AR.options.multiOptions.N = "None"
+elements.AR.options.multiOptions.L = "Low"
+elements.AR.options.multiOptions.M = "Medium"
+elements.AR.options.multiOptions.H = "High"
+displayGroups.cvssEnv.elements.AR = "AR"

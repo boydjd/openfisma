@@ -1,0 +1,41 @@
+; This is the form for CVSS Temporal Scores
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Christian Smith <christian.smith@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[cvss_temporal]
+
+; Temporal
+elements.E.type = "select"
+elements.E.options.size = "5"
+elements.E.options.label = "Exploitability"
+elements.E.options.multiOptions.ND = "Not Defined"
+elements.E.options.multiOptions.U = "Unproven"
+elements.E.options.multiOptions.POC = "Proof-of-Concept"
+elements.E.options.multiOptions.F = "Functional"
+elements.E.options.multiOptions.H = "High"
+displayGroups.cvssTemporal.elements.E = "E"
+
+elements.RL.type = "select"
+elements.RL.options.size = "5"
+elements.RL.options.label = "Remediation Level"
+elements.RL.options.multiOptions.ND = "Not Defined"
+elements.RL.options.multiOptions.OF = "Official Fix"
+elements.RL.options.multiOptions.TF = "Temporary Fix"
+elements.RL.options.multiOptions.W = "Workaround"
+elements.RL.options.multiOptions.U = "Unavailable"
+displayGroups.cvssTemporal.elements.RL = "RL"
+
+elements.RC.type = "select"
+elements.RC.options.size = "4"
+elements.RC.options.label = "Report Confidence"
+elements.RC.options.multiOptions.ND = "Not Defined"
+elements.RC.options.multiOptions.UC = "Unconfirmed"
+elements.RC.options.multiOptions.UR = "Uncorroborated"
+elements.RC.options.multiOptions.C = "Confirmed"
+displayGroups.cvssTemporal.elements.RC = "RC"
