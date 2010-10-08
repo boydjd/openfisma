@@ -1,0 +1,32 @@
+<?php Fisma_Format_Section::startSection('Selected Security Controls'); ?>
+<div id="container">
+<table id="controlTable">
+<?php foreach ($this->subject->SecurityControls as $control): ?>
+<tr>
+    <td><?php echo $this->escape($control->code); ?></td>
+    <td><?php echo $this->escape($control->name); ?></td>
+/tr>
+<?php endforeach; ?>
+</table>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>
+<script type="text/javascript">
+// Convert the HTML table above into a YUI table
+YAHOO.util.Event.onContentReady('container', function() {
+    var myColumnDefs = [
+        {key:"code", label:"Code", sortable:true},
+        {key:"name", label:"Name", sortable:true}
+    ];
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("controlTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            {key:"code"},
+            {key:"name"}
+        ]
+    };
+
+    this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});
+});
+</script>
+
