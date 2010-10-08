@@ -1,3 +1,9 @@
+<?php
+    $enhancements = array();
+    foreach ($this->subject->SecurityControlEnhancements as $enhancement) {
+        $enhancements[$enhancement->securityControlId][] = $enhancement;
+    }
+?>
 <?php Fisma_Format_Section::startSection('Selected Security Controls'); ?>
 <div id="container">
 <table id="controlTable">
@@ -5,7 +11,16 @@
 <tr>
     <td><?php echo $this->escape($control->code); ?></td>
     <td><?php echo $this->escape($control->name); ?></td>
-/tr>
+    <td>
+        <?php if (isset($enhancements[$control->id])): ?>
+        <ul>
+            <?php foreach ($enhancements[$control->id] as $enhancement): ?>
+            <li><?php echo $this->escape($enhancement->description, 'none'); ?></li>
+            <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
+    </td>
+</tr>
 <?php endforeach; ?>
 </table>
 </div>
@@ -15,14 +30,16 @@
 YAHOO.util.Event.onContentReady('container', function() {
     var myColumnDefs = [
         {key:"code", label:"Code", sortable:true},
-        {key:"name", label:"Name", sortable:true}
+        {key:"name", label:"Name", sortable:true},
+        {key:"enhancements", label:"Enhancements"}
     ];
     this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("controlTable"));
     this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
     this.myDataSource.responseSchema = {
         fields: [
             {key:"code"},
-            {key:"name"}
+            {key:"name"},
+            {key:"enhancements"}
         ]
     };
 
