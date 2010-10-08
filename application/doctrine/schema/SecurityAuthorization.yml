@@ -16,12 +16,12 @@ SecurityAuthorization:
             class: SecurityControl
             local: securityAuthorizationId
             foreign: securityControlId
-            refClass: saSecurityControl
+            refClass: SaSecurityControl
         SecurityControlEnhancements:
             class: SecurityControlEnhancement
             local: securityAuthorizationId
             foreign: securityControlEnhancementId
-            refClass: saSecurityControlEnhancement
+            refClass: SaSecurityControlEnhancement
     actAs:
         Timestampable:
             created:
