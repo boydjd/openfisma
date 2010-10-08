@@ -74,4 +74,67 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         return parent::executeSearchQuery($query);
     }
 
+    /**
+     * Hooks for manipulating and saving the values retrieved by Forms
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return integer ID of the object saved. 
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        // call default implementation and save the ID
+        $saId = parent::saveValue($form, $subject);
+
+        // if subject null, we're creating a new object and we need to populate relations
+        if (is_null($subject)) {
+            $sa = Doctrine::getTable('SecurityAuthorization')->find($saId);
+            $impact = $sa->impact;
+            $controlLevels = array();
+            switch($impact) {
+                case 'HIGH':
+                    $controlLevels[] = 'HIGH';
+                case 'MODERATE':
+                    $controlLevels[] = 'MODERATE';
+                default:
+                    $controlLevels[] = 'LOW';
+            }
+            $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
+
+            // associate suggested controls
+            $controls = Doctrine_Query::create()
+                ->from('SecurityControl')
+                ->whereIn('controlLevel', $controlLevels)
+                ->andWhere('securityControlCatalogId = ?', array($catalogId))
+                ->execute();
+            foreach ($controls as $control) {
+                $sacontrol = new SaSecurityControl();
+                $sacontrol->securityAuthorizationId = $sa->id;
+                $sacontrol->securityControlId = $control->id;
+                $sacontrol->save();
+                $sacontrol->free();
+            }
+            $controls->free();
+            unset($controls);
+ 
+            // associate suggested control enhancements
+            $controlEnhancements = Doctrine_Query::create()
+                ->from('SecurityControlEnhancement sce')
+                ->innerJoin('sce.Control control')
+                ->whereIn('sce.level', $controlLevels)
+                ->andWhere('control.securityControlCatalogId = ?', array($catalogId))
+                ->execute();
+            foreach ($controlEnhancements as $ce) {
+                $sace = new SaSecurityControlEnhancement();
+                $sace->securityAuthorizationId = $sa->id;
+                $sace->securityControlEnhancementId = $ce->id;
+                $sace->save();
+                $sace->free();
+            }
+            $controlEnhancements->free();
+        }
+        return $saId;
+    }
+
 }
