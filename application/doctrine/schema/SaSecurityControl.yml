@@ -4,3 +4,18 @@ SaSecurityControl:
             type: integer
         securityControlId:
             type: integer
+    relations:
+        SecurityAuthorization:
+            local: securityAuthorizationId
+            foreign: id
+            foreignAlias: SaSecurityControls
+        SecurityControl:
+            local: securityControlId
+            foreign: id
+            foreignAlias: SaSecurityControls
+        SecurityControlEnhancements:
+            class: SecurityControlEnhancement
+            local: saSecurityControlId
+            foreign: securityControlEnhancementId
+            refClass: SaSecurityControlEnhancement
+

@@ -84,12 +84,37 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     protected function saveValue($form, $subject=null)
     {
+        $sa = $subject;
+        // if subject is null we need to add in the impact from the system before passing the form onto the save method.
+        if (is_null($subject)) {
+            // fetch the system and use its impact values to set the impact of this SA
+            $org = Doctrine::getTable('Organization')->find($form->getValue(sysOrgId));
+            $system = $org->System;
+            if (empty($system)) {
+                throw new Fisma_Exception('A non-system was set to the Security Authorization');
+            }
+
+            $sa = new SecurityAuthorization();
+    
+            $impacts = array(
+                $system->confidentiality,
+                $system->integrity,
+                $system->availability
+            );
+            if (in_array('HIGH', $impacts)) {
+                $sa->impact = 'HIGH';
+            } else if (in_array('MODERATE', $impacts)) {
+                $sa->impact = 'MODERATE';
+            } else {
+                $sa->impact = 'LOW';
+            }
+        }
+        
         // call default implementation and save the ID
-        $saId = parent::saveValue($form, $subject);
+        $saId = parent::saveValue($form, $sa);
 
         // if subject null, we're creating a new object and we need to populate relations
         if (is_null($subject)) {
-            $sa = Doctrine::getTable('SecurityAuthorization')->find($saId);
             $impact = $sa->impact;
             $controlLevels = array();
             switch($impact) {
@@ -104,8 +129,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
             // associate suggested controls
             $controls = Doctrine_Query::create()
-                ->from('SecurityControl')
-                ->whereIn('controlLevel', $controlLevels)
+                ->from('SecurityControl sc')
+                ->leftJoin('sc.Enhancements sce')
+                ->whereIn('sc.controlLevel', $controlLevels)
+                ->andWhere('sce.id IS NULL')
+                ->orWhereIn('sce.level', $controlLevels)
                 ->andWhere('securityControlCatalogId = ?', array($catalogId))
                 ->execute();
             foreach ($controls as $control) {
@@ -113,27 +141,20 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 $sacontrol->securityAuthorizationId = $sa->id;
                 $sacontrol->securityControlId = $control->id;
                 $sacontrol->save();
+                foreach ($control->Enhancements as $ce) {
+                    $sace = new SaSecurityControlEnhancement();
+                    $sace->securityAuthorizationId = $sa->id;
+                    $sace->securityControlEnhancementId = $ce->id;
+                    $sace->saSecurityControlId = $sacontrol->id;
+                    $sace->save();
+                    $sace->free();
+                }
                 $sacontrol->free();
             }
             $controls->free();
             unset($controls);
- 
-            // associate suggested control enhancements
-            $controlEnhancements = Doctrine_Query::create()
-                ->from('SecurityControlEnhancement sce')
-                ->innerJoin('sce.Control control')
-                ->whereIn('sce.level', $controlLevels)
-                ->andWhere('control.securityControlCatalogId = ?', array($catalogId))
-                ->execute();
-            foreach ($controlEnhancements as $ce) {
-                $sace = new SaSecurityControlEnhancement();
-                $sace->securityAuthorizationId = $sa->id;
-                $sace->securityControlEnhancementId = $ce->id;
-                $sace->save();
-                $sace->free();
-            }
-            $controlEnhancements->free();
         }
+
         return $saId;
     }
 

@@ -1,24 +1,16 @@
-<?php
-    $enhancements = array();
-    foreach ($this->subject->SecurityControlEnhancements as $enhancement) {
-        $enhancements[$enhancement->securityControlId][] = $enhancement;
-    }
-?>
 <?php Fisma_Format_Section::startSection('Selected Security Controls'); ?>
 <div id="container">
 <table id="controlTable">
-<?php foreach ($this->subject->SecurityControls as $control): ?>
+<?php foreach ($this->subject->SaSecurityControls as $saControl): ?>
 <tr>
-    <td><?php echo $this->escape($control->code); ?></td>
-    <td><?php echo $this->escape($control->name); ?></td>
+    <td><?php echo $this->escape($saControl->SecurityControl->code); ?></td>
+    <td><?php echo $this->escape($saControl->SecurityControl->name); ?></td>
     <td>
-        <?php if (isset($enhancements[$control->id])): ?>
         <ul>
-            <?php foreach ($enhancements[$control->id] as $enhancement): ?>
+            <?php foreach ($saControl->SecurityControlEnhancements as $enhancement): ?>
             <li><?php echo $this->escape($enhancement->description, 'none'); ?></li>
             <?php endforeach; ?>
         </ul>
-        <?php endif; ?>
     </td>
 </tr>
 <?php endforeach; ?>

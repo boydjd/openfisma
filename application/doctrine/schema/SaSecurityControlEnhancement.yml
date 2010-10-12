@@ -1,7 +1,5 @@
 SaSecurityControlEnhancement:
     columns:
-        securityAuthorizationId:
-            type: integer
-        securityControlEnhancementId:
-            type: integer
-
+        securityAuthorizationId: integer
+        securityControlEnhancementId: integer
+        saSecurityControlId: integer

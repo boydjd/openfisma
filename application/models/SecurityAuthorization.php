@@ -26,40 +26,4 @@
  */
 class SecurityAuthorization extends BaseSecurityAuthorization
 {
-    /**
-     * Set custom mutators
-     * 
-     * @return void
-     */
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->hasMutator('sysOrgId', 'setSysOrgId');
-    }
-
-    public function setSysOrgId($sysOrgId)
-    {
-        $this->_set('sysOrgId', $sysOrgId);
-
-        // fetch the system and use its impact values to set the impact of this SA
-        $org = Doctrine::getTable('Organization')->find($sysOrgId);
-        $system = $org->System;
-        if (empty($system)) {
-            throw new Fisma_Exception('A non-system was set to the Security Authorization');
-        }
-
-        $impacts = array(
-            $system->confidentiality,
-            $system->integrity,
-            $system->availability
-        );
-        if (in_array('HIGH', $impacts)) {
-            $this->impact = 'HIGH';
-        } else if (in_array('MODERATE', $impacts)) {
-            $this->impact = 'MODERATE';
-        } else {
-            $this->impact = 'LOW';
-        }
-    }
 }
