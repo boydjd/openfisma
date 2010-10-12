@@ -276,6 +276,8 @@ function message(msg, model, clear) {
     
     if( model == 'warning')  {
         msgbar.style.color = 'red';
+        msgbar.style.borderColor = 'red';
+        msgbar.style.backgroundColor = 'pink';
     } else {
         msgbar.style.color = 'green';
         msgbar.style.borderColor = 'green';
