@@ -12,7 +12,6 @@
 
 ; Temporal
 elements.E.type = "select"
-elements.E.options.size = "5"
 elements.E.options.label = "Exploitability"
 elements.E.options.multiOptions.ND = "Not Defined"
 elements.E.options.multiOptions.U = "Unproven"
@@ -22,7 +21,6 @@ elements.E.options.multiOptions.H = "High"
 displayGroups.cvssTemporal.elements.E = "E"
 
 elements.RL.type = "select"
-elements.RL.options.size = "5"
 elements.RL.options.label = "Remediation Level"
 elements.RL.options.multiOptions.ND = "Not Defined"
 elements.RL.options.multiOptions.OF = "Official Fix"
@@ -32,7 +30,6 @@ elements.RL.options.multiOptions.U = "Unavailable"
 displayGroups.cvssTemporal.elements.RL = "RL"
 
 elements.RC.type = "select"
-elements.RC.options.size = "4"
 elements.RC.options.label = "Report Confidence"
 elements.RC.options.multiOptions.ND = "Not Defined"
 elements.RC.options.multiOptions.UC = "Unconfirmed"
