@@ -95,9 +95,10 @@ abstract class Fisma_Search_Backend_Abstract
      * @param boolean $sortDirection True for ascending sort, false for descending
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
      * @return Fisma_Search_Result
      */
-    abstract public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows);
+    abstract public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted);
 
     /**
      * Advanced search: search based on a list of specific field criteria
@@ -108,6 +109,7 @@ abstract class Fisma_Search_Backend_Abstract
      * @param boolean $sortDirection True for ascending sort, false for descending
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
      * @return Fisma_Search_Result Rectangular array of search results
      */
     abstract public function searchByCriteria(
@@ -116,7 +118,8 @@ abstract class Fisma_Search_Backend_Abstract
         $sortColumn,
         $sortDirection,
         $start,
-        $rows
+        $rows,
+        $deleted
     );
 
     /**

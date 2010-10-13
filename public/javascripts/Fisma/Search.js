@@ -60,6 +60,11 @@ Fisma.Search = function() {
          * A spinner that is display while persising the user's column preferences cookie
          */
         columnPreferencesSpinner : null,
+        
+        /**
+         * A boolean which determines whether soft-deleted items are displayed in search results
+         */
+        showDeletedRecords : false,
 
         /**
          * Test the current system configuration
@@ -160,6 +165,8 @@ Fisma.Search = function() {
                 throw "Invalid value for search type: " + searchType;
             }
 
+            query['showDeleted'] = this.showDeletedRecords;
+            
             return query;
         },
 
@@ -243,14 +250,18 @@ Fisma.Search = function() {
                            "&count=" + tableState.pagination.rowsPerPage;
 
             if ('simple' == searchType) {
-                postData += "&queryType=simple&keywords=" + document.getElementById('keywords').value;
+                postData += "&queryType=simple&keywords=" 
+                          + document.getElementById('keywords').value;
             } else if ('advanced' == searchType) {
                 var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
-                postData += "&queryType=advanced&query=" + YAHOO.lang.JSON.stringify(queryData);
+                postData += "&queryType=advanced&query=" 
+                          + YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
+
+            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
 
             return postData;
         },
@@ -469,6 +480,17 @@ Fisma.Search = function() {
             );
         },
 
+        /**
+         * Toggle the boolean value which controls whether deleted records are shown
+         */
+        toggleShowDeletedRecords : function () {
+            Fisma.Search.showDeletedRecords = !Fisma.Search.showDeletedRecords;
+            
+            var searchForm = document.getElementById('searchForm');
+
+            Fisma.Search.handleSearchEvent(searchForm);
+        },
+        
         /**
          * A method to add a YUI table to the "registry" that this object keeps track of
          *

@@ -169,9 +169,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * @param boolean $sortDirection True for ascending sort, false for descending
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
      * @return Fisma_Search_Result
      */
-    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows)
+    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted = false)
     {
         $query = new SolrQuery;
 
@@ -211,6 +212,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $filterQuery .= ' AND (' 
                           . $aclQueryFilter
                           . ')';
+        }
+        
+        // Filter out deleted items, if this model has soft delete
+        if ($table->hasColumn('deleted_at') && !$deleted) {
+            $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
         }
 
         if (empty($trimmedKeyword)) {
@@ -262,7 +268,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             }
         }
         
-        if (!empty($trimmedKeyword) > 0) {
+        if (!empty($trimmedKeyword)) {
             // If there are search terms, then combine them with the logical OR operator
             $query->setQuery(implode(' OR ', $searchTerms));
         }
@@ -281,9 +287,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * @param boolean $sortDirection True for ascending sort, false for descending
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results     
      * @return Fisma_Search_Result Rectangular array of search results
      */
-    public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection, $start, $rows)
+    public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection, 
+                                     $start, $rows, $deleted = false)
     {
         $query = new SolrQuery;
 
@@ -323,6 +331,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                           . ')';
         }
 
+        // Filter out deleted items, if this model has soft delete
+        if ($table->hasColumn('deleted_at') && !$deleted) {
+            $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+        }
+
         // Enable highlighting
         if ($this->getHighlightingEnabled()) {
             
@@ -333,7 +346,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         }
             
         // The filter query is used for efficiency (parts of the query that don't change can be cached separately)
-        $this->addFilterQuery($filterQuery);
+        $query->addFilterQuery($filterQuery);
 
         // Add the fields which should be returned in the result set and indicate which should be highlighted
         foreach ($searchableFields as $fieldName => $fieldDefinition) {

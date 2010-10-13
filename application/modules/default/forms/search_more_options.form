@@ -23,3 +23,8 @@ elements.advanced.options.label = "Advanced Search"
 elements.columns.type = "Form_Button_Checkbox"
 elements.columns.options.onClickFunction = "Fisma.Search.toggleSearchColumnsPanel"
 elements.columns.options.label = "Toggle Column Visibility"
+
+elements.showDeleted.type = "Form_Button_Checkbox"
+elements.showDeleted.options.onClickFunction = "Fisma.Search.toggleShowDeletedRecords"
+elements.showDeleted.options.label = "Display Deleted Records"
+
