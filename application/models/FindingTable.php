@@ -194,6 +194,12 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'deleted_at' => array(
+                'initiallyVisible' => false,
+                'label' => 'Deleted Date',
+                'sortable' => true,
+                'type' => 'datetime'
+            ),
             'lft' => array(
                 'hidden' => true,
                 'join' => array(

@@ -84,14 +84,13 @@
             var searchResultsHeader = document.getElementById('searchResultsTotalFound');
             if (searchResultsHeader) {
                 var totalRecords = response.meta.totalRecords ? response.meta.totalRecords : 0;
-                var searchTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
-                var currentChild = searchResultsTotalFound.firstChild;
+                var searchResultsTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
                 
-                if (currentChild) {
-                    searchResultsTotalFound.removeChild(searchResultsTotalFound.firstChild);
+                if (searchResultsHeader.firstChild) {
+                    searchResultsHeader.removeChild(searchResultsHeader.firstChild);
                 }
                 
-                searchResultsHeader.appendChild(searchTotalFound);
+                searchResultsHeader.appendChild(searchResultsTotalFound);
             }
 
             return payload; 

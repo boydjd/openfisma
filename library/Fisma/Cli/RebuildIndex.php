@@ -32,7 +32,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
      * 
      * @var int
      */
-    const INDEX_CHUNK_SIZE = 25;
+    const INDEX_CHUNK_SIZE = 100;
 
     /**
      * Configure the arguments accepted for this CLI program

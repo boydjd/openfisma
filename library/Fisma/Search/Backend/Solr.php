@@ -261,7 +261,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 }
             }
         }
-
+        
         if (!empty($trimmedKeyword) > 0) {
             // If there are search terms, then combine them with the logical OR operator
             $query->setQuery(implode(' OR ', $searchTerms));
@@ -575,6 +575,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
             }
 
+            if (is_null($rawValue)) {
+                continue;
+            }
+            
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
             $containsHtml = isset($doctrineDefinition['extra']['purify']['html']) &&
@@ -693,10 +697,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _removeSuffixFromColumnName($columnName)
     {
-        $suffixPosition = strpos($columnName, '_');
+        $suffixPosition = strrpos($columnName, '_');
 
         if ($suffixPosition) {
-            return substr($columnName, 0, strpos($columnName, '_'));
+            return substr($columnName, 0, $suffixPosition);
         } else {
             return $columnName;
         }
