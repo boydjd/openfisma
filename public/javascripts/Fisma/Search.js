@@ -164,6 +164,8 @@ Fisma.Search = function() {
 
             query['showDeleted'] = this.showDeletedRecords;
             
+            query['csrf'] = document.getElementById('searchForm').csrf.value;
+            
             return query;
         },
 
@@ -244,7 +246,8 @@ Fisma.Search = function() {
             var postData = "sort=" + tableState.sortedBy.key +
                            "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
                            "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage;
+                           "&count=" + tableState.pagination.rowsPerPage +
+                           "&csrf=" + document.getElementById('searchForm').csrf.value;
 
             if ('simple' == searchType) {
                 postData += "&queryType=simple&keywords=" 
