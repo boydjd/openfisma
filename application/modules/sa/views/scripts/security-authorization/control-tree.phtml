@@ -1,0 +1,40 @@
+<?php Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+
+<div class="buttonBar">
+<?php
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('label' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
+                                             'onClickFunction' => 'expandAll'));
+echo $this->escape($expandAll, 'none');
+
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('label' => 'Collapse All', 
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'collapseAll'));
+echo $this->escape($collapseAll, 'none');
+?>
+</div>
+
+<div id="controlTree"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+    var controlTree = new Fisma.ControlTree(
+        'controlTree',
+        '/sa/security-authorization/control-tree-data/id/<?php echo $this->escape($this->id); ?>/format/json'
+    );
+});
+// Expand all tree nodes
+function expandAll() {
+    tree.getRoot().expandAll();
+}
+
+// Collapse all tree nodes
+function collapseAll() {
+    tree.getRoot().collapseAll();
+}
+
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

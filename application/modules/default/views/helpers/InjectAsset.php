@@ -51,6 +51,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Blinker.js',
                                       '/javascripts/Fisma/Chart.js',
                                       '/javascripts/Fisma/Commentable.js',
+                                      '/javascripts/Fisma/ControlTree.js',
                                       '/javascripts/Fisma/Finding.js',
                                       '/javascripts/Fisma/Email.js',
                                       '/javascripts/Fisma/FindingSummary.js',

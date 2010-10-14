@@ -35,7 +35,20 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      * @var string
      */
     protected $_modelName = 'SecurityAuthorization';
-
+    
+    /**
+     * Initialize internal members.
+     * 
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('control-tree-data', 'json')
+                      ->initContext();
+    }
+    
     /**
      * @return void
      */
@@ -156,6 +169,31 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
 
         return $saId;
+    }
+
+    /**
+     * @return void
+     */
+    public function controlTreeAction()
+    {
+        $this->view->id = $this->_request->getParam('id');
+    }
+    
+    /**
+     * @return void
+     */
+    public function controlTreeDataAction() 
+    {
+        $id = $this->_request->getParam('id');
+        $controls = Doctrine_Query::create()
+            ->select('saSC.id, control.code, control.name, enhancements.description')
+            ->from('SaSecurityControl saSC')
+            ->leftJoin('saSC.SecurityControl control')
+            ->leftJoin('saSC.SecurityControlEnhancements enhancements')
+            ->where('saSC.securityAuthorizationId = ?', $id)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+        $this->view->treeData = $controls;
     }
 
 }
