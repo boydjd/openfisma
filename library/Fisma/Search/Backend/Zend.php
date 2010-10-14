@@ -27,5 +27,121 @@
  */
 class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 {
-    // THIS CLASS IS NOT IMPLEMENTED YET
+    /**
+     * Delete all documents in the index
+     */
+    public function deleteAll() 
+    {
+        
+    }
+
+    /**
+     * Delete all documents of the specified type in the index
+     *
+     * "Type" refers to a model, such as Asset, Finding, Incident, etc.
+     *
+     * @param string $type
+     */
+    public function deleteByType($type) 
+    {
+        
+    }
+
+    /**
+     * Delete the specified object from the index
+     *
+     * $type must have a corresponding table class which implements Fisma_Search_Searchable
+     *
+     * @param string $type The class of the object
+     * @param array $object
+     */
+    public function deleteObject($type, $object)
+    {
+        
+    }
+
+    /**
+     * Index an array of objects
+     *
+     * @param string $type The class of the object
+     * @param array $collection
+     */
+    public function indexCollection($type, $collection)
+    {
+        
+    }
+
+    /**
+     * Add the specified object (in array format) to the search engine index
+     *
+     * This will overwrite any existing object with the same luceneDocumentId
+     *
+     * @param string $type The class of the object
+     * @param array $object
+     */
+    public function indexObject($type, $object) {
+        
+    }
+
+    /**
+     * Optimize the index (degfragments the index)
+     */
+    public function optimizeIndex()
+    {
+        
+    }
+
+    /**
+     * Simple search: search all fields for the specified keyword
+     *
+     * @param string $type Name of model index to search
+     * @param string $keyword
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
+     * @return Fisma_Search_Result
+     */
+    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted)
+    {
+        
+    }
+
+    /**
+     * Advanced search: search based on a list of specific field criteria
+     *
+     * @param string $type Name of model index to search
+     * @param Fisma_Search_Criteria $criteria
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
+     * @return Fisma_Search_Result Rectangular array of search results
+     */
+    public function searchByCriteria(
+        $type,
+        Fisma_Search_Criteria $criteria,
+        $sortColumn,
+        $sortDirection,
+        $start,
+        $rows,
+        $deleted
+        ) 
+    {
+        
+    }
+
+    /**
+     * Validate the backend's configuration
+     *
+     * The implementing class should use this to exercise basic diagnostics
+     *
+     * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
+     */
+    public function validateConfiguration()
+    {
+        return "THIS BACKEND IS BROKE";
+    }
 }

@@ -82,9 +82,9 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText).response;
 
                         if (response.success) {
-                            message("Search configuration is valid", "notice");
+                            message("Search configuration is valid", "notice", true);
                         } else {
-                            message(response.message, "warning");
+                            message(response.message, "warning", true);
                         }
 
                         testConfigurationButton.className = "yui-button yui-push-button";
