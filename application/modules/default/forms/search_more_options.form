@@ -28,3 +28,7 @@ elements.showDeleted.type = "Form_Button_Checkbox"
 elements.showDeleted.options.onClickFunction = "Fisma.Search.toggleShowDeletedRecords"
 elements.showDeleted.options.label = "Display Deleted Records"
 
+elements.deleteSelected.type = "Form_Button"
+elements.deleteSelected.options.onClickFunction = "Fisma.Search.deleteSelectedRecords"
+elements.deleteSelected.options.label = "Delete Selected Records"
+

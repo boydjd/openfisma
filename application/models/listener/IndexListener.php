@@ -122,7 +122,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         }
 
         // If the record is softDeleted, do nothing. Otherwise, delete the record from the index.
-        if (!in_array('deleted_at', $modified)) {
+        if ($record->getTable()->hasColumn('deleted_at')) {
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
             $searchEngine->deleteObject(get_class($record), $record->toArray());

@@ -492,6 +492,62 @@ Fisma.Search = function() {
         },
         
         /**
+         * Delete the records selected in the YUI data table
+         */
+        deleteSelectedRecords : function () {
+            var checkedRecords = [];
+            var dataTable = Fisma.Search.yuiDataTable;
+            var selectedRows = dataTable.getSelectedRows();
+            
+            // Create an array containing the PKs of records to delete
+            for (var i = 0; i < selectedRows.length; i++) {
+                var record = dataTable.getRecord(selectedRows[i]);
+
+                if (record) {
+                    checkedRecords.push(record.getData('id'));
+                }
+            }
+            
+            // Do some sanity checking
+            if (0 == checkedRecords.length) {
+                message("No records selected for deletion.", "warning", true);
+                
+                return;
+            }
+            
+            if (!confirm("Delete " + checkedRecords.length + " records?")) {
+                return;
+            }
+            
+            // Submit request to delete records        
+            YAHOO.util.Connect.asyncRequest(
+                'POST', 
+                '/finding/index/multi-delete',
+                {
+                    success : function(o) {
+                        var messages = [];
+        
+                        if (o.responseText !== undefined) {
+                            var response = YAHOO.lang.JSON.parse(o.responseText);
+                            
+                            message(response.msg, response.status, true);
+                        }
+                        
+                        // Refresh search results
+                        var searchForm = document.getElementById('searchForm');
+                        Fisma.Search.handleSearchEvent(searchForm);
+                    },
+                    failure : function(o) {
+                        var text = 'An error occurred while trying to delete the records.'
+                                 + ' The error has been logged for administrator review.'; 
+                        message(text, "warning", true);
+                    }
+                },
+                "findings=" + YAHOO.lang.JSON.stringify(checkedRecords)
+            );
+        },
+        
+        /**
          * A method to add a YUI table to the "registry" that this object keeps track of
          *
          * @var table A YUI table

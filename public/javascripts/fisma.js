@@ -43,11 +43,23 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    //var logReader = new YAHOO.widget.LogReader(document.body, {footerEnabled : false, width : '500px'});
-    //logReader.hideCategory("info");
-    //logReader.hideCategory("time");
-    //logReader.hideCategory("window");
-    //logReader.hideCategory("iframe");
+    var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
+    
+    if (zfDebugYuiLoggingTab) {
+        var logReader = new YAHOO.widget.LogReader(
+            zfDebugYuiLoggingTab, 
+            {
+                draggable : false,
+                verboseOutput : false,
+                width : '95%'
+            }
+        );
+        
+        logReader.hideCategory("info");
+        logReader.hideCategory("time");
+        logReader.hideCategory("window");
+        logReader.hideCategory("iframe");
+    }
     
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {

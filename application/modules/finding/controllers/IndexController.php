@@ -502,7 +502,15 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 
             Doctrine_Manager::connection()->commit();
 
-            $message = $numFindings . ' findings were deleted.';
+            if (1 == $numFindings) {
+                $suffix = "";
+                $verb = "was";
+            } else {
+                $suffix = "s";
+                $verb = "were";
+            }
+            
+            $message = "$numFindings finding{$suffix} $verb deleted.";
             $status = 'notice';
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();

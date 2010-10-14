@@ -100,11 +100,17 @@
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
 
-        // Enable row click event handler if it was defined
-        dataTable.subscribe("rowClickEvent", function (clickEvent) {
+        // Enable cell click event handler
+        dataTable.subscribe("cellClickEvent", function (clickEvent) {
             var targetEl = clickEvent.target;
             var rowData = this.getRecord(targetEl);
 
+            // Reject clicks in columns that contain checkboxes (that would be cruel for the user)
+            var column = this.getColumn(targetEl);
+            if (column.formatter == YAHOO.widget.DataTable.formatCheckbox) {
+                return
+            }
+            
             var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
                     + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
                     
@@ -117,5 +123,49 @@
 
             dataTable.subscribe("renderEvent", renderEventFunction);
         <?php endif; ?>
+        
+        // Set up thead click events for columns which contain checkboxes
+        dataTable.subscribe("theadCellClickEvent", function (clickEvent) {
+            var column = this.getColumn(clickEvent.target);
+            
+            if (column.formatter == YAHOO.widget.DataTable.formatCheckbox) {
+                var theadCheckbox = YAHOO.util.Dom.get('dt-checkbox');
+                var records = this.getRecordSet().getRecords();
+                
+                for (var i = 0; i < records.length; i++) {
+                    if (theadCheckbox.checked) {
+                        this.selectRow(records[i]);
+                    } else {
+                        this.unselectRow(records[i]);
+                    }
+                    
+                    this.getRecordSet().updateRecordValue(records[i], column.key, theadCheckbox.checked);
+                }
+                
+                this.render();
+            }
+        });
+        
+        // Highlight/unhighlight rows in response to checkbox clicks
+        dataTable.subscribe("checkboxClickEvent", function (clickEvent) {
+            var target = clickEvent.target;
+            var checked = target.checked;
+            var record = this.getRecord(target);
+            
+            this.getRecordSet().updateRecordValue(record, 'checked', checked);
+            
+            if (checked) {
+                this.selectRow(record);
+            } else {
+                this.unselectRow(record);
+            }
+        });
+        
+        // Make sure that the header checkbox is unchecked on page changes
+        dataTable.get("paginator").subscribe("pageChange", function (event) {
+            var checkbox = YAHOO.util.Dom.get('dt-checkbox');
+            
+            checkbox.checked = false;
+        });
     });
 </script>

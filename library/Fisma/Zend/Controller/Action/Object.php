@@ -459,6 +459,18 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $firstColumn = each($searchableFields);
         $searchResultsTable->setInitialSortColumn($firstColumn['key']);
         reset($searchableFields);
+        
+        // If user can delete objects, then add a checkbox column
+        if ($this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+            $column = new Fisma_Yui_DataTable_Column('<input id="dt-checkbox" type="checkbox">',
+                                                     false,
+                                                     "YAHOO.widget.DataTable.formatCheckbox",
+                                                     null,
+                                                     'deleteCheckbox',
+                                                     false);
+
+            $searchResultsTable->addColumn($column);
+        }
 
         // Check if the user has a cookie describing his search column preferences
         $cookieName = $this->_modelName . 'Columns';
@@ -757,6 +769,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getSearchMoreOptionsForm()
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
+
+        // Remove the delete button if the user doesn't have the right to click it
+        if (!$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+            $searchForm->removeElement('deleteSelected');
+        }
 
         $searchForm->setDecorators(
             array(
