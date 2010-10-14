@@ -47,7 +47,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         Fisma::setNotificationEnabled(false);
         Fisma::setListenerEnabled(false);
 
-        // The CLI needs an in-memory configuration object, since it might drop and/or reload the configuration table
         $inMemoryConfig = new Fisma_Configuration_Array();
         $inMemoryConfig->setConfig('hash_type', 'sha1');
         $inMemoryConfig->setConfig('session_inactivity_period', '9999999');
@@ -111,7 +110,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $generateProgressBar = $this->_getProgressBar($numFindings);
         $generateProgressBar->update(0, "Generate Findings");
 
-        for ($i = 0; $i <= $numFindings; $i++) {
+        for ($i = 1; $i <= $numFindings; $i++) {
             $discoveredDate = rand(0, time());
 
             $finding = array();

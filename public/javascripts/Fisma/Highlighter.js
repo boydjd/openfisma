@@ -53,12 +53,18 @@ Fisma.Highlighter = function() {
             for (var i in elements) {
                 var element = elements[i];
 
-                if (!element.firstChild.firstChild) {
-                    // Skip empty table cells
+                // Skip empty table cells
+                if (!element.firstChild || !element.firstChild.firstChild) {
                     continue;
                 }
 
                 var parentNode = element.firstChild;
+                
+                // Don't try to highlight non-text nodes (text nodeType is 3 -- can't find a named constant for it)
+                if (parentNode && parentNode.firstChild && parentNode.firstChild.nodeType != 3) {
+                    continue;
+                }
+
                 var textNode = parentNode.firstChild;
                 var cellText = textNode.nodeValue;
 

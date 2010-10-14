@@ -100,7 +100,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public function setUp()
     {
         parent::setUp();
-        
+     
         $this->hasMutator('countermeasuresEffectiveness', 'setCountermeasuresEffectiveness');
         $this->hasMutator('currentEcd', 'setCurrentEcd');
         $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');

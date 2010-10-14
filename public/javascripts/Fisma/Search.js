@@ -125,9 +125,9 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == YAHOO.widget.DataTable.formatCheckbox);
-                    
-                    dataTable.set("sortedBy", sortColumn);
-                    dataTable.get('paginator').setPage(0, true);
+
+                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
+                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
