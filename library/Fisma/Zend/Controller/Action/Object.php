@@ -428,6 +428,62 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
+     * Delete multiple records 
+     * 
+     * @access public
+     * @return string JSON string 
+     */
+    public function multiDeleteAction()
+    {
+        $this->_acl->requirePrivilegeForClass('delete', $this->getAclResourceName());
+        $recordIds = Zend_Json::decode($this->_request->getParam('records'));
+
+        if (empty($recordIds)) {
+            return $this->_helper->json(array('msg' => 'An error has occured.', 'status' => 'warning'));
+        }
+
+        $records = Doctrine_Query::create()
+                   ->from("$this->_modelName a")
+                   ->whereIn('a.id', $recordIds)
+                   ->execute();
+
+        $numRecords = $records->count();
+
+        try {
+            Doctrine_Manager::connection()->beginTransaction();
+
+            foreach ($records as $record) {
+                $this->_acl->requirePrivilegeForObject('delete', $record);
+
+                $record->delete();
+                $record->free();
+
+                unset($record);
+            }
+
+            Doctrine_Manager::connection()->commit();
+
+            if (1 == $numRecords) {
+                $noun = $this->getSingularModelName();
+                $verb = "was";
+            } else {
+                $noun = $this->getPluralModelName();
+                $verb = "were";
+            }
+            
+            $message = "$numRecords $noun $verb deleted.";
+            $status = 'notice';
+        } catch (Exception $e) {
+            Doctrine_Manager::connection()->rollBack();
+
+            $message = $e->getMessage();
+            $status = 'warning';
+        }
+
+        return $this->_helper->json(array('msg' => $message, 'status' => $status));
+    }
+    
+    /**
      * List the subjects
      *
      * @return void
@@ -770,6 +826,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
 
+        // Remove the "Show Deleted" button if this model doesn't support soft-delete
+        if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
+            $searchForm->removeElement('showDeleted');
+        }
+        
         // Remove the delete button if the user doesn't have the right to click it
         if (!$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');

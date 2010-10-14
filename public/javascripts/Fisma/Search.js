@@ -40,18 +40,6 @@ Fisma.Search = function() {
         testConfigurationActive : false,
 
         /**
-         * The base URL to the controller action for searching
-         */
-        baseUrl : '',
-
-        /**
-         * A URL which builds on the base URL to pass arguments to the search controller action
-         *
-         * This is used by YUI data table to build its own queries with sorting added
-         */
-        searchActionUrl : '',
-
-        /**
          * Advanced search panel
          */
         advancedSearchPanel : null,
@@ -128,9 +116,18 @@ Fisma.Search = function() {
                 success : function (request, response, payload) {
                     dataTable.onDataReturnReplaceRows(request, response, payload);
 
-                    // Update YUI's visual state to show sort on first column
-                    var firstColumn = dataTable.getColumn(0);
-                    dataTable.set("sortedBy", firstColumn);
+                    // Update YUI's visual state to show sort on first data column
+                    var sortColumnIndex = 0;
+                    var sortColumn;
+                    
+                    do {
+                        sortColumn = dataTable.getColumn(sortColumnIndex);
+                        
+                        sortColumnIndex++;
+                    } while (sortColumn.formatter == YAHOO.widget.DataTable.formatCheckbox);
+                    
+                    dataTable.set("sortedBy", sortColumn);
+                    dataTable.get('paginator').setPage(0, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -518,11 +515,19 @@ Fisma.Search = function() {
             if (!confirm("Delete " + checkedRecords.length + " records?")) {
                 return;
             }
+
+            // Derive the URL for the multi-delete action
+            var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
+            var urlPieces = searchUrl.split('/');
+            
+            urlPieces[urlPieces.length-1] = 'multi-delete';
+            
+            var multiDeleteUrl = urlPieces.join('/');
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
                 'POST', 
-                '/finding/index/multi-delete',
+                multiDeleteUrl,
                 {
                     success : function(o) {
                         var messages = [];
@@ -543,7 +548,7 @@ Fisma.Search = function() {
                         message(text, "warning", true);
                     }
                 },
-                "findings=" + YAHOO.lang.JSON.stringify(checkedRecords)
+                "records=" + YAHOO.lang.JSON.stringify(checkedRecords)
             );
         },
         
