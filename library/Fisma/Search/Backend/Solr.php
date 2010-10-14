@@ -234,7 +234,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $query->addFilterQuery($filterQuery);
 
             // Tokenize keyword on spaces and escape all tokens
-            $keywordTokens = split(' ', $trimmedKeyword);
+            $keywordTokens = explode(' ', $trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }
@@ -617,10 +617,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * each variable will help to sort through the structure for debugging purposes.
      *
      * @param string $type
-     * @param SolrResult $solrResult
+     * @param SolrObject $solrResult
      * @return Fisma_Search_Result
      */
-    public function _convertSolrResultToStandardResult($type, SolrResult $solrResult)
+    public function _convertSolrResultToStandardResult($type, SolrObject $solrResult)
     {
         // @todo set global timestamp options
         Zend_Date::setOptions(array('format_type' => 'iso'));
@@ -663,6 +663,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             // Convert any dates or datetimes from Solr's UTC format back to native format
             foreach ($row as $fieldName => $fieldValue) {
+                // Skip fields that are not model-specific like luceneDocumentType, luceneDocumentId, etc.
+                if (!isset($searchableFields[$fieldName])) {
+                    continue;
+                }
+                
                 $fieldDefinition = $searchableFields[$fieldName];
 
                 if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {

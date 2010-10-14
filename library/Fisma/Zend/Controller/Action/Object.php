@@ -618,8 +618,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         //initialize the data rows
         $searchResults = array(
             'startIndex'      => $this->_paging['startIndex'],
-            'sort'            => $sortBy,
-            'dir'             => $order,
             'pageSize'        => $this->_paging['count']
         );
 
