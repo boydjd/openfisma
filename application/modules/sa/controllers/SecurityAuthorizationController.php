@@ -191,9 +191,22 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             ->leftJoin('saSC.SecurityControl control')
             ->leftJoin('saSC.SecurityControlEnhancements enhancements')
             ->where('saSC.securityAuthorizationId = ?', $id)
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
-        $this->view->treeData = $controls;
+
+        $data = array();
+        foreach ($controls as $saControl) {
+            $enhancements = array();
+            $control = $saControl->SecurityControl;
+            foreach ($saControl->SecurityControlEnhancements as $enhancement) {
+                $enhancements[] = $enhancement->description;
+            }
+            $data[$control->family][] = array(
+                'code' => $control->code,
+                'name' => $control->name,
+                'enhancements' => $enhancements
+            );
+        }
+        $this->view->treeData = $data;
     }
 
 }

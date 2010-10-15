@@ -51,18 +51,30 @@ Fisma.ControlTree.prototype = {
 
     renderTreeNodes: function(treeNodes, parentNode) {
         for (var i in treeNodes) {
-            // Create tree node
-            treeNode = treeNodes[i];
-            control = treeNode.SecurityControl;
-            nodeText = "<b>" + PHP_JS().htmlspecialchars(control.code) + "</b> - <i>"
-                             + PHP_JS().htmlspecialchars(control.name) + "</i>";
-            var controlNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
-            var enhancements = treeNode.SecurityControlEnhancements;
-            for (var j in enhancements) {
-                var eNode = new YAHOO.widget.TextNode(enhancements[j].description, controlNode, false);
-            }
+            this.renderFamily(i, treeNodes[i], parentNode);
         }
-    }
-    
+    },
 
+    renderFamily: function(family, controls, parent) {
+        var familyNode = new YAHOO.widget.TextNode(family, parent, false);
+        for (var i in controls) {
+            var control = controls[i];
+            this.renderControl(control, familyNode);
+        }
+    },
+
+    renderControl: function(control, parent) {
+        var nodeText = "<b>" + PHP_JS().htmlspecialchars(control.code) + "</b> - <i>"
+                             + PHP_JS().htmlspecialchars(control.name) + "</i>";
+        var controlNode = new YAHOO.widget.TextNode(nodeText, parent, false);
+        for (var i in control.enhancements) {
+            var enhancement = control.enhancements[i];
+            this.renderEnhancement(enhancement, controlNode);
+        }
+
+    },
+
+    renderEnhancement: function(enhancement, parent) {
+        var enhancementNode = new YAHOO.widget.TextNode(enhancement, parent, false);
+    }
 };
