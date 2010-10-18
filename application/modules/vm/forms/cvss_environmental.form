@@ -10,6 +10,11 @@
 
 [cvss_environmental]
 
+decorators.elements.decorator = "FormElements"
+decorators.table.decorator = "HtmlTag"
+decorators.table.options.tag = "table"
+decorators.form.decorator = "Form"
+
 ;Environmental
 elements.CDP.type = "select"
 elements.CDP.options.label = "Collateral Damage Potential"
@@ -20,6 +25,7 @@ elements.CDP.options.multiOptions.LM = "Low-Medium"
 elements.CDP.options.multiOptions.MH = "Medium-High"
 elements.CDP.options.multiOptions.H = "High"
 displayGroups.cvssEnv.elements.CDP = "CDP"
+elements.CDP.options.tooltip = "<p align='center'><b>Collateral Damage Potential (CDP)</b></p><p>This metric measures the potential for loss of life or physical assets through damage or theft of property or equipment.  The metric may also measure economic loss of productivity or revenue.</p><p><b>None (N)</b> - There is no potential for loss of life, physical assets, productivity or revenue.</p><p><b>Low (L)</b> - A successful exploit of this vulnerability may result in slight physical or property damage. Or, there may be a slight loss of revenue or productivity to the organization.</p><p><b>Low-Medium (LM)</b> - A successful exploit of this vulnerability may result in moderate physical or property damage. Or, there may be a moderate loss of revenue or productivity to the organization.</p><p><b>Medium-High (MH)</b> - A successful exploit of this vulnerability may result in significant physical or property damage or loss. Or, there may be a significant loss of revenue or productivity.</p><p><b>High (H)</b> - A successful exploit of this vulnerability may result in catastrophic physical or property damage and loss. Or, there may be a catastrophic loss of revenue or productivity.</p><p><b>Not Defined (ND)</b> - Assigning this value to the metric will not influence the score. It is a signal to the equation to skip this metric.</p>"
 
 elements.TD.type = "select"
 elements.TD.options.label = "Target Distribution"
@@ -29,6 +35,7 @@ elements.TD.options.multiOptions.L = "Low"
 elements.TD.options.multiOptions.M = "Medium"
 elements.TD.options.multiOptions.H = "High"
 displayGroups.cvssEnv.elements.TD = "TD"
+elements.TD.options.tooltip = "<p align='center'><b>Target Distribution (TD)</b></p><p>This metric measures the proportion of vulnerable systems. It is meant as an environment-specific indicator in order to approximate the percentage of systems that could be affected by the vulnerability.</p><p><b>None (N)</b> - No target systems exist, or targets are so highly specialized that they only exist in a laboratory setting. Effectively 0% of the environment is at risk.</p><p><b>Low (L)</b> - Targets exist inside the environment, but on a small scale. Between 1% - 25% of the total environment is at risk.</p><p><b>Medium (M)</b> - Targets exist inside the environment, but on a medium scale. Between 26% - 75% of the total environment is at risk.</p><p><b>High (H)</b> - Targets exist inside the environment on a considerable scale. Between 76% - 100% of the total environment is considered at risk.</p><p><b>Not Defined (ND)</b> - Assigning this value to the metric will not influence the score. It is a signal to the equation to skip this metric.</p>"
 
 elements.CR.type = "select"
 elements.CR.options.label = "Confidentiality Requirement"
@@ -37,7 +44,7 @@ elements.CR.options.multiOptions.N = "None"
 elements.CR.options.multiOptions.L = "Low"
 elements.CR.options.multiOptions.M = "Medium"
 elements.CR.options.multiOptions.H = "High"
-displayGroups.cvssEnv.elements.CR = "CR"
+displayGroups.cvssEnvImpact.elements.CR = "CR"
 
 elements.IR.type = "select"
 elements.IR.options.label = "Integrity Requirement"
@@ -46,7 +53,7 @@ elements.IR.options.multiOptions.N = "None"
 elements.IR.options.multiOptions.L = "Low"
 elements.IR.options.multiOptions.M = "Medium"
 elements.IR.options.multiOptions.H = "High"
-displayGroups.cvssEnv.elements.IR = "IR"
+displayGroups.cvssEnvImpact.elements.IR = "IR"
 
 elements.AR.type = "select"
 elements.AR.options.label = "Availability Requirement"
@@ -55,4 +62,4 @@ elements.AR.options.multiOptions.N = "None"
 elements.AR.options.multiOptions.L = "Low"
 elements.AR.options.multiOptions.M = "Medium"
 elements.AR.options.multiOptions.H = "High"
-displayGroups.cvssEnv.elements.AR = "AR"
+displayGroups.cvssEnvImpact.elements.AR = "AR"
