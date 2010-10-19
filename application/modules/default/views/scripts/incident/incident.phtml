@@ -137,20 +137,10 @@
                           href="/metainfo/list/o/organization/format/html/">
                         <?php if (isset($this->incident['Organization'])): ?>
                         <?php $orgId = $this->incident['Organization']['id']; ?>
-
-			<?php $organization = Doctrine::getTable('Organization')->find($orgId); ?>
-			<?php if ($this->acl()->hasPrivilegeForObject('read', $organization)): ?>
-                        	<a href="/organization/view/id/<?php echo $this->escape($orgId); ?>">
-			<?php endif; ?>
-
-
+                        <a href="/organization/view/id/<?php echo $this->escape($orgId); ?>">
                             <?php echo $this->escape($this->incident['Organization']['nickname']);?> 
                             - <?php echo $this->escape($this->incident['Organization']['name']);?>
-
-			<?php if ($this->acl()->hasPrivilegeForObject('read', $organization)): ?>
-	                        </a>
-			<?php endif; ?>
-
+                        </a>
                         <?php endif; ?>
 
                         &nbsp;
