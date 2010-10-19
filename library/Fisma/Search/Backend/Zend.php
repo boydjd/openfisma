@@ -28,11 +28,34 @@
 class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 {
     /**
+     * A cache of open indexes
+     *
+     * Each key is the name of an index, e.g. 'Asset', and the value is the index object
+     *
+     * @var array
+     */
+    private $_indexes = array();
+
+    /**
      * Delete all documents in the index
      */
     public function deleteAll() 
     {
+        $indexPath = Fisma::getPath('index');
         
+        $indexDir = opendir($indexPath);
+
+        while ($index = readdir($indexDir)) {
+            // Skip .* files
+            if ('.' == $index{0}) {
+                continue;
+            }
+
+            if (is_dir($indexPath . '/' . $index)) {
+                echo "dELETE $index\n";
+                $this->deleteByType($index);
+            }
+        }
     }
 
     /**
@@ -44,7 +67,33 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function deleteByType($type) 
     {
+        $indexPath = $this->_getIndexPath($type);
+
+        if (!file_exists($indexPath)) {
+            // Nothing to do
+            return;
+        }
         
+        // Remove contents of index
+        $indexDir = opendir($indexPath);
+        
+        if (!$indexDir) {
+            throw new Fisma_Zend_Exception("Not able to open directory: $indexPath");
+        }
+
+        while ($indexFile = readdir($indexDir)) {
+            // Skip .* files
+            if ('.' == $indexFile{0}) {
+                continue;
+            }
+
+            $indexFilePath = realpath($indexPath . '/' . $indexFile);
+
+            unlink($indexFilePath);
+        }
+        
+        // Remove the empty index directory
+        rmdir($indexPath);
     }
 
     /**
@@ -57,7 +106,11 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function deleteObject($type, $object)
     {
+        $index = $this->_openIndex($type);
         
+        $index->delete($object->id);
+        
+        $index->commit();
     }
 
     /**
@@ -68,7 +121,9 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function indexCollection($type, $collection)
     {
-        
+        foreach ($collection as $object) {
+            $this->indexObject($type, $object);
+        }
     }
 
     /**
@@ -79,8 +134,47 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      * @param string $type The class of the object
      * @param array $object
      */
-    public function indexObject($type, $object) {
+    public function indexObject($type, $object) 
+    {
+        $searchableFields = $this->_getSearchableFields($type);
+
+        $document = new Zend_Search_Lucene_Document();
         
+        // Always add an ID field
+        if (!isset($object['id'])) {
+            $message = "Cannot index objects that do not have an ID field. (Type is: $type)";
+
+            throw new Fisma_Search_Exception($message);
+        }
+        
+        $table = Doctrine::getTable($type);
+        
+        foreach ($searchableFields as $name => $field) {
+            $rawValue = $this->_getRawValueForField($table, $object, $name, $field);
+            
+            $field = Zend_Search_Lucene_Field::Text($name, $rawValue, 'iso-8859-1');
+            
+            $document->addField($field);
+        }
+        
+        $index = $this->_openIndex($type);
+
+        $index->addDocument($document);
+    }
+
+    /**
+     * Returns true if the specified column is sortable
+     *
+     * This is defined in the search abstraction layer since ultimately the sorting capability is determined by the
+     * search engine implementation.
+     *
+     * @param string $type The class containing the column
+     * @param string $columnName
+     * @return bool
+     */
+    public function isColumnSortable($type, $columnName)
+    {
+        throw new Exception("NOT IMPLEMENTED");
     }
 
     /**
@@ -88,7 +182,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function optimizeIndex()
     {
-        
+        throw new Exception("NOT IMPLEMENTED");
     }
 
     /**
@@ -105,7 +199,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted)
     {
-        
+        throw new Exception("NOT IMPLEMENTED");
     }
 
     /**
@@ -130,18 +224,56 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $deleted
         ) 
     {
-        
+        throw new Exception("NOT IMPLEMENTED");
     }
 
     /**
      * Validate the backend's configuration
      *
-     * The implementing class should use this to exercise basic diagnostics
-     *
      * @return mixed Return TRUE if configuration is valid, or a string error message otherwise
      */
     public function validateConfiguration()
     {
-        return "THIS BACKEND IS BROKE";
+       $indexDir = Fisma::getPath('index');
+
+        if (!is_writeable($indexDir)) {
+            return "Index directory ($indexDir) is not writeable";
+        }
+
+        return true;
+    }
+    
+    /**
+     * Get path for a specified index
+     */
+    private function _getIndexPath($type)
+    {
+        // Use basename on $type to prevent any potential path traversal attacks
+        $indexPath = Fisma::getPath('index') . '/' .  basename($type);
+
+        return $indexPath;
+    }
+    
+    /**
+     * Open an index with the specified name
+     */
+    private function _openIndex($type)
+    {
+        if (isset($this->_indexes[$type])) {
+            $index = $this->_indexes[$type];
+        } else {
+            $indexPath = $this->_getIndexPath($type);
+
+            if (file_exists($indexPath)) {
+                $index = Zend_Search_Lucene::open($indexPath);
+            } else {
+                $index = Zend_Search_Lucene::create($indexPath);
+            }
+            
+            // Cache a reference to the index
+            $this->_indexes[$type] = $index;
+        }
+
+        return $index;
     }
 }

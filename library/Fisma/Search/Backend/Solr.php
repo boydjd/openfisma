@@ -540,15 +540,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _convertObjectToDocument($type, $object)
     {
-        $table = Doctrine::getTable($type);
-
-        if (!($table instanceof Fisma_Search_Searchable)) {
-            $message = 'Objects which are to be indexed must have a table that implements'
-                     . ' the Fisma_Search_Searchable interface';
-
-            throw new Fisma_Zend_Exception($message);
-        }
-
         $document = new SolrInputDocument;
 
         // All documents have the following three fields
@@ -561,7 +552,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         }
 
         // Iterate over the model's columns and see which ones need to be indexed
-        $searchableFields = $table->getSearchableFields();
+        $searchableFields = $this->_getSearchableFields($type);
 
         foreach ($searchableFields as $doctrineFieldName => $searchFieldDefinition) {
 
@@ -571,23 +562,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $documentFieldName = $doctrineFieldName . '_' . $searchFieldDefinition['type'];
 
-            // @todo move this block to abstract class
-            // Values can come from the main model as well as related model
-            if (!isset($searchFieldDefinition['join'])) {
-                $rawValue = $object[$table->getFieldName($doctrineFieldName)];
-            } else {
-                // Handle nested relations
-                $relationParts = explode('.', $searchFieldDefinition['join']['relation']);
-
-                $relatedObject = $object;
-
-                foreach ($relationParts as $relationPart) {
-                    $relatedObject = $relatedObject[$relationPart];
-                }
-
-                $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
-            }
-
+            $rawValue = $this->_getRawValueForField($table, $object, $doctrineFieldName, $searchFieldDefinition);
+            
             if (is_null($rawValue)) {
                 continue;
             }

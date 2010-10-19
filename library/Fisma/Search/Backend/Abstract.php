@@ -82,6 +82,18 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function indexObject($type, $object);
 
     /**
+     * Returns true if the specified column is sortable
+     *
+     * This is defined in the search abstraction layer since ultimately the sorting capability is determined by the
+     * search engine implementation.
+     *
+     * @param string $type The class containing the column
+     * @param string $columnName
+     * @return bool
+     */
+    abstract public function isColumnSortable($type, $columnName);
+
+    /**
      * Optimize the index (degfragments the index)
      */
     abstract public function optimizeIndex();
@@ -224,5 +236,57 @@ abstract class Fisma_Search_Backend_Abstract
         $html = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html);
 
         return $html;
+    }
+    
+    /**
+     * Returns the raw value for a field based on the search metadata definition.
+     *
+     * This has the ability to load data from a related model as well.
+     *
+     * @param Doctrine_Table $table
+     * @param array $object
+     * @param string $doctrineFieldName Name of field given by Doctrine
+     * @param array $searchFieldDefinition
+     * return mixed The raw value of the field
+     */
+    protected function _getRawValueForField($table, $object, $doctrineFieldName, $searchFieldDefinition)
+    {
+        $rawValue = null;
+
+        if (!isset($searchFieldDefinition['join'])) {
+            $rawValue = $object[$table->getFieldName($doctrineFieldName)];
+        } else {
+            // Handle nested relations
+            $relationParts = explode('.', $searchFieldDefinition['join']['relation']);
+
+            $relatedObject = $object;
+
+            foreach ($relationParts as $relationPart) {
+                $relatedObject = $relatedObject[$relationPart];
+            }
+
+            $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
+        }
+        
+        return $rawValue;
+    }
+    
+    /**
+     * Return searchable fields for a particular model
+     *
+     * @param string $type Name of model 
+     */
+    protected function _getSearchableFields($type)
+    {
+        $table = Doctrine::getTable($type);
+
+        if (!($table instanceof Fisma_Search_Searchable)) {
+            $message = 'Objects which are to be indexed must have a table that implements'
+                     . ' the Fisma_Search_Searchable interface';
+
+            throw new Fisma_Zend_Exception($message);
+        }
+        
+        return $table->getSearchableFields();
     }
 }
