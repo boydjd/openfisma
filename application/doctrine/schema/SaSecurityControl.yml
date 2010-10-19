@@ -4,6 +4,12 @@ SaSecurityControl:
             type: integer
         securityControlId:
             type: integer
+        common:
+            type: boolean
+            default: false
+            notnull: true
+        inheritsId:
+            type: integer
     relations:
         SecurityAuthorization:
             local: securityAuthorizationId
@@ -18,4 +24,8 @@ SaSecurityControl:
             local: saSecurityControlId
             foreign: securityControlEnhancementId
             refClass: SaSecurityControlEnhancement
+        Inherits:
+            local: inheritsId
+            foreign: id
+            foreignAlias: InheritedBy
 
