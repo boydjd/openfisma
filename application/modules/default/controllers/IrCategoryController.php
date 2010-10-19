@@ -179,10 +179,6 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
          */        
         foreach ($categories as &$category) {
             $category['children'] = $category['SubCategories'];
-
-            // OFJ-922. brackets must be escapped within the names of categories in the tree-view
-            $category['name'] = $this->view->escape($category['name'], 'html');
-            
             unset($category['SubCategories']);
             
             foreach ($category['children'] as &$child) {
