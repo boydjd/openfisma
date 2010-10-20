@@ -108,7 +108,15 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     {
         $index = $this->_openIndex($type);
         
-        $index->delete($object->id);
+        // Deleting an object requires us to find it first
+        $term = new Zend_Search_Lucene_Index_Term($object->id, 'id');
+        $query = new Zend_Search_Lucene_Search_Query_Term($term);
+        $hits = $index->find($query);
+        
+        // We only expect one result (id is a primary key) but will delete all hits just in case
+        foreach ($hits as $hit) {
+            $index->delete($hit->id);
+        }
         
         $index->commit();
     }
@@ -138,6 +146,9 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     {
         $searchableFields = $this->_getSearchableFields($type);
 
+        // Unlike Solr, ZSL doesn't automatically replace documents, so we need to delete explicitly
+        $this->deleteObject($type, $object);
+        
         $document = new Zend_Search_Lucene_Document();
         
         // Always add an ID field
@@ -168,21 +179,42 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      * This is defined in the search abstraction layer since ultimately the sorting capability is determined by the
      * search engine implementation.
      *
+     * ZSL can sort on any column but it can be quite slow.
+     *
      * @param string $type The class containing the column
      * @param string $columnName
      * @return bool
      */
     public function isColumnSortable($type, $columnName)
     {
-        throw new Exception("NOT IMPLEMENTED");
+        $searchableFields = $this->_getSearchableFields($type);
+        
+        $sortable = false;
+        
+        if (isset($searchableFields[$columnName]['sortable'])) {
+            $sortable = $searchableFields[$columnName]['sortable'];
+        }
+        
+        return $sortable;
     }
 
     /**
      * Optimize the index (degfragments the index)
      */
     public function optimizeIndex()
-    {
-        throw new Exception("NOT IMPLEMENTED");
+    {     
+        // ZSL indexes are stored separately for each object type, so we need to list all possible
+        // indexes first
+        $indexEnumerator = new Fisma_Search_IndexEnumerator();
+        
+        $searchableClasses = $indexEnumerator->getSearchableClasses(Fisma::getPath('model'));
+        
+        // Loop over searchable classes and tell ZSL to optimize each index
+        foreach ($searchableClasses as $searchableClass) {
+            $index = $this->_openIndex($searchableClass);
+            
+            $index->optimize();
+        }
     }
 
     /**
