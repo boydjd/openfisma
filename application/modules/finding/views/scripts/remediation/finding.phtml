@@ -3,7 +3,10 @@
     $orgId = $finding->ResponsibleOrganization->nickname;
     $status  = $finding->getStatus();
 ?>
-<div>
+
+<table width="100%"><tr><td width="50%">
+
+<span>
     <?php Fisma_Format_Section::startSection("Details"); ?>
     <table class="keyValues">
         <tr>
@@ -138,9 +141,11 @@
         </tr>
     </table>
     <?php Fisma_Format_Section::stopSection(); ?>
-</div>
+</span>
 
 <div class="clear"></div>
+
+<td>&nbsp;</td></td><td width="50%" valign="top">
 
 <?php 
 if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_description', $finding)
@@ -167,4 +172,7 @@ if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
     <?php echo $this->escape($finding->recommendation, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
+
+
+</td></tr></table>
 
