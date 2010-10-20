@@ -70,7 +70,6 @@ class Fisma_Menu
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/index/injection'));
-                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/finding/index/plugin'));
             }
                                     
             $findings->addSeparator();
