@@ -140,9 +140,7 @@ class AuthController extends Zend_Controller_Action
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
                 $now = Zend_Date::now();
                 if ($now->isLater($passWarningTs)) {
-                    //set the password expiration day
-                    $passWarningTs->add($passWarningPeriod, Zend_Date::DAY);
-                    $leaveDays = round($passWarningTs->sub($now)->toValue() / (60 * 60 * 24)) + 1;
+                    $leaveDays = $passWarningPeriod - $now->sub($passWarningTs, Zend_Date::DAY);
                     $message = "Your password will expire in $leaveDays days,"
                              . " you should change it now.";
                     $this->view->priorityMessenger($message, 'warning');
