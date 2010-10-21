@@ -239,6 +239,49 @@ abstract class Fisma_Search_Backend_Abstract
     }
     
     /**
+     * Return an array of ACL terms
+     *
+     * e.g. the following return value indicates a user has access to any document where the 'id' field is 1 or 2
+     *
+     * array(
+     *     array('field' => 'id', 'value' => 1),
+     *     array('field' => 'id', 'value' => 2),
+     * )
+     *
+     * @param Doctrine_Table $table
+     * @return mixed Array of acl terms or null if ACL does not apply
+     */
+     protected function _getAclTerms($table) 
+     {
+        $aclFields = $table->getAclFields();
+
+        // If no ACL fields, then don't return any ACL terms
+        if (count($aclFields) == 0) {
+            return null;
+        }
+
+        $ids = array();
+        
+        foreach ($aclFields as $aclFieldName => $callback) {      
+            var_dump($aclFieldName);
+            var_dump($callback);
+            $aclIds = call_user_func($callback);
+
+            if ($aclIds === false) {
+                $message = "Could not call ACL ID provider ($callback) for ACL field ($name).";
+
+                throw new Fisma_Zend_Exception($message);
+            }
+
+            foreach ($aclIds as &$aclId) {
+                $ids[] = array($aclFieldName => $this->escape($aclId));
+            }
+        }
+
+        return $ids;
+    }
+    
+    /**
      * Returns the raw value for a field based on the search metadata definition.
      *
      * This has the ability to load data from a related model as well.

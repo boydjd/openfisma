@@ -52,7 +52,6 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             }
 
             if (is_dir($indexPath . '/' . $index)) {
-                echo "dELETE $index\n";
                 $this->deleteByType($index);
             }
         }
@@ -74,7 +73,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             return;
         }
         
-        // Remove contents of index
+        // Remove contents of index directory
         $indexDir = opendir($indexPath);
         
         if (!$indexDir) {
@@ -151,11 +150,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         
         $document = new Zend_Search_Lucene_Document();
         
-        // Always add an ID field
+        // Always add an ID and documentType field
         if (!isset($object['id'])) {
             $message = "Cannot index objects that do not have an ID field. (Type is: $type)";
 
             throw new Fisma_Search_Exception($message);
+        } else {
+            $document->addField(Zend_Search_Lucene_Field::Keyword('id', $object['id'], 'iso-8859-1'));
+            $document->addField(Zend_Search_Lucene_Field::Keyword('luceneDocumentType', $type, 'iso-8859-1'));
         }
         
         $table = Doctrine::getTable($type);
@@ -163,7 +165,15 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         foreach ($searchableFields as $name => $field) {
             $rawValue = $this->_getRawValueForField($table, $object, $name, $field);
             
-            $field = Zend_Search_Lucene_Field::Text($name, $rawValue, 'iso-8859-1');
+            $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($name));
+            
+            if (isset($doctrineDefinition['extra']['purify']) && 'html' == $doctrineDefinition['extra']['purify']) {
+                $purified = $this->_convertHtmlToIndexString($rawValue);
+
+                $field = Zend_Search_Lucene_Field::Text($name, $purified, 'iso-8859-1');
+            } else {
+                $field = Zend_Search_Lucene_Field::Text($name, $rawValue, 'iso-8859-1');
+            }
             
             $document->addField($field);
         }
@@ -231,7 +241,68 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
      */
     public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted)
     {
-        throw new Exception("NOT IMPLEMENTED");
+        $table = Doctrine::getTable($type);
+        $searchableFields = $this->_getSearchableFields($type);
+
+        $query = new Zend_Search_Lucene_Search_Query_Boolean();
+        
+        // Check sorting parameters
+        if (!$this->isColumnSortable($type, $sortColumn)) {
+            throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
+        }
+
+        $sortDirectionParam = $sortDirection ? SORT_ASC : SORT_DESC;
+
+        // Create ACL constraints subquery
+        $aclTerms = $this->_getAclTerms($table);
+
+        if ($aclTerms) {
+            $aclQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
+            
+            foreach ($aclTerms as $aclTerm) {
+                $aclQuery->addTerm(new Zend_Search_Lucene_Index_Term($aclTerm['field'], $aclTerm['name']));
+            }
+            
+            //$query->addSubquery($aclQuery, true);
+        }
+        
+        // Filter out deleted items, if this model has soft delete
+        if ($table->hasColumn('deleted_at') && !$deleted) {
+            $deletedTerm = new Zend_Search_Lucene_Index_Term('[* TO *]', 'deleted_at', false);
+            $deletedQuery = new Zend_Search_Lucene_Search_Query_Term($deletedTerm); 
+            
+            //$query->addSubquery($deletedQuery, true);
+        }
+
+        // Create subquery for the keywords (or a default query if no keywords provided)
+        $trimmedKeyword = trim($keyword);
+
+        if (!empty($trimmedKeyword)) {
+            $keywordTokens = explode(' ', $trimmedKeyword);
+            $keywordTokens = array_filter($keywordTokens);
+            $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
+        }
+
+        if (count($keywordTokens)) {
+            $keywordQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
+            
+            foreach ($keywordTokens as $keyword) {
+                $keywordQuery->addTerm(new Zend_Search_Lucene_Index_Term($keyword));
+            }
+            
+            $query->addSubquery($keywordQuery, true);
+        } else {
+            // If no keywords, then list all documents by searching on the 'luceneDocumentType' field
+            $defaultTerm = new Zend_Search_Lucene_Index_Term($type, 'luceneDocumentType');
+
+            $query->addSubquery(new Zend_Search_Lucene_Search_Query_Term($defaultTerm), true);
+        }
+
+        // Do actual query        
+        $index = $this->_openIndex($type);
+        $result = $index->find($query, $sortColumn, SORT_REGULAR, $sortDirectionParam);
+
+        return $this->_convertZslResultToStandardResult($type, $result);    
     }
 
     /**
@@ -276,6 +347,42 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     }
     
     /**
+     * Convert ZSL search results in to OpenFISMA search results
+     *
+     * @param string $type Type of object to create results fo
+     * @param array $result Array of Zend_Search_Lucene_Search_QueryHit
+     * @return Fisma_Search_Result
+     */
+    private function _convertZslResultToStandardResult($type, $result)
+    {
+        $numberFound = count($result);
+        $numberReturned = count($result);
+
+        $tableData = array();
+
+        $table = Doctrine::getTable($type);
+        $searchableFields = $this->_getSearchableFields($type);
+
+        foreach ($result as $hit) {
+            $document = $hit->getDocument();
+            
+            $row = array();
+            
+            $row['id'] = $document->getField('id')->value;
+            
+            foreach ($searchableFields as $name => $field) {
+                $definition = $table->getColumnDefinition($table->getColumnName($field));
+
+                $row[$name] = $document->getField($name)->value;
+            }
+            
+            $tableData[] = $row;
+        }
+
+        return new Fisma_Search_Result($numberReturned, $numberFound, $tableData);
+    }
+    
+    /**
      * Get path for a specified index
      */
     private function _getIndexPath($type)
@@ -292,6 +399,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     private function _openIndex($type)
     {
         if (isset($this->_indexes[$type])) {
+            // If this index is already open, reuse existing object
             $index = $this->_indexes[$type];
         } else {
             $indexPath = $this->_getIndexPath($type);

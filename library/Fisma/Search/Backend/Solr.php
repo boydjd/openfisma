@@ -145,7 +145,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             throw new Fisma_Search_Exception("This table is not searchable: $type");
         }
 
-        $searchableFields = $table->getSearchableFields();
+        $searchableFields = $this->_getSearchableFields($type);
 
         return isset($searchableFields[$columnName]['sortable']) && $searchableFields[$columnName]['sortable'];
     }
@@ -177,7 +177,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $query = new SolrQuery;
 
         $table = Doctrine::getTable($type);
-        $searchableFields = $table->getSearchableFields();
+        $searchableFields = $this->_getSearchableFields($type);
 
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
@@ -212,6 +212,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $filterQuery .= ' AND (' 
                           . $aclQueryFilter
                           . ')';
+                          var_dump($aclQueryFilter);die;
         }
         
         // Filter out deleted items, if this model has soft delete
@@ -296,7 +297,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $query = new SolrQuery;
 
         $table = Doctrine::getTable($type);
-        $searchableFields = $table->getSearchableFields();
+        $searchableFields = $this->_getSearchableFields($type);
 
         if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
             throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
@@ -608,7 +609,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $tableData = array();
 
         $table = Doctrine::getTable($type);
-        $searchableFields = $table->getSearchableFields();
+        $searchableFields = $this->_getSearchableFields($type);
 
         // Construct initial table data from documents part of the response
         foreach ($solrResult->response->docs as $document) {
@@ -751,31 +752,22 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _getAclQueryFilter($table, $searchableFields)
     {
-        $aclFields = $table->getAclFields();
-
-        $ids = array();
-
-        if (count($aclFields) == 0) {
-            // This model doesn't specify any ACL constraints
+        $aclTerms = $this->_getAclTerms($table);
+        
+        // If there is no ACL constraint, then return an empty query term
+        if (is_null($aclTerms)) {
             return '';
         }
+
+        $ids = array();
         
-        foreach ($aclFields as $aclFieldName => $callback) {                
-            $aclIds = call_user_func($callback);
+        foreach ($aclTerms as $aclTerm) {
+            $fieldName = $aclTerm['field'];
+            $fieldValue = $aclTerm['value'];
 
-            if ($aclIds === false) {
-                $message = "Could not call ACL ID provider ($callback) for ACL field ($name).";
+            $aclFieldType = $searchableFields[$fieldName]['type'];
 
-                throw new Fisma_Zend_Exception($message);
-            }
-
-            $aclFieldType = $searchableFields[$aclFieldName]['type'];
-
-            foreach ($aclIds as &$aclId) {
-                $aclId = "{$aclFieldName}_{$aclFieldType}:" . $this->escape($aclId);
-            }
-
-            $ids = array_merge($ids, $aclIds);
+            $ids[] = "{$fieldName}_{$aclFieldType}:" . $this->escape($fieldValue);
         }
 
         if (count($ids)) {
