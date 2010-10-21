@@ -54,7 +54,8 @@ class Fisma_Inject_Factory
             $parent = $class->getParentClass();
             
             if (!empty($parent->name) && $parent->name == 'Fisma_Inject_Abstract') { 
-                return new $pluginClass($data['filepath'], $data['network'], $data['system'], $data['findingSource']);
+//                return new $pluginClass($data['filepath'], $data['network'], $data['system'], $data['findingSource']);
+                return new $pluginClass($data['filepath'], $data['network'], null, null);
             }
 
             throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
