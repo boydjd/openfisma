@@ -33,7 +33,7 @@ class Fisma_Zend_Controller_Plugin_ErrorHandler extends Zend_Controller_Plugin_E
      * @access public
      * @return void
      */
-    public function routeStartup()
+    public function routeStartup(Zend_Controller_Request_Abstract $request)
     {
         Zend_Controller_Front::getInstance()->unregisterPlugin('Zend_Controller_Plugin_ErrorHandler');
     }
