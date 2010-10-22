@@ -384,7 +384,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $operator = $criterion->getOperator();
 
             switch ($operator) {
-                // These cases intentionally fall through
                 case 'dateAfter':
                     $afterDate = $this->_convertToSolrDate($operands[0]);
                     $searchTerms[] = "$fieldName:[$afterDate TO *]";

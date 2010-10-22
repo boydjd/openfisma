@@ -263,8 +263,6 @@ abstract class Fisma_Search_Backend_Abstract
         $ids = array();
         
         foreach ($aclFields as $aclFieldName => $callback) {      
-            var_dump($aclFieldName);
-            var_dump($callback);
             $aclIds = call_user_func($callback);
 
             if ($aclIds === false) {
@@ -274,7 +272,10 @@ abstract class Fisma_Search_Backend_Abstract
             }
 
             foreach ($aclIds as &$aclId) {
-                $ids[] = array($aclFieldName => $this->escape($aclId));
+                $ids[] = array(
+                    'field' => $aclFieldName,
+                    'value' => $this->escape($aclId)
+                );
             }
         }
 
