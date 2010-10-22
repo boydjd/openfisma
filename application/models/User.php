@@ -154,8 +154,7 @@ class User extends BaseUser
         } else {
             $message = 'Unlocked by unknown user (' 
                     . $_SERVER['REMOTE_ADDR']
-                    . '): '
-                . $this->getLockReason();
+                    . ')';
             $this->getAuditLog()->write($message);
         }
     }
