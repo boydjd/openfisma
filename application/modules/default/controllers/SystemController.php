@@ -410,6 +410,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $document->User = CurrentUser::getInstance();
             } else {
                 $document = $documents[0];
+                $document->User = CurrentUser::getInstance();
             }
 
             // Move file into its correct place
