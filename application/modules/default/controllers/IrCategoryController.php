@@ -186,6 +186,7 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
             
             foreach ($category['children'] as &$child) {
                 $child['children'] = array();
+                $child['name'] = $this->view->escape($child['name'], 'html');
             }
         }
 
