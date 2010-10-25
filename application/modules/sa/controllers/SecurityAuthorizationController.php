@@ -142,13 +142,15 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
             // associate suggested controls
             $controls = Doctrine_Query::create()
-                ->from('SecurityControl sc')
+                ->from('SecurityControlCatalog scc')
+                ->leftJoin('scc.Controls sc')
                 ->leftJoin('sc.Enhancements sce')
-                ->whereIn('sc.controlLevel', $controlLevels)
+                ->where('scc.id = ?', array($catalogId))
+                ->andWhereIn('sc.controlLevel', $controlLevels)
                 ->andWhere('sce.id IS NULL')
                 ->orWhereIn('sce.level', $controlLevels)
-                ->andWhere('securityControlCatalogId = ?', array($catalogId))
                 ->execute();
+            $controls = $controls[0]->Controls;
             foreach ($controls as $control) {
                 $sacontrol = new SaSecurityControl();
                 $sacontrol->securityAuthorizationId = $sa->id;
@@ -191,6 +193,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             ->leftJoin('saSC.SecurityControl control')
             ->leftJoin('saSC.SecurityControlEnhancements enhancements')
             ->where('saSC.securityAuthorizationId = ?', $id)
+            ->orderBy('control.code')
             ->execute();
 
         $data = array();
