@@ -60,7 +60,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (html != '') {
+            if (typeof(html) != 'undefined' && html != null && html != '') {
                 panel.setBody(html);
                 panel.center();
             }
