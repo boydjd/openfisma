@@ -105,7 +105,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                        )
                        ->addSelect('systemData.sornRequired AS sorn_required')
                        ->addSelect(
-                           'IF(\'YES\' = systemData.piaRequired, 
+                           'IF(\'YES\' = systemData.sornRequired, 
                                IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
                                \'N/A\') AS sorn_url'
                        )
