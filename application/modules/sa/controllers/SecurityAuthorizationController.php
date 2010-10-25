@@ -47,6 +47,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->contextSwitch()
                       ->addActionContext('control-tree-data', 'json')
                       ->initContext();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('add-control', 'html')
+                      ->initContext();
     }
     
     /**
@@ -212,4 +215,47 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->treeData = $data;
     }
 
+    /**
+     * @return void
+     */
+    public function addControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            $saSc = new SaSecurityControl();
+            $saSc->merge($post);
+            $saSc->save();
+            $this->_redirect('/sa/security-authorization/control-tree/id/'.$id);
+            return;
+        }
+
+        // get list of controls for the form
+        $currentControls = Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->innerJoin('sc.SaSecurityControls saSc')
+            ->innerJoin('saSc.SecurityAuthorization sa')
+            ->where('sa.id = ?', array($id))
+            ->execute()
+            ->toKeyValueArray('id', 'id');
+        $this->view->currentControls = $currentControls;
+        $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
+        $controls = Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->whereNotIn('sc.id', $currentControls)
+            ->andWhere('sc.securityControlCatalogId = ?', $catalogId)
+            ->execute();
+        $controlArray = array();
+        foreach ($controls as $control) {
+            $controlArray[$control->id] = $control->code . ' ' . $control->name;
+        }
+
+        // build form
+        $form = $this->getForm('securityauthorizationaddcontrol');
+        $form->setAction('/sa/security-authorization/add-control/id/'.$id);
+        $form->setDefault('securityAuthorizationId', $id);
+        $form->getElement('securityControlId')->addMultiOptions($controlArray);
+        $this->view->id = $id;
+        $this->view->addControlForm = $form;
+    }
 }

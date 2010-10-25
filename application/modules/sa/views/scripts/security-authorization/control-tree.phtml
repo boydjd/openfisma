@@ -13,6 +13,11 @@ $collapseAll = new Fisma_Yui_Form_Button('collapseAll',
                                              'imageSrc' => '/images/collapse.png',
                                              'onClickFunction' => 'collapseAll'));
 echo $this->escape($collapseAll, 'none');
+
+$addControl = new Fisma_Yui_Form_Button('addControl', 
+                                       array('label' => 'Add Control', 
+                                             'onClickFunction' => 'addControl'));
+echo $this->escape($addControl, 'none');
 ?>
 </div>
 
@@ -35,6 +40,25 @@ function collapseAll() {
     tree.getRoot().collapseAll();
 }
 
+// show Add Control dialog
+function addControl() {
+    var panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true });
+    var callbacks = {
+            success: function(o) {
+                var panel = o.argument;
+                panel.setBody(o.responseText);
+                panel.center();
+            },
+            failure: function(o) {
+                alert('Error getting "add control" form: ' + o.statusText);
+                var panel = o.argument;
+                panel.destroy();
+            },
+            argument: panel
+        };
+    YAHOO.util.Connect.asyncRequest( 'GET', "/sa/security-authorization/add-control/id/<?php echo $this->escape($this->id); ?>/format/html", callbacks, null);
+
+}
 </script>
 
 <?php Fisma_Format_Section::stopSection(); ?>

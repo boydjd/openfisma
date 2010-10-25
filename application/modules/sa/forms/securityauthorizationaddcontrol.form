@@ -1,0 +1,26 @@
+; This is the form for security authorization.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[securityauthorizationaddcontrol]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.securityAuthorizationId.type = "hidden"
+elements.securityAuthorizationId.options.hideLabel = true
+displayGroups.sa.elements.securityAuthorizationId = "securityAuthorizationId"
+
+elements.securityControlId.type = "select"
+elements.securityControlId.options.label = "Security Control"
+elements.securityControlId.options.required = true
+displayGroups.sa.elements.securityControlId = "securityControlId"
+
+elements.save.type = "Submit"
+elements.save.options.label = "Add"
+displayGroups.sa.elements.save = "save"
+
