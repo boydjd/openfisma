@@ -627,6 +627,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
         );
     
         $this->view->formAction = "/incident/update/id/$id";
+
+        $orgId = $incident['Organization']['id'];
+        $organization = Doctrine::getTable('Organization')->find($orgId);
+        
+        // $organization will be false if an organization has not been selected yet
+        if ($organization === false) {
+            $this->view->userCanViewOrganization = false;
+        } else {
+            $this->view->userCanViewOrganization = $this->_acl->hasPrivilegeForObject('read', $organization);
+        }
     }
 
     /**
