@@ -331,7 +331,6 @@ class Fisma
 
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
-        Zend_Date::setOptions(array('format_type' => 'php'));
         Zend_Layout::startMvc(
             array(
                 'layoutPath' => self::getPath('layout'),
@@ -602,7 +601,7 @@ class Fisma
      */
     public static function now() 
     {
-        return date('Y-m-d H:i:s');
+        return Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
     }
     
     /**

@@ -48,7 +48,7 @@ class IrIncidentWorkflow extends BaseIrIncidentWorkflow
     public function completeStep($comment)
     {
         $this->status = 'completed';
-        $this->completeTs = date('Y-m-d H:i:s');
+        $this->completeTs = Fisma::now();
         $this->User = CurrentUser::getInstance();
         $this->comments = $comment;
     }

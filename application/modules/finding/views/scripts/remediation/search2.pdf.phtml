@@ -49,9 +49,7 @@ $pdf->saveState();
 
 $head_height = 5;
 
-$pdf->addTextWrap($left_top['x'],$left_top['y'],$content_width,8,'Report run time:'.
-                                Zend_Date::now()->toString('Y-m-d H:i:s'),
-                                'right');
+$pdf->addTextWrap($left_top['x'], $left_top['y'], $content_width, 8, 'Report run time:' . Fisma::now(), 'right');
 $tmp_y = $left_top['y'] - $head_height;
 $pdf->line($left_top['x'],$tmp_y,$right_bottom['x'],$tmp_y);
 $pdf->setStrokeColor(0,0,0,1);
