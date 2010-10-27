@@ -236,7 +236,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
                         ->from('Finding f')
                         ->leftJoin('f.ResponsibleOrganization o')
-                        ->where('f.nextduedate < NOW()')
+                        ->where('DATEDIFF(NOW(), f.nextduedate) > 0')
                         ->groupBy('o.id, actionType')
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
