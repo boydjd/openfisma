@@ -467,8 +467,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $message = '';
-        if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], 'Y-m-d')) {
-            $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], 'Y-m-d');
+        if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], 'yyyy-MM-dd')) {
+            $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], 'yyyy-MM-dd');
         } else if (!empty($params['estDateBegin'])) {
             $message = 'Estimated Completion Date From: ' . $params['estDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -477,8 +477,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $params['estDateBegin'] = '';
         }
 
-        if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], 'Y-m-d')) {
-            $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], 'Y-m-d');
+        if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], 'yyyy-MM-dd')) {
+            $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], 'yyyy-MM-dd');
         } else if (!empty($params['estDateEnd'])) {
             $message = $message . 'Estimated Completion Date To: ' . $params['estDateEnd']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -486,9 +486,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         } else {
             $params['estDateEnd'] = '';
         }
-
-        if (!empty($params['createdDateBegin']) && Zend_Date::isDate($params['createdDateBegin'], 'Y-m-d')) {
-            $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], 'Y-m-d');
+        if (!empty($params['createdDateBegin']) && Zend_Date::isDate($params['createdDateBegin'], 'yyyy-MM-dd')) {
+            $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], 'yyyy-MM-dd');
         } else if (!empty($params['createdDateBegin'])) {
             $message = $message . 'Date Created From: ' . $params['createdDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -497,11 +496,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $params['createdDateBegin'] = '';
         }
 
-        if (!empty($params['createdDateEnd']) && Zend_Date::isDate($params['createdDateEnd'], 'Y-m-d')) {
-            $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], 'Y-m-d');
+        if (!empty($params['createdDateEnd']) && Zend_Date::isDate($params['createdDateEnd'], 'yyyy-MM-dd')) {
+            $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], 'yyyy-MM-dd');
         } else if (!empty($params['createdDateEnd'])) {
             $message = $message . 'Date Created To: ' . $params['createdDateEnd']
-                     . 'is not of the format YYYY-MM-DD.';
+                     . ' is not of the format YYYY-MM-DD.';
             $params['createdDateEnd'] = '';
         } else {
             $params['createdDateEnd'] = '';
@@ -768,7 +767,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         if (isset($findingData['currentEcd'])) {
             if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
                 $date = new Zend_Date();
-                $ecd  = new Zend_Date($findingData['currentEcd'], 'Y-m-d');
+                $ecd  = new Zend_Date($findingData['currentEcd'], 'yyyy-MM-dd');
 
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
@@ -915,7 +914,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
                 mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
-            $nowStr = date('Y-m-d-his', strtotime(Fisma::now()));
+            $nowStr = Zend_Date::now()->toString('yyyy-MM-dd-HHmmss');
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
@@ -963,7 +962,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $this->_helper->layout->disableLayout(true);
             $this->_helper->viewRenderer->setNoRender();
             ob_end_clean();
-            header('Expires: ' . gmdate('D, d M Y H:i:s', time()+31536000) . ' GMT');
+            $expiredDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
+            $expiredDateTime->setTimezone('GMT');
+            header('Expires: ' . $expiredDateTime->toString('EEE, dd MMM yyyy HH:mm:ss') . ' GMT');
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));
@@ -1335,18 +1336,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         $q->andWhere('f.deleted_at = f.deleted_at');
                     }
                 } elseif ($k == 'estDateBegin') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString('yyyy-MM-dd HH:mm:ss');
                     $q->andWhere("f.currentEcd > ?", $v);
                 } elseif ($k == 'estDateEnd') {
                     $v = $v->addDay(1);
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString('yyyy-MM-dd HH:mm:ss');
                     $q->andWhere("f.currentEcd < ?", $v);
                 } elseif ($k == 'createdDateBegin') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString('yyyy-MM-dd HH:mm:ss');
                     $q->andWhere("f.createdTs > ?", $v);
                 } elseif ($k == 'createdDateEnd') {
                     $v = $v->addDay(1);
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString('yyyy-MM-dd HH:mm:ss');
                     $q->andWhere("f.createdTs < ?", $v);
                 } elseif ($k == 'status') {
                     if (is_array($v)) {
@@ -1357,7 +1358,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         $q->andWhere("ce.nickname = ?", $v);
                     }
                 } elseif ($k == 'modify_ts') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString('yyyy-MM-dd HH:mm:ss');
                     $q->andWhere("f.modifiedTs < ?", $v);
                 } elseif ($k == 'ontime') {
                     if ($v == 'ontime') {
@@ -1437,9 +1438,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             // select the finding whether have attachments
             $row['attachments'] = count($result->Evidence) > 0 ? 'Y' : 'N';
 
+            $nextDueDate = new Zend_Date($result->nextDueDate, Zend_Date::ISO_8601);
             if (is_null($result->nextDueDate)) {
                 $row['duetime'] = 'N/A';
-            } elseif (date('Ymd', strtotime($result->nextDueDate)) >= date('Ymd', time())) {
+            } elseif ($nextDueDate->isLater(Zend_Date::now())) {
                 $row['duetime'] = 'On time';
             } else {
                 $row['duetime'] = 'Overdue';

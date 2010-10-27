@@ -423,7 +423,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             if (!is_dir($destinationPath)) {
                 mkdir($destinationPath);
             }
-            $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . date('Ymd-His') . '.$2', $file['name'], 2, $count);
+            $dateTime = Zend_Date::now()->toString('yyyyMMdd-HHmmss');
+            $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . $dateTime . '.$2', $file['name'], 2, $count);
             $filePath = "$destinationPath/$fileName";
 
             if (!move_uploaded_file($file['tmp_name'], $filePath)) {

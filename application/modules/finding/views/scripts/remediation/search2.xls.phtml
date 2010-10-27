@@ -37,7 +37,7 @@ $format_times->setTextWrap();
 $rowi=0;
 $worksheet->setColumn(0,0,20);
 $worksheet->mergeCells($rowi, 0, $rowi, $count_cols-1);
-$headinfo="Report run time: ".date("Y-m-d H:i:s");
+$headinfo="Report run time: " . Fisma::now();
 $worksheet->write($rowi++, 0, $headinfo,$format_times);
 
 $worksheet->mergeCells($rowi,0,$rowi,$count_cols-1);

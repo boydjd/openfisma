@@ -1,4 +1,4 @@
-<?php
+<?php 
     $finding = $this->finding;
     $orgId = $finding->ResponsibleOrganization->nickname;
     $status  = $finding->getStatus();
@@ -96,9 +96,12 @@
         <tr>
             <td>On Time:</td>
             <td>
-            <?php if (is_null($finding->nextDueDate)): ?>
+            <?php
+                $nextDueDate = new Zend_Date($finding->nextDueDate, Zend_Date::ISO_8601);
+                if (is_null($finding->nextDueDate)):
+            ?>
                 N/A
-            <?php elseif (date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate))): ?>
+            <?php elseif ($nextDueDate->isLater(Zend_Date::now())): ?>
                 On Time
             <?php else: ?>
                 Overdue
