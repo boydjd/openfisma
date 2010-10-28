@@ -49,9 +49,11 @@ class Fisma_Search_Indexer
      * on a related model -- for all indexable records.
      *
      * @param string $modelName
+     * @param array $relationAliases Passed by reference. On return it will contain a map of relation names 
+                                     and query table aliases.
      * @return Doctrine_Query
      */
-    public function getRecordFetchQuery($modelName)
+    public function getRecordFetchQuery($modelName, &$relationAliases = null)
     {
         $allRecordsQuery = Doctrine_Query::create()
                            ->from("$modelName a")
@@ -123,7 +125,7 @@ class Fisma_Search_Indexer
     public function indexRecordsFromQuery(Doctrine_Query $query,
                                           $modelName,
                                           $chunkSize, 
-                                          $progressCallback)
+                                          $progressCallback = null)
     {
         $currentRecord = 0;
         $totalRecords = $query->count();
@@ -133,10 +135,14 @@ class Fisma_Search_Indexer
                   ->offset($currentRecord);
 
             $recordSet = $query->execute();
+
             $this->_searchEngine->indexCollection($modelName, $recordSet);
 
             $currentRecord += count($recordSet);
-            call_user_func($progressCallback, $currentRecord);
+
+            if ($progressCallback) {
+                call_user_func($progressCallback, $currentRecord);
+            }
         }
 
     }

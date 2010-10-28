@@ -202,7 +202,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                         $organization->getNode()
                                      ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
-
                     $organization->save();
 
                 }

@@ -109,12 +109,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         }
         
         // Do the actual indexing
-        $indexer->indexRecordsFromQuery( 
-            $allRecordsQuery, 
-            $modelName, 
-            $chunkSize, 
-            $progressCallback
-        );
+        $indexer->indexRecordsFromQuery($allRecordsQuery, $modelName, $chunkSize, $progressCallback);
         
         $searchEngine->commit();
         

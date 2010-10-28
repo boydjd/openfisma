@@ -33,7 +33,7 @@ class Fisma_Search_ReverseIndexer
      * 
      *
      * @param int $id Primary key of the object which triggered the reindex
-     * @param Doctrine_Table $table The table the object belongs to
+     * @param Doctrine_Table $table The doctrine table that contains the object
      * @param array List of modified fields on the object
      */
     public function reindexAffectedDocuments($id, Doctrine_Table $table, $modified)
@@ -52,7 +52,7 @@ class Fisma_Search_ReverseIndexer
             set_time_limit(0);
             
             foreach ($relationsThatNeedUpdating as $relation) {
-                $this->_reindexRelatedRecords($table, $id, $relation);
+                $this->_reindexRelatedRecords($id, $relation);
             }
         }
     }
@@ -61,13 +61,41 @@ class Fisma_Search_ReverseIndexer
      * Given a table, the id of a record from that table, and the name of a foreign relation on that table, 
      * re-index all of the foreign records related to the local record. 
      * 
-     * @param Doctrine_Table $table The table that contains the local record
      * @param int $id The identifier of the local record
      * @param string $relation The name of the relation (in dotted form, e.g. Finding.Source is Finding's Source)
      */
-    private function _reindexRelatedRecords($table, $id, $relation)
+    private function _reindexRelatedRecords($id, $relation)
     {
-        $
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $indexer = new Fisma_Search_Indexer($searchEngine);
+        
+        // $relation looks like: "SystemDocument.System.Organization". SystemDocument is the base class and 
+        // System.Organization is the relation name
+        $relationParts = explode('.', $relation);
+        $baseClass = array_shift($relationParts);
+        $relationName = implode('.', $relationParts);
+        
+        // Relation aliases will be passed by referenced and filled in by the called method
+        $relationAliases = null;
+        $fetchQuery = $indexer->getRecordFetchQuery($baseClass, $relationAliases);
+        
+        // Now filter query to only fetch records related to the modified record.
+        // (Relation alias is safe to interpolate because it is generated from doctrine metadata without user input.)
+        $relationAlias = $relationAliases[$relationName];
+        $fetchQuery->andWhere("$relationAlias.id = ?", $id);
+
+        // Chunk size can be set by the model table or else we use a default value
+        $chunkSize = Fisma_Cli_RebuildIndex::INDEX_CHUNK_SIZE;
+        $table = Doctrine::getTable($baseClass);
+
+        if ($table instanceof Fisma_Search_CustomChunkSize_Interface) {
+            $chunkSize = $table->getIndexChunkSize();
+        }
+        
+        // Do the actual indexing
+        $indexer->indexRecordsFromQuery($fetchQuery, $baseClass, $chunkSize);
+        
+        $searchEngine->commit();        
     }
 
     /**
@@ -127,7 +155,7 @@ class Fisma_Search_ReverseIndexer
     {
         $cache = Fisma::getCacheManager()->getCache('default');
         
-        if (true) { //($reverseIndex = $cache->load('reverseIndex')) === false ) {
+        if (($reverseIndex = $cache->load('searchEngineReverseIndex')) === false ) {
         
             $indexEnumerator = new Fisma_Search_IndexEnumerator;
             
@@ -167,7 +195,7 @@ class Fisma_Search_ReverseIndexer
                 }
             }
             
-            $cache->save($reverseIndex, 'reverseIndex');
+            $cache->save($reverseIndex, 'searchEngineReverseIndex');
         }
         
         return $reverseIndex;
