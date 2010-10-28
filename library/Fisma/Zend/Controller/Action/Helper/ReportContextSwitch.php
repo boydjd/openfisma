@@ -306,7 +306,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
         $view->title = $this->_report->getTitle();
         $view->columns = $this->_report->getColumnNames();
-        $view->timestamp = Zend_Date::now()->toString('YYYY-MM-dd HH:mm:ss');
+        $view->timestamp = Zend_Date::now()->toString('yyyy-MM-dd hh:mm:ss');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
 
         /*
@@ -345,7 +345,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
         $view->title = $this->_report->getTitle();
         $view->columns = $this->_report->getColumnNames();
-        $view->timestamp = Zend_Date::now()->toString('YYYY-MM-dd HH:mm:ss');
+        $view->timestamp = Zend_Date::now()->toString('yyyy-MM-dd hh:mm:ss');
         $view->systemName = Fisma::configuration()->getConfig('system_name');
         $view->data = $data;
 

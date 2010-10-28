@@ -72,17 +72,6 @@ class AuthController extends Zend_Controller_Action
         
         // Attempt login. Display any authentication exceptions back to the user
         try {
-            // Honor the session.cookie_secure configuration from Zend_Session. If
-            // the user attempts to login over HTTP with session.cookie_secure=true
-            // the user will be shown an error message that they must use the system
-            // over HTTPS.
-            if ( Zend_Session::getOptions('cookie_secure') && 
-                !$this->_request->isSecure() 
-            ) {
-                throw new Zend_Auth_Exception("You must access this application via HTTPS,"
-                                            . " since secure cookies are enabled.");
-            }
-            
             // Verify account exists and is not locked
             $user = Doctrine::getTable('User')->findOneByUsername($username);
             if (!$user) {
@@ -136,12 +125,14 @@ class AuthController extends Zend_Controller_Action
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
                 $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
                 $passWarningPeriod = Fisma::configuration()->getConfig('pass_warning');
-                $passWarningTs = new Zend_Date($user->passwordTs, 'Y-m-d');
+                $passWarningTs = new Zend_Date($user->passwordTs, 'yyyy-MM-dd');
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
                 $now = Zend_Date::now();
                 if ($now->isLater($passWarningTs)) {
-                    $leaveDays = $passWarningPeriod - $now->sub($passWarningTs, Zend_Date::DAY);
-                    $message = "Your password will expire in $leaveDays days,"
+                    //set the password expiration day, and daysRemaining = expiration date - now
+                    $passWarningTs->add($passWarningPeriod, Zend_Date::DAY);
+                    $daysRemaining = floor($passWarningTs->sub($now)->toValue() / 86400);
+                    $message = "Your password will expire in $daysRemaining days,"
                              . " you should change it now.";
                     $this->view->priorityMessenger($message, 'warning');
                     // reset default layout and forward to password change action

@@ -275,7 +275,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
 function getDragLocation(targetElement, event) {
     var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
     var height = targetRegion.bottom - targetRegion.top;
-    var clickVerticalOffset = event.pageY - targetRegion.top;
+    var clickVerticalOffset = YAHOO.util.Event.getPageY(event) - targetRegion.top;
     
     // This ratio indicates how far down the click was inside the element. This is used for deciding whether the
     // mouse is near the top, near the bottom, or somewhere in the middle.

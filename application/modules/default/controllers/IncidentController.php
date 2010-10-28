@@ -582,6 +582,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         );
     
         $this->view->formAction = "/incident/update/id/$id";
+
+        $orgId = $incident['Organization']['id'];
+        $organization = Doctrine::getTable('Organization')->find($orgId);
+        
+        // $organization will be false if an organization has not been selected yet
+        if ($organization === false) {
+            $this->view->userCanViewOrganization = false;
+        } else {
+            $this->view->userCanViewOrganization = $this->_acl->hasPrivilegeForObject('read', $organization);
+        }
     }
 
     /**
@@ -1005,6 +1015,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
                 // Success message
                 $message = 'This incident has been opened and a workflow has been assigned. ';
+
+                $currentStep = $incident->CurrentWorkflowStep;
+
+                foreach ($this->_getAssociatedUsers($id) as $user) {
+                    $mail = new Fisma_Zend_Mail();
+                    $mail->IRStep($user['userId'], $id, $currentStep->name, $this->_me->username);
+                }
+
                 $this->view->priorityMessenger($message, 'notice');
             }
             

@@ -111,10 +111,15 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $generateProgressBar->update(0, "Generate Findings");
 
         for ($i = 1; $i <= $numFindings; $i++) {
-            $discoveredDate = rand(0, time());
+            $date = new Zend_Date();
+            $date->setTimestamp(rand(0, time()));
+            $discoveredDate = $date->getDate()->toString('yyyy-MM-dd');
+
+            $date->addTimestamp(rand(0, 86400*365*20));
+            $currentEcd = $date->getDate()->toString('yyyy-MM-dd');
 
             $finding = array();
-            $finding['currentEcd'] = date("Y-m-d", $discoveredDate+rand());
+            $finding['currentEcd'] = $currentEcd;
             $finding['type'] = $type[rand(0, $typeCount)];
             $finding['status'] = $status[rand(0, $statusCount)];
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
@@ -129,7 +134,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             $finding['resourcesRequired'] = Fisma_String::loremIpsum(rand(2, 1000));
             $finding['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
             $finding['countermeasures'] = Fisma_String::loremIpsum(rand(2, 1000));
-            $finding['discoveredDate'] = date("Y-m-d", $discoveredDate);
+            $finding['discoveredDate'] = $discoveredDate;
             $finding['ecdLocked'] = FALSE;
             $findings[] = $finding;
             unset($finding);

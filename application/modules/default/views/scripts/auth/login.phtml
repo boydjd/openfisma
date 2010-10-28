@@ -8,7 +8,7 @@
     <p class="message">
         <?php 
             if (isset($this->error)) {
-                $dateString = date('H:i:s');
+                $dateString = Zend_Date::now()->toString('HH:mm:ss');
                 echo $this->escape($dateString);
                 echo $this->escape(' ', 'none');
                 echo $this->escape($this->error); 

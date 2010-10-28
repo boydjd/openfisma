@@ -94,18 +94,18 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
             
-            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
 
             // Get month number without leading zero
-            $month = $startDate->get('n');
+            $month = $startDate->get('M');
             
             // Get year number
-            $year = $startDate->get('Y');
+            $year = $startDate->get('yyyy');
             
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
 
-            $months['i_' . $columnName] = $startDate->get('M');
+            $months['i_' . $columnName] = $startDate->get('MMM');
             
             /*
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
@@ -201,12 +201,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $startDate->addMonth(1);
             
             // Get month number without leading zero
-            $month = $startDate->get('n');
+            $month = $startDate->get('M');
             
             // Get year number
-            $year = $startDate->get('Y');
+            $year = $startDate->get('yyyy');
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
@@ -257,12 +257,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $startDate->addMonth(1);
             
             // Get month number without leading zero
-            $month = $startDate->get('n');
+            $month = $startDate->get('M');
             
             // Get year number
-            $year = $startDate->get('Y');
+            $year = $startDate->get('yyyy');
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get('M'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";

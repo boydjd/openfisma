@@ -538,7 +538,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (isset($findingData['currentEcd'])) {
             if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
                 $date = new Zend_Date();
-                $ecd  = new Zend_Date($findingData['currentEcd'], 'Y-m-d');
+                $ecd  = new Zend_Date($findingData['currentEcd'], 'yyyy-MM-dd');
 
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
@@ -685,7 +685,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
                 mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
-            $nowStr = date('Y-m-d-his', strtotime(Fisma::now()));
+            $nowStr = Zend_Date::now()->toString('yyyy-MM-dd-HHmmss');
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
@@ -733,7 +733,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->layout->disableLayout(true);
             $this->_helper->viewRenderer->setNoRender();
             ob_end_clean();
-            header('Expires: ' . gmdate('D, d M Y H:i:s', time()+31536000) . ' GMT');
+            $expiredDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
+            $expiredDateTime->setTimezone('GMT');
+            header('Expires: ' . $expiredDateTime->toString('EEE, dd MMM yyyy HH:mm:ss') . ' GMT');
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));

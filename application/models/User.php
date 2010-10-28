@@ -91,7 +91,7 @@ class User extends BaseUser
         }
 
         $this->locked = true;
-        $this->lockTs = date('Y-m-d H:i:s');
+        $this->lockTs = Fisma::now();
         $this->lockType = $lockType;
         $this->save();
 
@@ -149,8 +149,7 @@ class User extends BaseUser
         } else {
             $message = 'Unlocked by unknown user ('
                     . $_SERVER['REMOTE_ADDR']
-                    . '): '
-                . $this->getLockReason();
+                    . ')';
             $this->getAuditLog()->write($message);
         }
     }

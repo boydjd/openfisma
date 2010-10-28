@@ -84,7 +84,7 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
         // Write YAML file header
         fwrite($outputHandle, "Product:\n");
         fwrite($outputHandle, "    # Parsed from XML CPE Dictionary: ". basename($dictionary) . "\n");
-        fwrite($outputHandle, "    # Date: ". date('Y-m-d h:i:s') . "\n");        
+        fwrite($outputHandle, "    # Date: ". Fisma::now() . "\n");        
         fwrite($outputHandle, "    # CPE Version: ". $xml->generator->schema_version . "\n"); 
         fwrite($outputHandle, "    # Parsed by: ". $_SERVER['PHP_SELF'] . "\n"); 
         fwrite($outputHandle, "\n");

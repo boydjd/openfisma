@@ -127,9 +127,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function fismaAction()
-    {
-        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
-        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
+    {        
+        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('yyyy-MM-dd');
+        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('yyyy-MM-dd');
     }
 
     /**
@@ -146,8 +146,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->agencyName = $agency->name;
 
         // Submission Date
-        $this->view->submissionDate = date('Y-m-d');
-
+        $this->view->submissionDate = Zend_Date::now()->toString('yyyy-MM-dd');
+        
         // Bureau Statistics
         $bureaus = Organization::getBureaus();
         $stats = array();
@@ -174,8 +174,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->agencyName = $agency->name;
 
         // Submission Date
-        $this->view->submissionDate = date('Y-m-d');
-
+        $this->view->submissionDate = Zend_Date::now()->toString('yyyy-MM-dd');
+        
         // Bureau Statistics
         $bureaus = Organization::getBureaus();
         $stats = array();

@@ -43,7 +43,7 @@ class Fisma_Zend_Controller_Action_Helper_MakeUrlParams extends Zend_Controller_
         foreach ($criteria as $key => $value) {
             if (!empty($value)) {
                 if ($value instanceof Zend_Date) {
-                    $urlPart .= '/' . $key . '/' . $value->toString('Ymd') . '';
+                    $urlPart .= '/' . $key . '/' . $value->toString('yyyyMMdd') . '';
                 } else {
                     $urlPart .= '/' . $key . '/' . urlencode($value) . '';
                 }

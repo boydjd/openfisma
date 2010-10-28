@@ -130,7 +130,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 // get original file name
                 $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
                 // get current time and set to a format like '_2009-05-04_11_22_02'
-                $dateTime = date('_Y-m-d_H_i_s', time());
+                $dateTime = Zend_Date::now()->toString('_yyyy-MM-dd_HH_mm_ss');
                 // define new file name
                 $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
                 rename($filePath, $filePath = dirname($filePath) . '/' . $newName);

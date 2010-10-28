@@ -34,15 +34,13 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
      */
     public function _initFisma()
     {
-        register_shutdown_function('Zend_Session::writeClose', true);
+        register_shutdown_function(array("Zend_Session", "writeClose"), true);
+        set_error_handler(array("Fisma", "errorHandler"));
 
         Fisma::setConfiguration(new Fisma_Configuration_Database());
 
         Fisma::connectDb();
 
         Fisma::dispatch();
-
-        // register our security action helper
-        Zend_Controller_Action_HelperBroker::addHelper(new Fisma_Zend_Controller_Action_Helper_Security());
     }
 }

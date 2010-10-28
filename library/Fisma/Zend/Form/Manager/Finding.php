@@ -37,7 +37,7 @@ class Fisma_Zend_Form_Manager_Finding extends Fisma_Zend_Form_Manager_Abstract
         $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
         $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
 
-        $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
+        $form->getElement('discoveredDate')->setValue(Zend_Date::now()->toString('yyyy-MM-dd'));
         
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
