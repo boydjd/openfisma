@@ -45,6 +45,13 @@ abstract class Fisma_Search_Backend_Abstract
     abstract public function deleteAll();
 
     /**
+     * Commit changes to the index (if the backend supports read consistency)
+     *
+     * An implementation may provide a stub for commit() if the backend doesn't support it.
+     */
+    abstract public function commit();
+
+    /**
      * Delete all documents of the specified type in the index
      *
      * "Type" refers to a model, such as Asset, Finding, Incident, etc.

@@ -37,6 +37,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'initiallyVisible' => true,
                 'label' => 'Nickname',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'Organization',
                     'field' => 'nickname'
                 ),
@@ -47,6 +48,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'Organization',
                     'field' => 'name'
                 ),
@@ -57,6 +59,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'initiallyVisible' => false,
                 'label' => 'Description',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'Organization',
                     'field' => 'description'
                 ),
@@ -198,6 +201,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             'organizationId' => array(
                 'hidden' => true,
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'Organization',
                     'field' => 'id'
                 ),

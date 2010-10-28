@@ -87,6 +87,7 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 'initiallyVisible' => true,
                 'label' => 'Catalog',
                 'join' => array(
+                    'model' => 'SecurityControlCatalog',
                     'relation' => 'Catalog',
                     'field' => 'name'
                 ),

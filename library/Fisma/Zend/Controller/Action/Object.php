@@ -222,6 +222,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $subject->merge($form->getValues());
+        $subject->nickname = chr(rand(65,90)) . chr(rand(65,90));
         $subject->save();
 
         return $subject->id;
@@ -238,7 +239,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function viewAction()
     {
         $this->_viewObject();
-
         $this->renderScript('object/view.phtml');
     }
 

@@ -70,6 +70,8 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
             $searchableClasses = array($modelName);
         }
 
+        sort($searchableClasses);
+        
         // Do the actual indexing
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
@@ -86,90 +88,36 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
      */
     private function _rebuildIndex(Fisma_Search_Backend_Abstract $searchEngine, $modelName)
     {
-        // Delete all documents in this model's index first
         $searchEngine->deleteByType($modelName);
 
-        // Get a total count of all records
-        $allRecordsQuery = Doctrine_Query::create()
-                           ->from("$modelName a")
-                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        
-        // Add relations (if any) to the query -- this results in more efficient indexing of related records
-        $table = Doctrine::getTable($modelName);
-        $searchableFields = $table->getSearchableFields();
-        
-        // Implementers can tweak the selection query to filter out undesired records
-        if (method_exists($table, 'getSearchIndexQuery')) {
-            $allRecordsQuery = call_user_func(array($table, 'getSearchIndexQuery'), $allRecordsQuery);
-        }
-
-        $currentAlias = 'a';
-        $relationAliases = array();
-
-        foreach ($searchableFields as $fieldName => $fieldDefinition) {
-            if (isset($fieldDefinition['join'])) {
-                $relation = $fieldDefinition['join']['relation'];
-                
-                // Create a new relation alias if needed
-                if (!isset($relationAliases[$relation])) {
-                    $currentAlias = chr(ord($currentAlias) + 1);
-
-                    // Nested relations are allowed, ie. "System.Organization"
-                    $relationParts = explode('.', $relation);
-
-                    // First relation is related directly to the base table
-                    $allRecordsQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $allRecordsQuery->addSelect("$currentAlias.id");
-                    
-                    // Remaining relations are recursively related to each other
-                    for ($i = 1; $i < count($relationParts); $i++) {
-                        $previousAlias = $currentAlias;
-                        $currentAlias = chr(ord($currentAlias) + 1);
-                        
-                        $relationPart = $relationParts[$i];
-                        
-                        $allRecordsQuery->leftJoin("$previousAlias.$relationPart $currentAlias");
-                        $allRecordsQuery->addSelect("$currentAlias.id");
-                    }
-                    
-                    $relationAliases[$relation] = $currentAlias;
-                }
-                
-                $relationAlias = $relationAliases[$relation];
-
-                $name = $fieldDefinition['join']['field'];
-
-                $allRecordsQuery->addSelect("$relationAlias.$name");
-            } else {
-                $allRecordsQuery->addSelect("a.$fieldName");
-            }
-        }
-
-        // Execute query
-        $totalRecords = $allRecordsQuery->count();
+        $indexer = new Fisma_Search_Indexer($searchEngine);
+        $allRecordsQuery = $indexer->getRecordFetchQuery($modelName);
 
         // Progress bar for console progress monitoring
+        $totalRecords = $allRecordsQuery->count();
+
         $progressBar = $this->_getProgressBar($totalRecords);
         $progressBar->update(0, $modelName);
+        $progressCallback = array($progressBar, 'update');
 
-        // Loop over chunks of records from this table and index each chunk in a single request
-        $currentRecord = 0;
+        // Chunk size can be set by the model table or else we use a default value
+        $chunkSize = self::INDEX_CHUNK_SIZE;
+        $table = Doctrine::getTable($modelName);
 
-        while ($currentRecord < $totalRecords) {
-
-            // Get the next set of records and index them
-            $allRecordsQuery->limit(self::INDEX_CHUNK_SIZE)
-                            ->offset($currentRecord);
-
-            $recordSet = $allRecordsQuery->execute();
-
-            $searchEngine->indexCollection($modelName, $recordSet);
-
-            $currentRecord += count($recordSet);
-
-            $progressBar->update($currentRecord);
+        if ($table instanceof Fisma_Search_CustomChunkSize_Interface) {
+            $chunkSize = $table->getIndexChunkSize();
         }
-
+        
+        // Do the actual indexing
+        $indexer->indexRecordsFromQuery( 
+            $allRecordsQuery, 
+            $modelName, 
+            $chunkSize, 
+            $progressCallback
+        );
+        
+        $searchEngine->commit();
+        
         print "\n";
     }
 }

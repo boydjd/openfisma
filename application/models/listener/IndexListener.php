@@ -49,6 +49,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
         $searchEngine->indexObject(get_class($record), $record->toArray());
+        $searchEngine->commit();
     }
 
     /**
@@ -91,12 +92,19 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             }
         }
 
-        // If an indexed field changed, then update the index
+        // If an indexed field changed, then update the index for this object
         if ($needsIndex) {
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
             $searchEngine->indexObject(get_class($record), $record->toArray());
+            
+            $searchEngine->commit();
         }
+
+        // If an indexed field changed on a related model, then reindex the affected documents belonging to that 
+        // related model
+        $reverseIndexer = new Fisma_Search_ReverseIndexer;
+        $reverseIndexer->reindexAffectedDocuments($record->id, $record->getTable(), array_keys($modified));
     }
     
     /**
@@ -126,6 +134,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
             $searchEngine->deleteObject(get_class($record), $record->toArray());
+            $searchEngine->commit();
         }
     }
 }

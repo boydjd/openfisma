@@ -25,8 +25,17 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
+                                                           Fisma_Search_CustomChunkSize_Interface
 {
+    /**
+     * Because the finding model is quite complex, it has a smaller-than-normal index chunk size which 
+     * uses less memory and should provide a more responsive UI.
+     * 
+     * @var int
+     */
+    const INDEX_CHUNK_SIZE = 10;
+
     /**
      * Implement the interface for Searchable
      */
@@ -52,6 +61,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 ),
                 'label' => 'Responsible Organization',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'ResponsibleOrganization', 
                     'field' => 'nickname'
                 ),
@@ -62,6 +72,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => true,
                 'label' => 'Source',
                 'join' => array(
+                    'model' => 'Source',
                     'relation' => 'Source', 
                     'field' => 'nickname'
                 ),
@@ -178,6 +189,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => true,
                 'label' => 'Security Control',
                 'join' => array(
+                    'model' => 'SecurityControl',
                     'relation' => 'SecurityControl', 
                     'field' => 'code'
                 ),
@@ -188,6 +200,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'label' => 'Created By User',
                 'join' => array(
+                    'model' => 'User',
                     'relation' => 'CreatedBy', 
                     'field' => 'username'
                 ),
@@ -201,6 +214,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             'lft' => array(
                 'hidden' => true,
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'ResponsibleOrganization',
                     'field' => 'lft'
                 ),
@@ -209,6 +223,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             'rgt' => array(
                 'hidden' => true,
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'ResponsibleOrganization',
                     'field' => 'rgt'
                 ),
@@ -243,5 +258,15 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
         $organizationIds = $currentUser->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
 
         return $organizationIds;
+    }
+    
+    /**
+     * Implement required interface for custom chunk size.
+     *
+     * @return int
+     */
+    public function getIndexChunkSize()
+    {
+        return self::INDEX_CHUNK_SIZE;
     }
 }

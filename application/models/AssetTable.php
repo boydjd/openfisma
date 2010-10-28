@@ -73,6 +73,7 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'initiallyVisible' => true,
                 'label' => 'Network',
                 'join' => array(
+                    'model' => 'Network',
                     'relation' => 'Network',
                     'field' => 'nickname'
                 ),
@@ -83,6 +84,7 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'initiallyVisible' => true,
                 'label' => 'System',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'Organization',
                     'field' => 'nickname'
                 ),
@@ -93,6 +95,7 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'initiallyVisible' => true,
                 'label' => 'Product',
                 'join' => array(
+                    'model' => 'Product',
                     'relation' => 'Product',
                     'field' => 'name'
                 ),

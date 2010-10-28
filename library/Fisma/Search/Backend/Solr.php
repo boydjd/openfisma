@@ -53,13 +53,19 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     }
 
     /**
+     * Commit any changes to the index made since the previous commit.
+     */
+    public function commit()
+    {
+        $this->_client->commit();
+    }
+
+    /**
      * Delete all documents in the index
      */
     public function deleteAll()
     {
         $this->_client->deleteByQuery('*:*');
-
-        $this->_client->commit();
     }
 
     /**
@@ -72,8 +78,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     public function deleteByType($type)
     {
         $this->_client->deleteByQuery('luceneDocumentType:' . $type);
-
-        $this->_client->commit();
     }
 
     /**
@@ -89,8 +93,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $luceneDocumentId = $type . $object['id'];
 
         $this->_client->deleteById($luceneDocumentId);
-
-        $this->_client->commit();
     }
 
     /**
@@ -104,8 +106,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $documents = $this->_convertCollectionToDocumentArray($type, $collection);
 
         $this->_client->addDocuments($documents);
-
-        $this->_client->commit();
     }
 
     /**
@@ -121,8 +121,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $document = $this->_convertObjectToDocument($type, $object);
 
         $this->_client->addDocument($document);
-
-        $this->_client->commit();
     }
 
     /**
@@ -541,6 +539,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     private function _convertObjectToDocument($type, $object)
     {
         $document = new SolrInputDocument;
+        $table = Doctrine::getTable($type);
 
         // All documents have the following three fields
         if (isset($object['id'])) {

@@ -25,7 +25,8 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
+                                                                Fisma_Search_CustomIndexBuilder_Interface
 {
     /**
      * Implement the interface for Searchable
@@ -109,12 +110,16 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     /**
      * Modifies the search index collection query to filter out system objects
      * 
-     * @param Doctrine_Query $query
+     * @param Doctrine_Query $baseQuery
+     * @param array $relationAliases An array that maps relation names to table aliases in the query
      * @return Doctrine_Query
      */
-    public function getSearchIndexQuery(Doctrine_Query $query)
+    public function getSearchIndexQuery(Doctrine_Query $baseQuery, $relationAliases)
     {
-        return $query->where('a.orgType <> ?', 'system');
+        // Table aliases are generated from doctrine metadata (without user input) and are safe to interpolate
+        $baseTableAlias = $relationAliases['Organization'];
+
+        return $baseQuery->where("$baseTableAlias.orgType <> ?", 'system');
     }
 
     /**

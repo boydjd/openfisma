@@ -37,6 +37,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'initiallyVisible' => true,
                 'label' => 'Organization',
                 'join' => array(
+                    'model' => 'Organization',
                     'relation' => 'System.Organization',
                     'field' => 'nickname'
                 ),
@@ -47,6 +48,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'initiallyVisible' => true,
                 'label' => 'Document Type',
                 'join' => array(
+                    'model' => 'DocumentType',
                     'relation' => 'DocumentType',
                     'field' => 'name'
                 ),
@@ -77,20 +79,11 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'sortable' => true,
                 'type' => 'date'
             ),
-            'documentType' => array(
-                'initiallyVisible' => true,
-                'label' => 'Document Type',
-                'join' => array(
-                    'relation' => 'DocumentType',
-                    'field' => 'name'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
             'lastModifiedUser' => array(
                 'initiallyVisible' => true,
                 'label' => 'Last Modified By User',
                 'join' => array(
+                    'model' => 'User',
                     'relation' => 'User',
                     'field' => 'username'
                 ),

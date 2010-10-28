@@ -37,6 +37,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
     private $_indexes = array();
 
     /**
+     * ZSL doesn't support commits, so this is a no-op.
+     */
+    public function commit()
+    {
+        // ZSL doesn't support commits, so this is a no-op.
+    }
+
+    /**
      * Delete all documents in the index
      */
     public function deleteAll() 
