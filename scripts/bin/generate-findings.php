@@ -120,9 +120,9 @@ try {
     for ($numFindings; $numFindings > 0; $numFindings--) {
         $date = new Zend_Date();
         $date->setTimestamp(rand(0, time()));
-        $discoveredDate = $date->getDate()->toString('yyyy-MM-dd');
+        $discoveredDate = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
         $date->addTimestamp(rand(0, 86400*365*20));
-        $currentEcd = $date->getDate()->toString('yyyy-MM-dd');
+        $currentEcd = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
         $finding = array();
         $finding['currentEcd'] = $currentEcd;

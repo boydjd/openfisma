@@ -423,7 +423,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             if (!is_dir($destinationPath)) {
                 mkdir($destinationPath);
             }
-            $dateTime = Zend_Date::now()->toString('yyyyMMdd-HHmmss');
+            $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
             $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . $dateTime . '.$2', $file['name'], 2, $count);
             $filePath = "$destinationPath/$fileName";
 

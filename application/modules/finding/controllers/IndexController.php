@@ -165,11 +165,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
                 // get original file name
                 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
                 
-                // get current time and set to a format like '_2009-05-04_11_22_02'
-                $dateTime = Zend_Date::now()->toString('_yyyy-MM-dd_HH_mm_ss');
+                // get current time and set to a format like '20090504_112202'
+                $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
                 
                 // define new file name
-                $newName = str_replace($originalName, $originalName . $dateTime, $file['name']);
+                $newName = str_replace($originalName, $originalName . '_' . $dateTime, $file['name']);
                 
                 // organize upload data
                 $upload = new Upload();
@@ -355,10 +355,10 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
 
                     // get original file name
                     $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
-                    // get current time and set to a format like '_2009-05-04_11_22_02'
-                    $dateTime = Zend_Date::now()->toString('_yyyy-MM-dd_HH_mm_ss');
+                    // get current time and set to a format like '20090504_112202'
+                    $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
                     // define new file name
-                    $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
+                    $newName = str_replace($originalName, $originalName . '_' . $dateTime, basename($filePath));
                     // organize upload data
                     $upload = new Upload();
                     $upload->userId = $this->_me->id;

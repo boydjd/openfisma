@@ -160,11 +160,9 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                             $findingInstance = array();
                             $findingInstance['uploadId'] = (int) $uploadId;
                             
-                            if (!empty($host['startTime'])) {
-                                $discoveredDate = new Zend_Date(strtotime($host['startTime']), Zend_Date::TIMESTAMP);
-                            }
-                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? $discoveredDate->toString('yyyy-MM-dd')
-                                : NULL;
+                            $discoveredDate = new Zend_Date(strtotime($host['startTime']), Zend_Date::TIMESTAMP);
+                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
+                                $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
                             $findingInstance['description'] = Fisma_String::textToHtml(

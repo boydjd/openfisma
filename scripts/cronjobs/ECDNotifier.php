@@ -88,10 +88,10 @@ class ECDNotifier
     static function run() 
     {
         $expirationDates = array(
-            Zend_Date::now()->toString('yyyy-MM-dd'),
-            Zend_Date::now()->addDay(7)->toString('yyyy-MM-dd'),
-            Zend_Date::now()->addDay(14)->toString('yyyy-MM-dd'),
-            Zend_Date::now()->addDay(21)->toString('yyyy-MM-dd')
+            Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE),
+            Zend_Date::now()->addDay(7)->toString(Fisma_Date::FORMAT_DATE),
+            Zend_Date::now()->addDay(14)->toString(Fisma_Date::FORMAT_DATE),
+            Zend_Date::now()->addDay(21)->toString(Fisma_Date::FORMAT_DATE)
         );
 
         // Get all findings which expire today, or 7/14/21 days from now
