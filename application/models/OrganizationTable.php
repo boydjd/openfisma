@@ -128,21 +128,28 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      * Known implementers: FindingTable
      *
      * @param string $parentOrganization The nickname of the root node of the subtree to return
-     * @return array Lucene query terms (key is name of field, value is query expression)
+     * @return array An array of organization IDs in the subtree
      */
-    static function getOrganizationSubtreeLuceneQuery($parentOrganization)
+    static function getOrganizationSubtreeIds($parentOrganization)
     {
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
-        $searchTerms = array();
+        $idQuery = Doctrine_Query::create()
+                   ->select('id')
+                   ->from('Organization')
+                   ->where('lft > ? AND rgt < ?', array($organization->lft, $organization->rgt))
+                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if ($organization !== false) {
-            $searchTerms = array(
-                'lft'    => "[$organization->lft TO *]",
-                'rgt'    => "[* TO $organization->rgt]"
-            );
+        $idResult = $idQuery->execute();
+
+        $ids = array();
+        
+        foreach ($idResult as $row) {
+            foreach ($row as $column => $value) {
+                $ids[] = $value;
+            }
         }
-
-        return $searchTerms;
+        
+        return $ids;
     }
 }

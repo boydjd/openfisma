@@ -210,7 +210,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $filterQuery .= ' AND (' 
                           . $aclQueryFilter
                           . ')';
-                          var_dump($aclQueryFilter);die;
         }
         
         // Filter out deleted items, if this model has soft delete
@@ -462,19 +461,23 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
                     if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
-                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['callback'];
+                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idProvider'];
 
-                        $customTerms = call_user_func_array($callback, $operands);
+                        $ids = call_user_func_array($callback, $operands);
 
                         if ($customTerms === false) {
                             throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
                         }
 
-                        foreach ($customTerms as $termName => $termExpression) {
-                            $fieldType = $searchableFields[$termName]['type'];
+                        $idTerms = array();
+                        $idField = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idField'];
+                        $fieldType = $searchableFields[$idField]['type'];
 
-                            $searchTerms[] = "{$termName}_{$fieldType}:$termExpression";
+                        foreach ($ids as $id) {
+                            $idTerms[] = "{$idField}_{$fieldType}:$id";
                         }
+                        
+                        $searchTerms[] = '(' . implode($idTerms, ' OR ') . ')';
                     } else {
                         throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
                     }
