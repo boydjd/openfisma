@@ -80,6 +80,7 @@ class Fisma_Yui_DataTable_Column
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      * @param bool $hidden Whether column should be hidden
+     * @param string $parser The parser used when sorting this column. May be set to string or number.
      */
     public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false, $parser = 'string')
     {
