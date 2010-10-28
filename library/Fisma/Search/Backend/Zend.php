@@ -732,7 +732,8 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $tableData[] = $rowData;
         }
 
-        return new Fisma_Search_Result($doctrineCount, count($doctrineResult), $tableData);    }
+        return new Fisma_Search_Result($doctrineCount, count($doctrineResult), $tableData);    
+    }
 
     /**
      * Validate the backend's configuration

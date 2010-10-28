@@ -258,8 +258,8 @@ abstract class Fisma_Search_Backend_Abstract
      * @param Doctrine_Table $table
      * @return mixed Array of acl terms or null if ACL does not apply
      */
-     protected function _getAclTerms($table) 
-     {
+    protected function _getAclTerms($table) 
+    {
         $aclFields = $table->getAclFields();
 
         // If no ACL fields, then don't return any ACL terms
