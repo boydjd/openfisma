@@ -257,7 +257,7 @@ abstract class Fisma_Inject_Abstract
                     $vuln->status = 'OPEN';
                     $vuln->save();
                 } else {
-                    if (empty($this->_totals['suppressed'])) { $this->_totals['suppressed'] = 0; }
+                    if (!isset($this->_totals['suppressed'])) { $this->_totals['suppressed'] = 0; }
                     $this->_totals['suppressed']++;
                 }
 
