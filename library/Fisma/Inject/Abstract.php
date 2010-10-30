@@ -124,12 +124,10 @@ abstract class Fisma_Inject_Abstract
      * @param string $systemId The specified organization id
      * @param string $findingSourceId The specified finding source id
      */
-    public function __construct($file, $networkId, $systemId, $findingSourceId) 
+    public function __construct($file, $networkId) 
     {
         $this->_file            = $file;
         $this->_networkId       = $networkId;
-        $this->_orgSystemId     = $systemId;
-        $this->_findingSourceId = $findingSourceId;
     }
 
     /**
@@ -259,7 +257,7 @@ abstract class Fisma_Inject_Abstract
                     $vuln->status = 'OPEN';
                     $vuln->save();
                 } else {
-                    if (empty($this->_totals['suppressed'])) { $this->_totals['suppressed'] = 0; }
+                    if (!isset($this->_totals['suppressed'])) { $this->_totals['suppressed'] = 0; }
                     $this->_totals['suppressed']++;
                 }
 

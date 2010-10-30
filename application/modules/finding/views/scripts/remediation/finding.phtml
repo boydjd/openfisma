@@ -4,161 +4,166 @@
     $status  = $finding->getStatus();
 ?>
 
-<table width="100%"><tr><td width="50%">
+<div class="column left">
 
-<span>
-    <?php Fisma_Format_Section::startSection("Details"); ?>
-    <table class="keyValues">
-        <tr>
-            <td>Finding ID:</td>
-            <td><?php echo $this->escape($finding->id)?></td>
-        </tr>
-        <tr>
-            <td>Legacy Finding Key:</td>
-            <td>
-                <span 
-                    <?php
-                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status) &&
-                        $this->acl()->hasPrivilegeForObject('update_legacy_finding_key', $finding)) {
-                    ?>
-                        id="legacyFindingKey" 
-                        class="editable" 
-                        target="legacyFindingKey" 
-                        name="finding[legacyFindingKey]" 
-                        type="text"
+    <span>
+        <?php Fisma_Format_Section::startSection("Details"); ?>
+        <table class="keyValues">
+            <tr>
+                <td>Finding ID:</td>
+                <td><?php echo $this->escape($finding->id)?></td>
+            </tr>
+            <tr>
+                <td>Legacy Finding Key:</td>
+                <td>
+                    <span 
+                        <?php
+                        if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status) &&
+                            $this->acl()->hasPrivilegeForObject('update_legacy_finding_key', $finding)) {
+                        ?>
+                            id="legacyFindingKey" 
+                            class="editable" 
+                            target="legacyFindingKey" 
+                            name="finding[legacyFindingKey]" 
+                            type="text"
+                        <?php 
+                        }
+                        ?>>
+                        <?php echo $this->escape($finding->legacyFindingKey); ?>&nbsp;
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Date Discovered:</td>
+                <td><?php echo $this->escape($finding->discoveredDate)?></td>
+            </tr>
+            <tr>
+                <td>Date Opened:</td>
+                <td><?php echo $this->escape($finding->createdTs)?></td>
+            </tr>
+            <tr>
+                <td>Date Closed:</td>
+                <td>
                     <?php 
+                    if (!is_null($finding->closedTs)) {
+                        echo $this->escape($finding->closedTs);
+                    } else {
+                        echo $this->escape("<i>Not closed</i>", 'none');
                     }
-                    ?>>
-                    <?php echo $this->escape($finding->legacyFindingKey); ?>&nbsp;
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Date Discovered:</td>
-            <td><?php echo $this->escape($finding->discoveredDate)?></td>
-        </tr>
-        <tr>
-            <td>Date Opened:</td>
-            <td><?php echo $this->escape($finding->createdTs)?></td>
-        </tr>
-        <tr>
-            <td>Date Closed:</td>
-            <td>
-                <?php 
-                if (!is_null($finding->closedTs)) {
-                    echo $this->escape($finding->closedTs);
-                } else {
-                    echo $this->escape("<i>Not closed</i>", 'none');
-                }
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td>Source:</td>
-            <td>
-                <span id="source" 
-                      type="select" 
-                      name="finding[sourceId]" 
-                      href="/metainfo/list/o/source/format/html/"
-                      value="<?php echo $this->escape($finding->Source->id); ?>">
-                      <?php
-                      $sourceName = $finding->Source->nickname . ' - ' . $finding->Source->name;
-                      if ($this->acl()->hasPrivilegeForObject('read', $finding->Source)):
-                      ?>
-                          <a href="/finding/source/view/id/<?php echo $this->escape($finding->Source->id); ?>">
-                             <?php echo $this->escape($sourceName);?>
-                          </a>
-                      <?php
-                      else:
-                          echo $this->escape($sourceName);
-                      endif;
-                      ?>
-                </span>
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Source:</td>
+                <td>
+                    <span id="source" 
+                          type="select" 
+                          name="finding[sourceId]" 
+                          href="/metainfo/list/o/source/format/html/"
+                          value="<?php echo $this->escape($finding->Source->id); ?>">
+                          <?php
+                          $sourceName = $finding->Source->nickname . ' - ' . $finding->Source->name;
+                          if ($this->acl()->hasPrivilegeForObject('read', $finding->Source)):
+                          ?>
+                              <a href="/finding/source/view/id/<?php echo $this->escape($finding->Source->id); ?>">
+                                 <?php echo $this->escape($sourceName);?>
+                              </a>
+                          <?php
+                          else:
+                              echo $this->escape($sourceName);
+                          endif;
+                          ?>
+                    </span>
 
-                <?php
-                if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-                     && $this->acl()->hasPrivilegeForObject('update_finding_source', $finding)):
-                ?>
-                    <span class="editable" target="source">&nbsp;</span>
-                <?php 
-                endif;
-                ?>
-                
-            <?php if ($finding->uploadId): ?>
-                <br><?php echo $this->escape($finding->Upload->fileName)?>
-            <?php endif; ?>
-            </td>
-        </tr>
-        <tr>
-            <td>Status:</td>
-            <td><?php echo $this->escape($status)?></td>
-        </tr>
-        <?php 
-        if ($status != 'CLOSED') { 
-        ?>
-        <tr>
-            <td>On Time:</td>
-            <td>
-            <?php if (is_null($finding->nextDueDate)): ?>
-                N/A
-            <?php elseif (date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate))): ?>
-                On Time
-            <?php else: ?>
-                Overdue
-            <?php endif; ?>
-            </td>
-        </tr>
-        <?php 
-        } 
-        ?>
-        <tr>
-            <td>
-                <div>
-                    Responsible Organization:
-                </div>
-            </td>
-            <td>
-                <span id="organization" 
-                      type="select" 
-                      name="finding[responsibleOrganizationId]" 
-                      href="/metainfo/list/o/system/format/html/"
-                      value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
-                     <a href="/organization/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
-                         <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
-                         - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
-                    </a>
-                </span>
+                    <?php
+                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
+                         && $this->acl()->hasPrivilegeForObject('update_finding_source', $finding)):
+                    ?>
+                        <span class="editable" target="source">&nbsp;</span>
+                    <?php 
+                    endif;
+                    ?>
+                    
+                <?php if ($finding->uploadId): ?>
+                    <br><?php echo $this->escape($finding->Upload->fileName)?>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td><?php echo $this->escape($status)?></td>
+            </tr>
+            <?php 
+            if ($status != 'CLOSED') { 
+            ?>
+            <tr>
+                <td>On Time:</td>
+                <td>
+                <?php if (is_null($finding->nextDueDate)): ?>
+                    N/A
+                <?php elseif (date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate))): ?>
+                    On Time
+                <?php else: ?>
+                    Overdue
+                <?php endif; ?>
+                </td>
+            </tr>
+            <?php 
+            } 
+            ?>
+            <tr>
+                <td>
+                    <div>
+                        Responsible Organization:
+                    </div>
+                </td>
+                <td>
+                    <span id="organization" 
+                          type="select" 
+                          name="finding[responsibleOrganizationId]" 
+                          href="/metainfo/list/o/system/format/html/"
+                          value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
+                         <a href="/organization/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
+                             <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
+                             - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
+                        </a>
+                    </span>
 
-                <?php
-                if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-                     && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)):
-                ?>
-                    <span class="editable" target="organization">&nbsp;</span>
-                <?php 
-                endif; 
-                ?>
-            </td>
-        </tr>
-    </table>
+                    <?php
+                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
+                         && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)):
+                    ?>
+                        <span class="editable" target="organization">&nbsp;</span>
+                    <?php 
+                    endif; 
+                    ?>
+                </td>
+            </tr>
+        </table>
+        <?php Fisma_Format_Section::stopSection(); ?>
+    </span>
+
+    <div class="clear"></div>
+
+</div>
+<div class="column right">
+
+    <?php 
+    if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_description', $finding)
+        && ('NEW' == $status || 'DRAFT' == $status)) {
+        Fisma_Format_Section::startSection('Description', 'finding_description');
+    } else {
+        Fisma_Format_Section::startSection('Description');
+    }
+    ?>
+    <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160"> 
+        <?php echo $this->escape($finding->description, 'none'); ?>
+    </div>
     <?php Fisma_Format_Section::stopSection(); ?>
-</span>
+
+</div>
 
 <div class="clear"></div>
-
-<td>&nbsp;</td></td><td width="50%" valign="top">
-
-<?php 
-if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_description', $finding)
-    && ('NEW' == $status || 'DRAFT' == $status)) {
-    Fisma_Format_Section::startSection('Description', 'finding_description');
-} else {
-    Fisma_Format_Section::startSection('Description');
-}
-?>
-<div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160"> 
-    <?php echo $this->escape($finding->description, 'none'); ?>
-</div>
-<?php Fisma_Format_Section::stopSection(); ?>
 
 <?php
 if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
@@ -174,5 +179,4 @@ if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
 <?php Fisma_Format_Section::stopSection(); ?>
 
 
-</td></tr></table>
 

@@ -82,9 +82,7 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
         $fields = array();
         
         foreach ($this->getColumns() as $column) {
-            //$fields[] = Fisma_String::convertToJavascriptName($column->getName());
-            // above line commented out and replaced with below to support fowarding parser data. OFJ-943 (part 8)
-            $fields[] = Array( 'key' => $column->getName(), 'parser' => $column->getParser() );
+            $fields[] = array( 'key' => $column->getName(), 'parser' => $column->getParser() );
         }
         
         $responseSchema = array('fields' => $fields);
