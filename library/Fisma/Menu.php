@@ -322,6 +322,10 @@ class Fisma_Menu
                 $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
             }
 
+            if ($acl->hasPrivilegeForClass('read', 'Vulnerability')) {
+                $adminMenu->add(new Fisma_Yui_MenuItem('Status', '/vm/status/list'));
+            }
+
             $menu->add($adminMenu);
         }
 

@@ -8,14 +8,17 @@
 [state_transitions]
 method = "post"
 action = "/vm/vulnerability/change-state"
-
+id = "transitionsForm"
 elements.id.type = "hidden"
-
-elements.acceptRisk.type = "Form_Button_Submit"
-elements.acceptRisk.options.label = "Accept This Risk"
-
-elements.falsePositive.type = "Form_Button_Submit"
-elements.falsePositive.options.label = "Identify False Positive"
 
 elements.close.type = "Form_Button_Submit"
 elements.close.options.label = "Close"
+
+elements.fixed.type = "Form_Button_Submit"
+elements.fixed.options.label = "Fixed"
+
+elements.wontFixButton.type = "Submit"
+elements.wontFixButton.options.label = "Won't Fix"
+
+elements.wontFix.type = "select"
+elements.wontFix.options.label = "Resolutions"

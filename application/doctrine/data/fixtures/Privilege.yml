@@ -200,12 +200,12 @@ Privilege:
         description: Close Vulnerabilities
     vulnerability_accept_risk:
         resource: vulnerability
-        action: accept_risk
-        description: Accept Risk On Vulnerabilities
+        action: fixed
+        description: Set Vulnerability to Fixed
     vulnerability_false_positive:
         resource: vulnerability
-        action: false_positive
-        description: Set Vulnerabilities To False Positive
+        action: wont_fix
+        description: Set Vulnerability to Wont Fix
 
     # Assets CRUD
     asset_create:
