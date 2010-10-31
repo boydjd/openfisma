@@ -162,7 +162,7 @@ $style = $flag == ''
                         <?php
                             $estDateBeginValue = '';
                             if (!empty($this->params['estDateBegin'])) {
-                                $estDateBeginValue = $this->params['estDateBegin']->toString('Y-m-d');
+                                $estDateBeginValue = $this->params['estDateBegin']->toString(Fisma_Date::FORMAT_DATE);
                             }
                         ?>
                         <input type="text" 
@@ -181,7 +181,7 @@ $style = $flag == ''
                         <?php
                             $estDateEndValue = '';
                             if (!empty($this->params['estDateEnd'])) {
-                                $estDateEndValue = $this->params['estDateEnd']->toString('Y-m-d');
+                                $estDateEndValue = $this->params['estDateEnd']->toString(Fisma_Date::FORMAT_DATE);
                             }
                         ?>
                         <input type="text" class="date" id="estDateEnd" 
@@ -196,7 +196,8 @@ $style = $flag == ''
                         <?php
                             $createdDateBeginValue = '';
                             if (!empty($this->params['createdDateBegin'])) {
-                                $createdDateBeginValue = $this->params['createdDateBegin']->toString('Y-m-d');
+                                $createdDateBeginValue = $this->params['createdDateBegin']
+                                                              ->toString(Fisma_Date::FORMAT_DATE);
                             }
                         ?>
                         <input type="text" 
@@ -218,7 +219,8 @@ $style = $flag == ''
                         <?php
                             $createdDateEndValue = '';
                             if (!empty($this->params['createdDateEnd'])) {
-                                $createdDateEndValue = $this->params['createdDateEnd']->toString('Y-m-d');
+                                $createdDateEndValue = $this->params['createdDateEnd']
+                                                            ->toString(Fisma_Date::FORMAT_DATE);
                             }
                         ?>
                         <input type="text" 

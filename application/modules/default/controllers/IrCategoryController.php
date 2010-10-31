@@ -179,10 +179,14 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Security
          */        
         foreach ($categories as &$category) {
             $category['children'] = $category['SubCategories'];
+            
+            $category['name'] = $this->view->escape($category['name'], 'html');
+            
             unset($category['SubCategories']);
             
             foreach ($category['children'] as &$child) {
                 $child['children'] = array();
+                $child['name'] = $this->view->escape($child['name'], 'html');
             }
         }
 

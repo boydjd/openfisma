@@ -199,7 +199,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             
                 if (!empty($system->securityAuthorizationDt)) {
                     // Was the system C&A'ed in the last 3 years? 
-                    $currentCaDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                    $currentCaDate = new Zend_Date($system->securityAuthorizationDt, Fisma_Date::FORMAT_DATE);
                     $nextCaDate = $currentCaDate->addYear(3);
                     
                     /** 
@@ -235,7 +235,8 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
                 // Controls self-assessed in the last year?
                 if (!empty($system->controlAssessmentDt)) {
-                    $currentSelfAssessmentDate = new Zend_Date($system->securityAuthorizationDt, 'Y-m-d');
+                    $currentSelfAssessmentDate = new Zend_Date($system->securityAuthorizationDt,
+                        Fisma_Date::FORMAT_DATE);
                     $nextSelfAssessmentDate = $currentSelfAssessmentDate->addYear(1);
                     if (1 == $nextSelfAssessmentDate->compare($today)) {
                         $securityStats[$fipsCategory]['TOTAL_SELF_ASSESSMENT']++;
@@ -244,7 +245,8 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             
                 // Contingency plan has been tested in the last year?
                 if (!empty($system->contingencyPlanTestDt)) {
-                    $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt, 'Y-m-d');
+                    $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt,
+                        Fisma_Date::FORMAT_DATE);
                     $nextContingencyPlanTestDate = $currentContingencyPlanTestDate->addYear(1);
                     if (1 == $nextContingencyPlanTestDate->compare($today)) {
                         $securityStats[$fipsCategory]['TOTAL_CONTINGENCY_PLAN_TESTED']++;
@@ -270,7 +272,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
         // Count the 120+ first.
         $today = new Zend_Date();
-        $overdueDate121 = $today->subDay(121)->toString('Y-m-d');
+        $overdueDate121 = $today->subDay(121)->toString(Fisma_Date::FORMAT_DATE);
         $result121 = $poamQuery->execute(array($overdueDate121));
         foreach ($result121 as $level => $system) {
             if (empty($level)) {
@@ -281,7 +283,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
         
         // Now count the 90+
         $today = new Zend_Date();        
-        $overdueDate90 = $today->subDay(90)->toString('Y-m-d');
+        $overdueDate90 = $today->subDay(90)->toString(Fisma_Date::FORMAT_DATE);
         $result90 = $poamQuery->execute(array($overdueDate90));
         foreach ($result90 as $level => $system) {
             if (empty($level)) {

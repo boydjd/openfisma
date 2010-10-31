@@ -362,9 +362,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 // If this is an unpersisted object, then it won't have a createdTs yet
                 if (isset($this->createdTs)) {
                     $createdDt = new Zend_Date($this->createdTs, Zend_Date::ISO_8601);
-                    $startDate = $createdDt->toString('Y-m-d');
+                    $startDate = $createdDt->toString(Fisma_Date::FORMAT_DATE);
                 } else {
-                    $startDate = Zend_Date::now()->toString('Y-m-d');
+                    $startDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
                 }
                 break;
             case 'MSA':
@@ -379,9 +379,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                         . " invalid status: '$this->status'");
         }
 
-        $nextDueDate = new Zend_Date($startDate, 'Y-m-d');
+        $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
         $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
-        $this->_set('nextDueDate', $nextDueDate->toString('Y-m-d'));
+        $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
     }
 
     /**

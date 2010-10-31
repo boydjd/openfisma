@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,29 +17,26 @@
  */
 
 /**
- * Action helper to handle the authentication check to ensure users are logged in before allowing
+ * Controller plugin to handle the authentication check to ensure users are logged in before allowing
  * access to site resources.
  *
- * This helper MUST be explicitly registered in the Bootstrap or somewhere similar in order for its
- * preDispatch() hook to be triggered.
- * 
  * @uses Zend_Controller_Action_Helper_Abstract
- * @package Fisma_Zend_Controller_Action_Helper 
- * @version $Id: $
+ * @package Fisma_Zend_Controller_Plugin 
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Action_Helper_Abstract
+class Fisma_Zend_Controller_Plugin_Security extends Zend_Controller_Plugin_Abstract
 {
     /**
-     * Overridden init hook to do security checking
-     *
+     * Do security checks as early in the request process that we can 
+     * 
      * @return void
      */
-    public function init()
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
-        if (!$this->_authenticationRequired()) {
+        if (!$this->_authenticationRequired($request)) {
             return;
         }
 
@@ -52,20 +49,16 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
 
             $message = 'Your session has expired. Please log in again to begin a new session.';
             throw new Fisma_Zend_Exception_InvalidAuthentication($message);
-        }
-    }
+        } else {
+            $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
 
-    /**
-     * Overridden preDispatch hook to set user's ACL 
-     * 
-     * @return void
-     */
-    public function preDispatch()
-    {
-        $currentUser = CurrentUser::getInstance();
+            if (is_null($viewRenderer->view)) {
+                $viewRenderer->initView();
+            }
 
-        if ($currentUser != null) {
-            $this->getActionController()->view->getHelper('acl')->setAcl($currentUser->acl());
+            $view = $viewRenderer->view;
+                
+            $view->getHelper('acl')->setAcl($currentUser->acl());
         }
     }
 
@@ -74,9 +67,8 @@ class Fisma_Zend_Controller_Action_Helper_Security extends Zend_Controller_Actio
      *
      * @return bool True if authentication is required, false otherwise.
      */
-    protected function _authenticationRequired()
+    protected function _authenticationRequired(Zend_Controller_Request_Abstract $request)
     {
-        $request = $this->getRequest();
         $controller = strtolower($request->getControllerName());
         $action  = strtolower($request->getActionName());
 

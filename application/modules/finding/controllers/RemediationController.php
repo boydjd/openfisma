@@ -467,8 +467,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         }
 
         $message = '';
-        if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], 'Y-m-d')) {
-            $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], 'Y-m-d');
+        if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], Fisma_Date::FORMAT_DATE)) {
+            $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], Fisma_Date::FORMAT_DATE);
         } else if (!empty($params['estDateBegin'])) {
             $message = 'Estimated Completion Date From: ' . $params['estDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -477,8 +477,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $params['estDateBegin'] = '';
         }
 
-        if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], 'Y-m-d')) {
-            $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], 'Y-m-d');
+        if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], Fisma_Date::FORMAT_DATE)) {
+            $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], Fisma_Date::FORMAT_DATE);
         } else if (!empty($params['estDateEnd'])) {
             $message = $message . 'Estimated Completion Date To: ' . $params['estDateEnd']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -486,9 +486,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         } else {
             $params['estDateEnd'] = '';
         }
-
-        if (!empty($params['createdDateBegin']) && Zend_Date::isDate($params['createdDateBegin'], 'Y-m-d')) {
-            $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], 'Y-m-d');
+        if (!empty($params['createdDateBegin'])
+            && Zend_Date::isDate($params['createdDateBegin'], Fisma_Date::FORMAT_DATE)) {
+            $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], Fisma_Date::FORMAT_DATE);
         } else if (!empty($params['createdDateBegin'])) {
             $message = $message . 'Date Created From: ' . $params['createdDateBegin']
                      . ' is not of the format YYYY-MM-DD.<br>';
@@ -497,11 +497,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $params['createdDateBegin'] = '';
         }
 
-        if (!empty($params['createdDateEnd']) && Zend_Date::isDate($params['createdDateEnd'], 'Y-m-d')) {
-            $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], 'Y-m-d');
+        if (!empty($params['createdDateEnd'])
+            && Zend_Date::isDate($params['createdDateEnd'], Fisma_Date::FORMAT_DATE)) {
+            $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], Fisma_Date::FORMAT_DATE);
         } else if (!empty($params['createdDateEnd'])) {
             $message = $message . 'Date Created To: ' . $params['createdDateEnd']
-                     . 'is not of the format YYYY-MM-DD.';
+                     . ' is not of the format YYYY-MM-DD.';
             $params['createdDateEnd'] = '';
         } else {
             $params['createdDateEnd'] = '';
@@ -537,69 +538,135 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             }
         }
 
-        $columns = array(
-            'id' => array('label' => 'ID', 
-                          'sortable' => true, 
-                          'hidden' => ($visibleColumns & 1) == 0),
-            'sourceNickname' => array('label' => 'Source', 
-                                       'sortable' => true, 
-                                       'hidden' => ($visibleColumns & (1 << 1)) == 0,
-                                       'formatter' => 'text'),
-            'systemNickname' => array('label' => 'System', 
-                                       'sortable' => true, 
-                                       'hidden' => ($visibleColumns & (1 << 2)) == 0,
-                                       'formatter' => 'text'),
-            'assetName' => array('label' => 'Asset', 
-                                  'sortable' => true, 
-                                  'hidden' => ($visibleColumns & (1 << 3)) == 0,
-                                  'formatter' => 'text'),
-            'type' => array('label' => 'Type', 
-                            'sortable' => true, 
-                            'hidden' => ($visibleColumns & (1 << 4)) == 0,
-                            'formatter' => 'text'),
-            'status' => array('label' => 'Status', 
+        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
+            $columns = array(
+                'id' => array('label' => 'ID', 
                               'sortable' => true, 
-                              'hidden' => ($visibleColumns & (1 << 5)) == 0,
-                              'formatter' => 'text'),
-            'duetime' => array('label' => 'On Time?', 
-                               'sortable' => false, 
-                               'hidden' => ($visibleColumns & (1 << 6)) == 0,
-                               'formatter' => 'text'),
-            'description' => array('label' => 'Description', 
-                                    'sortable' => false, 
-                                    'hidden' => ($visibleColumns & (1 << 7)) == 0),
-            'recommendation' => array('label' => 'Recommendation', 
+                              'hidden' => ($visibleColumns & (1 << 1)) == 0),
+                'sourceNickname' => array('label' => 'Source', 
+                                           'sortable' => true, 
+                                           'hidden' => ($visibleColumns & (1 << 2)) == 0,
+                                           'formatter' => 'text'),
+                'systemNickname' => array('label' => 'System', 
+                                           'sortable' => true, 
+                                           'hidden' => ($visibleColumns & (1 << 3)) == 0,
+                                           'formatter' => 'text'),
+                'assetName' => array('label' => 'Asset', 
+                                      'sortable' => true, 
+                                      'hidden' => ($visibleColumns & (1 << 4)) == 0,
+                                      'formatter' => 'text'),
+                'type' => array('label' => 'Type', 
+                                'sortable' => true, 
+                                'hidden' => ($visibleColumns & (1 << 5)) == 0,
+                                'formatter' => 'text'),
+                'status' => array('label' => 'Status', 
+                                  'sortable' => true, 
+                                  'hidden' => ($visibleColumns & (1 << 6)) == 0,
+                                  'formatter' => 'text'),
+                'duetime' => array('label' => 'On Time?', 
+                                   'sortable' => false, 
+                                   'hidden' => ($visibleColumns & (1 << 7)) == 0,
+                                   'formatter' => 'text'),
+                'description' => array('label' => 'Description', 
                                         'sortable' => false, 
                                         'hidden' => ($visibleColumns & (1 << 8)) == 0),
-            'mitigationStrategy' => array('label' => 'Course of Action', 
-                                      'sortable' => false, 
-                                      'hidden' => ($visibleColumns & (1 << 9)) == 0),
-            'securityControl' => array('label' => 'Security Control', 
-                                'sortable' => true, 
-                                'hidden' => ($visibleColumns & (1 << 10)) == 0,
-                                'formatter' => 'text'),
-            'threatLevel' => array('label' => 'Threat Level', 
+                'recommendation' => array('label' => 'Recommendation', 
+                                            'sortable' => false, 
+                                            'hidden' => ($visibleColumns & (1 << 9)) == 0),
+                'mitigationStrategy' => array('label' => 'Course of Action', 
+                                          'sortable' => false, 
+                                          'hidden' => ($visibleColumns & (1 << 10)) == 0),
+                'securityControl' => array('label' => 'Security Control', 
                                     'sortable' => true, 
                                     'hidden' => ($visibleColumns & (1 << 11)) == 0,
                                     'formatter' => 'text'),
-            'threat' => array('label' => 'Threat Description', 
-                                     'sortable' => false, 
-                                     'hidden' => ($visibleColumns & (1 << 12)) == 0),
-            'countermeasuresEffectiveness' => array('label' => 'Countermeasure Effectiveness', 
-                                              'sortable' => true, 
-                                              'hidden' => ($visibleColumns & (1 << 13)) == 0,
-                                              'formatter' => 'text'),
-            'countermeasures' => array('label' => 'Countermeasure Description', 
-                                'sortable' => false, 
-                                'hidden' => ($visibleColumns & (1 << 14)) == 0),
-            'attachments' => array('label' => 'Attachments', 
-                                   'sortable' => false, 
-                                   'hidden' => ($visibleColumns & (1 << 15)) == 0),
-            'currentEcd' => array('label' => 'Expected Completion Date', 
+                'threatLevel' => array('label' => 'Threat Level', 
+                                        'sortable' => true, 
+                                        'hidden' => ($visibleColumns & (1 << 12)) == 0,
+                                        'formatter' => 'text'),
+                'threat' => array('label' => 'Threat Description', 
+                                         'sortable' => false, 
+                                         'hidden' => ($visibleColumns & (1 << 13)) == 0),
+                'countermeasuresEffectiveness' => array('label' => 'Countermeasure Effectiveness', 
+                                                  'sortable' => true, 
+                                                  'hidden' => ($visibleColumns & (1 << 14)) == 0,
+                                                  'formatter' => 'text'),
+                'countermeasures' => array('label' => 'Countermeasure Description', 
+                                    'sortable' => false, 
+                                    'hidden' => ($visibleColumns & (1 << 15)) == 0),
+                'attachments' => array('label' => 'Attachments', 
+                                       'sortable' => false, 
+                                       'hidden' => ($visibleColumns & (1 << 16)) == 0),
+                'currentEcd' => array('label' => 'Expected Completion Date', 
+                                               'sortable' => true, 
+                                               'hidden' => ($visibleColumns & (1 << 17)) == 0,
+                                               'formatter' => 'text')
+            );
+        } else {
+            $columns = array(
+                'id' => array('label' => 'ID', 
+                              'sortable' => true, 
+                              'hidden' => ($visibleColumns & 1 ) == 0),
+                'sourceNickname' => array('label' => 'Source', 
                                            'sortable' => true, 
-                                           'hidden' => ($visibleColumns & (1 << 16)) == 0,
-                                           'formatter' => 'text')
-        );
+                                           'hidden' => ($visibleColumns & (1 << 1)) == 0,
+                                           'formatter' => 'text'),
+                'systemNickname' => array('label' => 'System', 
+                                           'sortable' => true, 
+                                           'hidden' => ($visibleColumns & (1 << 2)) == 0,
+                                           'formatter' => 'text'),
+                'assetName' => array('label' => 'Asset', 
+                                      'sortable' => true, 
+                                      'hidden' => ($visibleColumns & (1 << 3)) == 0,
+                                      'formatter' => 'text'),
+                'type' => array('label' => 'Type', 
+                                'sortable' => true, 
+                                'hidden' => ($visibleColumns & (1 << 4)) == 0,
+                                'formatter' => 'text'),
+                'status' => array('label' => 'Status', 
+                                  'sortable' => true, 
+                                  'hidden' => ($visibleColumns & (1 << 5)) == 0,
+                                  'formatter' => 'text'),
+                'duetime' => array('label' => 'On Time?', 
+                                   'sortable' => false, 
+                                   'hidden' => ($visibleColumns & (1 << 6)) == 0,
+                                   'formatter' => 'text'),
+                'description' => array('label' => 'Description', 
+                                        'sortable' => false, 
+                                        'hidden' => ($visibleColumns & (1 << 7)) == 0),
+                'recommendation' => array('label' => 'Recommendation', 
+                                            'sortable' => false, 
+                                            'hidden' => ($visibleColumns & (1 << 8)) == 0),
+                'mitigationStrategy' => array('label' => 'Course of Action', 
+                                          'sortable' => false, 
+                                          'hidden' => ($visibleColumns & (1 << 9)) == 0),
+                'securityControl' => array('label' => 'Security Control', 
+                                    'sortable' => true, 
+                                    'hidden' => ($visibleColumns & (1 << 10)) == 0,
+                                    'formatter' => 'text'),
+                'threatLevel' => array('label' => 'Threat Level', 
+                                        'sortable' => true, 
+                                        'hidden' => ($visibleColumns & (1 << 11)) == 0,
+                                        'formatter' => 'text'),
+                'threat' => array('label' => 'Threat Description', 
+                                         'sortable' => false, 
+                                         'hidden' => ($visibleColumns & (1 << 12)) == 0),
+                'countermeasuresEffectiveness' => array('label' => 'Countermeasure Effectiveness', 
+                                                  'sortable' => true, 
+                                                  'hidden' => ($visibleColumns & (1 << 13)) == 0,
+                                                  'formatter' => 'text'),
+                'countermeasures' => array('label' => 'Countermeasure Description', 
+                                    'sortable' => false, 
+                                    'hidden' => ($visibleColumns & (1 << 14)) == 0),
+                'attachments' => array('label' => 'Attachments', 
+                                       'sortable' => false, 
+                                       'hidden' => ($visibleColumns & (1 << 15)) == 0),
+                'currentEcd' => array('label' => 'Expected Completion Date', 
+                                               'sortable' => true, 
+                                               'hidden' => ($visibleColumns & (1 << 16)) == 0,
+                                               'formatter' => 'text')
+            );
+        }
 
         return $columns;
     }
@@ -768,7 +835,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         if (isset($findingData['currentEcd'])) {
             if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
                 $date = new Zend_Date();
-                $ecd  = new Zend_Date($findingData['currentEcd'], 'Y-m-d');
+                $ecd  = new Zend_Date($findingData['currentEcd'], Fisma_Date::FORMAT_DATE);
 
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
@@ -915,7 +982,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
                 mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
-            $nowStr = date('Y-m-d-his', strtotime(Fisma::now()));
+            $nowStr = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
@@ -963,7 +1030,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             $this->_helper->layout->disableLayout(true);
             $this->_helper->viewRenderer->setNoRender();
             ob_end_clean();
-            header('Expires: ' . gmdate('D, d M Y H:i:s', time()+31536000) . ' GMT');
+            $expireDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
+            $expireDateTime->setTimezone('GMT');
+            header('Expires: '
+                  . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
+                  . ' GMT');
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));
@@ -1334,18 +1405,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         $q->andWhere('f.deleted_at = f.deleted_at');
                     }
                 } elseif ($k == 'estDateBegin') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
                     $q->andWhere("f.currentEcd > ?", $v);
                 } elseif ($k == 'estDateEnd') {
                     $v = $v->addDay(1);
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
                     $q->andWhere("f.currentEcd < ?", $v);
                 } elseif ($k == 'createdDateBegin') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
                     $q->andWhere("f.createdTs > ?", $v);
                 } elseif ($k == 'createdDateEnd') {
                     $v = $v->addDay(1);
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
                     $q->andWhere("f.createdTs < ?", $v);
                 } elseif ($k == 'status') {
                     if (is_array($v)) {
@@ -1356,7 +1427,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
                         $q->andWhere("ce.nickname = ?", $v);
                     }
                 } elseif ($k == 'modify_ts') {
-                    $v = $v->toString('Y-m-d H:i:s');
+                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
                     $q->andWhere("f.modifiedTs < ?", $v);
                 } elseif ($k == 'ontime') {
                     if ($v == 'ontime') {
@@ -1434,9 +1505,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             // select the finding whether have attachments
             $row['attachments'] = count($result->Evidence) > 0 ? 'Y' : 'N';
 
+            $nextDueDate = new Zend_Date($result->nextDueDate, Zend_Date::ISO_8601);
             if (is_null($result->nextDueDate)) {
                 $row['duetime'] = 'N/A';
-            } elseif (date('Ymd', strtotime($result->nextDueDate)) >= date('Ymd', time())) {
+            } elseif ($nextDueDate->isLater(Zend_Date::now())) {
                 $row['duetime'] = 'On time';
             } else {
                 $row['duetime'] = 'Overdue';
