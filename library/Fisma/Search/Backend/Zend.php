@@ -116,7 +116,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $index = $this->_openIndex($type);
         
         // Deleting an object requires us to find it first
-        $term = new Zend_Search_Lucene_Index_Term($object->id, 'id');
+        $term = new Zend_Search_Lucene_Index_Term($object['id'], 'id');
         $query = new Zend_Search_Lucene_Search_Query_Term($term);
         $hits = $index->find($query);
         
@@ -273,7 +273,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $zslQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
 
-        if (count($keywordTokens)) {
+        if (isset($keywordTokens)) {
             foreach ($keywordTokens as $keyword) {
                 $zslQuery->addTerm(new Zend_Search_Lucene_Index_Term($keyword));
             }
@@ -286,6 +286,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         // Now use matched IDs to query Doctrine for actual document contents
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
+                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $currentAlias = 'a';
@@ -352,12 +353,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $aclTerms = $this->_getAclTerms($table);
         $aclFields = array();
 
-        foreach ($aclTerms as $aclTerm) {
-            if (!isset($aclFields[$aclTerm['field']])) {
-                $aclFields[$aclTerm['field']] = array();
-            }
+        if ($aclTerms) {
+            foreach ($aclTerms as $aclTerm) {
+                if (!isset($aclFields[$aclTerm['field']])) {
+                    $aclFields[$aclTerm['field']] = array();
+                }
 
-            $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+                $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+            }
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
@@ -388,8 +391,9 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                       ->offset($start);
 
         // Get result and convert to Fisma_Search_Result
+//echo($doctrineQuery->getSql());
         $doctrineResult = $doctrineQuery->execute();
-
+//var_dump(count($doctrineResult));die;
         // Fix hack for soft delete records (see above)
         if ($deleted) {
             Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
@@ -467,6 +471,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
+                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $currentAlias = 'a';

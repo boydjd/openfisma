@@ -1,0 +1,1 @@
+Fisma.Search.CriteriaQuery=function(){return{noInputs:function(a){return[]},oneInput:function(b){var a=b.getElementsByTagName("input");var c=[a[0].value];return c},twoInputs:function(b){var a=b.getElementsByTagName("input");var c=[a[0].value,a[1].value];return c},enumSelect:function(b){var a=b.getElementsByTagName("button");var c=[a[0].firstChild.nodeValue];return c}}}();

@@ -139,7 +139,10 @@ Fisma.Search = function() {
             var postData = this.convertQueryToPostData(query);
 
             dataTable.showTableMessage("Loading...");
-            dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
+            
+            var dataSource = dataTable.getDataSource();
+            dataSource.connMethodPost = true;
+            dataSource.sendRequest(postData, onDataTableRefresh);
         },
 
         /**
@@ -236,10 +239,10 @@ Fisma.Search = function() {
          * Handle YUI data table events (such as sort)
          *
          * @param tableState From YUI
-         * @param self From YUI
+         * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, self) {
+        handleYuiDataTableEvent : function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -262,6 +265,8 @@ Fisma.Search = function() {
             }
 
             postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
+
+            table.getDataSource().connMethodPost = true;
 
             return postData;
         },
@@ -380,7 +385,8 @@ Fisma.Search = function() {
             var saveDiv = document.createElement('div');
             saveDiv.style.marginLeft = '20px';
             saveDiv.style.marginBottom = '20px';
-            saveDiv.style.float = 'right';
+            // The following line trips up YUI compressor if object notation (.) is used instead of array []
+            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -423,11 +429,18 @@ Fisma.Search = function() {
 
             // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
             var prefBitmap = 0;
+            var currentColumn = 0;
 
             for (var column in columnKeys) {
-              if (!columnKeys[column].hidden) {
-                prefBitmap |= 1 << column;
-              }
+                if (columnKeys[column].formatter == YAHOO.widget.DataTable.formatCheckbox) {
+                    continue;
+                }
+
+                if (!columnKeys[column].hidden) {
+                    prefBitmap |= 1 << currentColumn;
+                }
+                
+                currentColumn++;
             }
 
             var modelName = document.getElementById('modelName').value;
@@ -502,7 +515,7 @@ Fisma.Search = function() {
             // Create an array containing the PKs of records to delete
             for (var i = 0; i < selectedRows.length; i++) {
                 var record = dataTable.getRecord(selectedRows[i]);
-
+console.log(record);
                 if (record) {
                     checkedRecords.push(record.getData('id'));
                 }
