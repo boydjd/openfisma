@@ -1395,7 +1395,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Security
             ($incident->isLocked && $this->_acl->hasPrivilegeForObject('lock', $incident)))
         ) {
             $userCanUpdate = true;
-        } elseif (!$this->_acl->hasPrivilegeForObject('update', $incident) && !$incident->isLocked) {
+        } else {
             // Check if this user is an actor
             $userId = $this->_me->id;
             $actorCount = Doctrine_Query::create()
