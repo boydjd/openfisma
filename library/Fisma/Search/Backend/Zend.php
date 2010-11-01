@@ -542,7 +542,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     break;
 
                 case 'dateBefore':
-                    $doctrineQuery->andWhere("$sqlFieldName <= ?", $operands[0]);
+                    $doctrineQuery->andWhere("$sqlFieldName < ?", $operands[0]);
                     break;
 
                 case 'dateBetween':

@@ -50,7 +50,7 @@ class Fisma_Search_Indexer
      *
      * @param string $modelName
      * @param array $relationAliases Passed by reference. On return it will contain a map of relation names 
-                                     and query table aliases.
+     *                               and query table aliases.
      * @return Doctrine_Query
      */
     public function getRecordFetchQuery($modelName, &$relationAliases = null)

@@ -289,7 +289,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * @return Fisma_Search_Result Rectangular array of search results
      */
     public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection, 
-                                     $start, $rows, $deleted = false)
+                                     $start, $rows, $deleted)
     {
         $query = new SolrQuery;
 
@@ -388,7 +388,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
                 case 'dateBefore':
                     $beforeDate = $this->_convertToSolrDate($operands[0]);
-                    $searchTerms[] = "$fieldName:[* TO $beforeDate]";
+                    $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
                     break;
 
                 case 'dateBetween':

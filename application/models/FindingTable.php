@@ -96,7 +96,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => true,
                 'label' => 'Next Due Date',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'date'
             ), 
             'closedTs' => array(
                 'initiallyVisible' => false,
