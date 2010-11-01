@@ -519,7 +519,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if ($this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $column = new Fisma_Yui_DataTable_Column('<input id="dt-checkbox" type="checkbox">',
                                                      false,
-                                                     "YAHOO.widget.DataTable.formatCheckbox",
+                                                     "Fisma.TableFormat.formatCheckbox",
                                                      null,
                                                      'deleteCheckbox',
                                                      false);

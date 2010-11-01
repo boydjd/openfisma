@@ -344,9 +344,9 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         // Handle soft delete records
-        if ($deleted) {
-            // Hack: its not possible to disable just the soft delete listener, so disable all dql callbacks instead
-            Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);
+        if ($deleted && $table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at')
+                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
         }
         
         // Add ACL constraints
@@ -391,13 +391,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                       ->offset($start);
 
         // Get result and convert to Fisma_Search_Result
-//echo($doctrineQuery->getSql());
         $doctrineResult = $doctrineQuery->execute();
-//var_dump(count($doctrineResult));die;
-        // Fix hack for soft delete records (see above)
-        if ($deleted) {
-            Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
-        }
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();
@@ -645,10 +639,9 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $doctrineQuery->whereIn('a.id', $ids);
         }
 
-        // Handle soft delete records
-        if ($deleted) {
-            // Hack: its not possible to disable just the soft delete listener, so disable all dql callbacks instead
-            Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, false);
+        if ($deleted && $table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at')
+                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
         }
         
         // Add ACL constraints
@@ -698,11 +691,6 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         // Get result and convert to Fisma_Search_Result
         $doctrineResult = $doctrineQuery->execute();
-
-        // Fix hack for soft delete records (see above)
-        if ($deleted) {
-            Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
-        }
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();

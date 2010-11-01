@@ -170,7 +170,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      * @param bool $deleted If true, include soft-deleted records in the results
      * @return Fisma_Search_Result
      */
-    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted = false)
+    public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted)
     {
         $query = new SolrQuery;
 

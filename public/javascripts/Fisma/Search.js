@@ -124,7 +124,7 @@ Fisma.Search = function() {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
                         
                         sortColumnIndex++;
-                    } while (sortColumn.formatter == YAHOO.widget.DataTable.formatCheckbox);
+                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
                     dataTable.get('paginator').setPage(1, true);
@@ -432,7 +432,7 @@ Fisma.Search = function() {
             var currentColumn = 0;
 
             for (var column in columnKeys) {
-                if (columnKeys[column].formatter == YAHOO.widget.DataTable.formatCheckbox) {
+                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
                     continue;
                 }
 
@@ -515,7 +515,7 @@ Fisma.Search = function() {
             // Create an array containing the PKs of records to delete
             for (var i = 0; i < selectedRows.length; i++) {
                 var record = dataTable.getRecord(selectedRows[i]);
-console.log(record);
+
                 if (record) {
                     checkedRecords.push(record.getData('id'));
                 }

@@ -243,10 +243,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            console.log(fromDate);
             fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
-            console.log(fromDate);
-            console.log(parseInt(parameters.from));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -315,5 +312,35 @@ Fisma.TableFormat = {
         }
 
         elCell.innerHTML = docTypeNames;
+    },
+    
+    /**
+     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
+     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
+     * "re-delete" any already-deleted items.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
+        
+        if (oRecord.getData('deleted_at')) {
+
+            elCell.parentNode.style.backgroundColor = "pink";
+            
+        } else {
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = YAHOO.widget.DataTable.CLASS_CHECKBOX;
+            checkbox.checked = oData;
+
+            if (elCell.firstChild) {
+                elCell.removeChild(el.firstChild);            
+            }
+
+            elCell.appendChild(checkbox);
+        }        
     }
 };

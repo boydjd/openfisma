@@ -4578,7 +4578,7 @@ Fisma.Remediation = {
         }
     }
 }
-Fisma.Search=function(){return{yuiDataTable:null,onSetTableCallback:null,testConfigurationActive:false,advancedSearchPanel:null,columnPreferencesSpinner:null,showDeletedRecords:false,testConfiguration:function(){if(Fisma.Search.testConfigurationActive){return}Fisma.Search.testConfigurationActive=true;var a=document.getElementById("testConfiguration");a.className="yui-button yui-push-button yui-button-disabled";var c=new Fisma.Spinner(a.parentNode);c.show();var b=document.getElementById("search_config");YAHOO.util.Connect.setForm(b);YAHOO.util.Connect.asyncRequest("POST","/config/test-search/format/json",{success:function(e){var d=YAHOO.lang.JSON.parse(e.responseText).response;if(d.success){message("Search configuration is valid","notice",true)}else{message(d.message,"warning",true)}a.className="yui-button yui-push-button";Fisma.Search.testConfigurationActive=false;c.hide()},failure:function(d){message("Error: "+d.statusText,"warning");c.hide()}})},handleSearchEvent:function(c){var e=Fisma.Search.yuiDataTable;var b={success:function(g,f,i){e.onDataReturnReplaceRows(g,f,i);var h=0;var j;do{j=e.getColumn(h);h++}while(j.formatter==YAHOO.widget.DataTable.formatCheckbox);e.set("sortedBy",{key:j.key,dir:YAHOO.widget.DataTable.CLASS_ASC});e.get("paginator").setPage(1,true)},failure:e.onDataReturnReplaceRows,scope:e,argument:e.getState()};var d=this.getQuery(c);var a=this.convertQueryToPostData(d);e.showTableMessage("Loading...");e.getDataSource().sendRequest(a,b)},getQuery:function(c){var b=document.getElementById("searchType").value;var d={queryType:b};if("simple"==b){d.keywords=c.keywords.value}else{if("advanced"==b){var a=this.advancedSearchPanel.getQuery();d.query=YAHOO.lang.JSON.stringify(a)}else{throw"Invalid value for search type: "+b}}d.showDeleted=this.showDeletedRecords;d.csrf=document.getElementById("searchForm").csrf.value;return d},convertQueryToPostData:function(c){var b=Array();for(var d in c){var e=c[d];b.push(d+"="+encodeURIComponent(e))}var a=b.join("&");return a},exportToFile:function(b,i){var c=document.getElementById("searchForm");var k=Fisma.Search.yuiDataTable;var a=k.getDataSource();var f=a.liveData;var d=document.createElement("form");d.method="post";d.action=f+"/format/"+i;d.style.display="none";var g=Fisma.Search.getQuery(c);for(var j in g){var h=g[j];var e=document.createElement("input");e.type="hidden";e.name=j;e.value=h;d.appendChild(e)}document.body.appendChild(d);d.submit()},handleYuiDataTableEvent:function(d,c){var e=document.getElementById("searchType").value;var a="sort="+d.sortedBy.key+"&dir="+(d.sortedBy.dir=="yui-dt-asc"?"asc":"desc")+"&start="+d.pagination.recordOffset+"&count="+d.pagination.rowsPerPage+"&csrf="+document.getElementById("searchForm").csrf.value;if("simple"==e){a+="&queryType=simple&keywords="+document.getElementById("keywords").value}else{if("advanced"==e){var b=Fisma.Search.advancedSearchPanel.getQuery();a+="&queryType=advanced&query="+YAHOO.lang.JSON.stringify(b)}else{throw"Invalid value for search type: "+e}}a+="&showDeleted="+Fisma.Search.showDeletedRecords;return a},highlightSearchResultsTable:function(d){var d=Fisma.Search.yuiDataTable;var c=d.getTbodyEl();var b=c.getElementsByTagName("td");var a="***";Fisma.Highlighter.highlightDelimitedText(b,a)},toggleAdvancedSearchPanel:function(){if(document.getElementById("advancedSearch").style.display=="none"){document.getElementById("advancedSearch").style.display="block";document.getElementById("keywords").style.visibility="hidden";document.getElementById("searchType").value="advanced"}else{document.getElementById("advancedSearch").style.display="none";document.getElementById("keywords").style.visibility="visible";document.getElementById("searchType").value="simple"}},toggleSearchColumnsPanel:function(){if(document.getElementById("searchColumns").style.display=="none"){document.getElementById("searchColumns").style.display="block"}else{document.getElementById("searchColumns").style.display="none"}},initializeSearchColumnsPanel:function(a,k){var j=document.getElementById("modelName").value;var l=j+"Columns";var b=YAHOO.util.Cookie.get(l);var i=0;for(var g in k){var n=k[g];if(n.hidden===true){continue}var m=n.initiallyVisible;if(b){m=(b&1<<i)!=0}i++;var h="Column is visible. Click to hide column.";var f="Column is hidden. Click to unhide column.";var c=new YAHOO.widget.Button({type:"checkbox",label:n.label,container:a,checked:m,onclick:{fn:function(q,r){this.set("title",this.get("checked")?h:f);var p=Fisma.Search.yuiDataTable;var o=p.getColumn(r);if(this.get("checked")){p.showColumn(o)}else{p.hideColumn(o)}Fisma.Search.saveColumnCookies()},obj:n.name}});c.set("title",m?h:f)}var e=document.createElement("div");e.style.marginLeft="20px";e.style.marginBottom="20px";e.style["float"]="right";var d=new YAHOO.widget.Button({type:"button",label:"Save Column Preferences",container:e,onclick:{fn:Fisma.Search.persistColumnCookie}});if(!Fisma.Search.columnPreferencesSpinner){Fisma.Search.columnPreferencesSpinner=new Fisma.Spinner(e)}a.appendChild(e)},toggleMoreButton:function(){if(document.getElementById("moreSearchOptions").style.display=="none"){document.getElementById("moreSearchOptions").style.display="block"}else{document.getElementById("moreSearchOptions").style.display="none"}},saveColumnCookies:function(){var e=Fisma.Search.yuiDataTable;var d=e.getColumnSet().keys;var b=0;for(var c in d){if(!d[c].hidden){b|=1<<c}}var a=document.getElementById("modelName").value;var f=a+"Columns";YAHOO.util.Cookie.set(f,b,{path:"/",secure:location.protocol=="https"})},persistColumnCookie:function(){Fisma.Search.saveColumnCookies();var a=document.getElementById("modelName").value;var c=a+"Columns";var b=YAHOO.util.Cookie.get(c);Fisma.Search.columnPreferencesSpinner.show();YAHOO.util.Connect.asyncRequest("GET","/user/set-cookie/name/"+c+"/value/"+b+"/format/json",{success:function(e){Fisma.Search.columnPreferencesSpinner.hide();var d=YAHOO.lang.JSON.parse(e.responseText);if(d.success){message("Your column preferences have been saved","notice")}else{message(d.message,"warning")}},failure:function(d){Fisma.Search.columnPreferencesSpinner.hide();message("Error: "+d.statusText,"warning")}})},toggleShowDeletedRecords:function(){Fisma.Search.showDeletedRecords=!Fisma.Search.showDeletedRecords;var a=document.getElementById("searchForm");Fisma.Search.handleSearchEvent(a)},deleteSelectedRecords:function(){var c=[];var e=Fisma.Search.yuiDataTable;var f=e.getSelectedRows();for(var b=0;b<f.length;b++){var a=e.getRecord(f[b]);if(a){c.push(a.getData("id"))}}if(0==c.length){message("No records selected for deletion.","warning",true);return}if(!confirm("Delete "+c.length+" records?")){return}var d=Fisma.Search.yuiDataTable.getDataSource().liveData;var h=d.split("/");h[h.length-1]="multi-delete";var g=h.join("/");YAHOO.util.Connect.asyncRequest("POST",g,{success:function(l){var k=[];if(l.responseText!==undefined){var i=YAHOO.lang.JSON.parse(l.responseText);message(i.msg,i.status,true)}var j=document.getElementById("searchForm");Fisma.Search.handleSearchEvent(j)},failure:function(j){var i="An error occurred while trying to delete the records. The error has been logged for administrator review.";message(i,"warning",true)}},"records="+YAHOO.lang.JSON.stringify(c))},setTable:function(a){this.yuiDataTable=a;if(this.onSetTableCallback){this.onSetTableCallback()}},onSetTable:function(a){this.onSetTableCallback=a}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4704,7 +4704,7 @@ Fisma.Search = function() {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
                         
                         sortColumnIndex++;
-                    } while (sortColumn.formatter == YAHOO.widget.DataTable.formatCheckbox);
+                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
                     dataTable.get('paginator').setPage(1, true);
@@ -4719,7 +4719,10 @@ Fisma.Search = function() {
             var postData = this.convertQueryToPostData(query);
 
             dataTable.showTableMessage("Loading...");
-            dataTable.getDataSource().sendRequest(postData, onDataTableRefresh);
+            
+            var dataSource = dataTable.getDataSource();
+            dataSource.connMethodPost = true;
+            dataSource.sendRequest(postData, onDataTableRefresh);
         },
 
         /**
@@ -4816,10 +4819,10 @@ Fisma.Search = function() {
          * Handle YUI data table events (such as sort)
          *
          * @param tableState From YUI
-         * @param self From YUI
+         * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, self) {
+        handleYuiDataTableEvent : function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -4842,6 +4845,8 @@ Fisma.Search = function() {
             }
 
             postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
+
+            table.getDataSource().connMethodPost = true;
 
             return postData;
         },
@@ -5004,11 +5009,18 @@ Fisma.Search = function() {
 
             // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
             var prefBitmap = 0;
+            var currentColumn = 0;
 
             for (var column in columnKeys) {
-              if (!columnKeys[column].hidden) {
-                prefBitmap |= 1 << column;
-              }
+                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
+                    continue;
+                }
+
+                if (!columnKeys[column].hidden) {
+                    prefBitmap |= 1 << currentColumn;
+                }
+                
+                currentColumn++;
             }
 
             var modelName = document.getElementById('modelName').value;
@@ -6841,10 +6853,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            console.log(fromDate);
             fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
-            console.log(fromDate);
-            console.log(parseInt(parameters.from));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -6913,6 +6922,36 @@ Fisma.TableFormat = {
         }
 
         elCell.innerHTML = docTypeNames;
+    },
+    
+    /**
+     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
+     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
+     * "re-delete" any already-deleted items.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
+        
+        if (oRecord.getData('deleted_at')) {
+
+            elCell.parentNode.style.backgroundColor = "pink";
+            
+        } else {
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = YAHOO.widget.DataTable.CLASS_CHECKBOX;
+            checkbox.checked = oData;
+
+            if (elCell.firstChild) {
+                elCell.removeChild(el.firstChild);            
+            }
+
+            elCell.appendChild(checkbox);
+        }        
     }
 };/**
  * Copyright (c) 2008 Endeavor Systems, Inc.

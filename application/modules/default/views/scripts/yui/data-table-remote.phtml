@@ -107,7 +107,7 @@
 
             // Reject clicks in columns that contain checkboxes (that would be cruel for the user)
             var column = this.getColumn(targetEl);
-            if (column.formatter == YAHOO.widget.DataTable.formatCheckbox) {
+            if (column.formatter == Fisma.TableFormat.formatCheckbox) {
                 return
             }
             
@@ -128,11 +128,15 @@
         dataTable.subscribe("theadCellClickEvent", function (clickEvent) {
             var column = this.getColumn(clickEvent.target);
             
-            if (column.formatter == YAHOO.widget.DataTable.formatCheckbox) {
+            if (column.formatter == Fisma.TableFormat.formatCheckbox) {
                 var theadCheckbox = YAHOO.util.Dom.get('dt-checkbox');
                 var records = this.getRecordSet().getRecords();
                 
                 for (var i = 0; i < records.length; i++) {
+                    if (records[i].getData('deleted_at')) {
+                        continue;
+                    }
+
                     if (theadCheckbox.checked) {
                         this.selectRow(records[i]);
                     } else {
