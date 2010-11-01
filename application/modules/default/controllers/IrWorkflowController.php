@@ -186,7 +186,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Security
             $wfs[$key]['name'] =  $this->view->escape($wfs[$key]['name'], 'html');
             foreach ($wfs[$key]['children'] as $key2 => $val2) {
                 $wfs[$key]['children'][$key2]['children'] = array();
-                $wfs[$key]['children'][$key2]['name'] = $this->view->escape($wfs[$key]['children'][$key2]['name'], 'html');
+                $wfs[$key]['children'][$key2]['name'] = 
+                    $this->view->escape($wfs[$key]['children'][$key2]['name'], 'html');
             }
         }
         

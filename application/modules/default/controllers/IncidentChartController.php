@@ -118,7 +118,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             );
 
             // Merge reported counts with rejected/resolved counts for each month
-            $currentMonthNumber = $currentMonth->get(Zend_Date::MONTH_SHORT); // current month as number with no leading zero
+            
+            // Current month as number with no leading zero
+            $currentMonthNumber = $currentMonth->get(Zend_Date::MONTH_SHORT);
             
             if (isset($reportedIncidents[$currentMonthNumber])) {
                 $monthData['reported'] = $reportedIncidents[$currentMonthNumber]['reported'];

@@ -1032,9 +1032,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
             ob_end_clean();
             $expireDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
             $expireDateTime->setTimezone('GMT');
-            header('Expires: '
-                  . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
-                  . ' GMT');
+            header(
+                'Expires: '
+                . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
+                . ' GMT'
+            );
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));
