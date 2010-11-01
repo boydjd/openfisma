@@ -50,8 +50,8 @@ class Fisma_Yui_DataTable_Column
      * @var Fisma_Yui_DataTable_ColumnFormatter
      */
     private $_formatter;
-	
-	/**
+
+    /**
      * A parser for this column
      * 
      * @var string

@@ -48,8 +48,8 @@ class Fisma_Report_Column
      * @var string
      */
     private $_formatter;
-	
-	/**
+
+    /**
      * A parser for this column
      * 
      * @var string
@@ -109,8 +109,8 @@ class Fisma_Report_Column
     {
         return $this->_formatter;
     }
-	
-	    /**
+
+    /**
      * Accessor for $_parser
      * 
      * @return string

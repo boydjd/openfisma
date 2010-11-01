@@ -146,7 +146,9 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                     foreach ($findings as $finding) {
                         if (($finding['severity'] != 'NONE') && ($finding['severity'] != 'LOW')) {
                                                        
-                            if (!isset($host['ip'])) { $host['ip']  = null; }
+                            if (!isset($host['ip'])) {
+                                $host['ip']  = null;
+                            }
                                                        
                             // Prepare asset
                             $asset = array();
