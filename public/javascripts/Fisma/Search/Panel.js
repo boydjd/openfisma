@@ -132,9 +132,7 @@ Fisma.Search.Panel.prototype = {
                 }
                 
                 // URI Decode the operands
-                console.log(operands);
                 var unescapedOperands = operands.map(decodeURIComponent);
-                console.log(unescapedOperands);
 
                 // Render the element and then set its default values
                 var criterionElement = criterion.render(field, operator, unescapedOperands);

@@ -27,7 +27,7 @@ Fisma.Search.CriteriaDefinition = function () {
             dateAfter : {label : "After", renderer : 'singleDate', query : 'oneInput'},
             dateBefore : {label : "Before", renderer : 'singleDate', query : 'oneInput'},
             dateBetween : {label : "Between", renderer : 'betweenDate', query : 'twoInputs'},
-            dateDay : {label : "Is", renderer : 'singleDate', isDefault : true},
+            dateDay : {label : "Is", renderer : 'singleDate', query : 'oneInput', isDefault : true},
             dateThisMonth : {label : "This Month", renderer : 'none', query : 'noInputs'},
             dateThisYear : {label : "This Year", renderer : 'none', query : 'noInputs'},
             dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}

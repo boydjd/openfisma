@@ -43,8 +43,10 @@ Fisma.Calendar = function () {
             YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
 
             var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
-            calendar.render();
             calendar.hide();
+            
+            // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
+            setTimeout(function () {calendar.render();}, 0);
 
             textEl.onfocus = function () {calendar.show()};
 
