@@ -167,7 +167,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
 
         $type = $this->getRequest()->getParam('type');
-        $source = $this->getRequest()->getParam('sourceId');        
+        $source = $this->getRequest()->getParam('sourceNickname');        
         $format = $this->_request->getParam('format');
         // Prepare summary data
 
@@ -272,12 +272,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @param int $source Finding source ids to get counts for
      * @return array
      */
-    private function _getSummaryCounts($organization, $type, $source)
+    private function _getSummaryCounts($organization, $type, $sourceNickname)
     {
         // Doctrine won't let me paramaterize within a somewhat complex statement, so we'll just protect against
         // injection by using sprintf.
-        $source = (!empty($source)) ? sprintf("%d", $source) : $source;
-        $sourceCondition = (!empty($source)) ? "AND finding.sourceID = $source" : "";
+        if (!empty($sourceNickname)) {
+            $source = Doctrine::getTable('Source')->findOneByNickname($sourceNickname);
+            $sourceId = $source->id;            
+        }
+
+        $sourceCondition = $source ? "AND finding.sourceId = $sourceId" : "";
 
         $allStatuses = Finding::getAllStatuses();
 
@@ -330,10 +334,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         );
         $summary->addSelect("SUM(IF(finding.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
 
-        if (!empty($source))
+        if ($source) {
             $summary->addSelect("SUM(IF(finding.sourceId = $source, 1, 0)) total");
-        else
+        } else {
             $summary->addSelect("COUNT(finding.id) total");
+        }
 
         $summary->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgType")
             ->addSelect('parent.lft as lft')

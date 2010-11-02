@@ -495,7 +495,7 @@ Fisma.FindingSummary = function() {
             // Include any filters
             var filterType = '';
             if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/textExactMatch/' + this.filterType;
+                filterType = '/type/enumIs/' + this.filterType;
             }
 
             var filterSource = '';
@@ -504,7 +504,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/advanced'
+            var uri = '/finding/remediation/list/queryType/advanced'
                     + onTimeString
                     + statusString
                     + filterType

@@ -89,7 +89,7 @@ function menuHandler(source) {
     
     var url = '/finding/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value)
+            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value)
             + '/format/json';
     reloadTable(url);
 
@@ -97,7 +97,7 @@ function menuHandler(source) {
     document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
         '/finding/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
+        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value);
     <?php endforeach; ?>
 }
 </script>
@@ -114,8 +114,8 @@ function menuHandler(source) {
     <select id='sources' onchange='menuHandler(this);' disabled="true">
         <option value="ALL_SOURCES">All Sources</option>
         <?php foreach ($this->findingSources as $source): ?>
-        <option value='<?php echo $this->escape($source->id) ?>'>
-            <?php echo $this->escape($source->nickname);?>-<?php echo $this->escape($source->name); ?>
+        <option value='<?php echo $this->escape($source->nickname) ?>'>
+            <?php echo $this->escape($source->nickname);?> - <?php echo $this->escape($source->name); ?>
         </option>
         <?php endforeach; ?>
     </select>
