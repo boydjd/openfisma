@@ -1,4 +1,7 @@
 <?php Fisma_Format_Section::startSection('Selected Security Controls'); ?>
+<div class="buttonBar">
+<?php echo $this->partial('security-authorization/control-nav.phtml', array('id' => $this->id)); ?>
+</div>
 <div id="container">
 <table id="controlTable">
 <?php foreach ($this->subject->SaSecurityControls as $saControl): ?>

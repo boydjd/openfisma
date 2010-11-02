@@ -2,6 +2,8 @@
 
 <div class="buttonBar">
 <?php
+echo $this->partial('security-authorization/control-nav.phtml', array('id' => $this->id));
+
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 
                                              'imageSrc' => '/images/expand.png',
