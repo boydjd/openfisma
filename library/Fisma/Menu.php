@@ -146,10 +146,6 @@ class Fisma_Menu
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
 
-                if ($acl->hasPrivilegeForClass('read', 'Product')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
-                }
-
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
