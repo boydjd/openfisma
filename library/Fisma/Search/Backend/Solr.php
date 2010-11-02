@@ -212,9 +212,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                           . ')';
         }
         
-        // Filter out deleted items, if this model has soft delete
-        if ($table->hasColumn('deleted_at') && !$deleted) {
-            $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+        // Handle soft delete
+        if ($table->hasColumn('deleted_at')) {
+            $query->addField('deleted_at_datetime');
+            
+            if (!$deleted) {
+                $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+            }
         }
 
         if (empty($trimmedKeyword)) {
@@ -585,6 +589,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             }
         }
 
+        if ($table->hasColumn('deleted_at') && !empty($object['deleted_at'])) {
+            $deletedAt = $this->_convertToSolrDate($object['deleted_at']);
+
+            $document->addField('deleted_at_datetime', $deletedAt);
+        }
+
         return $document;
     }
 
@@ -736,13 +746,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     private function _convertToSolrDate($date)
     {
-        // @todo set global timestamp options
-        Zend_Date::setOptions(array('format_type' => 'iso'));
-
         // Date fields need to be converted to UTC
-        $tempDate = new Zend_Date($date, 'YYYY-MM-dd HH:mm:ss');
+        $tempDate = new Zend_Date($date, 'yyyy-MM-dd HH:mm:ss');
 
-        return $tempDate->toString('YYYY-MM-ddTHH:mm:ss') . 'Z';
+        return $tempDate->toString('yyyy-MM-ddTHH:mm:ss') . 'Z';
     }
 
     /**

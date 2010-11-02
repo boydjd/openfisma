@@ -104,6 +104,12 @@ class Fisma_Search_Indexer
                 $allRecordsQuery->addSelect("a.$fieldName");
             }
         }
+        
+        // Make sure soft deleted records are included, too
+        if ($table->hasColumn('deleted_at')) {
+            $allRecordsQuery->addSelect('a.deleted_at')
+                            ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+        }
 
         // Implementers can tweak the selection query to filter out undesired records
         if ($table instanceof Fisma_Search_CustomIndexBuilder_Interface) {
