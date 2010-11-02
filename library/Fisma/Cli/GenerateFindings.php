@@ -91,9 +91,28 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                                 ->from('SecurityControl s')
                                 ->setHydrationMode(Doctrine::HYDRATE_NONE)
                                 ->execute();
+                                
+        // Get root user
+        $rootUser = Doctrine::getTable('User')->findOneByUsername('root');
+        
+        // Get the evaluation ID for MSA
+        $msaQuery = Doctrine_Query::create()
+                    ->select('id')
+                    ->from('Evaluation')
+                    ->where('precedence = 0 AND approvalGroup = \'action\'');
+        $msaResult = $msaQuery->execute();
+        $msaEvaluation = $msaResult[0];
+
+        // Get the evaluation ID for EA
+        $eaQuery = Doctrine_Query::create()
+                    ->select('id')
+                    ->from('Evaluation')
+                    ->where('precedence = 0 AND approvalGroup = \'evidence\'');
+        $eaResult = $eaQuery->execute();
+        $eaEvaluation = $eaResult[0];
 
         $type = array('NONE', 'CAP', 'AR', 'FP');
-        $status = array('PEND', 'NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
+        $status = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
         $threat = array('LOW', 'MODERATE', 'HIGH');
         $effectiveness = array('LOW', 'MODERATE', 'HIGH');
 
@@ -135,6 +154,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             $finding['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
             $finding['countermeasures'] = Fisma_String::loremIpsum(rand(2, 1000));
             $finding['discoveredDate'] = $discoveredDate;
+            $finding['ecdChangeDescription'] = Fisma_String::loremIpsum(rand(5, 10));;
             $finding['ecdLocked'] = FALSE;
             $findings[] = $finding;
             unset($finding);
@@ -156,6 +176,34 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                 $f = new Finding();
                 $f->merge($finding);
                 $f->save();
+                
+                if ($f->status == 'MSA') {
+                    $f->CurrentEvaluation = $msaEvaluation;
+                    $f->updateDenormalizedStatus();
+                    $f->save();
+
+                    if (rand(0, 1)) {
+                        $f->approve($rootUser, 'Approved by generate-findings.php script.');
+                    }
+                } elseif ($f->status == 'EA') {
+                    // Create a sample piece of evidence
+                    $evidence = new Evidence();
+
+                    $evidence->filename = "sample-file-name.txt";
+                    $evidence->Finding = $f;
+                    $evidence->User = $rootUser;
+                    
+                    $evidence->save();
+                    
+                    $f->CurrentEvaluation = $eaEvaluation;
+                    $f->updateDenormalizedStatus();
+                    $f->save();
+
+                    if (rand(0, 1)) {
+                        $f->approve($rootUser, 'Approved by generate-findings.php script.');
+                    }
+                }
+
                 $f->free();
                 unset($f);
 
