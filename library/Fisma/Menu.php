@@ -138,6 +138,10 @@ class Fisma_Menu
 
                 $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
 
+                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
+                }
+
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
@@ -146,16 +150,19 @@ class Fisma_Menu
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
                 }
 
-                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
-                }
-
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
             // Organization reports submenu
             if ($acl->hasArea('system_inventory_report')) {
                 $systemInventoryReportsMenu = new Fisma_Yui_Menu('Reports');
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem(
+                        'Documentation Compliance', 
+                        '/organization-report/documentation-compliance/format/html'
+                    )
+                );
 
                 $systemInventoryReportsMenu->add(
                     new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel/format/html')
@@ -169,13 +176,6 @@ class Fisma_Menu
                     new Fisma_Yui_MenuItem(
                         'Security Authorizations', 
                         '/organization-report/security-authorization/format/html'
-                    )
-                );
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem(
-                        'Documentation Compliance', 
-                        '/organization-report/documentation-compliance/format/html'
                     )
                 );
 
