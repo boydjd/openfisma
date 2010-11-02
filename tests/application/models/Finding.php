@@ -93,7 +93,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         $finding->status = 'NEW';
         
         // Expected due date is 30 days after creation date
-        $expectedDueDate = Zend_Date::now()->subDay(15)->toString('Y-m-d');
+        $expectedDueDate = Zend_Date::now()->subDay(15)->toString(Fisma_Date::FORMAT_DATE);
         
         $this->assertEquals($expectedDueDate, $finding->nextDueDate);
     }
@@ -177,7 +177,7 @@ class Test_Application_Models_Finding extends Test_FismaUnitTest
         
         $today = Zend_Date::now();
         $acd = new Zend_Date();
-        $acd->set($finding->actualCompletionDate);
+        $acd->set($finding->actualCompletionDate, Zend_Date::ISO_8601);
 
         $this->assertEquals($today->get(Zend_Date::DATE_SHORT), $acd->get(Zend_Date::DATE_SHORT));
 

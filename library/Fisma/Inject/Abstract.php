@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -18,9 +18,13 @@
 
 /**
  * An abstract class for creating injection plug-ins
+ *
+ * This class (and it's subclasses) use the array key "finding" throughout.  However, this injection actually creates
+ * vulnerabilities; we maintain the use of the term "finding" due to legacy code using this convention.
  * 
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Inject
@@ -28,10 +32,6 @@
  */
 abstract class Fisma_Inject_Abstract
 {
-    const CREATE_FINDING = 1;
-    const DELETE_FINDING = 2;
-    const REVIEW_FINDING = 3;
-
     /**
      * The full xml file path to be used to the injection plugin
      * 
@@ -65,7 +65,7 @@ abstract class Fisma_Inject_Abstract
      * 
      * @var array
      */
-    private $_totalFindings = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
+    private $_totals = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
 
     /**
      * collection of findings to be created 
@@ -73,6 +73,37 @@ abstract class Fisma_Inject_Abstract
      * @var array
      */
     private $_findings = array();
+
+    /**
+     * collection of duplicates to be logged
+     * 
+     * @var array
+     */
+    private $_duplicates = array();
+
+    /**
+     * Keep track of the uploadId passed into parse()
+     *
+     * @var integer
+     */
+    protected $_uploadId;
+
+    /** 
+     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
+     * then _commit() to commit to database.
+     *
+     * This method wraps the protected override _parse()
+     *
+     * Throws an exception if the file is an invalid format.
+     *
+     * @param string $uploadId The primary key for the upload object associated with this file
+     * @throws Fisma_Inject_Exception
+     */
+    public function parse($uploadId)
+    {
+        $this->_uploadId = $uploadId;
+        return $this->_parse($uploadId);
+    }
 
     /** 
      * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
@@ -83,7 +114,7 @@ abstract class Fisma_Inject_Abstract
      * @param string $uploadId The primary key for the upload object associated with this file
      * @throws Fisma_Inject_Exception
      */
-    abstract public function parse($uploadId);
+    abstract protected function _parse($uploadId);
 
     /**
      * Create and initialize a new plug-in instance for the specified file
@@ -93,12 +124,10 @@ abstract class Fisma_Inject_Abstract
      * @param string $systemId The specified organization id
      * @param string $findingSourceId The specified finding source id
      */
-    public function __construct($file, $networkId, $systemId, $findingSourceId) 
+    public function __construct($file, $networkId) 
     {
         $this->_file            = $file;
         $this->_networkId       = $networkId;
-        $this->_orgSystemId     = $systemId;
-        $this->_findingSourceId = $findingSourceId;
     }
 
     /**
@@ -112,7 +141,7 @@ abstract class Fisma_Inject_Abstract
      */
     public function __get($field) 
     {
-        return (!empty($this->_totalFindings[$field])) ? $this->_totalFindings[$field] : 0;
+        return (!empty($this->_totals[$field])) ? $this->_totals[$field] : 0;
     }
 
     /**
@@ -131,10 +160,8 @@ abstract class Fisma_Inject_Abstract
         // Add data to provided assetData
         if (!empty($assetData)) {
             $assetData['networkId'] = $this->_networkId;
-            $assetData['orgSystemId'] = $this->_orgSystemId;
-            $assetData['source'] = 'SCAN';
-
             $assetData['id'] = $this->_prepareAsset($assetData);
+            $findingData['assetId'] = $assetData['id'];
         }
 
         // Add data to provided productData
@@ -143,7 +170,7 @@ abstract class Fisma_Inject_Abstract
         }
 
         // Prepare finding
-        $finding = new Finding();
+        $finding = new Vulnerability();
         $finding->merge($findingData);
 
         // Handle related objects, since merge doesn't
@@ -167,29 +194,20 @@ abstract class Fisma_Inject_Abstract
 
         // Handle duplicated findings
         $duplicateFinding = $this->_getDuplicateFinding($finding);
-        $action = ($duplicateFinding) ? $this->_getDuplicateAction($finding, $duplicateFinding) : self::CREATE_FINDING;
-        $finding->duplicateFindingId = ($duplicateFinding) ? $duplicateFinding['id']: NULL;
-
-        // Take the specified action on the current finding
-        switch ($action) {
-            case self::CREATE_FINDING:
-                $this->_totalFindings['created']++;
-                break;
-            case self::DELETE_FINDING:
-                $this->_totalFindings['deleted']++;
-                // Deleted findings are not saved, so we exit the _save routine
-                $finding->free();
-                unset($finding);
-                return;
-                break;
-            case self::REVIEW_FINDING:
-                $this->_totalFindings['reviewed']++;
-                $finding->status = 'PEND';
-                break;
+        if ($duplicateFinding) {
+            $this->_duplicates[] = array(
+                'vulnerability' => $duplicateFinding,
+                'action' => $duplicateFinding->status == 'CLOSED' ? 'REOPEN' : 'SUPPRESS',
+                'message' => 'This vulnerability was discovered again during a subsequent scan.'
+            );
+            // Deleted findings are not saved, so we exit the _save routine
+            $finding->free();
+            unset($finding);
+            return;
+        } else {
+            // Store data in instance to be committed later
+            $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
         }
-
-        // Store data in instance to be committed later
-        $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
     }
 
     /**
@@ -202,6 +220,7 @@ abstract class Fisma_Inject_Abstract
         Doctrine_Manager::connection()->beginTransaction();
 
         try {
+            // commit the new vulnerabilities
             foreach ($this->_findings as &$findingData) {
                 if (@!$findingData['asset']['productId'] && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
@@ -213,8 +232,47 @@ abstract class Fisma_Inject_Abstract
 
                 $findingData['finding']->assetId = $findingData['asset']['id'];
                 $findingData['finding']->save();
+                $this->_totals['created']++;
+
+                $vUpload = new VulnerabilityUpload();
+                $vUpload->vulnerabilityId = $findingData['finding']->id;
+                $vUpload->uploadId = $this->_uploadId;
+                $vUpload->action = 'CREATE';
+                $vUpload->save();
+                $vUpload->free();
+                unset($vUpload);
+
                 $findingData['finding']->free();
                 unset($findingData['finding']);
+            }
+
+            // append audit log messages
+            foreach ($this->_duplicates as $duplicate) {
+                $vuln = $duplicate['vulnerability'];
+                $mesg = $duplicate['message'];
+                $action = $duplicate['action'];
+                $vuln->getAuditLog()->write($mesg);
+                if ($action == 'REOPEN') {
+                    $this->_totals['reopened']++;
+                    $vuln->status = 'OPEN';
+                    $vuln->save();
+                } else {
+                    if (!isset($this->_totals['suppressed'])) { 
+                        $this->_totals['suppressed'] = 0;
+                    }
+                    $this->_totals['suppressed']++;
+                }
+
+                $vUpload = new VulnerabilityUpload();
+                $vUpload->vulnerabilityId = $vuln->id;
+                $vUpload->uploadId = $this->_uploadId;
+                $vUpload->action = $action;
+                $vUpload->save();
+                $vUpload->free();
+                unset($vUpload);
+
+                $vuln->free();
+                unset($vuln);
             }
 
             Doctrine_Manager::connection()->commit();
@@ -228,10 +286,15 @@ abstract class Fisma_Inject_Abstract
      * Get a duplicate of the specified finding
      * 
      * @param $finding A finding to check for duplicates
-     * @return bool|Finding Return a duplicate finding or FALSE if none exists
+     * @return bool|Vulnerability Return a duplicate finding or FALSE if none exists
      */
     private function _getDuplicateFinding($finding)
     {
+        // a vulnerability can't be a duplicate if it has no assetId
+        if (empty($finding->assetId)) {
+            return false;
+        }
+
         /**
          * In order to properly compare the current finding against persisted findings, we need to apply the same html
          * purification that the Xss Listener applies
@@ -240,50 +303,15 @@ abstract class Fisma_Inject_Abstract
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
         
         $duplicateFindings = Doctrine_Query::create()
-            ->select('f.id, f.responsibleOrganizationId, f.type, f.status')
-            ->from('Finding f')
-            ->where('description LIKE ?', $cleanDescription)
-            ->andWhere('status <> ?', 'PEND')
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->select('v.id, v.status')
+            ->from('Vulnerability v')
+            ->where('v.description LIKE ?', $cleanDescription)
+            ->andWhere('v.assetId = ?', $finding->assetId)
             ->execute();
 
-        return ($duplicateFindings) ? array_pop($duplicateFindings) : FALSE;
+        return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
     }
     
-    /**
-     * Evaluate duplication rules for two findings
-     * 
-     * @param Finding $newFinding
-     * @param Array $duplicateFinding
-     * @return int One of the constants: CREATE_FINDING, DELETE_FINDING, or REVIEW_FINDING
-     */
-    private function _getDuplicateAction(Finding $newFinding, Array $duplicateFinding)
-    {
-        $action  = NULL;
-        $orgSame = ($newFinding->ResponsibleOrganization->id == $duplicateFinding['responsibleOrganizationId']) ? TRUE 
-            : FALSE;
-        
-        switch ($duplicateFinding['type']) {
-            case 'CAP':
-            case 'FP':
-            case 'NONE':
-                if ($orgSame) {
-                    $action = ($duplicateFinding['status'] == 'CLOSED') ? self::CREATE_FINDING : self::DELETE_FINDING;
-                } else {
-                    $action = self::REVIEW_FINDING;
-                }
-                break;
-            case 'AR':
-                $action = ($orgSame) ? self::DELETE_FINDING : self::REVIEW_FINDING;
-                break;
-            default:
-                throw new Fisma_Zend_Exception('No duplicate finding action defined for mitigation type: '
-                    . $duplicateFinding['type']);
-        }
-
-        return $action;
-    }
-
     /**
      * Get the existing asset id if it exists 
      * 
@@ -293,14 +321,22 @@ abstract class Fisma_Inject_Abstract
     private function _prepareAsset($assetData)
     {
         // Verify whether asset exists or not
-        $assetRecord = Doctrine_Query::create()
+        $assetQuery = Doctrine_Query::create()
                         ->select('id')
                         ->from('Asset a')
-                        ->where('a.networkId = ?', $assetData['networkId'])
-                        ->andWhere('a.addressIp = ?', $assetData['addressIp'])
-                        ->andWhere('a.addressPort = ?', $assetData['addressPort'])
-                        ->setHydrationMode(Doctrine::HYDRATE_NONE)
-                        ->execute();
+                        ->where('a.networkId = ?', $assetData['networkId']);
+        if (empty($assetData['addressIp'])) {
+            $assetQuery->andWhere('a.addressIp IS NULL');
+        } else {
+            $assetQuery->andWhere('a.addressIp = ?', $assetData['addressIp']);
+        }
+        if (empty($assetData['addressPort'])) {
+            $assetQuery->andWhere('a.addressPort IS NULL');
+        } else {
+            $assetQuery->andWhere('a.addressPort = ?', $assetData['addressPort']);
+        }
+        $assetRecord = $assetQuery->setHydrationMode(Doctrine::HYDRATE_NONE)
+                                  ->execute();
 
         return ($assetRecord) ? $assetRecord[0][0] : FALSE;
     }

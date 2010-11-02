@@ -34,7 +34,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      * 
      * @param string $uploadId The id of upload Nessus xml file
      */
-    public function parse($uploadId)
+    protected function _parse($uploadId)
     {
         $grammar = new Fisma_Inject_Grammar('Nessus');
         $report  = new XMLReader();
@@ -51,7 +51,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.');
+            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
         }
 
         $report->close();
@@ -145,6 +145,11 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 if (is_array($findings)) {
                     foreach ($findings as $finding) {
                         if (($finding['severity'] != 'NONE') && ($finding['severity'] != 'LOW')) {
+                                                       
+                            if (!isset($host['ip'])) {
+                                $host['ip']  = null;
+                            }
+                                                       
                             // Prepare asset
                             $asset = array();
                             $asset['name'] = (!empty($finding['port'])) ? $host['ip'] . ':' . $finding['port'] : 
@@ -159,8 +164,10 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
                             $findingInstance = array();
                             $findingInstance['uploadId'] = (int) $uploadId;
-                            $findingInstance['discoveredDate'] = (!empty($host['startTime'])) ? 
-                                date('Y-m-d', strtotime($host['startTime'])) : NULL;
+                            
+                            $discoveredDate = new Zend_Date(strtotime($host['startTime']), Zend_Date::TIMESTAMP);
+                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
+                                $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
                             $findingInstance['description'] = Fisma_String::textToHtml(

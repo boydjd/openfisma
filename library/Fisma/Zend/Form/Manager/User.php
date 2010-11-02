@@ -66,7 +66,7 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
             $form->getElement('lockReason')->setValue($reason);
 
             $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
-            $form->getElement('lockTs')->setValue($lockTs->get('YYYY-MM-DD HH:mm:ss '));
+            $form->getElement('lockTs')->setValue($lockTs->get(Fisma_Date::FORMAT_DATETIME));
         } else {
             $form->removeElement('lockReason');
             $form->removeElement('lockTs');

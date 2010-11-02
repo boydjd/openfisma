@@ -311,6 +311,9 @@ Incident:
         organizationId:
             type: integer
             comment: Foreign key to the affected organization/system
+            extra:
+                auditLog: true
+                logicalName: Affected System/Organization 
 
     relations:
         CurrentWorkflowStep:

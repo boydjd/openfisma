@@ -1,0 +1,9 @@
+<?php 
+echo $this->escape($this->partial('status/searchbox.phtml', 'vm'), 'none');
+Fisma_Format_Section::startSection("Status Resolutions [<a href='{$this->viewLink}'>View</a>]"); ?>
+
+<div class="form_box">
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>

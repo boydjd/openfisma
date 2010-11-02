@@ -128,8 +128,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaAction()
     {        
-        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString('Y-m-d');
-        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString('Y-m-d');
+        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()
+                                                    ->toString(Fisma_Date::FORMAT_DATE);
+        $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString(Fisma_Date::FORMAT_DATE);
     }
     
     /**
@@ -146,7 +147,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->agencyName = $agency->name;
         
         // Submission Date
-        $this->view->submissionDate = date('Y-m-d');
+        $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
         $bureaus = Organization::getBureaus();
@@ -174,7 +175,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->agencyName = $agency->name;
         
         // Submission Date
-        $this->view->submissionDate = date('Y-m-d');
+        $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
         $bureaus = Organization::getBureaus();
@@ -236,7 +237,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) max')
                         ->from('Finding f')
                         ->leftJoin('f.ResponsibleOrganization o')
-                        ->where('f.nextduedate < NOW()')
+                        ->where('DATEDIFF(NOW(), f.nextduedate) > 0')
                         ->groupBy('o.id, actionType')
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 

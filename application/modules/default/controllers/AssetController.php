@@ -248,14 +248,19 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         if (!empty($params['version'])) {
             $q->andWhere('p.version LIKE ?', $params['version'] . '%');
         }
-        // get the assets whitch are belongs to current user's systems
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('asset', 'read')->toArray();
-        $orgSystemIds = array();
-        foreach ($orgSystems as $orgSystem) {
-            $orgSystemIds[] = $orgSystem['id'];
+
+        // Filter by what systems the user is allowed to see
+        $systems = $this->_me->getOrganizationsByPrivilege('asset', 'read')->toKeyValueArray('id', 'id');
+
+        // DQL doesn't allow us to easily create a parenthetical expression, so here's a quick workaround
+        $inString = implode(',', array_filter($systems, 'is_numeric'));
+
+        if ($this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
+            $q->andWhere("(a.orgSystemId IN ($inString) OR a.orgSystemId IS NULL)");
+        } else {
+            $q->andWhere("a.orgSystemId IN ($inString)");
         }
-        $q->andWhereIn('a.orgSystemId', $orgSystemIds);
-        
+
         if ($this->_request->getParam('format') == null) {
             $q->limit($this->_paging['count'])
             ->offset($this->_paging['startIndex']);
@@ -402,10 +407,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
                 // get original file name
                 $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
-                // get current time and set to a format like '_2009-05-04_11_22_02'
-                $dateTime = date('_Y-m-d_H_i_s', time());
+                // get current time and set to a format like '20090504_112202'
+                $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
                 // define new file name
-                $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
+                $newName = str_replace($originalName, $originalName . '_' . $dateTime, basename($filePath));
                 rename($filePath, $filePath = dirname($filePath) . '/' . $newName);
 
                 $values['filePath'] = $filePath;

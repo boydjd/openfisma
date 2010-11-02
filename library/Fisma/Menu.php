@@ -70,7 +70,6 @@ class Fisma_Menu
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/index/injection'));
-                $findings->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/finding/index/plugin'));
             }
                                     
             $findings->addSeparator();
@@ -109,6 +108,11 @@ class Fisma_Menu
             $mainMenuBar->add($findings);
         }
 
+        $vmModule = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+        if ($vmModule && $vmModule->enabled && $acl->hasArea('vulnerability')) {
+            $mainMenuBar->add(self::buildVulnerabilitiesMenu($acl));
+        }
+
         if ($acl->hasArea('system_inventory')) {
             $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
             
@@ -134,6 +138,10 @@ class Fisma_Menu
 
                 $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
 
+                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
+                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
+                }
+
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
@@ -142,16 +150,19 @@ class Fisma_Menu
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
                 }
 
-                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
-                }
-
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
             // Organization reports submenu
             if ($acl->hasArea('system_inventory_report')) {
                 $systemInventoryReportsMenu = new Fisma_Yui_Menu('Reports');
+
+                $systemInventoryReportsMenu->add(
+                    new Fisma_Yui_MenuItem(
+                        'Documentation Compliance', 
+                        '/organization-report/documentation-compliance/format/html'
+                    )
+                );
 
                 $systemInventoryReportsMenu->add(
                     new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel/format/html')
@@ -165,13 +176,6 @@ class Fisma_Menu
                     new Fisma_Yui_MenuItem(
                         'Security Authorizations', 
                         '/organization-report/security-authorization/format/html'
-                    )
-                );
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem(
-                        'Documentation Compliance', 
-                        '/organization-report/documentation-compliance/format/html'
                     )
                 );
 
@@ -297,5 +301,62 @@ class Fisma_Menu
         }
 
         return $mainMenuBar;
+    }
+
+    /**
+     * Constructs a vulnerabilities menu
+     *
+     * @param Zend_Acl $acl
+     * @return Fisma_Yui_Menu
+     */
+    protected static function buildVulnerabilitiesMenu(Zend_Acl $acl)
+    {
+        $menu = new Fisma_Yui_Menu('Vulnerabilities');
+
+        $menu->add(new Fisma_Yui_MenuItem('Search', '/vm/vulnerability/list'));
+
+        $menu->addSeparator();
+
+        if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
+            $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
+        }
+
+        $menu->addSeparator();
+
+        $menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
+
+        if ($acl->hasArea('vulnerability_admin')) {
+            $adminMenu = new Fisma_Yui_Menu('Administration');
+
+            if ($acl->hasPrivilegeForClass('read', 'Product')) {
+                $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
+            }
+
+            if ($acl->hasPrivilegeForClass('read', 'Vulnerability')) {
+                $adminMenu->add(new Fisma_Yui_MenuItem('Status', '/vm/status/list'));
+            }
+
+            $menu->add($adminMenu);
+        }
+
+        if ($acl->hasArea('vulnerability_report')) {
+            $reportsMenu = new Fisma_Yui_Menu('Reports');
+
+            $reportsMenu->add(
+                new Fisma_Yui_MenuItem('Aggregated Risk', '/vm/vulnerability-report/risk/format/html')
+            );
+            
+            $reportsMenu->add(
+                new Fisma_Yui_MenuItem('Reopened Vulnerabilities', '/vm/vulnerability-report/reopened/format/html')
+            );
+
+            $reportsMenu->add(
+                new Fisma_Yui_MenuItem('Vulnerable Services', '/vm/vulnerability-report/vulnerable-service/format/html')
+            );
+
+            $menu->add($reportsMenu);
+        }
+        
+        return $menu;
     }
 }

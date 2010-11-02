@@ -75,7 +75,7 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         }
         
         // Calculate the cutoff date based on the period        
-        $cutoffDate = Zend_Date::now()->sub($period, Zend_Date::MONTH)->get('Y-m-d');
+        $cutoffDate = Zend_Date::now()->sub($period, Zend_Date::MONTH)->get(Fisma_Date::FORMAT_DATE);
 
         // Get chart data. This is done in two queries because one groups by reportTs and the other groups by closedTs
         $reportedIncidentsQuery = Doctrine_Query::create()
@@ -112,13 +112,15 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                 'reported' => 0, 
                 'resolved' => 0, 
                 'rejected' => 0,
-                'monthName' => $currentMonth->get('M'), // short name for month
-                'year' => $currentMonth->get('Y')
+                'monthName' => $currentMonth->get(Zend_Date::MONTH_NAME_SHORT), // short name for month
+                'year' => $currentMonth->get(Zend_Date::YEAR)
                 
             );
 
             // Merge reported counts with rejected/resolved counts for each month
-            $currentMonthNumber = $currentMonth->get('n'); // current month as number with no leading zero
+            
+            // Current month as number with no leading zero
+            $currentMonthNumber = $currentMonth->get(Zend_Date::MONTH_SHORT);
             
             if (isset($reportedIncidents[$currentMonthNumber])) {
                 $monthData['reported'] = $reportedIncidents[$currentMonthNumber]['reported'];
@@ -157,7 +159,7 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
-        $cutoffDate = Zend_Date::now()->subDay(90)->toString('Y-m-d H:i:s');
+        $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);
 
         $bureauQuery = Doctrine_Query::create()
                        ->from('Incident i')

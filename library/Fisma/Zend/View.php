@@ -106,7 +106,7 @@ class Fisma_Zend_View extends Zend_View
                 for ($x = 0, $len = strlen($string); $x < $len; $x++) {
                     $ord = ord(substr($string, $x, 1));
                     // non-standard char, escape it
-                    if ($org >= 126) {
+                    if ($ord >= 126) {
                         $return .= '&#' . $ord . ';';
                     } else {
                         $return .= substr($string, $x, 1);

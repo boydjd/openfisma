@@ -22,6 +22,19 @@ Privilege:
         action: finding_report
         description: Finding Module Reports
 
+    vulnerability_area:
+        resource: area
+        action: vulnerability
+        description: Vulnerability Module
+    vulnerability_admin_area:
+        resource: area
+        action: vulnerability_admin
+        description: Vulnerability Module Administration
+    vulnerability_report_area:
+        resource: area
+        action: vulnerability_report
+        description: Vulnerability Module Reports
+
     system_inventory_area:
         resource: area
         action: system_inventory
@@ -160,6 +173,40 @@ Privilege:
         action: evidence_ivv
         description: Evidence Artifacts - IV&V Approval
 
+    # Vulnerability CRUD
+    vulnerability_create:
+        resource: vulnerability
+        action: create
+        description: Create Vulnerabilities
+    vulnerability_read:
+        resource: vulnerability
+        action: read
+        description: View Vulnerabilities
+    # Update doesn't have much meaning for this module (as of 2.10), but its reserved for future use
+    vulnerability_update: 
+        resource: vulnerability
+        action: update
+        description: Edit Vulnerabilities
+    # Delete doesn't have much meaning for this module (as of 2.10), but its reserved for future use
+    vulnerability_delete:
+        resource: vulnerability
+        action: delete
+        description: Delete Vulnerabilities
+
+    # Vulnerability state transitions
+    vulnerability_close:
+        resource: vulnerability
+        action: close
+        description: Close Vulnerabilities
+    vulnerability_accept_risk:
+        resource: vulnerability
+        action: fixed
+        description: Set Vulnerability to Fixed
+    vulnerability_false_positive:
+        resource: vulnerability
+        action: wont_fix
+        description: Set Vulnerability to Wont Fix
+
     # Assets CRUD
     asset_create:
         resource: asset
@@ -177,6 +224,14 @@ Privilege:
         resource: asset
         action: delete
         description: Delete Assets
+    # Asset ACL is based on systems, but not all assets will be connected to systems. This privilege is a special
+    # privilege that is orthogonal to the CRUD above; it adds the capability to use the CRUD privileges above on
+    # unaffiliated assets. E.g. if you have asset_read AND asset_unaffiliated, then you can view unaffiliated assets,
+    # but that doesn't mean that you can delete unaffiliated assets.
+    asset_unaffiliated:
+        resource: asset
+        action: unaffiliated
+        description: Unaffiliated Assets
 
     # Users CRUD
     user_create:
@@ -303,6 +358,10 @@ Privilege:
         resource: notification
         action: finding
         description: Finding Notifications
+    notification_vulnerability:
+        resource: notification
+        action: vulnerability
+        description: Vulnerability Notifications
 
     # Incident
     incident_read:

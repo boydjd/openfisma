@@ -154,8 +154,10 @@ class Version77 extends Doctrine_Migration_Base
         // Delete events
         $events = Doctrine_Query::create()
                   ->from('Event')
-                  ->whereIn('name',
-                            array('DOCUMENT_TYPE_CREATED', 'DOCUMENT_TYPE_UPDATED', 'DOCUMENT_TYPE_DELETED'))
+                  ->whereIn(
+                      'name',
+                      array('DOCUMENT_TYPE_CREATED', 'DOCUMENT_TYPE_UPDATED', 'DOCUMENT_TYPE_DELETED')
+                  )
                   ->execute();
 
         // Delete any associations those events have to users

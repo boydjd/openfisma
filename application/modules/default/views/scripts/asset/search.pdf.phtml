@@ -59,7 +59,7 @@ $pdf->ezSetMargins($top_margin, $bottom_margin, $left_margin, $right_margin);
 $all = $pdf->openObject();
 $pdf->saveState();
 
-$pdf->addTextWrap($left_margin,$content_height+110,$content_width,8,'Report run time:'.Zend_Date::now()->toString('Y-m-d H:i:s'),'right');
+$pdf->addTextWrap($left_margin, $content_height+110, $content_width, 8, 'Report run time:' . Fisma::now(), 'right');
 $pdf->line($left_margin,$content_height+105,$left_margin+$content_width,$content_height+105);
 
 $footer=REPORT_FOOTER_WARNING;

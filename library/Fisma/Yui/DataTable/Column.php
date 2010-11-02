@@ -52,6 +52,13 @@ class Fisma_Yui_DataTable_Column
     private $_formatter;
 
     /**
+     * A parser for this column
+     * 
+     * @var string
+     */
+    private $_parser;
+
+    /**
      * A javascript-friendly name for this column. If not specified, this is automatically derived from the _label.
      * 
      * @var string
@@ -73,13 +80,15 @@ class Fisma_Yui_DataTable_Column
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      * @param bool $hidden Whether column should be hidden
+     * @param string $parser The parser used when sorting this column. May be set to string or number.
      */
-    public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false)
+    public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false, $parser = 'string')
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
         $this->_formatter = $formatter;
         $this->_hidden = $hidden;
+        $this->_parser = $parser;
         
         if (is_null($name)) {
             $this->_name = Fisma_String::convertToJavascriptName($label);
@@ -114,6 +123,16 @@ class Fisma_Yui_DataTable_Column
     public function getFormatter()
     {
         return $this->_formatter;
+    }
+
+    /**
+     * Accessor for $_parser
+     * 
+     * @return string
+     */
+    public function getParser()
+    {
+        return $this->_parser;
     }
 
     /**

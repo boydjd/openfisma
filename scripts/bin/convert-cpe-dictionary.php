@@ -66,7 +66,7 @@ class ConvertCpeDictionary
         // Write YAML file header
         fwrite(STDOUT, "Product:\n");
         fwrite(STDOUT, "    # Parsed from XML CPE Dictionary: ". basename($cpePath) . "\n");
-        fwrite(STDOUT, "    # Date: ". date('Y-m-d h:i:s') . "\n");        
+        fwrite(STDOUT, "    # Date: ". Fisma::now() . "\n");        
         fwrite(STDOUT, "    # CPE Version: ". $xml->generator->schema_version . "\n"); 
         fwrite(STDOUT, "    # Parsed by: ". $_SERVER['PHP_SELF'] . "\n"); 
         fwrite(STDOUT, "\n");

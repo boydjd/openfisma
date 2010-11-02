@@ -4,8 +4,8 @@ Xref:
             type: string(255)
             comment: External reference provided by Nessus
     relations:
-        Findings:
-            class: Finding
+        Vulnerabilities:
+            class: Vulnerability
             local: xref_id
-            foreign: finding_id
-            refClass: FindingXref
+            foreign: vulnerability_id
+            refClass: VulnerabilityXref

@@ -37,7 +37,7 @@ class Fisma_Zend_Form_Manager_Finding extends Fisma_Zend_Form_Manager_Abstract
         $threatLevelOptions = $form->getElement('threatLevel')->getMultiOptions();
         $form->getElement('threatLevel')->setMultiOptions(array_merge(array('' => null), $threatLevelOptions));
 
-        $form->getElement('discoveredDate')->setValue(date('Y-m-d'));
+        $form->getElement('discoveredDate')->setValue(Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE));
         
         $sources = Doctrine::getTable('Source')->findAll()->toArray();
         $form->getElement('sourceId')->addMultiOptions(array('' => '--select--'));
@@ -49,28 +49,12 @@ class Fisma_Zend_Form_Manager_Finding extends Fisma_Zend_Form_Manager_Abstract
         $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
-        // fix: Zend_Form can not support the values which are not in its configuration
-        //      The values are set after page loading by Ajax
-        $asset = Doctrine::getTable('Asset')->find($this->_request->getParam('assetId'));
-        if ($asset) {
-            $form->getElement('assetId')->addMultiOptions(array($asset['id'] => $asset['name']));
-        }
-        
         $form->setDisplayGroupDecorators(
             array(
                 new Zend_Form_Decorator_FormElements(),
                 new Fisma_Zend_Form_Decorator_Finding_Create()
             )
         );
-        
-        // Check if the user is allowed to read assets.
-        if (!$this->_acl->hasPrivilegeForClass('read', 'Asset')) {
-            $form->removeElement('name');
-            $form->removeElement('ip');
-            $form->removeElement('port');
-            $form->removeElement('searchAsset');
-            $form->removeElement('assetId');
-        }
         
         $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Finding_Create()));
         $dateElement = $form->getElement('discoveredDate');

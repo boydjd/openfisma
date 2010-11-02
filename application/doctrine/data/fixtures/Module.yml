@@ -9,6 +9,11 @@ Module:
         canBeDisabled: YES
         enabled: YES
 
+    vulnerabilityManagementModule:
+        name: Vulnerability Management
+        canBeDisabled: YES
+        enabled: YES
+
     systemInventoryModule:
         name: System Inventory
         canBeDisabled: NO
