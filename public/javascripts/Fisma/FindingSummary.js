@@ -488,7 +488,7 @@ Fisma.FindingSummary = function() {
 
             // Include any status
             var statusString = '';
-            if (status != '') {
+            if (status != '' && status !='TOTAL') {
                 statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
             }
 
