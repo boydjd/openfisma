@@ -145,12 +145,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $columns[] = 'EN';
 
         foreach ($evidenceEvaluations as $evaluation) {
-            $columns[] = $evaluation->nickname;            
+            $columns[] = $evaluation->nickname;
         }
         
         $columns[] = 'CLOSED';
         $columns[] = 'TOTAL';
-        
+
         $this->view->statusArray = $columns;
         $this->view->mitigationEvaluations = $mitigationEvaluations;
         $this->view->evidenceEvaluations = $evidenceEvaluations;

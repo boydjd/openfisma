@@ -130,9 +130,14 @@ Fisma.Search.Panel.prototype = {
                     operands.push(this.defaultQueryTokens[index]);
                     index ++; 
                 }
+                
+                // URI Decode the operands
+                console.log(operands);
+                var unescapedOperands = operands.map(decodeURIComponent);
+                console.log(unescapedOperands);
 
                 // Render the element and then set its default values
-                var criterionElement = criterion.render(field, operator, operands);
+                var criterionElement = criterion.render(field, operator, unescapedOperands);
                 
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
