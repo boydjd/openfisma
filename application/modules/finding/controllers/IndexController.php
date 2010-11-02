@@ -456,13 +456,13 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Forward to the remediation searchbox action. 
+     * Forward to the remediation list action. 
      * 
      * @access public
      * @return void
      */
     public function listAction()
     {
-        $this->_forward('searchbox', 'remediation');
+        $this->_forward('list', 'remediation');
     }
 }

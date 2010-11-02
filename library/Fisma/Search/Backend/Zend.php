@@ -387,8 +387,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        $doctrineQuery->limit($rows)
-                      ->offset($start);
+        if ($rows && $start) {
+            $doctrineQuery->limit($rows)
+                          ->offset($start);
+        }
 
         // Get result and convert to Fisma_Search_Result
         $doctrineResult = $doctrineQuery->execute();
@@ -686,8 +688,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        $doctrineQuery->limit($rows)
-                      ->offset($start);
+        if ($rows && $start) {
+            $doctrineQuery->limit($rows)
+                          ->offset($start);
+        }
 
         // Get result and convert to Fisma_Search_Result
         $doctrineResult = $doctrineQuery->execute();

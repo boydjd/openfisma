@@ -634,9 +634,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $sortDirection = $this->getRequest()->getParam('dir', 'asc');
         $sortBoolean = ('asc' == $sortDirection);
-        $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
-        $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
         $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
+        
+        // For HTML UI, add a limit/offset to query
+        if (empty($format)) {
+            $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
+            $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
+        } else {
+            $start = null;
+            $rows = null;
+        }
 
         // Execute simple search (default) or advanced search (if explicitly requested)
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();

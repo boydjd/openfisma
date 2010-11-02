@@ -120,8 +120,19 @@
             
             var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
                     + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
-                    
-            document.location = url;
+
+            // A shift+click pops up a new window for the record view
+            if (clickEvent.event.shiftKey) {
+                var popup = window.open(url);
+                
+                // A shift+alt+click will pop under a new window for the record view
+                if (clickEvent.event.altKey) {
+                    popup.blur();
+                    window.focus();
+                }
+            } else {
+                document.location = url;
+            }                    
         });
         
         <?php if (isset($this->renderEventFunction)): ?>
