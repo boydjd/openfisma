@@ -170,7 +170,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setDataUrl($dataUrl)
     {
         $this->_dataUrl = $dataUrl;
-        
+
         return $this;
     }
 
@@ -184,7 +184,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setDeferData($deferData)
     {
         $this->_deferData = $deferData;
-        
+
         return $this;
     }
 

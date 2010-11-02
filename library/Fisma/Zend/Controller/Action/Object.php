@@ -575,7 +575,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchMoreOptionsForm = $searchMoreOptionsForm;
 
         // If there is an advanced parameter, switch the form default from simple to advanced.
-        if ($this->getRequest()->getParam('advanced')) {
+        if ('advanced' == $this->getRequest()->getParam('queryType')) {
             $searchForm->getElement('searchType')->setValue('advanced');
             $searchForm->getElement('keywords')->setAttrib('style', 'visibility: hidden;');
 
