@@ -24,6 +24,8 @@
  * 
  */
 Fisma.ControlTree = function (treeElem, dataUrl) {
+    this.treeElem = treeElem;
+
     var ctObj = this;
     YAHOO.util.Connect.asyncRequest(
         'GET', 
@@ -32,21 +34,27 @@ Fisma.ControlTree = function (treeElem, dataUrl) {
             success: function(o) {
                 var json = YAHOO.lang.JSON.parse(o.responseText);
                 ctObj.showTree(json.treeData);
+                ctObj.updateContextMenus();
             },
             failure: function(o) {
                 alert('Unable to load the organization tree: ' + o.statusText);
             }
         }, 
         null);
-
-    this.treeElem = treeElem;
 }
 
 Fisma.ControlTree.prototype = {
+    treeView: null,
+    treeElem: null,
+    controlContextMenu: null,
+    controlContextMenuTriggers: null,
+    enhancementContextMenu: null,
+    enhancementContextMenuTriggers: null,
+    
     showTree: function(treeNodes) {
-        this.tree = new YAHOO.widget.TreeView(this.treeElem);
-        this.renderTreeNodes(treeNodes, this.tree.getRoot());
-        this.tree.draw();
+        this.treeView = new YAHOO.widget.TreeView(this.treeElem);
+        this.renderTreeNodes(treeNodes, this.treeView.getRoot());
+        this.treeView.draw();
     },
 
     renderTreeNodes: function(treeNodes, parentNode) {
@@ -56,25 +64,82 @@ Fisma.ControlTree.prototype = {
     },
 
     renderFamily: function(family, controls, parent) {
-        var familyNode = new YAHOO.widget.TextNode(family, parent, false);
+        var familyNode = new YAHOO.widget.TextNode(
+            { label: family, renderHidden: true },
+            parent,
+            false
+        );
         for (var i in controls) {
-            var control = controls[i];
-            this.renderControl(control, familyNode);
+            this.renderControl(controls[i], familyNode);
         }
     },
 
     renderControl: function(control, parent) {
-        var nodeText = "<b>" + PHP_JS().htmlspecialchars(control.code) + "</b> - <i>"
-                             + PHP_JS().htmlspecialchars(control.name) + "</i>";
-        var controlNode = new YAHOO.widget.TextNode(nodeText, parent, false);
+        var label = "<b>" + PHP_JS().htmlspecialchars(control.code) + "</b> - <i>"
+                          + PHP_JS().htmlspecialchars(control.name) + "</i>";
+        var props = {
+            label: label,
+            renderHidden: true,
+            securityControlId: control.id
+        };
+
+        var controlNode = new YAHOO.widget.TextNode(props, parent, false);
+        if (this.controlContextMenuTriggers == null) {
+            this.controlContextMenuTriggers = [];
+        }
+        this.controlContextMenuTriggers.push(controlNode.labelElId);
+
         for (var i in control.enhancements) {
-            var enhancement = control.enhancements[i];
-            this.renderEnhancement(enhancement, controlNode);
+            this.renderEnhancement(control.enhancements[i], controlNode);
         }
 
     },
 
     renderEnhancement: function(enhancement, parent) {
-        var enhancementNode = new YAHOO.widget.TextNode(enhancement, parent, false);
+        var enhancementNode = new YAHOO.widget.TextNode(
+            { label: enhancement, renderHidden: true },
+            parent,
+            false
+        );
+        if (this.enhancementContextMenuTriggers == null) {
+            this.enhancementContextMenuTriggers = [];
+        }
+        this.enhancementContextMenuTriggers.push(enhancementNode.labelElId);
+    },
+
+    updateContextMenus: function() {
+        if (this.controlContextMenu == null) {
+            var controlContextMenuItems = [
+                "Remove Control",
+                "Add Enhancements",
+                "Edit Common Control"
+            ];
+            this.controlContextMenu = new YAHOO.widget.ContextMenu( 
+                "controlContextMenu", 
+                { 
+                    trigger:  this.controlContextMenuTriggers, 
+                    lazyload: true,
+                    itemData: controlContextMenuItems
+                }
+            );
+        } else {
+            this.controlContextMenu.cfg.setProperty("trigger", this.controlContextMenuTriggers);
+        }
+
+        if (this.enhancementContextMenu == null) {
+            var enhancementContextMenuItems = [
+                "Remove Enhancement"
+            ];
+            this.enhancementContextMenu = new YAHOO.widget.ContextMenu( 
+                "enhancementContextMenu", 
+                { 
+                    trigger:  this.enhancementContextMenuTriggers, 
+                    lazyload: true,
+                    itemData: enhancementContextMenuItems
+                }
+            );
+        } else {
+            this.enhancementContextMenu.cfg.setProperty("trigger", this.enhancementContextMenuTriggers);
+        }
     }
 };
