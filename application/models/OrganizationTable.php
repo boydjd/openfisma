@@ -137,7 +137,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         $idQuery = Doctrine_Query::create()
                    ->select('id')
                    ->from('Organization')
-                   ->where('lft > ? AND rgt < ?', array($organization->lft, $organization->rgt))
+                   ->where('lft >= ? AND rgt <= ?', array($organization->lft, $organization->rgt))
                    ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $idResult = $idQuery->execute();
