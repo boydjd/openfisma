@@ -135,14 +135,22 @@ Fisma.Search = function() {
             }
 
             // Construct a query URL based on whether this is a simple or advanced search
-            var query = this.getQuery(form);
-            var postData = this.convertQueryToPostData(query);
+            try {
+                var query = this.getQuery(form);
 
-            dataTable.showTableMessage("Loading...");
-            
-            var dataSource = dataTable.getDataSource();
-            dataSource.connMethodPost = true;
-            dataSource.sendRequest(postData, onDataTableRefresh);
+                var postData = this.convertQueryToPostData(query);
+
+                dataTable.showTableMessage("Loading...");
+
+                var dataSource = dataTable.getDataSource();
+                dataSource.connMethodPost = true;
+                dataSource.sendRequest(postData, onDataTableRefresh);
+            } catch (error) {
+                // If a string is thrown, then display that string to the user
+                if ('string' == typeof error) {
+                    alert(error);
+                }
+            }
         },
 
         /**

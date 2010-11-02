@@ -364,12 +364,21 @@ Fisma.Search.Criteria.prototype = {
         var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
         var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
 
-        var query = queryGenerator(this.queryInputContainer);
+        var operands = queryGenerator(this.queryInputContainer);
+        
+        // Make sure all operands are not blank
+        for (var i in operands) {
+            var operand = operands[i];
+            
+            if ('' == $P.trim(operand)) {
+                throw "Blank search criteria are not allowed in advanced search mode.";
+            }
+        }
 
         var response = {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : query
+            operands : operands
         }
 
         return response;

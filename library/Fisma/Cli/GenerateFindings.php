@@ -175,6 +175,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             foreach ($findings as $finding) {
                 $f = new Finding();
                 $f->merge($finding);
+                $f->CreatedBy = $rootUser;
                 $f->save();
                 
                 if ($f->status == 'MSA') {
