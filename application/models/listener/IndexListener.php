@@ -46,9 +46,19 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             throw new Fisma_Search_Exception($message);
         }
 
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $modelName = get_class($record);
+        $relationAliases = array();
 
-        $searchEngine->indexObject(get_class($record), $record->toArray());
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $indexer = new Fisma_Search_Indexer($searchEngine);
+        $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
+        
+        // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+        $baseClassAlias = $relationAliases[$modelName];
+        $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
+
+        $indexer->indexRecordsFromQuery($indexQuery, $modelName);
+
         $searchEngine->commit();
     }
 
@@ -94,10 +104,19 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         // If an indexed field changed, then update the index for this object
         if ($needsIndex) {
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+            $modelName = get_class($record);
+            $relationAliases = array();
 
-            $searchEngine->indexObject(get_class($record), $record->toArray());
-            
+            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+            $indexer = new Fisma_Search_Indexer($searchEngine);
+            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
+
+            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+            $baseClassAlias = $relationAliases[$modelName];
+            $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
+
+            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
+
             $searchEngine->commit();
         }
 

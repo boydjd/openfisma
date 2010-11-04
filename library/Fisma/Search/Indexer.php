@@ -130,7 +130,7 @@ class Fisma_Search_Indexer
      */
     public function indexRecordsFromQuery(Doctrine_Query $query,
                                           $modelName,
-                                          $chunkSize, 
+                                          $chunkSize = 1, 
                                           $progressCallback = null)
     {
         $currentRecord = 0;
