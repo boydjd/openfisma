@@ -142,6 +142,7 @@ Fisma.ControlTree.prototype = {
                     itemData: enhancementContextMenuItems
                 }
             );
+            this.enhancementContextMenu.subscribe("click", this.onContextMenuClick, this); 
         } else {
             this.enhancementContextMenu.cfg.setProperty("trigger", this.enhancementContextMenuTriggers);
         }
@@ -156,6 +157,9 @@ Fisma.ControlTree.prototype = {
             case "removeControl":
                 controlTree.removeControl(targetNode);
                 break;
+            case "removeEnhancement":
+                controlTree.removeEnhancement(targetNode);
+                break;
             default:
                 alert("Action not yet implemented.");
         }
@@ -166,6 +170,28 @@ Fisma.ControlTree.prototype = {
             actionUrl = this.actionUrls.removeControl,
             post = "securityControlId=" + securityControlId,
             parentNode = node.parent,
+            ctObj = this;
+        var callbacks = {
+            success: function(o) {
+                var json = YAHOO.lang.JSON.parse(o.responseText);
+                if (json.result == 'ok') {
+                    ctObj.treeView.removeNode(node, true);
+                    ctObj.updateContextMenus();
+                } else {
+                    alert(json.result);
+                }
+            },
+            failure: function(o) {
+                alert('Unable to remove the control tree: ' + o.statusText);
+            }
+        };
+        YAHOO.util.Connect.asyncRequest( 'POST', actionUrl, callbacks, post);
+    },
+
+    removeEnhancement: function (node) {
+        var securityControlEnhancementId = node.data.securityControlEnhancementId,
+            actionUrl = this.actionUrls.removeEnhancement,
+            post = "securityControlEnhancementId=" + securityControlEnhancementId,
             ctObj = this;
         var callbacks = {
             success: function(o) {

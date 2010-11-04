@@ -47,6 +47,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->contextSwitch()
                       ->addActionContext('control-tree-data', 'json')
                       ->addActionContext('remove-control', 'json')
+                      ->addActionContext('remove-enhancement', 'json')
                       ->initContext();
         $this->_helper->ajaxContext()
                       ->addActionContext('add-control', 'html')
@@ -208,6 +209,29 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 $saSce->delete();
             }
             $saSc->delete();
+        }
+        $this->view->result = 'ok';
+    }
+
+    /**
+     * @return void
+     */
+    public function removeEnhancementAction()
+    {
+        $id = $this->_request->getParam('id');
+        $enhancementId = $this->_request->getParam('securityControlEnhancementId');
+        $this->view->securityAuthorizationId = $id;
+        $this->view->controlEnhancementId = $enhancementId;
+
+        $saSceCollection = Doctrine_Query::create()
+            ->from('SaSecurityControlEnhancement saSce')
+            ->where('saSce.securityAuthorizationId = ?', $id)
+            ->andWhere('saSce.securityControlEnhancementId = ?', $enhancementId)
+            ->execute();
+        $this->view->saSce = $saSceCollection->toArray(true);
+
+        foreach ($saSceCollection as $saSce) {
+            $saSce->delete();
         }
         $this->view->result = 'ok';
     }
