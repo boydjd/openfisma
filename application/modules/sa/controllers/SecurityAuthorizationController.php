@@ -46,6 +46,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         parent::init();
         $this->_helper->contextSwitch()
                       ->addActionContext('control-tree-data', 'json')
+                      ->addActionContext('remove-control', 'json')
                       ->initContext();
         $this->_helper->ajaxContext()
                       ->addActionContext('add-control', 'html')
@@ -187,6 +188,33 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     /**
      * @return void
      */
+    public function removeControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        $controlId = $this->_request->getParam('securityControlId');
+        $this->view->securityAuthorizationId = $id;
+        $this->view->controlId = $controlId;
+
+        $saScCollection = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->leftJoin('saSc.SaSecurityControlEnhancement saSce')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $controlId)
+            ->execute();
+        $this->view->saSc = $saScCollection->toArray(true);
+
+        foreach ($saScCollection as $saSc) {
+            foreach ($saSc->SaSecurityControlEnhancement as $saSce) {
+                $saSce->delete();
+            }
+            $saSc->delete();
+        }
+        $this->view->result = 'ok';
+    }
+
+    /**
+     * @return void
+     */
     public function controlTreeDataAction() 
     {
         $id = $this->_request->getParam('id');
@@ -204,9 +232,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             $enhancements = array();
             $control = $saControl->SecurityControl;
             foreach ($saControl->SecurityControlEnhancements as $enhancement) {
-                $enhancements[] = $enhancement->description;
+                $enhancements[] = array(
+                    'id' => $enhancement->id,
+                    'description' => $enhancement->description
+                );
             }
             $data[$control->family][] = array(
+                'id' => $control->id,
                 'code' => $control->code,
                 'name' => $control->name,
                 'enhancements' => $enhancements

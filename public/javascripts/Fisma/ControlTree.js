@@ -23,13 +23,14 @@
  * Constructor
  * 
  */
-Fisma.ControlTree = function (treeElem, dataUrl) {
+Fisma.ControlTree = function (treeElem, actionUrls) {
     this.treeElem = treeElem;
+    this.actionUrls = actionUrls;
 
     var ctObj = this;
     YAHOO.util.Connect.asyncRequest(
         'GET', 
-        dataUrl, 
+        this.actionUrls.controlTreeData, 
         {
             success: function(o) {
                 var json = YAHOO.lang.JSON.parse(o.responseText);
@@ -50,6 +51,7 @@ Fisma.ControlTree.prototype = {
     controlContextMenuTriggers: null,
     enhancementContextMenu: null,
     enhancementContextMenuTriggers: null,
+    actionUrls: null,
     
     showTree: function(treeNodes) {
         this.treeView = new YAHOO.widget.TreeView(this.treeElem);
@@ -96,11 +98,12 @@ Fisma.ControlTree.prototype = {
     },
 
     renderEnhancement: function(enhancement, parent) {
-        var enhancementNode = new YAHOO.widget.TextNode(
-            { label: enhancement, renderHidden: true },
-            parent,
-            false
-        );
+        var props = {
+            label: enhancement.description,
+            renderHidden: true,
+            securityControlEnhancementId: enhancement.id
+        };
+        var enhancementNode = new YAHOO.widget.TextNode( props, parent, false);
         if (this.enhancementContextMenuTriggers == null) {
             this.enhancementContextMenuTriggers = [];
         }
@@ -110,9 +113,9 @@ Fisma.ControlTree.prototype = {
     updateContextMenus: function() {
         if (this.controlContextMenu == null) {
             var controlContextMenuItems = [
-                "Remove Control",
-                "Add Enhancements",
-                "Edit Common Control"
+                { text: "Remove Control", value: "removeControl" },
+                { text: "Add Enhancements", value: "addEnhancements" },
+                { text: "Edit Common Control", value: "editCommonControl" }
             ];
             this.controlContextMenu = new YAHOO.widget.ContextMenu( 
                 "controlContextMenu", 
@@ -122,13 +125,14 @@ Fisma.ControlTree.prototype = {
                     itemData: controlContextMenuItems
                 }
             );
+            this.controlContextMenu.subscribe("click", this.onContextMenuClick, this); 
         } else {
             this.controlContextMenu.cfg.setProperty("trigger", this.controlContextMenuTriggers);
         }
 
         if (this.enhancementContextMenu == null) {
             var enhancementContextMenuItems = [
-                "Remove Enhancement"
+                { text: "Remove Enhancement", value: "removeEnhancement" }
             ];
             this.enhancementContextMenu = new YAHOO.widget.ContextMenu( 
                 "enhancementContextMenu", 
@@ -141,5 +145,42 @@ Fisma.ControlTree.prototype = {
         } else {
             this.enhancementContextMenu.cfg.setProperty("trigger", this.enhancementContextMenuTriggers);
         }
+    },
+
+    onContextMenuClick: function (p_sType, p_aArgs, p_oValue) {
+        var controlTree = p_oValue,
+            targetNode = controlTree.treeView.getNodeByElement(this.contextEventTarget),
+            menuItem = p_aArgs[1];
+
+        switch (menuItem.value) {
+            case "removeControl":
+                controlTree.removeControl(targetNode);
+                break;
+            default:
+                alert("Action not yet implemented.");
+        }
+    },
+
+    removeControl: function (node) {
+        var securityControlId = node.data.securityControlId,
+            actionUrl = this.actionUrls.removeControl,
+            post = "securityControlId=" + securityControlId,
+            parentNode = node.parent,
+            ctObj = this;
+        var callbacks = {
+            success: function(o) {
+                var json = YAHOO.lang.JSON.parse(o.responseText);
+                if (json.result == 'ok') {
+                    ctObj.treeView.removeNode(node, true);
+                    ctObj.updateContextMenus();
+                } else {
+                    alert(json.result);
+                }
+            },
+            failure: function(o) {
+                alert('Unable to remove the control tree: ' + o.statusText);
+            }
+        };
+        YAHOO.util.Connect.asyncRequest( 'POST', actionUrl, callbacks, post);
     }
 };

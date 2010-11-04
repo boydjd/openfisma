@@ -26,10 +26,16 @@ echo $this->escape($addControl, 'none');
 <div id="controlTree"></div>
 
 <script type="text/javascript">
+var controlTree = null;
 YAHOO.util.Event.onDOMReady(function () {
-    var controlTree = new Fisma.ControlTree(
+    var base = '/sa/security-authorization/',
+        params = '/id/<?php echo $this->escape($this->id); ?>/format/json';
+    controlTree = new Fisma.ControlTree(
         'controlTree',
-        '/sa/security-authorization/control-tree-data/id/<?php echo $this->escape($this->id); ?>/format/json'
+        {
+            controlTreeData: base + 'control-tree-data' + params,
+            removeControl: base + 'remove-control' + params
+        }
     );
 });
 // Expand all tree nodes
@@ -44,7 +50,8 @@ function collapseAll() {
 
 // show Add Control dialog
 function addControl() {
-    var panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true });
+    var panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
+        url = "/sa/security-authorization/add-control/id/<?php echo $this->escape($this->id); ?>/format/html";
     var callbacks = {
             success: function(o) {
                 var panel = o.argument;
@@ -58,8 +65,7 @@ function addControl() {
             },
             argument: panel
         };
-    YAHOO.util.Connect.asyncRequest( 'GET', "/sa/security-authorization/add-control/id/<?php echo $this->escape($this->id); ?>/format/html", callbacks, null);
-
+    YAHOO.util.Connect.asyncRequest( 'GET', url, callbacks, null);
 }
 </script>
 
