@@ -376,6 +376,10 @@ div.queuedIncidentStep div.incidentCardinality {
     border: 2px solid gray;
     border-bottom: none;    
     color: gray;
+}
+
+tr.incidentStep {
+    border-top: 1px dotted silver;
 }/**
  * The module screen is used to enable/disable individual components in OpenFISMA
  */

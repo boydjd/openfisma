@@ -1449,7 +1449,6 @@ YAHOO.fisma.CheckboxTree.handleClick = function(clickedBox, event)
 function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
-        removeHighlight(document);
         var t_name = this.getAttribute('target');
         YAHOO.util.Dom.removeClass(this, 'editable'); 
         this.removeAttribute('target');
@@ -1477,7 +1476,7 @@ function setupEditFields() {
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
                      calendarIcon = document.createElement('img');
                      calendarIcon.id = t_name + "_show";
-                     calendarIcon.src = "/images/calendar.gif";
+                     calendarIcon.src = "/images/calendar.png";
                      calendarIcon.alt = "Calendar";
                      target.parentNode.appendChild(calendarIcon);
                      YAHOO.util.Event.on(t_name+'_show', "click", function() {
@@ -2725,8 +2724,10 @@ Fisma.Calendar = function () {
             YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
 
             var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
-            calendar.render();
             calendar.hide();
+            
+            // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
+            setTimeout(function () {calendar.render();}, 0);
 
             textEl.onfocus = function () {calendar.show()};
 
@@ -3761,14 +3762,14 @@ Fisma.FindingSummary = function() {
 
             // Include any status
             var statusString = '';
-            if (status != '') {
+            if (status != '' && status !='TOTAL') {
                 statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
             }
 
             // Include any filters
             var filterType = '';
             if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/textExactMatch/' + this.filterType;
+                filterType = '/type/enumIs/' + this.filterType;
             }
 
             var filterSource = '';
@@ -3777,7 +3778,7 @@ Fisma.FindingSummary = function() {
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/advanced'
+            var uri = '/finding/remediation/list/queryType/advanced'
                     + onTimeString
                     + statusString
                     + filterType
@@ -4155,6 +4156,113 @@ Fisma.Incident = {
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
+    },
+    
+    /**
+     * Given the button element inside an incident workflow step, return the <tr> parent element which contains
+     * the entire step.
+     * 
+     * @param element The button element which was clicked
+     */
+    getIncidentStepParentElement : function (element) {
+        var parent = element.parentNode.parentNode.parentNode;
+        
+        // Sanity check: this must be a <tr> element node
+        var elementNode = 1;
+        if (!(elementNode == parent.nodeType && "TR" == parent.tagName)) {
+            throw "Cannot locate the parent element for this incident step.";
+        }
+        
+        return parent;
+    },
+    
+    /**
+     * Given a reference to a <tr> containing an incidnet workflow step, return the step number of that step.
+     * 
+     * @param trElement The table row element which contains the incident step
+     */
+    getIncidentStepNumber : function(trElement) {
+        var tdEl = trElement.firstChild;
+        
+        // Sanity check: this must be a <tr> element node
+        var elementNode = 1;
+        if (!(elementNode == tdEl.nodeType && "TD" == tdEl.tagName)) {
+            throw "Cannot locate the table data (td) element for this incident step.";
+        }
+        
+        // Use regex to pull out the step number from the label
+        var label = tdEl.firstChild.nodeValue;        
+        var numberMatches = label.match(/\d+/);
+        
+        // Sanity check: should match exactly 1 string of digits
+        if (numberMatches.length != 1) {
+            throw "Not able to locate the step number in the incident step label.";
+        }
+        
+        return numberMatches[0];
+    },
+    
+    /**
+     * Renumber all of the incident steps
+     * 
+     * This takes the table element as a parameter, and it rewrites the label for each table row that has the class
+     * "incidentStep".
+     *
+     * @param tableEl
+     */
+    renumberAllIncidentSteps : function(tableEl) {
+        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', tableEl);
+        var stepNumber = 1;
+        
+        for (var i in trEls) {
+            var trEl = trEls[i];
+            
+            trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";
+            stepNumber++;
+        }
+    },
+    
+    /**
+     * Add an incident step above the current incident step (current refers to the one containing the "Add" button
+     * that was clicked.)
+     * 
+     * @param element The button element that was clicked
+     */
+    addIncidentStepAbove : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        var rowElClone = rowEl.cloneNode(true);
+        
+        rowEl.parentNode.insertBefore(rowElClone, rowEl);
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+        
+        return false;
+    },
+    
+    addIncidentStepBelow : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        var rowElClone = rowEl.cloneNode(true);
+        
+        // There is no "insertAfter" method for DOM elements, so this is a little tricky
+        if (rowEl.nextSibling) {
+            rowEl.parentNode.insertBefore(rowElClone, rowEl.nextSibling);
+        } else {
+            rowEl.parentNode.appendChild(rowElClone);
+        }
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+
+        return false;
+    },
+    
+    removeIncidentStep : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        
+        rowEl.parentNode.removeChild(rowEl);
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+        
+        return false; 
     }
 };
 /**
@@ -4715,14 +4823,22 @@ Fisma.Search = function() {
             }
 
             // Construct a query URL based on whether this is a simple or advanced search
-            var query = this.getQuery(form);
-            var postData = this.convertQueryToPostData(query);
+            try {
+                var query = this.getQuery(form);
 
-            dataTable.showTableMessage("Loading...");
-            
-            var dataSource = dataTable.getDataSource();
-            dataSource.connMethodPost = true;
-            dataSource.sendRequest(postData, onDataTableRefresh);
+                var postData = this.convertQueryToPostData(query);
+
+                dataTable.showTableMessage("Loading...");
+
+                var dataSource = dataTable.getDataSource();
+                dataSource.connMethodPost = true;
+                dataSource.sendRequest(postData, onDataTableRefresh);
+            } catch (error) {
+                // If a string is thrown, then display that string to the user
+                if ('string' == typeof error) {
+                    alert(error);
+                }
+            }
         },
 
         /**
@@ -5535,12 +5651,21 @@ Fisma.Search.Criteria.prototype = {
         var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
         var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
 
-        var query = queryGenerator(this.queryInputContainer);
+        var operands = queryGenerator(this.queryInputContainer);
+        
+        // Make sure all operands are not blank
+        for (var i in operands) {
+            var operand = operands[i];
+            
+            if ('' == $P.trim(operand)) {
+                throw "Blank search criteria are not allowed in advanced search mode.";
+            }
+        }
 
         var response = {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : query
+            operands : operands
         }
 
         return response;
@@ -5634,7 +5759,7 @@ Fisma.Search.CriteriaDefinition = function () {
             dateAfter : {label : "After", renderer : 'singleDate', query : 'oneInput'},
             dateBefore : {label : "Before", renderer : 'singleDate', query : 'oneInput'},
             dateBetween : {label : "Between", renderer : 'betweenDate', query : 'twoInputs'},
-            dateDay : {label : "Is", renderer : 'singleDate', isDefault : true},
+            dateDay : {label : "Is", renderer : 'singleDate', query : 'oneInput', isDefault : true},
             dateThisMonth : {label : "This Month", renderer : 'none', query : 'noInputs'},
             dateThisYear : {label : "This Year", renderer : 'none', query : 'noInputs'},
             dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}
@@ -6077,9 +6202,12 @@ Fisma.Search.Panel.prototype = {
                     operands.push(this.defaultQueryTokens[index]);
                     index ++; 
                 }
+                
+                // URI Decode the operands
+                var unescapedOperands = operands.map(decodeURIComponent);
 
                 // Render the element and then set its default values
-                var criterionElement = criterion.render(field, operator, operands);
+                var criterionElement = criterion.render(field, operator, unescapedOperands);
                 
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
