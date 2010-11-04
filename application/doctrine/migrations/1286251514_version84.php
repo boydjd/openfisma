@@ -17,7 +17,7 @@
  */
 
 /**
- * Add denormalized status column and residual risk column to finding model
+ * Add denormalized status column and residual risk column to finding model, rename incident category privileges
  *
  * @codingStandardsIgnoreFile
  *
@@ -26,7 +26,7 @@
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version82 extends Doctrine_Migration_Base
+class Version84 extends Doctrine_Migration_Base
 {
     public function up()
     {
@@ -99,11 +99,28 @@ class Version82 extends Doctrine_Migration_Base
                                   ->where("countermeasuresEffectiveness IS NULL");
 
         $nullCmeasuresRiskQuery->execute();
+        
+        // Rename the ir_category privileges to ir_sub_category (since categories cannot be edited at all, but
+        // subcategories can be edited by privileged users)
+        $renameIrCategoryPrivilgesQuery = Doctrine_Query::create()
+                                          ->update('Privilege')
+                                          ->set('resource', '?', 'ir_sub_category')
+                                          ->where("resource LIKE 'ir_category'");
+        
+        $renameIrCategoryPrivilgesQuery->execute();                                  
     }
 
     public function down()
     {
 		$this->removeColumn('finding', 'denormalizedstatus');
 		$this->removeColumn('finding', 'residualrisk');
+		
+        // Rename the ir_sub_category privileges to ir_category
+        $renameIrCategoryPrivilgesQuery = Doctrine_Query::create()
+                                          ->update('Privilege')
+                                          ->set('resource', '?', 'ir_category')
+                                          ->where("resource LIKE 'ir_sub_category'");
+        
+        $renameIrCategoryPrivilgesQuery->execute();                                  
     }
 }

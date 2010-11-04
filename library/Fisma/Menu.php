@@ -199,7 +199,7 @@ class Fisma_Menu
             if ($acl->hasArea('incident_admin')) {
                 $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
-                if ($acl->hasPrivilegeForClass('read', 'IrCategory')) {
+                if ($acl->hasPrivilegeForClass('read', 'IrSubCategory')) {
                     $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ir-category/list'));
                 }
                 

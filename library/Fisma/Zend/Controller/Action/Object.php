@@ -120,7 +120,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     /**
      * Return a human-readable, singular form of the model name.
      *
-     * In many cases the physical model name is also a suitable human-readable model name, but in outlier cases
+     * In many cases the physical model name is also a suitable human-readable model name, but in other cases
      * subclasses can override this method.
      */
     public function getSingularModelName()
@@ -136,7 +136,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function getPluralModelName()
     {
-        return $this->_modelName . 's';
+        return $this->getSingularModelName() . 's';
     }
 
     /**
@@ -213,7 +213,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * @return integer ID of the object saved.
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
-    protected function saveValue($form, $subject=null)
+    protected function saveValue($form, $subject = null)
     {
         if (is_null($subject)) {
             $subject = new $this->_modelName();
@@ -246,7 +246,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     protected function _viewObject()
     {
-        $id     = $this->_request->getParam('id');
+        $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
 
         if (!$subject) {
@@ -258,7 +258,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         // Load the object's form
-        $form   = $this->getForm();
+        $form = $this->getForm();
         $form->setReadOnly(true);
         $this->setForm($subject, $form);
         $this->view->form = $form;
@@ -267,7 +267,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->subject = $subject;
         $this->view->links = $this->getViewLinks($subject);
 
-        $this->view->modelName = $this->_modelName;
+        $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
@@ -379,7 +379,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
-        $this->view->modelName = $this->_modelName;
+        $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
         $form = $this->setForm($subject, $form);

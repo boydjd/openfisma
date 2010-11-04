@@ -39,29 +39,31 @@
     <div id="advancedSearchCriteria"></div>
 </div>
 
-<script>
-    YAHOO.util.Event.onContentReady (
-        "searchColumns", 
-        function () {
-            var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+<?php if (isset($this->advancedSearchOptions)): ?>
+    <script>
+        YAHOO.util.Event.onContentReady (
+            "searchColumns", 
+            function () {
+                var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
         
-            Fisma.Search.initializeSearchColumnsPanel(
-                document.getElementById('searchColumnsButtons'), 
-                advancedSearchOptions
-            );
-        }
-    );
+                Fisma.Search.initializeSearchColumnsPanel(
+                    document.getElementById('searchColumnsButtons'), 
+                    advancedSearchOptions
+                );
+            }
+        );
 
-    YAHOO.util.Event.onContentReady (
-        "advancedSearch", 
-        function () {
-            var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+        YAHOO.util.Event.onContentReady (
+            "advancedSearch", 
+            function () {
+                var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
-            var searchPanel = new Fisma.Search.Panel(advancedSearchOptions, document.location.pathname);
+                var searchPanel = new Fisma.Search.Panel(advancedSearchOptions, document.location.pathname);
             
-            Fisma.Search.advancedSearchPanel = searchPanel;
+                Fisma.Search.advancedSearchPanel = searchPanel;
 
-            searchPanel.render(document.getElementById('advancedSearchCriteria'));
-        }
-    );
-</script>
+                searchPanel.render(document.getElementById('advancedSearchCriteria'));
+            }
+        );
+    </script>
+<?php endif; ?>
