@@ -133,6 +133,7 @@ class Fisma_Report_Column
     public function getFormatterParameters()
     {
         return $this->_formatterParameters;
+    }
 
     /**
      * Accessor for $_parser
