@@ -163,7 +163,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 $sacontrol->save();
                 foreach ($control->Enhancements as $ce) {
                     $sace = new SaSecurityControlEnhancement();
-                    $sace->securityAuthorizationId = $sa->id;
                     $sace->securityControlEnhancementId = $ce->id;
                     $sace->saSecurityControlId = $sacontrol->id;
                     $sace->save();
@@ -225,7 +224,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         $saSceCollection = Doctrine_Query::create()
             ->from('SaSecurityControlEnhancement saSce')
-            ->where('saSce.securityAuthorizationId = ?', $id)
+            ->innerJoin('saSce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
             ->andWhere('saSce.securityControlEnhancementId = ?', $enhancementId)
             ->execute();
         $this->view->saSce = $saSceCollection->toArray(true);

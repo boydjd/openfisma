@@ -1,5 +1,10 @@
 SaSecurityControlEnhancement:
     columns:
-        securityAuthorizationId: integer
-        securityControlEnhancementId: integer
         saSecurityControlId: integer
+        securityControlEnhancementId: integer
+    relations:
+        SaSecurityControl:
+            local: saSecurityControlId
+            foreign: id
+            foreignAlias: SaSecurityControlEnhancements
+

@@ -17,11 +17,6 @@ SecurityAuthorization:
             local: securityAuthorizationId
             foreign: securityControlId
             refClass: SaSecurityControl
-        SecurityControlEnhancements:
-            class: SecurityControlEnhancement
-            local: securityAuthorizationId
-            foreign: securityControlEnhancementId
-            refClass: SaSecurityControlEnhancement
     actAs:
         Timestampable:
             created:
