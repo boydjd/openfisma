@@ -205,7 +205,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Generator extends Doctrine_Record_
         $artifact->objectId = $instance->id;
 
         // Insert a timestamp into the file name
-        $dateTime = Zend_Date::now()->toString('yyyyMMdd-HHmmss');
+        $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
         $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . $dateTime . '.$2', $file['name'], 2, $count);
 
         // Move the file into its correct location

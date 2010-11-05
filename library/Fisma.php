@@ -603,7 +603,7 @@ class Fisma
      */
     public static function now() 
     {
-        return Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+        return Zend_Date::now()->toString(Fisma_Date::FORMAT_DATETIME);
     }
     
     /**

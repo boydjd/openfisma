@@ -75,7 +75,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $dismiss = $this->_request->getParam('dismiss');
         if (isset($dismiss) && 'notifications' == $dismiss) {
             $user->Notifications->delete();
-            $user->mostRecentNotifyTs = Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+            $user->mostRecentNotifyTs = Fisma::now();
             $user->save();
         }
 
@@ -158,7 +158,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         
         if (isset($lastLoginInfo->lastLoginTs)) {
             $lastLoginDate = new Zend_Date($lastLoginInfo->lastLoginTs, Zend_Date::ISO_8601);
-            $this->view->lastLoginTs = $lastLoginDate->toString('EEEE, MMM d, h:mm a');
+            $this->view->lastLoginTs = $lastLoginDate->toString(Fisma_Date::FORMAT_WEEKDAY_MONTH_NAME_SHORT_DAY_TIME);
             $this->view->lastLoginIp = $lastLoginInfo->lastLoginIp;
             $this->view->failureCount = $lastLoginInfo->failureCount;
         } else {

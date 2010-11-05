@@ -543,7 +543,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (isset($findingData['currentEcd'])) {
             if (Zend_Validate::is($findingData['currentEcd'], 'Date')) {
                 $date = new Zend_Date();
-                $ecd  = new Zend_Date($findingData['currentEcd'], 'yyyy-MM-dd');
+                $ecd  = new Zend_Date($findingData['currentEcd'], Fisma_Date::FORMAT_DATE);
 
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
@@ -690,7 +690,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
                 mkdir(EVIDENCE_PATH .'/'. $id, 0755);
             }
-            $nowStr = Zend_Date::now()->toString('yyyy-MM-dd-HHmmss');
+            $nowStr = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
@@ -738,9 +738,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->layout->disableLayout(true);
             $this->_helper->viewRenderer->setNoRender();
             ob_end_clean();
-            $expiredDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
-            $expiredDateTime->setTimezone('GMT');
-            header('Expires: ' . $expiredDateTime->toString('EEE, dd MMM yyyy HH:mm:ss') . ' GMT');
+            $expireDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
+            $expireDateTime->setTimezone('GMT');
+            header(
+                'Expires: '
+                . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
+                . ' GMT'
+            );
             header('Content-type: application/octet-stream');
             header('Content-Disposition: attachment; filename=' . urlencode($fileName));
             header('Content-Length: ' . filesize($filePath . $fileName));

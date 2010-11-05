@@ -94,18 +94,18 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
             
-            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
 
             // Get month number without leading zero
-            $month = $startDate->get('M');
+            $month = $startDate->get(Zend_Date::MONTH_SHORT);
             
             // Get year number
-            $year = $startDate->get('yyyy');
+            $year = $startDate->get(Zend_Date::YEAR);
             
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
 
-            $months['i_' . $columnName] = $startDate->get('MMM');
+            $months['i_' . $columnName] = $startDate->get(Zend_Date::MONTH_NAME_SHORT);
             
             /*
              * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
@@ -201,12 +201,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $startDate->addMonth(1);
             
             // Get month number without leading zero
-            $month = $startDate->get('M');
+            $month = $startDate->get(Zend_Date::MONTH_SHORT);
             
             // Get year number
-            $year = $startDate->get('yyyy');
+            $year = $startDate->get(Zend_Date::YEAR);
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
@@ -257,12 +257,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $startDate->addMonth(1);
             
             // Get month number without leading zero
-            $month = $startDate->get('M');
+            $month = $startDate->get(Zend_Date::MONTH_SHORT);
             
             // Get year number
-            $year = $startDate->get('yyyy');
+            $year = $startDate->get(Zend_Date::YEAR);
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get('MMM'), true));
+            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";

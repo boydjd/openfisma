@@ -353,22 +353,24 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      *
      * @return void
      */
-     protected function validateOnUpdate() 
-     {
-         $modified = $this->getModified();
-         // sdlcPhase can only be changed to 'disposal' if there are no open findings
-         if (isset($modified['sdlcPhase']) && $modified['sdlcPhase'] == 'disposal') {
-             $query = $this->getTable()->createQuery()
-                 ->from('Finding f')
-                 ->leftJoin('f.ResponsibleOrganization ro')
-                 ->leftJoin('ro.System s')
-                 ->where('f.status != ?', 'CLOSED')
-                 ->andWhere('s.id = ?', $this->id);
+    protected function validateOnUpdate() 
+    {
+        $modified = $this->getModified();
+        // sdlcPhase can only be changed to 'disposal' if there are no open findings
+        if (isset($modified['sdlcPhase']) && $modified['sdlcPhase'] == 'disposal') {
+            $query = $this->getTable()->createQuery()
+                     ->from('Finding f')
+                     ->leftJoin('f.ResponsibleOrganization ro')
+                     ->leftJoin('ro.System s')
+                     ->where('f.status != ?', 'CLOSED')
+                     ->andWhere('s.id = ?', $this->id);
                  
-             if ($query->count() > 0) {
-                 $message = 'Systems with open findings cannot be moved into disposal phase.';
-                 $this->getErrorStack()->add('sdlcPhase', $message);
-             }
-         }
-     }
+            if ($query->count() > 0) {
+                $this->getErrorStack()->add(
+                    'sdlcPhase', 
+                    'Systems with open findings cannot be moved into disposal phase.'
+                );
+            }
+        }
+    }
 }

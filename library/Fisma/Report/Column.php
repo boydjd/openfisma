@@ -57,6 +57,13 @@ class Fisma_Report_Column
     private $_formatterParameters;
 
     /**
+     * A parser for this column
+     * 
+     * @var string
+     */
+    private $_parser;
+
+    /**
      * Whether this column is hidden or not
      *
      * @var bool
@@ -69,15 +76,23 @@ class Fisma_Report_Column
      * @param string $name Name of column
      * @param string $sortable Whether column should be sortable (only applies in some reporting contexts)
      * @param string $formatter Name of a Javascript/YUI formatter function
+     * @param mixed $formatterParams A scalar or array of parameters passed to the formatter
      * @param string $hidden Whether column should be hidden
+     * @param string $parser The name of a parser to use (mainly applicable to YUI)
      */
-    public function __construct($name, $sortable = false, $formatter = null, $formatterParams = null, $hidden = false)
+    public function __construct($name, 
+                                $sortable = false, 
+                                $formatter = null, 
+                                $formatterParams = null, 
+                                $hidden = false, 
+                                $parser = 'string')
     {
         $this->_name = $name;
         $this->_isSortable = $sortable;
         $this->_formatter = $formatter;
         $this->_formatterParameters = $formatterParams;
         $this->_isHidden = $hidden;
+        $this->_parser = $parser;
     }
 
     /**
@@ -118,6 +133,15 @@ class Fisma_Report_Column
     public function getFormatterParameters()
     {
         return $this->_formatterParameters;
+
+    /**
+     * Accessor for $_parser
+     * 
+     * @return string
+     */
+    public function getParser()
+    {
+        return $this->_parser;
     }
 
     /**

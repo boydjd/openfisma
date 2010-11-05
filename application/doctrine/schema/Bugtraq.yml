@@ -4,8 +4,8 @@ Bugtraq:
             type: integer(4)
             unsigned: true
     relations:
-        Findings:
-            class: Finding
+        Vulnerabilities:
+            class: Vulnerability
             local: bugtraq_id
-            foreign: finding_id
-            refClass: FindingBugtraq
+            foreign: vulnerability_id
+            refClass: VulnerabilityBugtraq

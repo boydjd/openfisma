@@ -93,12 +93,11 @@ class Fisma_Zend_Acl extends Zend_Acl
 
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency) {
-                $organizationId = $object->getOrganizationDependencyId();
-                $resourceName = "$organizationId/$resourceName";
+                $orgId = $object->getOrganizationDependencyId();
+                $hasPrivilege = $this->hasPrivilegeForOrganizationDependency($user, $privilege, $resourceName, $orgId);
+            } else {
+                $hasPrivilege = $this->isAllowed($user, $resourceName, $privilege);
             }
-
-            $hasPrivilege = $this->isAllowed($user, $resourceName, $privilege);
-            
         } else {
 
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them
@@ -115,6 +114,25 @@ class Fisma_Zend_Acl extends Zend_Acl
         return $hasPrivilege;
     }
     
+    /**
+     * Method to test if a user has the given privilege for an object with an organizational dependency
+     *
+     * @param User $user
+     * @param string $privilege
+     * @param string $resourceName
+     * @param string organizationId
+     * @return boolean
+     */
+    public function hasPrivilegeForOrganizationDependency(User $user, $privilege, $resourceName, $organizationId)
+    {
+        if (empty($organizationId)) {
+            $privilege = "unaffiliated";
+        } else {
+            $resourceName = "$organizationId/$resourceName";
+        }
+        return $this->isAllowed($user, $resourceName, $privilege);
+    }
+
     /**
      * Require the current user to have a particular privilege on a particular object, or else throw an exception
      * 

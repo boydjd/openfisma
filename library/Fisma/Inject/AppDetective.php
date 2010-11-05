@@ -74,7 +74,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * @return void
      * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not an App Detective report
      */
-    public function parse($uploadId)
+    protected function _parse($uploadId)
     {
         // Parse the XML file
         $report = simplexml_load_file($this->_file);
@@ -232,7 +232,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 
                 // The finding's asset ID is set during the commit, since the asset may not exist yet.
                 $finding['uploadId'] = $uploadId;
-                $finding['discoveredDate'] = $discoveredDate->toString('yyyy-MM-dd HH:mm:ss');
+                $finding['discoveredDate'] = $discoveredDate->toString(Fisma_Date::FORMAT_DATETIME);
                 $finding['sourceId'] = $this->_findingSourceId;
                 $finding['responsibleOrganizationId'] = $this->_orgSystemId;
                 $finding['recommendation'] = preg_replace(self::REMOVE_PHRASE, '', $reportFinding->fix);

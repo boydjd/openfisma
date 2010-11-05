@@ -700,7 +700,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         
         // Create the appropriate output for the requested format
-
         if (empty($format)) {
             $searchResults['recordsReturned'] = $result->getNumberReturned();
             $searchResults['totalRecords'] = $result->getNumberFound();
@@ -756,6 +755,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             $this->_helper->reportContextSwitch()->setReport($report);
         }
+    }
+
+    /**
+     * Overridable method to execute search query
+     *
+     * @param Doctrine_Query $query The query to be executed
+     * @return Doctrine_Collection Results of the query
+     */
+    public function executeSearchQuery(Doctrine_Query $query)
+    {
+        return $query->execute();
     }
 
     /**

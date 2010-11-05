@@ -2,8 +2,8 @@ Cve:
     columns:
         value: string(255)
     relations:
-        Findings:
-            class: Finding
+        Vulnerabilities:
+            class: Vulnerability
             local: cve_id
-            foreign: finding_id
-            refClass: FindingCve
+            foreign: vulnerability_id
+            refClass: VulnerabilityCve

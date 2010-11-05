@@ -125,7 +125,7 @@ class AuthController extends Zend_Controller_Action
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
                 $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
                 $passWarningPeriod = Fisma::configuration()->getConfig('pass_warning');
-                $passWarningTs = new Zend_Date($user->passwordTs, 'yyyy-MM-dd');
+                $passWarningTs = new Zend_Date($user->passwordTs, Fisma_Date::FORMAT_DATE);
                 $passWarningTs->add($passExpirePeriod - $passWarningPeriod, Zend_Date::DAY);
                 $now = Zend_Date::now();
                 if ($now->isLater($passWarningTs)) {

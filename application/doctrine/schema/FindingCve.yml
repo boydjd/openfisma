@@ -1,8 +1,0 @@
-FindingCve:
-    columns:
-        finding_id:
-            type: integer
-            primary: true
-        cve_id:
-            type: integer
-            primary: true

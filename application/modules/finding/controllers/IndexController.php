@@ -81,23 +81,13 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
                                                         ->setDisplayText($values['securityControlAutocomplete']);
 
         $subject->merge($values);
-
-        // If an asset is specified, then try to link the finding to that asset and assign
-        // the responsible system automatically. Otherwise, link to the responsible system
-        // that the user selected.
-        $asset = isset($values['assetId']) ? Doctrine::getTable('Asset')->find($values['assetId']) : null;
-        if ($asset) {
-            // set organization id by related asset
-            $subject->ResponsibleOrganization = $asset->Organization;
+        
+        $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
+        if ($organization !== false) {
+            $subject->ResponsibleOrganization = $organization;
         } else {
-            $subject->assetId = null;
-            $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
-            if ($organization !== false) {
-                $subject->ResponsibleOrganization = $organization;
-            } else {
-                throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
-                                        . " non-existent organization (id={$values['orgSystemId']}).");
-            }
+            throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
+                                         . " non-existent organization (id={$values['orgSystemId']}).");
         }
                 
         $subject->save();
@@ -165,11 +155,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
                 // get original file name
                 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
                 
-                // get current time and set to a format like '_2009-05-04_11_22_02'
-                $dateTime = Zend_Date::now()->toString('_yyyy-MM-dd_HH_mm_ss');
+                // get current time and set to a format like '20090504_112202'
+                $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
                 
                 // define new file name
-                $newName = str_replace($originalName, $originalName . $dateTime, $file['name']);
+                $newName = str_replace($originalName, $originalName . '_' . $dateTime, $file['name']);
                 
                 // organize upload data
                 $upload = new Upload();
@@ -293,107 +283,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             Zend_Layout::getMvcInstance()->enableLayout();
             $this->view->priorityMessenger($fe->getMessage(), 'warning');
             $this->_forward('injection', 'index', 'finding');
-        }
-    }
-
-    /** 
-     * Import scan results via a plug-in
-     * 
-     * @return void
-     */
-    public function pluginAction()
-    {       
-        $this->_acl->requirePrivilegeForClass('inject', 'Finding');
-
-        // Load the finding plugin form
-        $uploadForm = Fisma_Zend_Form_Manager::loadForm('finding_upload');
-        $uploadForm = Fisma_Zend_Form_Manager::prepareForm($uploadForm);
-        $uploadForm->setAttrib('id', 'injectionForm');
-
-        // Populate the drop menu options
-        $sources = Doctrine::getTable('Source')->findAll()->toArray();
-        $sourceList = array();
-        foreach ($sources as $source) {
-            $sourceList[$source['id']] = html_entity_decode($source['nickname']) 
-                                       . ' - ' 
-                                       . html_entity_decode($source['name']);
-        }
-        $uploadForm->findingSource->addMultiOption('', '');
-        $uploadForm->findingSource->addMultiOptions($sourceList);
-        
-        $systems = $this->_me->getSystemsByPrivilege('finding', 'inject');
-        $selectArray = $this->view->systemSelect($systems, 'nickname');
-        $uploadForm->system->addMultiOptions(array('' => ''));
-        $uploadForm->system->addMultiOptions($selectArray);
-
-        $networks = Doctrine::getTable('Network')->findAll()->toArray();
-        $networkList = array();
-        foreach ($networks as $network) {
-            $networkList[$network['id']] = $network['nickname'] . ' - ' . $network['name'];
-        }
-        $uploadForm->network->addMultiOption('', '');
-        $uploadForm->network->addMultiOptions($networkList);
-        
-        // Configure the file select
-        $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(Fisma::getPath('data') . '/uploads/scanreports');
-
-        // Setup the view
-        $this->view->assign('uploadForm', $uploadForm);
-
-        // Handle the file upload, if necessary
-        $fileReceived = false;
-        $postValues = $this->_request->getPost();
-        if ($postValues) {
-            if ($uploadForm->isValid($postValues) && $fileReceived = $uploadForm->selectFile->receive()) {
-                $filePath = $uploadForm->selectFile->getTransferAdapter()->getFileName('selectFile');
-                $values = $uploadForm->getValues();
-                $values['filepath'] = $filePath;
-                // Execute the plugin with the received file
-                try {
-                    $plugin = Fisma_Inject_Factory::create(NULL, $values);
-
-                    // get original file name
-                    $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
-                    // get current time and set to a format like '_2009-05-04_11_22_02'
-                    $dateTime = Zend_Date::now()->toString('_yyyy-MM-dd_HH_mm_ss');
-                    // define new file name
-                    $newName = str_replace($originalName, $originalName . $dateTime, basename($filePath));
-                    // organize upload data
-                    $upload = new Upload();
-                    $upload->userId = $this->_me->id;
-                    $upload->fileName = $newName;
-                    $upload->save();
-                    
-                    // parse the file
-                    $plugin->parse($upload->id);
-                    // rename the file by ts
-                    rename($filePath, dirname($filePath) . '/' . $newName);
-
-                    $message = "Your scan report was successfully uploaded.<br>"
-                             . "{$plugin->created} findings were created.<br>"
-                             . "{$plugin->reviewed} findings need review.<br>"
-                             . "{$plugin->deleted} findings were suppressed.";
-                    $this->view->priorityMessenger($message, 'notice');
-                    if (($plugin->created + $plugin->reviewed) == 0) {
-                        $upload->delete();
-                    }
-                } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
-                    $this->view->priorityMessenger($e->getMessage(), 'warning');
-                }
-            } else {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
-
-                if (!$fileReceived) {
-                    $errorString .= "File not received<br>";
-                }
-
-                // Error message
-                $this->view->priorityMessenger("Scan upload failed:<br>$errorString", 'warning');
-            }
-            // This is a hack to make the submit button work with YUI:
-            /** @yui */ $uploadForm->upload->setValue('Upload');
-            $this->_redirect('/finding/index/plugin');
         }
     }
 

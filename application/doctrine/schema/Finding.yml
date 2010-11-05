@@ -165,9 +165,6 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: Responsible Organization  
-        assetId:
-            type: integer
-            comment: Foreign key to the asset which this finding is against
         sourceId:
             type: integer
             comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
@@ -201,10 +198,6 @@ Finding:
             class: Finding
             local: duplicateFindingId
             foreign: id
-        Asset:
-            local: assetId
-            foreign: id
-            foreignAlias: Findings
         ResponsibleOrganization:
             class: Organization
             local: responsibleOrganizationId
@@ -236,21 +229,6 @@ Finding:
             local: uploadId
             foreign: id
             foreignAlias: Findings
-        Cves:
-            class: Cve
-            local: finding_id
-            foreign: cve_id
-            refClass: FindingCve
-        Bugtraqs:
-            class: Bugtraq
-            local: finding_id
-            foreign: bugtraq_id
-            refClass: FindingBugtraq
-        Xrefs:
-            class: Xref
-            local: finding_id
-            foreign: xref_id
-            refClass: FindingXref
 
     actAs:
         Timestampable:

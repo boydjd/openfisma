@@ -622,9 +622,6 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
      */
     public function _convertSolrResultToStandardResult($type, SolrObject $solrResult)
     {
-        // @todo set global timestamp options
-        Zend_Date::setOptions(array('format_type' => 'iso'));
-
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
         $highlighting = (array)$solrResult->highlighting;
@@ -671,12 +668,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 $fieldDefinition = $searchableFields[$fieldName];
 
                 if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
-                    $date = new Zend_Date($fieldValue, 'YYYY-MM-ddTHH:mm:ssZ');
+                    $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
 
                     if ('date' == $fieldDefinition['type']) {
-                        $row[$fieldName] = $date->toString('YYYY-MM-dd');
+                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
                     } else {
-                        $row[$fieldName] = $date->toString('YYYY-MM-dd HH:mm:ss');
+                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATETIME);
                     }
                 }
             }
@@ -759,9 +756,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     private function _convertToSolrDate($date)
     {
         // Date fields need to be converted to UTC
-        $tempDate = new Zend_Date($date, 'yyyy-MM-dd HH:mm:ss');
+        $tempDate = new Zend_Date($date, Fisma_Date::FORMAT_DATETIME);
 
-        return $tempDate->toString('yyyy-MM-ddTHH:mm:ss') . 'Z';
+        return $tempDate->toString(Fisma_Date::FORMAT_SOLR_DATETIME) . 'Z';
     }
 
     /**

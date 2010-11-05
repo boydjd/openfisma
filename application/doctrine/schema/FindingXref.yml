@@ -1,8 +1,0 @@
-FindingXref:
-    columns:
-        finding_id:
-            type: integer
-            primary: true
-        xref_id:
-            type: integer
-            primary: true

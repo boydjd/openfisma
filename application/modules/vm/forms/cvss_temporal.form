@@ -1,0 +1,48 @@
+; This is the form for CVSS Temporal Scores
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Christian Smith <christian.smith@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[cvss_temporal]
+
+decorators.elements.decorator = "FormElements"
+decorators.table.decorator = "HtmlTag"
+decorators.table.options.tag = "table"
+decorators.form.decorator = "Form"
+
+
+; Temporal
+
+elements.E.type = "select"
+elements.E.options.label = "Exploitability"
+elements.E.options.multiOptions.ND = "Not Defined"
+elements.E.options.multiOptions.U = "Unproven"
+elements.E.options.multiOptions.POC = "Proof-of-Concept"
+elements.E.options.multiOptions.F = "Functional"
+elements.E.options.multiOptions.H = "High"
+displayGroups.cvssTemporal.elements.E = "E"
+elements.E.options.tooltip = "<p align='center'><b>Exploitability (E)</b></p><p>This metric measures the current state of exploit techniques or code availability. Public availability of easy-to-use exploit code increases the number of potential attackers by including those who are unskilled, thereby increasing the severity of the vulnerability.</p><p><b>Unproven (U)</b> - No exploit code is available, or an exploit is entirely theoretical.</p><p><b>Proof-of-Concept (POC)</b> - Proof-of-concept exploit code or an attack demonstration that is not practical for most systems is available. The code or technique is not functional in all situations and may require substantial modification by a skilled attacker.</p><p><b>Functional (F)</b> - Functional exploit code is available. The code works in most situations where the vulnerability exists.</p><p><b>High (H)</b> - Either the vulnerability is exploitable by functional mobile autonomous code, or no exploit is required (manual trigger) and details are widely available. The code works in every situation, or is actively being delivered via a mobile autonomous agent (such as a worm or virus).</p><p><b>Not Defined (ND)</b> - Assigning this value to the metric will not influence the score. It is a signal to the equation to skip this metric.</p>"
+
+elements.RL.type = "select"
+elements.RL.options.label = "Remediation Level"
+elements.RL.options.multiOptions.ND = "Not Defined"
+elements.RL.options.multiOptions.OF = "Official Fix"
+elements.RL.options.multiOptions.TF = "Temporary Fix"
+elements.RL.options.multiOptions.W = "Workaround"
+elements.RL.options.multiOptions.U = "Unavailable"
+displayGroups.cvssTemporal.elements.RL = "RL"
+elements.RL.options.tooltip = "<p align='center'><b>Remediation Level (RL)</b></p><p>The remediation level of a vulnerability is an important factor for prioritization. The typical vulnerability is unpatched when initially published. Workarounds or hotfixes may offer interim remediation until an official patch or upgrade is issued. Each of these respective stages adjusts the temporal score downwards, reflecting the decreasing urgency as remediation becomes final.</p><p><b>Official Fix (OF)</b> - A complete vendor solution is available. Either the vendor has issued an official patch, or an upgrade is available.</p><p><b>Temporary Fix (TF)</b> - There is an official but temporary fix available. This includes instances where the vendor issues a temporary hotfix, tool, or workaround.</p><p><b>Workaround (W)</b> - There is an unofficial, non-vendor solution available. In some cases, users of the affected technology will create a patch of their own or provide steps to work around or otherwise mitigate the vulnerability.</p><p><b>Unavailable (U)</b> - There is either no solution available or it is impossible to apply.</p><p><b>Not Defined (ND)</b> -  Assigning this value to the metric will not influence the score. It is a signal to the equation to skip this metric.</p>"
+
+elements.RC.type = "select"
+elements.RC.options.label = "Report Confidence"
+elements.RC.options.multiOptions.ND = "Not Defined"
+elements.RC.options.multiOptions.UC = "Unconfirmed"
+elements.RC.options.multiOptions.UR = "Uncorroborated"
+elements.RC.options.multiOptions.C = "Confirmed"
+displayGroups.cvssTemporal.elements.RC = "RC"
+elements.RC.options.tooltip = "<p align='center'><b>Report Confidence (RC)</b></p><p>This metric measures the degree of confidence in the existence of the vulnerability and the credibility of the known technical details. Sometimes, only the existence of vulnerabilities are publicized, but without specific details. The vulnerability may later be corroborated and then confirmed through acknowledgement by the author or vendor of the affected technology. The urgency of a vulnerability is higher when a vulnerability is known to exist with certainty. This metric also suggests the level of technical knowledge available to would-be attackers.</p><p><b>Unconfirmed (UC)</b> - There is a single unconfirmed source or possibly multiple conflicting reports. There is little confidence in the validity of the reports. An example is a rumor that surfaces from the hacker underground.</p><p><b>Uncorroborated (UR)</b> - There are multiple non-official sources, possibly including independent security companies or research organizations. At this point there may be conflicting technical details or some other lingering ambiguity.</p><p><b>Confirmed (C)</b> - The vulnerability has been acknowledged by the vendor or author of the affected technology. The vulnerability may also be Confirmed when its existence is confirmed from an external event such as publication of functional or proof-of-concept exploit code or widespread exploitation.</p><p><b>Not Defined (ND)</b> - Assigning this value to the metric will not influence the score. It is a signal to the equation to skip this metric.</p>"
