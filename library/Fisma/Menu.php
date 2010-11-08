@@ -308,8 +308,9 @@ class Fisma_Menu
         }
 
         $menu->addSeparator();
-
-        $menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
+        
+        //Temporarily disabled
+        //$menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
 
         if ($acl->hasArea('vulnerability_admin')) {
             $adminMenu = new Fisma_Yui_Menu('Administration');
