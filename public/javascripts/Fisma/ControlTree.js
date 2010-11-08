@@ -157,6 +157,9 @@ Fisma.ControlTree.prototype = {
             case "removeControl":
                 controlTree.removeControl(targetNode);
                 break;
+            case "addEnhancements":
+                controlTree.addEnhancements(targetNode);
+                break;
             case "removeEnhancement":
                 controlTree.removeEnhancement(targetNode);
                 break;
@@ -208,5 +211,28 @@ Fisma.ControlTree.prototype = {
             }
         };
         YAHOO.util.Connect.asyncRequest( 'POST', actionUrl, callbacks, post);
+    },
+
+    addEnhancements: function(controlNode) {
+        var securityControlId = controlNode.data.securityControlId,
+            panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
+            actionUrl = this.actionUrls.addEnhancements,
+            getUrl = actionUrl + '/securityControlId/' + securityControlId,
+            ctObj = this;
+        var callbacks = {
+            success: function(o) {
+                var panel = o.argument;
+                panel.setBody(o.responseText);
+                panel.center();
+            },
+            failure: function(o) {
+                var panel = o.argument;
+                panel.destroy();
+                alert('Error getting "add control" form: ' + o.statusText);
+            },
+            argument: panel
+        };
+        YAHOO.util.Connect.asyncRequest( 'GET', getUrl, callbacks);
     }
+
 };

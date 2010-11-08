@@ -51,6 +51,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->initContext();
         $this->_helper->ajaxContext()
                       ->addActionContext('add-control', 'html')
+                      ->addActionContext('add-enhancements', 'html')
                       ->initContext();
     }
     
@@ -313,5 +314,62 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $form->getElement('securityControlId')->addMultiOptions($controlArray);
         $this->view->id = $id;
         $this->view->addControlForm = $form;
+    }
+
+    /**
+     * @return void
+     */
+    public function addEnhancementsAction()
+    {
+        $id = $this->_request->getParam('id');
+        $securityControlId = $this->_request->getParam('securityControlId');
+
+        $saSecurityControl = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->execute();
+        $saSecurityControl = $saSecurityControl[0];
+
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            foreach ($post['securityControlEnhancementIds'] as $securityControlEnhancementId) {
+                $saSce = new SaSecurityControlEnhancement();
+                $saSce->saSecurityControlId = $saSecurityControl->id;
+                $saSce->securityControlEnhancementId = $securityControlEnhancementId;
+                $saSce->save();
+                $saSce->free();
+            }
+            $this->_redirect('/sa/security-authorization/control-tree/id/'.$id);
+            return;
+        }
+
+        $this->view->id = $id;
+        $this->view->securityControlId = $securityControlId;
+
+        $currentControlEnhancements = Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce')
+            ->innerJoin('sce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->execute()
+            ->toKeyValueArray('id', 'id');
+        $this->view->currentControlEnhancementss = $currentControlEnhancements;
+
+        $enhancements = Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce')
+            ->whereNotIn('sce.id', $currentControlEnhancements)
+            ->andWhere('sce.securityControlId = ?', $securityControlId)
+            ->execute()
+            ->toKeyValueArray('id', 'description');
+        $this->view->availableEnhancements = $enhancements;
+
+        // build form
+        $form = $this->getForm('securityauthorizationaddenhancements');
+        $form->setAction(
+            '/sa/security-authorization/add-enhancements/id/'.$id . '/securityControlId/' . $securityControlId
+        );
+        $form->getElement('securityControlEnhancementIds')->addMultiOptions($enhancements);
+        $this->view->form = $form;
     }
 }

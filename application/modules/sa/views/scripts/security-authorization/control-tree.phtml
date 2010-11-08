@@ -29,13 +29,14 @@ echo $this->escape($addControl, 'none');
 var controlTree = null;
 YAHOO.util.Event.onDOMReady(function () {
     var base = '/sa/security-authorization/',
-        params = '/id/<?php echo $this->escape($this->id); ?>/format/json';
+        params = '/id/<?php echo $this->escape($this->id); ?>';
     controlTree = new Fisma.ControlTree(
         'controlTree',
         {
-            controlTreeData: base + 'control-tree-data' + params,
-            removeControl: base + 'remove-control' + params,
-            removeEnhancement: base + 'remove-enhancement' + params
+            controlTreeData: base + 'control-tree-data/format/json' + params,
+            removeControl: base + 'remove-control/format/json' + params,
+            addEnhancements: base + 'add-enhancements/format/html' + params,
+            removeEnhancement: base + 'remove-enhancement/format/json' + params
         }
     );
 });
