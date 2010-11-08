@@ -34,8 +34,7 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_close
-            - vulnerability_accept_risk
+            - vulnerability_status
             - notification_vulnerability
 
     reviewer_role:
@@ -100,9 +99,8 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_close
-            - vulnerability_accept_risk
-            - vulnerability_false_positive
+            - vulnerability_status
+            - vulnerability_resolution_read
             - notification_vulnerability         
 
     saiso_role:
@@ -148,9 +146,8 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_close
-            - vulnerability_accept_risk
-            - vulnerability_false_positive
+            - vulnerability_status
+            - vulnerability_resolution_read
             - notification_vulnerability
     
     admin_role:
@@ -250,9 +247,11 @@ Role:
             - vulnerability_read
             - vulnerability_update
             - vulnerability_delete
-            - vulnerability_close
-            - vulnerability_accept_risk
-            - vulnerability_false_positive
+            - vulnerability_status
+            - vulnerability_resolution_create
+            - vulnerability_resolution_read
+            - vulnerability_resolution_update
+            - vulnerability_resolution_delete
             - notification_vulnerability
             - user_read
             - document_type_create
@@ -330,7 +329,7 @@ Role:
             - vulnerability_area
             - vulnerability_report_area
             - vulnerability_read
-            - vulnerability_accept_risk
+            - vulnerability_status
             - notification_vulnerability
 
     oss_role:
@@ -361,8 +360,7 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_close
-            - vulnerability_accept_risk
+            - vulnerability_status
             - notification_vulnerability
 
     oig_role:

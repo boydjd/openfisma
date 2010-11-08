@@ -57,7 +57,7 @@ try {
                     ->setHydrationMode(Doctrine::HYDRATE_NONE)
                     ->execute();
 
-    $status = array('OPEN', 'AR', 'FP', 'CLOSED');
+    $status = array('OPEN', 'WONTFIX', 'FIXED', 'CLOSED');
     $threat = array('LOW', 'MODERATE', 'HIGH');
 
     $statusCount = count($status)-1;

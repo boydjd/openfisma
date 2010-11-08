@@ -8,7 +8,6 @@ Privilege:
         resource: area
         action: admin
         description: View Administration Menu
-
     finding_area:
         resource: area
         action: finding
@@ -194,18 +193,10 @@ Privilege:
         description: Delete Vulnerabilities
 
     # Vulnerability state transitions
-    vulnerability_close:
+    vulnerability_status:
         resource: vulnerability
-        action: close
-        description: Close Vulnerabilities
-    vulnerability_accept_risk:
-        resource: vulnerability
-        action: fixed
-        description: Set Vulnerability to Fixed
-    vulnerability_false_positive:
-        resource: vulnerability
-        action: wont_fix
-        description: Set Vulnerability to Wont Fix
+        action: update
+        description: Update Vulnerability Status
 
     # Assets CRUD
     asset_create:
@@ -344,6 +335,24 @@ Privilege:
         resource: network
         action: delete
         description: Delete Networks
+    
+    # Vulnerability Resolution CRUD
+    vulnerability_resolution_create:
+        resource: vulnerability_resolution
+        action: create
+        description: Create Resolution
+    vulnerability_resolution_read:
+        resource: vulnerability_resolution
+        action: read
+        description: View Resolution
+    vulnerability_resolution_update:
+        resource: vulnerability_resolution
+        action: update
+        description: Edit Resolution
+    vulnerability_resolution_delete:
+        resource: vulnerability_resolution
+        action: delete
+        description: Delete Resolution
     
     # Notification privileges
     notification_admin:

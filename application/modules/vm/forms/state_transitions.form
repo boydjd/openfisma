@@ -11,8 +11,8 @@ action = "/vm/vulnerability/change-state"
 id = "transitionsForm"
 elements.id.type = "hidden"
 
-elements.close.type = "Form_Button_Submit"
-elements.close.options.label = "Close"
+elements.open.type = "Form_Button_Submit"
+elements.open.options.label = "Open"
 
 elements.fixed.type = "Form_Button_Submit"
 elements.fixed.options.label = "Fixed"
