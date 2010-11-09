@@ -197,6 +197,11 @@ Privilege:
         resource: vulnerability
         action: update
         description: Update Vulnerability Status
+    
+    vulnerability_comment:
+        resource: vulnerability
+        action: comment
+        description: Comment on Vulnerability
 
     # Assets CRUD
     asset_create:

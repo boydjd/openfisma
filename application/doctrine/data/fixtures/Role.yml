@@ -31,6 +31,7 @@ Role:
             - asset_update
             - vulnerability_area
             - vulnerability_report_area
+            - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
@@ -96,6 +97,7 @@ Role:
             - product_read
             - vulnerability_area
             - vulnerability_report_area
+            - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
@@ -143,6 +145,7 @@ Role:
             - product_read
             - vulnerability_area
             - vulnerability_report_area
+            - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
@@ -242,6 +245,7 @@ Role:
             - ir_category_delete
             - vulnerability_area
             - vulnerability_admin_area
+            - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
@@ -275,6 +279,7 @@ Role:
             - findings_comment
             - notification_finding
             - vulnerability_area
+            - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
@@ -307,6 +312,7 @@ Role:
             - notification_asset
             - notification_finding
             - vulnerability_area
+            - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
@@ -327,6 +333,7 @@ Role:
             - notification_asset
             - notification_finding
             - vulnerability_area
+            - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_read
             - vulnerability_status
@@ -356,6 +363,7 @@ Role:
             - notification_finding
             - vulnerability_area
             - vulnerability_admin_area
+            - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
