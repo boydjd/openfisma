@@ -285,24 +285,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
             $this->_forward('injection', 'index', 'finding');
         }
     }
-
-    /** 
-     * Allows a user to approve or delete pending findings
-     * 
-     * @return void
-     * @todo Use YUI pager
-     */
-    public function approveAction()
-    {
-        $this->_acl->requirePrivilegeForClass('approve', 'Finding');
-        
-        $q = Doctrine_Query::create()
-             ->select('*')
-             ->from('Finding f')
-             ->where('f.status = ?', 'PEND');
-        $findings = $q->execute();
-        $this->view->assign('findings', $findings);
-    }
     
     /**
      *  Process the form submitted from the approveAction()
