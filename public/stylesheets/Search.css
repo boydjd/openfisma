@@ -39,7 +39,7 @@
     width: 10em;
 }
 
-.searchBox input[type=text].integer {
+.searchBox input[type=text].integer, .searchBox input[type=text].float {
 	width: 10em;
 }
 

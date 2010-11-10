@@ -33,6 +33,12 @@ Fisma.Search.CriteriaDefinition = function () {
             dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}
         },
 
+        "float" : {
+            floatBetween : {label : "Between", renderer : 'betweenFloat', query : 'twoInputs'},
+            floatGreaterThan : {label : "Greater Than", renderer : 'singleFloat', query : 'oneInput', isDefault : true},
+            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}            
+        },
+
         integer : {
             integerBetween : {label : "Between", renderer : 'betweenInteger', query : 'twoInputs'},
             integerDoesNotEqual : {label : "Does Not Equal", renderer : 'singleInteger', query : 'oneInput'},

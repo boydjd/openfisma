@@ -59,6 +59,37 @@ Fisma.Search.CriteriaRenderer = function () {
         },
 
         /**
+         * Renders two float fields with the word "And" between them
+         *
+         * @param container The HTML element to render into
+         * @param operands An array of default values
+         */
+        betweenFloat : function (container, operands) {
+            var lowEnd = document.createElement('input');
+
+            if (operands && operands.length > 0) {
+                lowEnd.value = operands[0];
+            }
+
+            lowEnd.type = "text";
+            lowEnd.className = "float";
+            container.appendChild(lowEnd);
+
+            var text = document.createTextNode(" and ");
+            container.appendChild(text);
+
+            var highEnd = document.createElement('input');
+
+            if (operands && operands.length > 1) {
+                highEnd.value = operands[1];
+            }
+
+            highEnd.type = "text";
+            highEnd.className = "float";
+            container.appendChild(highEnd);
+        },
+
+        /**
          * Renders two integer fields with the word "And" between them
          *
          * @param container The HTML element to render into
@@ -124,6 +155,25 @@ Fisma.Search.CriteriaRenderer = function () {
             container.appendChild(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
+        },
+
+        /**
+         * Renders a single float input field
+         *
+         * @param container The HTML element to render into
+         * @param operands An array of default values
+         */
+        singleFloat : function (container, operands) {
+            var textEl = document.createElement('input');
+
+            textEl.type = "text";
+            textEl.className = "float";
+
+            if (operands && operands.length > 0) {
+                textEl.value = operands[0];
+            }
+
+            container.appendChild(textEl);
         },
 
         /**

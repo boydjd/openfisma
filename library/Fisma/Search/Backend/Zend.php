@@ -568,6 +568,30 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     $doctrineQuery->andWhere("$sqlFieldName = DATE(NOW())");
                     break;
 
+                case 'floatBetween':
+                    if (!is_numeric($operands[0]) || !is_numeric($operands[1])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatBetween criterion.");
+                    }
+
+                    $doctrineQuery->andWhere("$sqlFieldName BETWEEN ? AND ?", array($operands[0], $operands[1]));
+                    break;
+
+                case 'floatGreaterThan':
+                    if (!is_numeric($operands[0])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatGreaterThan criterion.");
+                    }
+
+                    $doctrineQuery->andWhere("$sqlFieldName >= ?", $operands[0]);
+                    break;
+
+                case 'floatLessThan':
+                    if (!is_numeric($operands[0])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatLessThan criterion.");
+                    }
+
+                    $doctrineQuery->andWhere("$sqlFieldName <= ?", $operands[0]);
+                    break;
+
                 case 'integerBetween':
                     $doctrineQuery->andWhere("$sqlFieldName BETWEEN ? AND ?", array($operands[0], $operands[1]));
                     break;

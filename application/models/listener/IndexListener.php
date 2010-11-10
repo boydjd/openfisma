@@ -148,12 +148,25 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             throw new Fisma_Search_Exception($message);
         }
 
-        // If the record is softDeleted, do nothing. Otherwise, delete the record from the index.
-        if (!$record->getTable()->hasColumn('deleted_at')) {
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        // If the record is softDeleted, then reindex it. Otherwise, delete the record from the index.
+        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
 
+        if ($record->getTable()->hasColumn('deleted_at')) {
+            $modelName = get_class($record);
+            $relationAliases = array();
+
+            $indexer = new Fisma_Search_Indexer($searchEngine);
+            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
+
+            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+            $baseClassAlias = $relationAliases[$modelName];
+            $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
+
+            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
+        } else {
             $searchEngine->deleteObject(get_class($record), $record->toArray());
-            $searchEngine->commit();
         }
+
+        $searchEngine->commit();
     }
 }

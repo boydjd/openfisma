@@ -262,7 +262,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 'datetime' != $fieldDefinition['type']) {
 
                 // Solr can't highlight sortable integer fields
-                if ('integer' != $fieldDefinition['type']) {
+                if ('integer' != $fieldDefinition['type'] && 'float' != $fieldDefinition['type']) {
                     $query->addHighlightField($documentFieldName);
                 }
 
@@ -370,10 +370,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $query->addField($documentFieldName);
 
-            // Highlighting doesn't work for date or integerfields in Solr 4.1
+            // Highlighting doesn't work for date, integer, or float fields in Solr 4.1
             if ('date' != $fieldDefinition['type'] &&
                 'datetime' != $fieldDefinition['type'] &&
-                'integer' != $fieldDefinition['type']) {
+                'integer' != $fieldDefinition['type'] &&
+                'float' != $fieldDefinition['type']) {
 
                 $query->addHighlightField($documentFieldName);
             }
@@ -430,6 +431,31 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $searchTerms[] = "$fieldName:[NOW/DAY TO NOW/DAY+1DAY]";
                     break;
 
+                case 'floatBetween':
+                    if (!is_numeric($operands[0]) || !is_numeric($operands[1])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatBetween criterion.");
+                    }
+
+                    $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
+                    break;
+
+                case 'floatGreaterThan':
+                    if (!is_numeric($operands[0])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatGreaterThan criterion.");
+                    }
+
+                    $floatValue = (float)$operands[0];
+                    $searchTerms[] = "$fieldName:[5 TO *]";
+                    break;
+
+                case 'floatLessThan':
+                    if (!is_numeric($operands[0])) {
+                        throw new Fisma_Search_Exception("Invalid operands to floatLessThan criterion.");
+                    }
+
+                    $searchTerms[] = "$fieldName:[* TO {$operands[0]}]";
+                    break;
+                
                 case 'integerBetween':
                     $lowEndIntValue = intval($operands[0]);
                     $highEndIntValue = intval($operands[1]);
@@ -737,6 +763,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             $value = $this->_convertHtmlToIndexString($rawValue);
         } elseif ('integer' == $type) {
             $value = intval($rawValue);
+        } elseif ('float' == $type) {
+            $value = (float)$rawValue;
         } elseif ('date' == $type || 'datetime' == $type) {
             $value = $this->_convertToSolrDate($rawValue);
         } else {
