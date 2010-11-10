@@ -60,10 +60,6 @@ class Fisma_Menu
                 $findings->addSeparator();    
             }
 
-            if ($acl->hasPrivilegeForClass('approve', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/finding/index/approve'));
-            }
-
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/index/create'));
             }
@@ -144,10 +140,6 @@ class Fisma_Menu
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'Product')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Products', '/product/list'));
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
@@ -322,8 +314,9 @@ class Fisma_Menu
         }
 
         $menu->addSeparator();
-
-        $menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
+        
+        //Temporarily disabled
+        //$menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
 
         if ($acl->hasArea('vulnerability_admin')) {
             $adminMenu = new Fisma_Yui_Menu('Administration');
@@ -332,8 +325,8 @@ class Fisma_Menu
                 $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
             }
 
-            if ($acl->hasPrivilegeForClass('read', 'Vulnerability')) {
-                $adminMenu->add(new Fisma_Yui_MenuItem('Status', '/vm/status/list'));
+            if ($acl->hasPrivilegeForClass('read', 'VulnerabilityResolution')) {
+                $adminMenu->add(new Fisma_Yui_MenuItem('Resolutions', '/vm/vulnerability-resolution/list'));
             }
 
             $menu->add($adminMenu);

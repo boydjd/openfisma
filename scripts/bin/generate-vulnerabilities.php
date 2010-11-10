@@ -31,6 +31,30 @@ require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
 try {
     $startTime = time();
     
+    defined('APPLICATION_ENV')
+        || define(
+            'APPLICATION_ENV',
+            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
+        );
+    defined('APPLICATION_PATH') || define(
+        'APPLICATION_PATH',
+        realpath(dirname(__FILE__) . '/../../application')
+    );
+
+    set_include_path(
+        APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
+        APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
+        get_include_path()
+    );
+
+    require_once 'Fisma.php';
+    require_once 'Zend/Application.php';
+
+    $application = new Zend_Application(
+        APPLICATION_ENV,
+        APPLICATION_PATH . '/config/application.ini'
+    );
+    Fisma::setAppConfig($application->getOptions());
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
     Fisma::connectDb();
     Fisma::setNotificationEnabled(false);
@@ -57,7 +81,7 @@ try {
                     ->setHydrationMode(Doctrine::HYDRATE_NONE)
                     ->execute();
 
-    $status = array('OPEN', 'AR', 'FP', 'CLOSED');
+    $status = array('OPEN', 'FIXED', 'WONTFIX');
     $threat = array('LOW', 'MODERATE', 'HIGH');
 
     $statusCount = count($status)-1;
@@ -68,7 +92,12 @@ try {
         $discoveredDate = rand(0, time());
 
         $entry = array();
-        $entry['status'] = $status[rand(0, $statusCount)];
+        $randomstatus = $status[rand(0, $statusCount)];
+        
+        //Status defaults to OPEN and state transition does not allow from OPEN to OPEN
+        if ($randomstatus != 'OPEN') {
+            $entry['status'] = $randomstatus;
+        }
         $entry['threatLevel'] = $threat[rand(0, $threatCount)];
         $entry['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
         $entry['description'] = Fisma_String::loremIpsum(rand(2, 1000));
