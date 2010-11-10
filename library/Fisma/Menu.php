@@ -60,10 +60,6 @@ class Fisma_Menu
                 $findings->addSeparator();    
             }
 
-            if ($acl->hasPrivilegeForClass('approve', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Approve Pending Findings', '/finding/index/approve'));
-            }
-
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/index/create'));
             }

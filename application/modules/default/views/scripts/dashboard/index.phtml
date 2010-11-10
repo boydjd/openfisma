@@ -16,15 +16,6 @@
             </a>
             </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
         </li>
-<?php if ($this->acl()->hasPrivilegeForClass('approve', 'Finding')) : ?>
-        <li>
-            There are <b>
-            <a href="<?php echo $this->escape($this->pendingUrl, 'none')?>">
-                <?php echo $this->escape($this->alert['PEND'])?>
-            </a>
-            </b> PENDING findings awaiting approval.
-        </li>
-<?php endif; ?>
         <li>
             There are <b>
             <a href="<?php echo $this->escape($this->url, 'none')?>EN/ontime/ontime">
