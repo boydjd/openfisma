@@ -309,7 +309,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->form = $form;
 
-        $this->view->modelName = $this->_modelName;
+        $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
         $this->renderScript('object/create.phtml');
@@ -496,6 +496,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $keywords = trim($this->_request->getParam('keywords'));
 
         $table = Doctrine::getTable($this->_modelName);
+        
+        if (!($table instanceof Fisma_Search_Searchable)) {
+            throw new Fisma_Zend_Exception(get_class($table) . ' does not implement Fisma_Search_Searchable.');
+        }
+        
         $searchableFields = $table->getSearchableFields();
 
         // Create the YUI table that will display results

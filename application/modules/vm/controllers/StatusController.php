@@ -17,13 +17,12 @@
  */
 
 /**
- * Handles CRUD for vulnerability status resolutions
+ * Handles CRUD for vulnerability statuses
  *
  * @author     Christian Smith <christian.smith@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class Vm_StatusController extends Fisma_Zend_Controller_Action_Object
 {
@@ -35,4 +34,20 @@ class Vm_StatusController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'VulnerabilityResolution';
+    
+    /**
+     * Provide a better model name than the default.
+     */
+    public function getSingularModelName()
+    {
+        return 'Vulnerability Status';
+    }
+
+    /**
+     * Provide a better model name than the default.
+     */
+    public function getPluralModelName()
+    {
+        return 'Vulnerability Statuses';
+    }
 }

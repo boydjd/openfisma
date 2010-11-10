@@ -321,7 +321,7 @@ class Fisma_Menu
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Vulnerability')) {
-                $adminMenu->add(new Fisma_Yui_MenuItem('Status', '/vm/status/list'));
+                $adminMenu->add(new Fisma_Yui_MenuItem('Statuses', '/vm/status/list'));
             }
 
             $menu->add($adminMenu);
