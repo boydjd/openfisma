@@ -1,8 +1,12 @@
-<?php Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+<?php Fisma_Format_Section::startSection("Security Control Tree View"); ?>
 
 <div class="buttonBar">
 <?php
-echo $this->partial('security-authorization/control-nav.phtml', array('id' => $this->id));
+$goBack = new Fisma_Yui_Form_Button_Link('goBack', 
+                                       array('value' => 'Go Back', 
+                                             'imageSrc' => '/images/left_arrow.png',
+                                             'href' => '/sa/security-authorization/view/id/' . $this->id));
+echo $this->escape($goBack, 'none');
 
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 

@@ -40,6 +40,39 @@ class Fisma_Zend_Form_Manager_Securityauthorization extends Fisma_Zend_Form_Mana
         $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('sysOrgId')->addMultiOptions($selectArray);
         
+        $saTable = Doctrine::getTable('SecurityAuthorization');
+
+        $impactDef = $saTable->getColumnDefinition('impact');
+        $impactKeys = $impactDef['values'];
+        $impactNames = array_map('ucfirst', array_map('strtolower', $impactKeys));
+        $impacts = array_combine($impactKeys, $impactNames);
+        $form->getElement('impact')->addMultiOptions($impacts);
+
+        $statusDef = $saTable->getColumnDefinition('status');
+        $statusKeys = $statusDef['values'];
+        $statusNames = array_map('ucfirst', array_map('strtolower', $statusKeys));
+        $statuses = array_combine($statusKeys, $statusNames);
+        $form->getElement('status')->addMultiOptions($statuses);
+
+        /*
+         * differences in how the form is displayed in different actions
+         * 'view' is always readOnly, so it doesn't need to be explicit here
+         */
+        switch ($this->_request->getActionName()) {
+            case 'create':
+                // impact and status should not appear
+                $form->removeElement('impact');
+                $form->removeElement('status');
+                break;
+            case 'edit':
+                // once an SA is created, the system and impact are ineditable
+                $form->getElement('sysOrgId')->readOnly = true;
+                $form->getElement('sysOrgId')->setRequired(false)->setIgnore(true);
+                $form->getElement('impact')->readOnly = true;
+                $form->getElement('impact')->setRequired(false)->setIgnore(true);
+                break;
+        }
+
         $this->setForm($form);
     }
 }

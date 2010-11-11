@@ -1,44 +1,12 @@
-<?php Fisma_Format_Section::startSection('Selected Security Controls'); ?>
-<div class="buttonBar">
-<?php echo $this->partial('security-authorization/control-nav.phtml', array('id' => $this->id)); ?>
-</div>
-<div id="container">
-<table id="controlTable">
-<?php foreach ($this->subject->SaSecurityControls as $saControl): ?>
-<tr>
-    <td><?php echo $this->escape($saControl->SecurityControl->code); ?></td>
-    <td><?php echo $this->escape($saControl->SecurityControl->name); ?></td>
-    <td>
-        <ul>
-            <?php foreach ($saControl->SecurityControlEnhancements as $enhancement): ?>
-            <li><?php echo $this->escape($enhancement->description, 'none'); ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </td>
-</tr>
-<?php endforeach; ?>
-</table>
-</div>
-<?php Fisma_Format_Section::stopSection(); ?>
-<script type="text/javascript">
-// Convert the HTML table above into a YUI table
-YAHOO.util.Event.onContentReady('container', function() {
-    var myColumnDefs = [
-        {key:"code", label:"Code", sortable:true},
-        {key:"name", label:"Name", sortable:true},
-        {key:"enhancements", label:"Enhancements"}
-    ];
-    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("controlTable"));
-    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-    this.myDataSource.responseSchema = {
-        fields: [
-            {key:"code"},
-            {key:"name"},
-            {key:"enhancements"}
-        ]
-    };
+<?php
+$sectionTitle = 'Security Authorization';
+$sectionTitle .= ' [<a href="/sa/security-authorization/edit/id/' . $this->id . '">Edit</a>]';
+$sectionTitle .= ' [<a href="/sa/security-authorization/control-tree/id/' . $this->id . '">Select Controls</a>]';
+Fisma_Format_Section::startSection($sectionTitle); ?>
 
-    this.myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, this.myDataSource, {});
-});
-</script>
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
 

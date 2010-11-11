@@ -16,6 +16,16 @@ elements.sysOrgId.options.label = "System"
 elements.sysOrgId.options.required = true
 displayGroups.sa.elements.sysOrgId = "sysOrgId"
 
+elements.impact.type = "select"
+elements.impact.options.label = "Impact"
+elements.impact.options.required = true
+displayGroups.sa.elements.impact = "impact"
+
+elements.status.type = "select"
+elements.status.options.label = "Status"
+elements.status.options.required = true
+displayGroups.sa.elements.status = "status"
+
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
 displayGroups.sa.elements.save = "save"
