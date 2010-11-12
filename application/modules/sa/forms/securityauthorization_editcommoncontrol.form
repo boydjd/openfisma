@@ -1,0 +1,28 @@
+; This is the form for security authorization.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[securityauthorization_editcommoncontrol]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.common.type = "Radio"
+elements.common.options.label = "Common Control Type"
+elements.common.options.multiOptions.none = "None"
+elements.common.options.multiOptions.common = "Common"
+elements.common.options.multiOptions.inherits = "Inherits From System Below"
+displayGroups.sa.elements.common = "common"
+
+elements.sysOrgId.type = "Select"
+elements.sysOrgId.options.label = "Inherit From System"
+displayGroups.sa.elements.sysOrgId = "sysOrgId"
+
+elements.save.type = "Submit"
+elements.save.options.label = "Save"
+displayGroups.sa.elements.save = "save"
+

@@ -52,6 +52,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->ajaxContext()
                       ->addActionContext('add-control', 'html')
                       ->addActionContext('add-enhancements', 'html')
+                      ->addActionContext('edit-common-control', 'html')
                       ->initContext();
     }
     
@@ -244,10 +245,10 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $id = $this->_request->getParam('id');
         $controls = Doctrine_Query::create()
-            ->select('saSC.id, control.code, control.name, enhancements.description')
             ->from('SaSecurityControl saSC')
             ->leftJoin('saSC.SecurityControl control')
             ->leftJoin('saSC.SecurityControlEnhancements enhancements')
+            ->leftJoin('saSC.Inherits inSys')
             ->where('saSC.securityAuthorizationId = ?', $id)
             ->orderBy('control.code')
             ->execute();
@@ -266,7 +267,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 'id' => $control->id,
                 'code' => $control->code,
                 'name' => $control->name,
-                'enhancements' => $enhancements
+                'enhancements' => $enhancements,
+                'common' => $saControl->common ? true : false,
+                'inherits' => $saControl->Inherits->nickname
             );
         }
         $this->view->treeData = $data;
@@ -370,6 +373,66 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             '/sa/security-authorization/add-enhancements/id/'.$id . '/securityControlId/' . $securityControlId
         );
         $form->getElement('securityControlEnhancementIds')->addMultiOptions($enhancements);
+        $this->view->form = $form;
+    }
+
+    /**
+     * @return void
+     */
+    public function editCommonControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        $securityControlId = $this->_request->getParam('securityControlId');
+
+        $saSecurityControl = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->innerJoin('saSc.SecurityAuthorization sa')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->fetchOne();
+
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            $common = $post['common'];
+            $sysOrgId = $post['sysOrgId'];
+            $saSecurityControl->common = $common == 'common';
+            $saSecurityControl->inheritsId = $common == 'inherits' ? $sysOrgId : null;
+            $saSecurityControl->save();
+            $saSecurityControl->free();
+            $this->_redirect('/sa/security-authorization/control-tree/id/'.$id);
+            return;
+        }
+
+        $this->view->id = $id;
+        $this->view->securityControlId = $securityControlId;
+
+        // get a list of systems from which to inherit
+        $commonSysOrgs = Doctrine_Query::create()
+            ->from('Organization org')
+            ->leftJoin('org.SecurityAuthorizations sa')
+            ->leftJoin('sa.SaSecurityControls saSc')
+            ->where('org.id != ?', $saSecurityControl->SecurityAuthorization->sysOrgId)
+            ->andWhere('saSc.common = ?', true)
+            ->orderBy('org.nickname')
+            ->execute();
+        $commonSysOrgs = $this->view->systemSelect($commonSysOrgs);
+
+        // build form
+        $form = $this->getForm('securityauthorization_editcommoncontrol');
+        $form->setAction(
+            '/sa/security-authorization/edit-common-control/id/'.$id . '/securityControlId/' . $securityControlId
+        );
+        $inheritsId = $form->getElement('sysOrgId');
+        $common = $form->getElement('common');
+        $inheritsId->addMultiOptions($commonSysOrgs);
+        if ($saSecurityControl->common) {
+            $common->setValue('common');
+        } else if (!empty($saSecurityControl->inheritsId)) {
+            $common->setValue('inherits');
+            $inheritsId->setValue($saSecurityControl->inheritsId);
+        } else {
+            $common->setValue('none');
+        }
         $this->view->form = $form;
     }
 }
