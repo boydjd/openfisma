@@ -744,7 +744,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 // raw result for that column
                 if ($visible) {
                     $report->addColumn(
-                        new Fisma_Report_Column($searchableField['label'], $searchableFields['sortable'])
+                        new Fisma_Report_Column($searchableField['label']), $searchableField['sortable']
                     );
 
                     foreach ($rawSearchData as $index => $datum) {

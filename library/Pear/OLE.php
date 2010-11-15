@@ -470,7 +470,7 @@ class OLE extends PEAR
     * @param string $ascii The ASCII string to transform
     * @return string The string in Unicode
     */
-    function Asc2Ucs($ascii)
+    static function Asc2Ucs($ascii)
     {
         $rawname = '';
         for ($i = 0; $i < strlen($ascii); $i++) {
@@ -488,7 +488,7 @@ class OLE extends PEAR
     * @param integer $date A timestamp 
     * @return string The string for the OLE container
     */
-    function LocalDate2OLE($date = null)
+    static function LocalDate2OLE($date = null)
     {
         if (!isset($date)) {
             return "\x00\x00\x00\x00\x00\x00\x00\x00";
@@ -533,7 +533,7 @@ class OLE extends PEAR
     * @access public
     * @static
     */
-    function OLE2LocalDate($string)
+    static function OLE2LocalDate($string)
     {
         if (strlen($string) != 8) {
             return new PEAR_Error("Expecting 8 byte string");

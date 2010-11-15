@@ -650,7 +650,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     {
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
-        $highlighting = (array)$solrResult->highlighting;
+        
+        if (isset($solrResult->highlighting)) {
+            $highlighting = (array)$solrResult->highlighting;    
+        } else {
+            $highlighting = array();
+        }
 
         $tableData = array();
 
