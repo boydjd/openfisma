@@ -59,6 +59,14 @@ Privilege:
         resource: area
         action: incident_report
         description: Incident Module Reports
+    sa_area:
+        resource: area
+        action: security_authorization
+        description: Security Authorization Module
+    sa_select_area:
+        resource: area
+        action: security_authorization_select
+        description: Security Authroization Module Select Controls
 
     # Findings CRUD
     findings_create:
@@ -464,3 +472,21 @@ Privilege:
         resource: document_type
         action: delete
         description: Delete Document Type
+
+    # Security Authorization CRUD
+    sa_create:
+        resource: security_authorization
+        action: create
+        description: Create Security Authorization
+    sa_read:
+        resource: security_authorization
+        action: read
+        description: View Security Authorization
+    sa_update:
+        resource: security_authorization
+        action: update
+        description: Edit Security Authorization
+    sa_delete:
+        resource: security_authorization
+        action: delete
+        description: Delete Security Authorization

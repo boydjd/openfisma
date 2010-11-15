@@ -262,6 +262,12 @@ Role:
             - document_type_read
             - document_type_update
             - document_type_delete
+            - sa_area
+            - sa_select_area
+            - sa_create
+            - sa_read
+            - sa_update
+            - sa_delete
 
     certagent_role:
         name: Certification Agent

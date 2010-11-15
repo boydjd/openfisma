@@ -36,7 +36,7 @@ class Fisma_Zend_Form_Manager_Securityauthorization extends Fisma_Zend_Form_Mana
     {
         $form = $this->getForm();
 
-        $systems = $this->_me->getSystemsByPrivilege('SecurityAuthorization', 'read');
+        $systems = $this->_me->getSystemsByPrivilege('security_authorization', 'read');
         $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('sysOrgId')->addMultiOptions($selectArray);
         
