@@ -88,6 +88,11 @@ class Version81 extends Doctrine_Migration_Base
      */
     public function postUp()
     {
+        // Regenerate models so that we can instantiate new SecurityControlEnhancement objects
+        $task = new Doctrine_Task_GenerateModelsYaml();
+        $task->setArguments(Zend_Registry::get('doctrine_config'));
+        $task->execute();
+
         // Get securityControlId
         $securityControlIds = Doctrine_Query::CREATE()
                               ->select('securityControlId')
@@ -219,7 +224,7 @@ class Version81 extends Doctrine_Migration_Base
 
         // Rev2_MP_06_E2
         $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
+        $enhancement->number = 2;
         $enhancement->level = 'HIGH';
         $enhancement->description = 'The organization periodically tests sanitization equipment and procedures to '
                                   . 'verify correct performance.';
