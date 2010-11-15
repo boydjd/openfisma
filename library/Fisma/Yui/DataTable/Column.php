@@ -52,13 +52,6 @@ class Fisma_Yui_DataTable_Column
     private $_formatter;
 
     /**
-     * An array of parameters passed to the formatter function
-     *
-     * @var array
-     */
-    private $_formatterParameters;
-
-    /**
      * A parser for this column
      * 
      * @var string
@@ -85,23 +78,15 @@ class Fisma_Yui_DataTable_Column
      * @param string $label A human-friendly label for this column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
-     * @param mixed $formatterParams A scalar or array of parameters passed to the formatter
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      * @param bool $hidden Whether column should be hidden
-     * @param string $parser The name of a javascript parser function to use on this column.
+     * @param string $parser The parser used when sorting this column. May be set to string or number.
      */
-    public function __construct($label, 
-                                $sortable, 
-                                $formatter = null, 
-                                $formatterParams = null, 
-                                $name = null, 
-                                $hidden = false,
-                                $parser = 'string')
+    public function __construct($label, $sortable, $formatter = null, $name = null, $hidden = false, $parser = 'string')
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
         $this->_formatter = $formatter;
-        $this->_formatterParameters = $formatterParams;
         $this->_hidden = $hidden;
         $this->_parser = $parser;
         
@@ -138,16 +123,6 @@ class Fisma_Yui_DataTable_Column
     public function getFormatter()
     {
         return $this->_formatter;
-    }
-
-    /**
-     * Accessor for $_formatterParameters
-     *
-     * @return string
-     */
-    public function getFormatterParameters()
-    {
-        return $this->_formatterParameters;
     }
 
     /**

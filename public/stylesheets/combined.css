@@ -376,10 +376,6 @@ div.queuedIncidentStep div.incidentCardinality {
     border: 2px solid gray;
     border-bottom: none;    
     color: gray;
-}
-
-tr.incidentStep {
-    border-top: 1px dotted silver;
 }/**
  * The module screen is used to enable/disable individual components in OpenFISMA
  */
@@ -397,84 +393,6 @@ table.modules td {
 
 table.modules td:first-child {
 	font-weight: bold;
-}
-/* @override http://openfisma/stylesheets/Search.css */
-
-/* Search UI */
-.searchBox {
-    background-color: #ebebeb;
-    margin: 10px auto;
-    border: 1px solid #cecece;
-    padding: 5px 10px;
-}
-
-.searchBox #keywords {
-    width: 15em;
-}
-
-/* Style for boxes that are displayed underneath the main search box, such as "advanced search" */
-.searchBoxAdditional {
-    margin-top: -11px;
-    border-top: 1px solid #cecece;
-}
-
-.searchBox input[type=text] {
-	position: relative;
-	top: -.4em;
-    border: 1px solid #808080;
-    background-color: white;
-    height: 1.7em;
-    margin-left: 2px;
-    width: 20em;
-}
-
-.searchBox p {
-    font-weight: bold;
-    margin: 3px 0px;
-}
-
-.searchBox input[type=text].date {
-    background: url(/images/calendar.png) no-repeat 98%;
-    background-color: white;
-    width: 10em;
-}
-
-.searchBox input[type=text].integer, .searchBox input[type=text].float {
-	width: 10em;
-}
-
-.searchCriteria {    
-    border-top: 1px dotted #bfbfbf;
-    max-width: 50em;
-    padding-top: 5px;
-    padding-bottom: 3px;
-    -margin-left: auto;
-    margin-right: auto;
-}
-
-.searchCriteria:first-child {
-    border: none;
-}
-
-.searchQueryButtons {
-    float: right;
-}
-
-.searchAddCriteriaButton {
-    background: url(/images/add.png) center center no-repeat; 
-    overflow: hidden; 
-    width: 2em;
-}
-
-.searchRemoveCriteriaButton {
-    background: url(/images/remove.png) center center no-repeat; 
-    overflow: hidden; 
-    width: 2em;
-}
-
-/* The style for highlighted text matching search results */
-.highlight {
-    background-color: yellow;
 }
 /* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
 
@@ -739,6 +657,28 @@ div#footerLinks {
     float: right;
 }
 
+/* Used to display search criteria & filters at the top of various pages */
+.searchFilters {
+	text-align: center;
+    background-color: #ebebeb;
+    margin: 10px auto;
+    border: 1px solid #cecece;
+    padding: 5px 10px;
+}
+
+.searchField {
+    position: relative;
+    top: -5px;
+}
+
+.searchField label {
+    display: none;
+}
+
+.searchFilters select {
+    margin-right: 10px;
+}
+
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
 table.keyValues tr:nth-child(even) {
@@ -892,6 +832,11 @@ table.fisma_crud ul li {
 div.notice p {
     text-align:left;
     padding: 5px 20px;
+}
+
+/* This is the style for highlight the search keyword. */
+.highlight {
+    background-color: yellow;
 }
 
 #help_tips{

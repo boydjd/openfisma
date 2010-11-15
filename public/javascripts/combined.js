@@ -824,24 +824,6 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
-    
-    if (zfDebugYuiLoggingTab) {
-        var logReader = new YAHOO.widget.LogReader(
-            zfDebugYuiLoggingTab, 
-            {
-                draggable : false,
-                verboseOutput : false,
-                width : '95%'
-            }
-        );
-        
-        logReader.hideCategory("info");
-        logReader.hideCategory("time");
-        logReader.hideCategory("window");
-        logReader.hideCategory("iframe");
-    }
-    
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
@@ -1120,6 +1102,96 @@ function addBookmark(obj, url){
     } else {
         alert("Your browser does not support automatic bookmarks. Please try to bookmark this page manually instead.");
     }
+}
+
+/**
+ * A hastily written helper function for highlightWord() that iterates over an array of keywords
+ */
+function highlight(node, keywords) {
+    // Sometimes keyword is blank... in that case, just return
+    if ('' == keywords) {
+        return;
+    }
+    
+    // Sort in reverse. If a word is a fragment of another word on this list, it will highlight the larger
+    // word first
+    keywords.sort();
+    keywords.reverse();
+
+    // Highlight each word
+    for (var i in keywords) {
+        highlightWord(node, keywords[i]);
+    }
+}
+
+/**
+ * Recursively searches the dom for a keyword and highlights it by appliying a class selector called
+ * 'highlight'
+ *
+ * @param node object
+ * @param keyword string
+ */ 
+function highlightWord(node, keyword) {
+	// Iterate into this nodes childNodes
+	if (node && node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			highlightWord(node.childNodes[hi_cn],keyword);
+		}
+	}
+
+	// And do this node itself
+	if (node && node.nodeType == 3) { // text node
+		tempNodeVal = node.nodeValue.toLowerCase();
+		tempWordVal = keyword.toLowerCase();
+		if (tempNodeVal.indexOf(tempWordVal) != -1) {
+			pn = node.parentNode;
+			if (pn.className != "highlight") {
+				// keyword has not already been highlighted!
+				nv = node.nodeValue;
+				ni = tempNodeVal.indexOf(tempWordVal);
+				// Create a load of replacement nodes
+				before = document.createTextNode(nv.substr(0,ni));
+				docWordVal = nv.substr(ni,keyword.length);
+				after = document.createTextNode(nv.substr(ni+keyword.length));
+				hiwordtext = document.createTextNode(docWordVal);
+				hiword = document.createElement("span");
+				hiword.className = "highlight";
+				hiword.appendChild(hiwordtext);
+				pn.insertBefore(before,node);
+				pn.insertBefore(hiword,node);
+				pn.insertBefore(after,node);
+				pn.removeChild(node);
+			}
+		}
+	}
+}
+
+/**
+ * Remove the highlight attribute from the editable textarea on remediation detail page
+ *
+ * @param node object 
+ */
+function removeHighlight(node) {
+	// Iterate into this nodes childNodes
+	if (node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			removeHighlight(node.childNodes[hi_cn]);
+		}
+	}
+
+	// And do this node itself
+	if (node.nodeType == 3) { // text node
+		pn = node.parentNode;
+		if( pn.className == "highlight" ) {
+			prevSib = pn.previousSibling;
+			nextSib = pn.nextSibling;
+			nextSib.nodeValue = prevSib.nodeValue + node.nodeValue + nextSib.nodeValue;
+			prevSib.nodeValue = '';
+			node.nodeValue = '';
+		}
+	}
 }
 
 function switchYear(step){
@@ -1449,6 +1521,7 @@ YAHOO.fisma.CheckboxTree.handleClick = function(clickedBox, event)
 function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
+        removeHighlight(document);
         var t_name = this.getAttribute('target');
         YAHOO.util.Dom.removeClass(this, 'editable'); 
         this.removeAttribute('target');
@@ -1476,7 +1549,7 @@ function setupEditFields() {
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
                      calendarIcon = document.createElement('img');
                      calendarIcon.id = t_name + "_show";
-                     calendarIcon.src = "/images/calendar.png";
+                     calendarIcon.src = "/images/calendar.gif";
                      calendarIcon.alt = "Calendar";
                      target.parentNode.appendChild(calendarIcon);
                      YAHOO.util.Event.on(t_name+'_show', "click", function() {
@@ -2680,79 +2753,6 @@ Fisma.Blinker.prototype.cycle = function () {
     }
 }
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Renders different types of search criteria
- * 
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
- 
-Fisma.Calendar = function () {
-    return {
-        /**
-         * Add a popup calendar to any text field.
-         * 
-         * @param textEl
-         */
-        addCalendarPopupToTextField : function (textEl) {
-            var popupCalendarDiv = document.createElement('div');
-            popupCalendarDiv.style.position = 'absolute';
-            popupCalendarDiv.style.zIndex = 99;
-            textEl.parentNode.appendChild(popupCalendarDiv);
-
-            var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
-            var calendarPosition = [
-                textFieldPosition.left,
-                textFieldPosition.bottom + 5
-            ];
-
-            YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
-
-            var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
-            calendar.hide();
-            
-            // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
-            setTimeout(function () {calendar.render();}, 0);
-
-            textEl.onfocus = function () {calendar.show()};
-
-            var handleSelect = function (type, args, obj) {
-                var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
-
-                if (1 == month.length) {
-                    month = "0" + month;
-                }
-
-                if (1 == day.length) {
-                    day = "0" + day;
-                }
-
-                textEl.value = year + '-' + month + '-' + day;
-
-                calendar.hide();
-            }
-
-            calendar.selectEvent.subscribe(handleSelect, calendar, true);            
-        }
-    };
-}();
-/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3682,7 +3682,7 @@ Fisma.FindingSummary = function() {
                         // The in between columns should have the ontime class
                         cell.className = 'onTime';                
                     }
-                    this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    this.updateCellCount(cell, count, node.id, c, 'ontime', node.expanded);
                 }
 
                 // Now add cells to the second row
@@ -3690,7 +3690,7 @@ Fisma.FindingSummary = function() {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, c, 'overdue', node.expanded);
+                    this.updateCellCount(cell, count, node.id, c, 'overdue', node.expanded);
                 }
 
                 // Hide both rows by default
@@ -3750,7 +3750,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.id, c, 'ontime', true);
                 i++;
             }
 
@@ -3761,7 +3761,7 @@ Fisma.FindingSummary = function() {
                 var i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.id, c, 'overdue', true);
                     i++;
                 }
             } else {
@@ -3805,7 +3805,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.id, c, 'ontime', false);
                 i++;
             }
 
@@ -3821,7 +3821,7 @@ Fisma.FindingSummary = function() {
                 var i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.id, c, 'overdue', false);
                     i++;
                 }
             }
@@ -3958,16 +3958,16 @@ Fisma.FindingSummary = function() {
          * 
          * @param cell An HTML table cell
          * @param count The count to display
-         * @param orgName Used to generate link
+         * @param orgId Used to generate link
          * @param ontime Used to generate link
          * @param expanded Used to generate link
          */
-        updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+        updateCellCount : function (cell, count, orgId, status, ontime, expanded) {
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
                     var link = document.createElement('a');
-                    link.href = this.makeLink(orgName, status, ontime, expanded);
+                    link.href = this.makeLink(orgId, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
                 } else {
@@ -3980,7 +3980,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Update the anchor text
                         cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, status, ontime, expanded);
+                        cell.firstChild.href = this.makeLink(orgId, status, ontime, expanded);
                     } else {
                         // Remove the anchor
                         cell.removeChild(cell.firstChild);
@@ -3992,7 +3992,7 @@ Fisma.FindingSummary = function() {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
                         var link = document.createElement('a');
-                        link.href = this.makeLink(orgName, status, ontime, expanded);
+                        link.href = this.makeLink(orgId, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
                     } else {
@@ -4008,56 +4008,47 @@ Fisma.FindingSummary = function() {
          * 
          * These search engine uses these parameters to filter the search based on the cell that was clicked
          * 
-         * @param orgName
+         * @param orgId
          * @param status
          * @param ontime
          * @param expanded
          * @return String URI
          */
-        makeLink : function (orgName, status, ontime, expanded) {
+        makeLink : function (orgId, status, ontime, expanded) {
             // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
             var onTimeString = '';
             if (!(status == 'CLOSED' || status == 'TOTAL')) {
-                var now = new Date();
-                
-                var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
-
-                if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
-                } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
-                }
+                var onTimeString = '/ontime/' + ontime;
             }
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+            if (status != '') {
+                statusString = '/status/' + escape(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/enumIs/' + this.filterType;
+            if (!YAHOO.lang.isNull(this.filterType) 
+                && this.filterType != '') {
+                filterType = '/type/' + this.filterType;
             }
-
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+            if (!YAHOO.lang.isNull(this.filterSource)
+                && this.filterSource != '') {
+                filterSource = '/sourceId/' + this.filterSource;
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
+            var uri = '/finding/remediation/search'
                     + onTimeString
                     + statusString
+                    + '/responsibleOrganizationId/'
+                    + orgId
+                    + '/expanded/'
+                    + expanded
                     + filterType
                     + filterSource;
-
-            if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
-            } else {
-                uri += '/organization/organizationSubtree/' + orgName;
-            }
 
             return uri;            
         }, 
@@ -4099,174 +4090,6 @@ Fisma.FindingSummary = function() {
         }
     };
 };
-/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Highlighting utility for HTML DOM
- * 
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-/**
- * This class is still experimental. It was written for the search results highlighting and then refactored into its own
- * class, but it still makes a number of assumptions about how highlighting is performed and what the DOM will look
- * like when we try to highlight it. It needs some work to become a general-purpose highlighting utility class.
- */
-Fisma.Highlighter = function() {
-    return {
-        
-        /**
-         * Highlights delimited text in specified HTML elements
-         * 
-         * The element to be highlighted must contain matching pairs of delimiters. This method replaces the text in 
-         * between each pair of delimiters with highlighted text and then removes the pair of delimiters.
-         * 
-         * The method is recursive and will replace all instances of delimited text.
-         * 
-         * @param elements Array of HTML elements
-         * @param delimiter Phrases delimted with this string will be replaced with highlighted text
-         */
-        highlightDelimitedText : function (elements, delimiter) {
-
-            var escapedDelimiter = Fisma.Util.escapeRegexValue(delimiter);
-
-            var regex = new RegExp("^(.*?)" 
-                                   + escapedDelimiter
-                                   + "(.*?)"
-                                   + escapedDelimiter
-                                   + "(.*?)$");
-
-            for (var i in elements) {
-                var element = elements[i];
-
-                // Skip empty table cells
-                if (!element.firstChild || !element.firstChild.firstChild) {
-                    continue;
-                }
-
-                var parentNode = element.firstChild;
-                
-                // Don't try to highlight non-text nodes (text nodeType is 3 -- can't find a named constant for it)
-                if (parentNode && parentNode.firstChild && parentNode.firstChild.nodeType != 3) {
-                    continue;
-                }
-
-                var textNode = parentNode.firstChild;
-                var cellText = textNode.nodeValue;
-
-                var matches = this._getDelimitedRegexMatches(cellText, regex);
-
-                this._highlightMatches(parentNode, matches);
-            }
-        },
-        
-        /**
-         * A helper function that returns a list of text snippets matching a regex
-         * 
-         * The regex is assumed to be looking for a particular delimiter, in the form:
-         *     (some text)delimiter(highlighted text)delimiter(some more text)
-         * 
-         * This function returns a list of text snippets with an odd length. Every 2nd snippet in this list is one
-         * that was matched between delimiters and, therefore, needs to be highlighted. (If there are no snippets to
-         * be highlighted, then the list returned will have length==1.)
-         *
-         * @param text The string to match
-         * @param regex The regex to use for the match. It must have 3 parenthetical expressions. (see example above)
-         */
-        _getDelimitedRegexMatches : function (text, regex) {
-
-            // The list of matching snippets that will be returned
-            var matches = [];
-
-            // Used for storing regex matches temporarily
-            var highlightMatches = null;
-
-            // Stores the current text that matching is done against
-            var currentText = text;
-
-            do {
-
-                highlightMatches = currentText.match(regex);
-
-                // Match 3 subexpressions plus the overall match -> 4 total matches
-                if (highlightMatches && highlightMatches.length == 4) {
-
-                    var preMatch = highlightMatches[1];
-                    var highlightMatch = highlightMatches[2];
-                    var postMatch = highlightMatches[3];
-                    
-                    matches.push(preMatch);
-                    matches.push(highlightMatch);
-                    
-                    // The rest of the matching text becomes the input for the next loop iteration, in order to 
-                    // match multiple times on the same input string.
-                    currentText = postMatch;
-                } else {
-
-                    // Any remaining text gets pushed onto the matches list
-                    matches.push(currentText);
-
-                    // If the input text contains a delimiter that doesn't have a matching delimiter, then nothing will     
-                    // ever get matched and we need to break out of the loop or else it will loop indefinitely.
-                    break;
-                }
-                
-            } while (highlightMatches);
-            
-            return matches;
-        },
-        
-        /**
-         * Create highlighted span elements based on a list of matching text snippets
-         * 
-         * @param parentNode The HTML element that is being highlighted
-         * @param matches See the description for getDelimitedRegexMatches() for an explanation of the matches array
-         */
-        _highlightMatches : function (parentNode, matches) {
-
-            if ((matches.length > 1) && (matches.length % 2 == 1)) {
-
-                // Remove current text
-                parentNode.removeChild(parentNode.firstChild);
-
-                // Iterate over matches and create new text nodes (for plain text) and new spans (for highlighted
-                // text)
-                for (var j in matches) {
-                    var match = matches[j];
-
-                    var newTextNode = document.createTextNode(match);
-
-                    if (j % 2 == 0) {
-                        // This is a plaintext node
-                        parentNode.appendChild(newTextNode);
-                    } else {
-                        // This is a highlighted node
-                        var newSpan = document.createElement('span');
-                        newSpan.className = 'highlight';
-                        newSpan.appendChild(newTextNode);
-                        
-                        parentNode.appendChild(newSpan);
-                    }
-                }
-            }
-        }
-    }
-}();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -4425,113 +4248,6 @@ Fisma.Incident = {
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
-    },
-    
-    /**
-     * Given the button element inside an incident workflow step, return the <tr> parent element which contains
-     * the entire step.
-     * 
-     * @param element The button element which was clicked
-     */
-    getIncidentStepParentElement : function (element) {
-        var parent = element.parentNode.parentNode.parentNode;
-        
-        // Sanity check: this must be a <tr> element node
-        var elementNode = 1;
-        if (!(elementNode == parent.nodeType && "TR" == parent.tagName)) {
-            throw "Cannot locate the parent element for this incident step.";
-        }
-        
-        return parent;
-    },
-    
-    /**
-     * Given a reference to a <tr> containing an incidnet workflow step, return the step number of that step.
-     * 
-     * @param trElement The table row element which contains the incident step
-     */
-    getIncidentStepNumber : function(trElement) {
-        var tdEl = trElement.firstChild;
-        
-        // Sanity check: this must be a <tr> element node
-        var elementNode = 1;
-        if (!(elementNode == tdEl.nodeType && "TD" == tdEl.tagName)) {
-            throw "Cannot locate the table data (td) element for this incident step.";
-        }
-        
-        // Use regex to pull out the step number from the label
-        var label = tdEl.firstChild.nodeValue;        
-        var numberMatches = label.match(/\d+/);
-        
-        // Sanity check: should match exactly 1 string of digits
-        if (numberMatches.length != 1) {
-            throw "Not able to locate the step number in the incident step label.";
-        }
-        
-        return numberMatches[0];
-    },
-    
-    /**
-     * Renumber all of the incident steps
-     * 
-     * This takes the table element as a parameter, and it rewrites the label for each table row that has the class
-     * "incidentStep".
-     *
-     * @param tableEl
-     */
-    renumberAllIncidentSteps : function(tableEl) {
-        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', tableEl);
-        var stepNumber = 1;
-        
-        for (var i in trEls) {
-            var trEl = trEls[i];
-            
-            trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";
-            stepNumber++;
-        }
-    },
-    
-    /**
-     * Add an incident step above the current incident step (current refers to the one containing the "Add" button
-     * that was clicked.)
-     * 
-     * @param element The button element that was clicked
-     */
-    addIncidentStepAbove : function (element) {
-        var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
-        
-        rowEl.parentNode.insertBefore(rowElClone, rowEl);
-        
-        this.renumberAllIncidentSteps(rowEl.parentNode);
-        
-        return false;
-    },
-    
-    addIncidentStepBelow : function (element) {
-        var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
-        
-        // There is no "insertAfter" method for DOM elements, so this is a little tricky
-        if (rowEl.nextSibling) {
-            rowEl.parentNode.insertBefore(rowElClone, rowEl.nextSibling);
-        } else {
-            rowEl.parentNode.appendChild(rowElClone);
-        }
-        
-        this.renumberAllIncidentSteps(rowEl.parentNode);
-
-        return false;
-    },
-    
-    removeIncidentStep : function (element) {
-        var rowEl = this.getIncidentStepParentElement(element);
-        
-        rowEl.parentNode.removeChild(rowEl);
-        
-        this.renumberAllIncidentSteps(rowEl.parentNode);
-        
-        return false; 
     }
 };
 /**
@@ -4678,7 +4394,7 @@ Fisma.Module = {
     handleAsyncResponse : function (response) {
 
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(response.responseText).response;
+            var responseStatus = YAHOO.lang.JSON.parse(response.responseText);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object
@@ -4956,1728 +4672,6 @@ Fisma.Remediation = {
     }
 }
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
- * {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Various client side behaviors related to search functionality
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-Fisma.Search = function() {
-    return {
-
-        /**
-         * A reference to the YUI data table which is used for displaying search results
-         */
-        yuiDataTable : null,
-
-        /**
-         * A callback function which is called when the YUI data table reference is set
-         */
-        onSetTableCallback : null,
-
-        /**
-         * True if the test configuration process is currently running
-         */
-        testConfigurationActive : false,
-
-        /**
-         * Advanced search panel
-         */
-        advancedSearchPanel : null,
-
-        /**
-         * A spinner that is display while persising the user's column preferences cookie
-         */
-        columnPreferencesSpinner : null,
-        
-        /**
-         * A boolean which determines whether soft-deleted items are displayed in search results
-         */
-        showDeletedRecords : false,
-
-        /**
-         * Test the current system configuration
-         */
-        testConfiguration : function () {
-
-            if (Fisma.Search.testConfigurationActive) {
-                return;
-            }
-
-            Fisma.Search.testConfigurationActive = true;
-
-            var testConfigurationButton = document.getElementById('testConfiguration');
-            testConfigurationButton.className = "yui-button yui-push-button yui-button-disabled";
-
-            var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
-            spinner.show();
-
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
-
-            YAHOO.util.Connect.asyncRequest(
-                'POST',
-                '/config/test-search/format/json',
-                {
-                    success : function (o) {
-                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
-
-                        if (response.success) {
-                            message("Search configuration is valid", "notice", true);
-                        } else {
-                            message(response.message, "warning", true);
-                        }
-
-                        testConfigurationButton.className = "yui-button yui-push-button";
-                        Fisma.Search.testConfigurationActive = false;
-                        spinner.hide();
-                    },
-
-                    failure : function (o) {
-                        message('Error: ' + o.statusText, 'warning');
-
-                        spinner.hide();
-                    }
-                }
-            );
-        },
-
-        /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
-         *
-         * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
-         * two to use while handling this event.
-         *
-         * @param form Reference to the search form
-         */
-        handleSearchEvent : function (form) {
-            var dataTable = Fisma.Search.yuiDataTable;
-
-            var onDataTableRefresh = {
-                success : function (request, response, payload) {
-                    dataTable.onDataReturnReplaceRows(request, response, payload);
-
-                    // Update YUI's visual state to show sort on first data column
-                    var sortColumnIndex = 0;
-                    var sortColumn;
-                    
-                    do {
-                        sortColumn = dataTable.getColumn(sortColumnIndex);
-                        
-                        sortColumnIndex++;
-                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
-                },
-                failure : dataTable.onDataReturnReplaceRows,
-                scope : dataTable,
-                argument : dataTable.getState()
-            }
-
-            // Construct a query URL based on whether this is a simple or advanced search
-            try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
-
-                dataTable.showTableMessage("Loading...");
-
-                var dataSource = dataTable.getDataSource();
-                dataSource.connMethodPost = true;
-                dataSource.sendRequest(postData, onDataTableRefresh);
-            } catch (error) {
-                // If a string is thrown, then display that string to the user
-                if ('string' == typeof error) {
-                    alert(error);
-                }
-            }
-        },
-
-        /**
-         * Returns a POST request suitable for submitting a search query
-         *
-         * @var form A reference to the form
-         * @return Key value pairs (object) of query data
-         */
-        getQuery : function (form) {
-            var searchType = document.getElementById('searchType').value;
-            var query = {queryType : searchType};
-
-            if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
-            } else if ('advanced' == searchType) {
-                var queryData = this.advancedSearchPanel.getQuery();
-
-                query['query'] = YAHOO.lang.JSON.stringify(queryData);
-            } else {
-                throw "Invalid value for search type: " + searchType;
-            }
-
-            query['showDeleted'] = this.showDeletedRecords;
-            
-            query['csrf'] = document.getElementById('searchForm').csrf.value;
-            
-            return query;
-        },
-
-        /**
-         * Convert an array of key value pairs into URL encoded post data
-         *
-         * @var object
-         * @return string
-         */
-        convertQueryToPostData : function (object) {
-
-            var uriComponents = Array();
-
-            for (var key in object) {
-                var value = object[key];
-
-                uriComponents.push(key + "=" + encodeURIComponent(value));
-            }
-
-            var postData = uriComponents.join('&');
-
-            return postData;
-        },
-
-        /**
-         * Download current search results into a file attachment (such as PDF or Excel)
-         *
-         * This function operates by creating a hidden form on the page and then calling submit() on that form.
-         *
-         * @var event Provided by YUI
-         * @var format Either "pdf" or "xls"
-         */
-        exportToFile : function (event, format) {
-            var searchForm = document.getElementById('searchForm');
-
-            // The form's action is based on the data table's data source
-            var table = Fisma.Search.yuiDataTable;
-            var dataSource = table.getDataSource();
-            var baseUrl = dataSource.liveData;
-
-            // Create a hidden form for submitting the request
-            var tempForm = document.createElement('form');
-
-            tempForm.method = 'post';
-            tempForm.action = baseUrl + '/format/' + format;
-            tempForm.style.display = 'none';
-
-            var query = Fisma.Search.getQuery(searchForm);
-
-            // Create a hidden form element for each piece of post data
-            for (var key in query) {
-                var value = query[key];
-
-                var hiddenField = document.createElement('input');
-
-                hiddenField.type = 'hidden';
-                hiddenField.name = key;
-                hiddenField.value = value;
-
-                tempForm.appendChild(hiddenField);
-            }
-
-            document.body.appendChild(tempForm);
-            tempForm.submit();
-        },
-
-        /**
-         * Handle YUI data table events (such as sort)
-         *
-         * @param tableState From YUI
-         * @param table From YUI
-         * @return string URL encoded post data
-         */
-        handleYuiDataTableEvent : function (tableState, table) {
-
-            var searchType = document.getElementById('searchType').value;
-
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
-
-            if ('simple' == searchType) {
-                postData += "&queryType=simple&keywords=" 
-                          + document.getElementById('keywords').value;
-            } else if ('advanced' == searchType) {
-                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                postData += "&queryType=advanced&query=" 
-                          + YAHOO.lang.JSON.stringify(queryData);
-            } else {
-                throw "Invalid value for search type: " + searchType;
-            }
-
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
-            table.getDataSource().connMethodPost = true;
-
-            return postData;
-        },
-
-        /**
-         * Highlight marked words in the search results table
-         *
-         * Due to a quirk in Solr, highlights are delimited by three asterisks ***. This method just has to go
-         * through and find the asterisks, strip them out, and replace the content between them with highlighted text.
-         *
-         * @param dataTable The YUI data table to perform highlighting on
-         */
-        highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
-
-            var tbody = dataTable.getTbodyEl();
-
-            var cells = tbody.getElementsByTagName('td');
-
-            var delimiter = '***';
-
-            Fisma.Highlighter.highlightDelimitedText(cells, delimiter);
-        },
-
-        /**
-         * Show or hide the advanced search options UI
-         */
-        toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
-            } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
-
-            }
-        },
-
-        /**
-         * Show or hide the search columns UI
-         */
-        toggleSearchColumnsPanel : function () {
-            if (document.getElementById('searchColumns').style.display == 'none') {
-                document.getElementById('searchColumns').style.display = 'block';
-            } else {
-                document.getElementById('searchColumns').style.display = 'none';
-            }
-        },
-
-        /**
-         * Initialize the search columns UI
-         *
-         * @param container The HTML element to render into
-         * @param searchOptions The options defined in Fisma_Search_Searchable interface
-         */
-        initializeSearchColumnsPanel : function (container, searchOptions) {
-
-            // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-            var currentColumn = 0;
-
-            for (var index in searchOptions) {
-                var searchOption = searchOptions[index];
-
-                if (searchOption['hidden'] === true) {
-                    continue;
-                }
-
-                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
-                var checked = searchOption.initiallyVisible;
-
-                if (cookie) {
-                    checked = (cookie & 1 << currentColumn) != 0;
-                }
-
-                currentColumn++;
-
-                // Title elements used for accessibility
-                var checkedTitle = "Column is visible. Click to hide column.";
-                var uncheckedTitle = "Column is hidden. Click to unhide column.";
-
-                var columnToggleButton = new YAHOO.widget.Button({
-                    type : "checkbox",
-                    label : searchOption.label,
-                    container : container,
-                    checked : checked,
-                    onclick : {
-                        fn : function (event, columnKey) {
-                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
-
-                            var table = Fisma.Search.yuiDataTable;
-                            var column = table.getColumn(columnKey);
-
-                            if (this.get('checked')) {
-                                table.showColumn(column);
-                            } else {
-                                table.hideColumn(column);
-                            }
-
-                            Fisma.Search.saveColumnCookies();
-                        },
-                        obj : searchOption.name
-                    }
-                });
-
-                columnToggleButton.set("title", checked ? checkedTitle : uncheckedTitle);
-            }
-
-            var saveDiv = document.createElement('div');
-            saveDiv.style.marginLeft = '20px';
-            saveDiv.style.marginBottom = '20px';
-            // The following line trips up YUI compressor if object notation (.) is used instead of array []
-            saveDiv.style['float'] = 'right';
-
-            // Create the Save button
-            var saveButton = new YAHOO.widget.Button({
-                type : "button",
-                label : "Save Column Preferences",
-                container : saveDiv,
-                onclick : {
-                    fn : Fisma.Search.persistColumnCookie
-                }
-            });
-
-            if (!Fisma.Search.columnPreferencesSpinner) {
-                Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(saveDiv);
-            }
-
-            container.appendChild(saveDiv);
-        },
-
-        /**
-         * Toggles the display of the "more" options for search
-         *
-         * This includes things like help, column toggles, and advanced search
-         */
-        toggleMoreButton : function () {
-            if (document.getElementById('moreSearchOptions').style.display == 'none') {
-                document.getElementById('moreSearchOptions').style.display = 'block';
-            } else {
-                document.getElementById('moreSearchOptions').style.display = 'none';
-            }
-        },
-
-        /**
-         * Save the currently visible columns into a cookie
-         *
-         * @param table YUI Table
-         */
-        saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTable;
-            var columnKeys = table.getColumnSet().keys;
-
-            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
-            var prefBitmap = 0;
-            var currentColumn = 0;
-
-            for (var column in columnKeys) {
-                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
-                    continue;
-                }
-
-                if (!columnKeys[column].hidden) {
-                    prefBitmap |= 1 << currentColumn;
-                }
-                
-                currentColumn++;
-            }
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-
-            YAHOO.util.Cookie.set(
-                cookieName,
-                prefBitmap,
-                {
-                    path : "/",
-                    secure : location.protocol == 'https'
-                }
-            );
-        },
-
-        /**
-         * Persist the column cookie into the user's profile
-         */
-        persistColumnCookie : function () {
-            Fisma.Search.saveColumnCookies();
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-
-            Fisma.Search.columnPreferencesSpinner.show();
-
-            YAHOO.util.Connect.asyncRequest(
-                'GET',
-                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
-                {
-                    success : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        var response = YAHOO.lang.JSON.parse(o.responseText);
-
-                        if (response.success) {
-                            message("Your column preferences have been saved", "notice");
-                        } else {
-                            message(response.message, "warning");
-                        }
-                    },
-
-                    failure : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        message('Error: ' + o.statusText, 'warning');
-                    }
-                }
-            );
-        },
-
-        /**
-         * Toggle the boolean value which controls whether deleted records are shown
-         */
-        toggleShowDeletedRecords : function () {
-            Fisma.Search.showDeletedRecords = !Fisma.Search.showDeletedRecords;
-            
-            var searchForm = document.getElementById('searchForm');
-
-            Fisma.Search.handleSearchEvent(searchForm);
-        },
-        
-        /**
-         * Delete the records selected in the YUI data table
-         */
-        deleteSelectedRecords : function () {
-            var checkedRecords = [];
-            var dataTable = Fisma.Search.yuiDataTable;
-            var selectedRows = dataTable.getSelectedRows();
-            
-            // Create an array containing the PKs of records to delete
-            for (var i = 0; i < selectedRows.length; i++) {
-                var record = dataTable.getRecord(selectedRows[i]);
-
-                if (record) {
-                    checkedRecords.push(record.getData('id'));
-                }
-            }
-            
-            // Do some sanity checking
-            if (0 == checkedRecords.length) {
-                message("No records selected for deletion.", "warning", true);
-                
-                return;
-            }
-            
-            if (!confirm("Delete " + checkedRecords.length + " records?")) {
-                return;
-            }
-
-            // Derive the URL for the multi-delete action
-            var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
-            var urlPieces = searchUrl.split('/');
-            
-            urlPieces[urlPieces.length-1] = 'multi-delete';
-            
-            var multiDeleteUrl = urlPieces.join('/');
-            
-            // Submit request to delete records        
-            YAHOO.util.Connect.asyncRequest(
-                'POST', 
-                multiDeleteUrl,
-                {
-                    success : function(o) {
-                        var messages = [];
-        
-                        if (o.responseText !== undefined) {
-                            var response = YAHOO.lang.JSON.parse(o.responseText);
-                            
-                            message(response.msg, response.status, true);
-                        }
-                        
-                        // Refresh search results
-                        var searchForm = document.getElementById('searchForm');
-                        Fisma.Search.handleSearchEvent(searchForm);
-                    },
-                    failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
-                        message(text, "warning", true);
-                    }
-                },
-                "records=" + YAHOO.lang.JSON.stringify(checkedRecords)
-            );
-        },
-        
-        /**
-         * A method to add a YUI table to the "registry" that this object keeps track of
-         *
-         * @var table A YUI table
-         */
-        setTable : function (table) {
-            this.yuiDataTable = table;
-
-            if (this.onSetTableCallback) {
-                this.onSetTableCallback();
-            }
-        },
-
-        /**
-         * Set a callback function to call when the YUI table gets set (see setTable)
-         */
-        onSetTable : function(callback) {
-            this.onSetTableCallback = callback;
-        }
-    }
-}();
-/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
- * {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Implements a single criteria row in the advanced search interface
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-/**
- * Constructor
- *
- * @param searchPanel The search panel object that created this criteria object
- * @param fields List of fields and data types that are searchable
- */
-Fisma.Search.Criteria = function (searchPanel, fields) {
-    this.fields = fields;
-    this.searchPanel = searchPanel;
-};
-
-Fisma.Search.Criteria.prototype = {
-
-    /**
-     * The HTML element to render this widget into
-     */
-    container : null,
-
-    /**
-     * The type of the currently selected query
-     */
-    currentQueryType : null,
-
-    /**
-     * An array of field descriptions
-     */
-    fields : null,
-
-    /**
-     * Metadata about the currently selected field
-     */
-    currentField : null,
-
-    /**
-     * A reference to the search panel that this criteria widget is a part of
-     */
-    searchPanel : null,
-
-    /**
-     * The HTML element that holds the query field selection UI.
-     *
-     * The query field is the field on the model which this criteria applies to.
-     */
-    queryFieldContainer : null,
-
-    /**
-     * The HTML element that the holds query type selection UI.
-     *
-     * The query type refers to the type of criteria applied to the current field, such as "Contains" or
-     * "Greater Than".
-     */
-    queryTypeContainer : null,
-
-    /**
-     * The HTML element that holds the query input parameter UI.
-     *
-     * The query input is the user-supplied value to search for, such as a keyword or a range of date values
-     */
-    queryInputContainer : null,
-
-    /**
-     * The HTML element that holds the add/remove buttons UI.
-     *
-     * These buttons are used to add and remove criteria rows, respectively.
-     */
-    buttonsContainer : null,
-
-    /**
-     * A reference to the remove button
-     */
-    removeButton : null,
-
-    /**
-     * Holds current enum values if the currently selected criterion is an enum field (null otherwise)
-     */
-    enumValues : null,
-
-    /**
-     * Render the criteria widget
-     *
-     * @param fieldName The name of the field to select (Required)
-     * @param operator The name of the operator to select (Optional)
-     * @param operands Values of operands to fill in (Optional)
-     * @return An HTML element containing the search criteria widget
-     */
-    render : function (fieldName, operator, operands) {
-
-        this.container = document.createElement('div');
-
-        this.container.className = "searchCriteria";
-
-        this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
-
-        this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
-
-        this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
-
-        this.buttonsContainer = document.createElement('span');
-        this.buttonsContainer.className = "searchQueryButtons";
-        this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
-
-        var clearDiv = document.createElement('div');
-
-        clearDiv.className = "clear";
-
-        this.container.appendChild(clearDiv);
-
-        return this.container;
-    },
-
-    /**
-     * Renders a YUI menu button that behaves like a select element. This element is where the user selects the field
-     * to query on.
-     *
-     * @param container The HTML element to render into
-     * @param fieldName The name of the default field
-     */
-    renderQueryField : function (container, fieldName) {
-
-        var that = this;
-
-        var menuItems = new Array();
-        var menuButton;
-
-        // This event handler makes the menu button behave like a popup menu
-        var handleQueryFieldSelectionEvent = function (type, args, item) {
-
-            var newLabel = item.cfg.getProperty("text");
-
-            for (var index in that.fields) {
-                var field = that.fields[index];
-
-                if (item.value == field.name) {
-
-                    // If a widget is already displayed that still applies to this new field, then leave it alone
-                    // (Re-rendering it will set it back to its initial state, which is an annoying behavior.)
-                    var refreshQueryType = true;
-                    var refreshQueryInput = true;
-
-                    if (that.getCriteriaDefinition(field) == that.getCriteriaDefinition(that.currentField)) {
-                        refreshQueryType = false;
-                    }
-                    
-                    if ('enum' == field.type) {
-                        refreshQueryInput = true;
-                    }
-
-                    that.currentField = field;
-
-                    that.enumValues = field.enumValues;
-
-                    if (refreshQueryType) {
-                        that.renderQueryType(that.queryTypeContainer);
-                    }
-                    
-                    if (refreshQueryInput) {
-                        that.renderQueryInput(that.queryInputContainer);
-                    }
-
-                    break;
-                }
-            }
-
-            menuButton.set("label", field.label);
-        };
-
-        // Convert field list to menu items
-        for (var index in this.fields) {
-            var field = this.fields[index];
-
-            menuItems.push({
-                text : field.label,
-                value : field.name,
-                onclick : {fn : handleQueryFieldSelectionEvent}
-            });
-        }
-
-        // Render menu button
-        this.currentField = this.getField(fieldName);
-
-        menuButton = new YAHOO.widget.Button({
-            type : "menu",
-            label : this.currentField.label,
-            menu : menuItems,
-            container : container
-        });
-    },
-
-    /**
-     * Render the query type menu based on the current item's type
-     *
-     * @param container The HTML element to render into
-     * @param operator The default operator (optional)
-     */
-    renderQueryType : function (container, operator) {
-
-        // Remove any existing content in this container
-        if (container.firstChild) {
-            while (container.hasChildNodes()) {
-                container.removeChild(container.firstChild);
-            }
-        }
-
-        var that = this;
-
-        // This event handler makes the menu button behave like a popup menu
-        var handleQueryTypeSelectionEvent = function (type, args, item) {
-            var newLabel = item.cfg.getProperty("text");
-
-            var criteria = that.getCriteriaDefinition(that.currentField);
-            var oldRenderer = criteria[that.currentQueryType].renderer;
-            var newRenderer = criteria[item.value].renderer;
-
-            that.currentQueryType = item.value;
-
-            if (oldRenderer != newRenderer || 'enum' == that.currentField.type) {
-                that.renderQueryInput(that.queryInputContainer);
-            }
-
-            menuButton.set("label", newLabel);
-        };
-
-        // Load the criteria definition
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        // Create the select menu
-        var menuItems = new Array();
-
-        for (var criteriaType in criteriaDefinitions) {
-            var criteriaDefinition = criteriaDefinitions[criteriaType];
-
-            menuItem = {
-                text : criteriaDefinition.label,
-                value : criteriaType,
-                onclick : {fn : handleQueryTypeSelectionEvent}
-            };
-
-            menuItems.push(menuItem);
-
-            if (criteriaDefinition.isDefault) {
-                this.currentQueryType = criteriaType;
-            }
-        }
-
-        // If the operator is specified, it overrules the 'default' designation in the criteria definitions
-        if (operator) {
-            this.currentQueryType = operator;
-        }
-
-        // Render menu button
-        var menuButton = new YAHOO.widget.Button({
-            type : "menu",
-            label : criteriaDefinitions[this.currentQueryType].label,
-            menu : menuItems,
-            container : container
-        });
-    },
-
-    /**
-     * Render the actual query criteria fields based on the query's type
-     *
-     * @param container The HTML element that contains the query fields
-     * @param operands An array of operands to set the inputs' values to
-     */
-    renderQueryInput : function (container, operands) {
-
-        // Remove any existing content in this container
-        if (container.firstChild) {
-            while (container.hasChildNodes()) {
-                container.removeChild(container.firstChild);
-            }
-        }
-
-        // Call the defined renderer for the selected query type
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var rendererName = criteriaDefinitions[this.currentQueryType].renderer;
-        var render = Fisma.Search.CriteriaRenderer[rendererName];
-
-        if ('enum' == this.currentField.type) {
-            render(container, operands, this.currentField.enumValues);
-        } else {
-            render(container, operands);
-        }
-    },
-
-    /**
-     * Render the add/remove buttons that the user uses to create additional search criteria or remove existing
-     * criteria
-     *
-     * @param The HTML element to render into
-     */
-    renderButtons : function (container) {
-
-        var that = this;
-
-        var addButton = new YAHOO.widget.Button({container : container});
-
-        addButton._button.className = "searchAddCriteriaButton";
-        addButton._button.title = "Click to add another search criteria";
-
-        addButton.on(
-            "click",
-            function () {
-                that.searchPanel.addCriteria(that.container);
-            }
-        );
-
-        var removeButton = new YAHOO.widget.Button({container : container});
-
-        removeButton._button.className = "searchRemoveCriteriaButton";
-        removeButton._button.title = "Click to remove this search criteria";
-
-        removeButton.on(
-            "click",
-            function () {
-                that.searchPanel.removeCriteria(that.container);
-            }
-        );
-
-        this.removeButton = removeButton;
-    },
-
-    /**
-     * Get the query data for this criteria in its current state
-     *
-     * The query is returned as an object including the field name, the operator, and 0-n operands
-     */
-    getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
-            field : this.currentField.name,
-            operator : this.currentQueryType,
-            operands : operands
-        }
-
-        return response;
-    },
-
-    /**
-     * Returns the criteria definition for a given field
-     *
-     * @param field
-     */
-    getCriteriaDefinition : function (field) {
-
-        // Some mapping between the field's declared type and its inferred type
-        var tempType = field.type;
-
-        if ('datetime' == tempType) {
-            tempType = 'date';
-        } else if ('text' == tempType) {
-            if (field.sortable) {
-                tempType = 'sortableText';
-            } else {
-                tempType = 'nonSortableText';
-            }
-        }
-
-        var definition = Fisma.Search.CriteriaDefinition[tempType];
-        
-        // Fields can define extra criteria that should be merged in
-        if (field.extraCriteria) {
-            for (var index in field.extraCriteria) {
-                definition[index] = field.extraCriteria[index];
-            }
-        }
-
-        return definition;
-    },
-
-    /**
-     * Enable or disable the remove button
-     *
-     * The button is disabled when there is only 1 criterion left in the panel, so that the user cannot remove ALL
-     * of the criteria. (This would put the UI into an unusable state since there is no way to add criteria at
-     * that point.)
-     *
-     * @param bool enabled
-     */
-    setRemoveButtonEnabled : function (enabled) {
-        this.removeButton.set("disabled", !enabled);
-    },
-    
-    /**
-     * Fields is numerically indexed. This is a helper function to find a field by name.
-     */
-    getField : function (fieldName) {
-        for (var index in this.fields) {
-            var field = this.fields[index];
-            
-            if (field.name == fieldName) {
-                return field;
-            }
-        }
-        
-        throw "No field found with this name: " + fieldName;
-    }
-};/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Defines what search criteria are available in Fisma.Search.Criteria
- * 
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-Fisma.Search.CriteriaDefinition = function () {
-    return {
-        date : {
-            dateAfter : {label : "After", renderer : 'singleDate', query : 'oneInput'},
-            dateBefore : {label : "Before", renderer : 'singleDate', query : 'oneInput'},
-            dateBetween : {label : "Between", renderer : 'betweenDate', query : 'twoInputs'},
-            dateDay : {label : "Is", renderer : 'singleDate', query : 'oneInput', isDefault : true},
-            dateThisMonth : {label : "This Month", renderer : 'none', query : 'noInputs'},
-            dateThisYear : {label : "This Year", renderer : 'none', query : 'noInputs'},
-            dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}
-        },
-
-        "float" : {
-            floatBetween : {label : "Between", renderer : 'betweenFloat', query : 'twoInputs'},
-            floatGreaterThan : {label : "Greater Than", renderer : 'singleFloat', query : 'oneInput', isDefault : true},
-            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}            
-        },
-
-        integer : {
-            integerBetween : {label : "Between", renderer : 'betweenInteger', query : 'twoInputs'},
-            integerDoesNotEqual : {label : "Does Not Equal", renderer : 'singleInteger', query : 'oneInput'},
-            integerEquals : {label : "Equals", renderer : 'singleInteger', query : 'oneInput', isDefault : true},
-            integerGreaterThan : {label : "Greater Than", renderer : 'singleInteger', query : 'oneInput'},
-            integerLessThan : {label : "Less Than", renderer : 'singleInteger', query : 'oneInput'}
-        },
-
-        nonSortableText : {
-            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
-        },
-
-        sortableText : {
-            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
-            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'}
-        },
-        
-        "enum" : {
-            enumIs : {label : "Is", renderer : "enumSelect", query : "enumSelect", isDefault : true},
-            enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"}
-        }
-    };
-}();/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Generates URL query strings for various kinds of search criteria
- * 
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
- 
-Fisma.Search.CriteriaQuery = function () {
-    return {
-        /**
-         * This is the simplest query generator, it doesn't generate anything!
-         * 
-         * @param container The HTML element that contains the input fields
-         */
-        noInputs : function(container) {
-            return [];
-        },
-        
-        /**
-         * Generates a query based on one input field
-         * 
-         * @param container The HTML element that contains the input fields
-         */
-        oneInput : function (container) {
-            var inputs = container.getElementsByTagName('input');
-            
-            var values = [inputs[0].value];
-            
-            return values;
-        },
-        
-        /**
-         * Generates a query based on two input fields
-         * 
-         * @param container The HTML element that contains the input fieldss
-         */
-        twoInputs : function (container) {
-            var inputs = container.getElementsByTagName('input');
-            
-            var values = [inputs[0].value, inputs[1].value];
-            
-            return values;
-        },
-        
-        /**
-         * Generate a query based on a YUI menu button
-         * 
-         * @param container the HTML element that contains the input fields
-         */
-        enumSelect : function (container) {
-            var inputs = container.getElementsByTagName('button');
-
-            var values = [inputs[0].firstChild.nodeValue];
-            
-            return values;
-        }
-    };
-}();/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
- * {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Renders different types of search criteria
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-Fisma.Search.CriteriaRenderer = function () {
-    return {
-        /**
-         * Renders two date fields with the word "And" between them
-         *
-         * @todo Add date picker
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        betweenDate : function (container, operands) {
-            var lowEnd = document.createElement('input');
-
-            if (operands && operands.length > 0) {
-                lowEnd.value = operands[0];
-            }
-
-            lowEnd.type = "text";
-            lowEnd.className = "date";
-            container.appendChild(lowEnd);
-            Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
-
-            var text = document.createTextNode(" and ");
-            container.appendChild(text);
-
-            var highEnd = document.createElement('input');
-            
-            if (operands && operands.length > 1) {
-                highEnd.value = operands[1];
-            }
-
-            highEnd.type = "text";
-            highEnd.className = "date";
-            container.appendChild(highEnd);
-            Fisma.Calendar.addCalendarPopupToTextField(highEnd);
-        },
-
-        /**
-         * Renders two float fields with the word "And" between them
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        betweenFloat : function (container, operands) {
-            var lowEnd = document.createElement('input');
-
-            if (operands && operands.length > 0) {
-                lowEnd.value = operands[0];
-            }
-
-            lowEnd.type = "text";
-            lowEnd.className = "float";
-            container.appendChild(lowEnd);
-
-            var text = document.createTextNode(" and ");
-            container.appendChild(text);
-
-            var highEnd = document.createElement('input');
-
-            if (operands && operands.length > 1) {
-                highEnd.value = operands[1];
-            }
-
-            highEnd.type = "text";
-            highEnd.className = "float";
-            container.appendChild(highEnd);
-        },
-
-        /**
-         * Renders two integer fields with the word "And" between them
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        betweenInteger : function (container, operands) {
-            var lowEnd = document.createElement('input');
-
-            if (operands && operands.length > 0) {
-                lowEnd.value = operands[0];
-            }
-
-            lowEnd.type = "text";
-            lowEnd.className = "integer";
-            container.appendChild(lowEnd);
-
-            var text = document.createTextNode(" and ");
-            container.appendChild(text);
-
-            var highEnd = document.createElement('input');
-
-            if (operands && operands.length > 1) {
-                highEnd.value = operands[1];
-            }
-
-            highEnd.type = "text";
-            highEnd.className = "integer";
-            container.appendChild(highEnd);
-        },
-
-        /**
-         * The simplest renderer. It doesn't do anything!
-         *
-         * This is useful for search criteria that don't take any parameters
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        none : function (container, operands) {
-
-        },
-
-        /**
-         * Renders a single date input field
-         *
-         * @todo Add date picker
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        singleDate : function (container, operands) {
-
-            // Create the input field
-            var textEl = document.createElement('input');
-
-            textEl.type = "text";
-            textEl.className = "date";
-
-            if (operands && operands.length > 0) {
-                textEl.value = operands[0];
-            }
-
-            container.appendChild(textEl);
-
-            Fisma.Calendar.addCalendarPopupToTextField(textEl);
-        },
-
-        /**
-         * Renders a single float input field
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        singleFloat : function (container, operands) {
-            var textEl = document.createElement('input');
-
-            textEl.type = "text";
-            textEl.className = "float";
-
-            if (operands && operands.length > 0) {
-                textEl.value = operands[0];
-            }
-
-            container.appendChild(textEl);
-        },
-
-        /**
-         * Renders a single integer input field
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        singleInteger : function (container, operands) {
-            var textEl = document.createElement('input');
-
-            textEl.type = "text";
-            textEl.className = "integer";
-
-            if (operands && operands.length > 0) {
-                textEl.value = operands[0];
-            }
-
-            container.appendChild(textEl);
-        },
-
-        /**
-         * Renders a plain old text field
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         */
-        text : function (container, operands) {
-            var textEl = document.createElement('input');
-
-            textEl.type = "text";
-
-            if (operands && operands.length > 0) {
-                textEl.value = operands[0];
-            }
-
-            container.appendChild(textEl);
-        },
-
-        /**
-         * Render an enumeration field as a select menu
-         *
-         * @param container The HTML element to render into
-         * @param operands An array of default values
-         * @param enumValues An array of enumeration values
-         */
-        enumSelect : function (container, operands, enumValues) {
-
-            // This event handler makes the menu button behave like a popup menu
-            var handleEnumSelectionEvent = function (type, args, item) {
-                var newLabel = item.cfg.getProperty("text");
-
-                menuButton.set("label", newLabel);
-            };
-
-            // Create the select menu
-            var menuItems = new Array();
-
-            for (var index in enumValues) {
-                var enumValue = enumValues[index];
-
-                menuItem = {
-                    text : enumValue,
-                    value : enumValue,
-                    onclick : {fn : handleEnumSelectionEvent}
-                };
-
-                menuItems.push(menuItem);
-            }
-
-            // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
-
-            // Render menu button
-            var menuButton = new YAHOO.widget.Button({
-                type : "menu",
-                label : defaultValue,
-                menu : menuItems,
-                container : container
-            });
-        }
-    };
-}();/**
- * Copyright (c) 2010 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Implements a UI to display collection of advanced search criteria
- * 
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- */
-
-/**
- * Constructor
- * 
- * @param advancedSearchOptions Contains searchable fields and pre-defined filters
- * @param pathname The URL path, used to generate default search filters
- */
-Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
-
-    var searchableFields = advancedSearchOptions;
-
-    if (0 == searchableFields.length) {
-        throw "Field array cannot be empty";
-    }
-    
-    // Sort fields by name
-    searchableFields.sort(
-        function (a, b) {
-            if (a.label < b.label) {
-                return -1;
-            } else if (a.label > b.label) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-    );
-
-    // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
-    
-    for (var index in searchableFields) {
-        var searchableField = searchableFields[index];
-
-        if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
-        }
-    }
-
-    // A pathname can contain default query criteria if it contains the keyword 'advanced'
-    this.defaultQueryTokens = null;
-    
-    if (pathname) {
-        var pathTokens = pathname.split('/');
-
-        for (var index in pathTokens) {
-            var pathToken = pathTokens[index];
-
-            // If the 'advanced' token is found (and has more tokens after it), then save the 
-            // rest of the tokens into the object
-            var start = parseInt(index);
-
-            if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
-                
-                pathTokens.splice(0, start + 1);
-                
-                this.defaultQueryTokens = pathTokens;
-                
-                break;
-            }
-        }
-    }
-};
-
-Fisma.Search.Panel.prototype = {
-    
-    /**
-     * The parent container for this search panel
-     */
-    container : null,
-    
-    /**
-     * A list of current selected criteria
-     */
-    criteria : [],
-    
-    /**
-     * Render the advanced search box
-     * 
-     * @param container The HTML container to place the search box inside of
-     */
-    render : function (container) {
-        this.container = container;
-
-        if (this.defaultQueryTokens) {
-            var index = 0;
-            
-            // If a default query is specified, then switch to advanced mode and set up the UI for those criteria
-            while (this.defaultQueryTokens.length > index) {
-                var field = this.defaultQueryTokens[index];
-                index++;
-                
-                var operator = this.defaultQueryTokens[index];
-                index++;
-                
-                // Load up this criteria definition and see how many operands it takes
-                var fieldDefinition = this.getFieldDefinition(field);
-                
-                var criterion = new Fisma.Search.Criteria(this, this.searchableFields);
-                var criterionDefinition = criterion.getCriteriaDefinition(fieldDefinition);
-                
-                var numberOfOperands = this.getNumberOfOperands(fieldDefinition, operator, criterionDefinition);
-                
-                // Now we know how many operands there, push that number of tokens onto a stack
-                operands = [];
-                
-                for (; numberOfOperands > 0; numberOfOperands--) {
-                    operands.push(this.defaultQueryTokens[index]);
-                    index ++; 
-                }
-                
-                // URI Decode the operands
-                var unescapedOperands = operands.map(decodeURIComponent);
-
-                // Render the element and then set its default values
-                var criterionElement = criterion.render(field, operator, unescapedOperands);
-                
-                this.container.appendChild(criterion.container);
-                this.criteria.push(criterion);
-            }
-            
-            // Display the advanced search UI and submit the initial query request XHR
-            Fisma.Search.toggleAdvancedSearchPanel();
-            Fisma.Search.onSetTable(function () {
-                var searchForm = document.getElementById('searchForm');
-            
-                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
-                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
-                // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
-            });
-        } else {
-            // If not default query is specified, then just show 1 default criterion
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
-            this.criteria.push(initialCriteria);
-
-            // Update DOM
-            var criteriaElement = initialCriteria.render(this.searchableFields[0].name);
-            initialCriteria.setRemoveButtonEnabled(false);
-            this.container.appendChild(criteriaElement);
-        }
-    },
-  
-    /**
-     * Add a criteria row below the specified row
-     * 
-     * @param currentRow The HTML container for the row that the new row will be placed under
-     */
-    addCriteria : function (currentRow) {
-        // Update internal state
-        if (1 == this.criteria.length) {
-            this.criteria[0].setRemoveButtonEnabled(true);
-        }
-
-        var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
-        this.criteria.push(criteria);
-        
-        // Update DOM
-        var defaultFieldIndex = this.criteria.length - 1;
-
-        var criteriaElement = criteria.render(this.searchableFields[defaultFieldIndex].name);
-
-        this.container.insertBefore(criteriaElement, currentRow.nextSibling);
-    },
-    
-    /**
-     * Remove the specified criteria row
-     * 
-     * @param currentRow The HTML container for the row that needs to be removed
-     */
-    removeCriteria : function (currentRow) {
-        // Update internal state
-        for (var index in this.criteria) {
-            var criterion = this.criteria[index];
-            
-            if (criterion.container == currentRow) {
-                this.criteria.splice(index, 1);
-                
-                break;
-            }
-        }
-        
-        // Disable the remove button when there is only 1 criterion left
-        if (1 == this.criteria.length) {
-            this.criteria[0].setRemoveButtonEnabled(false);
-        }
-
-        // Update DOM
-        this.container.removeChild(currentRow);
-    },
-    
-    /**
-     * Get the URL query string for the current filter status
-     */
-    getQuery : function () {
-        var query = new Array();
-        
-        for (var index in this.criteria) {
-            var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
-        }
-        
-        return query;
-    },
-    
-    /**
-     * Returns search metadata for a field (specified by name)
-     * 
-     * @param fieldName
-     */
-    getFieldDefinition : function (fieldName) {
-        for (var index in this.searchableFields) {
-            if (this.searchableFields[index].name == fieldName) {
-                return this.searchableFields[index];
-            }
-        }
-        
-        throw "No definition for field: " + fieldName;
-    },
-    
-    /**
-     * Returns the number of operands required for the specified field and operator
-     * 
-     * @param field Definition of the field
-     * @param operator The operator applied to the field
-     * @param criteriaDefinition
-     */
-    getNumberOfOperands : function (field, operator, criteriaDefinition) {
-        var criterionQueryDefinition = criteriaDefinition[operator];
-
-        if (!criterionQueryDefinition) {
-            throw "No criteria defined for field (" + field.name + ") and operator (" + operator + ")";
-        }
-        
-        var queryFunction = criterionQueryDefinition.query;
-        
-        switch (queryFunction) {
-            case 'noInputs':
-                return 0;
-                break;
-                
-            // The following cases intentionally fall through
-            case 'enumSelect':
-            case 'oneInput':
-                return 1;
-                break;
-                
-            case 'twoInputs':
-                return 2;
-                break;
-            
-            default:
-                throw "Number of operands not defined for query function: " + queryFunction;
-                break;
-        }
-    }
-};
-/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6718,18 +4712,18 @@ Fisma.Spinner = function (container) {
     this.spinner = document.createElement('img');
     this.spinner.id = container.id + "_spinnerImg";
     this.spinner.src = "/images/spinners/small.gif";
-    this.spinner.style.visibility = "hidden";
+    this.spinner.style.display = "none";
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
 }
 
 Fisma.Spinner.prototype.show = function () {
-    this.spinner.style.visibility = 'visible';
+    this.spinner.style.display = 'inline';
 };
         
 Fisma.Spinner.prototype.hide = function () {
-    this.spinner.style.visibility = 'hidden';
+    this.spinner.style.display = 'none';
 };
 /**
  * Based on the iToggle example from Engage Interactive Labs.
@@ -7066,25 +5060,25 @@ Fisma.TabView.Roles = function() {
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
  * {@link http://www.gnu.org/licenses/}.
- *
+ * 
  * @fileoverview Provides various formatters for use with YUI table
- *
+ * 
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
-
+ 
 Fisma.TableFormat = {
     /**
      * CSS green color
@@ -7093,7 +5087,7 @@ Fisma.TableFormat = {
 
     /**
      * CSS yellow color
-     */
+     */    
     yellowColor : 'yellow',
 
     /**
@@ -7114,17 +5108,17 @@ Fisma.TableFormat = {
     yellow : function (element) {
         element.style.backgroundColor = Fisma.TableFormat.yellowColor;
     },
-
+    
     /**
      * Color an element red
      */
     red : function (element) {
         element.style.backgroundColor = Fisma.TableFormat.redColor;
     },
-
+    
     /**
      * A formatter which colors the security authorization date in red, yellow, or green (or not at all)
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7135,11 +5129,11 @@ Fisma.TableFormat = {
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
         dateParts = oData.split('-');
-
+        
         if (3 == dateParts.length) {
 
             authorizedDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-
+            
             greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 30);
 
@@ -7155,10 +5149,10 @@ Fisma.TableFormat = {
             }
         }
     },
-
+    
     /**
      * A formatter which colors the self-assessment date in red, yellow, or green (or not at all)
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7169,11 +5163,11 @@ Fisma.TableFormat = {
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
         dateParts = oData.split('-');
-
+        
         if (3 == dateParts.length) {
 
             assessmentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-
+            
             greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 8);
 
@@ -7199,7 +5193,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which colors cells green if the value is YES, and red if the value is NO
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7207,37 +5201,37 @@ Fisma.TableFormat = {
      */
     yesNo : function (elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = oData;
-
+        
         if ('YES' == oData) {
             Fisma.TableFormat.green(elCell.parentNode);
         } else if ('NO' == oData) {
             Fisma.TableFormat.red(elCell.parentNode);
         }
     },
-
+    
     /**
      * A formatter which displays an edit icon that is linked to an edit page
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
      */
      editControl : function (elCell, oRecord, oColumn, oData) {
-
+        
         var icon = document.createElement('img');
         icon.src = '/images/edit.png';
-
+        
         var link = document.createElement('a');
         link.href = oData;
         link.appendChild(icon);
-
+        
         elCell.appendChild(link);
     },
-
+     
     /**
      * A formatter which displays a delete icon that is linked to an edit page
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7254,10 +5248,10 @@ Fisma.TableFormat = {
 
         elCell.appendChild(link);
     },
-
+      
     /**
      * A formatter which converts escaped HTML into unescaped HTML
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7269,7 +5263,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which displays the total of overdue findings that is linked to a finding search page
-     *
+     * 
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -7278,52 +5272,22 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
 
-        // Handle organization field
-        var organization = oRecord.getData('System');
+        var organizationId = oRecord.getData('Organization_Id');
+        var sourceId = YAHOO.util.History.getQueryStringParameter('sourceId');
+        var overdueActionType = oRecord.getData('Overdue_Action_Type');
 
-        if (organization) {
-            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
+        if (organizationId != null) {
+            overdueFindingSearchUrl += "/responsibleOrganizationId/" + organizationId;
         }
 
-        // Handle status field
-        var status = oRecord.getData('Status');
-
-        if (status) {
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
+        if (sourceId != null) {
+            overdueFindingSearchUrl += "/sourceId/" + sourceId;
         }
 
-        // Handle source field
-        var parameters = oColumn.formatterParameters;
-
-        if (parameters.source) {
-            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
-        }
-
-        // Handle date fields
-        var from = null;
-
-        if (parameters.from) {
-            fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
-            
-            from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
-        }
-
-        var to = null;
-
-        if (parameters.to) {
-            toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
-            
-            to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
-        }
-
-        if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
-        } else if (from) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+        if (overdueActionType.length > 0) {
+            overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(overdueActionType);
         }
 
         elCell.innerHTML = "<a href="
@@ -7375,36 +5339,6 @@ Fisma.TableFormat = {
         }
 
         elCell.innerHTML = docTypeNames;
-    },
-    
-    /**
-     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
-     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
-     * "re-delete" any already-deleted items.
-     *
-     * @param elCell Reference to a container inside the <td> element
-     * @param oRecord Reference to the YUI row object
-     * @param oColumn Reference to the YUI column object
-     * @param oData The data stored in this cell
-     */
-    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
-        
-        if (oRecord.getData('deleted_at')) {
-
-            elCell.parentNode.style.backgroundColor = "pink";
-            
-        } else {
-            var checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.className = YAHOO.widget.DataTable.CLASS_CHECKBOX;
-            checkbox.checked = oData;
-
-            if (elCell.firstChild) {
-                elCell.removeChild(el.firstChild);            
-            }
-
-            elCell.appendChild(checkbox);
-        }        
     }
 };/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -7755,20 +5689,6 @@ Fisma.User = {
  
 Fisma.Util = {
     
-    /**
-     * Escapes the specified string so that it can be included in a regex without special characters affecting
-     * the regex's meaning
-     * 
-     * Special characters are: .*+?|()[]{}\
-     * 
-     * @param rawValue Unescaped input
-     */
-    escapeRegexValue : function (rawValue) {
-        var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g");
-        
-        return rawValue.replace(specials, "\\$&");
-    },
-
     /**
      * Convert a string name of an object into a reference to that object.
      * 

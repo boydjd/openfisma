@@ -4,26 +4,30 @@
     <ul>
         <li>
             There are <b>
-            <a href="<?php echo $this->escape($this->newFindingUrl, 'none'); ?>">
-                <?php echo $this->escape($this->alert['NEW'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>NEW">
+                <?php echo $this->escape($this->alert['NEW'])?>
+            </a>
             </b> NEW findings (findings that do not have a mitigation strategy).
         </li>
         <li>
             There are <b>
-            <a href="<?php echo $this->escape($this->draftFindingUrl, 'none'); ?>">
-                <?php echo $this->escape($this->alert['DRAFT'])?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>DRAFT">
+                <?php echo $this->escape($this->alert['DRAFT'])?>
+            </a>
             </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
         </li>
         <li>
             There are <b>
-            <a href="<?php echo $this->escape($this->evidenceNeededOntimeUrl); ?>">
-                <?php echo $this->escape($this->alert['EN']); ?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>EN/ontime/ontime">
+                <?php echo $this->escape($this->alert['EN'])?>
+            </a>
             </b> findings awaiting evidence.
         </li>
         <li>
             There are <b>
-            <a href="<?php echo $this->escape($this->evidenceNeededOverdueUrl); ?>">
-                <?php echo $this->escape($this->alert['EO']); ?></a>
+            <a href="<?php echo $this->escape($this->url, 'none')?>EN/ontime/overdue">
+                <?php echo $this->escape($this->alert['EO'])?>
+            </a>
             </b> overdue findings awaiting evidence.    
         </li>
     </ul>
@@ -87,16 +91,13 @@ if (isset($this->notifications)) {
 
 <script type="text/javascript">
     function barChartClick(status) {
-        document.location = "<?php echo $this->escape($this->barChartBaseUrl, 'javascript'); ?>"
-                          + $P.urlencode(status);
+        document.location = "/finding/remediation/searchbox/status/" + $P.urlencode(status);
     }
-
     function pieChartClick(columnNumber) {
         // Lookup table for converting the column number to the remediation type code
         var columns = ['NONE', 'CAP', 'FP', 'AR'];
         var type = columns[columnNumber-1];
-        document.location = "<?php echo $this->escape($this->pieChartBaseUrl, 'javascript'); ?>"
-                          + $P.urlencode(type);
+        document.location = "/finding/remediation/searchbox/type/" + $P.urlencode(type);
     }
 </script>
 <?php 

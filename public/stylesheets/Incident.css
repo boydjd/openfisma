@@ -115,7 +115,3 @@ div.queuedIncidentStep div.incidentCardinality {
     border-bottom: none;    
     color: gray;
 }
-
-tr.incidentStep {
-    border-top: 1px dotted silver;
-}

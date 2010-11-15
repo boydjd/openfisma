@@ -1,0 +1,28 @@
+<div class="searchFilters">
+    <div class="left">
+        <?php
+        $listButton = new Fisma_Yui_Form_Button_Link(
+            'listButton', 
+            array(
+                'value' => 'Asset List', 
+                'href' => '/asset/list'
+            )
+        );
+        echo $this->escape($listButton, 'none');
+        ?>
+
+        <?php 
+        if ($this->acl()->hasPrivilegeForClass('create', 'Asset')) {
+            $createButton = new Fisma_Yui_Form_Button_Link(
+                'createButton', 
+                array(
+                    'value' => 'Add Asset', 
+                    'href' => '/asset/create'
+                )
+            );
+            echo $this->escape($createButton, 'none');
+        } 
+        ?>
+    </div>
+    <div class="clear"></div>
+</div>

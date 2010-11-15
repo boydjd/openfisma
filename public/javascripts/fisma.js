@@ -43,24 +43,6 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
-    
-    if (zfDebugYuiLoggingTab) {
-        var logReader = new YAHOO.widget.LogReader(
-            zfDebugYuiLoggingTab, 
-            {
-                draggable : false,
-                verboseOutput : false,
-                width : '95%'
-            }
-        );
-        
-        logReader.hideCategory("info");
-        logReader.hideCategory("time");
-        logReader.hideCategory("window");
-        logReader.hideCategory("iframe");
-    }
-    
     var calendars = YAHOO.util.Selector.query('.date');
     for(var i = 0; i < calendars.length; i ++) {
         YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
@@ -339,6 +321,96 @@ function addBookmark(obj, url){
     } else {
         alert("Your browser does not support automatic bookmarks. Please try to bookmark this page manually instead.");
     }
+}
+
+/**
+ * A hastily written helper function for highlightWord() that iterates over an array of keywords
+ */
+function highlight(node, keywords) {
+    // Sometimes keyword is blank... in that case, just return
+    if ('' == keywords) {
+        return;
+    }
+    
+    // Sort in reverse. If a word is a fragment of another word on this list, it will highlight the larger
+    // word first
+    keywords.sort();
+    keywords.reverse();
+
+    // Highlight each word
+    for (var i in keywords) {
+        highlightWord(node, keywords[i]);
+    }
+}
+
+/**
+ * Recursively searches the dom for a keyword and highlights it by appliying a class selector called
+ * 'highlight'
+ *
+ * @param node object
+ * @param keyword string
+ */ 
+function highlightWord(node, keyword) {
+	// Iterate into this nodes childNodes
+	if (node && node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			highlightWord(node.childNodes[hi_cn],keyword);
+		}
+	}
+
+	// And do this node itself
+	if (node && node.nodeType == 3) { // text node
+		tempNodeVal = node.nodeValue.toLowerCase();
+		tempWordVal = keyword.toLowerCase();
+		if (tempNodeVal.indexOf(tempWordVal) != -1) {
+			pn = node.parentNode;
+			if (pn.className != "highlight") {
+				// keyword has not already been highlighted!
+				nv = node.nodeValue;
+				ni = tempNodeVal.indexOf(tempWordVal);
+				// Create a load of replacement nodes
+				before = document.createTextNode(nv.substr(0,ni));
+				docWordVal = nv.substr(ni,keyword.length);
+				after = document.createTextNode(nv.substr(ni+keyword.length));
+				hiwordtext = document.createTextNode(docWordVal);
+				hiword = document.createElement("span");
+				hiword.className = "highlight";
+				hiword.appendChild(hiwordtext);
+				pn.insertBefore(before,node);
+				pn.insertBefore(hiword,node);
+				pn.insertBefore(after,node);
+				pn.removeChild(node);
+			}
+		}
+	}
+}
+
+/**
+ * Remove the highlight attribute from the editable textarea on remediation detail page
+ *
+ * @param node object 
+ */
+function removeHighlight(node) {
+	// Iterate into this nodes childNodes
+	if (node.hasChildNodes) {
+		var hi_cn;
+		for (hi_cn=0;hi_cn<node.childNodes.length;hi_cn++) {
+			removeHighlight(node.childNodes[hi_cn]);
+		}
+	}
+
+	// And do this node itself
+	if (node.nodeType == 3) { // text node
+		pn = node.parentNode;
+		if( pn.className == "highlight" ) {
+			prevSib = pn.previousSibling;
+			nextSib = pn.nextSibling;
+			nextSib.nodeValue = prevSib.nodeValue + node.nodeValue + nextSib.nodeValue;
+			prevSib.nodeValue = '';
+			node.nodeValue = '';
+		}
+	}
 }
 
 function switchYear(step){

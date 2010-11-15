@@ -25,63 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IrSubCategoryTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class IrSubCategoryTable extends Fisma_Doctrine_Table
 {
-    /**
-     * Implement the interface for Searchable
-     */
-    public function getSearchableFields()
-    {
-        return array (
-            'categoryCode' => array(
-                'initiallyVisible' => true,
-                'label' => 'Category Code',
-                'join' => array(
-                    'model' => 'IrCategory',
-                    'relation' => 'Category',
-                    'field' => 'category'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'categoryName' => array(
-                'initiallyVisible' => true,
-                'label' => 'Category',
-                'join' => array(
-                    'model' => 'IrCategory',
-                    'relation' => 'Category',
-                    'field' => 'name'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'name' => array(
-                'initiallyVisible' => true,
-                'label' => 'Subcategory',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'workflow' => array(
-                'initiallyVisible' => true,
-                'label' => 'Workflow Name',
-                'join' => array(
-                    'model' => 'IrWorkflowDef',
-                    'relation' => 'Workflow',
-                    'field' => 'name'
-                ),
-                'sortable' => false,
-                'type' => 'text'
-            )
-        );
-    }
 
-    /**
-     * This model uses default access control (return empty array)
-     *
-     * @return array
-     */
-    public function getAclFields()
-    {
-        return array();
-    }
 }

@@ -25,36 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IrWorkflowDefTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class IrWorkflowDefTable extends Fisma_Doctrine_Table
 {
-    /**
-     * Implement the interface for Searchable
-     */
-    public function getSearchableFields()
-    {
-        return array (
-            'name' => array(
-                'initiallyVisible' => true,
-                'label' => 'Name',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'description' => array(
-                'initiallyVisible' => true,
-                'label' => 'Description',
-                'sortable' => false,
-                'type' => 'text'
-            )
-        );
-    }
 
-    /**
-     * This model uses default access control (return empty array)
-     *
-     * @return array
-     */
-    public function getAclFields()
-    {
-        return array();
-    }
 }

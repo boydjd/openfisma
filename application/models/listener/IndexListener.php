@@ -23,6 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Listener
+ * @version    $Id$
  */
 class IndexListener extends Fisma_Doctrine_Record_Listener
 {
@@ -37,29 +38,11 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         if (!self::$_listenerEnabled) {
             return;
         }
-
+        
         $record = $event->getInvoker();
 
-        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
-            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
-
-            throw new Fisma_Search_Exception($message);
-        }
-
-        $modelName = get_class($record);
-        $relationAliases = array();
-
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
-        $indexer = new Fisma_Search_Indexer($searchEngine);
-        $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
-        
-        // Relation aliases are derived from doctrine table metadata and are safe to interpolate
-        $baseClassAlias = $relationAliases[$modelName];
-        $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
-
-        $indexer->indexRecordsFromQuery($indexQuery, $modelName);
-
-        $searchEngine->commit();
+        $index = new Fisma_Index(get_class($record));
+        $index->update($record);
     }
 
     /**
@@ -77,12 +60,6 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $record = $event->getInvoker();
         $modified = $record->getLastModified();
 
-        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
-            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
-
-            throw new Fisma_Search_Exception($message);
-        }
-
         // A quick shortcut:
         if (0 == count($modified)) {
             return;
@@ -90,40 +67,20 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         // Determine whether any of the indexable fields have changed
         $needsIndex = false;
-        
         $table = $record->getTable();
-        $searchableFields = array_keys($table->getSearchableFields());
-        
-        foreach (array_keys($modified) as $modifiedField) {
-            if (in_array($modifiedField, $searchableFields)) {
+        foreach ($modified as $modifiedField => $modifiedValue) {
+            $columnDef = $table->getColumnDefinition($modifiedField);
+            if (isset($columnDef['extra']['searchIndex'])) {
                 $needsIndex = true;
-                
                 break;
             }
         }
 
-        // If an indexed field changed, then update the index for this object
+        // If an indexed field changed, then update the index
         if ($needsIndex) {
-            $modelName = get_class($record);
-            $relationAliases = array();
-
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
-            $indexer = new Fisma_Search_Indexer($searchEngine);
-            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
-
-            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
-            $baseClassAlias = $relationAliases[$modelName];
-            $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
-
-            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
-
-            $searchEngine->commit();
+            $index = new Fisma_Index(get_class($record));
+            $index->update($record);
         }
-
-        // If an indexed field changed on a related model, then reindex the affected documents belonging to that 
-        // related model
-        $reverseIndexer = new Fisma_Search_ReverseIndexer;
-        $reverseIndexer->reindexAffectedDocuments($record->id, $record->getTable(), array_keys($modified));
     }
     
     /**
@@ -142,31 +99,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $index    = new Fisma_Index(get_class($record));
         $modified = $record->getLastModified();
 
-        if (!($record->getTable() instanceof Fisma_Search_Searchable)) {
-            $message = 'Object table does not implement the Fisma_Search_Searchable interface: ' . get_class($record);
-
-            throw new Fisma_Search_Exception($message);
+        // If the record is softDeleted, do nothing. Otherwise, delete the record from the index.
+        if (!in_array('deleted_at', $modified)) {
+            $index->delete($record);
         }
-
-        // If the record is softDeleted, then reindex it. Otherwise, delete the record from the index.
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
-
-        if ($record->getTable()->hasColumn('deleted_at')) {
-            $modelName = get_class($record);
-            $relationAliases = array();
-
-            $indexer = new Fisma_Search_Indexer($searchEngine);
-            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
-
-            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
-            $baseClassAlias = $relationAliases[$modelName];
-            $indexQuery->andWhere("$baseClassAlias.id = ?", $record->id);
-
-            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
-        } else {
-            $searchEngine->deleteObject(get_class($record), $record->toArray());
-        }
-
-        $searchEngine->commit();
     }
 }

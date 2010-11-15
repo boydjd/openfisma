@@ -1,0 +1,47 @@
+; This is the form for system configuration.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Nathan Harris <nathan.harris@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+; Version   $Id$
+
+[irworkflowstep]
+method = "post"
+
+elements.workflowId.type = "select"
+elements.workflowId.options.label = "Workflow"
+displayGroups.irworkflowstep.elements.workflowId = "workflowId"
+
+elements.roleId.type = "select"
+elements.roleId.options.label = "Role"
+displayGroups.irworkflowstep.elements.roleId = "roleId"
+
+elements.cardinality.type = "select"
+elements.cardinality.options.label = "Sort Order"
+displayGroups.irworkflowstep.elements.cardinality = "cardinality"
+
+elements.name.type = "text"
+elements.name.options.label = "Name"
+elements.name.options.size = "65"
+elements.name.options.validators.alnum.validator = "NotEmpty"
+elements.name.options.required = true
+displayGroups.irworkflowstep.elements.name = "name"
+
+elements.description.type = "textarea"
+elements.description.options.label = "Description"
+elements.description.options.cols = "70%"
+elements.description.options.rows = "7"
+displayGroups.irworkflowstep.elements.description = "description"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.irworkflowstep.elements.save = "save"
+
+
+
+
+
+

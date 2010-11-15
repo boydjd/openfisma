@@ -62,16 +62,4 @@ class Fisma_Date
      * set format like '20101027-112502'
      */
     const FORMAT_FILENAME_DATETIMESTAMP = 'yyyyMMdd-HHmmss';
-    
-    /**
-     * The format of dates returned by Solr
-     */
-    const FORMAT_SOLR_DATETIME_TIMEZONE = 'YYYY-MM-ddTHH:mm:ssZ';
-    
-    /**
-     * When storing dates in Solr, use this format and append a literal 'Z' to the timestamp value.
-     * 
-     * The literal 'Z' means a timezone offset of zero, i.e. Grenwich Mean Time, which is required in Solr.
-     */
-    const FORMAT_SOLR_DATETIME = 'yyyy-MM-ddTHH:mm:ss';
 }

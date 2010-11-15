@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -25,49 +25,51 @@
  * @package    Controller
  * @version    $Id$
  */
-class OrganizationController extends Fisma_Zend_Controller_Action_Object
+class OrganizationController extends Fisma_Zend_Controller_Action_Security
 {
     /**
-     * The main name of the model.
-     *
-     * This model is the main subject which the controller operates on.
-     *
-     * @var string
-     */
-    protected $_modelName = 'Organization';
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
+     * A type constant of drag operation of organization tree which defines the operation that move 
      * the specified organization node as previous of the target organization node among their siblings.
      */
     const DRAG_ABOVE = 0;
-
+    
     /**
-     * A type constant of drag operation of organization tree which defines the operation that move
+     * A type constant of drag operation of organization tree which defines the operation that move 
      * the specified organization node as child of the target organization node in organization tree.
      */
     const DRAG_ONTO = 1;
-
+    
     /**
-     * A type constant of drag operation of organization tree which defines the operation that move
+     * A type constant of drag operation of organization tree which defines the operation that move 
      * the specified organization node as next of the target node among their siblings.
      */
     const DRAG_BELOW = 2;
-
+    
+    /**
+     *  Default pagination parameters
+     * 
+     * @var array
+     */
+    private $_paging = array(
+        'startIndex' => 0,
+        'count' => 20,
+    );
+    
     /**
      * Invoked before each Action
-     *
+     * 
      * @return void
      */
     public function preDispatch()
     {
         parent::preDispatch();
         $req = $this->getRequest();
+        $this->_paging['startIndex'] = $req->getParam('startIndex', 0);
     }
-
+    
     /**
      * Initialize internal members.
-     *
+     * 
      * @return void
      */
     public function init()
@@ -77,111 +79,226 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                       ->addActionContext('tree-data', 'json')
                       ->initContext();
     }
-
+    
     /**
      * Returns the standard form for creating, reading, and
      * updating organizations.
-     *
-     * @param string|null $formName The name of the specified form
-     * @return Zend_Form The specified form of the subject model
+     * 
+     * @param Organization|null $currOrg The current record of organization
+     * @return Zend_Form The standard form for organization operations
      */
-    public function getForm($formName = null)
+    private function _getOrganizationForm($currOrg = null)
     {
-        $form = parent::getForm();
+        $form = Fisma_Zend_Form_Manager::loadForm('organization');
+        
+        // build base query
+        $q = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        // The parent menu should show all organizations and systems (irregardless of user's ACL)
-        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $organizationTree = $organizationTreeObject->fetchTree();
-
-        if (!empty($organizationTree)) {
-            foreach ($organizationTree as $organization) {
-                $value = $organization['id'];
-                $text = str_repeat("--", $organization['level']) 
-                      . ' '
-                      . $organization['nickname'] 
-                      . ' - '
-                      . $organization['name'];
-                $form->getElement('parent')->addMultiOptions(array($value => $text));
-            }
+        if ($currOrg == null) {
+            $currOrg = new Organization();
         } else {
-            // If there are no other organizations, the parent only shows the option "None"
-            // (Notice that '0' is a special value which no primary key can actually take)
-            $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
+            $orgArray = $currOrg->toArray();
+            // filter the organizations which belongs to the current organization and itself
+            $q->andWhere('o.lft < ? OR o.rgt > ?', array($orgArray['lft'], $orgArray['rgt']));
+            // if the organization is specifted, than set the parent node.
+            if ($currOrg->getNode()->getParent()) {
+                $form->getElement('parent')->setValue($currOrg->getNode()->getParent()->id);
+            }
         }
 
-        // The type menu should display all types of organization EXCEPT system
-        $orgTypeArray = Doctrine::getTable('Organization')->getEnumValues('orgType');
+        // if the organization is root, then you haven't chance to change its parent
+        if ($currOrg->getNode()->isRoot()) {
+            // remove the column
+            $form->removeElement('parent');
+        } else {
+            $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+            $organizationTreeObject->setBaseQuery($q);
+            $organizationTree = $organizationTreeObject->fetchTree();
+            if (!empty($organizationTree)) {
+                foreach ($organizationTree as $organization) {
+                    $value = $organization['id'];
+                    $text = str_repeat('--', $organization['level']) . $organization['name'];
+                    $form->getElement('parent')->addMultiOptions(array($value => $text));
+                }
+            } else {
+                // condition: no organization in DB
+                $form->getElement('parent')->addMultiOptions(array(0 => 'NONE'));
+            }
+        }
+        
+        // get all kinds of orgType
+        $orgTypeArray = $currOrg->getTable()->getEnumValues('orgType');
+        // except 'system' type
         unset($orgTypeArray[array_search('system', $orgTypeArray)]);
-
         $form->getElement('orgType')->addMultiOptions(array_combine($orgTypeArray, $orgTypeArray));
         
-        return $form;
+        return Fisma_Zend_Form_Manager::prepareForm($form);
     }
 
     /**
-     * Override the hook to handle the "parent" field
-     *
-     * @param Doctrine_Record $subject The specified subject model
-     * @param Zend_Form $form The specified form
-     * @return Zend_Form The manipulated form
+     * Render the form for searching the organizations.
+     * 
+     * @return void
      */
-    protected function setForm($subject, $form)
+    public function searchbox()
     {
-        parent::setForm($subject, $form);
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+        $keywords = trim($this->_request->getParam('keywords'));
+        $this->view->assign('keywords', $keywords);
+        $this->render('searchbox');
+    }
 
-        // The root node cannot have it's parent changed
-        if ($subject->getNode()->isRoot()) {
-            $form->removeElement('parent');
-        } else {
-            $parent = $subject->getNode()->getParent();
-            
-            $form->getElement('parent')->setValue($parent->id);
+    /**
+     * Show the list page, not for data
+     * 
+     * @return void
+     */
+    public function listAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+        $value = htmlentities(trim($this->_request->getParam('keywords')));
+        empty($value) ? $link = '' : $link = '/keywords/' . $value;
+        $this->searchbox();
+        $this->view->assign('pageInfo', $this->_paging);
+        $this->view->assign('link', $link);
+        $this->render('list');
+    }
+    
+    /**
+     * List the organizations from the search. If search none, it list all organizations
+     * 
+     * @return void
+     * @throws Fisma_Zend_Exception if the 'sortBy' parameter is invalid
+     */
+    public function searchAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+        $keywords = html_entity_decode(trim($this->_request->getParam('keywords')));
+        
+        $this->_helper->layout->setLayout('ajax');
+        $this->_helper->viewRenderer->setNoRender();
+        $sortBy = $this->_request->getParam('sortby', 'name');
+        $order = $this->_request->getParam('order');
+        
+        $organization = Doctrine::getTable('Organization');
+        if (!in_array(strtolower($sortBy), $organization->getColumnNames())) {
+            throw new Fisma_Zend_Exception('Invalid "sortBy" parameter');
+        }
+        
+        $order = strtoupper($order);
+        if ($order != 'DESC') {
+            $order = 'ASC'; //ignore other values
+        }
+        
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
+        $userOrgQuery->andWhere("o.orgType IS NULL")
+                     ->orWhere("o.orgType != 'system'")
+                     ->orderBy("o.$sortBy $order")
+                     ->limit('?', $this->_paging['count'])
+                     ->offset($this->_paging['startIndex']);
+        if (!empty($keywords)) {
+            $index = new Fisma_Index('Organization');
+            $organizationIds = $index->findIds($keywords);
+            if (empty($organizationIds)) {
+                $organizationIds = array(-1);
+            }
+            $implodedOrganizationIds = implode(',', $organizationIds);
+            $userOrgQuery->andWhere("o.id IN ($implodedOrganizationIds)");
+        }
+        $totalRecords = $userOrgQuery->count();
+        $organizations = $userOrgQuery->execute();
+        
+        $tableData = array('table' => array(
+            'recordsReturned' => count($organizations->toArray()),
+            'totalRecords' => $totalRecords,
+            'startIndex' => $this->_paging['startIndex'],
+            'sort' => $sortBy,
+            'dir' => $order,
+            'pageSize' => $this->_paging['count'],
+            'records' => $organizations->toArray()
+        ));
+        
+        echo json_encode($tableData);
+    }
+    
+    /**
+     * Display a single organization record with all details.
+     * 
+     * @return void
+     * @throws Fisma_Zend_Exception if organization id is invalid
+     */
+    public function viewAction()
+    {
+        $id = $this->_request->getParam('id');
+        $organization = Doctrine::getTable('Organization')->find($id);
+
+        if ($organization->orgType == 'system') {
+            $this->_forward('view', 'system');
+            return;
         }
 
-        return $form;
+        $this->searchbox();
+        $v = $this->_request->getParam('v', 'view');
+        
+        $form = $this->_getOrganizationForm($organization);
+        
+        if (!$organization) {
+            throw new Fisma_Zend_Exception('Invalid organization ID');
+        } else {
+            $this->_acl->requirePrivilegeForObject('read', $organization);
+            $this->view->organization = $organization;
+            
+            $organization = $organization->toArray();
+        }
+
+        if ($v == 'edit') {
+            $this->view->assign('viewLink', "/organization/view/id/$id");
+            $form->setAction("/organization/update/id/$id");
+        } else {
+            // In view mode, disable all of the form controls
+            $this->view->assign('editLink', "/organization/view/id/$id/v/edit");
+            $form->setReadOnly(true);
+        }
+        $this->view->assign('deleteLink', "/organization/delete/id/$id");
+        $form->setDefaults($organization);
+        $this->view->form = $form;
+        $this->view->assign('id', $id);
+        $this->render($v);
     }
     
     /**
      * Display the form for creating a new organization.
-     *
-     * @param Zend_Form $form The specified form
-     * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved.
-     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     * 
+     * @return void
      */
-    protected function saveValue($form, $subject=null)
+    public function createAction()
     {
-        $form = $this->getForm();
+        $this->_acl->requirePrivilegeForClass('create', 'Organization');
         
-        $objectId = null;
-
-        if ($subject) {
-            $this->setForm($subject, $form);
-        }
-
+        $form = $this->_getOrganizationForm();
         $orgValues = $this->_request->getPost();
-
-        if ($form->isValid($orgValues)) {
-            $orgValues = $form->getValues();
-
-            // save the data, if failure then return false
-            try {
-                if (!$subject) {
-                    // Create new object
-                    $organization = new Organization();
-
-                    $organization->merge($orgValues);
+        
+        if ($orgValues) {
+            if ($form->isValid($orgValues)) {
+                $orgValues = $form->getValues();
+                $organization = new Organization();
+                $organization->merge($orgValues);
+                
+                // save the data, if failure then return false
+                try {
                     $organization->save();
 
-                    // 0 is a special value (see setForm()) that indicates a root node
+                    // the organization hasn't parent, so it is a root
                     if ((int)$orgValues['parent'] == 0) {
                         $treeObject = Doctrine::getTable('Organization')->getTree();
                         $treeObject->createRoot($organization);
+                    // the organization which has parent
                     } else {
+                        // insert as a child to a specify parent organization
                         $organization->getNode()
                                      ->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                     }
-
+                    
                     // Add this organization to the user's ACL so they can see it immediately
                     $userRoles = $this->_me->getRolesByPrivilege('organization', 'create');
 
@@ -192,41 +309,34 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     $userRoles->save();
                     $this->_me->invalidateAcl();
 
-                } else {
-                    $organization = $subject;
-                    
-                    $organization->merge($orgValues);
-                    
-                    if ($orgValues['parent'] != $organization->getNode()->getParent()->id) {
-
-                        $organization->getNode()
-                                     ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
-                    }
-                    $organization->save();
-
+                    $msg = "Organization created successfully";
+                    $model = 'notice';
+                    $this->view->priorityMessenger($msg, $model);
+                    $this->_redirect("/organization/view/id/{$organization->id}");
+                } catch (Doctrine_Validator_Exception $e) {
+                    $msg = $e->getMessage();
+                    $model = 'warning';
                 }
                 
-                $objectId = $organization->id;
-
-            } catch (Doctrine_Validator_Exception $e) {
-                $msg = $e->getMessage();
-                $model = 'warning';
-
                 $this->view->priorityMessenger($msg, $model);
+            } else {
+                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
+                // Error message
+                $this->view->priorityMessenger("Unable to create organization:<br>$errorString", 'warning');
             }
-
-        } else {
-            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-
-            $this->view->priorityMessenger("Unable to save: $errorString", 'warning');
         }
         
-        return $objectId;
+        //Display searchbox template
+        $this->searchbox();
+
+        $this->view->title = "Create ";
+        $this->view->form = $form;
+        $this->render('create');            
     }
 
     /**
      * Delete a specified organization.
-     *
+     * 
      * @return void
      */
     public function deleteAction()
@@ -235,7 +345,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $organization = Doctrine::getTable('Organization')->find($id);
         if ($organization) {
             $this->_acl->requirePrivilegeForObject('delete', $organization);
-
+            
             if ($organization->delete()) {
                 $msg = "Organization deleted successfully";
                 $model = 'notice';
@@ -250,7 +360,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Update organization information after submitting an edit form.
-     *
+     * 
      * @return void
      * @throws Exception_General if organization id is invalid
      * @todo cleanup this function
@@ -260,17 +370,17 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->_request->getParam('id', 0);
         $organization = new Organization();
         $organization = $organization->getTable()->find($id);
-
+        
         if (!$organization) {
             throw new Exception_General("Invalid organization ID");
         }
-
+        
         $this->_acl->requirePrivilegeForObject('update', $organization);
-
+        
         $form = $this->_getOrganizationForm($organization);
         $orgValues = $this->_request->getPost();
-
-        try {
+       
+        try { 
             if ($form->isValid($orgValues)) {
                 $isModify = false;
                 $orgValues = $form->getValues();
@@ -280,16 +390,16 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                      $organization->save();
                      $isModify = true;
                 }
-                // if the organization is not the root and
+                // if the organization is not the root and 
                 // its parent id is not equal the value submited
-                if (!$organization->getNode()->isRoot() &&
+                if (!$organization->getNode()->isRoot() && 
                         (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
                     // then move this organization to an other parent node
                     $organization->getNode()
                     ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($orgValues['parent']));
                     $isModify = true;
                 }
-
+            
                 if ($isModify) {
                     $msg = "The organization is saved";
                     $model = 'notice';
@@ -313,30 +423,28 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         // On error, redirect back to the edit action.
         $this->_redirect("/organization/view/id/$id/v/edit");
     }
-
+    
     /**
      * Display organizations and systems in tree mode for quick restructuring of the
      * organizational hiearchy.
-     *
+     * 
      * @return void
      */
-    public function treeAction()
+    public function treeAction() 
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
-
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-
+        $this->searchbox();
         $this->render('tree');
     }
 
     /**
-     * Gets the organization tree for the current user.
-     *
+     * Gets the organization tree for the current user. 
+     * 
      * This should be refactored into the user class, but I'm in a hurry.
-     *
+     * 
      * @return array The array representation of organization tree
      */
-    public function getOrganizationTree()
+    public function getOrganizationTree() 
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
         $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
@@ -348,59 +456,59 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $organizations = $this->toHierarchy($organizations);
         return $organizations;
     }
-
+    
     /**
      * Returns a JSON object that describes the organization tree, including systems
-     *
+     * 
      * @return void
      */
-    public function treeDataAction()
+    public function treeDataAction() 
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
-
-        $this->view->treeData = $this->getOrganizationTree();
+        
+        $this->view->treeData = $this->getOrganizationTree();        
     }
 
     /**
      * Transform the flat array returned from Doctrine's nested set into a nested array
-     *
+     * 
      * Doctrine should provide this functionality in a future
-     *
+     * 
      * @param Doctrine_Collection $collection The collection of organization record to hierarchy
      * @return array The array representation of organization tree
      * @todo review the need for this function in the future
      */
-    public function toHierarchy($collection)
-    {
-        // Trees mapped
-        $trees = array();
-        $l = 0;
-        if (count($collection) > 0) {
-            // Node Stack. Used to help building the hierarchy
+    public function toHierarchy($collection) 
+    { 
+        // Trees mapped 
+        $trees = array(); 
+        $l = 0; 
+        if (count($collection) > 0) { 
+            // Node Stack. Used to help building the hierarchy 
             $rootLevel = $collection[0]->level;
 
-            $stack = array();
-            foreach ($collection as $node) {
+            $stack = array(); 
+            foreach ($collection as $node) { 
                 $item = ($node instanceof Doctrine_Record) ? $node->toArray() : $node;
                 $item['level'] -= $rootLevel;
                 $item['label'] = $item['nickname'] . ' - ' . $item['name'];
                 $item['orgType'] = $node->getType();
-                $item['orgTypeLabel'] = $node->getOrgTypeLabel();
+                $item['orgTypeLabel'] = $node->getOrgTypeLabel();                
                 $item['children'] = array();
-                // Number of stack items
-                $l = count($stack);
-                // Check if we're dealing with different levels
-                while ($l > 0 && $stack[$l - 1]['level'] >= $item['level']) {
-                    array_pop($stack);
-                    $l--;
-                }
+                // Number of stack items 
+                $l = count($stack); 
+                // Check if we're dealing with different levels 
+                while ($l > 0 && $stack[$l - 1]['level'] >= $item['level']) { 
+                    array_pop($stack); 
+                    $l--; 
+                } 
 
-                if ($l != 0) {
+                if ($l != 0) { 
                     if ($node->getNode()->getParent()->name == $stack[$l-1]['name']) {
-                        // Add node to parent
-                        $i = count($stack[$l - 1]['children']);
-                        $stack[$l - 1]['children'][$i] = $item;
-                        $stack[] = & $stack[$l - 1]['children'][$i];
+                        // Add node to parent 
+                        $i = count($stack[$l - 1]['children']); 
+                        $stack[$l - 1]['children'][$i] = $item; 
+                        $stack[] = & $stack[$l - 1]['children'][$i]; 
                     } else {
                         // Find where the node belongs
                         for ($j = $l; $j >= 0; $j--) {
@@ -426,27 +534,27 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             }
         }
         return $trees;
-    }
-
+    }    
+    
     /**
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of organization nodes. It replies with a JSON object.
-     *
+     * 
      * @return void
      */
-    public function moveNodeAction()
+    public function moveNodeAction() 
     {
         $this->_helper->viewRenderer->setNoRender(true);
         $this->_helper->layout()->disableLayout();
         $return = array('success' => true, 'message' => null);
-
+        
         // Find the source and destination objects from the tree
         $srcId = $this->getRequest()->getParam('src');
         $src = Doctrine::getTable('Organization')->find($srcId);
-
+        
         $destId = $this->getRequest()->getParam('dest');
         $dest = Doctrine::getTable('Organization')->find($destId);
-
+        
         if ($src && $dest) {
             // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
             if (!$dest->getNode()->isDescendantOf($src)) {
@@ -466,7 +574,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                         $return['success'] = false;
                         $return['message'] = "Invalid dragLocation parameter ($dragLocation)";
                 }
-
+                
                 // Get refreshed organization tree data
                 $return['treeData'] = $this->getOrganizationTree();
             } else {
@@ -477,31 +585,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $return['success'] = false;
             $return['message'] = "Invalid src or dest parameter ($srcId, $destId)";
         }
-
+        
         print Zend_Json::encode($return);
-    }
-
-    /**
-     * Add the "Organization Tree" button
-     *
-     * @return array Array of Fisma_Yui_Form_Button
-     */
-    public function getToolbarButtons()
-    {
-        $buttons = array();
-
-        if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
-                'organizationTreeButton',
-                array(
-                    'value' => 'View Organization Hierarchy',
-                    'href' => $this->getBaseUrl() . '/tree'
-                )
-            );
-        }
-
-        $buttons = array_merge($buttons, parent::getToolbarButtons());
-
-        return $buttons;
     }
 }

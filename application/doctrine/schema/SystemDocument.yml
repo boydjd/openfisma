@@ -17,12 +17,18 @@ SystemDocument:
             type: string(255)
             extra:
                 notify: true
+                searchIndex: unstored
+                searchAlias: file
             comment: Name of the uploaded file
         size:
             type: integer
+            extra:
+                searchIndex: unstored
             comment: Size of the file in bytes
         description:
             type: string
+            extra:
+                searchIndex: unstored
             comment: A place for the user to enter version comments
 
         documentTypeId:

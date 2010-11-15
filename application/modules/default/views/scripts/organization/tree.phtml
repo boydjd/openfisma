@@ -1,20 +1,24 @@
+<?php Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+
+<div class="buttonBar">
 <?php
+$expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                       array('label' => 'Expand All', 
+                                             'imageSrc' => '/images/expand.png',
+                                             'onClickFunction' => 'expandAll'));
+echo $this->escape($expandAll, 'none');
 
-echo $this->escape(
-    $this->searchBox(
-        $this->toolbarButtons, 
-        $this->searchForm, 
-        $this->searchMoreOptionsForm,
-        $this->advancedSearchOptions
-    ), 
-    'none'
-);
-
-Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); 
-
+$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                         array('label' => 'Collapse All', 
+                                             'imageSrc' => '/images/collapse.png',
+                                             'onClickFunction' => 'collapseAll'));
+echo $this->escape($collapseAll, 'none');
 ?>
+</div>
 
-<div id="orgTree">Loading...</div>
+<p>Right click on an organization or system to view it.</p>
+
+<div id="orgTree"></div>
 
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(function () {

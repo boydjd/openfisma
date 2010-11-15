@@ -29,6 +29,7 @@
 function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
+        removeHighlight(document);
         var t_name = this.getAttribute('target');
         YAHOO.util.Dom.removeClass(this, 'editable'); 
         this.removeAttribute('target');
@@ -56,7 +57,7 @@ function setupEditFields() {
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
                      calendarIcon = document.createElement('img');
                      calendarIcon.id = t_name + "_show";
-                     calendarIcon.src = "/images/calendar.png";
+                     calendarIcon.src = "/images/calendar.gif";
                      calendarIcon.alt = "Calendar";
                      target.parentNode.appendChild(calendarIcon);
                      YAHOO.util.Event.on(t_name+'_show', "click", function() {

@@ -45,9 +45,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         parent::init();
 
         $this->_helper->contextSwitch()
-                      ->addActionContext('set-module', 'json')
+                      ->setAutoJsonSerialization(false)
                       ->addActionContext('test-email-config', 'json')
-                      ->addActionContext('test-search', 'json')
+                      ->addActionContext('set-module', 'json')
                       ->addActionContext('validate-ldap', 'json')
                       ->initContext();
     }
@@ -335,9 +335,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $msg = Fisma_Zend_Form_Manager::getErrors($form);
             $type = 'warning';
         }
-        
-        $this->view->msg = $msg;
-        $this->view->type = $type;
+
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
@@ -555,52 +555,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             /** @todo english */
             $msg  = "Invalid Parameters";
         }
-        
-        $this->view->msg = $msg;
-        $this->view->type = $type;
-    }
-
-    /**
-     * Test search engine backend
-     */
-    public function testSearchAction()
-    {
-        $response = new Fisma_AsyncResponse;
-
-        // Get system search configuration
-        $configuration = Fisma::configuration();
-
-        $storedConfig = array(
-            'search_backend' => $configuration->getConfig('search_backend'),
-            'search_solr_host' => $configuration->getConfig('search_solr_host'),
-            'search_solr_port' => $configuration->getConfig('search_solr_port'),
-            'search_solr_path' => $configuration->getConfig('search_solr_path')
-        );
-        
-        // Get posted form configuration and strip out empty fields
-        $request = $this->getRequest();
-
-        $formConfig = array(
-            'search_backend' => $request->getParam('search_backend'),
-            'search_solr_host' => $request->getParam('search_solr_host'),
-            'search_solr_port' => $request->getParam('search_solr_port'),
-            'search_solr_path' => $request->getParam('search_solr_path')
-        );
-        
-        $formConfig = array_filter($formConfig);
-        
-        // Merge system configuration into form configuration and then validate the merged configuration
-        $searchConfiguration = array_merge($storedConfig, $formConfig);
-        
-        $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
-        
-        $result = $searchBackend->validateConfiguration();
-    
-        if ($result !== true) {
-            $response->fail($result);
-        }
-
-        $this->view->response = $response;        
+        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type));
+        $this->_helper->viewRenderer->setNoRender();
     }
 
     /**
@@ -647,37 +603,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
             
             $this->_redirect('/config/password');
-        }
-
-        // Populate default values for non-submit button elements
-        foreach ($form->getElements() as $element) {
-
-            if ($element instanceof Zend_Form_Element_Submit) {
-                continue;
-            }
-            
-            $name = $element->getName();            
-            $value = Fisma::configuration()->getConfig($name);
-
-            $form->setDefault($name, $value);
-        }
-
-        $this->view->form = $form;
-    }
-    
-    /**
-     * Configurations related to searching
-     */
-    public function searchAction()
-    {
-        $form = $this->_getConfigForm('search_config');
-
-        if ($this->getRequest()->isPost()) {
-            $newValues = $this->getRequest()->getPost();
-
-            $this->_saveConfigurationForm($form, $newValues);
-
-            $this->_redirect('/config/search');
         }
 
         // Populate default values for non-submit button elements

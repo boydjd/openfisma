@@ -1,0 +1,259 @@
+<?php
+    $filterType = array(0  =>'--Any--',
+                    'NONE'  =>'NONE',
+                    'CAP'  =>'(CAP) Corrective Action Plan',
+                    'AR'   =>'(AR) Accepted Risk',
+                    'FP'   =>'(FP) False Positive');
+    $onTimes    = array(0 =>'--Any--',
+                        'ontime'=>'On Time',
+                        'overdue'=>'Overdue');
+    
+    $evaluationTable = Doctrine::getTable('Evaluation');
+    $mpEvalList = $evaluationTable->findByApprovalGroup('action');
+    $epEvalList = $evaluationTable->findByApprovalGroup('evidence');
+
+    foreach ($mpEvalList as $row) {
+        $mpStatus[$row->nickname] = '(' . $row->nickname . ')' . $row->name;
+    }
+    foreach ($epEvalList as $row) {
+        $epStatus[$row->nickname] = '(' . $row->nickname . ')' . $row->name;
+    }
+
+    $filterStatus = array(  0   =>'--Any--',
+                           'NEW' =>'(NEW) Awaiting Mitigation Type and Approval',
+                           'DRAFT'=>'(DRAFT) Awaiting Mitigation Approval');
+    $filterStatus = array_merge($filterStatus, $mpStatus);
+    $filterStatus['EN'] = '(EN) Evidence Needed';
+    $filterStatus = array_merge($filterStatus, $epStatus);
+    $filterStatus['CLOSED'] = '(CLOSED) Officially Closed';
+    $filterStatus['NOT-CLOSED'] = '(NOT-CLOSED) Not Closed';
+    $filterStatus['NOUP-30']   = '(NOUP-30) 30+ Days Since Last Update';
+    $filterStatus['NOUP-60']   = '(NOUP-60) 60+ Days Since Last Update';
+    $filterStatus['NOUP-90']   = '(NOUP-90) 90+ Days Since Last Update';
+
+    $this->systems = array('--Any--') + (array)$this->systems;
+    $this->sources = array('--Any--') + (array)$this->sources;
+
+    $bookmarkUrl = Fisma_Url::currentUrl();
+
+    $flag = '';
+    foreach ($this->params as $k => $value) {
+        if (!empty($value) && $k != 'evidence_include') {
+            $flag = 'true';
+            $bookmarkUrl .= "/$k/$value";
+        }
+    }
+?>
+<form name="filters" method="post" action="/finding/remediation/searchbox">
+<div class="searchFilters">
+        <span class="searchField"><b>Search: </b>
+        <input type="hidden" name="expanded" value="true">
+        <input type="text" 
+               name="keywords" 
+               size="50" 
+               value='<?php echo $this->escape($this->params['keywords'])?>'></span>
+    <?php 
+        $remediationSearchSubmitButton = new Fisma_Yui_Form_Button_Submit('remediationSearchSubmit',
+                                              array('label' => 'Search'));
+        echo $this->escape($remediationSearchSubmitButton, 'none');
+        $advancedSearchButton = new Fisma_Yui_Form_Button('advanced_search',
+                                            array('label' => 'Toggle Advanced Search Options',
+                                                  'onClickFunction' => 'toggleSearchOptions'));
+        echo $this->escape($advancedSearchButton, 'none');
+        $helpButton = new Fisma_Yui_Form_Button('searchHelp', 
+                                          array('label' => 'Help', 
+                                                'imageSrc' => '/images/help.png',
+                                                'onClickFunction' => 'showHelp',
+                                                'onClickArgument' => 'search'));
+        echo $this->escape($helpButton, 'none'); 
+        $bookmarkButton = new Fisma_Yui_Form_Button(
+            'bookmark', 
+            array(
+                'label' => 'Bookmark', 
+                'onClickFunction' => 'addBookmark', 
+                'onClickArgument' => array('title' => 'OpenFISMA Search Results', 'href' => $bookmarkUrl)
+            )
+        );
+        echo $this->escape($bookmarkButton, 'none');
+    ?>
+</div>
+
+<?php
+$style = $flag == ''
+       ? 'style="display:none"'
+       : '';
+?>
+<div id="advanced_searchbox" class="searchFilters" <?php echo $this->escape($style, 'none') ?>>
+<!-- Begin Filter Table -->
+<table style="text-align:left">
+    <tr>
+        <td><b><label for="sourceId">Finding Source:</label> </b><br>
+            <?php 
+            $sourceIdSelect = $this->formSelect(
+                'sourceId',
+                $this->params['sourceId'],
+                null,
+                $this->sources
+            );
+            echo $this->escape($sourceIdSelect, 'none');
+            ?>
+        </td>
+        <td>
+        <b><label for="ids">ID:</label> </b><i>(You may select multiple IDs by using a comma separated list - x,y,z)</i>
+        <br>
+        <input type="text" size="70" name="ids" id="ids" value="<?php echo $this->escape($this->params['ids'])?>">
+        </td>
+    </tr>
+    <tr>
+        <td ><b> Mitigation Strategy:</b><br>
+        <?php 
+        $typeSelect = $this->formSelect(
+            'type',
+            $this->params['type'],
+            null,
+            $filterType
+        );
+        echo $this->escape($typeSelect, 'none');
+        ?>
+        </td>
+        <td width="318" valign="top"><b> Finding Status:</b><br>
+        <?php 
+        $statusSelect = $this->formSelect(
+            'status', 
+            $this->params['status'], 
+            array('id'=>'poamSearchStatus'),
+            $filterStatus
+        );
+        echo $this->escape($statusSelect, 'none');
+        ?>
+        </td>
+    </tr>
+    <tr>
+        <td><b>Responsible System: </b><br>
+            <?php 
+            $roSelect = $this->formSelect(
+                'responsibleOrganizationId',
+                $this->params['responsibleOrganizationId'],
+                null,
+                $this->systems
+            );
+            echo $this->escape($roSelect, 'none');
+            ?>
+        </td>
+        <td ><b>On Time:</b><br>
+            <?php 
+            $ontimeSelect = $this->formSelect(
+                'ontime',
+                $this->params['ontime'],
+                array('id'=>'poamSearchOnTime'),
+                $onTimes
+            );
+            echo $this->escape($ontimeSelect, 'none');
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td colspan='2'>
+            <table border="0" cellpadding="3" cellspacing="1" width="98%">
+                <tr>
+                    <td><b>Estimated Completion Date:</b></td>
+                    <td> 
+                        <label for="estDateBegin">From:</label>
+                        <?php
+                            $estDateBeginValue = '';
+                            if (!empty($this->params['estDateBegin'])) {
+                                $estDateBeginValue = $this->params['estDateBegin']->toString(Fisma_Date::FORMAT_DATE);
+                            }
+                        ?>
+                        <input type="text" 
+                               class="date" 
+                               id="estDateBegin" 
+                               name="estDateBegin" 
+                               value="<?php echo $this->escape($estDateBeginValue, 'none')?>"
+                               size="12" 
+                               maxlength="10"
+                               onfocus="showCalendar('estDateBegin', 'estDateBegin_show');">
+                        <img id="estDateBegin_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar">
+                    </td>
+                        
+                    <td>
+                        <label for="estDateEnd">To:</label>
+                        <?php
+                            $estDateEndValue = '';
+                            if (!empty($this->params['estDateEnd'])) {
+                                $estDateEndValue = $this->params['estDateEnd']->toString(Fisma_Date::FORMAT_DATE);
+                            }
+                        ?>
+                        <input type="text" class="date" id="estDateEnd" 
+                            name="estDateEnd" value="<?php echo $this->escape($estDateEndValue, 'none')?>"
+                            size="12" maxlength="10">
+                        <img id="estDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar" >
+                    </td>
+                        
+                    <td><b>Date Created: </b></td>
+                    <td>
+                        <label for="createdDateBegin">From:</label> 
+                        <?php
+                            $createdDateBeginValue = '';
+                            if (!empty($this->params['createdDateBegin'])) {
+                                $createdDateBeginValue = $this->params['createdDateBegin']
+                                                              ->toString(Fisma_Date::FORMAT_DATE);
+                            }
+                        ?>
+                        <input type="text" 
+                               class="date" 
+                               id="createdDateBegin" 
+                               name="createdDateBegin" 
+                               value="<?php echo $this->escape($createdDateBeginValue, 'none')?>"
+                               size="12" 
+                               maxlength="10">
+                        <img id="createdDateBegin_show" 
+                             src="/images/calendar.gif" 
+                             width="18" 
+                             height="18" 
+                             alt="Calendar">
+                    </td>
+                        
+                    <td>
+                        <label for="createdDateEnd">To:</label> 
+                        <?php
+                            $createdDateEndValue = '';
+                            if (!empty($this->params['createdDateEnd'])) {
+                                $createdDateEndValue = $this->params['createdDateEnd']
+                                                            ->toString(Fisma_Date::FORMAT_DATE);
+                            }
+                        ?>
+                        <input type="text" 
+                               class="date" 
+                               id="createdDateEnd" 
+                               name="createdDateEnd" 
+                               value="<?php echo $this->escape($createdDateEndValue, 'none')?>"
+                               size="12" 
+                               maxlength="10">
+                        <img id="createdDateEnd_show" src="/images/calendar.gif" width="18" height="18" alt="Calendar">
+                    </td>
+                </tr>
+                <?php if ($this->acl()->hasPrivilegeForClass('delete', 'Finding')) : ?>
+                <tr>
+                    <td>
+                        <label for="deleted_at"><b>Deleted:</b></label><br />
+                        <?php
+                                $deletedSelect = $this->formSelect(
+                                    'deleted_at',
+                                    $this->params['deleted_at'],
+                                    null,
+                                    array(0 => 'No', 1 => 'Yes') 
+                                );
+                                echo $this->escape($deletedSelect, 'none');
+                        ?>
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </table>
+        </td>
+    </tr>
+</table>
+</form>
+</div>
+
+<?php //Fisma_Format_Section::stopSection(); ?>

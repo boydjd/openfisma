@@ -35,24 +35,17 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Role';
-
+    
     /**
-     * Override the parent class to add a link for editing privileges
+     * View a role
      * 
-     * @param Fisma_Doctrine_Record $subject
+     * @return void
      */
-    public function getViewLinks(Fisma_Doctrine_Record $subject)
+    public function viewAction()
     {
-        $links = array();
-        
-        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['Privileges'] = "{$this->_moduleName}/{$this->_controllerName}"
-                                 . "/right/id/{$subject->id}";
-        }
-        
-        $links = array_merge($links, parent::getViewLinks($subject));
-
-        return $links;
+        $id = $this->_request->getParam('id');
+        $this->view->assign('rightLink', "/Role/right/id/$id");
+        parent::viewAction();
     }
     
     /**

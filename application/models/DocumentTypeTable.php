@@ -25,8 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class DocumentTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
-                                                                Fisma_Search_CustomIndexBuilder_Interface
+class DocumentTypeTable extends Fisma_Doctrine_Table
 {
     /**
      * Return the count of required document types
@@ -84,54 +83,5 @@ class DocumentTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                            ->execute();
 
         return $documentTypeIds->toKeyValueArray('id', 'id');
-    }
-    
-    /**
-     * Implement the interface for Searchable
-     */
-    public function getSearchableFields()
-    {
-        return array (
-            'name' => array(
-                'initiallyVisible' => true,
-                'label' => 'Name',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'required' => array(
-                'enumValues' => array('yes', 'no'),
-                'initiallyVisible' => true,
-                'label' => 'Required',
-                'sortable' => true,
-                'type' => 'enum'
-            )
-        );
-    }
-
-    /**
-     * Document type model uses default access control (return empty array)
-     *
-     * @return array
-     */
-    public function getAclFields()
-    {
-        return array();
-    }
-    
-    /**
-     * Modifies the search index collection query to convert the boolean value to a string
-     * 
-     * @param Doctrine_Query $baseQuery
-     * @param array $relationAliases An array that maps relation names to table aliases in the query
-     * @return Doctrine_Query
-     */
-    public function getSearchIndexQuery(Doctrine_Query $baseQuery, $relationAliases)
-    {
-        // Table aliases are generated from doctrine metadata (without user input) and are safe to interpolate
-        $baseTableAlias = $relationAliases['DocumentType'];
-
-        return $baseQuery->select("$baseTableAlias.id AS id")
-                         ->addSelect("$baseTableAlias.name AS name")
-                         ->addSelect("IF($baseTableAlias.required = 1, 'yes', 'no') AS required");
     }
 }

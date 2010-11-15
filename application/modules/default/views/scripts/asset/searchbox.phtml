@@ -1,0 +1,51 @@
+<form action="/asset/list" method="post">
+    <div class="searchFilters" >
+        <table width="100%" style="text-align:left">
+        <tr>
+            <td><b><label for="system_id">System:</label></b></td>
+            <td>
+                <?php
+                    echo $this->escape(
+                        $this->formSelect('system_id', $this->criteria['system_id'], null, $this->systemList),
+                        'none'
+                    );
+                ?>
+            </td>
+            <td><b><label for="vendor">Vendor:</label></b></td>
+            <td>
+                <input name="vendor" type="text" id="vendor"
+                       value="<?php echo $this->escape($this->criteria['vendor'])?>">
+            </td>
+            <td><b><label for="product">Product Name:</label></b></td>
+            <td>
+                <input type="text" name="product" id="product"
+                       value="<?php echo $this->escape($this->criteria['product'])?>">
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><b><label for="ip">IP Address:</label></b></td>
+            <td>
+                <input type="text" name="ip" id="ip"
+                       value="<?php echo $this->escape($this->criteria['ip'])?>" maxlength="23">
+            </td>
+            <td><b><label for="port">Port:</label></b></td>
+            <td>
+                <input type="text" name="port" id="port"
+                       value="<?php echo $this->escape($this->criteria['port'])?>" size="10">
+            </td>
+            <td><b><label for="version">Version:</label></b></td>
+            <td>
+                <input type="text" id="version" name="version"
+                       value="<?php echo $this->escape($this->criteria['version'])?>"/>
+            </td>
+            <td>
+            <?php
+                $submitButton = new Fisma_Yui_Form_Button_Submit('assetSearchSubmit', array('label' => 'Search'));
+                echo $this->escape($submitButton, 'none');
+            ?>
+            </td>
+        </tr>
+        </table>
+    </div>
+</form>

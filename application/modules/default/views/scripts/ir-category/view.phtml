@@ -1,0 +1,17 @@
+<?php
+$operation = '';
+
+if ($this->updateIrCategoryPrivilege):
+    $operation .= "[<a href='{$this->editLink}'>Edit</a>]";
+endif;
+
+Fisma_Format_Section::startSection("Category Information</b> $operation"); 
+?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none'); ?>
+</div>
+
+<?php 
+Fisma_Format_Section::stopSection(); 
+?>

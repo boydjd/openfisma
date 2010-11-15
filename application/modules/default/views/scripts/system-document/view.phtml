@@ -1,5 +1,5 @@
 <?php
-echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+echo $this->escape($this->partial('system-document/searchbox.phtml'), 'none');
 
 $sectionName = "{$this->escape($this->document->DocumentType->name)} "
              . "for {$this->escape($this->document->System->Organization->name)}";

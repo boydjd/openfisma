@@ -1,0 +1,14 @@
+<?php 
+
+echo $this->escape(
+    $this->partial('security-control-catalog/toolbar.phtml', array('toolbarForm' => $this->toolbarForm)), 
+    'none'
+);
+
+Fisma_Format_Section::startSection($this->catalogName);
+
+echo $this->controlTable;
+
+Fisma_Format_Section::stopSection(); 
+
+?>

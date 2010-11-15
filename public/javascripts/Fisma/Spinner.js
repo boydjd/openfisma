@@ -39,16 +39,16 @@ Fisma.Spinner = function (container) {
     this.spinner = document.createElement('img');
     this.spinner.id = container.id + "_spinnerImg";
     this.spinner.src = "/images/spinners/small.gif";
-    this.spinner.style.visibility = "hidden";
+    this.spinner.style.display = "none";
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
 }
 
 Fisma.Spinner.prototype.show = function () {
-    this.spinner.style.visibility = 'visible';
+    this.spinner.style.display = 'inline';
 };
         
 Fisma.Spinner.prototype.hide = function () {
-    this.spinner.style.visibility = 'hidden';
+    this.spinner.style.display = 'none';
 };

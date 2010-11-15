@@ -28,6 +28,24 @@
 class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
+     * Declares fields stored in related records that should be indexed along with records in this table
+     * 
+     * This is an ugly hack. Doctrine lets us put extra attributes on columns in YAML, but not on relations.
+     * So column indexing options are written in the YAML, but for now the relation indexing options have to 
+     * specified within each class.
+     * 
+     * Each class that takes advantage of this must declare a public array called $relationIndex
+     * 
+     * @var array
+     * @todo Doctrine 2.0 might provide a nicer approach for this
+     */
+    public $relationIndex = array(
+        'Product' => array('vendor' => array('type' => 'unstored'),
+                           'name' => array('type' => 'unstored'),
+                           'version' => array('type' => 'unstored'))
+    );
+    
+    /**
      * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
      * 
      * @return int

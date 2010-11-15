@@ -139,7 +139,7 @@ Fisma.FindingSummary = function() {
                         // The in between columns should have the ontime class
                         cell.className = 'onTime';                
                     }
-                    this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    this.updateCellCount(cell, count, node.id, c, 'ontime', node.expanded);
                 }
 
                 // Now add cells to the second row
@@ -147,7 +147,7 @@ Fisma.FindingSummary = function() {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, c, 'overdue', node.expanded);
+                    this.updateCellCount(cell, count, node.id, c, 'overdue', node.expanded);
                 }
 
                 // Hide both rows by default
@@ -207,7 +207,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.id, c, 'ontime', true);
                 i++;
             }
 
@@ -218,7 +218,7 @@ Fisma.FindingSummary = function() {
                 var i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.id, c, 'overdue', true);
                     i++;
                 }
             } else {
@@ -262,7 +262,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.id, c, 'ontime', false);
                 i++;
             }
 
@@ -278,7 +278,7 @@ Fisma.FindingSummary = function() {
                 var i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.id, c, 'overdue', false);
                     i++;
                 }
             }
@@ -415,16 +415,16 @@ Fisma.FindingSummary = function() {
          * 
          * @param cell An HTML table cell
          * @param count The count to display
-         * @param orgName Used to generate link
+         * @param orgId Used to generate link
          * @param ontime Used to generate link
          * @param expanded Used to generate link
          */
-        updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+        updateCellCount : function (cell, count, orgId, status, ontime, expanded) {
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
                     var link = document.createElement('a');
-                    link.href = this.makeLink(orgName, status, ontime, expanded);
+                    link.href = this.makeLink(orgId, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
                 } else {
@@ -437,7 +437,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Update the anchor text
                         cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, status, ontime, expanded);
+                        cell.firstChild.href = this.makeLink(orgId, status, ontime, expanded);
                     } else {
                         // Remove the anchor
                         cell.removeChild(cell.firstChild);
@@ -449,7 +449,7 @@ Fisma.FindingSummary = function() {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
                         var link = document.createElement('a');
-                        link.href = this.makeLink(orgName, status, ontime, expanded);
+                        link.href = this.makeLink(orgId, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
                     } else {
@@ -465,56 +465,47 @@ Fisma.FindingSummary = function() {
          * 
          * These search engine uses these parameters to filter the search based on the cell that was clicked
          * 
-         * @param orgName
+         * @param orgId
          * @param status
          * @param ontime
          * @param expanded
          * @return String URI
          */
-        makeLink : function (orgName, status, ontime, expanded) {
+        makeLink : function (orgId, status, ontime, expanded) {
             // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
             var onTimeString = '';
             if (!(status == 'CLOSED' || status == 'TOTAL')) {
-                var now = new Date();
-                
-                var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
-
-                if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
-                } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
-                }
+                var onTimeString = '/ontime/' + ontime;
             }
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+            if (status != '') {
+                statusString = '/status/' + escape(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/enumIs/' + this.filterType;
+            if (!YAHOO.lang.isNull(this.filterType) 
+                && this.filterType != '') {
+                filterType = '/type/' + this.filterType;
             }
-
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+            if (!YAHOO.lang.isNull(this.filterSource)
+                && this.filterSource != '') {
+                filterSource = '/sourceId/' + this.filterSource;
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
+            var uri = '/finding/remediation/search'
                     + onTimeString
                     + statusString
+                    + '/responsibleOrganizationId/'
+                    + orgId
+                    + '/expanded/'
+                    + expanded
                     + filterType
                     + filterSource;
-
-            if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
-            } else {
-                uri += '/organization/organizationSubtree/' + orgName;
-            }
 
             return uri;            
         }, 

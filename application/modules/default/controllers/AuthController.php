@@ -116,10 +116,10 @@ class AuthController extends Zend_Controller_Action
             Notification::notify('LOGIN_SUCCESS', $user, $user);
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
             
-            // Get this user's cookies and set them
-            foreach ($user->Cookie as $cookie) {
-                Fisma_Cookie::set($cookie->name, $cookie->value);
-            }
+            // Set cookie for 'column manager' to control the columns visible on the search page
+            // Persistent cookies are prohibited on U.S. government web servers by federal law. 
+            // This cookie will expire at the end of the session.
+            Fisma_Cookie::set(User::SEARCH_PREF_COOKIE, $user->searchColumnsPref);
 
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {

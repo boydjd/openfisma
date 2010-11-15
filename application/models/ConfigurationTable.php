@@ -19,7 +19,7 @@
 /**
  * ConfigurationTable 
  * 
- * @uses Fisma_Doctrine_Table
+ * @uses Doctrine _Table
  * @package Model 
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 

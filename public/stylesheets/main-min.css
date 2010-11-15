@@ -24,6 +24,10 @@ div.clear{clear:both;}
 p.stacktrace{margin:10px;border:1px solid #d3d3d3;#fff-space:pre;font-family:monospace;overflow:auto;white-space:pre-wrap;}
 div#footer{margin:10px 0;padding:3px;}
 div#footerLinks{float:right;}
+.searchFilters{text-align:center;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
+.searchField{position:relative;top:-5px;}
+.searchField label{display:none;}
+.searchFilters select{margin-right:10px;}
 table.keyValues tr:nth-child(even){background-color:#eef5fe;}
 table.keyValues td{padding:5px;vertical-align:middle;}
 table.keyValues td:first-child{font-weight:bold;text-align:right;}
@@ -47,6 +51,7 @@ span.tooltip{padding:0 2px 2px 22px;background:url(/images/tooltip.png) no-repea
 table.fisma_crud tr td:first-child{text-align:right;background-repeat:no-repeat;}
 table.fisma_crud ul li{text-align:left;list-style:none;padding-top:2px;}
 div.notice p{text-align:left;padding:5px 20px;}
+.highlight{background-color:yellow;}
 #help_tips{cursor:help;position:relative;top:4px;}
 tr.alt td{background:#ecf6fc;}
 tr.over td{background:#bcd4ec;}

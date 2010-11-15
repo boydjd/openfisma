@@ -1,7 +1,7 @@
 <?php 
-$operation = "[<a href='{$this->viewLink}'>Back To User View</a>]";
-
-Fisma_Format_Section::startSection("User Audit Log ($this->username)&nbsp;&nbsp;$operation"); 
+echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
+$operation = "[<a href='{$this->viewLink}'>View</a>]";
+Fisma_Format_Section::startSection("User Audit Log (" . $this->escape($this->username) . ") $operation"); 
 ?>
 
 <div id="container">

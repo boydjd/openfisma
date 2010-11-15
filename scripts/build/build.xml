@@ -90,6 +90,6 @@
         <echo message="ant minify"/>
         <echo message=" -- Minifies and combines JS/CSS"/>
         <echo message="ant clean"/>
-        <echo message=" -- Removes all files created by the minify task"/>
+        <echo message=" -- Removes all files created by the minifiy task"/>
     </target>
 </project>

@@ -49,7 +49,7 @@ class Fisma_Menu
             
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
-                $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
+                $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/searchbox'));
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
@@ -116,7 +116,7 @@ class Fisma_Menu
                 $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
             }
             
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control/list'));
+            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog/list'));
 
             $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
 
@@ -132,7 +132,7 @@ class Fisma_Menu
             if ($acl->hasArea('system_inventory_admin')) {
                 $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
 
-                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-admin'));
+                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-catalog-admin'));
 
                 if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
@@ -205,7 +205,7 @@ class Fisma_Menu
             if ($acl->hasArea('incident_admin')) {
                 $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
-                if ($acl->hasPrivilegeForClass('read', 'IrSubCategory')) {
+                if ($acl->hasPrivilegeForClass('read', 'IrCategory')) {
                     $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ir-category/list'));
                 }
                 
@@ -258,8 +258,6 @@ class Fisma_Menu
             if ($acl->hasPrivilegeForClass('read', 'Role')) {
                 $admin->add(new Fisma_Yui_MenuItem('Roles', '/role/list'));
             }
-            
-            $admin->add(new Fisma_Yui_MenuItem('Search', '/config/search'));
             
             $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
 
@@ -316,6 +314,9 @@ class Fisma_Menu
         }
 
         $menu->addSeparator();
+        
+        //Temporarily disabled
+        //$menu->add(new Fisma_Yui_MenuItem('Dashboard', '/vm/dashboard'));
 
         if ($acl->hasArea('vulnerability_admin')) {
             $adminMenu = new Fisma_Yui_Menu('Administration');

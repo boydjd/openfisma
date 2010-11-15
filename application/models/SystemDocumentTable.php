@@ -25,85 +25,9 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class SystemDocumentTable extends Fisma_Doctrine_Table
 {
     /**
-     * Implement the interface for Searchable
-     */
-    public function getSearchableFields()
-    {
-        return array (
-            'organization' => array(
-                'initiallyVisible' => true,
-                'label' => 'Organization',
-                'join' => array(
-                    'model' => 'Organization',
-                    'relation' => 'System.Organization',
-                    'field' => 'nickname'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'documentType' => array(
-                'initiallyVisible' => true,
-                'label' => 'Document Type',
-                'join' => array(
-                    'model' => 'DocumentType',
-                    'relation' => 'DocumentType',
-                    'field' => 'name'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'version' => array(
-                'initiallyVisible' => true,
-                'label' => 'Current Version',
-                'sortable' => true,
-                'type' => 'integer'
-            ),
-            'description' => array(
-                'initiallyVisible' => true,
-                'label' => 'Version Notes',
-                'sortable' => false,
-                'type' => 'text'
-            ),
-            'size' => array(
-                'initiallyVisible' => true,
-                'label' => 'Size (bytes)',
-                'sortable' => true,
-                'type' => 'integer'
-            ),
-            'createdTs' => array(
-                'initiallyVisible' => true,
-                'label' => 'Last Modification Date',
-                'sortable' => true,
-                'type' => 'date'
-            ),
-            'lastModifiedUser' => array(
-                'initiallyVisible' => true,
-                'label' => 'Last Modified By User',
-                'join' => array(
-                    'model' => 'User',
-                    'relation' => 'User',
-                    'field' => 'username'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            )
-        );
-    }
-
-    /**
-     * Implement required interface, but there is no field-level ACL in this model
-     *
-     * @return array
-     */
-    public function getAclFields()
-    {
-        return array();
-    }
-
-    /*
      * Get an array of system documents including system id, name and percentage
      * 
      * @return array

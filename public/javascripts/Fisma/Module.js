@@ -53,7 +53,7 @@ Fisma.Module = {
     handleAsyncResponse : function (response) {
 
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(response.responseText).response;
+            var responseStatus = YAHOO.lang.JSON.parse(response.responseText);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object

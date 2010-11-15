@@ -8,7 +8,7 @@
 [security_control_catalog_toolbar]
 
 method=GET
-action=/security-control/list
+action=/security-control-catalog/list
 
 elements.id.type = "select"
 elements.id.options.label = "Catalog"

@@ -89,7 +89,7 @@ function menuHandler(source) {
     
     var url = '/finding/remediation/summary-data'
             + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value)
+            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value)
             + '/format/json';
     reloadTable(url);
 
@@ -97,12 +97,12 @@ function menuHandler(source) {
     document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
         '/finding/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
         + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value);
+        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceId/' + selectedSource.value);
     <?php endforeach; ?>
 }
 </script>
 
-<div class="searchBox" style="text-align: center;">
+<div class="searchFilters">
     <b>Filter by Mitigation Type:&nbsp;</b>
     <select id='types' onchange='menuHandler(this);' disabled="true">
         <option value="ALL">All Types</option>
@@ -114,8 +114,8 @@ function menuHandler(source) {
     <select id='sources' onchange='menuHandler(this);' disabled="true">
         <option value="ALL_SOURCES">All Sources</option>
         <?php foreach ($this->findingSources as $source): ?>
-        <option value='<?php echo $this->escape($source->nickname) ?>'>
-            <?php echo $this->escape($source->nickname);?> - <?php echo $this->escape($source->name); ?>
+        <option value='<?php echo $this->escape($source->id) ?>'>
+            <?php echo $this->escape($source->nickname);?>-<?php echo $this->escape($source->name); ?>
         </option>
         <?php endforeach; ?>
     </select>
@@ -205,26 +205,15 @@ echo $this->escape($exportPdf, 'none');
         <th colspan="<?php echo $this->escape(count($this->evidenceEvaluations)) ?>">Approval</th>
     </tr>
     <tr>
-    <?php 
-    foreach ($this->statusArray as $status):
-        if ($status == 'TOTAL'):
-            $url = Fisma_Url::customUrl('/finding/remediation/list');
-        else:
-            $url = Fisma_Url::customUrl(
-                '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/' 
-                . rawurlencode($status)
-            );
-        endif;
-    ?>
+    <?php foreach ($this->statusArray as $status):
+        $url = Fisma_Url::customUrl('/finding/remediation/searchbox/status/' . urlencode($status));?>
         <th>
-            <a id="finding_summary_search_<?php echo $this->escape($status, 'url'); ?>"
-               href="<?php echo $this->escape($url, 'none'); ?>">
+            <a id="finding_summary_search_<?php echo $this->escape($status, 'url') ?>"
+               href="<?php echo $this->escape($url, 'none') ?>">
                 <?php echo $this->escape($status); ?>
             </a>
         </th>
-    <?php 
-    endforeach; 
-    ?>
+    <?php endforeach; ?>
     </tr>
     <tr id='loadingRow'>
         <th colspan="10"><p>Loading&hellip;</p><img src="/images/loading_bar.gif"></th>
