@@ -4,7 +4,7 @@
 .searchBox input[type=text]{position:relative;top:-.4em;border:1px solid #808080;background-color:white;height:1.7em;margin-left:2px;width:20em;}
 .searchBox p{font-weight:bold;margin:3px 0;}
 .searchBox input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
-.searchBox input[type=text].integer{width:10em;}
+.searchBox input[type=text].integer,.searchBox input[type=text].float{width:10em;}
 .searchCriteria{border-top:1px dotted #bfbfbf;max-width:50em;padding-top:5px;padding-bottom:3px;-margin-left:auto;margin-right:auto;}
 .searchCriteria:first-child{border:none;}
 .searchQueryButtons{float:right;}

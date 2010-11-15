@@ -439,7 +439,7 @@ table.modules td:first-child {
     width: 10em;
 }
 
-.searchBox input[type=text].integer {
+.searchBox input[type=text].integer, .searchBox input[type=text].float {
 	width: 10em;
 }
 
@@ -1091,4 +1091,11 @@ form dl.zend_form dt, form dl.zend_form dd {
 /* Style for displaying search from*/
 form .searchForm {
     display: inline;
+}
+
+/* Date inputs have a calendar icon rendered on them */
+input[type=text].date {
+    background: url(/images/calendar.png) no-repeat 98%;
+    background-color: white;
+    width: 10em;
 }

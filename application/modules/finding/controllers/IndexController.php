@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2009 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -24,19 +24,9 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
-class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
+class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 {
-    /**
-     * The main name of the model.
-     * 
-     * This model is the main subject which the controller operates on.
-     * 
-     * @var string
-     */
-    protected $_modelName = 'Finding';
-
     /**
      * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges
      * 
@@ -52,47 +42,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->fismaContextSwitch
              ->addActionContext('template', 'xls')
              ->initContext();
-    }
-
-    /** 
-     * Overriding Hooks
-     * 
-     * @param Zend_Form $form The specified form to save
-     * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return integer ID of the object 
-     * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
-     * to the subject doesn`t exist
-     */
-    protected function saveValue($form, $subject=null)
-    {
-        if (is_null($subject)) {
-            $subject = new $this->_modelName();
-        } else {
-            throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
-        }
-
-        $values = $this->getRequest()->getPost();
-
-        if (empty($values['securityControlId'])) {
-            unset($values['securityControlId']);
-        }
-
-        $form->getElement('securityControlAutocomplete')->setValue($values['securityControlId'])
-                                                        ->setDisplayText($values['securityControlAutocomplete']);
-
-        $subject->merge($values);
-        
-        $organization = Doctrine::getTable('Organization')->find($values['orgSystemId']);
-        if ($organization !== false) {
-            $subject->ResponsibleOrganization = $organization;
-        } else {
-            throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
-                                         . " non-existent organization (id={$values['orgSystemId']}).");
-        }
-                
-        $subject->save();
-
-        return $subject->id;
     }
 
     /**

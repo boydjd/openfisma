@@ -112,6 +112,109 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->actionStack('summary', 'Remediation');
     }
 
+    /** 
+     * Overriding Hooks
+     * 
+     * @param Zend_Form $form The specified form to save
+     * @param Doctrine_Record|null $subject The subject model related to the form
+     * @return integer ID of the object 
+     * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
+     * to the subject doesn`t exist
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } else {
+            throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
+        }
+
+        $values = $this->getRequest()->getPost();
+
+        if (empty($values['securityControlId'])) {
+            unset($values['securityControlId']);
+        }
+
+        $subject->merge($values);
+        
+        $organization = Doctrine::getTable('Organization')->find($values['responsibleOrganizationId']);
+
+        if ($organization !== false) {
+            $subject->ResponsibleOrganization = $organization;
+        } else {
+            throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
+                                         . " non-existent organization (id={$values['orgSystemId']}).");
+        }
+                
+        $subject->save();
+
+        return $subject->id;
+    }
+
+    /**
+     * Override to fill in option values for the select elements, etc.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        // Default discovered date is today
+        $form->getElement('discoveredDate')
+             ->setValue(Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE))
+             ->addDecorator(new Fisma_Zend_Form_Decorator_Date);
+
+        // Populate <select> for finding sources
+        $sources = Doctrine::getTable('Source')->findAll()->toArray();
+
+        $form->getElement('sourceId')->addMultiOptions(array('' => null));
+
+        foreach ($sources as $source) {
+            $form->getElement('sourceId')
+                 ->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
+        }
+
+        // Populate <select> for threat level
+        $threatLevels = Doctrine::getTable('Finding')->getEnumValues('threatLevel');
+        $threatLevels = array('' => '') + array_combine($threatLevels, $threatLevels);
+
+        $form->getElement('threatLevel')->setMultiOptions($threatLevels);
+
+        // Populate <select> for responsible organization
+        $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
+        $selectArray = $this->view->systemSelect($systems);
+        $form->getElement('responsibleOrganizationId')->addMultiOptions($selectArray);
+
+        return $form;
+    }
+
+    /**
+     * Override to set some non-trivial default values (such as the security control autocomplete)
+     *
+     * @param Doctrine_Record $subject The specified subject model
+     * @param Zend_Form $form The specified form
+     * @return Zend_Form The manipulated form
+     */
+    protected function setForm($subject, $form)
+    {
+        parent::setForm($subject, $form);
+        
+        $values = $this->getRequest()->getPost();
+
+        // Set default value for security control autocomplete
+        if (empty($values['securityControlId'])) {
+            unset($values['securityControlId']);
+        }
+
+        $form->getElement('securityControlAutocomplete')
+             ->setValue($values['securityControlId'])
+             ->setDisplayText($values['securityControlAutocomplete']);
+
+        return $form;
+    }
+
     /**
      * Presents the view which contains the summary table. The summary table loads summary data
      * asynchronously by invoking the summaryDataAction().

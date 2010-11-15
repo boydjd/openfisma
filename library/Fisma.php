@@ -505,7 +505,7 @@ class Fisma
                 $username = '(none)';
             }
                 
-            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n";
+            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n\n";
             $formatter = new Zend_Log_Formatter_Simple($format);
 
             $writer->setFormatter($formatter);

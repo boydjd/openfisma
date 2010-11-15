@@ -1,0 +1,7 @@
+<script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function () {
+        var dateField = document.getElementById('<?php echo $this->escape($this->dateFieldName); ?>');
+
+        Fisma.Calendar.addCalendarPopupToTextField(dateField);        
+    });
+</script>

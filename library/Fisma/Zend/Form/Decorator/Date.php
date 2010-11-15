@@ -17,34 +17,28 @@
  */
 
 /**
- * A decorator which lets an element render itself, if the element has a renderSelf() method
+ * A decorator which turns a text field into a date field by adding a class and some client-side behavior
  * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend
- * @version    $Id$
  */
-class Fisma_Zend_Form_Decorator_RenderSelf extends Zend_Form_Decorator_Abstract
+class Fisma_Zend_Form_Decorator_Date extends Zend_Form_Decorator_Abstract
 {
     /**
-     * Allow an element to render itself, if it is capable of doing so.
-     * 
-     * Otherwise, it will return the same content passed in
+     * Render the element with a script immediately after that attaches the client-side date behavior
      * 
      * @param string $content
      */
     public function render($content)
-    {
-        $render = $content;
+    {        
+        $view = Zend_Layout::getMvcInstance()->getView();
+        $render .= $view->partial('form-element/date.phtml', 
+                                  'default', 
+                                  array('dateFieldName' => $this->getElement()->getName()));
         
-        // Replace content with the element's own self-rendering, if it has a renderSelf method
-        $element = $this->getElement();
-        if (method_exists($element, 'renderSelf')) {
-            $render = $element->renderSelf();
-        }
-        
-        return $render;
-    }
+        return $content . $render;
+    }  
 }

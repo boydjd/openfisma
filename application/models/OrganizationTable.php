@@ -150,6 +150,12 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             }
         }
         
+        // If $ids is empty, then the root node nickname doesn't exist anywhere in the tree. Return an impossible
+        // condition (no record has primary key == 0) to prevent any matching search records.
+        if (0 === count($ids)) {
+            $ids[] = 0;
+        }
+        
         return $ids;
     }
 }
