@@ -2611,21 +2611,21 @@ SecurityControlEnhancement:
     Rev2_PE_13_E1:
         number: 1
         Control: Rev2_PE_13
-        level: HIGH
+        level: MODERATE
         description: >
             The organization employs fire detection devices/systems that activate automatically and notify the 
             organization and emergency responders in the event of a fire.
     Rev2_PE_13_E2:
         number: 2
         Control: Rev2_PE_13
-        level: HIGH
+        level: MODERATE
         description: >
             The organization employs fire suppression devices/systems that provide automatic notification of any 
             activation to the organization and emergency responders.
     Rev2_PE_13_E3:
         number: 3
         Control: Rev2_PE_13
-        level: HIGH
+        level: MODERATE
         description: >
             The organization employs an automatic fire suppression capability in facilities that are not staffed on a 
             continuous basis.

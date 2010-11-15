@@ -56,6 +56,7 @@ class Version81 extends Doctrine_Migration_Base
         array('AC-07', 'NIST SP 800-53 Rev. 2'),
         array('MP-06', 'NIST SP 800-53 Rev. 2'),
         array('SA-12', 'NIST SP 800-53 Rev. 3'),
+        array('PE-13', 'NIST SP 800-53 Rev. 2'),
     );
 
     /**
@@ -241,6 +242,13 @@ class Version81 extends Doctrine_Migration_Base
         $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[6]);
         $enhancement->save();
 
+        // Change all level value of Rev2_PE_13 from 'HIGH' to 'MODERATE' in security control enhancement table
+        $securityControlId = $this->_getSecurityControl(self::$_missingNumbers[7])->id;
+        $enhancements = Doctrine::getTable('SecurityControlEnhancement')->findBySecurityControlId($securityControlId);
+        foreach ($enhancements as $enhancement) {
+            $enhancement->level = 'MODERATE';
+            $enhancement->save();
+        }
     }
 
     /**
