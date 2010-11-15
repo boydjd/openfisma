@@ -1,0 +1,69 @@
+; This is the form for security authorization.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Josh Boyd <joshua.boyd@endeavorsystems.com> 
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[sainformationtype]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.category.type = "text"
+elements.category.options.label = "Category"
+elements.category.options.required = true
+displayGroups.sa.elements.category = "category"
+
+elements.name.type = "text"
+elements.name.options.label = "Name"
+elements.name.options.required = true
+displayGroups.sa.elements.name = "name"
+
+elements.description.type = "text"
+elements.description.options.label = "Description"
+elements.description.options.required = false 
+displayGroups.sa.elements.desc = "description"
+
+elements.confidentiality.type = "select"
+elements.confidentiality.options.multiOptions.low.key = "LOW"
+elements.confidentiality.options.multiOptions.low.value = "LOW"
+elements.confidentiality.options.multiOptions.moderate.key = "MODERATE"
+elements.confidentiality.options.multiOptions.moderate.value = "MODERATE"
+elements.confidentiality.options.multiOptions.high.key = "HIGH"
+elements.confidentiality.options.multiOptions.high.value = "HIGH"
+elements.confidentiality.options.label = "Confidentiality"
+elements.confidentiality.options.required = true
+displayGroups.sa.elements.confidentiality = "confidentiality"
+
+elements.integrity.type = "select"
+elements.integrity.options.multiOptions.low.key = "LOW"
+elements.integrity.options.multiOptions.low.value = "LOW"
+elements.integrity.options.multiOptions.moderate.key = "MODERATE"
+elements.integrity.options.multiOptions.moderate.value = "MODERATE"
+elements.integrity.options.multiOptions.high.key = "HIGH"
+elements.integrity.options.multiOptions.high.value = "HIGH"
+elements.integrity.options.label = "Integrity"
+elements.integrity.options.required = true
+displayGroups.sa.elements.integrity = "integrity"
+
+elements.availability.type = "select"
+elements.availability.options.multiOptions.low.key = "LOW"
+elements.availability.options.multiOptions.low.value = "LOW"
+elements.availability.options.multiOptions.moderate.key = "MODERATE"
+elements.availability.options.multiOptions.moderate.value = "MODERATE"
+elements.availability.options.multiOptions.high.key = "HIGH"
+elements.availability.options.multiOptions.high.value = "HIGH"
+elements.availability.options.label = "Availability"
+elements.availability.options.required = true
+displayGroups.sa.elements.availability = "availability"
+
+elements.hidden.type = "checkbox"
+elements.hidden.options.label = "Hidden"
+elements.hidden.options.required = false
+displayGroups.sa.elements.hidden = "hidden"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.sa.elements.save = "save"
