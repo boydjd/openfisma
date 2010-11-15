@@ -133,6 +133,22 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         return $buttons;
     }
+    
+    /**
+     * Override to remove the "Delete" option since system documents can never be deleted
+     *
+     * @return Zend_Form
+     */
+    public function getSearchMoreOptionsForm()
+    {
+        $searchForm = parent::getSearchMoreOptionsForm();
+
+        if ($searchForm->getElement('deleteSelected')) {
+            $searchForm->removeElement('deleteSelected');
+        }
+
+        return $searchForm;
+    }
 
     /**
      * Override parent to provide proper human-readable name for SystemDocument class

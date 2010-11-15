@@ -101,7 +101,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                       . $organization['nickname'] 
                       . ' - '
                       . $organization['name'];
-                $form->getElement('parent')->addMultiOptions(array($value => $text));
+                      
+                $parent = $form->getElement('parent');
+                if ($parent) {
+                    $form->getElement('parent')->addMultiOptions(array($value => $text));
+                }
             }
         } else {
             // If there are no other organizations, the parent only shows the option "None"

@@ -486,16 +486,16 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText);
 
                         if (response.success) {
-                            message("Your column preferences have been saved", "notice");
+                            message("Your column preferences have been saved", "notice", true);
                         } else {
-                            message(response.message, "warning");
+                            message(response.message, "warning", true);
                         }
                     },
 
                     failure : function (o) {
                         Fisma.Search.columnPreferencesSpinner.hide();
 
-                        message('Error: ' + o.statusText, 'warning');
+                        message('Error: ' + o.statusText, 'warning', true);
                     }
                 }
             );
