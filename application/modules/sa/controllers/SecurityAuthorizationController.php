@@ -105,7 +105,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected function saveValue($form, $subject=null)
     {
         $sa = $subject;
-        // if subject is null we need to add in the impact from the system before passing the form onto the save method.
+
+        /** 
+         * if subject is null we need to add in the impact from the system before passing the form onto the save
+         * method.
+         */
         if (is_null($subject)) {
             // fetch the system and use its impact values to set the impact of this SA
             $org = Doctrine::getTable('Organization')->find($form->getValue(sysOrgId));
