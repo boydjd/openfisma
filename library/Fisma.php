@@ -326,6 +326,8 @@ class Fisma
                                 );
 
             $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
+            $debug->registerPlugin(new Fisma_ZfDebug_Plugin_YuiLogging);
+
             $frontController->registerPlugin($debug);
         }
 

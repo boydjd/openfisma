@@ -6,20 +6,17 @@ Network:
             type: string(255)
             extra:
                 logicalName: Network Name
-                searchIndex: unstored
                 notify: true
         nickname:
             type: string(255)
             unique: true
             extra:
                 logicalName: Network Nickname
-                searchIndex: unstored
                 notify: true
         description: 
             type: string
             extra:
                 logicalName: Description
                 purify: html
-                searchIndex: unstored
                 notify: true
             comment: Any extra information about this network, such as protocols used, geographic location, etc.

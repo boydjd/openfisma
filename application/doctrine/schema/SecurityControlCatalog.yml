@@ -1,9 +1,5 @@
 SecurityControlCatalog:
-    listeners: [IndexListener]
-
     columns:
         name: 
             type: string
             fixed: true
-            extra:
-                searchIndex: unstored

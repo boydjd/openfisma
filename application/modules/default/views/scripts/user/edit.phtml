@@ -1,6 +1,16 @@
 <script type="text/javascript" src="/javascripts/account.js"></script>
 <?php 
-echo $this->escape($this->partial('user/searchbox.phtml'), 'none');
+
+echo $this->escape(
+    $this->searchBox(
+        $this->toolbarButtons, 
+        $this->searchForm, 
+        $this->searchMoreOptionsForm,
+        $this->advancedSearchOptions
+    ), 
+    'none'
+);
+
 $operation = "[<a href='{$this->viewLink}'>View</a>]";
 
 if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {

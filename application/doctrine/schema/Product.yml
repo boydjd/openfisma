@@ -5,19 +5,16 @@ Product:
         vendor:
             type: string(255)
             extra:
-                searchIndex: unstored
                 notify: true
             comment: The name of the vendor who brands this product
         name:
             type: string(255)
             extra:
-                searchIndex: unstored
                 notify: true
             comment: Name of the product
         version:
             type: string(255)
             extra:
-                searchIndex: keyword
                 notify: true
             comment: Version of the product
         cpeName:

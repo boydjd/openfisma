@@ -1,13 +1,21 @@
 Source:
-    vulnerabilityScan:
-        name: Automated Vulnerability Scanner
-        nickname: SCAN
-        description: <p>The following scanners are used by the organization:</p><ul><li>App Detective Pro</li><li>Nessus</li></ul></p>
+    a123:
+        name: A-123 Financial Audit
+        nickname: A123
+        description: <p>A financial systems and business processes audit conducted in accordance with OMB Circular A-123</p>
     continuousMonitoring:
         name: Continuous Monitoring
         nickname: CM
         description: <p>In compliance with CA-7, a subset of security controls are assessed on an annual basis.</p>
-    certificationAndAccreditation:
-        name: Certification & Accreditation
-        nickname: C&A
+    fismaAudit:
+        name: FISMA Audit
+        nickname: FISMA
+        description: <p>An annual audit conducted to determine the enterprise's compliance with the Federal Information Security Management Act of 2002.</p>
+    oigAudit:
+        name: Inspector General Audit
+        nickname: OIG
+        description: <p>Audits performed by the Office of the Inspector General (OIG).</p>
+    securityAuthorization:
+        name: Security Authorization
+        nickname: SA
         description: <p>All information systems are certified and accredited following the guidelines laid out in NIST SP 800-37.</p>

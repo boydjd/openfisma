@@ -17,7 +17,7 @@
  */
 
 /**
- * Fisma_Doctrine_Table 
+ * Contain table-level functions that are common to all models
  * 
  * @uses Doctrine_Table
  * @package Fisma
@@ -26,7 +26,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Doctrine_Table extends Doctrine_Table
+abstract class Fisma_Doctrine_Table extends Doctrine_Table
 {
-    
+
 }

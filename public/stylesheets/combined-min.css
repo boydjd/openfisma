@@ -46,9 +46,23 @@ div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
 div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
 div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
 div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+tr.incidentStep{border-top:1px dotted silver;}
 table.modules{margin-left:auto;margin-right:auto;}
 table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
 table.modules td:first-child{font-weight:bold;}
+.searchBox{background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
+.searchBox #keywords{width:15em;}
+.searchBoxAdditional{margin-top:-11px;border-top:1px solid #cecece;}
+.searchBox input[type=text]{position:relative;top:-.4em;border:1px solid #808080;background-color:white;height:1.7em;margin-left:2px;width:20em;}
+.searchBox p{font-weight:bold;margin:3px 0;}
+.searchBox input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
+.searchBox input[type=text].integer,.searchBox input[type=text].float{width:10em;}
+.searchCriteria{border-top:1px dotted #bfbfbf;max-width:50em;padding-top:5px;padding-bottom:3px;-margin-left:auto;margin-right:auto;}
+.searchCriteria:first-child{border:none;}
+.searchQueryButtons{float:right;}
+.searchAddCriteriaButton{background:url(/images/add.png) center center no-repeat;overflow:hidden;width:2em;}
+.searchRemoveCriteriaButton{background:url(/images/remove.png) center center no-repeat;overflow:hidden;width:2em;}
+.highlight{background-color:yellow;}
 div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
 div.switchButton span.border{background-position:left top;margin:0;}
 div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}
@@ -82,10 +96,6 @@ div.clear{clear:both;}
 p.stacktrace{margin:10px;border:1px solid #d3d3d3;#fff-space:pre;font-family:monospace;overflow:auto;white-space:pre-wrap;}
 div#footer{margin:10px 0;padding:3px;}
 div#footerLinks{float:right;}
-.searchFilters{text-align:center;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
-.searchField{position:relative;top:-5px;}
-.searchField label{display:none;}
-.searchFilters select{margin-right:10px;}
 table.keyValues tr:nth-child(even){background-color:#eef5fe;}
 table.keyValues td{padding:5px;vertical-align:middle;}
 table.keyValues td:first-child{font-weight:bold;text-align:right;}
@@ -109,7 +119,6 @@ span.tooltip{padding:0 2px 2px 22px;background:url(/images/tooltip.png) no-repea
 table.fisma_crud tr td:first-child{text-align:right;background-repeat:no-repeat;}
 table.fisma_crud ul li{text-align:left;list-style:none;padding-top:2px;}
 div.notice p{text-align:left;padding:5px 20px;}
-.highlight{background-color:yellow;}
 #help_tips{cursor:help;position:relative;top:4px;}
 tr.alt td{background:#ecf6fc;}
 tr.over td{background:#bcd4ec;}

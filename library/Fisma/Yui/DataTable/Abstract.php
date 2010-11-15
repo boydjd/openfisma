@@ -87,6 +87,7 @@ abstract class Fisma_Yui_DataTable_Abstract
             $formatter = $column->getFormatter();
             if ($formatter) {
                 $columnDefinition['formatter'] = $column->getFormatter();
+                $columnDefinition['formatterParameters'] = $column->getFormatterParameters();
             }
 
             $columnDefinitions[] = $columnDefinition;

@@ -31,7 +31,7 @@
  * @subpackage Fisma_Doctrine_Record
  * @version    $Id$
  */
-class Fisma_Doctrine_Record extends Doctrine_Record
+abstract class Fisma_Doctrine_Record extends Doctrine_Record
 {
     /**
      * Store the original values of this record.

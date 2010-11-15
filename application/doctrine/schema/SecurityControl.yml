@@ -6,49 +6,33 @@ SecurityControl:
             type: string(5)
             fixed: true
             comment: The control number, e.g. AC-05
-            extra:
-                searchIndex: unstored
         name:
             type: string(255)
             comment: Name of the control
-            extra:
-                searchIndex: unstored
         class:
             type: enum
             values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
-            extra:
-                searchIndex: keyword
         family: 
             type: string(255)
-            extra:
-                searchIndex: unstored
                 
         control: 
             type: string
             extra:
-                searchIndex: unstored
                 purify: html
         supplementalGuidance: 
             type: string
             extra:
-                searchIndex: unstored
                 purify: html
         externalReferences:
             type: string
             extra:
-                searchIndex: unstored
                 purify: html
         priorityCode:
             type: enum
             values: [P0, P1, P2, P3]
-            extra:
-                searchIndex: keyword
         controlLevel:
             type: enum
             values: [NONE, LOW, MODERATE, HIGH]
-            extra:
-                searchIndex: keyword
-                searchAlias: level
                 
         securityControlCatalogId:
             type: integer
