@@ -1,0 +1,27 @@
+AssessmentProcedure:
+    53A_Rev1_AC_01_1:
+        controlCode: AC-01
+        number: 1
+        objective: >
+            Determine if:
+            <ol>
+                <li>the organization develops and formally documents access control policy;</li>
+                <li>the organization access control policy addresses:
+                    <ul>
+                        <li>purpose;</li>
+                        <li>scope;</li>
+                        <li>roles and responsibilities;</li>
+                        <li>management commitment;</li>
+                        <li>coordination among organizational entities; and</li>
+                        <li>compliance;</li>
+                    </ul>
+                </li>
+                <li>the organization disseminates formal documented access control policy to elements within the organization having associated access control roles and responsibilities;</li>
+                <li>the organization develops and formally documents access control procedures;<li>
+                <li>the organization access control procedures facilitate implementation of the access control policy and associated access controls; and</li>
+                <li>the organization disseminates formal documented access control procedures to elements within the organization having associated access control roles and responsibilities.</li>
+            </ol>
+        examine: "[SELECT FROM: Access control policy and procedures; other relevant documents or records]."
+        interview: "[SELECT FROM: Organizational personnel with access control responsibilities]."
+        Catalog: 800_53A_Rev_1
+
