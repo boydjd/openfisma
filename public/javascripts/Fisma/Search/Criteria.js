@@ -158,6 +158,10 @@ Fisma.Search.Criteria.prototype = {
             var newLabel = item.cfg.getProperty("text");
 
             for (var index in that.fields) {
+                if (!that.fields.hasOwnProperty(index)) {
+                    continue;
+                }
+
                 var field = that.fields[index];
 
                 if (item.value == field.name) {
@@ -196,6 +200,10 @@ Fisma.Search.Criteria.prototype = {
 
         // Convert field list to menu items
         for (var index in this.fields) {
+            if (!this.fields.hasOwnProperty(index)) {
+                continue;
+            }
+
             var field = this.fields[index];
 
             menuItems.push({
@@ -257,6 +265,10 @@ Fisma.Search.Criteria.prototype = {
         var menuItems = new Array();
 
         for (var criteriaType in criteriaDefinitions) {
+            if (!criteriaDefinitions.hasOwnProperty(criteriaType)) {
+                continue;
+            }
+
             var criteriaDefinition = criteriaDefinitions[criteriaType];
 
             menuItem = {
@@ -368,6 +380,10 @@ Fisma.Search.Criteria.prototype = {
         
         // Make sure all operands are not blank
         for (var i in operands) {
+            if (!operands.hasOwnProperty(i)) {
+                continue;
+            }
+
             var operand = operands[i];
             
             if ('' == $P.trim(operand)) {
@@ -409,6 +425,10 @@ Fisma.Search.Criteria.prototype = {
         // Fields can define extra criteria that should be merged in
         if (field.extraCriteria) {
             for (var index in field.extraCriteria) {
+                if (!field.extraCriteria.hasOwnProperty(index)) {
+                    continue;
+                }
+
                 definition[index] = field.extraCriteria[index];
             }
         }
@@ -434,6 +454,10 @@ Fisma.Search.Criteria.prototype = {
      */
     getField : function (fieldName) {
         for (var index in this.fields) {
+            if (!this.fields.hasOwnProperty(index)) {
+                continue;
+            }
+
             var field = this.fields[index];
             
             if (field.name == fieldName) {

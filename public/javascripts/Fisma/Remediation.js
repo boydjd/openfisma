@@ -34,7 +34,13 @@ Fisma.Remediation = {
         if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
             return false;
         }
-        Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', Fisma.Remediation.upload_evidence_form_init);
+
+        Fisma.UrlPanel.showPanel(
+            'Upload Evidence', 
+            '/finding/remediation/upload-form', 
+            Fisma.Remediation.upload_evidence_form_init
+        );
+
         return false;
     },
 

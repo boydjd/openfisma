@@ -130,6 +130,10 @@ Fisma.FindingSummary = function() {
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
                 for (var c in ontime) {
+                    if (!ontime.hasOwnProperty(c)) {
+                        continue;
+                    }
+
                     count = ontime[c];
                     cell = firstRow.insertCell(i++);
                     if (c == 'CLOSED' || c == 'TOTAL') {
@@ -144,6 +148,10 @@ Fisma.FindingSummary = function() {
 
                 // Now add cells to the second row
                 for (var c in overdue) {
+                    if (!overdue.hasOwnProperty(c)) {
+                        continue;
+                    }
+
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -206,6 +214,10 @@ Fisma.FindingSummary = function() {
             var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");    
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
+                if (!treeNode.ontime.hasOwnProperty(c)) {
+                    continue;
+                }
+
                 count = treeNode.ontime[c];
                 this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
                 i++;
@@ -217,6 +229,10 @@ Fisma.FindingSummary = function() {
                 // Do not hide the overdue row. Instead, update the counts
                 var i = 0;
                 for (c in treeNode.overdue) {
+                    if (!treeNode.overdue.hasOwnProperty(c)) {
+                        continue;
+                    }
+
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
                     i++;
@@ -261,6 +277,10 @@ Fisma.FindingSummary = function() {
             var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
+                if (!treeNode.ontime.hasOwnProperty(c)) {
+                    continue;
+                }
+
                 count = treeNode.ontime[c];
                 this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
                 i++;
@@ -277,6 +297,10 @@ Fisma.FindingSummary = function() {
 
                 var i = 0;
                 for (c in treeNode.all_overdue) {
+                    if (!treeNode.all_overdue.hasOwnProperty(c)) {
+                        continue;
+                    }
+
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
                     i++;
@@ -302,6 +326,10 @@ Fisma.FindingSummary = function() {
          */
         hideSubtree : function (nodeArray) {
             for (nodeId in nodeArray) {
+                if (!nodeArray.hasOwnProperty(nodeId)) {
+                    continue;
+                }
+
                 node = nodeArray[nodeId];
 
                 // Now update this node
@@ -327,6 +355,10 @@ Fisma.FindingSummary = function() {
          */
         showSubtree : function (nodeArray, recursive) {
             for (nodeId in nodeArray) {
+                if (!nodeArray.hasOwnProperty(nodeId)) {
+                    continue;
+                }
+
                 node = nodeArray[nodeId];
 
                 // Recurse through the child nodes (if necessary)
@@ -353,6 +385,10 @@ Fisma.FindingSummary = function() {
          */
         collapseAll : function () {
             for (nodeId in this.treeRoot) {
+                if (!this.treeRoot.hasOwnProperty(nodeId)) {
+                    continue;
+                }
+
                 node = this.treeRoot[nodeId];
                 this.collapseNode(node, true);
                 this.hideSubtree(node.children);
@@ -364,6 +400,10 @@ Fisma.FindingSummary = function() {
          */
         expandAll : function () {
             for (nodeId in this.treeRoot) {
+                if (!this.treeRoot.hasOwnProperty(nodeId)) {
+                    continue;
+                }
+
                 node = this.treeRoot[nodeId];
                 this.expandNode(node, true);
             } 
@@ -378,6 +418,10 @@ Fisma.FindingSummary = function() {
          */
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
+                if (!tree.hasOwnProperty(nodeId)) {
+                    continue;
+                }
+
                 node = tree[nodeId];
                 if (node.nickname == nodeName) {
                     return node;
@@ -402,6 +446,10 @@ Fisma.FindingSummary = function() {
          */
         hasOverdue : function (overdueCountArray) {
             for (var i in overdueCountArray) {
+                if (!overdueCountArray.hasOwnProperty(i)) {
+                    continue;
+                }
+
                 if (overdueCountArray[i] > 0) {
                     return true;
                 }

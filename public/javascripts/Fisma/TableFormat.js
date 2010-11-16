@@ -324,7 +324,7 @@ Fisma.TableFormat = {
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
      */
-    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
+    formatCheckbox : function (elCell, oRecord, oColumn, oData) {
         
         if (oRecord.getData('deleted_at')) {
 

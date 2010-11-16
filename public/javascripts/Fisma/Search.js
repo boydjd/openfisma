@@ -191,6 +191,10 @@ Fisma.Search = function() {
             var uriComponents = Array();
 
             for (var key in object) {
+                if (!object.hasOwnProperty(key)) {
+                    continue;
+                }
+
                 var value = object[key];
 
                 uriComponents.push(key + "=" + encodeURIComponent(value));
@@ -228,6 +232,10 @@ Fisma.Search = function() {
 
             // Create a hidden form element for each piece of post data
             for (var key in query) {
+                if (!query.hasOwnProperty(key)) {
+                    continue;
+                }
+
                 var value = query[key];
 
                 var hiddenField = document.createElement('input');
@@ -344,6 +352,10 @@ Fisma.Search = function() {
             var currentColumn = 0;
 
             for (var index in searchOptions) {
+                if (!searchOptions.hasOwnProperty(index)) {
+                    continue;
+                }
+
                 var searchOption = searchOptions[index];
 
                 if (searchOption['hidden'] === true) {
@@ -440,6 +452,10 @@ Fisma.Search = function() {
             var currentColumn = 0;
 
             for (var column in columnKeys) {
+                if (!columnKeys.hasOwnProperty(column)) {
+                    continue;
+                }
+
                 if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
                     continue;
                 }

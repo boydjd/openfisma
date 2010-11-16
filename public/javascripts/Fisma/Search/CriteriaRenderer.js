@@ -233,6 +233,10 @@ Fisma.Search.CriteriaRenderer = function () {
             var menuItems = new Array();
 
             for (var index in enumValues) {
+                if (!enumValues.hasOwnProperty(index)) {
+                    continue;
+                }
+
                 var enumValue = enumValues[index];
 
                 menuItem = {

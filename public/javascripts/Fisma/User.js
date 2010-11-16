@@ -207,9 +207,12 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null){
-                        for (var i in ldapColumns)
-                        {
+                    if (data.accountInfo != null) {
+                        for (var i in ldapColumns) {
+                            if (!ldapColumns.hasOwnProperty(i)) {
+                                continue;
+                            }
+
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
                             if (columnValue != null) {

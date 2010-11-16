@@ -87,7 +87,6 @@ if (isset($this->notifications)) {
 
 <script type="text/javascript">
     function barChartClick(status) {
-        console.log(status);
         document.location = "<?php echo $this->escape($this->barChartBaseUrl, 'javascript'); ?>"
                           + $P.rawurlencode(status);
     }

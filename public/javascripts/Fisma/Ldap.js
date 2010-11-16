@@ -46,6 +46,10 @@ Fisma.Ldap = {
         var ldapConfigId = null;
 
         for (pieceIndex in pieces) {
+            if (!pieces.hasOwnProperty(pieceIndex)) {
+                continue;
+            }
+
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {

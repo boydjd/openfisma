@@ -748,7 +748,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     );
 
                     foreach ($rawSearchData as $index => $datum) {
-                        $reformattedSearchData[$index][$fieldName] = $rawSearchData[$index][$fieldName];
+                        if (isset($rawSearchData[$index][$fieldName])) {
+                            $reformattedSearchData[$index][$fieldName] = $rawSearchData[$index][$fieldName];
+                        } else {
+                            $reformattedSearchData[$index][$fieldName] = '';
+                        }
                     }
                 }
                 

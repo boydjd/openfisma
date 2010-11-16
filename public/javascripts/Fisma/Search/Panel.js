@@ -52,6 +52,10 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     this.searchableFields = {};
     
     for (var index in searchableFields) {
+        if (!searchableFields.hasOwnProperty(index)) {
+            continue;
+        }
+
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
@@ -66,6 +70,10 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
         var pathTokens = pathname.split('/');
 
         for (var index in pathTokens) {
+            if (!pathTokens.hasOwnProperty(index)) {
+                continue;
+            }
+
             var pathToken = pathTokens[index];
 
             // If the 'advanced' token is found (and has more tokens after it), then save the 
@@ -124,7 +132,7 @@ Fisma.Search.Panel.prototype = {
                 var numberOfOperands = this.getNumberOfOperands(fieldDefinition, operator, criterionDefinition);
                 
                 // Now we know how many operands there, push that number of tokens onto a stack
-                operands = [];
+                var operands = [];
                 
                 for (; numberOfOperands > 0; numberOfOperands--) {
                     operands.push(this.defaultQueryTokens[index]);
@@ -193,6 +201,10 @@ Fisma.Search.Panel.prototype = {
     removeCriteria : function (currentRow) {
         // Update internal state
         for (var index in this.criteria) {
+            if (!this.criteria.hasOwnProperty(index)) {
+                continue;
+            }
+
             var criterion = this.criteria[index];
             
             if (criterion.container == currentRow) {
@@ -218,6 +230,10 @@ Fisma.Search.Panel.prototype = {
         var query = new Array();
         
         for (var index in this.criteria) {
+            if (!this.criteria.hasOwnProperty(index)) {
+                continue;
+            }
+
             var criterion = this.criteria[index];
 
             queryPart = criterion.getQuery();
@@ -235,11 +251,15 @@ Fisma.Search.Panel.prototype = {
      */
     getFieldDefinition : function (fieldName) {
         for (var index in this.searchableFields) {
+            if (!this.searchableFields.hasOwnProperty(index)) {
+                continue;
+            }
+
             if (this.searchableFields[index].name == fieldName) {
                 return this.searchableFields[index];
             }
         }
-        
+
         throw "No definition for field: " + fieldName;
     },
     
