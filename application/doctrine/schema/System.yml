@@ -112,6 +112,6 @@ System:
         InformationTypes:
             type: many
             class: SaInformationType
-            local: id
-            foreign: sainformationtype_id
+            local: systemid 
+            foreign: sainformationtypeid
             refClass: SaInformationTypeSystem

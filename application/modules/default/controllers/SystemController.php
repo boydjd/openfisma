@@ -201,19 +201,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function informationTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
-
+        $id = $this->getRequest()->getParam('id');
+        $informationTypes = Doctrine::getTable('Organization')->find($id)->System->InformationTypes->toArray();
         $informationTypesData = array();
-        $informationTypesData['informationTypes'] = array();
-        $informationTypes = $this->view->organization->System->InformationTypes;
-
-        foreach ($informationTypes as $informationType) {
-            $informationTypesData['informationTypes'][] = array(
-                'category' => $informationType->category, 
-                'name' => $informationType->name, 
-                'description' => $informationType->description
-            );
-        }
-
+        $informationTypesData['informationTypes'] = $informationTypes;
         $this->view->informationTypesData = $informationTypesData;
     }
     
