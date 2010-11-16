@@ -1,0 +1,9 @@
+# All new catalogs should be appended. None should be inserted in the middle, as the configuration fixure relies
+# on these catalogs having predictable primary keys. See Configuration.yml:175-178.
+
+AssessmentProcedureCatalog:
+    800_53A_Rev_0:
+        name: NIST SP 800-53A Rev. 0
+    800_53A_Rev_1:
+        name: NIST SP 800-53A Rev. 1
+
