@@ -26,3 +26,9 @@ SaInformationType:
             type: boolean
             notnull: true
             default: FALSE
+    relations:
+        Systems:
+            class: System
+            local: id
+            foreign: system_id
+            refClass: SaInformationTypeSystem
