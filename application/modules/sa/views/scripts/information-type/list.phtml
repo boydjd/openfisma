@@ -16,15 +16,25 @@
 Fisma_Format_Section::startSection("Information Types <span id='searchResultsTotalFound'></span>"); ?>
 <div id="list"></div>
 <script type="text/javascript">
-    var operation = function(elCell, oRecord, oColumn, sData) {
+    var viewOperation = function(elCell, oRecord, oColumn, sData) {
         elCell.innerHTML = "<a href='/sa/informationType/view/id/"+oRecord.getData("id")+"'>"
                          + "<img src='/images/view.gif' /></a>";
     };
+
+    var booleanFormatter = function(elCell, oRecord, oColumn, sData) {
+        elCell.innerHTML = (oRecord.getData("hidden")) ? "YES" : "NO";
+    };
+
     // Column definitions
     var myColumnDefs = [
-        {key:"name", label:"Name", formatter:"text", sortable:true},
         {key:"category", label:"Category", formatter:"text", sortable:true},
-        {key: 'id', label:'View', formatter: operation}];
+        {key:"name", label:"Name", formatter:"text", sortable:true},
+        {key:"description", label:"Description", formatter:"text"},
+        {key:"confidentiality", label:"Confidentiality", formatter:"text", sortable:true},
+        {key:"integrity", label:"Integrity", formatter:"text", sortable:true},
+        {key:"availability", label:"Availability", formatter:"text", sortable:true},
+        {key:"hidden", label:"Hidden", formatter:booleanFormatter, sortable:true},
+        {key: 'id', label:'View', formatter: viewOperation}];
 
     // A function which builds the query string
     var myRequestBuilder = function(oState, oSelf) {

@@ -1,0 +1,8 @@
+SaInformationTypeSystem:
+    columns:
+        sainformationtypeId:
+            type: integer
+            notnull: true
+        systemId:
+            type: integer
+            notnull: true

@@ -1,0 +1,11 @@
+<?php
+$sectionTitle = 'Information Type';
+$sectionTitle .= ' [<a href="/sa/informationType/edit/id/' . $this->id . '">Edit</a>]';
+Fisma_Format_Section::startSection($sectionTitle); ?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+
