@@ -35,4 +35,12 @@ class DocumentTypeController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'DocumentType';
+    
+    /**
+     * Override to return a human-friendly name
+     */
+    public function getSingularModelName()
+    {
+        return 'Document Type';
+    }
 }

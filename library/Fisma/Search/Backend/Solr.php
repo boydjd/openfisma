@@ -662,56 +662,58 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         $table = Doctrine::getTable($type);
         $searchableFields = $this->_getSearchableFields($type);
 
-        // Construct initial table data from documents part of the response
-        foreach ($solrResult->response->docs as $document) {
+        if ($solrResult->response->docs) {
+            // Construct initial table data from documents part of the response
+            foreach ($solrResult->response->docs as $document) {
 
-            $row = array();
+                $row = array();
 
-            foreach ($document as $columnName => $columnValue) {
-                $newColumnName = $this->_removeSuffixFromColumnName($columnName);
+                foreach ($document as $columnName => $columnValue) {
+                    $newColumnName = $this->_removeSuffixFromColumnName($columnName);
 
-                $maxRowLength = $this->getMaxRowLength();
+                    $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
-                    $shortValue = substr($columnValue[0], 0, $maxRowLength);
+                    if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
+                        $shortValue = substr($columnValue[0], 0, $maxRowLength);
 
-                    // Trim after the last white space (so as not to break in the middle of a word)
-                    $spacePosition = strrpos($shortValue, ' ');
+                        // Trim after the last white space (so as not to break in the middle of a word)
+                        $spacePosition = strrpos($shortValue, ' ');
 
-                    if ($spacePosition) {
-                        $shortValue = substr($shortValue, 0, $spacePosition);
-                    }
+                        if ($spacePosition) {
+                            $shortValue = substr($shortValue, 0, $spacePosition);
+                        }
 
-                    // Solr has a weird format. Each field is an array with length 1, so we take index 0
-                    $row[$newColumnName] = $shortValue . '...';
-                } else {
-                    $row[$newColumnName] = $columnValue[0];
-                }
-            }
-
-            // Convert any dates or datetimes from Solr's UTC format back to native format
-            foreach ($row as $fieldName => $fieldValue) {
-                // Skip fields that are not model-specific like luceneDocumentType, luceneDocumentId, etc.
-                if (!isset($searchableFields[$fieldName])) {
-                    continue;
-                }
-                
-                $fieldDefinition = $searchableFields[$fieldName];
-
-                if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
-                    $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
-
-                    if ('date' == $fieldDefinition['type']) {
-                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
+                        $row[$newColumnName] = $shortValue . '...';
                     } else {
-                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATETIME);
+                        // Solr has a weird format. Each field is an array with length 1, so we take index 0
+                        $row[$newColumnName] = $columnValue[0];
                     }
                 }
+
+                // Convert any dates or datetimes from Solr's UTC format back to native format
+                foreach ($row as $fieldName => $fieldValue) {
+                    // Skip fields that are not model-specific like luceneDocumentType, luceneDocumentId, etc.
+                    if (!isset($searchableFields[$fieldName])) {
+                        continue;
+                    }
+                
+                    $fieldDefinition = $searchableFields[$fieldName];
+
+                    if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
+                        $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
+
+                        if ('date' == $fieldDefinition['type']) {
+                            $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
+                        } else {
+                            $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATETIME);
+                        }
+                    }
+                }
+
+                $luceneDocumentId = $row['luceneDocumentId'];
+
+                $tableData[$luceneDocumentId] = $row;
             }
-
-            $luceneDocumentId = $row['luceneDocumentId'];
-
-            $tableData[$luceneDocumentId] = $row;
         }
 
         // Now merge any highlighted fields into the table data

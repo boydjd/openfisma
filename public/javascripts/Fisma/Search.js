@@ -548,6 +548,12 @@ Fisma.Search = function() {
             
             var multiDeleteUrl = urlPieces.join('/');
             
+            // Create a post string containing the IDs of the records to delete and the CSRF token
+            var postString = "csrf="
+                           + document.getElementById('searchForm').csrf.value
+                           + "&records="
+                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
                 'POST', 
@@ -572,7 +578,7 @@ Fisma.Search = function() {
                         message(text, "warning", true);
                     }
                 },
-                "records=" + YAHOO.lang.JSON.stringify(checkedRecords)
+                postString
             );
         },
         
