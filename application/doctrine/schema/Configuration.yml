@@ -81,7 +81,6 @@ Configuration:
             default: ""
         contact_phone:
             type: string(15)
-            notblank: true
             comment: Technical support contact phone number
             default: ""
             Fisma_Doctrine_Validator_Phone: true
