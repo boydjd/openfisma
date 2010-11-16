@@ -1,9 +1,11 @@
-<?php echo "{$this->doctype()}\n"; ?>
+<?php echo $this->escape("{$this->doctype()}\n", 'none'); ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="refresh" 
-              content="<?php echo Fisma::configuration()->getConfig('session_inactivity_period'); ?>;url=/auth/logout">
+              content="<?php
+                            echo $this->escape(Fisma::configuration()->getConfig('session_inactivity_period'), 'none');
+                        ?>;url=/auth/logout">
 
     <?php 
     echo $this->partial('partial/title.phtml');
@@ -25,9 +27,9 @@
 
     $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 
-    echo $yui;
-    echo $this->headScript();
-    echo $this->headLink();
+    echo $this->escape($yui, 'none');
+    echo $this->escape($this->headScript(), 'none');
+    echo $this->escape($this->headLink(), 'none');
     ?>
         <!--[if IE 7]>
         <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
@@ -58,7 +60,7 @@
              
         <a name="contentStart"></a>
         <div id='content'>
-                <?php echo $this->layout()->content; ?>
+                <?php echo $this->escape($this->layout()->content, 'none'); ?>
         </div>
         
         <div id='footer'>
