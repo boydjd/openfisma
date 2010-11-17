@@ -12,5 +12,41 @@
  */
 class SaSecurityControl extends BaseSaSecurityControl
 {
+    /**
+     * Hook to add assessment plan entries for inserted controls
+     *
+     * @param mixed $event
+     * @return void
+     */
+    public function postInsert($event)
+    {
+        $procedures = Doctrine_Query::create()
+            ->from('AssessmentProcedure ap')
+            ->where('ap.controlCode = ?', $this->SecurityControl->code)
+            ->andWhere('ap.enhancement IS NULL')
+            ->execute();
+        foreach ($procedures as $ap) {
+            $ape = new AssessmentPlanEntry();
+            $ape->SaSecurityControl = $this;
+            $ape->number = $ap->number;
+            $ape->objective = $ap->objective;
+            $ape->examine = $ap->examine;
+            $ape->interview = $ap->interview;
+            $ape->test = $ap->test;
+            $ape->save();
+        }
+    }
 
+    /**
+     * Hook to remove assessment plan entries before deleting
+     *
+     * @param mixed $event
+     * @return void
+     */
+     public function preDelete($event)
+     {
+         foreach ($this->AssessmentProcedures as $ape) {
+             $ape->delete();
+         }
+     }
 }
