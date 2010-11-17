@@ -507,7 +507,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
                         $ids = call_user_func_array($callback, $operands);
 
-                        if ($customTerms === false) {
+                        if ($ids === false) {
                             throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
                         }
 
