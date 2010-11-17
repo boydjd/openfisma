@@ -79,6 +79,11 @@ Fisma.ControlTree.prototype = {
     renderControl: function(control, parent) {
         var label = "<b>" + PHP_JS().htmlspecialchars(control.code) + "</b> - <i>"
                           + PHP_JS().htmlspecialchars(control.name) + "</i>";
+        if (control.common) {
+            label += " (Common)";
+        } else if (control.inherits != null) {
+            label += " (Inherits From " + control.inherits + ")";
+        }
         var props = {
             label: label,
             renderHidden: true,
@@ -163,6 +168,9 @@ Fisma.ControlTree.prototype = {
             case "removeEnhancement":
                 controlTree.removeEnhancement(targetNode);
                 break;
+            case "editCommonControl":
+                controlTree.editCommonControl(targetNode);
+                break;
             default:
                 alert("Action not yet implemented.");
         }
@@ -229,6 +237,29 @@ Fisma.ControlTree.prototype = {
                 var panel = o.argument;
                 panel.destroy();
                 alert('Error getting "add control" form: ' + o.statusText);
+            },
+            argument: panel
+        };
+        YAHOO.util.Connect.asyncRequest( 'GET', getUrl, callbacks);
+    },
+
+
+    editCommonControl: function(controlNode) {
+        var securityControlId = controlNode.data.securityControlId,
+            panel = Fisma.HtmlPanel.showPanel("Edit Common Security Control", null, null, { modal : true }),
+            actionUrl = this.actionUrls.editCommonControl,
+            getUrl = actionUrl + '/securityControlId/' + securityControlId,
+            ctObj = this;
+        var callbacks = {
+            success: function(o) {
+                var panel = o.argument;
+                panel.setBody(o.responseText);
+                panel.center();
+            },
+            failure: function(o) {
+                var panel = o.argument;
+                panel.destroy();
+                alert('Error getting "edit common control" form: ' + o.statusText);
             },
             argument: panel
         };

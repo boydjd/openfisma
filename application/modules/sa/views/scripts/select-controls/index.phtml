@@ -1,8 +1,12 @@
-<?php Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); ?>
+<?php Fisma_Format_Section::startSection("Security Control Tree View"); ?>
 
 <div class="buttonBar">
 <?php
-echo $this->partial('security-authorization/control-nav.phtml', array('id' => $this->id));
+$goBack = new Fisma_Yui_Form_Button_Link('goBack', 
+                                       array('value' => 'Go Back', 
+                                             'imageSrc' => '/images/left_arrow.png',
+                                             'href' => '/sa/security-authorization/view/id/' . $this->id));
+echo $this->escape($goBack, 'none');
 
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 
@@ -28,7 +32,7 @@ echo $this->escape($addControl, 'none');
 <script type="text/javascript">
 var controlTree = null;
 YAHOO.util.Event.onDOMReady(function () {
-    var base = '/sa/security-authorization/',
+    var base = '/sa/select-controls/',
         params = '/id/<?php echo $this->escape($this->id); ?>';
     controlTree = new Fisma.ControlTree(
         'controlTree',
@@ -36,7 +40,8 @@ YAHOO.util.Event.onDOMReady(function () {
             controlTreeData: base + 'control-tree-data/format/json' + params,
             removeControl: base + 'remove-control/format/json' + params,
             addEnhancements: base + 'add-enhancements/format/html' + params,
-            removeEnhancement: base + 'remove-enhancement/format/json' + params
+            removeEnhancement: base + 'remove-enhancement/format/json' + params,
+            editCommonControl: base + 'edit-common-control/format/html' + params
         }
     );
 });
@@ -53,7 +58,7 @@ function collapseAll() {
 // show Add Control dialog
 function addControl() {
     var panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
-        url = "/sa/security-authorization/add-control/id/<?php echo $this->escape($this->id); ?>/format/html";
+        url = "/sa/select-controls/add-control/id/<?php echo $this->escape($this->id); ?>/format/html";
     var callbacks = {
             success: function(o) {
                 var panel = o.argument;

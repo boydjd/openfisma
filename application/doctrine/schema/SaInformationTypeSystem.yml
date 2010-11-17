@@ -1,0 +1,16 @@
+SaInformationTypeSystem:
+    columns:
+        sainformationtypeid:
+            type: integer
+            notnull: true
+            primary: true
+        systemid:
+            type: integer
+            notnull: true
+            primary: true
+    relations:
+        InformationType:
+            class: SaInformationType
+            local: sainformationtypeid
+        System:
+            local: systemid

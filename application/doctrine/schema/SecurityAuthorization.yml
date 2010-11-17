@@ -6,6 +6,11 @@ SecurityAuthorization:
             type: enum
             values: [LOW, MODERATE, HIGH]
             notnull: true
+        status:
+            type: enum
+            values: [PENDING, ACTIVE, RETIRED]
+            notnull: true
+            default: PENDING
 
     relations:
         Organization:

@@ -7,26 +7,22 @@
 ; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
 
-[securityauthorization]
+[securityauthorization_editcommoncontrol]
 method = "post"
 elementFilters.trim = "StringTrim"
 
-elements.sysOrgId.type = "select"
-elements.sysOrgId.options.label = "System"
-elements.sysOrgId.options.required = true
+elements.common.type = "Radio"
+elements.common.options.label = "Common Control Type"
+elements.common.options.multiOptions.none = "None"
+elements.common.options.multiOptions.common = "Common"
+elements.common.options.multiOptions.inherits = "Inherits From System Below"
+displayGroups.sa.elements.common = "common"
+
+elements.sysOrgId.type = "Select"
+elements.sysOrgId.options.label = "Inherit From System"
 displayGroups.sa.elements.sysOrgId = "sysOrgId"
 
-elements.impact.type = "select"
-elements.impact.options.label = "Impact"
-elements.impact.options.required = true
-displayGroups.sa.elements.impact = "impact"
-
-elements.status.type = "select"
-elements.status.options.label = "Status"
-elements.status.options.required = true
-displayGroups.sa.elements.status = "status"
-
-elements.save.type = "Form_Button_Submit"
+elements.save.type = "Submit"
 elements.save.options.label = "Save"
 displayGroups.sa.elements.save = "save"
 

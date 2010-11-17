@@ -1,0 +1,8 @@
+<?php
+if (count($this->availableEnhancements) > 0) {
+    echo $this->escape($this->form, 'none');
+} else {
+?>
+<i>There are no enhancements available to be added.</i>
+<?php
+}

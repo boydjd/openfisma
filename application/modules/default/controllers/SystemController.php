@@ -178,8 +178,34 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->organization = Doctrine::getTable('Organization')->find($id);
         $this->view->system = $this->view->organization->System;
+
+        // BEGIN: Build the data table of information types associated with the system
+
+        $informationTypesTable = new Fisma_Yui_DataTable_Remote();
+
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, 'category'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, 'name'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Description', false, null, 'description'))
+                              ->setResultVariable('informationTypes')
+                              ->setInitialSortColumn('category')
+                              ->setSortAscending(true)
+                              ->setRowCount(25)
+                              ->setDataUrl("/system/information-types/id/$id/format/json");
         
+        $this->view->informationTypesTable = $informationTypesTable;
+        // END: Building of data table
+
         $this->render();
+    }
+
+    public function informationTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+        $id = $this->getRequest()->getParam('id');
+        $informationTypes = Doctrine::getTable('Organization')->find($id)->System->InformationTypes->toArray();
+        $informationTypesData = array();
+        $informationTypesData['informationTypes'] = $informationTypes;
+        $this->view->informationTypesData = $informationTypesData;
     }
     
     /**

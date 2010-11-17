@@ -1,0 +1,4 @@
+AssessmentProcedureCatalog:
+    columns:
+        name: string
+

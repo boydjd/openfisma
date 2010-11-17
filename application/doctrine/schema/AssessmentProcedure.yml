@@ -1,0 +1,16 @@
+AssessmentProcedure:
+    columns:
+        catalogId: integer
+        controlCode: string
+        enhancement: integer
+        number: integer
+        objective: string
+        examine: string
+        interview: string
+        test: string
+    relations:
+        Catalog:
+            class: AssessmentProcedureCatalog
+            local: catalogId
+            foreignAlias: AssessmentProcedures
+

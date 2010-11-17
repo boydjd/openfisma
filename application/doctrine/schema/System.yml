@@ -107,4 +107,11 @@ System:
             extra:
                 searchIndex: unstored
                 searchAlias: upi
-            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        
+            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"
+    relations:
+        InformationTypes:
+            type: many
+            class: SaInformationType
+            local: systemid 
+            foreign: sainformationtypeid
+            refClass: SaInformationTypeSystem
