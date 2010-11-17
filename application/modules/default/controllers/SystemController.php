@@ -198,6 +198,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->render();
     }
 
+    /**
+     * informationTypesAction 
+     * 
+     * @access public
+     * @return void
+     */
     public function informationTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');

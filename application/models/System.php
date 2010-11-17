@@ -277,7 +277,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     {
         Notification::notify('SYSTEM_UPDATED', $this->Organization, CurrentUser::getInstance());
     }
-    
+
     /**
      * Mutator for availability. Updates the FIPS 199 automatically.
      * 
