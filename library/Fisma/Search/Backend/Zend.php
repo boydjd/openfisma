@@ -306,8 +306,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                     // First relation is related directly to the base table
                     $doctrineQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $doctrineQuery->addSelect("$currentAlias.id");
-                    
+
                     // Remaining relations are recursively related to each other
                     for ($i = 1; $i < count($relationParts); $i++) {
                         $previousAlias = $currentAlias;
@@ -326,7 +325,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 $name = $fieldDefinition['join']['field'];
 
-                $doctrineQuery->addSelect("$relationAlias.$name");
+                $doctrineQuery->addSelect("$relationAlias.$name $fieldName");
             } else {
                 $doctrineQuery->addSelect("a.$fieldName");
             }

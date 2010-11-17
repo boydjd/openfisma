@@ -35,9 +35,10 @@ class Fisma_Zend_Form_Decorator_Date extends Zend_Form_Decorator_Abstract
     public function render($content)
     {        
         $view = Zend_Layout::getMvcInstance()->getView();
-        $render .= $view->partial('form-element/date.phtml', 
-                                  'default', 
-                                  array('dateFieldName' => $this->getElement()->getName()));
+
+        $render = $view->partial('form-element/date.phtml', 
+                                 'default', 
+                                 array('dateFieldName' => $this->getElement()->getName()));
         
         return $content . $render;
     }  
