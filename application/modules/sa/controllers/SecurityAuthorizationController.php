@@ -133,20 +133,30 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
             // associate suggested controls
             $controls = Doctrine_Query::create()
-                ->from('SecurityControlCatalog scc')
-                ->leftJoin('scc.Controls sc')
-                ->leftJoin('sc.Enhancements sce')
-                ->where('scc.id = ?', array($catalogId))
+                ->from('SecurityControl sc')
+                ->where('sc.securityControlCatalogId = ?', array($catalogId))
                 ->andWhereIn('sc.controlLevel', $controlLevels)
-                ->andWhere('sce.id IS NULL')
-                ->orWhereIn('sce.level', $controlLevels)
                 ->execute();
-            $controls = $controls[0]->Controls;
             foreach ($controls as $control) {
                 $sacontrol = new SaSecurityControl();
                 $sacontrol->securityAuthorizationId = $sa->id;
                 $sacontrol->securityControlId = $control->id;
                 $sacontrol->save();
+                $sacontrol->free();
+            }
+            $controls->free();
+            unset($controls);
+
+            // associate suggested enhancements
+            $sacontrols = Doctrine_Query::create()
+                ->from('SaSecurityControl sasc')
+                ->leftJoin('sasc.SecurityControl sc')
+                ->leftJoin('sc.Enhancements sce')
+                ->where('sasc.securityAuthorizationId = ?', $sa->id)
+                ->andWhereIn('sce.level', $controlLevels)
+                ->execute();
+            foreach ($sacontrols as $sacontrol) {
+                $control = $sacontrol->SecurityControl;
                 foreach ($control->Enhancements as $ce) {
                     $sace = new SaSecurityControlEnhancement();
                     $sace->securityControlEnhancementId = $ce->id;
@@ -156,8 +166,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 }
                 $sacontrol->free();
             }
-            $controls->free();
-            unset($controls);
+            $sacontrols->free();
+            unset($sacontrols);
         }
 
         return $saId;
