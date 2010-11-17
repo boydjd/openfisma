@@ -780,109 +780,6 @@ tinyMCE.init({
 	spellchecker_languages : "+English=en"
 });
 /**
- * This file contains javascript implementations for some functions defined in the ECMA standard for javascript.
- * Some browsers do not implement all of these functions natively, so this script provides compatibility with those
- * browsers.
- * 
- * Endeavor Systems, Inc. does not hold the copyright for this piece of software. The author of this software has 
- * released it into the public domain, so it is included within OpenFISMA to provide support for users using 
- * non-standard browers such as IE7.
- * 
- * http://stackoverflow.com/questions/2790001/fixing-javascript-array-functions-in-internet-explorer-indexof-foreach-etc
- */
-
-// Add ECMA262-5 method binding if not supported natively
-//
-if (!('bind' in Function.prototype)) {
-    Function.prototype.bind= function(owner) {
-        var that= this;
-        if (arguments.length<=1) {
-            return function() {
-                return that.apply(owner, arguments);
-            };
-        } else {
-            var args= Array.prototype.slice.call(arguments, 1);
-            return function() {
-                return that.apply(owner, arguments.length===0? args : 
-                                  args.concat(Array.prototype.slice.call(arguments)));
-            };
-        }
-    };
-}
-
-// Add ECMA262-5 string trim if not supported natively
-//
-if (!('trim' in String.prototype)) {
-    String.prototype.trim= function() {
-        return this.replace(/^\s+/, '').replace(/\s+$/, '');
-    };
-}
-
-// Add ECMA262-5 Array methods if not supported natively
-//
-if (!('indexOf' in Array.prototype)) {
-    Array.prototype.indexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= 0;
-        if (i<0) i+= this.length;
-        if (i<0) i= 0;
-        for (var n= this.length; i<n; i++)
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('lastIndexOf' in Array.prototype)) {
-    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= this.length-1;
-        if (i<0) i+= this.length;
-        if (i>this.length-1) i= this.length-1;
-        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('forEach' in Array.prototype)) {
-    Array.prototype.forEach= function(action, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                action.call(that, this[i], i, this);
-    };
-}
-if (!('map' in Array.prototype)) {
-    Array.prototype.map= function(mapper, that /*opt*/) {
-        var other= new Array(this.length);
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                other[i]= mapper.call(that, this[i], i, this);
-        return other;
-    };
-}
-if (!('filter' in Array.prototype)) {
-    Array.prototype.filter= function(filter, that /*opt*/) {
-        var other= [], v;
-        for (var i=0, n= this.length; i<n; i++)
-            if (i in this && filter.call(that, v= this[i], i, this))
-                other.push(v);
-        return other;
-    };
-}
-if (!('every' in Array.prototype)) {
-    Array.prototype.every= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && !tester.call(that, this[i], i, this))
-                return false;
-        return true;
-    };
-}
-if (!('some' in Array.prototype)) {
-    Array.prototype.some= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && tester.call(that, this[i], i, this))
-                return true;
-        return false;
-    };
-}/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3507,10 +3404,6 @@ Fisma.FindingSummary = function() {
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
                 for (var c in ontime) {
-                    if (!ontime.hasOwnProperty(c)) {
-                        continue;
-                    }
-
                     count = ontime[c];
                     cell = firstRow.insertCell(i++);
                     if (c == 'CLOSED' || c == 'TOTAL') {
@@ -3525,10 +3418,6 @@ Fisma.FindingSummary = function() {
 
                 // Now add cells to the second row
                 for (var c in overdue) {
-                    if (!overdue.hasOwnProperty(c)) {
-                        continue;
-                    }
-
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -3591,10 +3480,6 @@ Fisma.FindingSummary = function() {
             var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");    
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
-                if (!treeNode.ontime.hasOwnProperty(c)) {
-                    continue;
-                }
-
                 count = treeNode.ontime[c];
                 this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
                 i++;
@@ -3606,10 +3491,6 @@ Fisma.FindingSummary = function() {
                 // Do not hide the overdue row. Instead, update the counts
                 var i = 0;
                 for (c in treeNode.overdue) {
-                    if (!treeNode.overdue.hasOwnProperty(c)) {
-                        continue;
-                    }
-
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
                     i++;
@@ -3654,10 +3535,6 @@ Fisma.FindingSummary = function() {
             var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
-                if (!treeNode.ontime.hasOwnProperty(c)) {
-                    continue;
-                }
-
                 count = treeNode.ontime[c];
                 this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
                 i++;
@@ -3674,10 +3551,6 @@ Fisma.FindingSummary = function() {
 
                 var i = 0;
                 for (c in treeNode.all_overdue) {
-                    if (!treeNode.all_overdue.hasOwnProperty(c)) {
-                        continue;
-                    }
-
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
                     i++;
@@ -3703,10 +3576,6 @@ Fisma.FindingSummary = function() {
          */
         hideSubtree : function (nodeArray) {
             for (nodeId in nodeArray) {
-                if (!nodeArray.hasOwnProperty(nodeId)) {
-                    continue;
-                }
-
                 node = nodeArray[nodeId];
 
                 // Now update this node
@@ -3732,10 +3601,6 @@ Fisma.FindingSummary = function() {
          */
         showSubtree : function (nodeArray, recursive) {
             for (nodeId in nodeArray) {
-                if (!nodeArray.hasOwnProperty(nodeId)) {
-                    continue;
-                }
-
                 node = nodeArray[nodeId];
 
                 // Recurse through the child nodes (if necessary)
@@ -3762,10 +3627,6 @@ Fisma.FindingSummary = function() {
          */
         collapseAll : function () {
             for (nodeId in this.treeRoot) {
-                if (!this.treeRoot.hasOwnProperty(nodeId)) {
-                    continue;
-                }
-
                 node = this.treeRoot[nodeId];
                 this.collapseNode(node, true);
                 this.hideSubtree(node.children);
@@ -3777,10 +3638,6 @@ Fisma.FindingSummary = function() {
          */
         expandAll : function () {
             for (nodeId in this.treeRoot) {
-                if (!this.treeRoot.hasOwnProperty(nodeId)) {
-                    continue;
-                }
-
                 node = this.treeRoot[nodeId];
                 this.expandNode(node, true);
             } 
@@ -3795,10 +3652,6 @@ Fisma.FindingSummary = function() {
          */
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
-                if (!tree.hasOwnProperty(nodeId)) {
-                    continue;
-                }
-
                 node = tree[nodeId];
                 if (node.nickname == nodeName) {
                     return node;
@@ -3823,10 +3676,6 @@ Fisma.FindingSummary = function() {
          */
         hasOverdue : function (overdueCountArray) {
             for (var i in overdueCountArray) {
-                if (!overdueCountArray.hasOwnProperty(i)) {
-                    continue;
-                }
-
                 if (overdueCountArray[i] > 0) {
                     return true;
                 }
@@ -4034,10 +3883,6 @@ Fisma.Highlighter = function() {
                                    + "(.*?)$");
 
             for (var i in elements) {
-                if (!elements.hasOwnProperty(i)) {
-                    continue;
-                }
-
                 var element = elements[i];
 
                 // Skip empty table cells
@@ -4133,10 +3978,6 @@ Fisma.Highlighter = function() {
                 // Iterate over matches and create new text nodes (for plain text) and new spans (for highlighted
                 // text)
                 for (var j in matches) {
-                    if (!matches.hasOwnProperty(j)) {
-                        continue;
-                    }
-
                     var match = matches[j];
 
                     var newTextNode = document.createTextNode(match);
@@ -4374,10 +4215,6 @@ Fisma.Incident = {
         var stepNumber = 1;
         
         for (var i in trEls) {
-            if (!trEls.hasOwnProperty(i)) {
-                continue;
-            }
-
             var trEl = trEls[i];
             
             trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";
@@ -4476,10 +4313,6 @@ Fisma.Ldap = {
         var ldapConfigId = null;
 
         for (pieceIndex in pieces) {
-            if (!pieces.hasOwnProperty(pieceIndex)) {
-                continue;
-            }
-
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
@@ -5052,10 +4885,6 @@ Fisma.Search = function() {
             var uriComponents = Array();
 
             for (var key in object) {
-                if (!object.hasOwnProperty(key)) {
-                    continue;
-                }
-
                 var value = object[key];
 
                 uriComponents.push(key + "=" + encodeURIComponent(value));
@@ -5093,10 +4922,6 @@ Fisma.Search = function() {
 
             // Create a hidden form element for each piece of post data
             for (var key in query) {
-                if (!query.hasOwnProperty(key)) {
-                    continue;
-                }
-
                 var value = query[key];
 
                 var hiddenField = document.createElement('input');
@@ -5213,10 +5038,6 @@ Fisma.Search = function() {
             var currentColumn = 0;
 
             for (var index in searchOptions) {
-                if (!searchOptions.hasOwnProperty(index)) {
-                    continue;
-                }
-
                 var searchOption = searchOptions[index];
 
                 if (searchOption['hidden'] === true) {
@@ -5313,10 +5134,6 @@ Fisma.Search = function() {
             var currentColumn = 0;
 
             for (var column in columnKeys) {
-                if (!columnKeys.hasOwnProperty(column)) {
-                    continue;
-                }
-
                 if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
                     continue;
                 }
@@ -5640,10 +5457,6 @@ Fisma.Search.Criteria.prototype = {
             var newLabel = item.cfg.getProperty("text");
 
             for (var index in that.fields) {
-                if (!that.fields.hasOwnProperty(index)) {
-                    continue;
-                }
-
                 var field = that.fields[index];
 
                 if (item.value == field.name) {
@@ -5682,10 +5495,6 @@ Fisma.Search.Criteria.prototype = {
 
         // Convert field list to menu items
         for (var index in this.fields) {
-            if (!this.fields.hasOwnProperty(index)) {
-                continue;
-            }
-
             var field = this.fields[index];
 
             menuItems.push({
@@ -5747,10 +5556,6 @@ Fisma.Search.Criteria.prototype = {
         var menuItems = new Array();
 
         for (var criteriaType in criteriaDefinitions) {
-            if (!criteriaDefinitions.hasOwnProperty(criteriaType)) {
-                continue;
-            }
-
             var criteriaDefinition = criteriaDefinitions[criteriaType];
 
             menuItem = {
@@ -5862,10 +5667,6 @@ Fisma.Search.Criteria.prototype = {
         
         // Make sure all operands are not blank
         for (var i in operands) {
-            if (!operands.hasOwnProperty(i)) {
-                continue;
-            }
-
             var operand = operands[i];
             
             if ('' == $P.trim(operand)) {
@@ -5907,10 +5708,6 @@ Fisma.Search.Criteria.prototype = {
         // Fields can define extra criteria that should be merged in
         if (field.extraCriteria) {
             for (var index in field.extraCriteria) {
-                if (!field.extraCriteria.hasOwnProperty(index)) {
-                    continue;
-                }
-
                 definition[index] = field.extraCriteria[index];
             }
         }
@@ -5936,10 +5733,6 @@ Fisma.Search.Criteria.prototype = {
      */
     getField : function (fieldName) {
         for (var index in this.fields) {
-            if (!this.fields.hasOwnProperty(index)) {
-                continue;
-            }
-
             var field = this.fields[index];
             
             if (field.name == fieldName) {
@@ -6322,10 +6115,6 @@ Fisma.Search.CriteriaRenderer = function () {
             var menuItems = new Array();
 
             for (var index in enumValues) {
-                if (!enumValues.hasOwnProperty(index)) {
-                    continue;
-                }
-
                 var enumValue = enumValues[index];
 
                 menuItem = {
@@ -6403,10 +6192,6 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     this.searchableFields = {};
     
     for (var index in searchableFields) {
-        if (!searchableFields.hasOwnProperty(index)) {
-            continue;
-        }
-
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
@@ -6421,10 +6206,6 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
         var pathTokens = pathname.split('/');
 
         for (var index in pathTokens) {
-            if (!pathTokens.hasOwnProperty(index)) {
-                continue;
-            }
-
             var pathToken = pathTokens[index];
 
             // If the 'advanced' token is found (and has more tokens after it), then save the 
@@ -6491,7 +6272,7 @@ Fisma.Search.Panel.prototype = {
                 }
                 
                 // URI Decode the operands
-                var unescapedOperands = operands.map(decodeURIComponent);
+                var unescapedOperands = $P.array_map(decodeURIComponent, operands);
 
                 // Render the element and then set its default values
                 var criterionElement = criterion.render(field, operator, unescapedOperands);
@@ -6552,10 +6333,6 @@ Fisma.Search.Panel.prototype = {
     removeCriteria : function (currentRow) {
         // Update internal state
         for (var index in this.criteria) {
-            if (!this.criteria.hasOwnProperty(index)) {
-                continue;
-            }
-
             var criterion = this.criteria[index];
             
             if (criterion.container == currentRow) {
@@ -6581,10 +6358,6 @@ Fisma.Search.Panel.prototype = {
         var query = new Array();
         
         for (var index in this.criteria) {
-            if (!this.criteria.hasOwnProperty(index)) {
-                continue;
-            }
-
             var criterion = this.criteria[index];
 
             queryPart = criterion.getQuery();
@@ -6602,15 +6375,11 @@ Fisma.Search.Panel.prototype = {
      */
     getFieldDefinition : function (fieldName) {
         for (var index in this.searchableFields) {
-            if (!this.searchableFields.hasOwnProperty(index)) {
-                continue;
-            }
-
             if (this.searchableFields[index].name == fieldName) {
                 return this.searchableFields[index];
             }
         }
-
+        
         throw "No definition for field: " + fieldName;
     },
     
@@ -6998,10 +6767,6 @@ Fisma.TabView.Roles = function() {
                         var found = 0;
                         
                         for (var i in tabs) {
-                            if (!tabs.hasOwnProperty(i)) {
-                                continue;
-                            }
-
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -7010,10 +6775,6 @@ Fisma.TabView.Roles = function() {
 
                         if (!found) {
                             for (var i in roles) {
-                                if (!roles.hasOwnProperty(i)) {
-                                    continue;
-                                }
-
                                 if (roles[i]['id'] == el.value) {
                                     var label = roles[i]['nickname'];
                                     break;
@@ -7033,10 +6794,6 @@ Fisma.TabView.Roles = function() {
                         }
                     } else {
                         for (var i in tabs) {
-                            if (!tabs.hasOwnProperty(i)) {
-                                continue;
-                            }
-
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
@@ -7773,11 +7530,7 @@ Fisma.Util = {
         var pieces = objectName.split('.');
         var currentObj = window;
 
-        for (var piece in pieces) {
-            if (!pieces.hasOwnProperty(piece)) {
-                continue;
-            }
-
+        for (piece in pieces) {
             currentObj = currentObj[pieces[piece]];
 
             if (currentObj == undefined) {

@@ -144,10 +144,6 @@ Fisma.Incident = {
         var stepNumber = 1;
         
         for (var i in trEls) {
-            if (!trEls.hasOwnProperty(i)) {
-                continue;
-            }
-
             var trEl = trEls[i];
             
             trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";

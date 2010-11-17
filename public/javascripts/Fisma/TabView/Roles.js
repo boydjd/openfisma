@@ -34,10 +34,6 @@ Fisma.TabView.Roles = function() {
                         var found = 0;
                         
                         for (var i in tabs) {
-                            if (!tabs.hasOwnProperty(i)) {
-                                continue;
-                            }
-
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -46,10 +42,6 @@ Fisma.TabView.Roles = function() {
 
                         if (!found) {
                             for (var i in roles) {
-                                if (!roles.hasOwnProperty(i)) {
-                                    continue;
-                                }
-
                                 if (roles[i]['id'] == el.value) {
                                     var label = roles[i]['nickname'];
                                     break;
@@ -69,10 +61,6 @@ Fisma.TabView.Roles = function() {
                         }
                     } else {
                         for (var i in tabs) {
-                            if (!tabs.hasOwnProperty(i)) {
-                                continue;
-                            }
-
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }

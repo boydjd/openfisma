@@ -51,10 +51,6 @@ Fisma.Highlighter = function() {
                                    + "(.*?)$");
 
             for (var i in elements) {
-                if (!elements.hasOwnProperty(i)) {
-                    continue;
-                }
-
                 var element = elements[i];
 
                 // Skip empty table cells
@@ -150,10 +146,6 @@ Fisma.Highlighter = function() {
                 // Iterate over matches and create new text nodes (for plain text) and new spans (for highlighted
                 // text)
                 for (var j in matches) {
-                    if (!matches.hasOwnProperty(j)) {
-                        continue;
-                    }
-
                     var match = matches[j];
 
                     var newTextNode = document.createTextNode(match);

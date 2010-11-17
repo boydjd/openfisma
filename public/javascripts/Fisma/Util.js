@@ -53,11 +53,7 @@ Fisma.Util = {
         var pieces = objectName.split('.');
         var currentObj = window;
 
-        for (var piece in pieces) {
-            if (!pieces.hasOwnProperty(piece)) {
-                continue;
-            }
-
+        for (piece in pieces) {
             currentObj = currentObj[pieces[piece]];
 
             if (currentObj == undefined) {
