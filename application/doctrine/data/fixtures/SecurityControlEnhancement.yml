@@ -2534,7 +2534,8 @@ SecurityControlEnhancement:
         Control: Rev2_MP_05
         level: HIGH
         description: >
-            <p>The organization employs an identified custodian at all times to transport information system media.</p>
+            <p>The organization employs an identified custodian at all times to transport information system media.
+            </p>
 
     Rev2_PE_03_E1:
         number: 1
@@ -3364,7 +3365,7 @@ SecurityControlEnhancement:
         Control: Rev3_AC_17
         level: MODERATE
         description: >
-            <p>The organization authorizes the execution of privileged commands and access to security-relevant 
+            <p>The organization authorizes the execution of privileged commands and access to security-relevant
             information via remote access only for compelling operational needs and documents the rationale for such
             access in the security plan for the information system.</p>
     Rev3_AC_17_E5:
@@ -4752,7 +4753,6 @@ SecurityControlEnhancement:
         level: NONE
         description: >
             <p>The organization maintains procedures for the use of maintenance personnel that lack appropriate 
-
             security clearances or are not U.S. citizens, that include the following requirements: <ol><li>Maintenance 
             personnel who do not have needed access authorizations, clearances, or formal access approvals are escorted 
             and supervised during the performance of maintenance and diagnostic activities on the information system by 
@@ -5739,9 +5739,9 @@ SecurityControlEnhancement:
             The organization produces, controls, and distributes asymmetric cryptographic keys using approved PKI 
             Class 3 or Class 4 certificates and hardware security tokens that protect the user's private key.
 
-    Rev3_SC_12_E1:
+    Rev3_SC_13_E1:
         number: 1
-        Control: Rev3_SC_12
+        Control: Rev3_SC_13
         level: NONE
         description: >
             The organization employs, at a minimum, FIPS-validated cryptography to protect unclassified information.
@@ -6233,7 +6233,7 @@ SecurityControlEnhancement:
         Control: Rev0_AC_07
         level: NONE
         description: >
-            The information system automatically locks the account/node until released by an administrator when the 
+            The information system automatically locks the account/node until released by an administrator when the
             maximum number of unsuccessful attempts is exceeded.
 
     Rev0_AU_02_E1:
@@ -6241,15 +6241,14 @@ SecurityControlEnhancement:
         Control: Rev0_AU_02
         level: NONE
         description: >
-            The information system provides the capability to compile audit records from multiple components throughout 
+            The information system provides the capability to compile audit records from multiple components throughout
             the system into a systemwide (logical or physical), time-correlated audit trail.
-
     Rev0_AU_02_E2:
         number: 2
         Control: Rev0_AU_02
         level: NONE
         description: >
-            The information system provides the capability to manage the selection of events to be audited by 
+            The information system provides the capability to manage the selection of events to be audited by
             individual components of the system.
 
     Rev1_AC_07_E1:
@@ -6257,7 +6256,7 @@ SecurityControlEnhancement:
         Control: Rev1_AC_07
         level: NONE
         description: >
-            The information system automatically locks the account/node until released by an administrator when the 
+            The information system automatically locks the account/node until released by an administrator when the
             maximum number of unsuccessful attempts is exceeded.
 
     Rev1_SC_08_E1:
@@ -6265,7 +6264,7 @@ SecurityControlEnhancement:
         Control: Rev1_SC_08
         level: HIGH
         description: >
-            The organization employs cryptographic mechanisms to recognize changes to information during transmission 
+            The organization employs cryptographic mechanisms to recognize changes to information during transmission
             unless otherwise protected by alternative physical measures.
 
     Rev2_AC_07_E1:
@@ -6273,7 +6272,7 @@ SecurityControlEnhancement:
         Control: Rev2_AC_07
         level: NONE
         description: >
-            The information system automatically locks the account/node until released by an administrator when the 
+            The information system automatically locks the account/node until released by an administrator when the
             maximum number of unsuccessful attempts is exceeded.
 
     Rev2_MP_06_E1:

@@ -28,8 +28,8 @@
 class Version81 extends Doctrine_Migration_Base
 {
     /**
-     * All the records whose enhancement numbers are withdrawn are listed so that 
-     * they can be assigned correct enhancement number.
+     * The list of the records whose enhancement numbers are withdrawn need to
+     * be assigned correct enhancement number.
      * 
      * @var array
      */
@@ -41,6 +41,7 @@ class Version81 extends Doctrine_Migration_Base
         'CP-10' => array(1),
         'MP-05' => array(1),
         'SA-12' => array(1),
+        'SC-13' => array(1),
     );
 
     /**
@@ -48,16 +49,111 @@ class Version81 extends Doctrine_Migration_Base
      * 
      * @var array
      */
-    private static $_missingNumbers = array(
-        array('AC-07', 'NIST SP 800-53 Rev. 0'),
-        array('AU-02', 'NIST SP 800-53 Rev. 0'),
-        array('AC-07', 'NIST SP 800-53 Rev. 1'),
-        array('SC-08', 'NIST SP 800-53 Rev. 1'),
-        array('AC-07', 'NIST SP 800-53 Rev. 2'),
-        array('MP-06', 'NIST SP 800-53 Rev. 2'),
-        array('SA-12', 'NIST SP 800-53 Rev. 3'),
-        array('PE-13', 'NIST SP 800-53 Rev. 2'),
+    private static $_missingEnhancements = array(
+        'Rev0_AC_07_E1' => array(
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The information system automatically locks the account/node until released by an 
+                              administrator when the maximum number of unsuccessful attempts is exceeded.",
+            'control' => array('AC-07', 'NIST SP 800-53 Rev. 0')
+        ),
+        'Rev0_AU_02_E1' => array(
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The information system provides the capability to compile audit records from multiple 
+                              components throughout the system into a systemwide (logical or physical), 
+                              time-correlated audit trail.",
+            'control' => array('AU-02', 'NIST SP 800-53 Rev. 0')
+        ),
+        'Rev0_AU_02_E2' => array(
+            'number' => 2,
+            'level' => 'NONE',
+            'description' => "The information system provides the capability to manage the selection of events to be 
+                              audited by individual components of the system.",
+            'control' => array('AU-02', 'NIST SP 800-53 Rev. 0')
+        ),
+        'Rev1_AC_07_E1' => array(
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The information system automatically locks the account/node until released by an 
+                              dministrator when the maximum number of unsuccessful attempts is exceeded.",
+            'control' => array('AC-07', 'NIST SP 800-53 Rev. 1')
+        ),
+        'Rev1_SC_08_E1' => array(
+            'number' => 1,
+            'level' => 'HIGH',
+            'description' => "The organization employs cryptographic mechanisms to recognize changes to information 
+                              during transmission unless otherwise protected by alternative physical measures.",
+            'control' => array('SC-08', 'NIST SP 800-53 Rev. 1')
+        ),
+        'Rev2_AC_07_E1' => array(
+            'number' => 1,
+            'level'  => 'NONE',
+            'description' => "The information system automatically locks the account/node until released by an 
+                              administrator when the maximum number of unsuccessful attempts is exceeded.",
+            'control' => array('AC-07', 'NIST SP 800-53 Rev. 2')
+        ),
+        'Rev2_MP_06_E1' => array(
+            'number' => 1,
+            'level' => 'HIGH',
+            'description' => "The organization tracks, documents, and verifies media sanitization and disposal 
+                              actions.",
+            'control' => array('MP-06', 'NIST SP 800-53 Rev. 2')
+        ),
+        'Rev2_MP_06_E2' => array(
+            'number' => 2,
+            'level' => 'HIGH',
+            'description' => "The organization periodically tests sanitization equipment and procedures to verify 
+                              correct performance.",
+            'control' => array('MP-06', 'NIST SP 800-53 Rev. 2')
+        ),
+        'Rev3_SA_14_E1' => array(
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The organization: <ol> <li>Identifies information system components for which 
+                              alternative sourcing is not viable; and</li> <li>Employs [<em>Assignment: 
+                              organization-defined measures</em>] to ensure that critical security controls for the 
+                              information system components are not compromised.</li> </ol>",
+            'control' => array('SA-14', 'NIST SP 800-53 Rev. 3')
+        ),
+        'Rev3_SC_13_E1' => array(
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The organization employs, at a minimum, FIPS-validated cryptography to protect 
+                              unclassified information.",
+            'control' => array('SC-13', 'NIST SP 800-53 Rev. 3'),
+        )
     );
+
+    /**
+     * Duplicated records in securityControlEnhancement.yml data fixture
+     * Fox example: The record of Rev3_SA_12_E1 should be updated to Rev3_SA_14_E1
+     *  Rev3_SA_12_E1:
+     *      number: 1
+     *      Control: Rev3_SA_14
+     *      level: NONE
+     *      description: >
+     * 
+     * @var array
+     */
+    private static $_duplicatedEnhancements = array(
+        'Rev3_SA_12_E1' => array(
+            'securityControlCode' => 'SA-14',
+            'number' => 1,
+            'level' => 'NONE',
+            'description' => "The organization purchases all anticipated information system components and spares in 
+                              the initial acquisition.",
+            'control' => array('SA-12', 'NIST SP 800-53 Rev. 3')
+        ),
+        'Rev3_SC_12_E1' => array(
+            'securityControlCode' => 'SC-12',
+            'number' => 1,
+            'level' => 'HIGH',
+            'description' => "The organization maintains availability of information in the event of the loss of 
+                              cryptographic keys by users.",
+            'control' => array('SC-12', 'NIST SP 800-53 Rev. 3')
+        )
+     );
 
     /**
      * Add number column and remove 'Enhancement Supplemental Guidance'
@@ -78,9 +174,9 @@ class Version81 extends Doctrine_Migration_Base
         $conn = Doctrine_Manager::connection();
 
         // Remove the "Enhancement Supplemental Guidance" from the description field
-        $updateSql = "UPDATE `security_control_enhancement` SET `description` = LEFT(`description`,"
-                   . "LOCATE('<p><u>Enhancement Supplemental Guidance',`description`)-1) where `description` like "
-                   . "'%Enhancement Supplemental Guidance%'";
+        $updateSql = "UPDATE `security_control_enhancement` SET `description` = CONCAT(RTRIM(LEFT(`description`,"
+                   . "LOCATE('<p><u>Enhancement Supplemental Guidance',`description`)-1)), '\n') where `description` "
+                   . "like '%Enhancement Supplemental Guidance%'";
         $conn->exec($updateSql);
     }
 
@@ -105,8 +201,19 @@ class Version81 extends Doctrine_Migration_Base
         // Loop through the SeurityControlEnhancement records gotten by securityControlId to update number column.
         $this->_updateEnhancementNumber($securityControlIds);
 
-        // Add the missing records of security control enhancement
-        $this->_addMissingEnhancement();
+        // Add the missing records of in security control enhancement table
+        $this->_addMissingEnhancement(self::$_missingEnhancements);
+
+        // Update the duplicated records in security control enhancement table
+        $this->_updateEnhancement(self::$_duplicatedEnhancements);
+
+        // Change all level value of Rev2_PE_13 from 'HIGH' to 'MODERATE' in security control enhancement table
+        $securityControlId = $this->_getSecurityControl(array('PE-13', 'NIST SP 800-53 Rev. 2'))->id;
+        $enhancements = Doctrine::getTable('SecurityControlEnhancement')->findBySecurityControlId($securityControlId);
+        foreach ($enhancements as $enhancement) {
+            $enhancement->level = 'MODERATE';
+            $enhancement->save();
+        }
     }
 
     /**
@@ -152,101 +259,38 @@ class Version81 extends Doctrine_Migration_Base
 
     /**
      * Add the missing records of securitycontrol enhancement
+     * 
+     * @param array $missingEnhancements
+     * @return void
      */
-    private function _addMissingEnhancement()
+    private function _addMissingEnhancement($missingEnhancements)
     {
-        // The mising enhancement in SP800-53-rev0 file
-        // Rev0_AC_07_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The information system automatically locks the account/node until released by an '
-                                  . 'administrator when the maximum number of unsuccessful attempts is exceeded.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[0]);
-        $enhancement->save();
+        foreach ($missingEnhancements as $missingEnhancement) {
+            $enhancement = new SecurityControlEnhancement();
+            $enhancement->number = $missingEnhancement['number'];
+            $enhancement->level = $missingEnhancement['level'];
+            $enhancement->description = $missingEnhancement['description'];
+            $enhancement->Control = $this->_getSecurityControl($missingEnhancement['control']);
+            $enhancement->save();
+        }
+    }
 
-        // Rev0_AU_02_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The information system provides the capability to compile audit records from '
-                                  . 'multiple components throughout the system into a systemwide (logical or physical),'
-                                  . ' time-correlated audit trail.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[1]);
-        $enhancement->save();
-
-        // Rev0_AU_02_E2
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 2;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The information system provides the capability to manage the selection of events '
-                                  . 'to be audited by individual components of the system.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[1]);
-        $enhancement->save();
-
-        // The mising enhancement in SP800-53-rev1 file
-        // Rev1_AC_07_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The information system automatically locks the account/node until released by an '
-                                  . 'administrator when the maximum number of unsuccessful attempts is exceeded.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[2]);
-        $enhancement->save();
-
-        // Rev1_SC_08_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'HIGH';
-        $enhancement->description = 'The organization employs cryptographic mechanisms to recognize changes to '
-                                  . 'information during transmission unless otherwise protected by alternative '
-                                  . 'physical measures.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[3]);
-        $enhancement->save();
-
-        // The mising enhancement in SP800-53-rev2 file
-        // Rev2_AC_07_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The information system automatically locks the account/node until released by an '
-                                  . 'administrator when the maximum number of unsuccessful attempts is exceeded.';
-        $enhancement->Control =  $this->_getSecurityControl(self::$_missingNumbers[4]);
-        $enhancement->save();
-
-        // Rev2_MP_06_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'HIGH';
-        $enhancement->description = 'The organization tracks, documents, and verifies media sanitization and disposal '
-                                  . 'actions.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[5]);
-        $enhancement->save();
-
-        // Rev2_MP_06_E2
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 2;
-        $enhancement->level = 'HIGH';
-        $enhancement->description = 'The organization periodically tests sanitization equipment and procedures to '
-                                  . 'verify correct performance.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[5]);
-        $enhancement->save();
-
-        // The mising enhancement in SP800-53-rev3 file
-        // Rev3_SA_12_E1
-        $enhancement = new SecurityControlEnhancement();
-        $enhancement->number = 1;
-        $enhancement->level = 'NONE';
-        $enhancement->description = 'The organization purchases all anticipated information system components and '
-                                  . 'spares in the initial acquisition.';
-        $enhancement->Control = $this->_getSecurityControl(self::$_missingNumbers[6]);
-        $enhancement->save();
-
-        // Change all level value of Rev2_PE_13 from 'HIGH' to 'MODERATE' in security control enhancement table
-        $securityControlId = $this->_getSecurityControl(self::$_missingNumbers[7])->id;
-        $enhancements = Doctrine::getTable('SecurityControlEnhancement')->findBySecurityControlId($securityControlId);
-        foreach ($enhancements as $enhancement) {
-            $enhancement->level = 'MODERATE';
+    /**
+     * Update the duplicated records of securitycontrol enhancement
+     * 
+     * @param array $duplicatedEnhancements
+     * @return void
+     */
+    private function _updateEnhancement($duplicatedEnhancements)
+    {
+        foreach ($duplicatedEnhancements as $duplicatedEnhancement) {
+            $id = $this->_getEnhancementId($duplicatedEnhancement['securityControlCode']);
+            $enhancement = new SecurityControlEnhancement();
+            $enhancement->assignIdentifier($id);
+            $enhancement->number = $duplicatedEnhancement['number'];
+            $enhancement->level = $duplicatedEnhancement['level'];
+            $enhancement->description = $duplicatedEnhancement['description'];
+            $enhancement->Control = $this->_getSecurityControl($duplicatedEnhancement['control']);
             $enhancement->save();
         }
     }
@@ -266,6 +310,27 @@ class Version81 extends Doctrine_Migration_Base
                            ->fetchOne();
 
        return $securityControl;
+    }
+
+    /**
+     * Get the first record from required update enhancement
+     * 
+     * @param string $code The security code is used to find the securityControlEnhancement record id whose
+     *                     contents need to be updated.
+     * @return string
+     */
+    private function _getEnhancementId($code)
+    {
+        $enhancement = Doctrine_Query::create()
+                       ->from('SecurityControlEnhancement s')
+                       ->innerJoin('s.Control sc')
+                       ->innerJoin('sc.Catalog ca')
+                       ->where('sc.code = ? AND ca.name = ?', array($code, 'NIST SP 800-53 Rev. 3'))
+                       ->orderBy('s.id')
+                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+                       ->fetchOne();
+
+        return $enhancement['s_id'];
     }
 
     /**
