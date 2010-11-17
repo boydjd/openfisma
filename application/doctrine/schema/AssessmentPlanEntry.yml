@@ -1,0 +1,17 @@
+AssessmentPlanEntry:
+    columns:
+        saSecurityControlId: integer
+        saSecurityControlEnhancementId: integer
+        number: integer
+        objective: string
+        examine: string
+        interview: string
+        test: string
+    relations:
+        SaSecurityControl:
+            local: saSecurityControlId
+            foreignAlias: AssessmentProcedures
+        SaSecurityControlEnhancement:
+            local: saSecurityControlEnhancementId
+            foreignAlias: AssessmentProcedures
+
