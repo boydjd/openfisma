@@ -197,7 +197,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if (!is_null($rows) && !is_null($start)) {
+        if (isset($rows) && isset($start)) {
               $query->setStart($start)
                     ->setRows($rows);
         }
@@ -323,7 +323,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $query->setStart($start)
                   ->setRows($rows);
         }

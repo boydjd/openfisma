@@ -393,7 +393,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }
@@ -718,7 +718,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }
