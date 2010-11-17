@@ -25,3 +25,98 @@ AssessmentProcedure:
         interview: "[SELECT FROM: Organizational personnel with access control responsibilities]."
         Catalog: 800_53A_Rev_1
 
+    53A_Rev1_AC_01_2:
+        controlCode: AC-01
+        number: 2
+        objective: >
+            Determine if:
+            <ol>
+                <li>the organization defines the frequency of access control policy reviews/updates;
+                <li>the organization reviews/updates access control policy in accordance with organization-defined frequency;
+                <li>the organization defines the frequency of access control procedure reviews/updates; and
+                <li>the organization reviews/updates access control procedures in accordance with organization-defined frequency.
+            </ol>
+        examine: "[SELECT FROM: Access control policy and procedures; other relevant documents or records]."
+        interview: "[SELECT FROM: Organizational personnel with access control responsibilities]."
+
+    53A_Rev1_AC_02_1:
+        controlCode: AC-02
+        number: 1
+        objective: >
+            Determine if:
+            <ol>
+                <li>the organization manages information system accounts, including;
+                    <ul>
+                        <li>identifying account types (i.e., individual, group, system, application, guest/anonymous, and temporary);</li>
+                        <li>establishing conditions for group membership;</li>
+                        <li>identifying authorized users of the information system and specifying access privileges;</li>
+                        <li>requiring appropriate approvals for requests to establish accounts;</li>
+                        <li>establishing, activating, modifying, disabling, and removing accounts;</li>
+                        <li>specifically authorizing and monitoring the use of guest/anonymous and temporary accounts;</li>
+                        <li>notifying account managers when temporary accounts are no longer required and when information system users are terminated, transferred, or information system usage or need-to-know/need-to-share changes;</li>
+                        <li>deactivating: i) temporary accounts that are no longer required; and ii) accounts of terminated or transferred users; and</li>
+                        <li>granting access to the system based on:
+                            <ul>
+                                <li>a valid access authorization;</li>
+                                <li>intended system usage; and</li>
+                                <li>other attributes as required by the organization or associated missions/business functions; and</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>the organization defines the frequency of information system account reviews; and</li>
+                <li>the organization reviews information system accounts in accordance with organization-defined frequency.</li>
+            </ol>
+        examine: |
+            [SELECT FROM: Access control policy; procedures addressing account management; security plan; list of
+            active system accounts along with the name of the individual associated with each account; list of
+            guest/anonymous and temporary accounts along with the name of the individual associated with each account
+            and the date the account expires; lists of recently transferred, separated, or terminated employees; list of
+            recently disabled information system accounts along with the name of the individual associated with each
+            account; system-generated records with user IDs and last login date; other relevant documents or records].
+        interview: "[SELECT FROM: Organizational personnel with account management responsibilities]."
+
+    53A_Rev1_AC_02E1_1:
+        controlCode: AC-02
+        enhancement: 1
+        number: 1
+        objective: Determine if the organization employs automated mechanisms to support information system account management functions.
+        examine: |
+            [SELECT FROM: Procedures addressing account management; information system design documentation;
+            information system configuration settings and associated documentation; other relevant documents or
+            records].
+        test: "[SELECT FROM: Automated mechanisms implementing account management functions]."
+
+    53A_Rev1_AC_02E2_1:
+        controlCode: AC-02
+        enhancement: 2
+        number: 1
+        objective: >
+            Determine if:
+            <ol>
+                <li>the organization defines a time period for each type of account after which the information system terminates temporary and emergency accounts; and</li>
+                <li>the information system automatically terminates temporary and emergency accounts after organization-defined time period for each type of account.</li>
+            </ol>
+        examine: |
+            [SELECT FROM: Security plan; information system design documentation; information system configuration
+            settings and associated documentation; information system-generated list of active accounts; information
+            system audit records; other relevant documents or records]."
+        test: "[SELECT FROM: Automated mechanisms implementing account management functions]."
+
+    53A_Rev1_AC_02E3_1:
+        controlCode: AC-02
+        enhancement: 3
+        number: 1
+        objective: >
+            Determine if:
+            <ol>
+                <li>the organization defines in a time period after which the information system disables inactive accounts; and</li>
+                <li>the information system automatically disables inactive accounts after organization- defined time period.</li>
+            </ol>
+        examine: |
+            [SELECT FROM: Procedures addressing account management; security plan; information system design
+            documentation; information system configuration settings and associated documentation; information system
+            generated list of last login dates; information system- generated list of active accounts; information
+            system audit records; other relevant documents or records]."
+        test: "[SELECT FROM: Automated mechanisms implementing account management functions]."
+
