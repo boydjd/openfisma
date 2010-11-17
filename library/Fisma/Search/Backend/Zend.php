@@ -290,7 +290,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $currentAlias = 'a';
-        $relationAliases = array();
+        $relationAliases = array($type => $currentAlias);
 
         // Add any join tables required to get related records
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -364,11 +364,17 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
-            $relationTable = $searchableFields[$aclField]['join']['relation'];
-            $relationAlias = $relationAliases[$relationTable];
-            $relationField = $searchableFields[$aclField]['join']['field'];
+            if (isset($searchableFields[$aclField]['join'])) {
+                $relationTable = $searchableFields[$aclField]['join']['relation'];
+                $relationAlias = $relationAliases[$relationTable];
+                $relationField = $searchableFields[$aclField]['join']['field'];
 
-            $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+                $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+            } else {
+                $relationAlias = $relationAliases[$type];
+
+                $doctrineQuery->whereIn("$relationAlias.$aclField", $aclValues);
+            }
         }
 
         // Add sorting and limit/offset
