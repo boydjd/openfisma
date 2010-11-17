@@ -28,6 +28,14 @@
 abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller_Action_Security
 {
     /**
+     * The maximum number of records this controller will export during its search action when the format is PDF
+     * or XLS
+     * 
+     * @var int
+     */
+    const MAX_EXPORT_RECORDS = 1000;
+
+    /**
      * Default pagination parameters
      *
      * @var array
@@ -641,13 +649,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $sortBoolean = ('asc' == $sortDirection);
         $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
         
-        // For HTML UI, add a limit/offset to query
         if (empty($format)) {
+            // For HTML UI, add a limit/offset to query
             $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
             $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
         } else {
-            $start = null;
-            $rows = null;
+            // For PDF/XLS export, $rows is an arbitrarily high number (that won't DoS the system)
+            $start = 0;
+            $rows = self::MAX_EXPORT_RECORDS;
         }
 
         // Execute simple search (default) or advanced search (if explicitly requested)
@@ -737,7 +746,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 if (isset($visibleColumns)) {
                     $visible = (bool)($visibleColumns & (1 << $currentColumn));
                 } else {
-                    $visible = $searchableField['initiallyVisible'];
+                    $visible = isset($searchableField['initiallyVisible']) && $searchableField['initiallyVisible'];
                 }
                 
                 // For visible columns, display the column in the report and add data from the 
