@@ -29,16 +29,28 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
 {
     protected $_modelName = 'SaInformationType';
 
+    /**
+     * indexAction 
+     * 
+     * @return void
+     */
     public function indexAction()
     {
         $this->_forward('list');
     }
 
+    /**
+     * Return types which can be assigned to a system
+     * The system ID is included in the data for use on the System FIPS-199 page
+     * 
+     * @return void
+     */
     public function activeTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
-        $id = $this->getRequest()->getParam('id');
+        $systemId = $this->getRequest()->getParam('systemId');
         $informationTypes = Doctrine_Query::create()
+                            ->select("*, {$systemId} as system") // TODO: Make sure not vulnerable to injection
                             ->from('SaInformationType sat')
                             ->where('hidden = FALSE')
                             ->execute()

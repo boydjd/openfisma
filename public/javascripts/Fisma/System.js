@@ -40,7 +40,6 @@ Fisma.System = {
     },
 
     addInformationType : function (elCell, oRecord, oColumn, oData) {
-        console.log(oRecord);
-        elCell.innerHTML = "<a href='/system/add-information-type/id/15/sitId/" + oData + "'>Add</a>";
+        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
     }
 };

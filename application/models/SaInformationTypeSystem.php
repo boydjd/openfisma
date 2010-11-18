@@ -98,6 +98,6 @@ class SaInformationTypeSystem extends BaseSaInformationTypeSystem
                                    ->limit(1)
                                    ->fetchOne()
                                    ->integrity;
-        $system->save();
+        $system->replace();
     }
 }
