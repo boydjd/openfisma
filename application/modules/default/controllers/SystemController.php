@@ -186,14 +186,45 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, 'category'))
                               ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, 'name'))
                               ->addColumn(new Fisma_Yui_DataTable_Column('Description', false, null, 'description'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Confidentiality', false, null, 'confidentiality')
+                              )
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', false, null, 'integrity'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Availability', false, null, 'availability'))
                               ->setResultVariable('informationTypes')
                               ->setInitialSortColumn('category')
                               ->setSortAscending(true)
-                              ->setRowCount(25)
+                              ->setRowCount(10)
                               ->setDataUrl("/system/information-types/id/$id/format/json");
         
         $this->view->informationTypesTable = $informationTypesTable;
         // END: Building of data table
+
+        // BEGIN: Build the data table of available information types to assign to the system
+
+        $availableInformationTypesTable = clone $informationTypesTable;
+
+        $availableInformationTypesTable->addColumn(
+            new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', 'id')
+        );
+        $availableInformationTypesTable->setDataUrl("/sa/informationType/active-types/format/json");
+
+        $this->view->availableInformationTypesTable = $availableInformationTypesTable;
+        // END: Building of the data table
+
+        $addInformationTypeButton = new Fisma_Yui_Form_Button(
+            'addInformationTypeButton', 
+            array(
+                'label' => 'Add Information Types', 
+                'onClickFunction' => 'Fisma.System.showInformationTypes',
+            )
+        );
+
+        if (!$this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $addInformationTypeButton->readOnly = true;
+        }
+        
+        $this->view->addInformationTypeButton = $addInformationTypeButton;
 
         $this->render();
     }

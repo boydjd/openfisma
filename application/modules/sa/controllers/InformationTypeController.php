@@ -33,4 +33,18 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_forward('list');
     }
+
+    public function activeTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+        $id = $this->getRequest()->getParam('id');
+        $informationTypes = Doctrine_Query::create()
+                            ->from('SaInformationType sat')
+                            ->where('hidden = FALSE')
+                            ->execute()
+                            ->toArray();
+        $informationTypesData = array();
+        $informationTypesData['informationTypes'] = $informationTypes;
+        $this->view->informationTypesData = $informationTypesData;
+    }
 }

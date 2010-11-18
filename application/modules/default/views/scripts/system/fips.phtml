@@ -1,5 +1,18 @@
 <?php
-Fisma_Format_Section::startSection('Information Types');
+echo $this->escape($this->addInformationTypeButton, 'none');
+?>
+<div id="addInformationTypes">
+    <div class="sectionHeader">
+        <span>Add Information Types</span>
+    </div>
+    <div class="section">
+<?php
+echo $this->escape($this->availableInformationTypesTable, 'none');
+?>
+    </div>
+</div>
+<?php
+Fisma_Format_Section::startSection('Assigned Information Types');
 echo $this->escape($this->informationTypesTable, 'none');
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('FIPS-199 Security Categorization');

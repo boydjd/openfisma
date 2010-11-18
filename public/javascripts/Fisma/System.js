@@ -30,5 +30,17 @@ Fisma.System = {
      */
     uploadDocumentCallback : function (yuiPanel) {
         window.location.href = window.location.href;
+    },
+
+    /**
+     * Displays the hidden block on the FIPS-199 page to add information types to a system 
+     */
+    showInformationTypes : function () {
+        document.getElementById('addInformationTypes').style.display = 'block';
+    },
+
+    addInformationType : function (elCell, oRecord, oColumn, oData) {
+        console.log(oRecord);
+        elCell.innerHTML = "<a href='/system/add-information-type/id/15/sitId/" + oData + "'>Add</a>";
     }
 };
