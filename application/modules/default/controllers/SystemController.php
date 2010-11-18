@@ -256,7 +256,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $informationTypeSystem = new SaInformationTypeSystem();
         $informationTypeSystem->sainformationtypeid = $informationTypeId;
         $informationTypeSystem->systemid = $systemId;
-        $informationTypeSystem->replace();
+        $informationTypeSystem->save();
 
         $this->_redirect("/system/view/id/$id");
     }
