@@ -172,13 +172,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function fipsAction() 
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('System')->find($id)->Organization;
+        $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
         $this->view->organization = $organization;
         $this->view->system = $this->view->organization->System;
-
         // BEGIN: Build the data table of information types associated with the system
 
         $informationTypesTable = new Fisma_Yui_DataTable_Remote();
@@ -195,7 +194,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                               ->setInitialSortColumn('category')
                               ->setSortAscending(true)
                               ->setRowCount(10)
-                              ->setDataUrl("/system/information-types/id/$id/format/json");
+                              ->setDataUrl("/system/information-types/id/{$id}/format/json");
         
         $this->view->informationTypesTable = $informationTypesTable;
         // END: Building of data table
@@ -207,7 +206,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $availableInformationTypesTable->addColumn(
             new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', 'id')
         );
-        $availableInformationTypesTable->setDataUrl("/sa/informationType/active-types/systemId/{$id}/format/json");
+        $availableInformationTypesTable->setDataUrl(
+            "/sa/informationType/active-types/organizationId/{$id}/format/json"
+        );
 
         $this->view->availableInformationTypesTable = $availableInformationTypesTable;
         // END: Building of the data table
@@ -239,7 +240,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout->setLayout('ajax');
         $id = $this->getRequest()->getParam('id');
-        $informationTypes = Doctrine::getTable('System')->find($id)->InformationTypes->toArray();
+        $system = Doctrine::getTable('Organization')->find($id)->System;
+        $informationTypes = $system->InformationTypes->toArray();
         $informationTypesData = array();
         $informationTypesData['informationTypes'] = $informationTypes;
         $this->view->informationTypesData = $informationTypesData;
@@ -248,14 +250,15 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function addInformationTypeAction()
     {
         $informationTypeId = $this->getRequest()->getParam('sitId');
-        $systemId = $this->getRequest()->getParam('id');
+        $id = $this->getRequest()->getParam('id');
+        $systemId = Doctrine::getTable('Organization')->find($id)->System->id;
 
         $informationTypeSystem = new SaInformationTypeSystem();
         $informationTypeSystem->sainformationtypeid = $informationTypeId;
         $informationTypeSystem->systemid = $systemId;
-        $informationTypeSystem->save();
+        $informationTypeSystem->replace();
 
-        $this->_forward('view');
+        $this->_redirect("/system/view/id/$id");
     }
     
     /**

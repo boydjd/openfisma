@@ -48,9 +48,11 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     public function activeTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
-        $systemId = $this->getRequest()->getParam('systemId');
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $systemId = Doctrine::getTable('Organization')->find($organizationId)->System->id;
         $informationTypes = Doctrine_Query::create()
-                            ->select("*, {$systemId} as system") // TODO: Make sure not vulnerable to injection
+                            // TODO: Make sure not vulnerable to injection
+                            ->select("*, {$organizationId} as organization")
                             ->from('SaInformationType sat')
                             ->where('hidden = FALSE')
                             ->execute()

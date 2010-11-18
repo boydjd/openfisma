@@ -39,7 +39,10 @@ Fisma.System = {
         document.getElementById('addInformationTypes').style.display = 'block';
     },
 
+    /**
+     * Build URL for adding information type to the system 
+     */
     addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
+        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('organization') + "/sitId/" + oData + "'>Add</a>";
     }
 };

@@ -10,7 +10,6 @@ System:
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
-        InformationTypes: [rdpct]
 
     OSC_SYS:
         type: minor

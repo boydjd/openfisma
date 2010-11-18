@@ -73,6 +73,16 @@ class Fisma_Yui_DataTable_Column
     private $_hidden;
 
     /**
+     * Clone any objects assigned to the class so that containing classes can properly deep copy the object
+     * 
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->_formatter = clone $this->_formatter;
+    }
+
+    /**
      * Create a column with a human-friendly name
      * 
      * @param string $label A human-friendly label for this column
