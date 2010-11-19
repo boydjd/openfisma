@@ -2,6 +2,10 @@ SecurityControlEnhancement:
     listeners: [XssListener]
 
     columns:
+        number: 
+            type: integer(2)
+            comment: Enhancement number
+            default: null
         level:
             type: enum
             values: [LOW, MODERATE, HIGH]
