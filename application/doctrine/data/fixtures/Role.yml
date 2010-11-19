@@ -37,6 +37,7 @@ Role:
             - vulnerability_update
             - vulnerability_status
             - notification_vulnerability
+            - sa_it_read
 
     reviewer_role:
         name: Reviewer
@@ -54,6 +55,7 @@ Role:
             - vulnerability_report_area
             - vulnerability_read
             - notification_vulnerability
+            - sa_it_read
         
     ivv_role:
         name: Independent Verification and Validation
@@ -104,6 +106,7 @@ Role:
             - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability         
+            - sa_it_read
 
     saiso_role:
         name: Senior Agency Information Security Officer
@@ -152,6 +155,7 @@ Role:
             - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability
+            - sa_it_read
     
     admin_role:
         name: Application Administrator
@@ -268,6 +272,10 @@ Role:
             - sa_read
             - sa_update
             - sa_delete
+            - sa_it_read
+            - sa_it_create
+            - sa_it_update
+            - sa_admin
 
     certagent_role:
         name: Certification Agent
@@ -324,6 +332,7 @@ Role:
             - vulnerability_read
             - vulnerability_update
             - notification_vulnerability
+            - sa_it_read
 
     ao_role:
         name: Authorizing Official
@@ -344,6 +353,7 @@ Role:
             - vulnerability_read
             - vulnerability_status
             - notification_vulnerability
+            - sa_it_read
 
     oss_role:
         name: Operational Support Staff

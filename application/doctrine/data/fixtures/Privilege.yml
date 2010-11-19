@@ -68,6 +68,20 @@ Privilege:
         action: security_authorization_select
         description: Security Authroization Module Select Controls
 
+    # Security Authorization Information Types CRUD
+    sa_it_read:
+        resource: sa_information_type
+        action: read
+        description: View Information Types
+    sa_it_create:
+        resource: sa_information_Type
+        action: create
+        description: Create Information Types
+    sa_it_update:
+        resource: sa_information_type
+        action: update
+        description: Update Information Types
+
     # Findings CRUD
     findings_create:
         resource: finding
@@ -474,6 +488,10 @@ Privilege:
         description: Delete Document Type
 
     # Security Authorization CRUD
+    sa_admin:
+        resource: area 
+        action: security_authorization_admin
+        description: Administer Security Authorization
     sa_create:
         resource: security_authorization
         action: create
