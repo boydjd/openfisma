@@ -55,7 +55,11 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
         $sort           = $this->getRequest()->getParam('sort', 'category');
         $dir            = $this->getRequest()->getParam('dir', 'asc');
 
-        $systemId = Doctrine::getTable('Organization')->find($organizationId)->System->id;
+        $organization = Doctrine::getTable('Organization')->find($organizationId);
+
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+
+        $systemId = $organization->System->id;
 
         $informationTypes = Doctrine_Query::create()
                             // TODO: Make sure not vulnerable to injection
