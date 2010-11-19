@@ -48,8 +48,15 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     public function activeTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
+
         $organizationId = $this->getRequest()->getParam('organizationId');
+        $count          = $this->getRequest()->getParam('count', 10);
+        $start          = $this->getRequest()->getParam('start', 0);
+        $sort           = $this->getRequest()->getParam('sort', 'category');
+        $dir            = $this->getRequest()->getParam('dir', 'asc');
+
         $systemId = Doctrine::getTable('Organization')->find($organizationId)->System->id;
+
         $informationTypes = Doctrine_Query::create()
                             // TODO: Make sure not vulnerable to injection
                             ->select("*, {$organizationId} as organization")
@@ -60,11 +67,13 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
                                 'SELECT s.sainformationtypeid FROM SaInformationTypeSystem s where s.systemid = ?' .
                                 ')', $systemId
                             )
-                            ->execute()
-                            ->toArray();
+                            ->limit($count)
+                            ->offset($start)
+                            ->orderBy("sat.{$sort} {$dir}");
 
         $informationTypesData = array();
-        $informationTypesData['informationTypes'] = $informationTypes;
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
         $this->view->informationTypesData = $informationTypesData;
     }
 }

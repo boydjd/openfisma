@@ -186,10 +186,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                               ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, 'name'))
                               ->addColumn(new Fisma_Yui_DataTable_Column('Description', false, null, 'description'))
                               ->addColumn(
-                                  new Fisma_Yui_DataTable_Column('Confidentiality', false, null, 'confidentiality')
+                                  new Fisma_Yui_DataTable_Column('Confidentiality', true, null, 'confidentiality')
                               )
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', false, null, 'integrity'))
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Availability', false, null, 'availability'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, 'integrity'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Availability', true, null, 'availability'))
                               ->setResultVariable('informationTypes')
                               ->setInitialSortColumn('category')
                               ->setSortAscending(true)
@@ -242,7 +242,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function informationTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
-        $id = $this->getRequest()->getParam('id');
+
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', 10);
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort', 'category');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
         $systemId = Doctrine::getTable('Organization')->find($id)->System->id;
 
         $informationTypes = Doctrine_Query::create()
@@ -251,11 +257,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             ->where('sats.systemid = ?', $systemId)
             ->andWhere('sats.sainformationtypeid = sat.id')
             ->andWhere('sat.hidden = FALSE')
-            ->execute()
-            ->toArray();
+            ->orderBy("sat.{$sort} {$dir}")
+            ->limit($count)
+            ->offset($start);
 
         $informationTypesData = array();
-        $informationTypesData['informationTypes'] = $informationTypes;
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
         $this->view->informationTypesData = $informationTypesData;
     }
 
