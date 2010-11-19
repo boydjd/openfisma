@@ -213,6 +213,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->availableInformationTypesTable = $availableInformationTypesTable;
         // END: Building of the data table
 
+        $this->view->informationTypesTable->addColumn(
+            new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', 'id')
+        );
+
         $addInformationTypeButton = new Fisma_Yui_Form_Button(
             'addInformationTypeButton', 
             array(
@@ -231,22 +235,35 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * informationTypesAction 
+     * Return all information types currently assigned to the system 
      * 
-     * @access public
      * @return void
      */
     public function informationTypesAction()
     {
         $this->_helper->layout->setLayout('ajax');
         $id = $this->getRequest()->getParam('id');
-        $system = Doctrine::getTable('Organization')->find($id)->System;
-        $informationTypes = $system->InformationTypes->toArray();
+        $systemId = Doctrine::getTable('Organization')->find($id)->System->id;
+
+        $informationTypes = Doctrine_Query::create()
+            ->select("sat.*, {$id} as organization")
+            ->from('SaInformationType sat, SaInformationTypeSystem sats')
+            ->where('sats.systemid = ?', $systemId)
+            ->andWhere('sats.sainformationtypeid = sat.id')
+            ->andWhere('sat.hidden = FALSE')
+            ->execute()
+            ->toArray();
+
         $informationTypesData = array();
         $informationTypesData['informationTypes'] = $informationTypes;
         $this->view->informationTypesData = $informationTypesData;
     }
 
+    /**
+     * Add a single information type to a system 
+     * 
+     * @return void
+     */
     public function addInformationTypeAction()
     {
         $informationTypeId = $this->getRequest()->getParam('sitId');
@@ -257,6 +274,26 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $informationTypeSystem->sainformationtypeid = $informationTypeId;
         $informationTypeSystem->systemid = $systemId;
         $informationTypeSystem->save();
+
+        $this->_redirect("/system/view/id/$id");
+    }
+
+    /**
+     * Remove a single information type from a system 
+     * 
+     * @return void
+     */
+    public function removeInformationTypeAction()
+    {
+        $informationTypeId = $this->getRequest()->getParam('sitId');
+        $id = $this->getRequest()->getParam('id');
+        $systemId = Doctrine::getTable('Organization')->find($id)->System->id;
+
+        Doctrine_Query::create()
+            ->delete('SaInformationTypeSystem saits')
+            ->where('saits.sainformationtypeid = ?', $informationTypeId)
+            ->andWhere('saits.systemid = ?', $systemId)
+            ->execute();
 
         $this->_redirect("/system/view/id/$id");
     }

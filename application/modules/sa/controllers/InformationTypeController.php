@@ -54,9 +54,15 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
                             // TODO: Make sure not vulnerable to injection
                             ->select("*, {$organizationId} as organization")
                             ->from('SaInformationType sat')
-                            ->where('hidden = FALSE')
+                            ->where('sat.hidden = FALSE')
+                            ->andWhere(
+                                'sat.id NOT IN (' . 
+                                'SELECT s.sainformationtypeid FROM SaInformationTypeSystem s where s.systemid = ?' .
+                                ')', $systemId
+                            )
                             ->execute()
                             ->toArray();
+
         $informationTypesData = array();
         $informationTypesData['informationTypes'] = $informationTypes;
         $this->view->informationTypesData = $informationTypesData;
