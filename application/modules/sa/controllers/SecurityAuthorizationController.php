@@ -173,4 +173,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         return $saId;
     }
    
+    public function assessmentPlanAction()
+    {
+        $this->view->id = $this->_request->getParam('id');
+    }
 }

@@ -1,0 +1,46 @@
+; This is the form for security authorization.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[assessmentplanentry]
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
+elementPrefixPath.type = Validate
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.objective.type = "textarea"
+elements.objective.options.validators.mce.validator = "MceNotEmpty"
+elements.objective.options.label = "Objective"
+elements.objective.options.cols = "100"
+elements.objective.options.rows = "8"
+elements.objective.options.required = true
+displayGroups.sa.elements.objective = "objective"
+
+elements.examine.type = "textarea"
+elements.examine.options.label = "Examine"
+elements.examine.options.cols = "100"
+elements.examine.options.rows = "8"
+displayGroups.sa.elements.examine = "examine"
+
+elements.interview.type = "textarea"
+elements.interview.options.label = "Interview"
+elements.interview.options.cols = "100"
+elements.interview.options.rows = "8"
+displayGroups.sa.elements.interview = "interview"
+
+elements.test.type = "textarea"
+elements.test.options.label = "Test"
+elements.test.options.cols = "100"
+elements.test.options.rows = "8"
+displayGroups.sa.elements.test = "test"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.sa.elements.save = "save"
+

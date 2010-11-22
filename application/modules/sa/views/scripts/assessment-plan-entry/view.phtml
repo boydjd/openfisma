@@ -1,0 +1,11 @@
+<?php
+$sectionTitle = 'AssessmentPlanEntry';
+$sectionTitle .= ' [<a href="/sa/assessmentplanentry/edit/id/' . $this->id . '">Edit</a>]';
+Fisma_Format_Section::startSection($sectionTitle); ?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+
