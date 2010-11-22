@@ -23,8 +23,7 @@ class SaSecurityControlEnhancement extends BaseSaSecurityControlEnhancement
         $procedures = Doctrine_Query::create()
             ->from('AssessmentProcedure ap')
             ->where('ap.controlCode = ?', $this->SaSecurityControl->SecurityControl->code)
-            // @todo Uncomment once number field of enhancements is available
-            //->andWhere('ap.enhancement = ?', $this->SecurityControl->Enhancement->number)
+            ->andWhere('ap.enhancement = ?', $this->SecurityControlEnhancement->number)
             ->execute();
         foreach ($procedures as $ap) {
             $ape = new AssessmentPlanEntry();
