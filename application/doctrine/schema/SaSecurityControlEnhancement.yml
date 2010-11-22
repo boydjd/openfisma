@@ -7,4 +7,6 @@ SaSecurityControlEnhancement:
             local: saSecurityControlId
             foreign: id
             foreignAlias: SaSecurityControlEnhancements
-
+        SecurityControlEnhancement:
+            local: securityControlEnhancementId
+            foreign: id
