@@ -227,12 +227,15 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
             ->toKeyValueArray('id', 'id');
         $this->view->currentControlEnhancementss = $currentControlEnhancements;
 
-        $enhancements = Doctrine_Query::create()
+        $enhancementObjects = Doctrine_Query::create()
             ->from('SecurityControlEnhancement sce')
             ->whereNotIn('sce.id', $currentControlEnhancements)
             ->andWhere('sce.securityControlId = ?', $securityControlId)
-            ->execute()
-            ->toKeyValueArray('id', 'description');
+            ->execute();
+        $enhancements = array();
+        foreach ($enhancementObjects as $enh) {
+            $enhancements[$enh->id] = $enh->Control->code . " (" . $enh->number . ")";
+        }
         $this->view->availableEnhancements = $enhancements;
 
         // build form
