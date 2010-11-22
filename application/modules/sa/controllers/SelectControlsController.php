@@ -127,6 +127,7 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
             foreach ($saControl->SecurityControlEnhancements as $enhancement) {
                 $enhancements[] = array(
                     'id' => $enhancement->id,
+                    'number' => $enhancement->number,
                     'description' => $enhancement->description
                 );
             }

@@ -87,7 +87,8 @@ Fisma.ControlTree.prototype = {
         var props = {
             label: label,
             renderHidden: true,
-            securityControlId: control.id
+            securityControlId: control.id,
+            controlCode: PHP_JS().htmlspecialchars(control.code)
         };
 
         var controlNode = new YAHOO.widget.TextNode(props, parent, false);
@@ -103,8 +104,9 @@ Fisma.ControlTree.prototype = {
     },
 
     renderEnhancement: function(enhancement, parent) {
+        var label = parent.data.controlCode + " (" + enhancement.number + ")";
         var props = {
-            label: enhancement.description,
+            label: label,
             renderHidden: true,
             securityControlEnhancementId: enhancement.id
         };
