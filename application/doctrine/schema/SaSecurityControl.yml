@@ -3,7 +3,7 @@ SaSecurityControl:
         type: column_aggregation
         extends: SaSecurityControlAggregate
         keyField: type
-        keyValue: 1
+        keyValue: "control"
     columns:
         securityAuthorizationId:
             type: integer
