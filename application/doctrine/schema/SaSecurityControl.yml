@@ -1,4 +1,9 @@
 SaSecurityControl:
+    inheritance:
+        type: column_aggregation
+        extends: SaSecurityControlAggregate
+        keyField: type
+        keyValue: 1
     columns:
         securityAuthorizationId:
             type: integer

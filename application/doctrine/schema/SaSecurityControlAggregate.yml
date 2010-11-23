@@ -1,0 +1,4 @@
+SaSecurityControlAggregate:
+    columns:
+        dummy: integer
+

@@ -1,4 +1,9 @@
 SaSecurityControlEnhancement:
+    inheritance:
+        type: column_aggregation
+        extends: SaSecurityControlAggregate
+        keyField: type
+        keyValue: 2
     columns:
         saSecurityControlId: integer
         securityControlEnhancementId: integer
