@@ -1,7 +1,6 @@
 <?php
 $sectionTitle = 'Security Authorization';
 $sectionTitle .= ' [<a href="/sa/security-authorization/edit/id/' . $this->id . '">Edit</a>]';
-$sectionTitle .= ' [<a href="/sa/select-controls/index/id/' . $this->id . '">Select Controls</a>]';
 $sectionTitle .= ' [<a href="/sa/security-authorization/assessment-plan/id/' . $this->id . '">Assessment Plan</a>]';
 Fisma_Format_Section::startSection($sectionTitle); ?>
 
@@ -9,5 +8,31 @@ Fisma_Format_Section::startSection($sectionTitle); ?>
     <?php echo $this->escape($this->form, 'none') ?>
 </div>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+<?php
+Fisma_Format_Section::stopSection();
 
+$sectionTitle = 'Currently Selected Security controls';
+$sectionTitle .= ' [<a href="/sa/select-controls/index/id/' . $this->id . '">Edit</a>]';
+Fisma_Format_Section::startSection($sectionTitle);
+?>
+<div id="controlTree"></div>
+
+<script type="text/javascript">
+var controlTree = null;
+YAHOO.util.Event.onDOMReady(function () {
+    var base = '/sa/select-controls/',
+        params = '/id/<?php echo $this->escape($this->id); ?>';
+    controlTree = new Fisma.ControlTree(
+        'controlTree',
+        {
+            controlTreeData: base + 'control-tree-data/format/json' + params,
+            removeControl: base + 'remove-control/format/json' + params,
+            addEnhancements: base + 'add-enhancements/format/html' + params,
+            removeEnhancement: base + 'remove-enhancement/format/json' + params,
+            editCommonControl: base + 'edit-common-control/format/html' + params
+        },
+        true //readonly
+    );
+});
+</script>
+<?php Fisma_Format_Section::stopSection(); ?>
