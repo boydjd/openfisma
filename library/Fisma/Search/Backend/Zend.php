@@ -290,7 +290,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $currentAlias = 'a';
-        $relationAliases = array();
+        $relationAliases = array($type => $currentAlias);
 
         // Add any join tables required to get related records
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -306,8 +306,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                     // First relation is related directly to the base table
                     $doctrineQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $doctrineQuery->addSelect("$currentAlias.id");
-                    
+
                     // Remaining relations are recursively related to each other
                     for ($i = 1; $i < count($relationParts); $i++) {
                         $previousAlias = $currentAlias;
@@ -326,7 +325,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 $name = $fieldDefinition['join']['field'];
 
-                $doctrineQuery->addSelect("$relationAlias.$name");
+                $doctrineQuery->addSelect("$relationAlias.$name $fieldName");
             } else {
                 $doctrineQuery->addSelect("a.$fieldName");
             }
@@ -364,11 +363,17 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
-            $relationTable = $searchableFields[$aclField]['join']['relation'];
-            $relationAlias = $relationAliases[$relationTable];
-            $relationField = $searchableFields[$aclField]['join']['field'];
+            if (isset($searchableFields[$aclField]['join'])) {
+                $relationTable = $searchableFields[$aclField]['join']['relation'];
+                $relationAlias = $relationAliases[$relationTable];
+                $relationField = $searchableFields[$aclField]['join']['field'];
 
-            $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+                $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+            } else {
+                $relationAlias = $relationAliases[$type];
+
+                $doctrineQuery->whereIn("$relationAlias.$aclField", $aclValues);
+            }
         }
 
         // Add sorting and limit/offset
@@ -387,7 +392,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }
@@ -712,7 +717,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }

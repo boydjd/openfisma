@@ -197,12 +197,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
               $query->setStart($start)
                     ->setRows($rows);
-        } else {
-            // Solr will automatically limit to 10 rows if we don't explicitly give it a higher limit
-            $query->setRows(PHP_INT_MAX);
         }
 
         $trimmedKeyword = trim($keyword);
@@ -326,12 +323,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $query->setStart($start)
                   ->setRows($rows);
-        } else {
-            // Solr will automatically limit to 10 rows if we don't explicitly give it a higher limit
-            $query->setRows(PHP_INT_MAX);
         }
 
         $filterQuery = 'luceneDocumentType:' . $this->escape($type);
