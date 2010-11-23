@@ -23,9 +23,10 @@
  * Constructor
  * 
  */
-Fisma.ControlTree = function (treeElem, actionUrls) {
+Fisma.ControlTree = function (treeElem, actionUrls, readonly) {
     this.treeElem = treeElem;
     this.actionUrls = actionUrls;
+    this.readonly = readonly ? true : false;
 
     var ctObj = this;
     YAHOO.util.Connect.asyncRequest(
@@ -52,6 +53,7 @@ Fisma.ControlTree.prototype = {
     enhancementContextMenu: null,
     enhancementContextMenuTriggers: null,
     actionUrls: null,
+    readonly: null,
     
     showTree: function(treeNodes) {
         this.treeView = new YAHOO.widget.TreeView(this.treeElem);
@@ -92,10 +94,12 @@ Fisma.ControlTree.prototype = {
         };
 
         var controlNode = new YAHOO.widget.TextNode(props, parent, false);
-        if (this.controlContextMenuTriggers == null) {
-            this.controlContextMenuTriggers = [];
+        if (!this.readonly) {
+            if (this.controlContextMenuTriggers == null) {
+                this.controlContextMenuTriggers = [];
+            }
+            this.controlContextMenuTriggers.push(controlNode.labelElId);
         }
-        this.controlContextMenuTriggers.push(controlNode.labelElId);
 
         for (var i in control.enhancements) {
             this.renderEnhancement(control.enhancements[i], controlNode);
@@ -111,13 +115,19 @@ Fisma.ControlTree.prototype = {
             securityControlEnhancementId: enhancement.id
         };
         var enhancementNode = new YAHOO.widget.TextNode( props, parent, false);
-        if (this.enhancementContextMenuTriggers == null) {
-            this.enhancementContextMenuTriggers = [];
+        if (!this.readonly) {
+            if (this.enhancementContextMenuTriggers == null) {
+                this.enhancementContextMenuTriggers = [];
+            }
+            this.enhancementContextMenuTriggers.push(enhancementNode.labelElId);
         }
-        this.enhancementContextMenuTriggers.push(enhancementNode.labelElId);
     },
 
     updateContextMenus: function() {
+        if (this.readonly) {
+            return;
+        }
+
         if (this.controlContextMenu == null) {
             var controlContextMenuItems = [
                 { text: "Remove Control", value: "removeControl" },
