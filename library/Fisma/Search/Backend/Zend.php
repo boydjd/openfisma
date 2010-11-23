@@ -409,6 +409,13 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         foreach ($doctrineResult as $row) {
             $rowData = array();
 
+            // Some models don't explicitly include "id" but that needs to be included in the search results
+            if (!isset($searchableFields['id'])) {
+                $tableAlias = $relationAliases[$type];
+                
+                $rowData['id'] = $row[$tableAlias . '_id'];
+            }
+
             foreach ($searchableFields as $columnName => $columnDefinition) {
 
                 if (isset($columnDefinition['join'])) {
@@ -742,6 +749,13 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         foreach ($doctrineResult as $row) {
             $rowData = array();
+            
+            // Some models don't explicitly include "id" but that needs to be included in the search results
+            if (!isset($searchableFields['id'])) {
+                $tableAlias = $relationAliases[$type];
+                
+                $rowData['id'] = $row[$tableAlias . '_id'];
+            }
 
             foreach ($searchableFields as $columnName => $columnDefinition) {
 
