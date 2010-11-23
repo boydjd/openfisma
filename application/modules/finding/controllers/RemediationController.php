@@ -327,6 +327,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                             array("$orgName (Overdue Items)"), 
                             array_values($organization['all_overdue'])
                         );
+
+                        // Add 2 blank columns at the end of the overdue row (for CLOSED and TOTAL)
+                        $overdueRow[] = 'n/a';
+                        $overdueRow[] = 'n/a';
+
                         $tableData[] = $overdueRow;
                     }
                 } elseif (in_array($organization['id'], $expandedRows)) {
@@ -340,10 +345,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                             array("$orgName (Overdue Items)"), 
                             array_values($organization['single_overdue'])
                         );
+                        
+                        // Add 2 blank columns at the end of the overdue row (for CLOSED and TOTAL)
+                        $overdueRow[] = 'n/a';
+                        $overdueRow[] = 'n/a';
+
                         $tableData[] = $overdueRow;
                     }                    
                 }
             }
+
             $this->view->tableData = $tableData;
         } else {
             // Decide whether the response can be gzipped

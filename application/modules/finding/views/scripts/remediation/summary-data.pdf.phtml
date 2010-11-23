@@ -6,7 +6,7 @@ define('FONTS', Fisma::getPath('library') . '/pdf/fonts');
 
 require_once( 'pdf/class.ezpdf.php');
 
-$pdf =& new Cezpdf('LEGAL', 'landscape');
+$pdf = new Cezpdf('LEGAL', 'landscape');
 $pdf->selectFont(FONTS . "/Helvetica.afm");
 $horiz_margin = 50;
 $bottom_margin = 100;
@@ -52,6 +52,7 @@ $tableData = $this->tableData;
 foreach ($tableData as &$tableRow) {
     $tableRow[0] = htmlentities($tableRow[0]);
 }
+
 $pdf->ezTable($tableData, $this->columns,'Finding Summary',
     array('fontSize'=>8, 'maxWidth'=>$content_width, 'titleFontSize'=>'12' ));
 
