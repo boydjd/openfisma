@@ -7,9 +7,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Corrective Action involves the enforcement functions necessary to remedy programs that have been 
-            found non-compliant with a given law, regulation, or policy. The recommended security categorization for 
-            the corrective action information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            found non-compliant with a given law, regulation, or policy.</p> 
     cope:
         name: Program Evaluation
         category: Controls and Oversight
@@ -21,9 +19,7 @@ SaInformationType:
             determination of corrective actions as appropriate. The impact levels should be commensurate with the 
             impact levels of the program that is being evaluated. For example, if the program contains very sensitive 
             financial data with moderate impact levels for confidentiality and integrity, the program evaluation 
-            impact levels for confidentiality and integrity should also be moderate. The recommended security 
-            categorization for the program evaluation information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            impact levels for confidentiality and integrity should also be moderate.</p> 
     copm:
         name: Program Monitoring
         category: Controls and Oversight
@@ -36,9 +32,7 @@ SaInformationType:
             policies. The impact levels should be commensurate with the impact levels of the programs that are being 
             monitored. For example, if a program contains very sensitive financial data with moderate impact levels 
             for confidentiality and integrity, the program monitoring impact levels for confidentiality and integrity 
-            should also be moderate. Subject to exception conditions described below, the recommended security 
-            categorization for the program monitoring information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            should also be moderate.</p>
     rdpgd:
         name: Policy and Guidance Development
         category: Regulatory Development
@@ -51,9 +45,7 @@ SaInformationType:
             loss of policy and guidance development mission capability can be expected to be delayed rather than 
             immediate. As a result, the potential for consequent loss of human life or of major national assets is 
             relatively low, since these most catastrophic consequences of impairment to mission capability can, in 
-            most cases, be corrected before they are fully realized. The recommended security categorization for the 
-            policy and guidance development information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            most cases, be corrected before they are fully realized. </p>
     rdpct:
         name: Public Comment Tracking
         category: Regulatory Development
@@ -62,9 +54,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Public Comment Tracking involves the activities of soliciting, maintaining, and responding to public 
-            comments regarding proposed regulations. Subject to exception conditions described below, the recommended 
-            security categorization for the public comment tracking information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            comments regarding proposed regulations. </p> 
     rdrc:
         name: Regulatory Creation
         category: Regulatory Development
@@ -72,10 +62,7 @@ SaInformationType:
         integrity: LOW
         availability: LOW
         description: >
-            <p>Regulatory Creation involves the activities of researching and drafting proposed and final regulations. 
-            Subject to exception conditions described below, the recommended security categorization for the 
-            regulatory creation information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            <p>Regulatory Creation involves the activities of researching and drafting proposed and final regulations.</p> 
     rdrp:
         name: Rule Publication
         category: Regulatory Development
@@ -84,9 +71,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Rule Publication includes all activities associated with the publication of a proposed or final rule 
-            in the Federal Register and Code of Federal Regulations. Subject to exception conditions described below, 
-            the recommended security categorization for the rule publication information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            in the Federal Register and Code of Federal Regulations. </p>
     pbbf:
         name: Budget Formulation
         category: Planning and Budgeting
@@ -97,9 +82,7 @@ SaInformationType:
             <p>Budget Formulation involves all activities undertaken to determine priorities for future spending and 
             to develop an itemized forecast of future funding and expenditures during a targeted period of time. 
             This includes the collection and use of performance information to assess the effectiveness of programs 
-            and develop budget priorities. Subject to exception conditions described below, the recommended security 
-            categorization for the budget formulation information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            and develop budget priorities. </p>
     pbcp:
         name: Capital Planning
         category: Planning and Budgeting
@@ -108,9 +91,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Capital Planning involves the processes for ensuring that appropriate investments are selected for 
-            capital expenditures. The recommended provisional security categorization for capital planning 
-            information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            capital expenditures. </p>
     pbea:
         name: Enterprise Architecture
         category: Planning and Budgeting
@@ -119,10 +100,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Enterprise Architecture is an established process for describing the current state and defining the 
-            target state and transition strategy for an organization's people, processes, and technology. The 
-            recommended provisional security categorization for the enterprise architecture information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            target state and transition strategy for an organization's people, processes, and technology.</p>
     pbsp:
         name: Strategic Planning
         category: Planning and Budgeting
@@ -131,9 +109,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Strategic Planning entails the determination of long-term goals and the identification of the best 
-            approach for achieving those goals. The recommended provisional security categorization for strategic 
-            planning information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            approach for achieving those goals.</p> 
     pbbe:
         name: Budget Execution
         category: Planning and Budgeting
@@ -143,9 +119,7 @@ SaInformationType:
         description: >
             <p>Budget Execution involves day-to-day requisitions and obligations for agency expenditures, invoices, 
             billing dispute resolution, reconciliation, service level agreements, and distributions of shared 
-            expenses. The recommended provisional security categorization for budget execution information is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            expenses.</p> 
     pbwp:
         name: Workforce Planning
         category: Planning and Budgeting
@@ -154,9 +128,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Workforce Planning involves the processes for identifying the workforce competencies required to meet 
-            the agency's strategic goals and for developing the strategies to meet these requirements. The 
-            recommended security categorization for workforce planning information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            the agency's strategic goals and for developing the strategies to meet these requirements.</p>
     pbmi:
         name: Management Improvement
         category: Planning and Budgeting
@@ -165,9 +137,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Management Improvement includes all efforts to gauge the ongoing efficiency of business processes and 
-            identify opportunities for reengineering or restructuring. The recommended provisional security 
-            categorization for the management improvement information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            identify opportunities for reengineering or restructuring.</p>
     pbbpi:
         name: "Budgeting & Performance Integration"
         category: Planning and Budgeting
@@ -179,10 +149,7 @@ SaInformationType:
             budget formulation, execution, and management actions with examinations of program objectives, 
             performance, and demonstrated results such as Program Performance Assessments, Government Performance 
             Results Act (GPRA) plans and reports, performance-based agency budget submissions, and Financial 
-            Management Cost Accounting and Performance Measurement data. Subject to exception conditions described 
-            below, the recommended security categorization for the budget and performance integration information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Management Cost Accounting and Performance Measurement data.</p>
     pbtfp:
         name: Tax and Fiscal Policy
         category: Planning and Budgeting
@@ -193,9 +160,7 @@ SaInformationType:
             <p>Tax and Fiscal Policy encompasses analysis of the implications for economic growth and stability in 
             the United States and the world of Federal tax and spending policies. This includes assessing the 
             sustainability of current programs and policies, the best means for raising revenues, the distribution of 
-            tax liabilities, and the appropriate limits on debt. The recommended provisional security categorization 
-            for tax and fiscal policy information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            tax liabilities, and the appropriate limits on debt.</p>
     irmmcp:
         name: Contingency Planning
         category: Internal Risk Management and Mitigation
@@ -204,9 +169,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>Contingency planning involves the actions required to plan for, respond to, and mitigate damaging 
-            events. The recommended provisional security categorization for the contingency planning information 
-            type is as follows:<p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            events.</p>
     irmmco:
         name: Continuity of Operations
         category: Internal Risk Management and Mitigation
@@ -216,9 +179,7 @@ SaInformationType:
         description: >
             <p>Continuity of operations involves the activities associated with the identification of critical systems 
             and processes, and the planning and preparation required to ensure that these systems and processes will 
-            be available in the event of a catastrophic event. The recommended provisional security categorization for 
-            the continuity of operations information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            be available in the event of a catastrophic event.</p>
     irmmsr:
         name: Service Recovery
         category: Internal Risk Management and Mitigation
@@ -227,9 +188,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Service recovery involves the internal actions necessary to develop a plan for resuming operations 
-            after a catastrophe occurs, such as a fire or earthquake. The recommended provisional security 
-            categorization for the service recovery information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            after a catastrophe occurs, such as a fire or earthquake.</p>
     rcdc:
         name: Debt Collection
         category: Revenue Collection
@@ -238,9 +197,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Debt Collection supports activities associated with the collection of money owed to the United States 
-            government from both foreign and domestic sources. The recommended security categorization for debt 
-            collection information is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            government from both foreign and domestic sources.</p>
     rcufc:
         name: User Fee Collection
         category: Revenue Collection
@@ -249,9 +206,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>User fee Collection involves the collection of fees assessed on individuals or organizations for the 
-            provision of Government services and for the use of Government goods or resources (i.e. National Parks). 
-            The recommended security categorization for the user fee collection information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Moderate)}</p>
+            provision of Government services and for the use of Government goods or resources (i.e. National Parks).</p>
     rcfas:
         name: Federal Asset Sales
         category: Revenue Collection
@@ -261,9 +216,7 @@ SaInformationType:
         description: >
             <p>Federal Asset Sales encompasses the activities associated with the acquisition, oversight, tracking, 
             and sale of non-internal assets managed by the Federal Government with a commercial value and sold to the 
-            private sector. The recommended security categorization for the Federal asset sales information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            private sector.</p>
     pacs:
         name: Customer Services
         category: Public Affairs
@@ -272,9 +225,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Customer Service supports activities associated with providing and managing the delivery of information 
-            and support to the government's customers. The recommended security categorization for the customer service 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            and support to the government's customers.</p>
     paoid:
         name: Official Information Dissemination
         category: Public Affairs
@@ -283,10 +234,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Official Information Dissemination includes all efforts to provide official government information to 
-            external stakeholders through the use of various types of media, such as video, paper, web, etc. The 
-            recommended security categorization for the official information dissemination information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            external stakeholders through the use of various types of media, such as video, paper, web, etc.</p>
     papo:
         name: Product Outreach
         category: Public Affairs
@@ -296,9 +244,7 @@ SaInformationType:
         description: >
             <p>Product Outreach relates to the marketing of government services products, and programs to the general 
             public in an attempt to promote awareness and increase the number of customers/beneficiaries of those 
-            services and programs. The recommended security categorization for the product outreach information type 
-            is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            services and programs.</p>
     papr:
         name: Public Relations
         category: Public Affairs
@@ -307,9 +253,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Public Relations activities involve the efforts to promote an organizations image through the effective 
-            handling of citizen concerns. The recommended security categorization for the public relations information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            handling of citizen concerns.</p>
     lrlt:
         name: Legislation Tracking
         category: Legislative Relations
@@ -317,9 +261,7 @@ SaInformationType:
         integrity: LOW
         availability: LOW
         description: >
-            <p>Legislation Tracking involves following legislation from conception to adoption. The recommended 
-            security categorization for the legislation tracking information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            <p>Legislation Tracking involves following legislation from conception to adoption.</p>
     lrlte:
         name: Legislation Testimony
         category: Legislative Relations
@@ -328,10 +270,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Legislation Testimony involves activities associated with providing testimony/evidence in support or, 
-            or opposition to, legislation from conception to adoption. Subject to exception conditions described 
-            below, the recommended security categorization for the legislation testimony information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            or opposition to, legislation from conception to adoption.</p>
     lrpd:
         name: Proposal Development
         category: Legislative Relations
@@ -340,9 +279,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Proposal Development involves drafting proposed legislation that creates or amends laws subject to 
-            Congressional legislative action. Subject to exception conditions described below, the recommended 
-            security categorization for the proposal development information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            Congressional legislative action.</p>
     lrclo:
         name: Congressional Liason Operations
         category: Legislative Relations
@@ -351,10 +288,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Congressional Liaison Operations involves all activities associated with supporting the formal 
-            relationship between a Federal Agency and the U.S. Congress. Subject to exception conditions described 
-            below, the recommended security categorization for the Congressional liaison information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            relationship between a Federal Agency and the U.S. Congress.</p>
     ggcfo:
         name: Central Fiscal Operations
         category: General Government
@@ -368,9 +302,7 @@ SaInformationType:
             operations may affect the security of the critical banking and finance infrastructure. In most cases, the 
             effect on public welfare of a loss of central fiscal operations functionality can be expected to be 
             delayed rather than immediate. The potential for consequent loss of human life or of major national assets 
-            is low. . The provisional security categorization recommended for the central fiscal operations information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            is low.</p>
     gglf:
         name: Legislative Functions
         category: General Government
@@ -380,19 +312,14 @@ SaInformationType:
         description: >
             <p>Legislative functions include the service support activities associated with costs of the Legislative 
             Branch other than the Tax Court, the Library of Congress, and the Government Printing Office revolving 
-            fund. The recommended security categorization for the legislative service support information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            fund.</p>
     ggef:
         name: Executive Functions
         category: General Government
         confidentiality: LOW
         integrity: LOW
         availability: LOW
-        description: >
-            <p>Subject to exception conditions described below, the recommended provisional security categorization 
-            for the executive information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+        description: 
     ggcpropm:
         name: Central Property Management
         category: General Government
@@ -400,11 +327,7 @@ SaInformationType:
         integrity: LOW
         availability: LOW
         description: >
-            <p>Central Property Management involves most of the operations of the General Services Administration. The 
-            following recommended provisional security categorization of central property management information is 
-            particularly subject to change where critical infrastructure elements or key national assets are 
-            involved:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            <p>Central Property Management involves most of the operations of the General Services Administration.</p>
     ggcpersm:
         name: Central Personnel Management
         category: General Government
@@ -413,9 +336,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Central Personnel Management involves most of the operating activities of the Office of Personnel 
-            Management and related agencies. The recommended security categorization for the central personnel 
-            management information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Management and related agencies. </p>
     ggtm:
         name: Taxation Management
         category: General Government
@@ -424,9 +345,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Taxation Management includes activities associated with the implementation of the Internal Revenue Code 
-            and the collection of taxes in the United States and abroad. The recommended security categorization for 
-            the taxation management information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            and the collection of taxes in the United States and abroad.</p>
     ggcrsm:
         name: Central Records and Statistics Management
         category: General Government
@@ -442,9 +361,7 @@ SaInformationType:
             and statistics management for a particular business function and as such should be mapped to the service 
             support, management, or mission area associated with that business function. The central records and 
             statistics management information type is intended for functions performed on behalf of the entire Federal 
-            government. The recommended security categorization for the central records and statistics management 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            government.</p>
     ggii:
         name: Income Information
         category: General Government
@@ -458,9 +375,7 @@ SaInformationType:
             or RSDI Title II Programs. In most cases, the impact levels are based on the effects of unauthorized 
             disclosure, modification, or loss of availability of income information on the ability of the Federal 
             government to identify citizen entitlements and obligations and to protect individuals against identity 
-            theft and the Federal government against fraud. The recommended security categorization for the income 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            theft and the Federal government against fraud.</p>
     ggpia:
         name: Personal Identity and Authentication
         category: General Government
@@ -472,9 +387,7 @@ SaInformationType:
             persons who are potentially entitled to receive any federal benefit are enumerated and identified so that 
             Federal agencies can have reasonable assurance that they are paying or communicating with the right 
             individuals. This information include individual citizen's Social Security Numbers, names, dates of birth, 
-            places of birth, parents' names, etc. The recommended security categorization for the personal identity 
-            and authentication information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            places of birth, parents' names, etc. </p>
     ggeei:
         name: Entitlement Event Information
         category: General Government
@@ -488,9 +401,7 @@ SaInformationType:
             to benefits only as auxiliaries of the primary beneficiary, and other related information needed to 
             process a claim for benefits. This also includes means-related information required to administer all the 
             means related benefits associated with the Title XVI (Supplementary Security Income Program) and the new 
-            drug provisions of the recently revised Medicare Program. The recommended security categorization for the 
-            entitlement event information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            drug provisions of the recently revised Medicare Program.</p>
     ggrpi:
         name: Representative Payee Information
         category: General Government
@@ -502,9 +413,7 @@ SaInformationType:
             representative payees and the data that is gathered to make the determination of who should serve as the 
             representative payee for all beneficiaries of federal benefits who are unable to manage their own funds. 
             This also includes accountability information required to provide reasonable assurance that the funds are 
-            being used appropriately for the well being of entitled individuals. The recommended security 
-            categorization for the representative payee information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            being used appropriately for the well being of entitled individuals.</p>
     gggi:
         name: General Information
         category: General Government
@@ -520,7 +429,6 @@ SaInformationType:
             <p>Not all of these information types are likely to have the same impact levels. The impacts to some 
             information types will jeopardize system functionality and the agency mission more than other information 
             types. General Information impact levels must be assessed in the context of the agencies mission.</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
     amffem:
         name: Facilities, Fleet, and Equipment Management
         category: Administrative Management
@@ -532,11 +440,7 @@ SaInformationType:
             and operation of office buildings, fleets, machinery, and other capital assets considered as possessions 
             of the Federal government. Impacts to some information and information systems associated with facilities, 
             fleet, and equipment management may affect the security of some key national assets (e.g., nuclear power 
-            plants, dams, and other government facilities). The following recommended provisional categorization of 
-            the facilities, fleet, and equipment management information type is particularly subject to change where 
-            critical infrastructure elements or key national assets are involved:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            plants, dams, and other government facilities).</p>
     amhds:
         name: Help Desk Services
         category: Administrative Management
@@ -545,11 +449,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Help Desk Services involves the management of a service center to respond to government 
-            employees' technical and administrative questions. Subject to exception conditions described below, the 
-            recommended provisional security categorization for the help desk service information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            employees' technical and administrative questions.</p>
     amsm:
         name: Security Management
         category: Administrative Management
@@ -563,11 +463,7 @@ SaInformationType:
             elements and key national assets (e.g., nuclear power plants, dams, and other government facilities). 
             Impact levels associated with security information directly relate to the potential threat to human life 
             associated with the asset(s) being protected (e.g., consequences to the public of terrorist access to 
-            dams or nuclear power plants). The following recommended categorization of the security management 
-            information type is subject to change where critical infrastructure elements or key national assets are 
-            involved:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Low)}</p>
-
+            dams or nuclear power plants).</p>
     amt:
         name: Travel
         category: Administrative Management
@@ -576,10 +472,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Travel involves the activities associated with planning, preparing, and monitoring of business related 
-            travel for an organization's employees. The following security categorization is recommended for the 
-            travel information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            travel for an organization's employees.</p>
     amwpdm:
         name: Workplace Policy Development and Management
         category: Administrative Management
@@ -588,11 +481,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Workplace policy development and management includes all activities required to develop and 
-            disseminate workplace policies such as dress codes, time reporting requirements, telecommuting, etc. The 
-            following security categorization is recommended for the workplace policy development and management 
-            information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            disseminate workplace policies such as dress codes, time reporting requirements, telecommuting, etc.</p>
     fmalm:
         name: Assets and Liability Management
         category: Financial Management
@@ -604,10 +493,7 @@ SaInformationType:
             liabilities of the Federal government. Assets and liability management activities measure the total cost 
             and revenue of Federal programs, and their various elements, activities and outputs. Assets and liability 
             management is essential for providing accurate program measurement information, performance measures, and 
-            financial statements with verifiable reporting of the cost of activities. The recommended security 
-            categorization for the assets and liability management information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            financial statements with verifiable reporting of the cost of activities.</p>
     fmri:
         name: Reporting and Information
         category: Financial Management
@@ -618,10 +504,7 @@ SaInformationType:
             <p>Reporting and Information includes providing financial information, reporting and analysis of 
             financial transactions. Financial reporting includes the activities necessary to support: management's 
             fiduciary role; budget formulation and execution functions; fiscal management of program delivery and 
-            program decision making; and internal and external reporting requirements. The recommended security 
-            categorization for the "financial reporting and information" information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            program decision making; and internal and external reporting requirements.</p>
     fmfc:
         name: Funds Control
         category: Financial Management
@@ -634,10 +517,7 @@ SaInformationType:
             operations through appropriation and apportionment of direct and reimbursable spending authority, fund 
             transfers, investments and other financing mechanisms. Funds control management includes the 
             establishment of a system for ensuring an organization does not obligate or disburse funds in excess of 
-            those appropriated or authorized. The recommended security categorization for the funds control 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Low)}</p>
-
+            those appropriated or authorized.</p>
     fma:
         name: Accounting
         category: Financial Management
@@ -648,10 +528,7 @@ SaInformationType:
             <p>Accounting entails accounting for assets, liabilities, fund balances, revenues and expenses 
             associated with the maintenance of Federal funds and expenditure of Federal appropriations (Salaries and 
             Expenses, Operation and Maintenance, Procurement, Working Capital, Trust Funds, etc.), in accordance 
-            with applicable Federal standards (FASAB, Treasury, OMB, GAO, etc.). The recommended security 
-            categorization for the accounting information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            with applicable Federal standards (FASAB, Treasury, OMB, GAO, etc.). </p>
     fmp:
         name: Payments
         category: Financial Management
@@ -666,10 +543,7 @@ SaInformationType:
             organization, including but not limited to payments made to: vendors in accordance with contracts, 
             purchase orders and other obligating documents; state governments under a variety of programs; employees 
             for salaries and expense reimbursements; other Federal agencies for reimbursable work performed; 
-            individual citizens receiving Federal benefits; and recipients of Federal loans. The recommended 
-            security categorization for the payments information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            individual citizens receiving Federal benefits; and recipients of Federal loans.</p>
     fmcr:
         name: Collections and Receivables
         category: Financial Management
@@ -679,11 +553,7 @@ SaInformationType:
         description: >
             <p>Collections and Receivables include deposits, fund transfers, and receipts for sales or service.
             Receivable management supports activities associated with recognizing and recording debts due to the 
-            Government, performing follow-up actions to collect on these debts, and recording cash receipts. The 
-            recommended security categorization for the collections and receivables information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            Government, performing follow-up actions to collect on these debts, and recording cash receipts.</p>
     fmcapm:
         name: Cost Accounting/ Performance Measurement
         category: Financial Management
@@ -696,11 +566,7 @@ SaInformationType:
             the way in which an organization uses, accounts for, safeguards, and controls its resources to meet its 
             objectives. Cost accounting information is necessary in establishing strategic goals, measuring service 
             efforts and accomplishments, and relating efforts to accomplishments. Also, cost accounting, financial 
-            accounting, and budgetary accounting all draw information from common data sources. The recommended 
-            security categorization for the cost accounting / performance measurement information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            accounting, and budgetary accounting all draw information from common data sources.</p>
     hrmhrs:
         name: HR Strategy
         category: Human Resource Management
@@ -715,9 +581,7 @@ SaInformationType:
             human resources policy and practices; managing current and future workforce competencies; developing 
             workforce plans; developing succession plans; managing the human resources budget; providing human 
             resources and human capital consultative support; and measuring and improving human resources 
-            performance. The recommended provisional security categorization for HR strategy information is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            performance.</p>
     hrmsa:
         name: Staff Acquisition
         category: Human Resource Management
@@ -729,10 +593,7 @@ SaInformationType:
             employees with the right skills and competencies, in accordance with merit system principles. This 
             sub-function includes: developing a staffing strategy and plan; establishing an applicant evaluation 
             approach; announcing the vacancy, sourcing and evaluating candidates against the competency requirements 
-            for the position; initiating pre-employment activities; and hiring employees. The recommended provisional 
-            security categorization for staff acquisition information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            for the position; initiating pre-employment activities; and hiring employees.</p>
     hrmopm:
         name: Organization & Position Management
         category: Human Resource Management
@@ -742,10 +603,7 @@ SaInformationType:
         description: >
             <p>Organization and Position Management designs, develops, and implements organizational and position 
             structures that create a high-performance, competency-driven framework that both advances the agency 
-            mission and serves agency human capital needs. The recommended provisional security categorization for 
-            organization and position management information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            mission and serves agency human capital needs.</p>
     hrmcm:
         name: Compensation Management
         category: Human Resource Management
@@ -758,10 +616,7 @@ SaInformationType:
             performance compensation programs to recognize and reward high performance, with both base pay increases 
             and performance bonus payments. This sub-function includes: developing and implementing compensation 
             programs; administering bonus and monetary awards programs; administering pay changes; managing time, 
-            attendance, leave and pay; and managing payroll. The recommended provisional security categorization for 
-            compensation management information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            attendance, leave and pay; and managing payroll.</p>
     hrmbm:
         name: Benefits Management
         category: Human Resource Management
@@ -772,10 +627,7 @@ SaInformationType:
             <p>Benefits Management designs, develops, and implements benefit programs that attract, retain and 
             support current and former agency employees. This sub-function includes: establishing and communicating 
             benefits programs; processing benefits actions; and interacting as necessary with third party benefits 
-            providers. The recommended provisional security categorization for benefits management information is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            providers.</p>
     hrmemp:
         name: Employee Performance Management
         category: Human Resource Management
@@ -788,9 +640,7 @@ SaInformationType:
             assignments. Design, develop and implement a comprehensive performance management strategy that enables 
             managers to make distinctions in performance and links individual performance to agency goal and mission 
             accomplishment. This sub-function also includes managing employee performance at the individual level and 
-            evaluating the overall effectiveness of the agency's employee development approach. The recommended 
-            provisional security categorization for employee performance management information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            evaluating the overall effectiveness of the agency's employee development approach.</p>>
 
     hrmer:
         name: Employee Relations
@@ -804,10 +654,7 @@ SaInformationType:
             sub-function includes: addressing employee misconduct; addressing employee performance problems; 
             managing administrative grievances; providing employee accommodation; administering employees assistance 
             programs; participating in administrative third party proceedings; and determining candidate and 
-            applicant suitability. The recommended provisional security categorization for employee relations 
-            information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            applicant suitability.</p>
     hrmlr:
         name: Labor Relations
         category: Human Resource Management
@@ -817,9 +664,7 @@ SaInformationType:
         description: >
             <p>Labor Relations manages the relationship between the agency and its unions and bargaining units. 
             This includes negotiating and administering labor contracts and collective bargaining agreements; 
-            managing negotiated grievances; and participating in negotiated third party proceedings. The recommended 
-            provisional security categorization for labor relations information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            managing negotiated grievances; and participating in negotiated third party proceedings.</p>
     hrmsm:
         name: Separation Management
         category: Human Resource Management
@@ -829,10 +674,7 @@ SaInformationType:
         description: >
             <p>Separation Management conducts efficient and effective employee separation programs that assist 
             employees in transitioning to non-Federal employment; facilitates the removal of unproductive, 
-            non-performing employees; and assists employees in transitioning to retirement. The recommended 
-            provisional security categorization for separation management information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            non-performing employees; and assists employees in transitioning to retirement.</p>
     hrmhrd:
         name: Human Resources Development
         category: Human Resource Management
@@ -844,10 +686,7 @@ SaInformationType:
             approach to ensure that agency employees have the right competencies and skills for current and future 
             work assignments. This sub-function includes conducting employee development needs assessments; designing 
             employee development programs; administering and delivering employee development programs; and evaluating 
-            the overall effectiveness of the agency's employee development approach. The recommended provisional 
-            security categorization for human resources development information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            the overall effectiveness of the agency's employee development approach.</p>
     scmga:
         name: Goods Acquisition
         category: Supply Chain Management
@@ -856,10 +695,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Goods acquisition involves the procurement of physical goods, products, and capital assets to be used 
-            by the Federal government. The recommended security categorization for the goods acquisition information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            by the Federal government.</p>
     scmic:
         name: Inventory Control
         category: Supply Chain Management
@@ -868,10 +704,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Inventory control refers to the tracking of information related to procured assets and resources 
-            with regards to quantity, quality, and location. The recommended security categorization for the 
-            inventory control information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            with regards to quantity, quality, and location.</p>
     scmlm:
         name: Logistics Management
         category: Supply Chain Management
@@ -880,10 +713,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Logistics management involves the planning and tracking of personnel and their resources in relation 
-            to their availability and location. The recommended security categorization for the logistics management 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            to their availability and location.</p>
     scmsa:
         name: Services Acquisition
         category: Supply Chain Management
@@ -892,10 +722,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Services acquisition involves the oversight and/or management of contractors and service providers 
-            from the private sector. The recommended security categorization for the services acquisition information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            from the private sector.</p>
     itsd:
         name: System Development
         category: Information and Technology Management
@@ -904,10 +731,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>System Development supports all activities associated with the in-house design and development of 
-            software applications. The recommended security categorization for the system development information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            software applications.</p>
     itlcm:
         name: Lifecycle/Change Management
         category: Information and Technology Management
@@ -917,9 +741,7 @@ SaInformationType:
         description: >
             <p>Lifecycle/Change Management involves the processes that facilitate a smooth evolution, composition, 
             and workforce transition of the design and implementation of changes to agency resources such as assets, 
-            methodologies, systems, or procedures. The recommended security categorization for the lifecycle/change 
-            management information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            methodologies, systems, or procedures.</p>
     itsm:
         name: System Maintenance
         category: Information and Technology Management
@@ -928,9 +750,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>System Maintenance supports all activities associated with the maintenance of in-house designed 
-            software applications. The recommended security categorization for the system maintenance information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            software applications.</p>
     ititim:
         name: IT Infrastructure Maintenance
         category: Information and Technology Management
@@ -950,10 +770,6 @@ SaInformationType:
             the design, implementation, and maintenance of systems and networks. The security of each of these data 
             elements is dependent on the security of the other data elements. Security compromise of one data element 
             type will propagate to others.</p>
-            <p>The recommended security categorization for the IT infrastructure maintenance information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
     itis:
         name: Information Security
         category: Information and Technology Management
@@ -963,10 +779,7 @@ SaInformationType:
         description: >
             <p>IT Security involves all functions pertaining to the securing of Federal data and systems through the 
             creation and definition of security policies, procedures and controls covering such services as 
-            identification, authentication, and non-repudiation. The recommended security categorization for the IT 
-            security information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            identification, authentication, and non-repudiation.</p>
     itrr:
         name: Record Retention
         category: Information and Technology Management
@@ -975,10 +788,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Records Retention involves the operations surrounding the management of the official documents and 
-            records for an agency. Subject to exception conditions described below, the recommended security 
-            categorization for the record retention information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            records for an agency.</p>
     itim:
         name: Information Management
         category: Information and Technology Management
@@ -1004,11 +814,7 @@ SaInformationType:
             observation to determine the performance and status of information systems and is closely tied to other 
             Information and Technology Management sub-functions. System and network monitoring information type 
             should be considered broadly to include an agency's network [performance, health, and status] and 
-            security operations [intrusion monitoring, auditing, etc.] support. Subject to exception conditions 
-            described below, the recommended security categorization for the information management information type 
-            is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Low)}</p>
-
+            security operations [intrusion monitoring, auditing, etc.] support.</p>
     itish:
         name: Information Sharing
         category: Information and Technology Management
@@ -1027,10 +833,7 @@ SaInformationType:
             assessment. Therefore, agency personnel should identify the information sharing information type as a 
             pure resource management support activity for the evaluated information system. With the information 
             sharing information type identified, agency personnel can track the flow of information to interfacing 
-            systems. The recommended security categorization for the information sharing information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, N/A), (integrity, N/A), (availability, N/A)}</p>
-
+            systems.</p>
     hsbts:
         name: Border and Transportation Security
         category: Homeland Security
@@ -1050,9 +853,7 @@ SaInformationType:
             infrastructure networks, facilities, vehicles, and personnel within the United States are also 
             covered under the information types associated with the transportation mission. In some cases the 
             border control information may be classified. Any classified information is treated under separate 
-            rules established for national security information. The recommended categorization for unclassified 
-            border and transportation security information follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            rules established for national security information.</p>
     hskacip:
         name: Key Asset and Critical Infrastructure Protection
         category: Homeland Security
@@ -1066,10 +867,7 @@ SaInformationType:
             The Critical Infrastructure Information Protection Act of 2002 (6 U.S.C. 131-134) places specific 
             controls on the dissemination of critical infrastructure information (see Volume I, 3.5.2.3). Under 
             the provisions of Executive Order 13292, some anti-terrorism information is subject to security 
-            classification. <i>National security information</i> is outside the scope of this guideline. The 
-            recommended categorization for unclassified anti-terrorism information follows:</p>
-            <p>Security Category = {(confidentiality, High), (integrity, High), (availability, High)}</p>
-
+            classification. <i>National security information</i> is outside the scope of this guideline.</p>
     hscd:
         name: Catastrophic Defense
         category: Homeland Security
@@ -1082,9 +880,7 @@ SaInformationType:
             new and promising devices, and conducting basic and applied science that can lead to the development 
             of countermeasures. Under the provisions of Executive Order 13292, some anti-terrorism information is 
             subject to security classification. National security information is outside the scope of this 
-            guideline. The recommended categorization for unclassified anti-terrorism information follows:</p>
-            <p>Security Category = {(confidentiality, High), (integrity, High), (availability, High)}</p>
-
+            guideline.</p>
     hsefeop:
         name: Executive Functions of the Executive Office of the President (EOP)
         category: Homeland Security
@@ -1092,11 +888,7 @@ SaInformationType:
         integrity: MODERATE
         availability: HIGH
         description: >
-            <p>Executive Functions involve the Executive Office of the President (EOP). Subject to exception 
-            conditions described below, the recommended provisional security categorization for the executive 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, High), (integrity, Moderate), (availability, High)}</p>
-
+            <p>Executive Functions involve the Executive Office of the President (EOP).</p>
     ioip:
         name: Intelligence Planning
         category: Intelligence Operations
@@ -1160,10 +952,7 @@ SaInformationType:
             <p>Disaster monitoring and prediction involves the actions taken to predict when and where a disaster 
             may take place and communicate that information to affected parties. [Some disaster management 
             information occurs in humanitarian aid systems under the International Affairs and Commerce line of 
-            business (e.g., State Department disaster preparedness and planning).] The recommended provisional 
-            categorization of the disaster monitoring and protection information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, High), (availability, High)}</p>
-
+            business (e.g., State Department disaster preparedness and planning).]</p>
     dmdpp:
         name: Disaster Preparedness and Planning
         category: Disaster Management
@@ -1173,9 +962,7 @@ SaInformationType:
         description: >
             <p>Disaster preparedness and planning involves the development of response programs to be used in 
             case of a disaster. This involves the development of emergency management programs and activities as 
-            well as staffing and equipping regional response centers. The recommended provisional categorization 
-            of the disaster preparedness and planning information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            well as staffing and equipping regional response centers.</p>
     dmdrr:
         name: Disaster Repair and Restoration
         category: Disaster Management
@@ -1185,10 +972,7 @@ SaInformationType:
         description: >
             <p>Disaster repair and restoration involves the cleanup and restoration activities that take place 
             after a disaster. This involves the cleanup and rebuilding of any homes, buildings, roads, 
-            environmental resources, or infrastructure that may be damaged due to a disaster. The recommended 
-            provisional categorization of the disaster repair and restoration information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            environmental resources, or infrastructure that may be damaged due to a disaster.</p>
     dmer:
         name: Emergency Response
         category: Disaster Management
@@ -1202,10 +986,7 @@ SaInformationType:
             information and the information systems that process and store emergency response information could 
             result in negative impacts on cross-jurisdictional coordination within the critical emergency 
             services infrastructure and the general effectiveness of organizations tasked with emergency response 
-            missions. The recommended provisional categorization of the emergency response information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, High), (availability, High)}</p>
-
+            missions.</p>
     iacfa:
         name: Foreign Affairs
         category: International Affairs and Commerce
@@ -1231,10 +1012,7 @@ SaInformationType:
             assets.</p>
             <p>Some information associated with treaties and agreements is subject to security classification. 
             This classified information is treated under separate rules established for <i>national security 
-            information</i>. The recommended categorization for unclassified foreign affairs information 
-            follows:</p>
-            <p>Security Category = {(confidentiality, High), (integrity, High), (availability, Moderate)}</p>
-
+            information</i>.</p>
     iacidha:
         name: International Development and Humanitarian Aid
         category: International Affairs and Commerce
@@ -1248,10 +1026,7 @@ SaInformationType:
             of knowledge and expertise), and the delivery of equipment, commodities and humanitarian assistance 
             including food aid. In some cases, international development and humanitarian aid information is 
             subject to security classification. This classified information is treated under separate rules 
-            established for <i>national security information</i>. The recommended categorization for unclassified 
-            international development and humanitarian aid information follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
-
+            established for <i>national security information</i>.</p>
     iacgt:
         name: Global Trade
         category: International Affairs and Commerce
@@ -1267,10 +1042,7 @@ SaInformationType:
             expansion of U.S. exports. Merchandise inspection includes the verification of goods and merchandise 
             as well as the surveillance, interdiction, and investigation of imports/exports in violation of 
             various Customs laws. Tariffs/quotas monitoring refers to the monitoring and modification of the 
-            schedules of items imported and exported to and from the United States. The recommended 
-            categorization for the global trade information type follows:</p>
-            <p>Security Category = {(confidentiality, High), (integrity, High), (availability, High)}</p>
-
+            schedules of items imported and exported to and from the United States.</p>
     nrwrm:
         name: Water Resource Management
         category: Natural Resources
@@ -1281,9 +1053,7 @@ SaInformationType:
             <p>Water Resource Management includes all activities that promote the effective use and management 
             of the nation's water resources. Notes: Environmental protection of water resources is included in 
             the Environmental Management Line of Business. Hydroelectric energy production is included under the 
-            Energy Production mission. The recommended provisional categorization of the water resource management 
-            information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Energy Production mission.</p>
     nrcmlm:
         name: Conservation, Marine and Land Management
         category: Natural Resources
@@ -1295,11 +1065,7 @@ SaInformationType:
             maintaining, and operating public lands and monuments, as well as activities devoted to ensuring 
             the preservation of land, water, wildlife, and natural resources, both domestically and 
             internationally. It also includes the sustainable stewardship of natural resources on federally 
-            owned/controlled lands for commercial use (mineral mining, grazing, forestry, fishing, etc.). The 
-            recommended provisional categorization of the conservation, marine, and land management 
-            information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            owned/controlled lands for commercial use (mineral mining, grazing, forestry, fishing, etc.).</p>
     nrrrmt:
         name: Recreational Resource Management and Tourism
         category: Natural Resources
@@ -1311,10 +1077,7 @@ SaInformationType:
             monuments, and tourist attractions as well as visitor centers, campsites, and park service 
             facilities. Impacts to some information and information systems associated with tourism 
             management may affect the security of some key national assets (e.g., some national monuments 
-            and icons). The recommended provisional categorization of the recreational resource management 
-            and tourism information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            and icons).</p>
     nrais:
         name: Agricultural Innovation and Services
         category: Natural Resources
@@ -1323,10 +1086,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Agricultural Innovation and Services involves the creation and dissemination of better 
-            methods for farming and the development of better and healthier crops. The recommended security 
-            categorization for the agricultural innovation and service information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            methods for farming and the development of better and healthier crops.</p>
     ees:
         name: Energy Supply
         category: Energy
@@ -1340,11 +1100,7 @@ SaInformationType:
             function also includes distributing and transferring power, electric generation, and/or storage 
             located near the point of use. Impacts to some information and information systems associated 
             with energy supply may affect the security of critical infrastructures, particularly in the 
-            areas of energy transmission and transport. The following recommended provisional categorization 
-            of the energy supply information type is particularly subject to change where critical 
-            infrastructure elements or nuclear materials are involved:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Moderate)}</p>
-
+            areas of energy transmission and transport.</p>
     eecp:
         name: Energy Conservation and Preparedness
         category: Energy
@@ -1355,10 +1111,7 @@ SaInformationType:
             <p>Energy Conservation and Preparedness involves protection of energy resources from 
             over-consumption to ensure the continued availability of fuel resources and to promote 
             environmental protection. This mission also includes measures taken to ensure the provision of 
-            energy in the event of an emergency. The recommended security categorization for the energy 
-            conservation and preparedness information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            energy in the event of an emergency.</p>
     eerm:
         name: Energy Resource Management
         category: Energy
@@ -1367,10 +1120,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Energy resource management involves the management of energy producing resources including 
-            facilities, land, and offshore resources. The recommended provisional categorization of the 
-            energy resource management information type follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
-
+            facilities, land, and offshore resources.</p>
     eep:
         name: Energy Production
         category: Energy
@@ -1380,9 +1130,7 @@ SaInformationType:
         description: >
             <p>Energy production involves the transformation of raw energy resources into useable, 
             deliverable energy. Impacts to some information and information systems associated with energy 
-            production may affect the security of the critical energy infrastructure. The recommended 
-            provisional categorization of the energy production information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            production may affect the security of the critical energy infrastructure.</p>
     ememf:
         name: Environmental Monitoring and Forecasting
         category: Environmental Management
@@ -1393,11 +1141,7 @@ SaInformationType:
             <p>Environmental Monitoring and Forecasting involves the observation and prediction of 
             environmental conditions. This includes b the monitoring and forecasting of water quality, water 
             levels, ice sheets, air quality, regulated and non-regulated emissions, as well as the 
-            observation and prediction of weather patterns and conditions. The following provisional 
-            security categorization is recommended for the environmental monitoring and forecasting 
-            information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
-
+            observation and prediction of weather patterns and conditions.</p>
     emer:
         name: Environmental Remediation
         category: Environmental Management
@@ -1407,10 +1151,7 @@ SaInformationType:
         description: >
             <p>Environmental remediation supports the immediate and long-term activities associated with 
             the correcting and offsetting of environmental deficiencies or imbalances, including restoration 
-            activities. The following security categorization is recommended for the environmental 
-            remediation information type:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
-
+            activities.</p>
     emppc:
         name: Pollution Prevention and Control
         category: Environmental Management
@@ -1420,10 +1161,7 @@ SaInformationType:
         description: >
             <p>Pollution prevention and control includes activities associated with the establishment of 
             environmental standards to control the levels of harmful substances emitted into the soil, water 
-            and atmosphere. The following security categorization is recommended for the pollution prevention 
-            and control information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            and atmosphere.</p>
     edbid:
         name: Business and Industry Development
         category: Economic Development
@@ -1433,10 +1171,7 @@ SaInformationType:
         description: >
             <p>Business and industry development supports activities related to the creation of economic and 
             business opportunities and stimulus, and the promotion of financial and economic stability for 
-            corporations and citizens involved in different types of business. The recommended provisional 
-            categorization of the business and industry development information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            corporations and citizens involved in different types of business.</p>
     edipp:
         name: Intellectual Property Protection
         category: Economic Development
@@ -1448,11 +1183,7 @@ SaInformationType:
             of intellectual property including inventions, literary and artistic works, and symbols, names, 
             images, and designs used in commerce. Note that intellectual property protection is an exception 
             to the often-close relationship between impacts to law enforcement information and information 
-            systems and the security of critical infrastructures and key national assets. The following 
-            security categorization is recommended for the intellectual property protection information 
-            type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-
+            systems and the security of critical infrastructures and key national assets.</p>
     edfso:
         name: Financial Sector Oversight
         category: Economic Development
@@ -1462,9 +1193,7 @@ SaInformationType:
         description: >
             <p>Financial Sector Oversight involves the regulation of private sector firms and markets 
             (stock exchanges, corporations, etc.) to protect investors from fraud, monopolies, and illegal 
-            behavior. This also includes deposit protection. The recommended provisional categorization of 
-            the financial sector oversight information type follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            behavior. This also includes deposit protection.</p>
     edisis:
         name: Industry Sector Income Stabilization
         category: Economic Development
@@ -1475,9 +1204,7 @@ SaInformationType:
             <p>Industry Sector Income Stabilization involves all programs and activities devoted to assisting 
             adversely impacted industrial sectors (farming, commercial transportation, etc.) to ensure the continued 
             availability of their services for the American public and the long-term economic stability of these 
-            sectors. The provisional recommended security categorization for the industry sector income stabilization 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            sectors.</p>
     casshp:
         name: Homeownership Promotion
         category: Community and Social Services
@@ -1487,9 +1214,7 @@ SaInformationType:
         description: >
             <p>Homeownership Promotion includes activities devoted to assisting citizens interested in buying homes and 
             educating the public as to the benefits of homeownership. Note: Activities devoted to the provision of 
-            housing to low-income members of the public are covered under the Housing Assistance mission. The 
-            recommended provisional categorization of the homeownership promotion information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            housing to low-income members of the public are covered under the Housing Assistance mission.</p>
     casscard:
         name: Community and Regional Development
         category: Community and Social Services
@@ -1499,10 +1224,7 @@ SaInformationType:
         description: >
             <p>The Community and Regional Development mission involves activities designed to assist communities in 
             preventing and eliminating blight and deterioration, assist economically distressed communities, and 
-            encourage and foster economic development through improved public facilities and resources. The 
-            recommended provisional categorization of the community and regional development information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            encourage and foster economic development through improved public facilities and resources.</p>
     cassss:
         name: Social Services
         category: Community and Social Services
@@ -1517,9 +1239,7 @@ SaInformationType:
             services include family life education and counseling, adoption, guardianship, foster family care, 
             rehabilitation services, etc. Note: This mission does not include services that are primarily for income 
             support (Income Security) or are an integral part of some other mission area (e.g., Health, Workforce 
-            Management, etc.). The recommended provisional categorization of the social services information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Management, etc.).</p>
     cassps:
         name: Postal Services
         category: Community and Social Services
@@ -1533,9 +1253,7 @@ SaInformationType:
             infrastructure required to make Postal Services easily accessible to customers. (Note: The commercial 
             function of mail is more closely aligned with the "Business and Industry Development" mission in the 
             "Economic Development mission area." The international commercial function of mail is more closely aligned 
-            with the "Global Trade" mission in the "International Affairs" mission area). The recommended provisional 
-            categorization of thee postal services information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Moderate)}</p>
+            with the "Global Trade" mission in the "International Affairs" mission area).</p>
     tgt:
         name: Ground Transportation
         category: Transportation
@@ -1546,9 +1264,7 @@ SaInformationType:
             <p>Ground Transportation involves the activities related to ensuring the availability of transit and the 
             safe passage of passengers and goods over land. Water and fuel pipelines are included among ground 
             transportation assets. Note: The protection of ground transportation from deliberate attack is included in 
-            the Transportation Security information type under the Homeland Security mission area. The recommended 
-            provisional security categorization for the ground transportation information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            the Transportation Security information type under the Homeland Security mission area.</p>
     twt:
         name: Water Transportation
         category: Transportation
@@ -1559,9 +1275,7 @@ SaInformationType:
             <p>Water Transportation involves the activities related to ensuring the availability of transit and the 
             safe passage of passengers and goods over sea and water. Note: The protection of maritime transportation 
             from deliberate attack is included in the Transportation Security information type under the Homeland 
-            Security mission area. The general recommended security categorization for the water transportation 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Security mission area.</p>
     tat:
         name: Air Transportation
         category: Transportation
@@ -1573,9 +1287,7 @@ SaInformationType:
             the air. It also includes command and control activities related to the safe movement of aircraft through 
             all phases of flight for commercial and military operations. Note: The protection of air transportation 
             from deliberate attack is included in the Transportation Security information type under the Homeland 
-            Security mission area. The general recommended security categorization for the air transportation 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Security mission area.</p>
     tso:
         name: Space Operations
         category: Transportation
@@ -1584,9 +1296,7 @@ SaInformationType:
         availability: HIGH
         description: >
             <p>Space Operations involves the activities related to the safe launches/missions of passengers or goods 
-            into aerospace and includes commercial, scientific, and military operations. The recommended provisional 
-            security categorization for the space operations information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, High), (availability, High)}</p>
+            into aerospace and includes commercial, scientific, and military operations.</p>
     eesave:
         name: Elementary, Secondary, and Vocational Education
         category: Education
@@ -1596,9 +1306,7 @@ SaInformationType:
         description: >
             <p>Elementary, secondary, and vocational education refers to the provision of education in elementary 
             subjects (reading and writing and arithmetic); education provided by a high school or college preparatory 
-            school; and vocational and technical education and training. The recommended provisional categorization of 
-            the elementary, secondary, and vocational education information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            school; and vocational and technical education and training.</p>
     ehe:
         name: Higher Education
         category: Education
@@ -1608,9 +1316,7 @@ SaInformationType:
         description: >
             <p>Higher Education refers to education beyond the secondary level; specifically, education provided by a 
             college or university. It includes external higher educational activities performed by the government 
-            (e.g., Military Academies, ROTC, and USDA Graduate School). The recommended provisional categorization of 
-            the higher education information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            (e.g., Military Academies, ROTC, and USDA Graduate School).</p>
     ecahp:
         name: Cultural and Historic Preservation
         category: Education
@@ -1620,9 +1326,7 @@ SaInformationType:
         description: >
             <p>Cultural and Historic Preservation involves all activities performed by the Federal Government to 
             collect and preserve information and artifacts important to the culture and history of the United States 
-            and its citizenry and the education of U.S. citizens and the world. The recommended provisional 
-            categorization of the cultural and historic preservation information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            and its citizenry and the education of U.S. citizens and the world.</p>
     ecahe:
         name: Cultural and Historic Exhibition
         category: Education
@@ -1631,9 +1335,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Cultural and Historic Exhibition includes all activities undertaken by the U.S. government to promote 
-            education through the exhibition of cultural, historical, and other information, archives, art, etc. The 
-            recommended provisional categorization of the cultural and historic exhibition information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            education through the exhibition of cultural, historical, and other information, archives, art, etc.</p>
     wmtae:
         name: Training and Employment
         category: Workforce Management
@@ -1644,9 +1346,7 @@ SaInformationType:
             <p>Training and Employment includes programs of job or skill training, employment services and placement, 
             and programs to promote the hiring of marginal, unemployed, or low-income workers. Additionally, training 
             information can include special training for personnel involved in Federal government operations (e.g., 
-            astronaut training). The recommended provisional categorization of the training and employment information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            astronaut training).</p>
     wmlrm:
         name: Labor Rights Management
         category: Workforce Management
@@ -1656,9 +1356,7 @@ SaInformationType:
         description: >
             <p>Labor Rights Management refers to those activities undertaken to ensure that employees and employers are 
             aware of and comply with all statutes and regulations concerning labor rights, including those pertaining 
-            to wages, benefits, safety and health, whistleblower, and nondiscrimination policies. The recommended 
-            provisional categorization of the labor rights management information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            to wages, benefits, safety and health, whistleblower, and nondiscrimination policies.</p>
     wmws:
         name: Worker Safety
         category: Workforce Management
@@ -1667,9 +1365,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Worker Safety refers to those activities undertaken to save lives, prevent injuries, and protect the 
-            health of America's workers. The recommended provisional categorization of the worker safety information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            health of America's workers.</p>
     hatc:
         name: Access to Care
         category: Health
@@ -1680,9 +1376,7 @@ SaInformationType:
             <p>Access to Care focuses on the access to appropriate care. This includes streamlining efforts to receive 
             care; ensuring care is appropriate in terms of type, care, intensity, location and availability; providing 
             seamless access to health knowledge, enrolling providers; performing eligibility determination, and 
-            managing patient movement. The recommended provisional security categorization for access to care 
-            information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            managing patient movement.</p>
     hphmacs:
         name: Population Health Management and Consumer Safety
         category: Health
@@ -1695,9 +1389,7 @@ SaInformationType:
             health planning, and health management of humans, animals, animal products, and plants, as well as tracking 
             the spread of diseases and pests. It also includes evaluation of consumer products, drug, and foods to 
             assess the potential risks and dangers; education of the consumer and the general population; and 
-            facilitation of health promotion and disease and injury prevention. The recommended provisional security 
-            categorization for population health management and consumer safety information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            facilitation of health promotion and disease and injury prevention.</p>
     hhca:
         name: Health Care Administration
         category: Health
@@ -1708,7 +1400,6 @@ SaInformationType:
             <p>Health Care Administration assures that federal health care resources are expended effectively to ensure 
             quality, safety, and efficiency. This includes managing health care quality, cost, workload, utilization, 
             and fraud/abuse efforts.</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
     hhcds:
         name: Health Care Delivery Services
         category: Health
@@ -1718,9 +1409,7 @@ SaInformationType:
         description: >
             <p>Health Care Delivery Services provides and supports the delivery of health care to its beneficiaries. 
             This includes assessing health status; planning health services; ensuring quality of services and 
-            continuity of care; and managing clinical information and documentation. The recommended provisional 
-            security categorization for health care delivery services information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, High), (availability, Low)}</p>
+            continuity of care; and managing clinical information and documentation.</p>
     hhcrape:
         name: Health Care Research and Practitioner Education
         category: Health
@@ -1732,9 +1421,7 @@ SaInformationType:
             This includes developing new strategies to handle diseases; promoting health knowledge advancement; 
             identifying new means for delivery of services, methods, decision models and practices; making strides in 
             quality improvement; managing clinical trials and research quality; and providing for practitioner 
-            education. The recommended provisional security categorization for health care research and practitioner 
-            education information is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            education.</p>
     isgrad:
         name: General Retirement and Disability
         category: Income Security
@@ -1745,9 +1432,7 @@ SaInformationType:
             <p>General Retirement and Disability involves the development and management of retirement benefits, 
             pensions, and income security for those who are retired or disabled. Related information types affecting 
             qualification and disbursement of benefits are discussed in Appendix C's Sections C.2.8.8, C.2.8.9, 
-            C.2.8.10, C.2.8.11, and C.3.2.5. The recommended provisional categorization of the general retirement and 
-            disability information type follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            C.2.8.10, C.2.8.11, and C.3.2.5.</p>
     isuc:
         name: Unemployment Compensation
         category: Income Security
@@ -1756,9 +1441,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Unemployment Compensation provides income security to those who are no longer employed, while they seek 
-            new employment. The recommended provisional categorization of the unemployment compensation information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            new employment.</p>
     isha:
         name: Housing Assistance
         category: Income Security
@@ -1768,9 +1451,7 @@ SaInformationType:
         description: >
             <p>Housing Assistance involves the development and management programs that provide housing to those who 
             are unable to provide housing for themselves including the rental of single-family or multifamily 
-            properties, and the management and operation of federally supported housing properties. The recommended 
-            provisional categorization of the housing assistance information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            properties, and the management and operation of federally supported housing properties.</p>
     isfaua:
         name: Food and Nutrition Assistance
         category: Income Security
@@ -1779,10 +1460,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Food and Nutrition Assistance involves the development and management of programs that provide food and 
-            nutrition assistance to those members of the public who are unable to provide for these needs themselves. 
-            The recommended provisional categorization of the food and nutrition assistance information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            nutrition assistance to those members of the public who are unable to provide for these needs themselves.</p> 
     issc:
         name: Survivor Compensation
         category: Income Security
@@ -1792,9 +1470,7 @@ SaInformationType:
         description: >
             <p>Survivor Compensation provides compensation to the survivors of individuals currently receiving or 
             eligible to receive benefits from the Federal Government. This includes survivors such as spouses or 
-            children of veterans or wage earners eligible for social security payments. The recommended provisional 
-            categorization of the survivor compensation information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            children of veterans or wage earners eligible for social security payments.</p>
     leca:
         name: Criminal Apprehension
         category: Law Enforcement
@@ -1803,9 +1479,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>Criminal apprehension supports activities associated with the tracking and capture of groups or 
-            individuals believed to be responsible for committing Federal crimes. The recommended provisional 
-            categorization of the criminal apprehension information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Moderate)}</p>
+            individuals believed to be responsible for committing Federal crimes.</p>
     lecias:
         name: Criminal Investigation and Surveillance
         category: Law Enforcement
@@ -1814,9 +1488,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>Criminal investigation and surveillance includes the collection of evidence required to determine 
-            responsibility for a crime and the monitoring and questioning of affected parties. The recommended 
-            provisional categorization of the criminal investigation and surveillance information type follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            responsibility for a crime and the monitoring and questioning of affected parties.</p>
     lecp:
         name: Citizen Protection
         category: Law Enforcement
@@ -1825,9 +1497,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>Citizen protection involves all activities performed to protect the general population of the United 
-            States from criminal activity. The following security categorization is recommended for the citizen 
-            protection information type:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate, (availability, Moderate)}</p>
+            States from criminal activity.</p>
     lelp:
         name: Leadership Protection
         category: Law Enforcement
@@ -1838,9 +1508,7 @@ SaInformationType:
             <p>Leadership protection involves all activities performed to protect the health and well being of the 
             president, vice-president, their families, and other high-level government officials. Some leadership 
             protection information may be classified. All classified information is treated under separate rules 
-            established for <i>national security information</i> and is outside the scope of this guideline. The 
-            recommended provisional categorization for unclassified leadership protection information follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            established for <i>national security information</i> and is outside the scope of this guideline.</p>
     lepp:
         name: Property Protection
         category: Law Enforcement
@@ -1849,9 +1517,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Property protection entails all activities performed to ensure the security of civilian and government 
-            property. The recommended provisional categorization of the property protection information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            property.</p>
     lesc:
         name: Substance Control
         category: Law Enforcement
@@ -1861,9 +1527,7 @@ SaInformationType:
         description: >
             <p>Substance control supports activities associated with the enforcement of legal substances (i.e., alcohol 
             and tobacco) and illegal narcotics laws including trafficking, possession, sale, distribution, and other 
-            related activities. The provisional security categorization recommended for the substance control 
-            information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            related activities.</p>
     lecpr:
         name: Crime Prevention
         category: Law Enforcement
@@ -1872,9 +1536,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Crime prevention entails all efforts designed to create safer communities through the control and 
-            reduction of crime by addressing the causes of crime and reducing the opportunities of crime. The 
-            recommended provisional security categorization for the crime prevention information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            reduction of crime by addressing the causes of crime and reducing the opportunities of crime.</p>
     letle:
         name: Trade Law Enforcement
         category: Law Enforcement
@@ -1883,9 +1545,7 @@ SaInformationType:
         availability: MODERATE
         description: >
             <p>Trade law enforcement refers to the enforcement of anti-boycott, international loan, and general trade 
-            laws. The security categorization recommended for the trade law enforcement information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            laws.</p>
     lajajh:
         name: Judicial Hearings
         category: Litigation and Judicial Activities
@@ -1894,9 +1554,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Judicial hearings include activities associated with conducting a hearing in a court of law to settle a 
-            dispute. The general recommended security categorization for the judicial hearings information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            dispute.</p>
     lajald:
         name: Legal Defense
         category: Litigation and Judicial Activities
@@ -1907,9 +1565,7 @@ SaInformationType:
             <p>Legal defense refers to the representation of a defendant in a criminal/civil court of law in an attempt 
             to provide constitutional guarantees to legal representation. The sensitivity of much legal information is 
             highly lifecycle-dependent. From a confidentiality perspective, most information associated with litigation 
-            and judicial activities is in the public record after the information has been presented in court. The 
-            recommended provisional security categorization for the legal defense information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, High), (availability, Low)}</p>
+            and judicial activities is in the public record after the information has been presented in court.</p>
     lajali:
         name: Legal Investigation
         category: Litigation and Judicial Activities
@@ -1919,9 +1575,7 @@ SaInformationType:
         description: >
             <p>Legal investigation supports activities associated with gathering information about a given party 
             (government agency, citizen, corporation) that would be admissible in a court of law, in an attempt to 
-            prove guilt or innocence. The recommended provisional categorization of the legal investigation information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Moderate)}</p>
+            prove guilt or innocence.</p>
     lajalpali:
         name: Legal Prosecution and Litigation
         category: Litigation and Judicial Activities
@@ -1930,10 +1584,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Legal prosecution/litigation includes all activities involved with presenting a case in a legal 
-            proceeding both in a criminal or civil court of law in an attempt to prove guilt/responsibility. The 
-            recommended provisional security categorization for the legal prosecution/litigation information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            proceeding both in a criminal or civil court of law in an attempt to prove guilt/responsibility.</p>
     lajarf:
         name: Resolution Facilitation
         category: Litigation and Judicial Activities
@@ -1942,9 +1593,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Resolution facilitation involves all activities outside of a court of law that may be used in an attempt 
-            to settle a dispute between two or more parties (government, citizen, corporation). The general recommended 
-            security categorization for the resolution facilitation information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            to settle a dispute between two or more parties (government, citizen, corporation).</p>
     fcaci:
         name: Criminal Incarceration
         category: Federal Correctional Activities
@@ -1953,9 +1602,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Criminal incarceration includes activities associated with the housing, custody and general care of 
-            criminals sentenced to serve time in penitentiaries. The following security categorization is recommended 
-            for the criminal incarceration information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            criminals sentenced to serve time in penitentiaries.</p>
     fcacr:
         name: Criminal Rehabilitation
         category: Federal Correctional Activities
@@ -1965,9 +1612,7 @@ SaInformationType:
         description: >
             <p>Criminal Rehabilitation includes all government activities devoted to providing convicted criminals with 
             the educational resources and life skills necessary to rejoin society as responsible and contributing 
-            members. The recommended provisional categorization of the criminal rehabilitation information type 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            members.</p>
     gsaisatrai:
         name: Scientific and Technological Research and Innovation
         category: General Sciences and Innovation
@@ -1980,10 +1625,7 @@ SaInformationType:
             the other mission areas or information types identified in the BRM. Most sensitive information is developed 
             under research and development programs that directly support another of the mission areas described in 
             this Appendix and are not included here. Some information associated with scientific and technical research 
-            and innovation is <i>national security information</i> and is outside the scope of this guideline. The 
-            recommended provisional categorization for the scientific and technical research and innovation information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            and innovation is <i>national security information</i> and is outside the scope of this guideline.</p>
     gsaiseai:
         name: Space Exploration and Innovation
         category: General Sciences and Innovation
@@ -1996,9 +1638,7 @@ SaInformationType:
             general research and exploration of outer space. While some space exploration and innovation is 
             <i>national security information</i>, most sensitive information is developed under research and 
             development programs that directly support another of the mission areas described in this Appendix and are 
-            not included here. The recommended provisional categorization of the research and development information 
-            type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            not included here.</p>
     kcamrad:
         name: Research and Development
         category: Knowledge Creation and Management
@@ -2008,9 +1648,7 @@ SaInformationType:
         description: >
             <p>Research and Development involves the gathering and analysis of data, dissemination of results, and 
             development of new products, methodologies, and ideas. The sensitivity and criticality of most research 
-            and development information depends on the subject matter involved. The recommended provisional 
-            categorization of the research and development information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Moderate), (availability, Low)}</p>
+            and development information depends on the subject matter involved.</p>
     kcamgpdas:
         name: General Purpose Data and Statistics
         category: Knowledge Creation and Management
@@ -2020,9 +1658,7 @@ SaInformationType:
         description: >
             <p>General purpose data and statistics includes activities performed in providing empirical, numerical, 
             and related data and information pertaining to the current state of the nation in areas such as the 
-            economy, labor, weather, international trade, etc. The recommended provisional categorization of the 
-            General Purpose Data and Statistics information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            economy, labor, weather, international trade, etc.</p>
     kcamaac:
         name: Advising and Consulting
         category: Knowledge Creation and Management
@@ -2031,9 +1667,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Advising and Consulting activities involve the guidance and consultative services provided by the 
-            Federal Government to support the implementation of a specific service provided to citizens. The 
-            recommended provisional categorization of the advising and consulting information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            Federal Government to support the implementation of a specific service provided to citizens.</p>
     kcamkd:
         name: Knowledge Dissemination
         category: Knowledge Creation and Management
@@ -2044,9 +1678,7 @@ SaInformationType:
             <p>Knowledge Dissemination addresses those instances where the primary method used in delivering a service 
             is through the publishing or broadcasting of information, such as the Voice of America or web-based museums 
             maintained by the Smithsonian. Knowledge Dissemination is not intended to address circumstances where the 
-            publication of information is a by-product of a mission rather than the mission itself. The recommended 
-            provisional security categorization of the knowledge dissemination information type follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            publication of information is a by-product of a mission rather than the mission itself.</p>
     rcaeiaa:
         name: Inspections and Auditing
         category: Regulatory Compliance and Enforcement
@@ -2055,9 +1687,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Inspections and Auditing involves the methodical examination and review of regulated activities to 
-            ensure compliance with standards for regulated activity. The recommended security categorization for the 
-            inspections and auditing information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Moderate), (availability, Low)</p>
+            ensure compliance with standards for regulated activity.</p>
     rcaessrgd:
         name: Standards Setting/Reporting Guideline Development
         category: Regulatory Compliance and Enforcement
@@ -2068,10 +1698,7 @@ SaInformationType:
             <p>Standard Setting/Reporting Guideline Development involves the establishment of allowable limits 
             associated with a regulated activity and the development of reporting requirements necessary to monitor 
             and control compliance with allowable limits. This includes the development of requirements for product 
-            sampling and testing, emissions monitoring and control, incident reporting, financial filings, etc. The 
-            following provisional security categorization is recommended for the standards setting/reporting guideline 
-            development information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            sampling and testing, emissions monitoring and control, incident reporting, financial filings, etc.</p>
     rcaepal:
         name: Permits and Licensing
         category: Regulatory Compliance and Enforcement
@@ -2080,9 +1707,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Permits and Licensing involves activities associated with granting, revoking, and the overall management 
-            of the documented authority necessary to perform a regulated task or function. The following security 
-            categorization is recommended for the permits and licensing information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            of the documented authority necessary to perform a regulated task or function.</p>
     pgcamm:
         name: Manufacturing
         category: Public Goods Creation and Management
@@ -2091,9 +1716,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Manufacturing involves all programs and activities in which the Federal Government produces both 
-            marketable and non-marketable goods. The following provisional security categorization is recommended for 
-            the manufacturing information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            marketable and non-marketable goods.</p>
     pgcamc:
         name: Construction
         category: Public Goods Creation and Management
@@ -2102,9 +1725,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Construction involves all programs and activities in which the Federal Government builds or constructs 
-            facilities, roads, dams, etc. The following security categorization is recommended for the construction 
-            information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            facilities, roads, dams, etc.</p>
     pgcamprfaim:
         name: Public Resources, Facility and Infrastructure Management
         category: Public Goods Creation and Management
@@ -2116,9 +1737,7 @@ SaInformationType:
             government-owned capital goods and resources (natural or otherwise) on behalf of the public, usually with 
             benefits to the community at large as well as to the direct user. Examples of facilities and infrastructure 
             include schools, roads, bridges, dams, harbors, and public buildings. Examples of resources include parks, 
-            cultural artifacts and art, endangered species, oil reserves, etc. The following security categorization is 
-            recommended for the public resources, facilities, and infrastructure management information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            cultural artifacts and art, endangered species, oil reserves, etc.</p>
     pgcamiim:
         name: Information Infrastructure Management
         category: Public Goods Creation and Management
@@ -2134,9 +1753,7 @@ SaInformationType:
             physical communication infrastructures (networks) on behalf of the public.</p>
             <p>Note: Information infrastructures for government use are not included in this information type because 
             the impact levels associated with information infrastructure maintenance information are primarily a 
-            function of the information processed in that infrastructure. The recommended provisional security 
-            categorization for the information infrastructure maintenance information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            function of the information processed in that infrastructure.</p>
     ffafg:
         name: Federal Grants (Non-State)
         category: Federal Financial Assistance
@@ -2148,9 +1765,7 @@ SaInformationType:
             help fund projects or activities. This includes the processes associated with grant administration, 
             including the publication of funds availability notices, development of the grant application guidance, 
             determination of grantee eligibility, coordination of the peer review/evaluation process for competitive 
-            grants, the transfer of funds, and the monitoring/oversight as appropriate. The recommended provisional 
-            security categorization for the federal grants information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            grants, the transfer of funds, and the monitoring/oversight as appropriate.</p>
     ffadti:
         name: Direct Transfers to Individuals
         category: Federal Financial Assistance
@@ -2161,10 +1776,7 @@ SaInformationType:
             <p>Direct Transfers to Individuals involves the disbursement of funds from the Federal Government directly 
             to beneficiaries (individuals or organizations) who satisfy Federal eligibility requirements with no 
             restrictions imposed on the recipient as to how the money is spent. Direct Transfers include both earned 
-            and unearned Federal Entitlement programs such as Medicare, Social Security, unemployment benefits, etc. 
-            The recommended provisional security categorization for the direct transfers to individuals information 
-            type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            and unearned Federal Entitlement programs such as Medicare, Social Security, unemployment benefits, etc.</p> 
     ffas:
         name: Subsidies
         category: Federal Financial Assistance
@@ -2174,9 +1786,7 @@ SaInformationType:
         description: >
             <p>Subsidies involve Federal Government financial transfers that reduce costs and/or increase revenues of 
             producers. Subsidies include the payment of funds from the government to affect the production or prices 
-            of various goods to benefit the public. The recommended provisional security categorization for the 
-            subsidies information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            of various goods to benefit the public.</p>
     ffatc:
         name: Tax Credits
         category: Federal Financial Assistance
@@ -2186,9 +1796,7 @@ SaInformationType:
         description: >
             <p>Tax Credits allow a special exclusion, exemption, or deduction from gross income or which provide a 
             special credit, a preferential rate of tax, or a deferral of tax liability designed to encourage certain 
-            kinds of activities or to aid taxpayers in special circumstances. The recommended provisional security 
-            categorization for the tax credits information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Moderate), (integrity, Low), (availability, Low)}</p>
+            kinds of activities or to aid taxpayers in special circumstances.</p>
     cnidl:
         name: Direct Loans
         category: Credit and Insurance
@@ -2197,9 +1805,7 @@ SaInformationType:
         availability: LOW
         description: >
             <p>Direct loans involve a disbursement of funds by the Government to a non-Federal borrower under a 
-            contract that requires the repayment of such funds with or without interest. The recommended provisional 
-            security categorization for the direct loan information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            contract that requires the repayment of such funds with or without interest.</p>
     cnilg:
         name: Loan Guarantees
         category: Credit and Insurance
@@ -2210,9 +1816,7 @@ SaInformationType:
             <p>Loan guarantees involve any guarantee, insurance, or other pledge with respect to the payment of all or 
             a part of the principal or interest on any debt obligation of a non-Federal borrower to a non-Federal 
             lender, but does not include the insurance of deposits, shares, or other withdrawable accounts in financial 
-            institutions. The general recommended security categorization for the loan guarantees information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            institutions.</p>
     cnigi:
         name: General Insurance
         category: Credit and Insurance
@@ -2222,9 +1826,7 @@ SaInformationType:
         description: >
             <p>General Insurance involves providing protection to individuals or entities against specified risks. The 
             specified protection generally involves risks that private sector entities are unable or unwilling to 
-            assume or subsidize and where the provision of insurance is necessary to achieve social objectives. The 
-            following provisional security categorization is recommended for the general insurance information type:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            assume or subsidize and where the provision of insurance is necessary to achieve social objectives.</p>
     tslgfg:
         name: Formula Grants
         category: Transfers to State/Local Governments
@@ -2234,9 +1836,7 @@ SaInformationType:
         description: >
             <p>Formula Grants involves the allocation of money to States or their subdivisions in accordance with 
             distribution formulas prescribed by law or administrative regulation, for activities of a continuing 
-            nature. The recommended provisional security categorization for the formula grants information type is as 
-            follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            nature.</p>
     tslgpcg:
         name: Project/Competitive Grants
         category: Transfers to State/Local Governments
@@ -2247,9 +1847,7 @@ SaInformationType:
             <p>Project/Competitive Grants involves the funding, for fixed or known periods, of projects. 
             Project/Competitive grants can include fellowships, scholarships, research grants, training grants, 
             traineeships, experimental and demonstration grants, evaluation grants, planning grants, technical 
-            assistance grants, survey grants, and construction grants. The general recommended security categorization 
-            for the project/competitive grants information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            assistance grants, survey grants, and construction grants.</p>
     tslgeg:
         name: Earmarked Grants
         category: Transfers to State/Local Governments
@@ -2259,9 +1857,7 @@ SaInformationType:
         description: >
             <p>Earmarked Grants involves the distribution of money to State and Local Governments for a named purpose 
             or service usually specifically noted by Congress in appropriations language, or other program authorizing 
-            language. The recommended provisional security categorization for the earmarked grants information type is 
-            as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
+            language.</p>
     tslgsl:
         name: State Loans
         category: Transfers to State/Local Governments
@@ -2270,32 +1866,5 @@ SaInformationType:
         availability: LOW
         description: >
             <p>State Loans involve all disbursement of funds by the Government to a State or Local Government (or 
-            Indian Tribe) entity under a contract that requires the repayment of such funds with or without interest. 
-            The recommended provisional security categorization for the state loan information type is as follows:</p>
-            <p>Security Category = {(confidentiality, Low), (integrity, Low), (availability, Low)}</p>
-    dsfcmo:
-        name: Military Operations
-        category: Direct Services for Citizens
-        confidentiality: NONE
-        integrity: NONE
-        availability: NONE
-        description: >
-            <p>The BRM provided in the <i>FEA Consolidated Reference Model Document, Version 2.3</i>, October 2007 does 
-            not define the Military Operations information type. For the purpose of this document, Military Operations 
-            describes the direct provision of military service for the citizens. Further, the BRM specifies Military 
-            Operations as a Mode of Delivery business area or a vehicle by which the federal government delivers it 
-            services to citizens. Therefore, agency personnel</p>
-    dsfcco:
-        name: Civilian Operations
-        category: Direct Services for Citizens
-        confidentiality: NONE
-        integrity: NONE
-        availability: NONE
-        description: >
-            <p>Civilian Operations describes the direct provision of a non-military service for the citizen by 
-            government employees.</p>
-            <p>The BRM provided in the <i>FEA Consolidated Reference Model Document, Version 2.3</i>, October 2007 
-            specifies Civilian Operations as a Mode of Delivery business area or a vehicle by which the federal 
-            government delivers it services to citizens. Therefore, agency personnel should consider the Civilian 
-            Operations information type as delivery mechanisms of the mission-based services information types [e.g., 
-            Health Care, Emergency Response, and Environmental Remediation] described heretofore.</p>
+            Indian Tribe) entity under a contract that requires the repayment of such funds with or without interest.</p> 
+
