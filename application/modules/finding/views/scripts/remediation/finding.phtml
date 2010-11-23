@@ -98,10 +98,10 @@
             ?>
             <tr>
                 <td>On Time:</td>
-                <td>
+                <td>                    
                 <?php if (is_null($finding->nextDueDate)): ?>
                     N/A
-                <?php elseif (date('Ymd', time()) <= date('Ymd', strtotime($finding->nextDueDate))): ?>
+                <?php elseif (time() <= strtotime($finding->nextDueDate)): ?>
                     On Time
                 <?php else: ?>
                     Overdue

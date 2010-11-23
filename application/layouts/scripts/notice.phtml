@@ -1,9 +1,9 @@
-<?php echo "{$this->doctype()}\n" ?>
+<?php echo $this->escape("{$this->doctype()}\n", 'none') ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <?php
-            echo $this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name'));
+            echo $this->escape($this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name')), 'none');
 
             $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'button');
 
@@ -12,15 +12,15 @@
             $this->injectAsset('/stylesheets/combined.css', 'css', true);
             $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 
-            echo $yui;
-            echo $this->headLink();
-            echo $this->headScript();
+            echo $this->escape($yui, 'none');
+            echo $this->escape($this->headLink(), 'none');
+            echo $this->escape($this->headScript(), 'none');
         ?>
     </head>
     <body class="yui-skin-sam">
         <div id='container'>
             <div id="content">
-                <?php echo $this->layout()->content; ?>
+                <?php echo $this->escape($this->layout()->content, 'none'); ?>
             </div>
         </div>
     </body>
