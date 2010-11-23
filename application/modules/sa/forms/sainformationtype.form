@@ -21,7 +21,7 @@ elements.name.options.label = "Name"
 elements.name.options.required = true
 displayGroups.sa.elements.name = "name"
 
-elements.description.type = "text"
+elements.description.type = "textarea"
 elements.description.options.label = "Description"
 elements.description.options.required = false 
 displayGroups.sa.elements.desc = "description"
