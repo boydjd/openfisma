@@ -103,7 +103,8 @@ try {
         $entry['description'] = Fisma_String::loremIpsum(rand(2, 1000));
         $entry['recommendation'] = Fisma_String::loremIpsum(rand(2, 1000));
         $entry['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
-        $entry['discoveredDate'] = date("Y-m-d", $discoveredDate);
+        $zdDescDate = new Zend_Date($discoveredDate);
+        $entry['discoveredDate'] = zdDescDate->toString('yyyy-MM-dd');
         $entries[] = $entry;
         unset($entry);
     }
