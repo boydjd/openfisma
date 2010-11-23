@@ -286,8 +286,11 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         // Now use matched IDs to query Doctrine for actual document contents
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
-                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        if (!isset($searchableFields['id'])) {
+            $doctrineQuery->select('a.id');
+        }
 
         $currentAlias = 'a';
         $relationAliases = array($type => $currentAlias);
@@ -406,14 +409,22 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         foreach ($doctrineResult as $row) {
             $rowData = array();
 
-            foreach ($row as $columnName => $columnValue) {
-                $newColumnName = substr($columnName, 2);
-                $newColumnValue = $this->_convertHtmlToIndexString($columnValue);
+            foreach ($searchableFields as $columnName => $columnDefinition) {
+
+                if (isset($columnDefinition['join'])) {
+                    $tableAlias = $relationAliases[$columnDefinition['join']['relation']];
+                } else {
+                    $tableAlias = $relationAliases[$type];
+                }
+
+                $doctrineColumnName = $tableAlias . '_' . $columnName;
+
+                $columnValue = $this->_convertHtmlToIndexString($row[$doctrineColumnName]);
 
                 $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($newColumnValue) > $maxRowLength) {
-                    $shortValue = substr($newColumnValue, 0, $maxRowLength);
+                if ($maxRowLength && strlen($columnValue) > $maxRowLength) {
+                    $shortValue = substr($columnValue, 0, $maxRowLength);
 
                     // Trim after the last white space (so as not to break in the middle of a word)
                     $spacePosition = strrpos($shortValue, ' ');
@@ -422,14 +433,12 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                         $shortValue = substr($shortValue, 0, $spacePosition);
                     }
 
-                    $newColumnValue = $shortValue . '...';
-                } else {
-                    $newColumnValue = $newColumnValue;
+                    $columnValue = $shortValue . '...';
                 }
-                
-                $rowData[$newColumnName] = $newColumnValue;
+
+                $rowData[$columnName] = $columnValue;
             }
-            
+
             $tableData[] = $rowData;
         }
 
@@ -472,11 +481,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
-                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+         if (!isset($searchableFields['id'])) {
+             $doctrineQuery->select('a.id');
+         }
+
         $currentAlias = 'a';
-        $relationAliases = array();
+        $relationAliases = array($type => $currentAlias);
 
         // Add any join tables required to get related records
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -492,13 +504,13 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                     // First relation is related directly to the base table
                     $doctrineQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $doctrineQuery->addSelect("$currentAlias.id");
-                    
+
                     // Remaining relations are recursively related to each other
                     for ($i = 1; $i < count($relationParts); $i++) {
                         $previousAlias = $currentAlias;
+
                         $currentAlias = chr(ord($currentAlias) + 1);
-                        
+
                         $relationPart = $relationParts[$i];
                         
                         $doctrineQuery->leftJoin("$previousAlias.$relationPart $currentAlias");
@@ -512,7 +524,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 $name = $fieldDefinition['join']['field'];
 
-                $doctrineQuery->addSelect("$relationAlias.$name");
+                $doctrineQuery->addSelect("$relationAlias.$name $fieldName");
             } else {
                 $doctrineQuery->addSelect("a.$fieldName");
             }
@@ -731,14 +743,22 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         foreach ($doctrineResult as $row) {
             $rowData = array();
 
-            foreach ($row as $columnName => $columnValue) {
-                $newColumnName = substr($columnName, 2);
-                $newColumnValue = $this->_convertHtmlToIndexString($columnValue);
+            foreach ($searchableFields as $columnName => $columnDefinition) {
+
+                if (isset($columnDefinition['join'])) {
+                    $tableAlias = $relationAliases[$columnDefinition['join']['relation']];
+                } else {
+                    $tableAlias = $relationAliases[$type];
+                }
+
+                $doctrineColumnName = $tableAlias . '_' . $columnName;
+
+                $columnValue = $this->_convertHtmlToIndexString($row[$doctrineColumnName]);
 
                 $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($newColumnValue) > $maxRowLength) {
-                    $shortValue = substr($newColumnValue, 0, $maxRowLength);
+                if ($maxRowLength && strlen($columnValue) > $maxRowLength) {
+                    $shortValue = substr($columnValue, 0, $maxRowLength);
 
                     // Trim after the last white space (so as not to break in the middle of a word)
                     $spacePosition = strrpos($shortValue, ' ');
@@ -747,14 +767,12 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                         $shortValue = substr($shortValue, 0, $spacePosition);
                     }
 
-                    $newColumnValue = $shortValue . '...';
-                } else {
-                    $newColumnValue = $newColumnValue;
+                    $columnValue = $shortValue . '...';
                 }
-                
-                $rowData[$newColumnName] = $newColumnValue;
+
+                $rowData[$columnName] = $columnValue;
             }
-            
+
             $tableData[] = $rowData;
         }
 
