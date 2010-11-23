@@ -180,6 +180,7 @@ class Fisma_Menu
         // Security Authorization submenu
         if ($acl->hasArea('security_authorization')) {
             $saMenu = new Fisma_Yui_Menu('Security Authorization');
+            $saMenu->add(new Fisma_Yui_MenuItem('Create Security Authorization', '/sa/security-authorization/create'));
             $saMenu->add(new Fisma_Yui_MenuItem('Search', '/sa/security-authorization'));
 
             if ($acl->hasArea('security_authorization_admin')) {
