@@ -5,12 +5,12 @@ AssessmentProcedure:
         objective: >
             Determine if:
             <ol>
-                <li>﻿the organization develops and documents access control policy and procedures;</li>
-                <li>﻿the organization disseminates access control policy and procedures to appropriateelements within the organization;</li>
-                <li>﻿responsible parties within the organization periodically review access control policyand procedures; and</li>
+                <li>the organization develops and documents access control policy and procedures;</li>
+                <li>the organization disseminates access control policy and procedures to appropriateelements within the organization;</li>
+                <li>responsible parties within the organization periodically review access control policyand procedures; and</li>
                 <li>the organization updates access control policy and procedures when organizational review indicates updates are required.<li>
             </ol>
-        examine: "[﻿SELECT FROM: Access control policy and procedures; other relevant documents or records]."
+        examine: "[SELECT FROM: Access control policy and procedures; other relevant documents or records]."
         interview: "[SELECT FROM: Organizational personnel with access control responsibilities]."
         Catalog: 800_53A_Rev_0
 
@@ -67,8 +67,8 @@ AssessmentProcedure:
         objective: >
             Determine if:
             <ol>
-                <li>﻿the organization defines in the security plan, explicitly or by reference, a timeperiod for each type of account after which the information system terminatestemporary and emergency accounts; and</li>
-                <li>﻿the information system automatically terminates temporary and emergency accountsafter organization-defined time period for each type of account. </li>
+                <li>the organization defines in the security plan, explicitly or by reference, a timeperiod for each type of account after which the information system terminatestemporary and emergency accounts; and</li>
+                <li>the information system automatically terminates temporary and emergency accountsafter organization-defined time period for each type of account. </li>
             </ol>
         examine: |
             [SELECT FROM: Security plan; information system design documentation; information system configuration 
@@ -258,7 +258,7 @@ AssessmentProcedure:
         objective: >
             Determine if:
             <ol>
-                <li>﻿the information system displays a system use notification message before grantingsystem access informing potential users:
+                <li>the information system displays a system use notification message before grantingsystem access informing potential users:
                     <ul>
                         <li>that the user is accessing a U.S. Government information system;</li>
                         <li>that system usage may be monitored, recorded, and subject to audit;</li>
@@ -296,7 +296,7 @@ AssessmentProcedure:
                 <li>the information system limits the number of concurrent sessions for users to the organization-defined number of sessions.</li>
             </ol>
         examine: |
-            [﻿SELECT FROM: Access control policy; procedures addressing concurrent session control;information 
+            [SELECT FROM: Access control policy; procedures addressing concurrent session control;information 
             system configuration settings and associated documentation; security plan; other relevant documents or records].
         test: "[SELECT FROM: Automated mechanisms implementing the access control policy for concurrent session control]."
 
@@ -350,7 +350,7 @@ AssessmentProcedure:
             [SELECT FROM: Access control policy; procedures addressing supervision and review of access control
             enforcement and usage; organizational records of supervisory notices of disciplinary actions to users; 
             information system exception reports; other relevant documents or records].
-        test: "﻿SELECT FROM: Organizational personnel with supervisory and access controlresponsibilities]."
+        test: "SELECT FROM: Organizational personnel with supervisory and access controlresponsibilities]."
 
     53A_Rev0_AC_13E1_1:
         controlCode: AC-13
