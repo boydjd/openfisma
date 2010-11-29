@@ -6,6 +6,14 @@ AssessmentPlanEntry:
         examine: string
         interview: string
         test: string
+        status:
+            type: enum
+            values: ["Not Started", "In Progress", "Complete"]
+            default: "Not Started"
+        result:
+            type: enum
+            values: ["Satisfied", "Other Than Satisfied"]
+            default: null
     relations:
         SaSecurityControlAggregate:
             local: saSecurityControlaggregateId
