@@ -65,5 +65,14 @@ try {
              . "<p><pre>Stack Trace:\n" 
              . $exception->getTraceAsString() 
              . '</pre></p>';
+    } else {
+        $logString = get_class($exception) 
+                   . "\n"
+                   . $exception->getMessage() 
+                   . "\nStack Trace:\n" 
+                   . $exception->getTraceAsString() 
+                   . "\n";
+        
+        Fisma::getLogInstance()->err($logString);
     }
 }

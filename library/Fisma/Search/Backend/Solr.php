@@ -264,9 +264,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 }
 
                 foreach ($keywordTokens as $keywordToken) {
-
                     // Don't search for strings in integer fields (Solr emits an error)
-                    if ( !('integer' == $fieldDefinition['type'] && !is_numeric($keywordToken)) ) {
+                    $isNumberField = ('integer' == $fieldDefinition['type'] || 'float' == $fieldDefinition['type']);
+                    $canSearch = (is_numeric($keywordToken) || !$isNumberField);
+
+                    if ($canSearch) {
                         $searchTerms[] = $documentFieldName . ':' . $keywordToken;
                     }
                 }
