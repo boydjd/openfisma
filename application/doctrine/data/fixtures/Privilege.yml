@@ -181,23 +181,15 @@ Privilege:
         resource: vulnerability
         action: read
         description: View Vulnerabilities
-    # Update doesn't have much meaning for this module (as of 2.10), but its reserved for future use
     vulnerability_update: 
         resource: vulnerability
         action: update
         description: Edit Vulnerabilities
-    # Delete doesn't have much meaning for this module (as of 2.10), but its reserved for future use
     vulnerability_delete:
         resource: vulnerability
         action: delete
         description: Delete Vulnerabilities
 
-    # Vulnerability state transitions
-    vulnerability_status:
-        resource: vulnerability
-        action: update
-        description: Update Vulnerability Status
-    
     vulnerability_comment:
         resource: vulnerability
         action: comment

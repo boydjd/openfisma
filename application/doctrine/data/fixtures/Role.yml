@@ -35,7 +35,7 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
+            - vulnerability_comment
             - notification_vulnerability
 
     reviewer_role:
@@ -101,7 +101,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability         
 
@@ -149,7 +148,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability
     
@@ -249,9 +247,8 @@ Role:
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
-            - vulnerability_update
             - vulnerability_delete
-            - vulnerability_status
+            - vulnerability_update
             - vulnerability_resolution_create
             - vulnerability_resolution_read
             - vulnerability_resolution_update
@@ -336,7 +333,7 @@ Role:
             - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_read
-            - vulnerability_status
+            - vulnerability_update
             - notification_vulnerability
 
     oss_role:
@@ -368,7 +365,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - notification_vulnerability
 
     oig_role:
