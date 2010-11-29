@@ -42,6 +42,10 @@
                 <td><?php echo $this->escape($finding->createdTs)?></td>
             </tr>
             <tr>
+                <td>Opened By:</td>
+                <td><?php echo $this->escape($this->userInfo($finding->CreatedBy->username), 'none'); ?></td>
+            </tr>
+            <tr>
                 <td>Date Closed:</td>
                 <td>
                     <?php 

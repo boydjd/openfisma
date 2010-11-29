@@ -121,10 +121,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
-    protected function saveValue($form, $subject=null)
+    protected function saveValue($form, $finding = null)
     {
-        if (is_null($subject)) {
-            $subject = new $this->_modelName();
+        if (is_null($finding)) {
+            $finding = new $this->_modelName();
         } else {
             throw new Fisma_Zend_Exception('Invalid parameter expecting a Record model');
         }
@@ -135,20 +135,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             unset($values['securityControlId']);
         }
 
-        $subject->merge($values);
+        $finding->merge($values);
         
         $organization = Doctrine::getTable('Organization')->find($values['responsibleOrganizationId']);
 
         if ($organization !== false) {
-            $subject->ResponsibleOrganization = $organization;
+            $finding->ResponsibleOrganization = $organization;
         } else {
             throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
                                          . " non-existent organization (id={$values['orgSystemId']}).");
         }
-                
-        $subject->save();
 
-        return $subject->id;
+        $finding->CreatedBy = CurrentUser::getInstance();
+
+        $finding->save();
+
+        return $finding->id;
     }
 
     /**
