@@ -14102,7 +14102,7 @@ AssessmentProcedure:
         controlCode: SC-12
         enhancement: 5
         number: 1
-        objective: Determine if the organization produces, controls, and distributes asymmetric cryptographic keys using approved PKI Class 3 or Class 4 certificates and hardware security tokens that protect the user闂備胶鍋ㄩ崕鏌ユ偘?private key.
+        objective: Determine if the organization produces, controls, and distributes asymmetric cryptographic keys using approved PKI Class 3 or Class 4 certificates and hardware security tokens that protect the user's private key.
         examine: |
             [SELECT FROM: System and communications protection policy; procedures addressing
             cryptographic key management, establishment, and recovery; information system design
