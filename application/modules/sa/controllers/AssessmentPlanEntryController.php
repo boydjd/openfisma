@@ -43,16 +43,19 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
      */
     public function handleCollection($rows)
     {
-        $result = $rows->toArray();
-        foreach ($rows as $k => $v) {
-            if ($v->SaSecurityControl) {
-                $result[$k]['code'] = $v->SaSecurityControl->SecurityControl->code;
-            } else if ($v->SaSecurityControlEnhancement) {
-                $result[$k]['code'] = $v->SaSecurityControlEnhancement->SaSecurityControl->SecurityControl->code;
-                $result[$k]['enhancement'] = $v->SaSecurityControlEnhancement->SecurityControlEnhancement->number;
-            }
-        }
-        return $result;
+       $result = $rows->toArray();
+       foreach ($rows as $key => $record) {
+           $sasca = $record->SaSecurityControlAggregate;
+           if ($sasca instanceof SaSecurityControl) {
+               $result[$key]['code'] = $sasca->SecurityControl->code;
+           } else if ($sasca instanceof SaSecurityControlEnhancement) {
+               $result[$key]['code'] = $sasca->SaSecurityControl->SecurityControl->code;
+               $result[$key]['enhancement'] = $sasca->SecurityControlEnhancement->number;
+           } else {
+               throw new Fisma_Zend_Exception('Unknown record type. ' . get_class($sasca));
+           }
+       }
+       return $result;
     }
 
     /**
@@ -79,17 +82,29 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             $order = 'ASC'; //ignore other values
         }
         
+        $sasc = Doctrine_Query::create()
+            ->from('SaSecurityControl sasc, sasc.SecurityControl sc')
+            ->where('sasc.securityAuthorizationId = ?', $saId)
+            ->execute();
+        $sasce = Doctrine_Query::create()
+            ->from(
+                'SaSecurityControlEnhancement sasce, ' .
+                'sasce.SecurityControlEnhancement sce, ' .
+                'sasce.SaSecurityControl sasc, ' .
+                'sasc.SecurityControl sc'
+            )
+            ->where('sasc.securityAuthorizationId = ?', $saId)
+            ->execute();
+        $sasca = new Doctrine_Collection('SaSecurityControlAggregate');
+        $sasca->merge($sasc);
+        $sasca->merge($sasce);
         $query  = Doctrine_Query::create()
-                    ->from('AssessmentPlanEntry ape')
-                    ->leftJoin('ape.SaSecurityControl sasc')
-                    ->leftJoin('sasc.SecurityControl sc')
-                    ->leftJoin('ape.SaSecurityControlEnhancement saSce')
-                    ->leftJoin('saSce.SaSecurityControl eSasc')
-                    ->leftJoin('eSasc.SecurityControl eSc')
-                    ->leftJoin('saSce.SecurityControlEnhancement eSce')
-                    ->orderBy("$sortBy $order")
-                    ->limit($this->_paging['count'])
-                    ->offset($this->_paging['startIndex']);
+            ->from('AssessmentPlanEntry ape')
+            ->leftJoin('ape.SaSecurityControlAggregate sasca')
+            ->whereIn('sasca.id', $sasca->toKeyValueArray('id', 'id'))
+            ->orderBy("$sortBy $order")
+            ->limit($this->_paging['count'])
+            ->offset($this->_paging['startIndex']);
  
         //initialize the data rows
         $tableData    = array('table' => array(
@@ -112,8 +127,6 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
                 return $this->_helper->json($tableData);
             }
         }
-
-        $query->andWhere('sasc.securityAuthorizationId = ? OR eSasc.securityAuthorizationId = ?', array($saId, $saId));
 
         $totalRecords = $query->count();
         $rows         = $this->executeSearchQuery($query);

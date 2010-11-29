@@ -27,7 +27,7 @@ class SaSecurityControl extends BaseSaSecurityControl
             ->execute();
         foreach ($procedures as $ap) {
             $ape = new AssessmentPlanEntry();
-            $ape->SaSecurityControl = $this;
+            $ape->SaSecurityControlAggregate = $this;
             $ape->number = $ap->number;
             $ape->objective = $ap->objective;
             $ape->examine = $ap->examine;
