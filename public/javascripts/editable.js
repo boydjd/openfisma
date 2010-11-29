@@ -54,14 +54,6 @@ function setupEditFields() {
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
-                     calendarIcon = document.createElement('img');
-                     calendarIcon.id = t_name + "_show";
-                     calendarIcon.src = "/images/calendar.png";
-                     calendarIcon.alt = "Calendar";
-                     target.parentNode.appendChild(calendarIcon);
-                     YAHOO.util.Event.on(t_name+'_show', "click", function() {
-                        showCalendar(t_name, t_name+'_show');
-                     });
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');

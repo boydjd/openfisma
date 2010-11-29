@@ -136,4 +136,18 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
     {
         return 'Security Controls';
     }
+
+    /**
+     * Override to remove the "Create New" button
+     *
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = parent::getToolbarButtons();
+
+        unset($buttons['create']);
+
+        return $buttons;
+    }
 }
