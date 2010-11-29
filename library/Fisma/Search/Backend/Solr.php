@@ -432,7 +432,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                         throw new Fisma_Search_Exception("Invalid operands to floatBetween criterion.");
                     }
 
-                    $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
+                    if ($operands[0] < $operands[1]) {
+                        $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
+                    } else {
+                        $searchTerms[] = "$fieldName:[{$operands[1]} TO {$operands[0]}]";
+                    }
                     break;
 
                 case 'floatGreaterThan':
@@ -440,8 +444,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                         throw new Fisma_Search_Exception("Invalid operands to floatGreaterThan criterion.");
                     }
 
-                    $floatValue = (float)$operands[0];
-                    $searchTerms[] = "$fieldName:[5 TO *]";
+                    $searchTerms[] = "$fieldName:[{$operands[0]} TO *]";
                     break;
 
                 case 'floatLessThan':
@@ -455,7 +458,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 case 'integerBetween':
                     $lowEndIntValue = intval($operands[0]);
                     $highEndIntValue = intval($operands[1]);
-                    $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
+                    
+                    if ($lowEndIntValue < $highEndIntValue) {
+                        $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
+                    } else {
+                        $searchTerms[] = "$fieldName:[$highEndIntValue TO $lowEndIntValue]";
+                    }
                     break;
 
                 case 'integerDoesNotEqual':
