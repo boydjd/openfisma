@@ -345,7 +345,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
             }
             $file = $_FILES['file'];
-            $destinationPath = Fisma::getPath('systemDocument') . "/$organizationId";
+            $destinationPath = Fisma::getPath('systemDocument') . '/' . $organization->id;
             if (!is_dir($destinationPath)) {
                 mkdir($destinationPath);
             }
