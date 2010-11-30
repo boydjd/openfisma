@@ -40,6 +40,14 @@ elements.test.options.cols = "100"
 elements.test.options.rows = "8"
 displayGroups.sa.elements.test = "test"
 
+elements.status.type = "select"
+elements.status.options.label = "Status"
+displayGroups.sa.elements.status = "status"
+
+elements.result.type = "select"
+elements.result.options.label = "Status"
+displayGroups.sa.elements.result = "result"
+
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
 displayGroups.sa.elements.save = "save"
