@@ -275,14 +275,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         if (isset($keywordTokens)) {
             foreach ($keywordTokens as $keyword) {
-                $zslQuery->addTerm(new Zend_Search_Lucene_Index_Term($keyword));
+                $zslQuery->addTerm(new Zend_Search_Lucene_Index_Term(strtolower($keyword)));
             }
 
             // Use lucene index to get IDs of matching documents     
             $index = $this->_openIndex($type);
             $zslResult = $index->find($zslQuery);
         }
-        
+
         // Now use matched IDs to query Doctrine for actual document contents
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
@@ -335,14 +335,19 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         if (isset($zslResult)) {
-            // Create an array of matched Ids from lucene and add to doctrine query 
+            // Create an array of matched Ids from lucene and add to doctrine query.
             $ids = array();
     
             foreach ($zslResult as $hit) {
                 $ids[] = $hit->getDocument()->getField('id')->value;
             }
-            
-            $doctrineQuery->whereIn('a.id', $ids);
+
+            if (count($ids)) {
+                $doctrineQuery->whereIn('a.id', $ids);   
+            } else {
+                // If no matches in Lucene, then we don't need to go any further.
+                return new Fisma_Search_Result(0, 0, array());
+            }      
         }
 
         // Handle soft delete records
@@ -483,7 +488,6 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         // Create a lucene query AND a doctrine query. Each index is used to search different fields.
-        $zslQuery = new Zend_Search_Lucene_Search_Query_Boolean;
         $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
 
         $doctrineQuery = Doctrine_Query::create()
@@ -636,21 +640,27 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     $doctrineQuery->andWhere("$sqlFieldName < ?", $operands[0]);
                     break;
 
-                // The following cases intentionally fall through
                 case 'textContains':
+                    $text = strtolower($operands[0]);
+                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($text, $luceneFieldName), true);
+                    break;
+
                 case 'enumIs':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), true);
+                    $doctrineQuery->andWhere("$sqlFieldName = ?", $operands[0]);
                     break;
 
-                // The following cases intentionally fall through
                 case 'textDoesNotContain':
-                case 'enumIsNot':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), false);
+                    $text = strtolower($operands[0]);
+                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($text, $luceneFieldName), false);
                     break;
 
-                // ZSL doesn't really have an exact match syntax... so fake it
+                case 'enumIsNot':
+                    $doctrineQuery->andWhere("$sqlFieldName <> ?", $operands[0]);
+                    break;
+
+                // ZSL doesn't really have an exact match syntax... so use Doctrine instead
                 case 'textExactMatch':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), true);
+                    $doctrineQuery->andWhere("$sqlFieldName LIKE ?", $operands[0]);
                     break;
 
                 default:
@@ -672,21 +682,58 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     }
             }
         }
-        
-        $zslQuery->addSubquery($zslTermQuery, true);
+
+        // If the query contains only negative terms, then ZSL won't return any results. We need to detect this 
+        // condition and invert the meaning of the query (i.e. turn it from pure negative to pure positive)
+        $signs = $zslTermQuery->getSigns();
+        $flipSigns = true;
+
+        if ($signs) {
+            foreach ($signs as $sign) {
+                if ($sign !== false) {
+                    $flipSigns = false;
+                    break;
+                }
+            }
+        } else {
+            $flipSigns = false;
+        }
+
+        if ($flipSigns) {
+            $terms = $zslTermQuery->getTerms();
+
+            // Recreate the multiterm query with positive terms instead of negative terms
+            $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
+            
+            foreach ($terms as $term) {
+                $zslTermQuery->addTerm($term, true);
+            }
+        }
 
         $index = $this->_openIndex($type);
-        $zslResult = $index->find($zslQuery);
+        
+        if (count($zslTermQuery->getQueryTerms())) {
+            $zslResult = $index->find($zslTermQuery);            
+        }
 
         if (isset($zslResult)) {
-            // Create an array of matched Ids from lucene and add to doctrine query 
+            // Create an array of matched Ids from lucene and add to doctrine query.
             $ids = array();
     
             foreach ($zslResult as $hit) {
                 $ids[] = $hit->getDocument()->getField('id')->value;
             }
-            
-            $doctrineQuery->whereIn('a.id', $ids);
+
+            if (count($ids)) {
+                if ($flipSigns) {
+                    $doctrineQuery->whereNotIn('a.id', $ids);                    
+                } else {
+                    $doctrineQuery->whereIn('a.id', $ids);                    
+                }
+            } else {
+                // If no matches in Lucene, then we don't need to go any further.
+                return new Fisma_Search_Result(0, 0, array());
+            }      
         }
 
         if ($deleted && $table->hasColumn('deleted_at')) {
