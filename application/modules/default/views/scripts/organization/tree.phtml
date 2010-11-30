@@ -79,8 +79,7 @@ function contextMenuHandler(event, eventArgs) {
 
     // Now check which menu item was selected and redirect
     var menuItem = eventArgs[1];
-    var action = (menuItem.index == 0) ? 'view' : 'edit';
-    var url = '/' + model + '/view/v/' + action + '/id/' + organizationId;
+    var url = '/' + model + '/view/oid/' + organizationId;
     window.location = url;
 }
 

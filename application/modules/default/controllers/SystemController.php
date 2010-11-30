@@ -48,8 +48,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     public function viewAction()
     {
+        // Either 'id' (system ID) or 'oid' (organization ID) is required
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $organizationId = $this->getRequest()->getParam('oid');
+        
+        if ($id) {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);            
+        } elseif ($organizationId) {
+            $organization = Doctrine::getTable('Organization')->find($organizationId);            
+            $id = $organization->System->id;
+        } else {
+            throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
+        }
+
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
         $this->view->organization = $organization;
