@@ -36,17 +36,14 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
      */
     protected function _parse($uploadId)
     {
-        $grammar = new Fisma_Inject_Grammar('Nessus');
         $report  = new XMLReader();
-
+        
         // The third parameter is the constant LIBXML_PARSEHUGE from libxml, which is not exposed to XMLReader. 
         // This is fixed in SVN of PHP as of 12/1/09, but until it hits a release version this hack will stay.
         // @TODO Change 1<<19 to LIBXML_PARSEHUGE once it is visible
         if (!$report->open($this->_file, NULL, 1<<19)) {
             throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
         }
-
-        $report->setRelaxNGSchemaSource($grammar);
 
         try {
             $this->_persist($report, $uploadId);
@@ -132,12 +129,6 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                     $itemCounter++;
                 }
             }
-        }
-
-        // Make sure that the XML is valid before continuing. Since XMLReader is stream based, we can't check for
-        // validity until after the XML is completely parsed.
-        if (!$oXml->isValid()) {
-            throw new Fisma_Inject_Exception('XML is not valid.');
         }
 
         foreach ($parsedData as $host) {
