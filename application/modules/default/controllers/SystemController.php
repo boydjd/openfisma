@@ -202,7 +202,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function editAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
@@ -242,7 +242,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msg, $type);
         }
 
-        $this->_redirect("/system/view/id/$id");
+        $this->_redirect("/system/view/oid/$id");
     }
 
     /**
