@@ -73,6 +73,11 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 if ($oXml->name == 'ReportHost') {
                     $parsedData[$hostCounter] = array();
                     $parsedData[$hostCounter]['findings'] = array();
+
+                    if ($oXml->getAttribute('name')) {
+                        $parsedData[$hostCounter]['name'] = $oXml->getAttribute('name');
+                    }
+
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'host-ip') {
                     $parsedData[$hostCounter]['ip'] = $oXml->readString();
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'HOST_END') {
@@ -138,7 +143,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                         if (($finding['severity'] != 'NONE') && ($finding['severity'] != 'LOW')) {
                                                        
                             if (!isset($host['ip'])) {
-                                $host['ip']  = null;
+                                $host['ip']  = $host['name'];
                             }
                                                        
                             // Prepare asset
