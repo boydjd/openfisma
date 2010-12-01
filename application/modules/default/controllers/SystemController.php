@@ -301,7 +301,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             CurrentUser::getInstance()->invalidateAcl();
         }
 
-        return $system->Organization->id;
+        return $system->id;
     }
 
     /**

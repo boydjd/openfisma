@@ -578,7 +578,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
-        parent::createAction();
+        parent::_createObject();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
 
