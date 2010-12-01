@@ -23,3 +23,6 @@ AssessmentPlanEntry:
         SaSecurityControlEnhancement:
             local: saSecurityControlaggregateId
 
+    actAs:
+        Fisma_Doctrine_Behavior_AttachArtifacts: true
+

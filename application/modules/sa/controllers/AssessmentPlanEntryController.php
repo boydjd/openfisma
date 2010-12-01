@@ -136,4 +136,128 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         $tableData['table']['records'] = $rows;
         return $this->_helper->json($tableData);
     }
+
+    /**
+     * Override parent behavior
+     *
+     * The FZCAO::viewAction method calls View::render() at the end for some reason.  I've copied all but that line
+     * here so I wouldn't have to modify the base class implementation to add my extra bits.  This will probably need
+     * to be rewritten after the new search functionality is merged in.
+     *
+     * @return void
+     */
+    public function viewAction()
+    {
+        $id     = $this->_request->getParam('id');
+        $subject = Doctrine::getTable($this->_modelName)->find($id);
+        if (!$subject) {
+            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
+        }
+        $this->_acl->requirePrivilegeForObject('read', $subject);
+
+        $form   = $this->getForm();
+
+        $this->view->assign('editLink', "{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        $form->setReadOnly(true);            
+        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
+        $this->setForm($subject, $form);
+        $this->view->form = $form;
+        $this->view->id   = $id;
+        $this->view->subject = $subject;
+
+        $this->_addArtifactUploadButton();
+        $this->_addArtifactsArray();
+    }
+
+    protected function _addArtifactUploadButton()
+    {
+        // Upload button
+        $uploadPanelButton = new Fisma_Yui_Form_Button(
+            'uploadPanelButton', 
+            array(
+                'label' => 'Upload New Artifact', 
+                'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
+                'onClickArgument' => array(
+                    'id' => $this->view->id,
+                    'server' => array(
+                        'module' => 'sa',
+                        'controller' => 'assessment-plan-entry',
+                        'action' => 'attach-artifact'                        
+                    ),
+                    'callback' => array(
+                        'object' => 'AssessmentPlanEntry',
+                        'method' => 'attachArtifactCallback'
+                    )
+                )
+            )
+        );
+
+        // @todo conditionally disable button for users without access
+        //$uploadPanelButton->readOnly = true;
+        
+        $this->view->uploadPanelButton = $uploadPanelButton;
+    }
+
+    protected function _addArtifactsArray()
+    {
+        $ape = Doctrine::getTable('AssessmentPlanEntry')->find($this->view->id);
+        $artifactCollection = $ape->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);;
+        $artifacts = array();
+        
+        foreach ($artifactCollection as $artifact) {
+            $artifactArray = $artifact->toArray();
+            $artifactArray['iconUrl'] = $artifact->getIconUrl();
+            $artifactArray['fileSize'] = $artifact->getFileSize();
+            
+            $artifacts[] = $artifactArray;
+        }
+
+        $this->view->artifacts = $artifacts;
+    }
+
+    public function attachArtifactAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $comment = $this->getRequest()->getParam('comment');
+        
+        $this->_helper->layout->disableLayout();
+
+        $response = new Fisma_AsyncResponse();
+        
+        try {
+            
+            $ape = Doctrine::getTable('AssessmentPlanEntry')->find($id);
+
+            // If file upload is too large, then $_FILES will be empty (thanks for the helpful behavior, PHP!)
+            if (0 == count($_FILES)) {
+                throw new Fisma_Zend_Exception_User('File size is over the limit.');
+            }
+            
+            // 'file' is the name of the file input element.
+            if (!isset($_FILES['file'])) {
+                throw new Fisma_Zend_Exception_User('You did not specify a file to upload.');
+            }
+
+            $ape->getArtifacts()->attach($_FILES['file'], $comment);
+            
+        } catch (Fisma_Zend_Exception_User $e) {
+            $response->fail($e->getMessage());
+        } catch (Exception $e) {
+            if (Fisma::debug()) {
+                $response->fail("Failure (debug mode): " . $e->getMessage());
+            } else {
+                $response->fail("Internal system error. File not uploaded.");
+            }
+
+            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
+        }
+        
+        $this->view->response = json_encode($response);
+        
+        if ($response->success) {
+            $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
+        }
+    }
+    
+
 }

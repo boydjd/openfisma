@@ -46,6 +46,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/help.js',
                                       '/javascripts/selectallselectnone.js',
                                       '/javascripts/deleteconfirm.js',
+                                      '/javascripts/Fisma/AssessmentPlanEntry.js',
                                       '/javascripts/Fisma/AttachArtifacts.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
