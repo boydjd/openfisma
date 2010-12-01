@@ -233,7 +233,12 @@ Fisma.AttachArtifacts = {
 
         var that = this;
         
-        var postUrl = "/"
+        var module = "";
+        if (this.config.server.module) {
+            module = "/" + encodeURIComponent(this.config.server.module);
+        }
+        var postUrl = module
+                    + "/"
                     + encodeURIComponent(this.config.server.controller)
                     + "/"
                     + encodeURIComponent(this.config.server.action)
