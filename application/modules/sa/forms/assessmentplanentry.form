@@ -45,7 +45,7 @@ elements.status.options.label = "Status"
 displayGroups.sa.elements.status = "status"
 
 elements.result.type = "select"
-elements.result.options.label = "Status"
+elements.result.options.label = "Result"
 displayGroups.sa.elements.result = "result"
 
 elements.save.type = "Form_Button_Submit"
