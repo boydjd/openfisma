@@ -508,3 +508,21 @@ Privilege:
         resource: security_authorization
         action: delete
         description: Delete Security Authorization
+
+    # Assessment Plan Entry CRUD
+    sa_ape_create:
+        resource: assessment_plan_entry
+        action: create
+        description: Create Assessment Plan Entry
+    sa_ape_read:
+        resource: assessment_plan_entry
+        action: read
+        description: Read Assessment Plan Entry
+    sa_ape_update:
+        resource: assessment_plan_entry
+        action: update
+        description: Update Assessment Plan Entry
+    sa_ape_delete:
+        resource: assessment_plan_entry
+        action: delete
+        description: Delete Assessment Plan Entry

@@ -272,6 +272,10 @@ Role:
             - sa_read
             - sa_update
             - sa_delete
+            - sa_ape_create
+            - sa_ape_read
+            - sa_ape_update
+            - sa_ape_delete
             - sa_it_read
             - sa_it_create
             - sa_it_update

@@ -175,6 +175,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
    
     public function assessmentPlanAction()
     {
+        $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
     }
 }
