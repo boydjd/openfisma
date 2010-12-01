@@ -280,11 +280,26 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Create a subject model/record
+     * Display a create page for a single record. 
+     *
+     * All of the default logic for creating a record is performed in _createObject, so that child classes can use the
+     * default logic but still render their own views.
      *
      * @return void
      */
     public function createAction()
+    {
+        $this->_createObject();
+
+        $this->renderScript('object/create.phtml');
+    }
+
+    /**
+     * A protected method which holds all of the logic for the create page but does not actually render a view
+     *
+     * @return void
+     */
+    public function _createObject()
     {
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
@@ -319,10 +334,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
-
-        $this->renderScript('object/create.phtml');
     }
-
     /**
      * Display an edit page for a single record.
      *
