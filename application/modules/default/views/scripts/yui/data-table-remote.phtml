@@ -148,8 +148,13 @@
             
             if (column.formatter == Fisma.TableFormat.formatCheckbox) {
                 var theadCheckbox = YAHOO.util.Dom.get('dt-checkbox');
-                var records = this.getRecordSet().getRecords();
                 
+                // Load records for the current page
+                var paginator = dataTable.getState().pagination.paginator;
+                var startRecord = (paginator.getCurrentPage() - 1) * paginator.getRowsPerPage();
+                console.log(startRecord);
+                var records = this.getRecordSet().getRecords(startRecord);
+
                 for (var i = 0; i < records.length; i++) {
                     if (records[i].getData('deleted_at')) {
                         continue;
