@@ -405,6 +405,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
 
+        if (!$this->_isDeletable()) {
+            throw new Fisma_Zend_Exception("This model is marked as not deletable");
+        }
+
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('delete', $subject);
         }
@@ -444,6 +448,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $this->_acl->requirePrivilegeForClass('delete', $this->getAclResourceName());
         $recordIds = Zend_Json::decode($this->_request->getParam('records'));
+
+        if (!$this->_isDeletable()) {
+            throw new Fisma_Zend_Exception("This model is marked as not deletable");
+        }
 
         if (empty($recordIds)) {
             return $this->_helper->json(array('msg' => 'An error has occured.', 'status' => 'warning'));
@@ -529,7 +537,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         reset($searchableFields);
         
         // If user can delete objects, then add a checkbox column
-        if ($this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+        if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $column = new Fisma_Yui_DataTable_Column('<input id="dt-checkbox" type="checkbox">',
                                                      false,
                                                      "Fisma.TableFormat.formatCheckbox",
@@ -864,7 +872,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         
         // Remove the delete button if the user doesn't have the right to click it
-        if (!$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+        if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');
         }
 
@@ -897,7 +905,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
@@ -920,10 +928,23 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
         return $links;
+    }
+    
+    /**
+     * Returns true if the model is deletable, false otherwise.
+     * 
+     * The default implementation returns true because most models are deletable. Models which are not deletable should
+     * override this method in their controller and return false.
+     * 
+     * @return bool
+     */
+    protected function _isDeletable()
+    {
+        return true;
     }
 }

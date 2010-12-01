@@ -7013,7 +7013,7 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
 
         // Handle organization field
         var organization = oRecord.getData('System');
@@ -7059,6 +7059,17 @@ Fisma.TableFormat = {
             overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
         } else if (from) {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+        } else {
+            // This is the TOTAL column
+            var yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            var yesterdayString = yesterday.getFullYear() 
+                                + '-' 
+                                + (yesterday.getMonth() + 1) 
+                                + '-' 
+                                + yesterday.getDate();
+
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
 
         elCell.innerHTML = "<a href="
