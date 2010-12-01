@@ -1,1 +1,12 @@
 SaSecurityControlAggregate:
+    columns:
+        saImplementationId:
+            type: integer
+
+    relations:
+        Implementation:
+            class: SaImplementation
+            local: saImplementationId 
+            foreign: id
+            foreignType: one
+            type: one

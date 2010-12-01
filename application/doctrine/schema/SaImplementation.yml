@@ -1,0 +1,34 @@
+SaImplementation:
+    columns:
+        status:
+            type: enum
+            values: ['Not Started', 'In Progress', 'Complete']
+            default: 'Not Started'
+            notnull: true
+            extra:
+                auditLog: true
+                logicalName: ISSP Implementation Status
+
+        description:
+            type: string
+            extra:
+                purify: html
+                auditLog: true
+                logicalName: ISSP Implementation Description
+                searchIndex: unstored
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            modified:
+                name: modifiedTs
+                type: timestamp
+    
+        Fisma_Doctrine_Behavior_AuditLoggable:
+            logCreateObject: true
+            logUpdateField: true
+            logDeleteObject: true
+
+        SoftDelete: true

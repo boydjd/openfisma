@@ -1037,3 +1037,7 @@ form dl.zend_form dt, form dl.zend_form dd {
 form .searchForm {
     display: inline;
 }
+
+div#addInformationTypes {
+    display: none;
+}
