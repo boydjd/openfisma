@@ -259,5 +259,43 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         }
     }
     
+    /**
+     * Override parent implementation to automatically generate findings for Other Than Satisfied assessments.
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return integer ID of the object saved. 
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject=null)
+    {
+        $oldResult = is_null($subject) ? null : $subject->result;
+        $newResult = $form->getValue('result');
 
+        $id = parent::saveValue($form, $subject);
+
+        if ($newResult == 'Other Than Satisfied' && $oldResult != $newResult) {
+            if (is_null($subject)) {
+                $subject = Doctrine::getTable('AssessmentPlanEntry')->find($id);
+            }
+            $finding = new Finding();
+            $sasca = $subject->SaSecurityControlAggregate;
+            if ($sasca instanceof SaSecurityControl) {
+                $finding->ResponsibleOrganization = $sasca->SecurityAuthorization->Organization;
+                $finding->SecurityControl = $sasca->SecurityControl;
+            } else if ($sasca instanceof SaSecurityControlEnhancement) {
+                $finding->ResponsibleOrganization = $sasca->SaSecurityControl->SecurityAuthorization->Organization;
+                $finding->SecurityControl = $sasca->SaSecurityControl->SecurityControl;
+            } else {
+                throw new Fisma_Zend_Exception('Unknown SaSecurityControlAggregate type: ' . get_class($subject));
+            }
+            $finding->discoveredDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
+            $finding->CreatedBy = $this->_me;
+            $finding->Source = Doctrine::getTable('Source')->findOneByNickname('C&A');
+            $finding->save();
+            $this->view->priorityMessenger('Created Finding for Other Than Satisfied Assessment.', 'info');
+        }
+
+        return $id;
+    }
 }
