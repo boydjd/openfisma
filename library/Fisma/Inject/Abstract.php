@@ -197,7 +197,7 @@ abstract class Fisma_Inject_Abstract
         if ($duplicateFinding) {
             $this->_duplicates[] = array(
                 'vulnerability' => $duplicateFinding,
-                'action' => $duplicateFinding->status == 'CLOSED' ? 'REOPEN' : 'SUPPRESS',
+                'action' => $duplicateFinding->status == 'FIXED' ? 'REOPEN' : 'SUPPRESS',
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
             );
             // Deleted findings are not saved, so we exit the _save routine
