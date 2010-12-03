@@ -14,6 +14,7 @@ AssessmentPlanEntry:
             type: enum
             values: ["Satisfied", "Other Than Satisfied"]
             default: null
+        findingId: integer
     relations:
         SaSecurityControlAggregate:
             local: saSecurityControlaggregateId
@@ -22,7 +23,11 @@ AssessmentPlanEntry:
             local: saSecurityControlaggregateId
         SaSecurityControlEnhancement:
             local: saSecurityControlaggregateId
-
+        Finding:
+            local: findingId
+            foreign: id
+            foreignAlias: AssessmentPlanEntry
+            foreignType: one
     actAs:
         Fisma_Doctrine_Behavior_AttachArtifacts: true
 

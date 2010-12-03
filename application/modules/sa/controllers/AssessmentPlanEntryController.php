@@ -293,6 +293,8 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             $finding->CreatedBy = $this->_me;
             $finding->Source = Doctrine::getTable('Source')->findOneByNickname('C&A');
             $finding->save();
+            $subject->Finding = $finding;
+            $subject->save();
             $this->view->priorityMessenger('Created Finding for Other Than Satisfied Assessment.', 'info');
         }
 
