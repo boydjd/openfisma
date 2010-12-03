@@ -11,6 +11,10 @@ SecurityAuthorization:
             values: [PENDING, ACTIVE, RETIRED]
             notnull: true
             default: PENDING
+        result:
+            type: enum
+            values: ["Pending Authorization Decision", "Authorized to Operate", "Authorization Rescinded"]
+        atoDate: date
 
     relations:
         Organization:
