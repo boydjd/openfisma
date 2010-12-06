@@ -74,12 +74,17 @@ function contextMenuHandler(event, eventArgs) {
     var model = (type == 'agency' || type == 'bureau' || type == 'organization') 
               ? 'organization'
               : 'system';
+    
+    // The organization controller expects a parameter called "id" while the system controller expects "oid"
+    var idParameter = (type == 'agency' || type == 'bureau' || type == 'organization') 
+                    ? 'id'
+                    : 'oid';
 
     var organizationId = treeMap[parentEl.id]['id'];
 
     // Now check which menu item was selected and redirect
     var menuItem = eventArgs[1];
-    var url = '/' + model + '/view/oid/' + organizationId;
+    var url = '/' + model + '/view/' + idParameter + '/' + organizationId;
     window.location = url;
 }
 
