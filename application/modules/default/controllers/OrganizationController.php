@@ -253,6 +253,29 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Override parent to check if the object is a system object, in which case the user is redirected.
+     * 
+     * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong 
+     * controller. It will write a log message for any bad URLs, so after some time in production we can see where
+     * the other bad links are and eventually remove this crutch.
+     */
+    public function viewAction()
+    {
+        $organization = Doctrine::getTable('Organization')->find($this->getRequest()->getParam('id'));
+
+        if ('system' == $organization->orgType) {
+            $message = "Organization controller: expected an organization object but got a system object. Referer: "
+                     . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a');
+
+            Fisma::getLogInstance(CurrentUser::getInstance())->warn($message);
+
+            $this->_redirect('/system/view/oid/' . $organization->id);
+        }
+
+        parent::viewAction();
+    }
+
+    /**
      * Update organization information after submitting an edit form.
      *
      * @return void
