@@ -334,6 +334,7 @@ Incident:
             foreignAlias: Incidents
 
     actAs:
+        SoftDelete:
         Fisma_Doctrine_Behavior_Commentable: true
         
         Fisma_Doctrine_Behavior_Lockable: true

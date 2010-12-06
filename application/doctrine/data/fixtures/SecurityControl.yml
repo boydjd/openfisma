@@ -216,7 +216,7 @@ SecurityControl:
 
     Rev0_AC_13:
         code: AC-13
-        name: Supervision And Review — Access Control
+        name: Supervision And Review -- Access Control
         class: TECHNICAL
         family: Access Control
         control: >
@@ -2967,7 +2967,7 @@ SecurityControl:
 
     Rev1_AC_13:
         code: AC-13
-        name: Supervision And Review — Access Control
+        name: Supervision And Review -- Access Control
         class: TECHNICAL
         family: Access Control
         control: >
@@ -3593,7 +3593,7 @@ SecurityControl:
             <p>This control is closely related to and mutually supportive of the activities required in monitoring 
             configuration changes to the information system. An effective continuous monitoring program results in 
             ongoing updates to the information system security plan, the security assessment report, and the plan of 
-            action and milestones—the three principle documents in the security accreditation package. A rigorous and 
+            action and milestones--the three principle documents in the security accreditation package. A rigorous and 
             well executed continuous monitoring process significantly reduces the level of effort required for the 
             reaccreditation of the information system. NIST Special Publication 800-37 provides guidance on the 
             continuous monitoring process. NIST Special Publication 800-53A provides guidance on the assessment of 
@@ -6287,7 +6287,7 @@ SecurityControl:
 
     Rev2_AC_13:
         code: AC-13
-        name: Supervision And Review — Access Control
+        name: Supervision And Review -- Access Control
         class: TECHNICAL
         family: Access Control
         control: >
@@ -6913,7 +6913,7 @@ SecurityControl:
             <p>This control is closely related to and mutually supportive of the activities required in monitoring 
             configuration changes to the information system. An effective continuous monitoring program results in 
             ongoing updates to the information system security plan, the security assessment report, and the plan of 
-            action and milestones—the three principle documents in the security accreditation package. A rigorous and 
+            action and milestones--the three principle documents in the security accreditation package. A rigorous and 
             well executed continuous monitoring process significantly reduces the level of effort required for the 
             reaccreditation of the information system. NIST Special Publication 800-37 provides guidance on the 
             continuous monitoring process. NIST Special Publication 800-53A provides guidance on the assessment of 
