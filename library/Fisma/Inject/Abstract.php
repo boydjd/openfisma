@@ -65,7 +65,7 @@ abstract class Fisma_Inject_Abstract
      * 
      * @var array
      */
-    private $_totals = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
+    private $_totals = array('reopened' => 0, 'created' => 0, 'deleted' => 0, 'reviewed' => 0);
 
     /**
      * collection of findings to be created 
