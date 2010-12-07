@@ -127,7 +127,7 @@
                           name="finding[responsibleOrganizationId]" 
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
-                    <a href="/organization/view/id/<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
+                    <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
                          <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
                          - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
                     </a>

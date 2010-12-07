@@ -970,6 +970,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function findingAction() 
     {
         $this->_viewFinding();
+        
+        $finding = $this->view->finding;
+        $organization = $finding->ResponsibleOrganization;
+
+        // For users who can view organization or system URLs, construct that URL
+        $controller = ($organization->orgType == 'system' ? 'system' : 'organization');
+        $idParameter = ($organization->orgType == 'system' ? 'oid' : 'id');
+        $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
+
         $this->view->keywords = $this->_request->getParam('keywords');
         $this->_helper->layout->setLayout('ajax');
     }

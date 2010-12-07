@@ -152,7 +152,6 @@
                 // Load records for the current page
                 var paginator = dataTable.getState().pagination.paginator;
                 var startRecord = (paginator.getCurrentPage() - 1) * paginator.getRowsPerPage();
-                console.log(startRecord);
                 var records = this.getRecordSet().getRecords(startRecord);
 
                 for (var i = 0; i < records.length; i++) {

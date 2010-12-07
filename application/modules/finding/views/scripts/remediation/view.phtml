@@ -11,7 +11,7 @@
                 if ($this->acl()->hasPrivilegeForObject('delete', $this->finding)) {
                     $deleteFindingButtonConfig = array(
                         'value' => 'Delete Finding',
-                        'href' => '/finding/index/delete/id/' . $this->finding->id
+                        'href' => '/finding/remediation/delete/id/' . $this->finding->id
                     );
 
                     $deleteFindingButton = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
