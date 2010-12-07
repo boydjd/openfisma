@@ -92,7 +92,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
          */
         if (is_null($subject)) {
             // fetch the system and use its impact values to set the impact of this SA
-            $org = Doctrine::getTable('Organization')->find($form->getValue(sysOrgId));
+            $org = Doctrine::getTable('Organization')->find($form->getValue('sysOrgId'));
             $system = $org->System;
             if (empty($system)) {
                 throw new Fisma_Exception('A non-system was set to the Security Authorization');

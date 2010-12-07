@@ -137,7 +137,7 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
                 'name' => $control->name,
                 'enhancements' => $enhancements,
                 'common' => $saControl->common ? true : false,
-                'inherits' => $saControl->Inherits->nickname
+                'inherits' => is_null($saControl->Inherits) ? null : $saControl->Inherits->nickname
             );
         }
         $this->view->treeData = $data;
