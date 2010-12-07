@@ -145,6 +145,9 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             );
         }
         $asset['addressPort'] = $port[1]; // match the parenthesized part of the regex
+
+        $asset['source'] = 'scan';
+
         return $asset;
     }
 
