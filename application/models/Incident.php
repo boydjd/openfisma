@@ -89,7 +89,7 @@ class Incident extends BaseIncident
         $rejectStep->name = 'Reject Incident';
         $rejectStep->cardinality = 0;
 
-        $rejectStep->completeStep();
+        $rejectStep->completeStep($comment);
         $rejectStep->save();
         
         $this->status = 'closed';
