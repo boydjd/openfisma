@@ -181,6 +181,17 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     }
 
     /**
+     * @return void
+     */
+    public function authorizationAction()
+    {
+        $this->view->id = $this->_request->getParam('id');
+        $dataTable = $this->_baseAssessmentPlanDataTable();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, 'findingId'));
+        $this->view->dataTable = $dataTable;
+    }
+
+    /**
      * @return Fisma_Yui_DataTable_Abstract
      */
     protected function _baseAssessmentPlanDataTable()

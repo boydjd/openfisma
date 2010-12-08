@@ -1,0 +1,10 @@
+<?php 
+$goBack = new Fisma_Yui_Form_Button_Link('goBack',
+                                       array('value' => 'Go Back',
+                                             'imageSrc' => '/images/left_arrow.png',
+                                             'href' => '/sa/security-authorization/view/id/' . $this->id));
+echo $this->escape($goBack, 'none');
+
+Fisma_Format_Section::startSection("Authorization");
+echo $this->escape($this->dataTable, 'none');
+Fisma_Format_Section::stopSection();
