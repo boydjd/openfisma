@@ -59,12 +59,13 @@ class Fisma_Zend_Form_Element_IncidentWorkflowStep extends Zend_Form_Element
     {
         $label = $this->getLabel();
         $step = $this->_step;
+        $stepName = $this->getView()->escape($step->name);
 
         if ($this->readOnly) {
             $render = '<tr class="incidentStep"><td>'
                     . (empty($label) ? '&nbsp;' : "$label:")
                     . '</td><td><p>Name:&nbsp;'
-                    . $step->name
+                    . $stepName
                     . '</p><p>'
                     . 'Role:&nbsp;'
                     . (isset($this->_roles[$this->_defaultRole]) ? $this->_roles[$this->_defaultRole] : '')
@@ -88,7 +89,7 @@ class Fisma_Zend_Form_Element_IncidentWorkflowStep extends Zend_Form_Element
             $render = '<tr class="incidentStep"><td>'
                     . (empty($label) ? '&nbsp;' : "$label:")
                     . "</td><td><p>"
-                    . "Name:&nbsp;<input size=\"80\" name=\"stepName[]\" type=\"text\" value=\"$step->name\"></p>"
+                    . "Name:&nbsp;<input size=\"80\" name=\"stepName[]\" type=\"text\" value=\"$stepName\"></p>"
                     . "<p>Role:&nbsp;$roleSelect"
                     . "<p>Description:&nbsp;"
                     . "<textarea name=\"stepDescription[]\" rows=8 cols=100>$step->description</textarea></p>"
