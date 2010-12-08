@@ -70,6 +70,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         $order  = $this->_request->getParam('order');
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
         $saId = $this->_request->getParam('said');
+        $offset = $this->_request->getParam('start', 0);
 
         //filter the sortby to prevent sqlinjection
         $subjectTable = Doctrine::getTable($this->_modelName);
@@ -104,7 +105,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             ->whereIn('sasca.id', $sasca->toKeyValueArray('id', 'id'))
             ->orderBy("$sortBy $order")
             ->limit($this->_paging['count'])
-            ->offset($this->_paging['startIndex']);
+            ->offset($offset);
  
         //initialize the data rows
         $tableData    = array('table' => array(
