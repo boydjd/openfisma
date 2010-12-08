@@ -257,7 +257,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Generator extends Doctrine_Record_
         $query = $this->query($instance)->addWhere('id = ?', $id);
         $resultSet = $query->execute();
 
-        if (count($resultSet > 0)) {
+        if (count($resultSet) > 0) {
             return $resultSet[0];
         } else {
             return false;
