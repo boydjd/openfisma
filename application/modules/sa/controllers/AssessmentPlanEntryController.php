@@ -134,6 +134,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         $rows         = $this->handleCollection($rows);
         $tableData['table']['recordsReturned'] = count($rows);
         $tableData['table']['totalRecords'] = $totalRecords;
+        $tableData['totalRecords'] = $totalRecords;
         $tableData['table']['records'] = $rows;
         return $this->_helper->json($tableData);
     }

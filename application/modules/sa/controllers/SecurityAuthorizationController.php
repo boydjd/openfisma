@@ -177,5 +177,29 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
+        $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
+    }
+
+    /**
+     * @return Fisma_Yui_DataTable_Abstract
+     */
+    protected function _baseAssessmentPlanDataTable()
+    {
+        $id = $this->_request->getParam('id');
+        $dataTable = new Fisma_Yui_DataTable_Remote();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, 'id', true))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, 'code'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Enhancement', true, null, 'enhancement'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Procedure', true, null, 'number'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Status', true, null, 'status'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Result', true, null, 'result'))
+                  ->setDataUrl('/sa/assessment-plan-entry/search/said/' . $id)
+                  ->setResultVariable('table.records')
+                  ->setRowCount(20)
+                  ->setInitialSortColumn('id')
+                  ->setSortAscending(true)
+                  ->setClickEventBaseUrl('/sa/assessment-plan-entry/view/id/')
+                  ->setClickEventVariableName('id');
+        return $dataTable;
     }
 }
