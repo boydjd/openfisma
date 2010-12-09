@@ -267,8 +267,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 // Decorators for the timestamp
                 $timestamp = $formPart->getElement('incidentDate');
                 $timestamp->clearDecorators();
-                $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
                 $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Incident_Create);
+                $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Date);
                 $tz = $formPart->getElement('incidentTimezone');
                 $tz->addMultiOptions($this->_timezones);
                 break;
