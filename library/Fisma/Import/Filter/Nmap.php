@@ -70,14 +70,12 @@ class Fisma_Import_Filter_Nmap
         $this->_orgSystemId = $orgSystemId;
         $this->_networkId = $networkId;
 
-        $grammar = new Fisma_Inject_Grammar('Nmap');
         $report = new XMLReader();
 
         if (!$report->open($this->_filePath, NULL, 1<<19)) {
             return FALSE;
         }
 
-        $report->setRelaxNgSchemaSource($grammar);
         $this->_report = $report;
     }
 
@@ -122,10 +120,6 @@ class Fisma_Import_Filter_Nmap
         $portCounter = 0;
 
         while ($this->_report->read()) {
-            if (!$this->_report->isValid()) {
-                throw new Fisma_Zend_Exception('Bad XML!');
-            }
-
             if ($this->_report->depth >= 1 && $this->_report->nodeType == XMLReader::ELEMENT) {
                 if ($this->_report->name == 'host') {
                     $parsedData[$hostCounter] = array();

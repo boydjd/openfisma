@@ -95,7 +95,29 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $subject->save();
         return $subject->id;
     }
-    
+
+    /**
+     * Customize the toolbar buttons
+     *
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = parent::getToolbarButtons();
+
+        if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
+                'importAssetsButton',
+                array(
+                    'value' => 'Import Assets',
+                    'href' => $this->getBaseUrl() . '/import'
+                )
+            );
+        }
+
+        return $buttons;
+    }
+
     /**
      * Import assets from an uploaded XML file using an import plugin
      */
