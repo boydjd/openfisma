@@ -547,7 +547,29 @@ Fisma.Search = function() {
             urlPieces[urlPieces.length-1] = 'multi-delete';
             
             var multiDeleteUrl = urlPieces.join('/');
-            
+
+            var onDataTableRefresh = {
+                success : function (request, response, payload) {
+                    dataTable.onDataReturnReplaceRows(request, response, payload);
+
+                    // Update YUI's visual state to show sort on first data column
+                    var sortColumnIndex = 0;
+                    var sortColumn;
+                    
+                    do {
+                        sortColumn = dataTable.getColumn(sortColumnIndex);
+                        
+                        sortColumnIndex++;
+                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
+                    dataTable.get('paginator').setPage(1, true);
+                },
+                failure : dataTable.onDataReturnReplaceRows,
+                scope : dataTable,
+                argument : dataTable.getState()
+            }
+
             // Create a post string containing the IDs of the records to delete and the CSRF token
             var postString = "csrf="
                            + document.getElementById('searchForm').csrf.value
@@ -569,8 +591,8 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
-                        var searchForm = document.getElementById('searchForm');
-                        Fisma.Search.handleSearchEvent(searchForm);
+                        dataTable.showTableMessage("Loading...");
+                        dataTable.getDataSource().sendRequest('', onDataTableRefresh);
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
