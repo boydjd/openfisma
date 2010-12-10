@@ -136,7 +136,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
         // If the parent node isn't found, then return an impossible condition to prevent matching any objects
         if (!$organization) {
-            return array(-1);
+            return array(0);
         }
 
         $idQuery = Doctrine_Query::create()
