@@ -351,9 +351,15 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         // Handle soft delete records
-        if ($deleted && $table->hasColumn('deleted_at')) {
-            $doctrineQuery->addSelect('a.deleted_at')
-                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+        if ($table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at');
+
+            if ($deleted) {
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+            } else {
+                // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
+                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+            }
         }
         
         // Add ACL constraints
@@ -739,9 +745,16 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             }      
         }
 
-        if ($deleted && $table->hasColumn('deleted_at')) {
-            $doctrineQuery->addSelect('a.deleted_at')
-                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+        // Handle soft delete records
+        if ($table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at');
+
+            if ($deleted) {
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+            } else {
+                // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
+                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+            }
         }
         
         // Add ACL constraints
