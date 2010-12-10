@@ -745,12 +745,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $aclTerms = $this->_getAclTerms($table);
         $aclFields = array();
 
-        foreach ($aclTerms as $aclTerm) {
-            if (!isset($aclFields[$aclTerm['field']])) {
-                $aclFields[$aclTerm['field']] = array();
-            }
+        if ($aclTerms) {
+            foreach ($aclTerms as $aclTerm) {
+                if (!isset($aclFields[$aclTerm['field']])) {
+                    $aclFields[$aclTerm['field']] = array();
+                }
 
-            $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+                $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+            }
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
