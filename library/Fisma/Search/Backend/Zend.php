@@ -665,16 +665,16 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
-                    if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
-                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idProvider'];
+                    if (isset($searchableFields[$luceneFieldName]['extraCriteria'][$operator])) {
+                        $callback = $searchableFields[$luceneFieldName]['extraCriteria'][$operator]['idProvider'];
 
                         $ids = call_user_func_array($callback, $operands);
 
-                        if ($customTerms === false) {
+                        if ($ids === false) {
                             throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
                         }
 
-                        $fieldName = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idField'];
+                        $fieldName = $searchableFields[$luceneFieldName]['extraCriteria'][$operator]['idField'];
                         
                         $doctrineQuery->whereIn("a.$fieldName", $ids);
                     } else {

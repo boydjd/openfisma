@@ -7,6 +7,11 @@
 var findingSummary;
 
 YAHOO.util.Event.onDOMReady(function () {
+    // Reset popup menus to default state (some browsers will maintain the state if the user hits the back button
+    document.getElementById('types').selectedIndex = 0;
+    document.getElementById('sources').selectedIndex = 0;
+
+    // Load summary data
     YAHOO.util.Connect.asyncRequest('GET', 
                                     '/finding/remediation/summary-data/format/json', 
                                     {
@@ -93,12 +98,21 @@ function menuHandler(source) {
             + '/format/json';
     reloadTable(url);
 
-    <?php foreach ($this->statusArray as $status): ?>
-    document.getElementById('finding_summary_search_<?php echo $this->escape($status, 'url')?>').href = 
-        '/finding/remediation/searchbox/status/<?php echo $this->escape($status, 'url')?>' 
-        + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-        + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value);
-    <?php endforeach; ?>
+    <?php 
+    foreach ($this->statusArray as $status):
+        $statusId = 'finding_summary_search_' 
+                  . $this->escape($status, 'url');
+
+        $url = '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/'
+             . $this->escape($status, 'url');
+    ?>
+        var href = "<?php echo $this->escape($url, 'none'); ?>"
+                 + ((selectedType.value == 'ALL') ? '' : '/type/enumIs/' + selectedType.value)
+                 + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/source/textExactMatch/' + selectedSource.value);
+        document.getElementById('<?php echo $this->escape($statusId, 'none'); ?>').href = href;
+    <?php 
+    endforeach; 
+    ?>
 }
 </script>
 
