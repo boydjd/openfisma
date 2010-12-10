@@ -35,6 +35,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'Incident';
 
     /**
+     * Override parent in order to turn off default ACL checks.
+     * 
+     * Incident ACL checks are unusual and are performed within this controller, not the parent.
+     */
+    protected $_enforceAcl = false;
+
+    /**
      * Timezones
      * 
      * @todo this doesn't belong here
