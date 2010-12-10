@@ -134,6 +134,11 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     {
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
+        // If the parent node isn't found, then return an impossible condition to prevent matching any objects
+        if (!$organization) {
+            return array(-1);
+        }
+
         $idQuery = Doctrine_Query::create()
                    ->select('id')
                    ->from('Organization')
@@ -148,12 +153,6 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             foreach ($row as $column => $value) {
                 $ids[] = $value;
             }
-        }
-        
-        // If $ids is empty, then the root node nickname doesn't exist anywhere in the tree. Return an impossible
-        // condition (no record has primary key == 0) to prevent any matching search records.
-        if (0 === count($ids)) {
-            $ids[] = 0;
         }
         
         return $ids;
