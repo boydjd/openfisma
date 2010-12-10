@@ -269,7 +269,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $canSearch = (is_numeric($keywordToken) || !$isNumberField);
 
                     if ($canSearch) {
-                        $searchTerms[] = $documentFieldName . ':' . $keywordToken;
+                        $searchTerms[] = $documentFieldName . ':"' . $keywordToken . '"';
                     }
                 }
             }
