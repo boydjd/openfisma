@@ -568,7 +568,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
             switch ($operator) {
                 case 'dateAfter':
-                    $doctrineQuery->andWhere("$sqlFieldName => ?", $operands[0]);
+                    $doctrineQuery->andWhere("$sqlFieldName >= ?", $operands[0]);
                     break;
 
                 case 'dateBefore':
