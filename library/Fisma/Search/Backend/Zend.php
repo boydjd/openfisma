@@ -410,15 +410,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();
+        $rootAlias = $relationAliases[$type];
 
         foreach ($doctrineResult as $row) {
             $rowData = array();
 
             // Some models don't explicitly include "id" but that needs to be included in the search results
             if (!isset($searchableFields['id'])) {
-                $tableAlias = $relationAliases[$type];
-                
-                $rowData['id'] = $row[$tableAlias . '_id'];
+                $rowData['id'] = $row[$rootAlias . '_id'];
             }
 
             foreach ($searchableFields as $columnName => $columnDefinition) {
@@ -449,6 +448,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 }
 
                 $rowData[$columnName] = $columnValue;
+            }
+
+            if ($deleted && $table->hasColumn('deleted_at')) {
+                $rowData['deleted_at'] = $row[$rootAlias . '_deleted_at'];
             }
 
             $tableData[] = $rowData;
@@ -795,15 +798,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();
+        $rootAlias = $relationAliases[$type];
 
         foreach ($doctrineResult as $row) {
             $rowData = array();
             
             // Some models don't explicitly include "id" but that needs to be included in the search results
             if (!isset($searchableFields['id'])) {
-                $tableAlias = $relationAliases[$type];
-                
-                $rowData['id'] = $row[$tableAlias . '_id'];
+                $rowData['id'] = $row[$rootAlias . '_id'];
             }
 
             foreach ($searchableFields as $columnName => $columnDefinition) {
@@ -834,6 +836,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 }
 
                 $rowData[$columnName] = $columnValue;
+            }
+
+            if ($deleted && $table->hasColumn('deleted_at')) {
+                $rowData['deleted_at'] = $row[$rootAlias . '_deleted_at'];
             }
 
             $tableData[] = $rowData;
