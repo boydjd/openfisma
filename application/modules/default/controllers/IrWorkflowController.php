@@ -73,15 +73,15 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
         // Handle special cases of merging workflow steps
         $post = $this->getRequest()->getPost();
 
-        if (isset($post['stepName']) && is_array($post['stepName'])) {
-            
-            // Get existing steps
-            $stepsQuery = Doctrine_Query::create()
-                          ->from('IrStep')
-                          ->where('workflowId = ?', $workflowId)
-                          ->orderBy('cardinality');
+        // Get existing steps
+        $stepsQuery = Doctrine_Query::create()
+                      ->from('IrStep')
+                      ->where('workflowId = ?', $workflowId)
+                      ->orderBy('cardinality');
 
-            $steps = $stepsQuery->execute();
+        $steps = $stepsQuery->execute();
+
+        if (isset($post['stepName']) && is_array($post['stepName'])) {
             $currentStepNumber = 1;
 
             // Loop over posted steps' data
@@ -116,6 +116,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             // Deep-refresh the workflow object instance in case somebody else wants to use it (and we've mucked with
             // it's relations in the loops above)
             $workflowDefinition->refresh(true);
+        } else if (count($steps) > 0) {
+            $steps->delete();
         }
 
         Doctrine_Manager::connection()->commit();
