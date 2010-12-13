@@ -13,4 +13,16 @@
 class IrSubCategory extends BaseIrSubCategory
 {
 
+    public function preDelete($event)
+    {
+        
+        if (count($this->Incident) > 0) {
+            throw new Fisma_Zend_Exception_User(
+            /** @todo english */
+                'This sub-category can not be deleted because it is already associated with one or more incidents'
+            );
+        }
+
+    }
+
 }

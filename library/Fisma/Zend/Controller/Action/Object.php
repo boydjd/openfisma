@@ -425,19 +425,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $this->_acl->requirePrivilegeForObject('delete', $subject);
         }
 
-        // Ensure we are not deleting an ir(sub)category that has incidents associated with it
-        if ($this->_modelName == 'IrSubCategory') {
-            $q = new Doctrine_Query();
-            $assocIncCount = $q->from('Incident')->where('categoryid = ?', $id)->count();
-            if ($assocIncCount > 0) {
-                $msg = 'You cannot delete a sub-category that has incidences associated with it.';
-                $type = 'warning';
-                $this->view->priorityMessenger($msg, $type);
-                $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
-                return;
-            }
-        }
-
         if (!$subject) {
             $msg   = "Invalid {$this->_modelName} ID";
             $type = 'warning';
