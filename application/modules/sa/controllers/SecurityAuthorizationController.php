@@ -187,7 +187,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $this->view->id = $this->_request->getParam('id');
         $dataTable = $this->_baseAssessmentPlanDataTable();
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, 'findingId'));
+        $dataTable->setDataUrl('/sa/assessment-plan-entry/search/said/' . $this->view->id . '/otherThanSatisfied/true')
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, 'findingId'));
         $this->view->dataTable = $dataTable;
     }
 

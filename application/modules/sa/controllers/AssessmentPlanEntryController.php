@@ -71,6 +71,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         $keywords  = html_entity_decode($this->_request->getParam('keywords')); 
         $saId = $this->_request->getParam('said');
         $offset = $this->_request->getParam('start', 0);
+        $otherThanSatisfied = $this->_request->getParam('otherThanSatisfied', false);
 
         //filter the sortby to prevent sqlinjection
         $subjectTable = Doctrine::getTable($this->_modelName);
@@ -107,6 +108,11 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             ->limit($this->_paging['count'])
             ->offset($offset);
  
+        // for authorization step, we only want to show assessments resulting in "Other Than Satisfied"
+        if ($otherThanSatisfied) {
+            $query->andWhere('ape.result = ?', 'Other Than Satisfied');
+        }
+
         //initialize the data rows
         $tableData    = array('table' => array(
                             'recordsReturned' => 0,
