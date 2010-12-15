@@ -2013,7 +2013,7 @@ function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
   if (mimeType) ret.embedAttrs["type"] = mimeType;
   return ret;
 }
-Fisma.AttachArtifacts={sampleInterval:1000,apcId:null,yuiProgressBar:null,pollingTimeoutId:null,lastAsyncRequest:null,pollingEnabled:false,config:null,yuiPanel:null,showPanel:function(d,b){Fisma.AttachArtifacts.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Upload Artifact");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.AttachArtifacts.cancelPanel.call(Fisma.AttachArtifacts)});Fisma.AttachArtifacts.yuiPanel=a;var c="/artifact/upload-form";if(b.form){c+="/form/"+encodeURIComponent(b.form)}YAHOO.util.Connect.asyncRequest("GET",c,{success:function(e){e.argument.setBody(e.responseText);e.argument.center()},failure:function(e){e.argument.setBody("The content for this panel could not be loaded.");e.argument.center()},argument:a},null)},trackUploadProgress:function(){var f=document.getElementById("fileUpload");if(""==f.value){alert("Please select a file.");return false}var g=document.getElementById("uploadButton");g.disabled=true;var e=this;var c=document.getElementById("progress_key");if(c){this.apcId=c.value;var h=document.getElementById("progressBarContainer");var a=parseInt(YAHOO.util.Dom.getStyle(h,"width"));var d=parseInt(YAHOO.util.Dom.getStyle(h,"height"));YAHOO.util.Dom.removeClass(h,"attachArtifactsProgressBar");while(h.hasChildNodes()){h.removeChild(h.firstChild)}var i=new YAHOO.widget.ProgressBar();i.set("width",a);i.set("height",d);i.set("ariaTextTemplate","Upload is {value}% complete");i.set("anim",true);var b=i.get("anim");b.duration=2;b.method=YAHOO.util.Easing.easeNone;i.render("progressBarContainer");YAHOO.util.Dom.addClass(h,"attachArtifactsProgressBar");this.yuiProgressBar=i;this.pollingEnabled=true;setTimeout(function(){e.getProgress.call(e)},this.sampleInterval)}document.getElementById("progressBarContainer").style.display="block";document.getElementById("progressTextContainer").style.display="block";setTimeout(function(){e.postForm.call(e)},0);return false},postForm:function(){var a=this;var b="/"+encodeURIComponent(this.config.server.controller)+"/"+encodeURIComponent(this.config.server.action)+"/id/"+encodeURIComponent(this.config.id)+"/format/json";YAHOO.util.Connect.setForm("uploadArtifactForm",true);YAHOO.util.Connect.asyncRequest("POST",b,{upload:function(c){a.handleUploadComplete.call(a,c)},failure:function(c){alert("Document upload failed.")}},null)},getProgress:function(){var a=this;if(this.pollingEnabled){this.lastAsyncRequest=YAHOO.util.Connect.asyncRequest("GET","/artifact/upload-progress/format/json/id/"+this.apcId,{success:function(d){try{var c=YAHOO.lang.JSON.parse(d.responseText)}catch(g){if(g instanceof SyntaxError){c=new Object();c.progress=false}else{throw g}}if(!c.progress){a.yuiProgressBar.destroy();a.yuiProgressBar=null;a.pollingEnabled=false;var i=document.getElementById("progressBarContainer");YAHOO.util.Dom.addClass(i,"attachArtifactsProgressBar");var b=document.createElement("img");b.src="/images/loading_bar.gif";i.appendChild(b);a.pollingTimeoutId=null;return}var f=Math.round((c.progress.current/c.progress.total)*100);a.yuiProgressBar.set("value",f);var h=document.getElementById("progressTextContainer").firstChild;h.nodeValue=f+"%";a.pollingTimeoutId=setTimeout(function(){a.getProgress.call(a)},a.sampleInterval)}},null)}},handleUploadComplete:function(d){try{var c=YAHOO.lang.JSON.parse(d.responseText)}catch(g){if(g instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw g}}this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId);YAHOO.util.Connect.abort(this.lastAsyncRequest);if(this.yuiProgressBar){this.yuiProgressBar.get("anim").duration=0.5;this.yuiProgressBar.set("value",100)}var h=document.getElementById("progressTextContainer").firstChild;h.nodeValue="Verifying file.";if(!c.success){alert("Upload Failed: "+c.message);h.nodeValue="Uploading...";document.getElementById("progressBarContainer").style.display="none";document.getElementById("progressTextContainer").style.display="none";var b=document.getElementById("uploadButton");b.disabled=false;return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,this.yuiPanel)}}},cancelPanel:function(){if(this.pollingEnabled){this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId)}if(this.lastAsyncRequest){YAHOO.util.Connect.abort(this.lastAsyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2434,7 +2434,7 @@ Fisma.AttachArtifacts = {
         }
     }
 };
-Fisma.AutoComplete=function(){return{requestCount:0,resultsPopulated:false,init:function(b,f,e){var d=new YAHOO.widget.DS_XHR(e.xhr,e.schema);d.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;d.maxCacheEntries=500;d.queryMatchContains=true;var c=new YAHOO.widget.AutoComplete(e.fieldId,e.containerId,d);c.maxResultsDisplayed=20;c.forceSelection=true;var a=document.getElementById(e.containerId+"Spinner");c.dataRequestEvent.subscribe(function(){a.style.visibility="visible";Fisma.AutoComplete.requestCount++});c.dataReturnEvent.subscribe(function(){Fisma.AutoComplete.requestCount--;if(0==Fisma.AutoComplete.requestCount){a.style.visibility="hidden"}});c.getInputEl().onclick=function(){if(Fisma.AutoComplete.resultsPopulated){c.expandContainer()}};c.containerPopulateEvent.subscribe(function(){Fisma.AutoComplete.resultsPopulated=true});c.generateRequest=function(g){return e.queryPrepend+g};c.formatResult=function(h,j,g){var i=(g)?g:"";i=PHP_JS().htmlspecialchars(i);return i};c.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:e.hiddenFieldId,callback:e.callback})},subscribe:function(e,d,c){document.getElementById(c.hiddenFieldId).value=d[2][1]["id"];try{var b=Fisma.Util.getObjectFromName(c.callback);if("function"==typeof b){b()}}catch(a){}}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2590,7 +2590,7 @@ Fisma.AutoComplete = function() {
         }
     };
 }();
-Fisma.Blinker=function(a,c,b,d){this.interval=a;this.cycles=c;this.cyclesRemaining=c;this.onFunction=b;this.offFunction=d;this.state=0};Fisma.Blinker.prototype.start=function(){this.cycle()};Fisma.Blinker.prototype.cycle=function(){var a=this;if(1===this.state){this.offFunction()}else{this.onFunction()}this.state=1-this.state;this.cyclesRemaining--;if(this.cyclesRemaining>0){setTimeout(function(){a.cycle.call(a)},this.interval)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2671,7 +2671,7 @@ Fisma.Blinker.prototype.cycle = function () {
         );
     }
 }
-Fisma.Calendar=function(){return{addCalendarPopupToTextField:function(d){var b=document.createElement("div");b.style.position="absolute";b.style.zIndex=99;d.parentNode.appendChild(b);var c=YAHOO.util.Dom.getRegion(d);var f=[c.left,c.bottom+5];YAHOO.util.Dom.setXY(b,f);var e=new YAHOO.widget.Calendar(b,{close:true});e.hide();setTimeout(function(){e.render()},0);d.onfocus=function(){e.show()};var a=function(k,h,m){var j=h[0][0];var i=j[0],l=""+j[1],g=""+j[2];if(1==l.length){l="0"+l}if(1==g.length){g="0"+g}d.value=i+"-"+l+"-"+g;e.hide()};e.selectEvent.subscribe(a,e,true)}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2744,7 +2744,7 @@ Fisma.Calendar = function () {
         }
     };
 }();
-Fisma.Chart={handleLink:function(b){var c=b.match(/%s/);if(c.length!=arguments.length-1){throw"Expected "+c.length+" arguments but found "+(arguments.length-1)}var a;for(a=1;a<arguments.length;a++){b=b.replace("%s",escape(arguments[a]))}location.href=b}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2802,7 +2802,7 @@ Fisma.Chart = {
         location.href = baseUrl;
     }
 };
-Fisma.Commentable={asyncRequest:null,config:null,yuiPanel:null,showPanel:function(c,b){Fisma.Commentable.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Add Comment");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.Commentable.closePanel.call(Fisma.Commentable)});Fisma.Commentable.yuiPanel=a;YAHOO.util.Connect.asyncRequest("GET","/comment/form",{success:function(d){d.argument.setBody(d.responseText);d.argument.center()},failure:function(d){d.argument.setBody("The content for this panel could not be loaded.");d.argument.center()},argument:a},null);return false},postComment:function(){var a="/comment/add/id/"+encodeURIComponent(Fisma.Commentable.config.id)+"/type/"+encodeURIComponent(Fisma.Commentable.config.type)+"/format/json";YAHOO.util.Connect.setForm("addCommentForm");Fisma.Commentable.asyncRequest=YAHOO.util.Connect.asyncRequest("POST",a,{success:function(b){Fisma.Commentable.commentCallback.call(Fisma.Commentable,b)},failure:function(b){alert("Document upload failed.")}},null);return false},commentCallback:function(d){var c;try{var b=YAHOO.lang.JSON.parse(d.responseText);c=b.response}catch(g){if(g instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw g}}if(!c.success){alert("Error: "+c.message);return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,c.comment,this.yuiPanel)}}},closePanel:function(){if(this.asyncRequest){YAHOO.util.Connect.abort(this.asyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2993,7 +2993,7 @@ Fisma.Commentable = {
          }
      }
 };
-Fisma.Email=function(){return{panelElement:null,showRecipientDialog:function(){if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}var c=document.createElement("div");var f=document.createElement("p");var b=document.createTextNode("* Target E-mail Address:");f.appendChild(b);c.appendChild(f);var d=document.createElement("input");d.id="testEmailRecipient";d.name="recipient";c.appendChild(d);var e=document.createElement("div");e.style.height="10px";c.appendChild(e);var a=document.createElement("input");a.type="button";a.id="dialogRecipientSendBtn";a.style.marginLeft="10px";a.value="Send";c.appendChild(a);Fisma.Email.panelElement=Fisma.HtmlPanel.showPanel("Test E-mail Configuration",c.innerHTML);document.getElementById("dialogRecipientSendBtn").onclick=Fisma.Email.sendTestEmail},sendTestEmail:function(){if(document.getElementById("testEmailRecipient").value==""){alert("Recipient is required.");document.getElementById("testEmailRecipient").focus();return false}var c=document.getElementById("testEmailRecipient").value;var b=document.getElementById("email_config");b.elements.recipient.value=c;var a=document.getElementById("sendTestEmail");spinner=new Fisma.Spinner(a.parentNode);spinner.show();YAHOO.util.Connect.setForm(b);YAHOO.util.Connect.asyncRequest("POST","/config/test-email-config/format/json",{success:function(e){var d=YAHOO.lang.JSON.parse(e.responseText);message(d.msg,d.type,true);spinner.hide()},failure:function(d){alert("Failed to send test mail: "+d.statusText);spinner.hide()}},null);if(Fisma.Email.panelElement!=null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3119,7 +3119,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c;if(a.firstChild){c=a.firstChild.nodeValue}else{c=""}var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)},showSecurityControlSearch:function(){var b=document.getElementById("securityControlSearchButton");b.style.display="none";var a=document.getElementById("findingSecurityControlSearch");a.style.display="block"},handleSecurityControlSelection:function(){var a=document.getElementById("securityControlContainer");a.innerHTML='<img src="/images/loading_bar.gif">';var c=document.getElementById("finding[securityControlId]");var b=escape(c.value);YAHOO.util.Connect.asyncRequest("GET","/security-control/single-control/id/"+b,{success:function(d){a.innerHTML=d.responseText},failure:function(d){alert("Unable to load security control definition.")}})}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3264,7 +3264,7 @@ Fisma.Finding = {
         );
     }
 }
-Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(var r in o){count=o[r];cell=a.insertCell(m++);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.nickname,r,"ontime",l.expanded)}for(var r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.nickname,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.nickname,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){var d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.nickname,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.nickname,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";var d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.nickname,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname==e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!=false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,f,b,h,d){if(!a.hasChildNodes()){if(g>0){var e=document.createElement("a");e.href=this.makeLink(f,b,h,d);e.appendChild(document.createTextNode(g));a.appendChild(e)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(f,b,h,d)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);var e=document.createElement("a");e.href=this.makeLink(f,b,h,d);e.appendChild(document.createTextNode(g));a.appendChild(e)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(j,g,k,i){var f="";if(!(g=="CLOSED"||g=="TOTAL")){var b=new Date();var l=b.getFullYear()+"-"+(b.getMonth()+1)+"-"+b.getDate();if("ontime"==k){f="/nextDueDate/dateAfter/"+l}else{f="/nextDueDate/dateBefore/"+l}}var h="";if(g!=""&&g!="TOTAL"){h="/denormalizedStatus/textExactMatch/"+escape(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!=""){a="/type/enumIs/"+this.filterType}var d="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!=""){d="/source/textExactMatch/"+this.filterSource}var e="/finding/remediation/list/queryType/advanced"+f+h+a+d;if(i){e+="/organization/textExactMatch/"+j}else{e+="/organization/organizationSubtree/"+j}return e},exportTable:function(b){var a="/finding/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3822,7 +3822,7 @@ Fisma.FindingSummary = function() {
         }
     };
 };
-Fisma.Highlighter=function(){return{highlightDelimitedText:function(a,b){var h=Fisma.Util.escapeRegexValue(b);var j=new RegExp("^(.*?)"+h+"(.*?)"+h+"(.*?)$");for(var d in a){var e=a[d];if(!e.firstChild||!e.firstChild.firstChild){continue}var g=e.firstChild;if(g&&g.firstChild&&g.firstChild.nodeType!=3){continue}var c=g.firstChild;var k=c.nodeValue;var f=this._getDelimitedRegexMatches(k,j);this._highlightMatches(g,f)}},_getDelimitedRegexMatches:function(h,d){var f=[];var g=null;var e=h;do{g=e.match(d);if(g&&g.length==4){var c=g[1];var a=g[2];var b=g[3];f.push(c);f.push(a);e=b}else{f.push(e);break}}while(g);return f},_highlightMatches:function(a,f){if((f.length>1)&&(f.length%2==1)){a.removeChild(a.firstChild);for(var d in f){var c=f[d];var e=document.createTextNode(c);if(d%2==0){a.appendChild(e)}else{var b=document.createElement("span");b.className="highlight";b.appendChild(e);a.appendChild(b)}}}}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3990,7 +3990,7 @@ Fisma.Highlighter = function() {
         }
     }
 }();
-Fisma.HtmlPanel=function(){return{showPanel:function(e,c,b,d){if(typeof(b)=="undefined"||b==null){b="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(b,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(c!=""){a.setBody(c);a.center()}return a}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4061,7 +4061,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},getIncidentStepParentElement:function(b){var c=b.parentNode.parentNode.parentNode;var a=1;if(!(a==c.nodeType&&"TR"==c.tagName)){throw"Cannot locate the parent element for this incident step."}return c},getIncidentStepNumber:function(e){var d=e.firstChild;var b=1;if(!(b==d.nodeType&&"TD"==d.tagName)){throw"Cannot locate the table data (td) element for this incident step."}var a=d.firstChild.nodeValue;var c=a.match(/\d+/);if(c.length!=1){throw"Not able to locate the step number in the incident step label."}return c[0]},renumberAllIncidentSteps:function(b){var c=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",b);var a=1;for(var d in c){var e=c[d];e.firstChild.firstChild.nodeValue="Step "+a+":";a++}},addIncidentStepAbove:function(c){var b=this.getIncidentStepParentElement(c);var a=b.cloneNode(true);b.parentNode.insertBefore(a,b);this.renumberAllIncidentSteps(b.parentNode);return false},addIncidentStepBelow:function(c){var b=this.getIncidentStepParentElement(c);var a=b.cloneNode(true);if(b.nextSibling){b.parentNode.insertBefore(a,b.nextSibling)}else{b.parentNode.appendChild(a)}this.renumberAllIncidentSteps(b.parentNode);return false},removeIncidentStep:function(b){var a=this.getIncidentStepParentElement(b);a.parentNode.removeChild(a);this.renumberAllIncidentSteps(a.parentNode);return false}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4222,9 +4222,12 @@ Fisma.Incident = {
      */
     addIncidentStepAbove : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         rowEl.parentNode.insertBefore(rowElClone, rowEl);
+
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
         
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
@@ -4233,7 +4236,8 @@ Fisma.Incident = {
     
     addIncidentStepBelow : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         // There is no "insertAfter" method for DOM elements, so this is a little tricky
         if (rowEl.nextSibling) {
@@ -4242,6 +4246,8 @@ Fisma.Incident = {
             rowEl.parentNode.appendChild(rowElClone);
         }
         
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
+
         this.renumberAllIncidentSteps(rowEl.parentNode);
 
         return false;
@@ -4255,9 +4261,89 @@ Fisma.Incident = {
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
         return false; 
+    },
+
+    /** 
+    * This takes a tr element and an unique id as  parameters, and it generates a new incident step form fields 
+    * including name, description and buttons. And compose newly generated elements to a tr element node.
+    *    
+    * @param tableEl
+    * @param textareaId an unique id for textarea so that tinyMCE can be added.
+    * @return a <tr> element node containing sub form fields.
+    */
+    generateIncidentStep: function (rowEl, textareaId) {
+        //To check the tr node structure, see the render() at class Fisma_Zend_Form_Element_IncidentWorkflowStep
+        //clone tr node without its children
+        var rowElClone = rowEl.cloneNode(false);
+        var tableEl = rowEl.parentNode;
+
+        //create first td node containing "Step " text
+        var newTdElStep = document.createElement('td');
+        newTdElStep.innerHTML = 'Step : ';
+        rowElClone.appendChild(newTdElStep);
+
+        //create second td node containing all the form fields
+        var newTdElForm = document.createElement('td');
+        rowElClone.appendChild(newTdElForm);
+
+        //the last child of rowEl is <td> block containing the subform fields
+        var tdForm = YAHOO.util.Dom.getLastChild(rowEl);
+
+        //The first child of <td> block should be Name field.
+        var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
+        var nameElClone = nameField.cloneNode(true) 
+
+        //The next sibling should be role field  
+        var roleField = YAHOO.util.Dom.getNextSibling(nameField);
+        var roleElClone = roleField.cloneNode(true) 
+
+        newTdElForm.appendChild(nameElClone); 
+        newTdElForm.appendChild(roleElClone); 
+
+        //create p node for Desription and textarea
+        var elP = document.createElement('p');
+        elP.innerHTML = 'Description: ';
+
+        var newTextareaEl = document.createElement('textarea');
+        newTextareaEl.setAttribute('id',textareaId);
+
+        var descField = YAHOO.util.Dom.getNextSibling(roleField);
+        var textareaField = YAHOO.util.Dom.getFirstChild(descField);
+
+        //get original textarea attribute value
+        var textareaRows = YAHOO.util.Dom.getAttribute(textareaField, 'rows');
+        var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
+        var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
+
+        newTextareaEl.setAttribute('rows',textareaRows);
+        newTextareaEl.setAttribute('cols',textareaCols);
+        newTextareaEl.setAttribute('name',textareaName);
+ 
+        elP.appendChild(newTextareaEl);
+        newTdElForm.appendChild(elP); 
+
+        //get button field of form 
+        var buttonField = YAHOO.util.Dom.getNextSibling(descField);
+        var buttonElClone = buttonField.cloneNode(true);
+        newTdElForm.appendChild(buttonElClone); 
+
+        return rowElClone;
+    },
+
+    /** 
+    * This takes a table element  as  parameters, and it generates an unique Id for textarea 
+    *    
+    * @param tableEl
+    * @return ID.
+    */
+    generateTextareaId: function (element) {
+        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', element);
+        var stepNumber = 1 + trEls.length;
+        var textareaId = 'textareaid' + stepNumber;
+        return textareaId;
     }
 };
-Fisma.Ldap={validateLdapBusy:false,validateLdapConfiguration:function(){if(Fisma.Ldap.validateLdapBusy){return}Fisma.Ldap.validateLdapBusy=true;var c=document.location;var f=document.location.pathname.split("/");var b=null;for(pieceIndex in f){var d=f[pieceIndex];if("id"==d){b=f[parseInt(pieceIndex)+1];break}}var a=document.getElementById("validateLdap");a.className="yui-button yui-push-button yui-button-disabled";var g=new Fisma.Spinner(a.parentNode);g.show();var e=document.getElementById("ldapUpdate");YAHOO.util.Connect.setForm(e);YAHOO.util.Connect.asyncRequest("POST","/config/validate-ldap/format/json/id/"+b,{success:function(i){var h=YAHOO.lang.JSON.parse(i.responseText);message(h.msg,h.type,true);a.className="yui-button yui-push-button";Fisma.Ldap.validateLdapBusy=false;g.hide()},failure:function(h){message("Validation failed: "+h.statusText,"warning",true);g.hide()}})}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4346,7 +4432,7 @@ Fisma.Ldap = {
         );
     }  
 };
-Fisma.Module={handleSwitchButtonStateChange:function(a){a.setBusy(true);var b=a.state?"true":"false";var c="/config/set-module/id/"+a.payload.id+"/enabled/"+b+"/format/json/";YAHOO.util.Connect.asyncRequest("GET",c,{success:Fisma.Module.handleAsyncResponse,failure:Fisma.Module.handleAsyncResponse,argument:a},null)},handleAsyncResponse:function(b){try{var c=YAHOO.lang.JSON.parse(b.responseText).response}catch(d){if(d instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw d}}if(!c.success){alert("Error: Not able to change module status. Reason: "+c.message)}var a=b.argument;a.setBusy(false)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4422,7 +4508,7 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
-Fisma.Remediation={upload_evidence:function(){if(!form_confirm(document.finding_detail,"Upload Evidence")){return false}Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",Fisma.Remediation.upload_evidence_form_init);return false},upload_evidence_form_init:function(){document.finding_detail_upload_evidence.action=document.finding_detail.action},ev_approve:function(d){if(!form_confirm(document.finding_detail,"approve the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments (OPTIONAL):"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}h.elements.comment.value=i;h.elements.decision.value="APPROVED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="APPROVED";h.appendChild(g);h.submit()}},ev_deny:function(d){if(!form_confirm(document.finding_detail,"deny the evidence package")){return false}var c=document.createElement("div");var e=document.createElement("p");e.appendChild(document.createTextNode("Comments:"));c.appendChild(e);var b=document.createElement("textarea");b.rows=5;b.cols=60;b.id="dialog_comment";b.name="comment";c.appendChild(b);var f=document.createElement("div");f.style.height="20px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialog_continue";a.value="Continue";c.appendChild(a);Fisma.HtmlPanel.showPanel("Evidence Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var h=d;if(document.all){var i=document.getElementById("dialog_comment").innerHTML}else{var i=document.getElementById("dialog_comment").value}if(i.match(/^\s*$/)){alert("Comments are required in order to deny.");return}h.elements.comment.value=i;h.elements.decision.value="DENIED";var g=document.createElement("input");g.type="hidden";g.name="submit_ea";g.value="DENIED";h.appendChild(g);h.submit()}},ms_approve:function(d){if(!form_confirm(document.finding_detail,"approve the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments (OPTIONAL):");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Approval",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}i.elements.comment.value=j;i.elements.decision.value="APPROVED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="APPROVED";i.appendChild(h);i.submit()}},ms_deny:function(d){if(!form_confirm(document.finding_detail,"deny the mitigation strategy")){return false}var c=document.createElement("div");var e=document.createElement("p");var f=document.createTextNode("Comments:");e.appendChild(f);c.appendChild(e);var a=document.createElement("textarea");a.id="dialog_comment";a.name="comment";a.rows=5;a.cols=60;c.appendChild(a);var g=document.createElement("div");g.style.height="20px";c.appendChild(g);var b=document.createElement("input");b.type="button";b.id="dialog_continue";b.value="Continue";c.appendChild(b);Fisma.HtmlPanel.showPanel("Mitigation Strategy Denial",c.innerHTML);document.getElementById("dialog_continue").onclick=function(){var i=d;if(document.all){var j=document.getElementById("dialog_comment").innerHTML}else{var j=document.getElementById("dialog_comment").value}if(j.match(/^\s*$/)){alert("Comments are required in order to submit.");return}i.elements.comment.value=j;i.elements.decision.value="DENIED";var h=document.createElement("input");h.type="hidden";h.name="submit_msa";h.value="DENIED";i.appendChild(h);i.submit()}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4684,7 +4770,7 @@ Fisma.Remediation = {
         }
     }
 }
-Fisma.Search=function(){return{yuiDataTable:null,onSetTableCallback:null,testConfigurationActive:false,advancedSearchPanel:null,columnPreferencesSpinner:null,showDeletedRecords:false,testConfiguration:function(){if(Fisma.Search.testConfigurationActive){return}Fisma.Search.testConfigurationActive=true;var a=document.getElementById("testConfiguration");a.className="yui-button yui-push-button yui-button-disabled";var c=new Fisma.Spinner(a.parentNode);c.show();var b=document.getElementById("search_config");YAHOO.util.Connect.setForm(b);YAHOO.util.Connect.asyncRequest("POST","/config/test-search/format/json",{success:function(e){var d=YAHOO.lang.JSON.parse(e.responseText).response;if(d.success){message("Search configuration is valid","notice",true)}else{message(d.message,"warning",true)}a.className="yui-button yui-push-button";Fisma.Search.testConfigurationActive=false;c.hide()},failure:function(d){message("Error: "+d.statusText,"warning");c.hide()}})},handleSearchEvent:function(d){var f=Fisma.Search.yuiDataTable;var b={success:function(i,h,k){f.onDataReturnReplaceRows(i,h,k);var j=0;var l;do{l=f.getColumn(j);j++}while(l.formatter==Fisma.TableFormat.formatCheckbox);f.set("sortedBy",{key:l.key,dir:YAHOO.widget.DataTable.CLASS_ASC});f.get("paginator").setPage(1,true)},failure:f.onDataReturnReplaceRows,scope:f,argument:f.getState()};try{var e=this.getQuery(d);var a=this.convertQueryToPostData(e);f.showTableMessage("Loading...");var g=f.getDataSource();g.connMethodPost=true;g.sendRequest(a,b)}catch(c){if("string"==typeof c){alert(c)}}},getQuery:function(c){var b=document.getElementById("searchType").value;var d={queryType:b};if("simple"==b){d.keywords=c.keywords.value}else{if("advanced"==b){var a=this.advancedSearchPanel.getQuery();d.query=YAHOO.lang.JSON.stringify(a)}else{throw"Invalid value for search type: "+b}}d.showDeleted=this.showDeletedRecords;d.csrf=document.getElementById("searchForm").csrf.value;return d},convertQueryToPostData:function(c){var b=Array();for(var d in c){var e=c[d];b.push(d+"="+encodeURIComponent(e))}var a=b.join("&");return a},exportToFile:function(b,i){var c=document.getElementById("searchForm");var k=Fisma.Search.yuiDataTable;var a=k.getDataSource();var f=a.liveData;var d=document.createElement("form");d.method="post";d.action=f+"/format/"+i;d.style.display="none";var g=Fisma.Search.getQuery(c);for(var j in g){var h=g[j];var e=document.createElement("input");e.type="hidden";e.name=j;e.value=h;d.appendChild(e)}document.body.appendChild(d);d.submit()},handleYuiDataTableEvent:function(c,e){var d=document.getElementById("searchType").value;var a="sort="+c.sortedBy.key+"&dir="+(c.sortedBy.dir=="yui-dt-asc"?"asc":"desc")+"&start="+c.pagination.recordOffset+"&count="+c.pagination.rowsPerPage+"&csrf="+document.getElementById("searchForm").csrf.value;if("simple"==d){a+="&queryType=simple&keywords="+document.getElementById("keywords").value}else{if("advanced"==d){var b=Fisma.Search.advancedSearchPanel.getQuery();a+="&queryType=advanced&query="+YAHOO.lang.JSON.stringify(b)}else{throw"Invalid value for search type: "+d}}a+="&showDeleted="+Fisma.Search.showDeletedRecords;e.getDataSource().connMethodPost=true;return a},highlightSearchResultsTable:function(d){var d=Fisma.Search.yuiDataTable;var c=d.getTbodyEl();var b=c.getElementsByTagName("td");var a="***";Fisma.Highlighter.highlightDelimitedText(b,a)},toggleAdvancedSearchPanel:function(){if(document.getElementById("advancedSearch").style.display=="none"){document.getElementById("advancedSearch").style.display="block";document.getElementById("keywords").style.visibility="hidden";document.getElementById("searchType").value="advanced"}else{document.getElementById("advancedSearch").style.display="none";document.getElementById("keywords").style.visibility="visible";document.getElementById("searchType").value="simple"}},toggleSearchColumnsPanel:function(){if(document.getElementById("searchColumns").style.display=="none"){document.getElementById("searchColumns").style.display="block"}else{document.getElementById("searchColumns").style.display="none"}},initializeSearchColumnsPanel:function(a,k){var j=document.getElementById("modelName").value;var l=j+"Columns";var b=YAHOO.util.Cookie.get(l);var i=0;for(var g in k){var n=k[g];if(n.hidden===true){continue}var m=n.initiallyVisible;if(b){m=(b&1<<i)!=0}i++;var h="Column is visible. Click to hide column.";var f="Column is hidden. Click to unhide column.";var c=new YAHOO.widget.Button({type:"checkbox",label:n.label,container:a,checked:m,onclick:{fn:function(q,r){this.set("title",this.get("checked")?h:f);var p=Fisma.Search.yuiDataTable;var o=p.getColumn(r);if(this.get("checked")){p.showColumn(o)}else{p.hideColumn(o)}Fisma.Search.saveColumnCookies()},obj:n.name}});c.set("title",m?h:f)}var e=document.createElement("div");e.style.marginLeft="20px";e.style.marginBottom="20px";e.style["float"]="right";var d=new YAHOO.widget.Button({type:"button",label:"Save Column Preferences",container:e,onclick:{fn:Fisma.Search.persistColumnCookie}});if(!Fisma.Search.columnPreferencesSpinner){Fisma.Search.columnPreferencesSpinner=new Fisma.Spinner(e)}a.appendChild(e)},toggleMoreButton:function(){if(document.getElementById("moreSearchOptions").style.display=="none"){document.getElementById("moreSearchOptions").style.display="block"}else{document.getElementById("moreSearchOptions").style.display="none"}},saveColumnCookies:function(){var f=Fisma.Search.yuiDataTable;var e=f.getColumnSet().keys;var c=0;var b=0;for(var d in e){if(e[d].formatter==Fisma.TableFormat.formatCheckbox){continue}if(!e[d].hidden){c|=1<<b}b++}var a=document.getElementById("modelName").value;var g=a+"Columns";YAHOO.util.Cookie.set(g,c,{path:"/",secure:location.protocol=="https"})},persistColumnCookie:function(){Fisma.Search.saveColumnCookies();var a=document.getElementById("modelName").value;var c=a+"Columns";var b=YAHOO.util.Cookie.get(c);Fisma.Search.columnPreferencesSpinner.show();YAHOO.util.Connect.asyncRequest("GET","/user/set-cookie/name/"+c+"/value/"+b+"/format/json",{success:function(e){Fisma.Search.columnPreferencesSpinner.hide();var d=YAHOO.lang.JSON.parse(e.responseText);if(d.success){message("Your column preferences have been saved","notice",true)}else{message(d.message,"warning",true)}},failure:function(d){Fisma.Search.columnPreferencesSpinner.hide();message("Error: "+d.statusText,"warning",true)}})},toggleShowDeletedRecords:function(){Fisma.Search.showDeletedRecords=!Fisma.Search.showDeletedRecords;var a=document.getElementById("searchForm");Fisma.Search.handleSearchEvent(a)},deleteSelectedRecords:function(){var h=[];var b=Fisma.Search.yuiDataTable;var d=b.getSelectedRows();for(var e=0;e<d.length;e++){var f=b.getRecord(d[e]);if(f){h.push(f.getData("id"))}}if(0==h.length){message("No records selected for deletion.","warning",true);return}if(!confirm("Delete "+h.length+" records?")){return}var g=Fisma.Search.yuiDataTable.getDataSource().liveData;var a=g.split("/");a[a.length-1]="multi-delete";var c=a.join("/");var j="csrf="+document.getElementById("searchForm").csrf.value+"&records="+YAHOO.lang.JSON.stringify(h);YAHOO.util.Connect.asyncRequest("POST",c,{success:function(m){var l=[];if(m.responseText!==undefined){var i=YAHOO.lang.JSON.parse(m.responseText);message(i.msg,i.status,true)}var k=document.getElementById("searchForm");Fisma.Search.handleSearchEvent(k)},failure:function(k){var i="An error occurred while trying to delete the records. The error has been logged for administrator review.";message(i,"warning",true)}},j)},setTable:function(a){this.yuiDataTable=a;if(this.onSetTableCallback){this.onSetTableCallback()}},onSetTable:function(a){this.onSetTableCallback=a}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5311,7 +5397,7 @@ Fisma.Search = function() {
         }
     }
 }();
-Fisma.Search.Criteria=function(b,a){this.fields=a;this.searchPanel=b};Fisma.Search.Criteria.prototype={container:null,currentQueryType:null,fields:null,currentField:null,searchPanel:null,queryFieldContainer:null,queryTypeContainer:null,queryInputContainer:null,buttonsContainer:null,removeButton:null,enumValues:null,render:function(d,a,b){this.container=document.createElement("div");this.container.className="searchCriteria";this.queryFieldContainer=document.createElement("span");this.renderQueryField(this.queryFieldContainer,d);this.container.appendChild(this.queryFieldContainer);this.queryTypeContainer=document.createElement("span");this.renderQueryType(this.queryTypeContainer,a);this.container.appendChild(this.queryTypeContainer);this.queryInputContainer=document.createElement("span");this.renderQueryInput(this.queryInputContainer,b);this.container.appendChild(this.queryInputContainer);this.buttonsContainer=document.createElement("span");this.buttonsContainer.className="searchQueryButtons";this.renderButtons(this.buttonsContainer);this.container.appendChild(this.buttonsContainer);var c=document.createElement("div");c.className="clear";this.container.appendChild(c);return this.container},renderQueryField:function(a,h){var f=this;var e=new Array();var c;var d=function(n,l,o){var m=o.cfg.getProperty("text");for(var k in f.fields){var p=f.fields[k];if(o.value==p.name){var j=true;var i=true;if(f.getCriteriaDefinition(p)==f.getCriteriaDefinition(f.currentField)){j=false}if("enum"==p.type){i=true}f.currentField=p;f.enumValues=p.enumValues;if(j){f.renderQueryType(f.queryTypeContainer)}if(i){f.renderQueryInput(f.queryInputContainer)}break}}c.set("label",p.label)};for(var b in this.fields){var g=this.fields[b];e.push({text:g.label,value:g.name,onclick:{fn:d}})}this.currentField=this.getField(h);c=new YAHOO.widget.Button({type:"menu",label:this.currentField.label,menu:e,container:a})},renderQueryType:function(b,c){if(b.firstChild){while(b.hasChildNodes()){b.removeChild(b.firstChild)}}var g=this;var d=function(n,l,o){var m=o.cfg.getProperty("text");var p=g.getCriteriaDefinition(g.currentField);var j=p[g.currentQueryType].renderer;var k=p[o.value].renderer;g.currentQueryType=o.value;if(j!=k||"enum"==g.currentField.type){g.renderQueryInput(g.queryInputContainer)}h.set("label",m)};var i=this.getCriteriaDefinition(this.currentField);var a=new Array();for(var f in i){var e=i[f];menuItem={text:e.label,value:f,onclick:{fn:d}};a.push(menuItem);if(e.isDefault){this.currentQueryType=f}}if(c){this.currentQueryType=c}var h=new YAHOO.widget.Button({type:"menu",label:i[this.currentQueryType].label,menu:a,container:b})},renderQueryInput:function(a,d){if(a.firstChild){while(a.hasChildNodes()){a.removeChild(a.firstChild)}}var c=this.getCriteriaDefinition(this.currentField);var b=c[this.currentQueryType].renderer;var e=Fisma.Search.CriteriaRenderer[b];if("enum"==this.currentField.type){e(a,d,this.currentField.enumValues)}else{e(a,d)}},renderButtons:function(a){var d=this;var b=new YAHOO.widget.Button({container:a});b._button.className="searchAddCriteriaButton";b._button.title="Click to add another search criteria";b.on("click",function(){d.searchPanel.addCriteria(d.container)});var c=new YAHOO.widget.Button({container:a});c._button.className="searchRemoveCriteriaButton";c._button.title="Click to remove this search criteria";c.on("click",function(){d.searchPanel.removeCriteria(d.container)});this.removeButton=c},getQuery:function(){var h="";var e=this.getCriteriaDefinition(this.currentField);var d=e[this.currentQueryType].query;var g=Fisma.Search.CriteriaQuery[d];var c=g(this.queryInputContainer);for(var f in c){var a=c[f];if(""==$P.trim(a)){throw"Blank search criteria are not allowed in advanced search mode."}}var b={field:this.currentField.name,operator:this.currentQueryType,operands:c};return b},getCriteriaDefinition:function(d){var c=d.type;if("datetime"==c){c="date"}else{if("text"==c){if(d.sortable){c="sortableText"}else{c="nonSortableText"}}}var b=Fisma.Search.CriteriaDefinition[c];if(d.extraCriteria){for(var a in d.extraCriteria){b[a]=d.extraCriteria[a]}}return b},setRemoveButtonEnabled:function(a){this.removeButton.set("disabled",!a)},getField:function(c){for(var a in this.fields){var b=this.fields[a];if(b.name==c){return b}}throw"No field found with this name: "+c}};/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5756,7 +5842,7 @@ Fisma.Search.Criteria.prototype = {
         
         throw "No field found with this name: " + fieldName;
     }
-};Fisma.Search.CriteriaDefinition=function(){return{date:{dateAfter:{label:"After",renderer:"singleDate",query:"oneInput"},dateBefore:{label:"Before",renderer:"singleDate",query:"oneInput"},dateBetween:{label:"Between",renderer:"betweenDate",query:"twoInputs"},dateDay:{label:"Is",renderer:"singleDate",query:"oneInput",isDefault:true},dateThisMonth:{label:"This Month",renderer:"none",query:"noInputs"},dateThisYear:{label:"This Year",renderer:"none",query:"noInputs"},dateToday:{label:"Today",renderer:"none",query:"noInputs"}},"float":{floatBetween:{label:"Between",renderer:"betweenFloat",query:"twoInputs"},floatGreaterThan:{label:"Greater Than",renderer:"singleFloat",query:"oneInput",isDefault:true},floatLessThan:{label:"Less Than",renderer:"singleFloat",query:"oneInput"}},integer:{integerBetween:{label:"Between",renderer:"betweenInteger",query:"twoInputs"},integerDoesNotEqual:{label:"Does Not Equal",renderer:"singleInteger",query:"oneInput"},integerEquals:{label:"Equals",renderer:"singleInteger",query:"oneInput",isDefault:true},integerGreaterThan:{label:"Greater Than",renderer:"singleInteger",query:"oneInput"},integerLessThan:{label:"Less Than",renderer:"singleInteger",query:"oneInput"}},nonSortableText:{textContains:{label:"Contains",renderer:"text",query:"oneInput",isDefault:true},textDoesNotContain:{label:"Does Not Contain",renderer:"text",query:"oneInput"}},sortableText:{textContains:{label:"Contains",renderer:"text",query:"oneInput",isDefault:true},textDoesNotContain:{label:"Does Not Contain",renderer:"text",query:"oneInput"},textExactMatch:{label:"Exact Match",renderer:"text",query:"oneInput"}},"enum":{enumIs:{label:"Is",renderer:"enumSelect",query:"enumSelect",isDefault:true},enumIsNot:{label:"Is Not",renderer:"enumSelect",query:"enumSelect"}}}}();/**
+};/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5821,7 +5907,7 @@ Fisma.Search.CriteriaDefinition = function () {
             enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"}
         }
     };
-}();Fisma.Search.CriteriaQuery=function(){return{noInputs:function(a){return[]},oneInput:function(b){var a=b.getElementsByTagName("input");var c=[a[0].value];return c},twoInputs:function(b){var a=b.getElementsByTagName("input");var c=[a[0].value,a[1].value];return c},enumSelect:function(b){var a=b.getElementsByTagName("button");var c=[a[0].firstChild.nodeValue];return c}}}();/**
+}();/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5894,7 +5980,7 @@ Fisma.Search.CriteriaQuery = function () {
             return values;
         }
     };
-}();Fisma.Search.CriteriaRenderer=function(){return{betweenDate:function(a,c){var b=document.createElement("input");if(c&&c.length>0){b.value=c[0]}b.type="text";b.className="date";a.appendChild(b);Fisma.Calendar.addCalendarPopupToTextField(b);var d=document.createTextNode(" and ");a.appendChild(d);var e=document.createElement("input");if(c&&c.length>1){e.value=c[1]}e.type="text";e.className="date";a.appendChild(e);Fisma.Calendar.addCalendarPopupToTextField(e)},betweenFloat:function(a,c){var b=document.createElement("input");if(c&&c.length>0){b.value=c[0]}b.type="text";b.className="float";a.appendChild(b);var d=document.createTextNode(" and ");a.appendChild(d);var e=document.createElement("input");if(c&&c.length>1){e.value=c[1]}e.type="text";e.className="float";a.appendChild(e)},betweenInteger:function(a,c){var b=document.createElement("input");if(c&&c.length>0){b.value=c[0]}b.type="text";b.className="integer";a.appendChild(b);var d=document.createTextNode(" and ");a.appendChild(d);var e=document.createElement("input");if(c&&c.length>1){e.value=c[1]}e.type="text";e.className="integer";a.appendChild(e)},none:function(a,b){},singleDate:function(a,b){var c=document.createElement("input");c.type="text";c.className="date";if(b&&b.length>0){c.value=b[0]}a.appendChild(c);Fisma.Calendar.addCalendarPopupToTextField(c)},singleFloat:function(a,b){var c=document.createElement("input");c.type="text";c.className="float";if(b&&b.length>0){c.value=b[0]}a.appendChild(c)},singleInteger:function(a,b){var c=document.createElement("input");c.type="text";c.className="integer";if(b&&b.length>0){c.value=b[0]}a.appendChild(c)},text:function(a,b){var c=document.createElement("input");c.type="text";if(b&&b.length>0){c.value=b[0]}a.appendChild(c)},enumSelect:function(b,g,c){var d=function(l,j,m){var k=m.cfg.getProperty("text");i.set("label",k)};var a=new Array();for(var f in c){var e=c[f];menuItem={text:e,value:e,onclick:{fn:d}};a.push(menuItem)}var h=(g&&g.length>0)?g[0]:c[0];var i=new YAHOO.widget.Button({type:"menu",label:h,menu:a,container:b})}}}();/**
+}();/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6152,7 +6238,7 @@ Fisma.Search.CriteriaRenderer = function () {
             });
         }
     };
-}();Fisma.Search.Panel=function(b,f){var h=b;if(0==h.length){throw"Field array cannot be empty"}h.sort(function(j,i){if(j.label<i.label){return -1}else{if(j.label>i.label){return 1}else{return 0}}});this.searchableFields={};for(var c in h){var d=h[c];if(d.hidden!==true){this.searchableFields[c]=d}}this.defaultQueryTokens=null;if(f){var e=f.split("/");for(var c in e){var a=e[c];var g=parseInt(c);if("advanced"==a&&e.length>(g+1)){e.splice(0,g+1);this.defaultQueryTokens=e;break}}}};Fisma.Search.Panel.prototype={container:null,criteria:[],render:function(b){this.container=b;if(this.defaultQueryTokens){var h=0;while(this.defaultQueryTokens.length>h){var k=this.defaultQueryTokens[h];h++;var c=this.defaultQueryTokens[h];h++;var f=this.getFieldDefinition(k);var l=new Fisma.Search.Criteria(this,this.searchableFields);var d=l.getCriteriaDefinition(f);var m=this.getNumberOfOperands(f,c,d);var j=[];for(;m>0;m--){j.push(this.defaultQueryTokens[h]);h++}var e=$P.array_map(decodeURIComponent,j);var g=l.render(k,c,e);this.container.appendChild(l.container);this.criteria.push(l)}if(1==this.criteria.length){this.criteria[0].setRemoveButtonEnabled(false)}Fisma.Search.toggleAdvancedSearchPanel();Fisma.Search.onSetTable(function(){var n=document.getElementById("searchForm");setTimeout(function(){Fisma.Search.handleSearchEvent(n)},1)})}else{var i=new Fisma.Search.Criteria(this,this.searchableFields);this.criteria.push(i);var a=i.render(this.searchableFields[0].name);i.setRemoveButtonEnabled(false);this.container.appendChild(a)}},addCriteria:function(b){if(1==this.criteria.length){this.criteria[0].setRemoveButtonEnabled(true)}var d=new Fisma.Search.Criteria(this,this.searchableFields);this.criteria.push(d);var a=this.criteria.length-1;var c=d.render(this.searchableFields[a].name);this.container.insertBefore(c,b.nextSibling)},removeCriteria:function(b){for(var a in this.criteria){var c=this.criteria[a];if(c.container==b){this.criteria.splice(a,1);break}}if(1==this.criteria.length){this.criteria[0].setRemoveButtonEnabled(false)}this.container.removeChild(b)},getQuery:function(){var c=new Array();for(var a in this.criteria){var b=this.criteria[a];queryPart=b.getQuery();c.push(queryPart)}return c},getFieldDefinition:function(b){for(var a in this.searchableFields){if(this.searchableFields[a].name==b){return this.searchableFields[a]}}throw"No definition for field: "+b},getNumberOfOperands:function(e,b,d){var a=d[b];if(!a){throw"No criteria defined for field ("+e.name+") and operator ("+b+")"}var c=a.query;switch(c){case"noInputs":return 0;break;case"enumSelect":case"oneInput":return 1;break;case"twoInputs":return 2;break;default:throw"Number of operands not defined for query function: "+c;break}}};/**
+}();/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6439,7 +6525,7 @@ Fisma.Search.Panel.prototype = {
         }
     }
 };
-Fisma.Spinner=function(a){this.container=a;this.spinner=document.createElement("img");this.spinner.id=a.id+"_spinnerImg";this.spinner.src="/images/spinners/small.gif";this.spinner.style.visibility="hidden";this.container.appendChild(this.spinner)};Fisma.Spinner.prototype.show=function(){this.spinner.style.visibility="visible"};Fisma.Spinner.prototype.hide=function(){this.spinner.style.visibility="hidden"};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6493,7 +6579,7 @@ Fisma.Spinner.prototype.show = function () {
 Fisma.Spinner.prototype.hide = function () {
     this.spinner.style.visibility = 'hidden';
 };
-Fisma.SwitchButton=function(b,a,e,d){var c=this;if(b.nodeType&&b.nodeType==document.ELEMENT_NODE){this.element=b}else{if("string"==typeof b){this.element=document.getElementById(b);if(!this.element){throw'Invalid element name "'+name+'"'}}else{throw"Invalid element for switch button constructor"}}this.createDomElements();this.state=a;this.payload=d;if(!this.state){this.element.style.backgroundPosition="-54px 100%"}this.element.onclick=function(){c.toggleSwitch.call(c)};if(""!=e){callbackObj=Fisma.Util.getObjectFromName(e);if("function"==typeof callbackObj){this.callback=callbackObj}else{throw"Specified callback is not a function: "+e}}};Fisma.SwitchButton.prototype={createDomElements:function(){YAHOO.util.Dom.addClass(this.element,"switchButton");var c=document.createElement("span");YAHOO.util.Dom.addClass(c,"border");this.element.appendChild(c);var b=document.createElement("span");YAHOO.util.Dom.addClass(b,"spinner");var a=document.createElement("img");a.src="/images/spinners/small.gif";b.appendChild(a);this.element.appendChild(b);this.spinner=b;this.proxyElement=document.createElement("div");this.proxyElement.style.display="none";document.body.appendChild(this.proxyElement)},toggleSwitch:function(){var b=this;var a;if(this.state){a={left:{from:0,to:-54,unit:"px"}};this.state=false}else{a={left:{from:-54,to:0,unit:"px"}};this.state=true}var c=new YAHOO.util.Anim(this.proxyElement,a,0.1,YAHOO.util.Easing.easeOut);c.onTween.subscribe(function(){b.element.style.backgroundPosition=b.proxyElement.style.left+" 100%"});c.animate();if(this.callback){this.callback(this)}},setBusy:function(a){if(a){this.spinner.style.visibility="visible"}else{this.spinner.style.visibility="hidden"}}};/**
+/**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/
  * 
@@ -6693,7 +6779,7 @@ Fisma.SwitchButton.prototype = {
             this.spinner.style.visibility = 'hidden';
         }
     }
-};Fisma.System={uploadDocumentCallback:function(a){window.location.href=window.location.href}};/**
+};/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6727,7 +6813,7 @@ Fisma.System = {
         window.location.href = window.location.href;
     }
 };
-Fisma.TabView={};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6750,7 +6836,7 @@ Fisma.TabView={};/**
  */
 
 Fisma.TabView = {};
-Fisma.TabView.Roles=function(){return{init:function(b,a,c){YAHOO.util.Event.addListener("role","change",function(d){YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren("role"),function(j){var h=Fisma.tabView;var g=h.get("tabs");if(j.selected){var k=0;for(var f in g){if(g[f].get("id")==j.value){k=1;break}}if(!k){for(var f in b){if(b[f]["id"]==j.value){var e=b[f]["nickname"];break}}var l=new YAHOO.widget.Tab({id:j.value,label:e,dataSrc:"/user/get-organization-subform/user/"+a+"/role/"+j.value+"/readOnly/"+c,cacheData:true,active:true});l.subscribe("dataLoadedChange",Fisma.prepareTab);h.addTab(l)}}else{for(var f in g){if(g[f].get("id")==j.value){h.removeTab(g[f])}}}})})}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6823,7 +6909,7 @@ Fisma.TabView.Roles = function() {
         }
     }
 }();
-Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},contingencyPlanTest:function(b,a,c,d){Fisma.TableFormat.selfAssessment(b,a,c,d)},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}},editControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/edit.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},deleteControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/del.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},formatHtml:function(a,b,c,d){a.innerHTML=d.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">")},overdueFinding:function(i,k,f,b){overdueFindingSearchUrl="/finding/remediation/list/queryType/advanced";var a=k.getData("System");if(a){overdueFindingSearchUrl+="/organization/textExactMatch/"+escape(a)}var d=k.getData("Status");if(d){overdueFindingSearchUrl+="/denormalizedStatus/textExactMatch/"+escape(d)}var j=f.formatterParameters;if(j.source){overdueFindingSearchUrl+="/source/textExactMatch/"+escape(j.source)}var h=null;if(j.from){fromDate=new Date();fromDate.setDate(fromDate.getDate()-parseInt(j.from));h=fromDate.getFullYear()+"-"+(fromDate.getMonth()+1)+"-"+fromDate.getDate()}var g=null;if(j.to){toDate=new Date();toDate.setDate(toDate.getDate()-parseInt(j.to));g=toDate.getFullYear()+"-"+(toDate.getMonth()+1)+"-"+toDate.getDate()}if(h&&g){overdueFindingSearchUrl+="/nextDueDate/dateBetween/"+g+"/"+h}else{if(h){overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+h}else{var e=new Date();e.setDate(e.getDate()-1);var c=e.getFullYear()+"-"+(e.getMonth()+1)+"-"+e.getDate();overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+c}}i.innerHTML="<a href="+overdueFindingSearchUrl+">"+b+"</a>"},completeDocTypePercentage:function(b,a,c,d){b.innerHTML=d;percentage=parseInt(d.replace(/%/g,""));if(percentage!=null){if(percentage>=95&&percentage<=100){Fisma.TableFormat.green(b.parentNode)}else{if(percentage>=80&&percentage<95){Fisma.TableFormat.yellow(b.parentNode)}else{if(percentage>=0&&percentage<80){Fisma.TableFormat.red(b.parentNode)}}}}},incompleteDocumentType:function(c,b,d,e){var a="";if(e.length>0){a+="<ul><li>"+e.replace(/,/g,"</li><li>")+"</li></ul>"}c.innerHTML=a},formatCheckbox:function(c,a,d,e){if(a.getData("deleted_at")){c.parentNode.style.backgroundColor="pink"}else{var b=document.createElement("input");b.type="checkbox";b.className=YAHOO.widget.DataTable.CLASS_CHECKBOX;b.checked=e;if(c.firstChild){c.removeChild(el.firstChild)}c.appendChild(b)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7179,7 +7265,7 @@ Fisma.TableFormat = {
             elCell.appendChild(checkbox);
         }        
     }
-};Fisma.UrlPanel=function(){return{showPanel:function(e,b,f,c,d){if(typeof(c)=="undefined"||c==null){c="panel"}if(typeof(d)=="undefined"||d==null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(c,d);a.setHeader(e);a.setBody("Loading...");a.render(document.body);a.center();a.show();if(b!=""){YAHOO.util.Connect.asyncRequest("GET",b,{success:function(g){g.argument.setBody(g.responseText);g.argument.center();if(typeof(f)=="function"){f()}},failure:function(g){alert("Failed to load the specified panel.")},argument:a},null)}return a}}}();/**
+};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7265,7 +7351,7 @@ Fisma.UrlPanel = function() {
         }
     };
 }();
-Fisma.User={userInfoPanelList:{},generatePasswordBusy:false,checkAccountBusy:false,displayUserInfo:function(c,b){var a;if(typeof Fisma.User.userInfoPanelList[b]=="undefined"){a=Fisma.User.createUserInfoPanel(c,b);Fisma.User.userInfoPanelList[b]=a;a.show()}else{a=Fisma.User.userInfoPanelList[b];if(a.cfg.getProperty("visible")){a.hide()}else{a.bringToTop();a.show()}}},createUserInfoPanel:function(e,d){var b=350;var c,a;c=d+"InfoPanel";a=new YAHOO.widget.Panel(c,{width:b+"px",modal:false,close:true,constraintoviewport:true});a.setHeader("User Profile");a.setBody("Loading user profile for <em>"+d+"</em>...");a.render(document.body);Fisma.Util.positionPanelRelativeToElement(a,e);YAHOO.util.Connect.asyncRequest("GET","/user/info/username/"+escape(d),{success:function(f){a.setBody(f.responseText);Fisma.Util.positionPanelRelativeToElement(a,e)},failure:function(f){a.setBody("User information cannot be loaded.");Fisma.Util.positionPanelRelativeToElement(a,e)}},null);return a},generatePassword:function(){if(Fisma.User.generatePasswordBusy){return}Fisma.User.generatePasswordBusy=true;var a=document.getElementById("generate_password");a.className="yui-button yui-push-button yui-button-disabled";var b=new Fisma.Spinner(a.parentNode);b.show();YAHOO.util.Connect.asyncRequest("GET","/user/generate-password/format/html",{success:function(c){document.getElementById("password").value=c.responseText;document.getElementById("confirmPassword").value=c.responseText;Fisma.User.generatePasswordBusy=false;a.className="yui-button yui-push-button";b.hide()},failure:function(c){b.hide();alert("Failed to generate password: "+c.statusText)}},null);return false},checkAccount:function(){if(Fisma.User.checkAccountBusy){return}Fisma.User.checkAccountBusy=true;var c=document.getElementById("username").value;var a="/user/check-account/format/json/account/"+encodeURIComponent(c);var b=document.getElementById("checkAccount");b.className="yui-button yui-push-button yui-button-disabled";var d=new Fisma.Spinner(b.parentNode);d.show();YAHOO.util.Connect.asyncRequest("GET",a,{success:function(k){var h=YAHOO.lang.JSON.parse(k.responseText);message(h.msg,h.type,true);var e=new Array("nameFirst","nameLast","phoneOffice","phoneMobile","email","title");var f=new Array("givenname","sn","telephonenumber","mobile","mail","title");if(h.accountInfo!=null){for(var g in f){if(!f.hasOwnProperty(g)){continue}var j=h.accountInfo[f[g]];if(j!=null){document.getElementById(e[g]).value=j}else{document.getElementById(e[g]).value=""}}}Fisma.User.checkAccountBusy=false;b.className="yui-button yui-push-button";d.hide()},failure:function(e){d.hide();alert("Failed to check account password: "+e.statusText)}},null)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7505,7 +7591,7 @@ Fisma.User = {
         );
     }
 };
-Fisma.Util={escapeRegexValue:function(b){var a=new RegExp("[.*+?|()\\[\\]{}\\\\]","g");return b.replace(a,"\\$&")},getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a},positionPanelRelativeToElement:function(b,c){var a=5;b.cfg.setProperty("context",[c,YAHOO.widget.Overlay.TOP_LEFT,YAHOO.widget.Overlay.BOTTOM_LEFT,null,[0,a]])},getTimestamp:function(){var b=new Date();var a=b.getHours()+"";if(a.length==1){a="0"+a}var c=b.getMinutes()+"";if(c.length==1){c="0"+c}var d=b.getSeconds()+"";if(d.length==1){d="0"+d}return a+":"+c+":"+d}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7625,7 +7711,7 @@ Fisma.Util = {
         return hours + ":" + minutes + ":" + seconds;
     }
 };
-Fisma.Vulnerability={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("vulnerabilityCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
