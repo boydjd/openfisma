@@ -39,7 +39,7 @@ class Fisma_Zend_Form_Validate_MceNotEmpty extends Fisma_Zend_Form_Validate_NotB
      * @var array
      */
     protected $_messageTemplates = array(
-        self::NOTEMPTY => "cannot be empty."
+        self::NOTEMPTY => "can't be empty."
     );
 
     /** 
@@ -63,7 +63,7 @@ class Fisma_Zend_Form_Validate_MceNotEmpty extends Fisma_Zend_Form_Validate_NotB
             return parent::isValid($value);
         }
 
-        $this->_error();
+        $this->_error(self::NOTEMPTY);
         return false;
     }
 }
