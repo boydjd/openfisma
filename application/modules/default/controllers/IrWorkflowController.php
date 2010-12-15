@@ -134,6 +134,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
      */
     protected function setForm($workflowDef, $form)
     {
+        $actionName = $this->getRequest()->getActionName();
+
         $parentForm = parent::setForm($workflowDef, $form);
 
         // Get roles
@@ -152,7 +154,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
         $steps = $stepsQuery->execute();
 
         // If no steps exist, create a blank step
-        if (0 === count($steps)) {
+        if (0 === count($steps) && 'edit' == $actionName) {
             $defaultStep = new IrStep();
             $defaultStep->cardinality = 1;
 
@@ -174,7 +176,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
              * @todo Kludge... the readonly attribute of the form isn't getting carried down to the step elements.
              * I dont' have time to fix it, so I'm going to set it directly when the action is 'view'. This is bad.
              */
-            if ('view' == $this->getRequest()->getActionName()) {
+            if ('view' == $actionName) {
                 $stepElement->readOnly = true;
             }
 
