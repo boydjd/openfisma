@@ -11619,7 +11619,7 @@ SecurityControl:
             brought into the information system specifically for diagnostic and repair actions (e.g., a hardware or 
             software packet sniffer that is introduced for the purpose of a particular maintenance activity). Hardware 
             and/or software components that may support information system maintenance, yet are a part of the system 
-            (e.g., the software implementing “ping,” “ls,” “ipconfig,” or the hardware and software implementing the 
+            (e.g., the software implementing "ping," "ls," "ipconfig," or the hardware and software implementing the 
             monitoring port of an Ethernet switch) are not covered by this control. Related control: MP-6.
         externalReferences: >
             NIST Special Publication 800-88.
