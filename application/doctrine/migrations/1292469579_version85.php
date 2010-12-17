@@ -17,7 +17,7 @@
  */
 
 /**
- * Update app version 
+ * Update security_control 
  * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
@@ -27,7 +27,7 @@
 class Version85 extends Doctrine_Migration_Base
 {
     /**
-     * fix data encode errors at security_control 
+     * fix wrong characters at security_control 
      */
     public function up()
     {
@@ -51,7 +51,7 @@ class Version85 extends Doctrine_Migration_Base
     }
 
     /**
-     * Remove  encode errors
+     * Remove the fixing of wrong  characters
      */
     public function down()
     {
