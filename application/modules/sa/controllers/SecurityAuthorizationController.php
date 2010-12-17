@@ -214,4 +214,26 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                   ->setClickEventVariableName('id');
         return $dataTable;
     }
+
+    /**
+     * Action to complete a SA step and move to the next step.
+     *
+     * @return void
+     */
+    public function completeStepAction()
+    {
+        $id = $this->_getParam('id');
+        $step  = $this->_getParam('step');
+
+        if ($this->getRequest()->isPost()) {
+            // update the SA to the next step
+            $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+            if ($sa != null) {
+                $sa->completeStep($step);
+                $sa->save();
+            }
+        }
+
+        $this->_redirect('/sa/security-authorization/view/id/' . $id);
+    }
 }

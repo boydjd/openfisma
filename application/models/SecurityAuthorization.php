@@ -26,4 +26,40 @@
  */
 class SecurityAuthorization extends BaseSecurityAuthorization
 {
+    /**
+     * Update the SA to the next step
+     *
+     * @param string $step Step to complete.  Must be the models current status.
+     * @return boolean
+     */
+    public function completeStep($step)
+    {
+        if ($this->status != $step) {
+            return false;
+        }
+
+        switch ($this->status) {
+            case 'Select':
+                // @todo skips implement
+                $this->status = 'Assessment Plan';
+                break;
+            case 'Implement':
+            case 'Assessment Plan':
+                $this->status = 'Assessment';
+                break;
+            case 'Assessment':
+                $this->status = 'Authorization';
+                break;
+            case 'Authorization':
+                $this->status = 'Active';
+                break;
+            case 'Active':
+                $this->status = 'Retired';
+                break;
+            default:
+                throw new Exception('Unable to complete step: ' . $this->status);
+        }
+
+        return true;
+    }
 }

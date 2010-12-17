@@ -52,6 +52,14 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
     public function indexAction()
     {
         $this->view->id = $this->_request->getParam('id');
+        $completeForm = new Fisma_Zend_Form();
+        $completeForm->setAction('/sa/security-authorization/complete-step')
+                     ->setAttrib('id', 'completeForm')
+                     ->addElement(new Zend_Form_Element_Hidden('id'))
+                     ->addElement(new Zend_Form_Element_Hidden('step'))
+                     ->setElementDecorators(array('ViewHelper'))
+                     ->setDefaults(array('id' => $this->view->id, 'step' => 'Select'));
+        $this->view->completeForm = $completeForm;
     }
    
     /**

@@ -24,6 +24,13 @@ $addControl = new Fisma_Yui_Form_Button('addControl',
                                        array('label' => 'Add Control', 
                                              'onClickFunction' => 'addControl'));
 echo $this->escape($addControl, 'none');
+
+$completeSelection = new Fisma_Yui_Form_Button('completeSelection', 
+                                       array('label' => 'Complete Selection', 
+                                             'onClickFunction' => 'completeSelect'));
+echo $this->escape($completeSelection, 'none');
+
+echo $this->escape($this->completeForm, 'none');
 ?>
 </div>
 
@@ -73,6 +80,12 @@ function addControl() {
             argument: panel
         };
     YAHOO.util.Connect.asyncRequest( 'GET', url, callbacks, null);
+}
+
+// submit the form to mark the selection step as complete
+function completeSelect()
+{
+    document.getElementById('completeForm').submit();
 }
 </script>
 
