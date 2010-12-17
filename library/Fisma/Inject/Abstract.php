@@ -322,9 +322,9 @@ abstract class Fisma_Inject_Abstract
     {
         // Verify whether asset exists or not
         $assetQuery = Doctrine_Query::create()
-                        ->select('id')
-                        ->from('Asset a')
-                        ->where('a.networkId = ?', $assetData['networkId']);
+                      ->select('id, deleted_at')
+                      ->from('Asset a')
+                      ->where('a.networkId = ?', $assetData['networkId']);
         if (empty($assetData['addressIp'])) {
             $assetQuery->andWhere('a.addressIp IS NULL');
         } else {
@@ -335,10 +335,21 @@ abstract class Fisma_Inject_Abstract
         } else {
             $assetQuery->andWhere('a.addressPort = ?', $assetData['addressPort']);
         }
-        $assetRecord = $assetQuery->setHydrationMode(Doctrine::HYDRATE_NONE)
+        $assetRecord = $assetQuery->orWhere('a.deleted_at IS NOT NULL')
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                                   ->execute();
 
-        return ($assetRecord) ? $assetRecord[0][0] : FALSE;
+        //  If the vulnerability references to the existing and soft delete'd asset, then active asset.
+        $deletedAt = ($assetRecord) ? $assetRecord[0]['deleted_at'] : FALSE;
+        if ($deletedAt) {
+            $query = Doctrine_Query::create()
+                     ->update('Asset a')
+                     ->set('a.deleted_at', 'NULL')
+                     ->where('a.id = ?', $assetRecord[0]['id'])
+                     ->execute();
+        }
+
+        return ($assetRecord) ? $assetRecord[0]['id'] : FALSE;
     }
 
     /**
