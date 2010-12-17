@@ -96,7 +96,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      private static $_sdlcPhaseMap = array(
                 'initiation' => 'Initiation',
                 'development' => 'Development/Acquisition',
-                'imlementation' => 'Implementation/Assessment',
+                'implementation' => 'Implementation/Assessment',
                 'operations' => 'Operations/Maintenance',
                 'disposal' => 'Disposal'
      );
