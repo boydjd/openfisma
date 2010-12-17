@@ -8,9 +8,9 @@ SecurityAuthorization:
             notnull: true
         status:
             type: enum
-            values: [PENDING, ACTIVE, RETIRED]
+            values: [Select, "Assessment Plan", Assessment, Authorization, Active, Retired]
             notnull: true
-            default: PENDING
+            default: Select
         result:
             type: enum
             values: ["Pending Authorization Decision", "Authorized to Operate", "Authorization Rescinded"]
