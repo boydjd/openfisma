@@ -2,34 +2,11 @@
 
 <div class="buttonBar">
 <?php
-$goBack = new Fisma_Yui_Form_Button_Link('goBack', 
-                                       array('value' => 'Go Back', 
-                                             'imageSrc' => '/images/left_arrow.png',
-                                             'href' => '/sa/security-authorization/view/id/' . $this->id));
-echo $this->escape($goBack, 'none');
-
-$expandAll = new Fisma_Yui_Form_Button('expandAll', 
-                                       array('label' => 'Expand All', 
-                                             'imageSrc' => '/images/expand.png',
-                                             'onClickFunction' => 'expandAll'));
-echo $this->escape($expandAll, 'none');
-
-$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
-                                         array('label' => 'Collapse All', 
-                                             'imageSrc' => '/images/collapse.png',
-                                             'onClickFunction' => 'collapseAll'));
-echo $this->escape($collapseAll, 'none');
-
-$addControl = new Fisma_Yui_Form_Button('addControl', 
-                                       array('label' => 'Add Control', 
-                                             'onClickFunction' => 'addControl'));
-echo $this->escape($addControl, 'none');
-
-$completeSelection = new Fisma_Yui_Form_Button('completeSelection', 
-                                       array('label' => 'Complete Selection', 
-                                             'onClickFunction' => 'completeSelect'));
-echo $this->escape($completeSelection, 'none');
-
+echo $this->escape($this->goBack, 'none');
+echo $this->escape($this->expandAll, 'none');
+echo $this->escape($this->collapseAll, 'none');
+echo $this->escape($this->addControl, 'none');
+echo $this->escape($this->completeSelection, 'none');
 echo $this->escape($this->completeForm, 'none');
 ?>
 </div>

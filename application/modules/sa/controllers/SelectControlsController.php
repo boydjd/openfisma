@@ -52,6 +52,44 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
     public function indexAction()
     {
         $this->view->id = $this->_request->getParam('id');
+
+        $this->view->goBack = new Fisma_Yui_Form_Button_Link(
+            'goBack', 
+            array(
+                'value' => 'Go Back',
+                'imageSrc' => '/images/left_arrow.png',
+                'href' => '/sa/security-authorization/view/id/' . $this->view->id
+            )
+        );
+        
+        $this->view->expandAll = new Fisma_Yui_Form_Button(
+            'expandAll',
+            array(
+                'label' => 'Expand All',
+                'imageSrc' => '/images/expand.png',
+                'onClickFunction' => 'expandAll'
+            )
+        );
+        
+        $this->view->collapseAll = new Fisma_Yui_Form_Button(
+            'collapseAll',
+            array(
+                'label' => 'Collapse All',
+                'imageSrc' => '/images/collapse.png',
+                'onClickFunction' => 'collapseAll'
+            )
+        );
+        
+        $this->view->addControl = new Fisma_Yui_Form_Button(
+            'addControl',
+            array('label' => 'Add Control', 'onClickFunction' => 'addControl')
+        );
+        
+        $this->view->completeSelection = new Fisma_Yui_Form_Button(
+            'completeSelection',
+             array('label' => 'Complete Selection', 'onClickFunction' => 'completeSelect')
+        );
+
         $completeForm = new Fisma_Zend_Form();
         $completeForm->setAction('/sa/security-authorization/complete-step')
                      ->setAttrib('id', 'completeForm')
