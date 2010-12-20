@@ -87,6 +87,10 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             // Loop over posted steps' data
             foreach ($post['stepName'] as $index => $postedStepName) {
 
+                // Skip a blank step
+                $stepDescription = trim(strip_tags($post['stepDescription'][$index]));
+                if (empty($postedStepName) && empty($post['stepRole'][$index]) && empty($stepDescription)) continue;
+
                 // If the user posts more steps than the workflow has, then create new steps
                 if (isset($steps[$index])) {
                     $currentStep = $steps[$index];

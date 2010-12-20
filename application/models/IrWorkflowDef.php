@@ -23,14 +23,12 @@ class IrWorkflowDef extends BaseIrWorkflowDef
     {
         if (count($this->Steps) > 0) {
             throw new Fisma_Zend_Exception_User(
-            /** @todo english */
                 'This workflow can not be deleted because it is already associated with one or more steps'
             );
         }
 
         if (count($this->SubCategories) > 0) {
             throw new Fisma_Zend_Exception_User(
-            /** @todo english */
                 'This workflow can not be deleted because it is already associated with one or more sub-categories'
             );
         }

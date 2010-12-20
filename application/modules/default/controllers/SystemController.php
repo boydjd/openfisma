@@ -88,6 +88,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
     }
 
+    public function _isDeletable()
+    {
+        return false;
+    }
+
     /**
      * Display basic system properties such as name, creation date, etc.
      *

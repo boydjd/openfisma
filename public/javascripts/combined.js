@@ -5364,7 +5364,11 @@ Fisma.Search = function() {
                         
                         // Refresh search results
                         dataTable.showTableMessage("Loading...");
-                        dataTable.getDataSource().sendRequest('', onDataTableRefresh);
+                        var postData = "csrf="
+                           + document.getElementById('searchForm').csrf.value;
+                        var dataSource = dataTable.getDataSource();
+                        dataSource.connMethodPost = true;
+                        dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
