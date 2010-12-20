@@ -500,9 +500,23 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             
             $message = "$numRecords $noun $verb deleted.";
             $status = 'notice';
+            
+        } catch (Doctrine_Exception $e) {
+            
+            Doctrine_Manager::connection()->rollback();
+            
+            if (Fisma::debug()) {
+                $message .= $e->getMessage();
+            } else {
+                $message .= 'An error has occured while deleting selected record(s)';
+            }
+            $status = 'warning';
+            
+            $logger = Fisma::getLogInstance(CurrentUser::getInstance());
+            $logger->log($e->getMessage() . "\n" . $e->getTraceAsString(), Zend_Log::ERR);
+            
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
-
             $message = $e->getMessage();
             $status = 'warning';
         }

@@ -373,4 +373,14 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
             }
         }
     }
+    
+    public function preDelete($event)
+    {
+        if ($this->Organization->Incidents->count() > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'You cannot delete a organization/system that has Incidents associated with it'
+            );
+        }
+    }
+    
 }
