@@ -40,6 +40,7 @@ class SecurityAuthorization extends BaseSecurityAuthorization
 
         switch ($this->status) {
             case 'Select':
+                $this->initAssessmentPlan();
                 // @todo skips implement
                 $this->status = 'Assessment Plan';
                 break;
@@ -61,5 +62,49 @@ class SecurityAuthorization extends BaseSecurityAuthorization
         }
 
         return true;
+    }
+
+    /**
+     * @return void
+     */
+    public function initAssessmentPlan()
+    {
+        // populate assessment plan entries for security controls
+        $apeColl = new Doctrine_Collection('AssessmentPlanEntry');
+
+        foreach ($this->SaSecurityControls as $sasc) {
+            $cProcedures = Doctrine_Query::create()
+                ->from('AssessmentProcedure ap')
+                ->where('ap.controlCode = ?', $sasc->SecurityControl->code)
+                ->andWhere('ap.enhancement IS NULL')
+                ->execute();
+            foreach ($cProcedures as $ap) {
+                $apeColl->add($this->_createAssessmentPlanEntry($ap, $sasc));
+            }
+            foreach ($sasc->SaSecurityControlEnhancements as $sasce) {
+                $eProcedures = Doctrine_Query::create()
+                    ->from('AssessmentProcedure ap')
+                    ->where('ap.controlCode = ?', $sasc->SecurityControl->code)
+                    ->andWhere('ap.enhancement = ?', $sasce->SecurityControlEnhancement->number)
+                    ->execute();
+                foreach ($eProcedures as $ap) {
+                    $apeColl->add($this->_createAssessmentPlanEnty($ap, $sasce));
+                }
+            }
+        }
+
+        $apeColl->save();
+    }
+
+    protected function _createAssessmentPlanEntry(AssessmentProcedure $ap, SaSecurityControlAggregate $sasca)
+    {
+        $ape = new AssessmentPlanEntry();
+        $ape->SaSecurityControlAggregate = $sasca;
+        $ape->number = $ap->number;
+        $ape->objective = $ap->objective;
+        $ape->examine = $ap->examine;
+        $ape->interview = $ap->interview;
+        $ape->test = $ap->test;
+        return $ape;
     }
 }
