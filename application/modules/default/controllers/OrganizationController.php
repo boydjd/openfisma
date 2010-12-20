@@ -228,6 +228,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         return $objectId;
     }
 
+    public function _isDeletable()
+    {
+        return false;
+    }
+
     /**
      * Delete a specified organization.
      *
