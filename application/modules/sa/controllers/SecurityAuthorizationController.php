@@ -178,6 +178,40 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
         $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
+
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        $buttonbar = array();
+        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
+            'goBack',
+             array(
+                 'value' => 'Go Back',
+                 'imageSrc' => '/images/left_arrow.png',
+                 'href' => '/sa/security-authorization/view/id/' . $sa->id
+             )
+        );
+
+        if ($sa->status == 'Assessment Plan') {
+            $buttonbar[] = new Fisma_Yui_Form_Button(
+                'completeAssessmentPlan',
+                 array('label' => 'Complete Assessment Plan', 'onClickFunction' => 'submitCompleteForm')
+            );
+        } else if ($sa->status == 'Assessment') {
+            $buttonbar[] = new Fisma_Yui_Form_Button(
+                'completeAssessment',
+                 array('label' => 'Complete Assessment', 'onClickFunction' => 'submitCompleteForm')
+            );
+        }
+
+        $completeForm = new Fisma_Zend_Form();
+        $completeForm->setAction('/sa/security-authorization/complete-step')
+                     ->setAttrib('id', 'completeForm')
+                     ->addElement(new Zend_Form_Element_Hidden('id'))
+                     ->addElement(new Zend_Form_Element_Hidden('step'))
+                     ->setElementDecorators(array('ViewHelper'))
+                     ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
+        $buttonbar[] = $completeForm;
+
+        $this->view->buttonbar = $buttonbar;
     }
 
     /**

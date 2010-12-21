@@ -88,7 +88,7 @@ class SecurityAuthorization extends BaseSecurityAuthorization
                     ->andWhere('ap.enhancement = ?', $sasce->SecurityControlEnhancement->number)
                     ->execute();
                 foreach ($eProcedures as $ap) {
-                    $apeColl->add($this->_createAssessmentPlanEnty($ap, $sasce));
+                    $apeColl->add($this->_createAssessmentPlanEntry($ap, $sasce));
                 }
             }
         }
