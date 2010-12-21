@@ -50,6 +50,14 @@ class Fisma_Zend_Form_Manager_Assessmentplanentry extends Fisma_Zend_Form_Manage
         $resultNames = array_map('ucfirst', array_map('strtolower', $resultKeys));
         $resultElem->addMultiOptions(array_combine($resultKeys, $resultNames));
 
+        $ape = $apeTable->find($this->_request->getParam('id'));
+        $sa = $ape->SaSecurityControlAggregate->SecurityAuthorization;
+        if ($sa->status == 'Assessment Plan') {
+            // hide result
+            $form->removeElement('status');
+            $form->removeElement('result');
+        }
+
         $this->setForm($form);
     }
 }
