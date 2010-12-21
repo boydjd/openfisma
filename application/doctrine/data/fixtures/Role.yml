@@ -233,6 +233,7 @@ Role:
             - incident_close
             - incident_create
             - incident_update
+            - incident_lock
             - ir_workflow_def_read
             - ir_workflow_def_create
             - ir_workflow_def_update
