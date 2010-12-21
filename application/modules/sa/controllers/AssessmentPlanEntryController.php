@@ -163,6 +163,13 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         }
         $this->_acl->requirePrivilegeForObject('read', $subject);
 
+        $sasca = $subject->SaSecurityControlAggregate;
+        if ($sasca instanceof SaSecurityControl) {
+            $this->view->sa = $sasca->SecurityAuthorization;
+        } else if ($sasca instanceof SaSecurityControlEnhancement) {
+            $this->view->sa = $sasca->SaSecurityControl->SecurityAuthorization;
+        }
+
         $form   = $this->getForm();
 
         $this->view->assign('editLink', "{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
