@@ -6423,6 +6423,8 @@ Fisma.Search.Panel.prototype = {
             this.criteria[0].setRemoveButtonEnabled(true);
         }
 
+        if (!this.searchableFields[this.criteria.length]) throw "No field defined for search";
+
         var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
         this.criteria.push(criteria);
         
