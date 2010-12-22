@@ -92,18 +92,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $needsIndex = false;
         
         $table = $record->getTable();
-        $searchableFields = array_keys($table->getSearchableFields());
-        
-        foreach (array_keys($modified) as $modifiedField) {
-            if (in_array($modifiedField, $searchableFields)) {
-                $needsIndex = true;
-                
-                break;
-            }
-        }
 
         // If an indexed field changed, then update the index for this object
-        if ($needsIndex) {
+        if ($this->_needsReindex($modified, $table)) {
             $modelName = get_class($record);
             $relationAliases = array();
 
@@ -168,5 +159,43 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         }
 
         $searchEngine->commit();
+    }
+    
+    /**
+     * Determine if a record needs to be re-indexed based on changes made by a user
+     * 
+     * This is smart enough to check whether the user modified any indexable fields. If the user did not,
+     * then a re-index is not required.
+     * 
+     * @param array $modified List of modified fields
+     * @param Doctrine_Table $table
+     */
+    private function _needsReindex($modified, Doctrine_Table $table)
+    {
+        $searchableFields = $table->getSearchableFields();
+        $relations = $table->getRelations();
+
+        foreach (array_keys($modified) as $modifiedField) {
+            foreach ($searchableFields as $searchFieldName => $searchFieldDefinition) {
+
+                // Did the user modify an indexable field on this object model?
+                if ($modifiedField == $searchFieldName['name']) {
+                    return true;
+                }
+
+                // Did the user modify an indexable foreign key?
+                if (isset($searchFieldDefinition['join'])) {
+                    foreach ($relations as $relation) {
+                        if ($relation->getLocalFieldName() == $modifiedField && 
+                            $relation->getAlias() == $searchFieldDefinition['join']['relation']) {
+                        
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 }
