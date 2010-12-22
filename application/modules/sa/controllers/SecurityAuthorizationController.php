@@ -180,6 +180,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
 
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        $this->view->sa = $sa;
         $buttonbar = array();
         $buttonbar[] = new Fisma_Yui_Form_Button_Link(
             'goBack',
@@ -219,6 +220,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->dataTable = $dataTable;
 
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        $this->view->sa = $sa;
         $buttonbar = array();
         $buttonbar[] = new Fisma_Yui_Form_Button_Link(
             'goBack',

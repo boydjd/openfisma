@@ -1,8 +1,7 @@
 <?php
+echo $this->partial('navigation.phtml', array('sa' => $this->subject, 'current' => 'Overview'));
 $sectionTitle = 'Security Authorization';
 $sectionTitle .= ' [<a href="/sa/security-authorization/edit/id/' . $this->id . '">Edit</a>]';
-$sectionTitle .= ' [<a href="/sa/security-authorization/assessment-plan/id/' . $this->id . '">Assessment Plan</a>]';
-$sectionTitle .= ' [<a href="/sa/security-authorization/authorization/id/' . $this->id . '">Authorization</a>]';
 Fisma_Format_Section::startSection($sectionTitle); ?>
 
 <div>

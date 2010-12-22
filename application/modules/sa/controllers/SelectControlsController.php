@@ -52,6 +52,7 @@ class Sa_SelectControlsController extends Fisma_Zend_Controller_Action_Security
     public function indexAction()
     {
         $this->view->id = $this->_request->getParam('id');
+        $this->view->sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
 
         $this->view->goBack = new Fisma_Yui_Form_Button_Link(
             'goBack', 

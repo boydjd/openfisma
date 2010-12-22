@@ -1,0 +1,40 @@
+<?php
+$links = array(
+    'Overview' => '/sa/security-authorization/view/id/' . $this->sa->id,
+    'Select' => '/sa/select-controls/index/id/' . $this->sa->id,
+    'Implement' => null,
+    'Assessment' => '/sa/security-authorization/assessment-plan/id/' . $this->sa->id,
+    'Authorization' => '/sa/security-authorization/authorization/id/' . $this->sa->id
+);
+// null value means disabled, disable tabs based on status
+switch ($this->sa->status) {
+    case 'Select':
+        $links['Implement'] = null;
+    case 'Implement':
+        $links['Assessment'] = null;
+    case 'Assessment Plan':
+    case 'Assessment':
+        $links['Authorization'] = null;
+    case 'Authorization':
+    case 'Active':
+    case 'Retired':
+        // do nothing
+        break;
+    default:
+        throw new Fisma_Zend_Exception('Unknown SA status encountered.');
+}
+
+foreach ($links as $label => &$value) {
+    if ($label == $this->current) {
+        $value = '<b>' . $label . '</b>';
+    } else if (empty($value)) {
+        $value = '<i>' . $label . '</i>';
+    } else {
+        $value = '<a href="' . $value . '">' . $label . '</a>';
+    }
+}
+$links = implode(' | ', $links);
+?>
+Security Authorization <?php echo $this->escape($this->sa->id); ?><br />
+[ <?php echo $this->escape($links, 'none'); ?> ]
+
