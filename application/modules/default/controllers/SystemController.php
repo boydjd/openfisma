@@ -293,6 +293,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $system->Organization->getNode()->insertAsLastChildOf($parentNode);
         $system->Organization->save();
 
+        // Quick hack to force re-indexing of the system, since intially it won't index its organization fields
+        $system->state(Doctrine_Record::STATE_DIRTY);
+        $system->save();
+
         // Add the system to the user's ACL if the flag was set above
         if ($addSystemToUserAcl) {
             $userRoles = CurrentUser::getInstance()->getRolesByPrivilege('organization', 'create');

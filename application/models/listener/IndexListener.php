@@ -88,9 +88,6 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             return;
         }
 
-        // Determine whether any of the indexable fields have changed
-        $needsIndex = false;
-        
         $table = $record->getTable();
 
         // If an indexed field changed, then update the index for this object
@@ -179,7 +176,8 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             foreach ($searchableFields as $searchFieldName => $searchFieldDefinition) {
 
                 // Did the user modify an indexable field on this object model?
-                if ($modifiedField == $searchFieldName['name']) {
+                if ($modifiedField == $searchFieldName) {
+
                     return true;
                 }
 
