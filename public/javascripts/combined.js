@@ -4882,6 +4882,12 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent : function (form) {
+
+            // Ensure the search type is simple when advance search is hidden
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+                document.getElementById('searchType').value = 'simple';
+            }
+
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
