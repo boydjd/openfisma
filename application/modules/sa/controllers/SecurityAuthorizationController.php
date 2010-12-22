@@ -202,14 +202,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             );
         }
 
-        $completeForm = new Fisma_Zend_Form();
-        $completeForm->setAction('/sa/security-authorization/complete-step')
-                     ->setAttrib('id', 'completeForm')
-                     ->addElement(new Zend_Form_Element_Hidden('id'))
-                     ->addElement(new Zend_Form_Element_Hidden('step'))
-                     ->setElementDecorators(array('ViewHelper'))
-                     ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
-        $buttonbar[] = $completeForm;
+        $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
     }
@@ -224,6 +217,24 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $dataTable->setDataUrl('/sa/assessment-plan-entry/search/said/' . $this->view->id . '/otherThanSatisfied/true')
                   ->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, 'findingId'));
         $this->view->dataTable = $dataTable;
+
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        $buttonbar = array();
+        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
+            'goBack',
+            array(
+                'value' => 'Go Back',
+                'imageSrc' => '/images/left_arrow.png',
+                'href' => '/sa/security-authorization/view/id/' . $this->id
+            )
+        );
+        $buttonbar[] = new Fisma_Yui_Form_Button(
+            'completeAuthorization',
+             array('label' => 'Complete Authorization', 'onClickFunction' => 'submitCompleteForm')
+        );
+        $buttonbar[] = $this->_createCompleteStepForm($sa);
+
+        $this->view->buttonbar = $buttonbar;
     }
 
     /**
@@ -269,5 +280,17 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
 
         $this->_redirect('/sa/security-authorization/view/id/' . $id);
+    }
+
+    protected function _createCompleteStepForm(SecurityAuthorization $sa)
+    {
+        $completeForm = new Fisma_Zend_Form();
+        $completeForm->setAction('/sa/security-authorization/complete-step')
+                     ->setAttrib('id', 'completeForm')
+                     ->addElement(new Zend_Form_Element_Hidden('id'))
+                     ->addElement(new Zend_Form_Element_Hidden('step'))
+                     ->setElementDecorators(array('ViewHelper'))
+                     ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
+        return $completeForm;
     }
 }
