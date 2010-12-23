@@ -779,7 +779,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 $relationAlias = $relationAliases[$relationTable];
                 $relationField = $aclFieldDefinition['join']['field'];
     
-                $doctrineQuery->whereIn("relationAlias.$relationField", $aclValues);
+                $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
             } else {
                 $doctrineQuery->whereIn("a.$aclField", $aclValues);
             }
@@ -794,7 +794,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $relationAlias = $relationAliases[$relationTable];
             $relationField = $sortDefinition['join']['field'];
 
-            $doctrineQuery->orderBy("relationAlias.$relationField $sortOrder");
+            $doctrineQuery->orderBy("$relationAlias.$relationField $sortOrder");
         } else {
             $doctrineQuery->orderBy("a.$sortColumn $sortOrder");
         }
