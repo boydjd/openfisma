@@ -36,8 +36,8 @@ class Version88 extends Doctrine_Migration_Base
         //Update Module table
         $module = new Module();
         $module->name = 'Vulnerability Management';
-        $module->canBeDisabled = 'YES';
-        $module->enabled = 'NO';
+        $module->canBeDisabled = true;
+        $module->enabled = false;
         $module->save();
 
         //Retrieve the ADMIN role ID from the Role table to assign privileges
