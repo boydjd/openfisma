@@ -31,6 +31,13 @@ class Version86 extends Doctrine_Migration_Base
 {
     public function up()
     {
+        $this->dropForeignKey('finding', 'finding_assetid_asset_id');
+        $this->dropForeignKey('finding_bugtraq', 'finding_bugtraq_bugtraq_id_bugtraq_id');
+        $this->dropForeignKey('finding_bugtraq', 'finding_bugtraq_finding_id_finding_id');
+        $this->dropForeignKey('finding_cve', 'finding_cve_cve_id_cve_id');
+        $this->dropForeignKey('finding_cve', 'finding_cve_finding_id_finding_id');
+        $this->dropForeignKey('finding_xref', 'finding_xref_finding_id_finding_id');
+
         $this->createTable('vulnerability', array(
             'id' => 
             array(
