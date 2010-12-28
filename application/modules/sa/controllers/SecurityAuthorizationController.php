@@ -216,7 +216,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->id = $this->_request->getParam('id');
         $dataTable = $this->_baseAssessmentPlanDataTable();
         $dataTable->setDataUrl('/sa/assessment-plan-entry/search/said/' . $this->view->id . '/otherThanSatisfied/true')
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, 'findingId'));
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, null, 'findingId'));
         $this->view->dataTable = $dataTable;
 
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
@@ -246,12 +246,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $id = $this->_request->getParam('id');
         $dataTable = new Fisma_Yui_DataTable_Remote();
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, 'id', true))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, 'code'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Enhancement', true, null, 'enhancement'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Procedure', true, null, 'number'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Status', true, null, 'status'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Result', true, null, 'result'))
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, null, 'id', true))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'code'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Enhancement', true, null, null, 'enhancement'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Procedure', true, null, null, 'number'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Status', true, null, null, 'status'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Result', true, null, null, 'result'))
                   ->setDataUrl('/sa/assessment-plan-entry/search/said/' . $id)
                   ->setResultVariable('table.records')
                   ->setRowCount(20)
@@ -294,5 +294,17 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                      ->setElementDecorators(array('ViewHelper'))
                      ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
         return $completeForm;
+    }
+
+    /**
+     * Display details for a single record.
+     *
+     * Override default implementation to use custom view script.
+     *
+     * @return void
+     */
+    public function viewAction()
+    {
+        $this->_viewObject();
     }
 }

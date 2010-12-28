@@ -156,29 +156,14 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
      */
     public function viewAction()
     {
-        $id     = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
-        if (!$subject) {
-            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
-        }
-        $this->_acl->requirePrivilegeForObject('read', $subject);
+        $this->_viewObject();
 
-        $sasca = $subject->SaSecurityControlAggregate;
+        $sasca = $this->view->subject->SaSecurityControlAggregate;
         if ($sasca instanceof SaSecurityControl) {
             $this->view->sa = $sasca->SecurityAuthorization;
         } else if ($sasca instanceof SaSecurityControlEnhancement) {
             $this->view->sa = $sasca->SaSecurityControl->SecurityAuthorization;
         }
-
-        $form   = $this->getForm();
-
-        $this->view->assign('editLink', "{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
-        $form->setReadOnly(true);            
-        $this->view->assign('deleteLink', "{$this->_moduleName}/{$this->_controllerName}/delete/id/$id");
-        $this->setForm($subject, $form);
-        $this->view->form = $form;
-        $this->view->id   = $id;
-        $this->view->subject = $subject;
 
         $this->_addArtifactUploadButton();
         $this->_addArtifactsArray();
@@ -306,7 +291,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             }
             $finding->discoveredDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
             $finding->CreatedBy = $this->_me;
-            $finding->Source = Doctrine::getTable('Source')->findOneByNickname('C&A');
+            $finding->Source = Doctrine::getTable('Source')->findOneByNickname('SA');
             $finding->save();
             $subject->Finding = $finding;
             $subject->save();

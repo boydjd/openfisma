@@ -129,14 +129,18 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $informationTypesTable = new Fisma_Yui_DataTable_Remote();
 
-        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, 'category'))
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, 'name'))
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Description', false, null, 'description'))
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
                               ->addColumn(
-                                  new Fisma_Yui_DataTable_Column('Confidentiality', true, null, 'confidentiality')
+                                  new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
                               )
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, 'integrity'))
-                              ->addColumn(new Fisma_Yui_DataTable_Column('Availability', true, null, 'availability'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+                              )
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+                              )
                               ->setResultVariable('informationTypes')
                               ->setInitialSortColumn('category')
                               ->setSortAscending(true)
@@ -152,7 +156,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $availableInformationTypesTable = clone $informationTypesTable;
 
             $availableInformationTypesTable->addColumn(
-                new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', 'id')
+                new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', null, 'id')
             );
 
             $availableInformationTypesTable->setDataUrl(

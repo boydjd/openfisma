@@ -28,7 +28,80 @@
 
 /**
  */
-class SecurityAuthorizationTable extends Fisma_Doctrine_Table
+class SecurityAuthorizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
+    /**
+     * Return an array of fields (and definitions) which are searchable
+     * 
+     * @return array
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'id' => array(
+                'initiallyVisible' => true,
+                'label' => 'ID',
+                'sortable' => true,
+                'type' => 'integer'
+            ),
+            'organization' => array(
+                'initiallyVisible' => true,
+                'extraCriteria' => array(
+                    'organizationSubtree' => array(
+                        'idField' => 'responsibleOrganizationId',
+                        'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
+                        'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    )
+                ),
+                'label' => 'System',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'Organization', 
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'impact' => array(
+                'initiallyVisible' => true,
+                'label' => 'Impact',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'createdTs' => array(
+                'initiallyVisible' => true,
+                'label' => 'Created',
+                'sortable' => true,
+                'type' => 'date'
+            ), 
+            'status' => array(
+                'initiallyVisible' => true,
+                'label' => 'Status',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'result' => array(
+                'initiallyVisible' => true,
+                'label' => 'Result',
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
+    }
+
+    /**
+     * Return an array of fields which are used to test access control
+     * 
+     * Each key is the name of a field and each value is a callback function which provides a list of values to match
+     * against that field.
+     * 
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array();
+    }
 
 }
