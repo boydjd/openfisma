@@ -330,7 +330,6 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable
         $this->_options['joinedParents'] = array();
 
         foreach (array_reverse($this->_options['parents']) as $parent) {
-
             if ($parent === $class->getName()) {
                 continue;
             }

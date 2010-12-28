@@ -17,72 +17,8 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
-Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-ConvertCpeDictionary::run($argv);
+require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-/**
- * Convert the CPE dictionary from XML format into a YAML format for Doctrine
- * 
- * Accepts an argument that is a path to the XML CPE dictionary. Prints the YAML formatted dictionary
- * to the standard output.
- * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Scripts
- * @version    $Id$
- * 
- * @see        http://nvd.nist.gov/cpe.cfm
- */
-class ConvertCpeDictionary
-{
-    /**
-     * Run the command line application
-     * 
-     * @param array $argv PHP's command line arguments
-     * @return void
-     * @throws Exception if fail to initialize SimpleXMLElement
-     */
-    public static function run($argv) 
-    {
-        if (!isset($argv[1])) {
-            fwrite(STDOUT, "Usage: convert-cpe-dictionary.php <pathToXml>\n");
-            return;
-        }
+$cli = new Fisma_Cli_ConvertCpeDictionary();
+$cli->run();
 
-        // Open and parse the XML dictionary
-        $cpePath = $argv[1];
-        try {
-            $xml = @(new SimpleXMLElement("file:///$cpePath", null, true));
-        } catch (Exception $e) {
-            if (Fisma::debug()) {
-                throw $e;
-            } else {
-                fwrite(STDERR, "Error parsing XML file '$cpePath': {$e->getMessage()}\n");
-            }
-        }
-        
-        // Write YAML file header
-        fwrite(STDOUT, "Product:\n");
-        fwrite(STDOUT, "    # Parsed from XML CPE Dictionary: ". basename($cpePath) . "\n");
-        fwrite(STDOUT, "    # Date: ". Fisma::now() . "\n");        
-        fwrite(STDOUT, "    # CPE Version: ". $xml->generator->schema_version . "\n"); 
-        fwrite(STDOUT, "    # Parsed by: ". $_SERVER['PHP_SELF'] . "\n"); 
-        fwrite(STDOUT, "\n");
-
-        // Iterate over CPE items and write to YAML file
-        $itemCount = 0;
-        foreach ($xml->children() as $name => $data) {
-            if ('cpe-item' == $name) {
-                fwrite(STDOUT, "    product$itemCount:\n");
-                $itemCount++;
-                $cpe = new Fisma_Cpe($data['name']);
-                fwrite(STDOUT, "        name: $data->title\n");
-                fwrite(STDOUT, "        vendor: $cpe->vendor\n");
-                fwrite(STDOUT, "        version: $cpe->version\n");
-                fwrite(STDOUT, "        cpeName: $cpe->cpeName\n");                
-            }
-        }
-    }
-}

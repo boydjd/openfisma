@@ -24,27 +24,24 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  * @version    $Id$
- * 
- * @todo       As part of the ongoing refactoring, this class should probably be merged with the FindingController.
  */
-class Finding_RemediationController extends Fisma_Zend_Controller_Action_Security
+class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 {
+    /**
+     * The main name of the model.
+     * 
+     * This model is the main subject which the controller operates on.
+     * 
+     * @var string
+     */
+    protected $_modelName = 'Finding';
+
     /**
      * The orgSystems which are belongs to current user.
      * 
      * @var Doctrine_Collection
      */
     protected $_organizations = null;
-    
-    /**
-     * Default pagination parameters
-     * 
-     * @var array
-     */
-    protected $_paging = array(
-        'startIndex' => 0,
-        'count' => 20
-    );
     
     /**
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
@@ -148,12 +145,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $columns[] = 'EN';
 
         foreach ($evidenceEvaluations as $evaluation) {
-            $columns[] = $evaluation->nickname;            
+            $columns[] = $evaluation->nickname;
         }
         
         $columns[] = 'CLOSED';
         $columns[] = 'TOTAL';
-        
+
         $this->view->statusArray = $columns;
         $this->view->mitigationEvaluations = $mitigationEvaluations;
         $this->view->evidenceEvaluations = $evidenceEvaluations;
@@ -170,7 +167,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
 
         $type = $this->getRequest()->getParam('type');
-        $source = $this->getRequest()->getParam('sourceId');        
+        $source = $this->getRequest()->getParam('sourceNickname');        
         $format = $this->_request->getParam('format');
         // Prepare summary data
 
@@ -275,12 +272,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
      * @param int $source Finding source ids to get counts for
      * @return array
      */
-    private function _getSummaryCounts($organization, $type, $source)
+    private function _getSummaryCounts($organization, $type, $sourceNickname)
     {
         // Doctrine won't let me paramaterize within a somewhat complex statement, so we'll just protect against
         // injection by using sprintf.
-        $source = (!empty($source)) ? sprintf("%d", $source) : $source;
-        $sourceCondition = (!empty($source)) ? "AND finding.sourceID = $source" : "";
+        if (!empty($sourceNickname)) {
+            $source = Doctrine::getTable('Source')->findOneByNickname($sourceNickname);
+            $sourceId = $source->id;            
+        }
+
+        $sourceCondition = $source ? "AND finding.sourceId = $sourceId" : "";
 
         $allStatuses = Finding::getAllStatuses();
 
@@ -333,10 +334,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         );
         $summary->addSelect("SUM(IF(finding.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
 
-        if (!empty($source))
+        if ($source) {
             $summary->addSelect("SUM(IF(finding.sourceId = $source, 1, 0)) total");
-        else
+        } else {
             $summary->addSelect("COUNT(finding.id) total");
+        }
 
         $summary->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgType")
             ->addSelect('parent.lft as lft')
@@ -434,300 +436,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         return $organizations;
     }
 
-    /**
-     * Parse and translate the URL to criterias
-     * which can be used by searchBoxAction method and searchAction method.
-     *
-     * @return array The criterias dealt
-     */
-    private function _parseCriteria()
-    {
-        $params = array('responsibleOrganizationId' => 0, 'sourceId' => 0, 'type' => '',
-                        'status' => '', 'ids' => '', 'assetOwner' => 0,
-                        'estDateBegin' => '', 'estDateEnd' => '',
-                        'createdDateBegin' => '', 'createdDateEnd' => '',
-                        'ontime' => '', 'sortby' => '', 'dir'=> '', 'keywords' => '', 'expanded' => null,
-                        'securityControl' => null, 'overdueActionType' => null, 'deleted_at' => '');
-        $req = $this->getRequest();
-        $tmp = $req->getParams();
-        foreach ($params as $k => &$v) {
-            if (isset($tmp[$k])) {
-                $v = $tmp[$k];
-            }
-        }
-
-        if (is_numeric($params['responsibleOrganizationId'])) {
-            $params['responsibleOrganizationId'] = $params['responsibleOrganizationId'];
-        }
-        if (is_numeric($params['sourceId'])) {
-            $params['sourceId'] = $params['sourceId'];
-        }
-        if (is_numeric($params['assetOwner'])) {
-            $params['assetOwner'] = $params['assetOwner'];
-        }
-
-        $message = '';
-        if (!empty($params['estDateBegin']) && Zend_Date::isDate($params['estDateBegin'], Fisma_Date::FORMAT_DATE)) {
-            $params['estDateBegin'] = new Zend_Date($params['estDateBegin'], Fisma_Date::FORMAT_DATE);
-        } else if (!empty($params['estDateBegin'])) {
-            $message = 'Estimated Completion Date From: ' . $params['estDateBegin']
-                     . ' is not of the format YYYY-MM-DD.<br>';
-            $params['estDateBegin'] = '';
-        } else {
-            $params['estDateBegin'] = '';
-        }
-
-        if (!empty($params['estDateEnd']) && Zend_Date::isDate($params['estDateEnd'], Fisma_Date::FORMAT_DATE)) {
-            $params['estDateEnd'] = new Zend_Date($params['estDateEnd'], Fisma_Date::FORMAT_DATE);
-        } else if (!empty($params['estDateEnd'])) {
-            $message = $message . 'Estimated Completion Date To: ' . $params['estDateEnd']
-                     . ' is not of the format YYYY-MM-DD.<br>';
-            $params['estDateEnd'] = '';
-        } else {
-            $params['estDateEnd'] = '';
-        }
-        if (!empty($params['createdDateBegin'])
-            && Zend_Date::isDate($params['createdDateBegin'], Fisma_Date::FORMAT_DATE)) {
-            $params['createdDateBegin'] = new Zend_Date($params['createdDateBegin'], Fisma_Date::FORMAT_DATE);
-        } else if (!empty($params['createdDateBegin'])) {
-            $message = $message . 'Date Created From: ' . $params['createdDateBegin']
-                     . ' is not of the format YYYY-MM-DD.<br>';
-            $params['createdDateBegin'] = '';
-        } else {
-            $params['createdDateBegin'] = '';
-        }
-
-        if (!empty($params['createdDateEnd'])
-            && Zend_Date::isDate($params['createdDateEnd'], Fisma_Date::FORMAT_DATE)) {
-            $params['createdDateEnd'] = new Zend_Date($params['createdDateEnd'], Fisma_Date::FORMAT_DATE);
-        } else if (!empty($params['createdDateEnd'])) {
-            $message = $message . 'Date Created To: ' . $params['createdDateEnd']
-                     . ' is not of the format YYYY-MM-DD.';
-            $params['createdDateEnd'] = '';
-        } else {
-            $params['createdDateEnd'] = '';
-        }
-
-        if (!empty($message)) {
-            $this->view->priorityMessenger($message, 'warning');
-        }
-
-        return $params;
-    }
-    
-    /**
-     * Get the columns(title) which were displayed on page, PDF, Excel
-     * 
-     * @return array The two dimension array which includes column id in index and the label, sortable and 
-     * hidden of the column in value.
-     */
-    private function _getColumns()
-    {
-        // Set up the data for the columns in the search results table
-        $me = Doctrine::getTable('User')->find($this->_me->id);
-        
-        try {
-            $cookie = Fisma_Cookie::get($_COOKIE, 'search_columns_pref');
-            $visibleColumns = $cookie;
-        } catch(Fisma_Zend_Exception $e) {
-            if (empty($me->searchColumnsPref)) {
-                $me->searchColumnsPref = $visibleColumns = 66037;
-                $me->save();
-            } else {
-                $visibleColumns = $me->searchColumnsPref;
-            }
-        }
-
-        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
-            $columns = array(
-                'id' => array('label' => 'ID', 
-                              'sortable' => true, 
-                              'hidden' => ($visibleColumns & (1 << 1)) == 0),
-                'sourceNickname' => array('label' => 'Source', 
-                                           'sortable' => true, 
-                                           'hidden' => ($visibleColumns & (1 << 2)) == 0,
-                                           'formatter' => 'text'),
-                'systemNickname' => array('label' => 'System', 
-                                           'sortable' => true, 
-                                           'hidden' => ($visibleColumns & (1 << 3)) == 0,
-                                           'formatter' => 'text'),
-                'assetName' => array('label' => 'Asset', 
-                                      'sortable' => true, 
-                                      'hidden' => ($visibleColumns & (1 << 4)) == 0,
-                                      'formatter' => 'text'),
-                'type' => array('label' => 'Type', 
-                                'sortable' => true, 
-                                'hidden' => ($visibleColumns & (1 << 5)) == 0,
-                                'formatter' => 'text'),
-                'status' => array('label' => 'Status', 
-                                  'sortable' => true, 
-                                  'hidden' => ($visibleColumns & (1 << 6)) == 0,
-                                  'formatter' => 'text'),
-                'duetime' => array('label' => 'On Time?', 
-                                   'sortable' => false, 
-                                   'hidden' => ($visibleColumns & (1 << 7)) == 0,
-                                   'formatter' => 'text'),
-                'description' => array('label' => 'Description', 
-                                        'sortable' => false, 
-                                        'hidden' => ($visibleColumns & (1 << 8)) == 0),
-                'recommendation' => array('label' => 'Recommendation', 
-                                            'sortable' => false, 
-                                            'hidden' => ($visibleColumns & (1 << 9)) == 0),
-                'mitigationStrategy' => array('label' => 'Course of Action', 
-                                          'sortable' => false, 
-                                          'hidden' => ($visibleColumns & (1 << 10)) == 0),
-                'securityControl' => array('label' => 'Security Control', 
-                                    'sortable' => true, 
-                                    'hidden' => ($visibleColumns & (1 << 11)) == 0,
-                                    'formatter' => 'text'),
-                'threatLevel' => array('label' => 'Threat Level', 
-                                        'sortable' => true, 
-                                        'hidden' => ($visibleColumns & (1 << 12)) == 0,
-                                        'formatter' => 'text'),
-                'threat' => array('label' => 'Threat Description', 
-                                         'sortable' => false, 
-                                         'hidden' => ($visibleColumns & (1 << 13)) == 0),
-                'countermeasuresEffectiveness' => array('label' => 'Countermeasure Effectiveness', 
-                                                  'sortable' => true, 
-                                                  'hidden' => ($visibleColumns & (1 << 14)) == 0,
-                                                  'formatter' => 'text'),
-                'countermeasures' => array('label' => 'Countermeasure Description', 
-                                    'sortable' => false, 
-                                    'hidden' => ($visibleColumns & (1 << 15)) == 0),
-                'attachments' => array('label' => 'Attachments', 
-                                       'sortable' => false, 
-                                       'hidden' => ($visibleColumns & (1 << 16)) == 0),
-                'currentEcd' => array('label' => 'Expected Completion Date', 
-                                               'sortable' => true, 
-                                               'hidden' => ($visibleColumns & (1 << 17)) == 0,
-                                               'formatter' => 'text')
-            );
-        } else {
-            $columns = array(
-                'id' => array('label' => 'ID', 
-                              'sortable' => true, 
-                              'hidden' => ($visibleColumns & 1 ) == 0),
-                'sourceNickname' => array('label' => 'Source', 
-                                           'sortable' => true, 
-                                           'hidden' => ($visibleColumns & (1 << 1)) == 0,
-                                           'formatter' => 'text'),
-                'systemNickname' => array('label' => 'System', 
-                                           'sortable' => true, 
-                                           'hidden' => ($visibleColumns & (1 << 2)) == 0,
-                                           'formatter' => 'text'),
-                'assetName' => array('label' => 'Asset', 
-                                      'sortable' => true, 
-                                      'hidden' => ($visibleColumns & (1 << 3)) == 0,
-                                      'formatter' => 'text'),
-                'type' => array('label' => 'Type', 
-                                'sortable' => true, 
-                                'hidden' => ($visibleColumns & (1 << 4)) == 0,
-                                'formatter' => 'text'),
-                'status' => array('label' => 'Status', 
-                                  'sortable' => true, 
-                                  'hidden' => ($visibleColumns & (1 << 5)) == 0,
-                                  'formatter' => 'text'),
-                'duetime' => array('label' => 'On Time?', 
-                                   'sortable' => false, 
-                                   'hidden' => ($visibleColumns & (1 << 6)) == 0,
-                                   'formatter' => 'text'),
-                'description' => array('label' => 'Description', 
-                                        'sortable' => false, 
-                                        'hidden' => ($visibleColumns & (1 << 7)) == 0),
-                'recommendation' => array('label' => 'Recommendation', 
-                                            'sortable' => false, 
-                                            'hidden' => ($visibleColumns & (1 << 8)) == 0),
-                'mitigationStrategy' => array('label' => 'Course of Action', 
-                                          'sortable' => false, 
-                                          'hidden' => ($visibleColumns & (1 << 9)) == 0),
-                'securityControl' => array('label' => 'Security Control', 
-                                    'sortable' => true, 
-                                    'hidden' => ($visibleColumns & (1 << 10)) == 0,
-                                    'formatter' => 'text'),
-                'threatLevel' => array('label' => 'Threat Level', 
-                                        'sortable' => true, 
-                                        'hidden' => ($visibleColumns & (1 << 11)) == 0,
-                                        'formatter' => 'text'),
-                'threat' => array('label' => 'Threat Description', 
-                                         'sortable' => false, 
-                                         'hidden' => ($visibleColumns & (1 << 12)) == 0),
-                'countermeasuresEffectiveness' => array('label' => 'Countermeasure Effectiveness', 
-                                                  'sortable' => true, 
-                                                  'hidden' => ($visibleColumns & (1 << 13)) == 0,
-                                                  'formatter' => 'text'),
-                'countermeasures' => array('label' => 'Countermeasure Description', 
-                                    'sortable' => false, 
-                                    'hidden' => ($visibleColumns & (1 << 14)) == 0),
-                'attachments' => array('label' => 'Attachments', 
-                                       'sortable' => false, 
-                                       'hidden' => ($visibleColumns & (1 << 15)) == 0),
-                'currentEcd' => array('label' => 'Expected Completion Date', 
-                                               'sortable' => true, 
-                                               'hidden' => ($visibleColumns & (1 << 16)) == 0,
-                                               'formatter' => 'text')
-            );
-        }
-
-        return $columns;
-    }
-    
-    /**
-    * Do the real searching work. It's a thin wrapper of poam model's search method.
-    * 
-    * @return void
-    */
-    public function searchAction()
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Finding');
-        
-        $params = $this->_parseCriteria();
-        
-        // These variables go into the search view
-        $link = $this->_helper->makeUrlParams($params);
-        $this->view->assign('link', $link);
-        $this->view->assign('attachUrl', '/finding/remediation/search2' . $link);
-        Fisma_Cookie::set('lastSearchUrl', "/finding/remediation/searchbox$link");
-
-        $columns = $this->_getColumns();
-
-        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
-            $columns = array(
-                'checked' => array(
-                                    'label' => '<input id="dt-checkbox" type="checkbox" />',
-                                    'width' => '30',
-                                    'sortable' => false,
-                                    'hidden' => false,
-                                    'formatter' => 'checkbox'
-                )
-            ) + $columns;
-        }
-
-        $this->view->assign('columns', $columns);
-        // These variables go into the search box view
-        $systemList = $this->view->systemSelect($this->_me->getSystemsByPrivilege('finding', 'read'));
-        $this->view->assign('params', $params);
-        $this->view->assign('systems', $systemList);
-        $this->view->assign('sources', Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'name'));
-        $this->view->assign('pageInfo', $this->_paging);
-        $this->view->assign('csrfToken', $this->_helper->csrf->getToken());
-
-        $this->render('searchbox');
-        $this->render('search');
-    }
-    
-    /**
-     * This is is a stub provided for compatibility purposes in response to OFJ-464.
-     * 
-     * @todo remove me in 2.6+
-     * 
-     * @return void
-     */
-    public function searchboxAction()
-    {
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_forward('search');
-    }
-    
     /**
      * View details of a finding object
      * 
@@ -1223,335 +931,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Securit
         $this->view->columns = array('Timestamp', 'User', 'Message');
         $this->view->rows = $logs;
     }
-    
-    /**
-     * Real searching worker, to return searching results for page, PDF, Excel
-     * 
-     * @return void
-     */
-    public function search2Action() 
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Finding');
-        
-        /* @todo A hack to translate column names in the data table to column names
-         * which can be sorted... this could probably be done in a much better way.
-         */
-        $columnMap = array(
-            'sourceNickname' => 's.nickname',
-            'systemNickname' => 'ro.nickname',
-            'assetName' => 'a.name',
-            'securityControl' => 'sc.code'
-        );
-        
-        $tableData = array(
-            'recordsReturned' => 0,
-            'totalRecords' => $total = 0,
-            'startIndex' => $this->_paging['startIndex'],
-            'sort' => null,
-            'dir' => 'asc',
-            'pageSize' => $this->_paging['count'],
-            'records' => array()
-        );
-        
-        // JSON requests are handled differently from PDF and XLS requests, so we need
-        // to determine which request type this is.
-        $format = $this->_request->getParam('format');
-        
-        $params = $this->_parseCriteria();
-        
-        if (in_array($params['sortby'], array_keys($columnMap))) {
-            $params['sortby'] = $columnMap[$params['sortby']];
-        } elseif (in_array($params['sortby'], array_keys($this->_getColumns()))) {
-            $params['sortby'] = 'f.' . $params['sortby'];
-        } else {
-            $params['sortby'] = 'f.id';
-        }
-        
-        if (strtoupper($params['dir']) == 'DESC') {
-            $params['dir'] = 'DESC';
-        } else {
-            $params['dir'] = 'ASC';
-        }
-        
-        if (!empty($params['status'])) {
-            $now = new Zend_Date();
-            switch ($params['status']) {
-                case 'TOTAL':
-                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
-                    break;
-                case 'NOT-CLOSED':
-                    $params['status'] = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA');
-                    break;
-                case 'NOUP-30':
-                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                    $params['modify_ts'] = $now->subDay(30);
-                    break;
-                case 'NOUP-60':
-                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                    $params['modify_ts'] = $now->subDay(60);
-                    break;
-                case 'NOUP-90':
-                    $params['status'] = array('DRAFT', 'MSA', 'EN', 'EA');
-                    $params['modify_ts'] = $now->subDay(90);
-                    break;
-                case 'NEW':  case 'DRAFT':  case 'EN': case 'CLOSED': default : 
-                    break;
-            }
-        }
 
-        // Convert overdue action type to correspond finding status for overdue finding search
-        if (!empty($params['overdueActionType'])) {
-            switch ($params['overdueActionType']) {
-                case 'Mitigation Strategy':
-                    $params['status'] = array('NEW', 'DRAFT', 'MSA');
-                    break;
-                case 'Corrective Action':
-                    $params['status'] = array('EN','EA');
-                    break;
-            }
-
-            unset($params['overdueActionType']);
-        }
-
-        if ($params['ids']) {
-            $params['ids'] = explode(',', $params['ids']);
-        }
-        // Use Zend Lucene to find all POAM ids which match the keyword query
-        if (!empty($params['keywords'])) {
-            if (preg_match('/^[0-9, ]+$/', $params['keywords'])) {
-                // if the query contains only numbers and commas and whitespace, then interpret it as a list of 
-                // ids to search for
-                $params['ids'] = explode(',', $params['keywords']);
-            } else {
-                // Otherwise, interpret it as a lucene query
-                try {
-                    $index = new Fisma_Index('Finding');
-                    $poamIds = $index->findIds($params['keywords']);
-                    $tableData['highlightWords'] = $index->getHighlightWords();
-                } catch (Zend_Search_Lucene_Exception $e) {
-                    $tableData['exception'] = $e->getMessage();
-                }
-                // Even though it isn't rendered in the view, the highlight words need to be exported to the view...
-                // due the stupid design of this class
-                $this->view->keywords = $tableData['highlightWords'];
-                // Merge keyword results with filter results
-                if ($params['ids'] && $poamIds) {
-                    $params['ids'] = array_intersect($poamIds, $params['ids']);
-                    if (!$params['ids']) {
-                        $list = array();
-                    }
-                } elseif ($poamIds) {
-                    $params['ids'] = $poamIds;
-                } else {
-                    $list = array();
-                }
-            }
-        }
-        
-        if (!isset($list)) {
-            $list = $this->_getResults($params, $format, $total);
-        }
-        
-        if ($format == 'pdf' || $format == 'xls') {
-            $this->view->columnPreference = Doctrine::getTable('User')
-                                            ->find($this->_me->id)
-                                            ->searchColumnsPref;
-            $this->view->columns = $this->_getColumns();
-            /**
-             * @todo to support free sorting in exporting PDF and Excel like in datatable
-             */
-            $this->view->list = $list;
-        } else {
-            $this->_helper->contextSwitch()
-                          ->addActionContext('search2', 'json')
-                          ->initContext();
-            $tableData['recordsReturned'] = count($list);
-            $tableData['totalRecords'] = $total;
-            $tableData['sort'] = $params['sortby'];
-            $tableData['dir'] = $params['dir'];
-            $tableData['records'] = $list;
-            $this->view->assign('findings', $tableData);
-        }
-    }
-    
-    /**
-     * Analyze the criterias and merge the DQL query for getting results
-     * 
-     * @param array $params The specified filter criterias
-     * @param string $format The specified output format which is json or xls or pdf
-     * @param int $total The total number of found rows
-     * @return array $list The corresponding results
-     */
-    private function _getResults($params, $format, &$total)
-    {
-        $list = array();
-        $q = Doctrine_Query::create()
-            ->select()
-            ->from('Finding f')
-            ->leftJoin('f.ResponsibleOrganization ro')
-            ->leftJoin('f.Source s')
-            ->leftJoin('f.SecurityControl sc')
-            ->leftJoin('f.CurrentEvaluation ce')
-            ->leftJoin('ro.System ros')
-            ->whereIn(
-                'f.responsibleOrganizationId', 
-                $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id')
-            )
-            ->andWhere('ro.orgType <> ? OR ros.sdlcPhase <> ?', array('system', 'disposal'))
-            ->orderBy($params['sortby'] . ' ' . $params['dir']);
-
-        foreach ($params as $k => $v) {
-            if ($v) {
-                if ($k == 'deleted_at') {
-                    if ($v) {
-                        $q->andWhere('f.deleted_at = f.deleted_at');
-                    }
-                } elseif ($k == 'estDateBegin') {
-                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
-                    $q->andWhere("f.currentEcd > ?", $v);
-                } elseif ($k == 'estDateEnd') {
-                    $v = $v->addDay(1);
-                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
-                    $q->andWhere("f.currentEcd < ?", $v);
-                } elseif ($k == 'createdDateBegin') {
-                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
-                    $q->andWhere("f.createdTs > ?", $v);
-                } elseif ($k == 'createdDateEnd') {
-                    $v = $v->addDay(1);
-                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
-                    $q->andWhere("f.createdTs < ?", $v);
-                } elseif ($k == 'status') {
-                    if (is_array($v)) {
-                        $q->andWhereIn("f.status", $v);
-                    } elseif (in_array($v, array('NEW', 'DRAFT', 'EN', 'CLOSED'))) {
-                        $q->andWhere("f.status = ?", $v);
-                    } else {
-                        $q->andWhere("ce.nickname = ?", $v);
-                    }
-                } elseif ($k == 'modify_ts') {
-                    $v = $v->toString(Fisma_Date::FORMAT_DATETIME);
-                    $q->andWhere("f.modifiedTs < ?", $v);
-                } elseif ($k == 'ontime') {
-                    if ($v == 'ontime') {
-                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) <= 0');
-                    } else {
-                        $q->andWhere('DATEDIFF(NOW(), f.nextDueDate) > 0');
-                    }
-                } elseif ($k == 'ids') {
-                    $sqlPart = array();
-                    foreach ($v as $id) {
-                        if (is_numeric($id)) {
-                            $sqlPart[] = 'f.id = ' . $id;
-                        }
-                    }
-                    if (!empty($sqlPart)) {
-                        $q->andWhere(implode(' OR ', $sqlPart));
-                    }
-                } elseif ($k == 'expanded') {
-                    // Intentionally falls through. This is a consequence of bad design in this method. The 
-                    // 'expanded' variable is not literally added to the query, but is actually just
-                    // a modifier for the responsibleOrganizationId parameter.
-                    ;
-                } elseif ($k == 'responsibleOrganizationId') {
-                    if ('false' == $params['expanded']) {
-                        $o = Doctrine::getTable('Organization')->find($v);
-                        $q->addWhere('ro.lft >= ? AND ro.rgt <= ?', array($o->lft, $o->rgt));
-                    } else {
-                        $q->addWhere('ro.id = ?', $v);
-                    }
-                } elseif ($k == 'securityControl' && !is_null($v)) {
-                    $q->andWhere('sc.code LIKE ?', $v);
-                } elseif ($k != 'keywords' && $k != 'dir' && $k != 'sortby') {
-                    $q->andWhere("f.$k = ?", $v);
-                }
-            }
-        }
-
-        unset($params['deleted_at']);
-
-        if ($format == 'json') {
-            $q->limit($this->_paging['count'])->offset($this->_paging['startIndex']);
-        }
-
-        // The total number of found rows is appended to the list of finding. 
-        $total = $q->count();
-        $results = $q->execute();
-        
-        foreach ($results as $result) {
-            $row = array();
-            $row['id'] = $result->id;
-            $row['type'] = $result->type;
-            if ($result->CurrentEvaluation) {
-                $row['status'] = $result->CurrentEvaluation->nickname;
-            } else {
-                $row['status'] = $result->status;
-            }
-            $row['threatLevel'] = $result->threatLevel;
-            if (empty($result->currentEcd) || $result->currentEcd == '0000-00-00') {
-                if ($result->currentEcd != '0000-00-00') {
-                    $row['currentEcd'] = $result->currentEcd;
-                } else {
-                    $row['currentEcd'] = '';
-                }
-            } else {
-                $row['currentEcd'] = $result->currentEcd;
-            }
-            $row['countermeasuresEffectiveness'] = $result->countermeasuresEffectiveness;
-            
-            $source = $result->Source;
-            $row['sourceNickname'] = $source ? $result->Source->nickname : '';
-            $responsibleOrganization = $result->ResponsibleOrganization;
-            $row['systemNickname'] = $responsibleOrganization ? $result->ResponsibleOrganization->nickname : '';
-            $securityControl = $result->SecurityControl;
-            $row['securityControl'] = $securityControl ? $result->SecurityControl->code : '';
-            // select the finding whether have attachments
-            $row['attachments'] = count($result->Evidence) > 0 ? 'Y' : 'N';
-
-            $nextDueDate = new Zend_Date($result->nextDueDate, Zend_Date::ISO_8601);
-            if (is_null($result->nextDueDate)) {
-                $row['duetime'] = 'N/A';
-            } elseif ($nextDueDate->isLater(Zend_Date::now())) {
-                $row['duetime'] = 'On time';
-            } else {
-                $row['duetime'] = 'Overdue';
-            }
-            if ($format == 'pdf') {
-                $row['systemNickname'] = htmlspecialchars($row['systemNickname']);
-                $row['description'] = strip_tags($result->description);
-                $row['recommendation'] = strip_tags($result->recommendation);
-                $row['mitigationStrategy'] = strip_tags($result->mitigationStrategy);
-                $row['threat'] = strip_tags($result->threat);
-                $row['countermeasures'] = strip_tags($result->countermeasures);
-            } else if ($format == 'xls') {
-                $row['description'] = html_entity_decode(strip_tags($result->description));
-                $row['recommendation'] = html_entity_decode(strip_tags($result->recommendation));
-                $row['mitigationStrategy'] = html_entity_decode(strip_tags($result->mitigationStrategy));
-                $row['threat'] = html_entity_decode(strip_tags($result->threat));
-                $row['countermeasures'] = html_entity_decode(strip_tags($result->countermeasures));
-            } else {
-                $row['description'] = $this->view->ShowLongText(
-                    strip_tags($result->description), 
-                    $this->view->keywords
-                );
-                $row['recommendation'] = $this->view->ShowLongText(
-                    strip_tags($result->recommendation), 
-                    $this->view->keywords
-                );
-                $row['mitigationStrategy'] = $this->view->ShowLongText(
-                    strip_tags($result->mitigationStrategy), 
-                    $this->view->keywords
-                );
-                $row['threat'] = $this->view->ShowLongText(strip_tags($result->threat), $this->view->keywords);
-                $row['countermeasures'] = $this->view->ShowLongText(
-                    strip_tags($result->countermeasures), 
-                    $this->view->keywords
-                );
-            }
-            $list[] = $row;
-        }
-        return $list;
-    }
-    
     /**
      * Display the NIST SP 800-53 control mapping and related information
      * 

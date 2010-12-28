@@ -452,20 +452,20 @@ Privilege:
         description: Delete IR Workflows and IR Workflow Steps
 
     # IRCategory CRUD
-    ir_category_create:
-        resource: ir_category
+    ir_sub_category_create:
+        resource: ir_sub_category
         action: create
         description: Create IR Categories and IR Sub Categories
-    ir_category_read:
-        resource: ir_category
+    ir_sub_category_read:
+        resource: ir_sub_category
         action: read
         description: View IR Categories and IR Sub Categories
-    ir_category_update:
-        resource: ir_category
+    ir_sub_category_update:
+        resource: ir_sub_category
         action: update
         description: Edit IR Categories and IR Sub Categories
-    ir_category_delete:
-        resource: ir_category
+    ir_sub_category_delete:
+        resource: ir_sub_category
         action: delete
         description: Delete IR Categories and IR Sub Categories
 

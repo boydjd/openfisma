@@ -1,7 +1,10 @@
 <?php 
 
-Fisma_Format_Section::startSection(
-    $this->escape(Fisma::configuration()->getConfig('system_name')) . ' Rules of Behavior'
-);
+$sectionTitle = $this->escape(Fisma::configuration()->getConfig('system_name')) . ' Rules of Behavior';
+Fisma_Format_Section::startSection($sectionTitle);
+
 echo $this->escape(Fisma::configuration()->getConfig('behavior_rule'), 'none');
+
 Fisma_Format_Section::stopSection(); 
+
+?>

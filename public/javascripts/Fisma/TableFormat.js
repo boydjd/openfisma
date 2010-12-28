@@ -3,25 +3,25 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Provides various formatters for use with YUI table
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
- 
+
 Fisma.TableFormat = {
     /**
      * CSS green color
@@ -30,7 +30,7 @@ Fisma.TableFormat = {
 
     /**
      * CSS yellow color
-     */    
+     */
     yellowColor : 'yellow',
 
     /**
@@ -51,17 +51,17 @@ Fisma.TableFormat = {
     yellow : function (element) {
         element.style.backgroundColor = Fisma.TableFormat.yellowColor;
     },
-    
+
     /**
      * Color an element red
      */
     red : function (element) {
         element.style.backgroundColor = Fisma.TableFormat.redColor;
     },
-    
+
     /**
      * A formatter which colors the security authorization date in red, yellow, or green (or not at all)
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -72,11 +72,11 @@ Fisma.TableFormat = {
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
         dateParts = oData.split('-');
-        
+
         if (3 == dateParts.length) {
 
             authorizedDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-            
+
             greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 30);
 
@@ -92,10 +92,10 @@ Fisma.TableFormat = {
             }
         }
     },
-    
+
     /**
      * A formatter which colors the self-assessment date in red, yellow, or green (or not at all)
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -106,11 +106,11 @@ Fisma.TableFormat = {
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
         dateParts = oData.split('-');
-        
+
         if (3 == dateParts.length) {
 
             assessmentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-            
+
             greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 8);
 
@@ -136,7 +136,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which colors cells green if the value is YES, and red if the value is NO
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -144,37 +144,37 @@ Fisma.TableFormat = {
      */
     yesNo : function (elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = oData;
-        
+
         if ('YES' == oData) {
             Fisma.TableFormat.green(elCell.parentNode);
         } else if ('NO' == oData) {
             Fisma.TableFormat.red(elCell.parentNode);
         }
     },
-    
+
     /**
      * A formatter which displays an edit icon that is linked to an edit page
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
      */
      editControl : function (elCell, oRecord, oColumn, oData) {
-        
+
         var icon = document.createElement('img');
         icon.src = '/images/edit.png';
-        
+
         var link = document.createElement('a');
         link.href = oData;
         link.appendChild(icon);
-        
+
         elCell.appendChild(link);
     },
-     
+
     /**
      * A formatter which displays a delete icon that is linked to an edit page
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -191,10 +191,10 @@ Fisma.TableFormat = {
 
         elCell.appendChild(link);
     },
-      
+
     /**
      * A formatter which converts escaped HTML into unescaped HTML
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -206,7 +206,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which displays the total of overdue findings that is linked to a finding search page
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -215,22 +215,52 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/search/ontime/overdue/expanded/true';
+        overdueFindingSearchUrl = '/finding/remediation/list/advanced';
 
-        var organizationId = oRecord.getData('Organization_Id');
-        var sourceId = YAHOO.util.History.getQueryStringParameter('sourceId');
-        var overdueActionType = oRecord.getData('Overdue_Action_Type');
+        // Handle organization field
+        var organization = oRecord.getData('System');
 
-        if (organizationId != null) {
-            overdueFindingSearchUrl += "/responsibleOrganizationId/" + organizationId;
+        if (organization) {
+            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
         }
 
-        if (sourceId != null) {
-            overdueFindingSearchUrl += "/sourceId/" + sourceId;
+        // Handle status field
+        var status = oRecord.getData('Status');
+
+        if (status) {
+            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
-        if (overdueActionType.length > 0) {
-            overdueFindingSearchUrl += "/overdueActionType/" + encodeURIComponent(overdueActionType);
+        // Handle source field
+        var parameters = oColumn.formatterParameters;
+
+        if (parameters.source) {
+            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
+        }
+
+        // Handle date fields
+        var from = null;
+
+        if (parameters.from) {
+            fromDate = new Date();
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            
+            from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
+        }
+
+        var to = null;
+
+        if (parameters.to) {
+            toDate = new Date();
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            
+            to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
+        }
+
+        if (from && to) {
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
+        } else if (from) {
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
         }
 
         elCell.innerHTML = "<a href="
@@ -282,5 +312,35 @@ Fisma.TableFormat = {
         }
 
         elCell.innerHTML = docTypeNames;
+    },
+    
+    /**
+     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
+     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
+     * "re-delete" any already-deleted items.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
+        
+        if (oRecord.getData('deleted_at')) {
+
+            elCell.parentNode.style.backgroundColor = "pink";
+            
+        } else {
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = YAHOO.widget.DataTable.CLASS_CHECKBOX;
+            checkbox.checked = oData;
+
+            if (elCell.firstChild) {
+                elCell.removeChild(el.firstChild);            
+            }
+
+            elCell.appendChild(checkbox);
+        }        
     }
 };

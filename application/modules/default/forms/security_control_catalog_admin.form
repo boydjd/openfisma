@@ -8,7 +8,7 @@
 [security_control_catalog_admin]
 
 method=POST
-action=/security-control-catalog-admin/save
+action=/security-control-admin/save
 
 elements.defaultCatalog.type = "select"
 elements.defaultCatalog.options.label = "Default Control Catalog"

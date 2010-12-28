@@ -85,5 +85,112 @@ Fisma.Incident = {
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
+    },
+    
+    /**
+     * Given the button element inside an incident workflow step, return the <tr> parent element which contains
+     * the entire step.
+     * 
+     * @param element The button element which was clicked
+     */
+    getIncidentStepParentElement : function (element) {
+        var parent = element.parentNode.parentNode.parentNode;
+        
+        // Sanity check: this must be a <tr> element node
+        var elementNode = 1;
+        if (!(elementNode == parent.nodeType && "TR" == parent.tagName)) {
+            throw "Cannot locate the parent element for this incident step.";
+        }
+        
+        return parent;
+    },
+    
+    /**
+     * Given a reference to a <tr> containing an incidnet workflow step, return the step number of that step.
+     * 
+     * @param trElement The table row element which contains the incident step
+     */
+    getIncidentStepNumber : function(trElement) {
+        var tdEl = trElement.firstChild;
+        
+        // Sanity check: this must be a <tr> element node
+        var elementNode = 1;
+        if (!(elementNode == tdEl.nodeType && "TD" == tdEl.tagName)) {
+            throw "Cannot locate the table data (td) element for this incident step.";
+        }
+        
+        // Use regex to pull out the step number from the label
+        var label = tdEl.firstChild.nodeValue;        
+        var numberMatches = label.match(/\d+/);
+        
+        // Sanity check: should match exactly 1 string of digits
+        if (numberMatches.length != 1) {
+            throw "Not able to locate the step number in the incident step label.";
+        }
+        
+        return numberMatches[0];
+    },
+    
+    /**
+     * Renumber all of the incident steps
+     * 
+     * This takes the table element as a parameter, and it rewrites the label for each table row that has the class
+     * "incidentStep".
+     *
+     * @param tableEl
+     */
+    renumberAllIncidentSteps : function(tableEl) {
+        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', tableEl);
+        var stepNumber = 1;
+        
+        for (var i in trEls) {
+            var trEl = trEls[i];
+            
+            trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";
+            stepNumber++;
+        }
+    },
+    
+    /**
+     * Add an incident step above the current incident step (current refers to the one containing the "Add" button
+     * that was clicked.)
+     * 
+     * @param element The button element that was clicked
+     */
+    addIncidentStepAbove : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        var rowElClone = rowEl.cloneNode(true);
+        
+        rowEl.parentNode.insertBefore(rowElClone, rowEl);
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+        
+        return false;
+    },
+    
+    addIncidentStepBelow : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        var rowElClone = rowEl.cloneNode(true);
+        
+        // There is no "insertAfter" method for DOM elements, so this is a little tricky
+        if (rowEl.nextSibling) {
+            rowEl.parentNode.insertBefore(rowElClone, rowEl.nextSibling);
+        } else {
+            rowEl.parentNode.appendChild(rowElClone);
+        }
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+
+        return false;
+    },
+    
+    removeIncidentStep : function (element) {
+        var rowEl = this.getIncidentStepParentElement(element);
+        
+        rowEl.parentNode.removeChild(rowEl);
+        
+        this.renumberAllIncidentSteps(rowEl.parentNode);
+        
+        return false; 
     }
 };

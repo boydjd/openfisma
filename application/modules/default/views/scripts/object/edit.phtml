@@ -1,0 +1,21 @@
+<?php
+
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+
+$actions = '';
+
+foreach ($this->links as $label => $url) {
+    $actions .= "&nbsp;&nbsp;[<a href='$url'>$label</a>]";
+}
+
+Fisma_Format_Section::startSection('Edit: ' . $this->modelName . $actions); 
+
+?>
+
+<div>
+    <?php echo $this->escape($this->form, 'none') ?>
+</div>
+
+<?php
+Fisma_Format_Section::stopSection(); 
+?>

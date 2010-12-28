@@ -243,10 +243,10 @@ Role:
             - ir_workflow_def_create
             - ir_workflow_def_update
             - ir_workflow_def_delete
-            - ir_category_read
-            - ir_category_update
-            - ir_category_create
-            - ir_category_delete
+            - ir_sub_category_read
+            - ir_sub_category_update
+            - ir_sub_category_create
+            - ir_sub_category_delete
             - vulnerability_area
             - vulnerability_admin_area
             - vulnerability_comment
@@ -419,10 +419,10 @@ Role:
             - incident_close
             - incident_create
             - incident_update
-            - ir_category_read
-            - ir_category_update
-            - ir_category_create
-            - ir_category_delete
+            - ir_sub_category_read
+            - ir_sub_category_update
+            - ir_sub_category_create
+            - ir_sub_category_delete
             - ir_workflow_def_read
             - ir_workflow_def_update
             - ir_workflow_def_create

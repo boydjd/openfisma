@@ -29,6 +29,13 @@
 class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
 {
     /**
+     * The YUI button type. This can be changed in subclasses to quickly create a new type of button.
+     * 
+     * @string
+     */
+    protected $_yuiButtonType = 'button';
+
+    /**
      * When this element is expressed as a string, it renders itself as a convenience. This allows the element to
      * be used as a parameter to echo, print, or string interpolation expressions.
      * 
@@ -48,13 +55,17 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
     function renderSelf() 
     {
         $disabled = $this->readOnly ? 'disabled' : '';
+        $checked = $this->getAttrib('checked') ? ('checked: true,') : '';
+        
         $value = $this->getValue() ? $this->getValue() : $this->getLabel();
         $obj = json_encode($this->getAttrib('onClickArgument'));
-        $render = "<input type=\"button\" id=\"{$this->getName()}\" value=\"{$value}\" $disabled>
+        
+        $render = "<input type=\"{$this->_yuiButtonType}\" id=\"{$this->getName()}\" value=\"{$value}\" $disabled>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
                            var button = new YAHOO.widget.Button('{$this->getName()}', 
                                {
+                                   $checked
                                    onclick: {fn: {$this->getAttrib('onClickFunction')}, obj: {$obj}}
                                }
                            );";

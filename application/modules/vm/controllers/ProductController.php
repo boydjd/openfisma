@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2009 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class Vm_ProductController extends Fisma_Zend_Controller_Action_Object
 {

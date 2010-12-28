@@ -12,3 +12,4 @@ div.currentIncidentStep{border:2px solid #416ed7;background-color:#edf5ff;}
 div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-bottom:none;color:#416ed7;}
 div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
 div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
+tr.incidentStep{border-top:1px dotted silver;}

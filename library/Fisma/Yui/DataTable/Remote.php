@@ -85,6 +85,28 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * @var string
      */
     private $_clickEventVariableName;
+
+    /**
+     * The name of a Javascript function which can build POST requests for this data table's data source
+     * 
+     * @var string
+     */
+    private $_requestConstructor;
+    
+    /**
+     * A function which is called by YUI after the table is rendered (after data updates, for example)
+     * 
+     * @var string
+     */
+    private $_renderEventFunction;
+    
+    /**
+     * If true, the table will not automatically fetch data and data must be fetched programmatically. If false, the
+     * table will automatically make an initial data request to the $_dataUrl.
+     * 
+     * @var bool
+     */
+    private $_deferData = false;    
     
     /**
      * Render the datatable with HTML and/or Javascript
@@ -106,12 +128,15 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'columnDefinitions' => $this->_getYuiColumnDefinitions(),
             'containerId' => $uniqueId . "_container",
             'dataUrl' => $this->_dataUrl,
+            'deferData' => $this->_deferData,
             'initialSortColumn' => $this->_initialSortColumn,
+            'renderEventFunction' => $this->_renderEventFunction,
+            'requestConstructor' => $this->_requestConstructor,
             'resultVariable' => $this->_resultVariable,
             'rowCount' => $this->_rowCount,
             'sortDirection' => ($this->_sortAscending ? 'asc' : 'desc')
         );
-        
+
         return $view->partial('yui/data-table-remote.phtml', 'default', $data);
     }
 
@@ -145,6 +170,34 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setDataUrl($dataUrl)
     {
         $this->_dataUrl = $dataUrl;
+
+        return $this;
+    }
+
+    /**
+     * Mutator for $_deferData
+     * 
+     * Fluent interface
+     * 
+     * @param bool $deferData
+     */
+    public function setDeferData($deferData)
+    {
+        $this->_deferData = $deferData;
+
+        return $this;
+    }
+
+    /**
+     * Mutator for $_renderEventFunction
+     * 
+     * Fluent interface
+     * 
+     * @param string $renderEventFunction
+     */
+    public function setRenderEventFunction($renderEventFunction)
+    {
+        $this->_renderEventFunction = $renderEventFunction;
         
         return $this;
     }
@@ -187,6 +240,20 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     public function setInitialSortColumn($initialSortColumn)
     {
         $this->_initialSortColumn = $initialSortColumn;
+        
+        return $this;
+    }
+
+    /**
+     * Mutator for $_requestConstructor
+     * 
+     * Fluent interface
+     * 
+     * @param string $requestConstructor
+     */
+    public function setRequestConstructor($requestConstructor)
+    {
+        $this->_requestConstructor = $requestConstructor;
         
         return $this;
     }

@@ -128,12 +128,29 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $result = $pendingFindingsQuery->fetchOne();
             $alert['PEND'] = $result['count'];
         }
-        
-        $url = '/finding/remediation/searchbox/status/';
 
-        $this->view->url = $url;
-        $this->view->pendingUrl = '/finding/index/approve';
         $this->view->alert = $alert;
+
+        // URLs for "Alerts" panel
+        $baseUrl = '/finding/remediation/list/queryType/advanced';
+
+        $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/NEW';
+        $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/DRAFT';
+        $this->view->pendingFindingUrl = '/finding/index/approve';
+        
+        $today = Zend_Date::now()->toString('yyyy-MM-dd');        
+        $this->view->evidenceNeededOntimeUrl = $baseUrl 
+                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/nextDueDate/dateAfter/'
+                                             . $today;
+        $this->view->evidenceNeededOverdueUrl = $baseUrl 
+                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/nextDueDate/dateBefore/'
+                                             . $today;
+                                             
+        // URLs for chart click event handlers
+        $this->view->barChartBaseUrl = $baseUrl . '/denormalizedStatus/textExactMatch/';
+        $this->view->pieChartBaseUrl = $baseUrl . '/type/enumIs/';
         
         // Look up the last login information. If it's their first time logging in, then the view
         // script will show a different message.

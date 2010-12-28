@@ -200,28 +200,6 @@ div#footerLinks {
     float: right;
 }
 
-/* Used to display search criteria & filters at the top of various pages */
-.searchFilters {
-	text-align: center;
-    background-color: #ebebeb;
-    margin: 10px auto;
-    border: 1px solid #cecece;
-    padding: 5px 10px;
-}
-
-.searchField {
-    position: relative;
-    top: -5px;
-}
-
-.searchField label {
-    display: none;
-}
-
-.searchFilters select {
-    margin-right: 10px;
-}
-
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
 table.keyValues tr:nth-child(even) {
@@ -375,11 +353,6 @@ table.fisma_crud ul li {
 div.notice p {
     text-align:left;
     padding: 5px 20px;
-}
-
-/* This is the style for highlight the search keyword. */
-.highlight {
-    background-color: yellow;
 }
 
 #help_tips{

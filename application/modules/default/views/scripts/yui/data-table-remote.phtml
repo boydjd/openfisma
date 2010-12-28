@@ -17,21 +17,27 @@
             }
         }
 
-        // A function which builds the query string
-        var constructUrlFunction = function (tableState, self) {    
+        // A function which constructs POST requests for this data table
+        var requestConstructor;
 
-            // Build custom request
-            var request = "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>" + 
-                          "/sort/" + tableState.sortedBy.key +
-                          "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
-                          "/start/" + tableState.pagination.recordOffset +
-                          "/count/" + tableState.pagination.rowsPerPage;
+        <?php if (isset($this->requestConstructor)): ?>
+            var requestConstructorName = "<?php echo $this->escape($this->requestConstructor); ?>";
+            requestConstructor = Fisma.Util.getObjectFromName(requestConstructorName);
+        <?php else: ?>
+            requestConstructor = function (tableState, self) {    
+                // Build custom request
+                var request = "sort=" + tableState.sortedBy.key +
+                              "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
+                              "&start=" + tableState.pagination.recordOffset +
+                              "&count=" + tableState.pagination.rowsPerPage;
 
-            return request;
-        };
+                return request;
+            };
+        <?php endif; ?>
 
         // DataSource instance
-        var dataSource = new YAHOO.util.XHRDataSource();
+        var dataSource = new YAHOO.util.XHRDataSource('<?php echo $this->escape($this->dataUrl); ?>');
+        dataSource.connMethodPost = false;
         dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         dataSource.responseSchema = {
             resultsList : "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>",
@@ -42,6 +48,7 @@
 
         // DataTable configuration
         var tableConfiguration = {
+            initialLoad : <?php echo $this->escape($this->deferData ? 'false' : 'true'); ?>,
             initialRequest : "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>",
             dynamicData : true, 
             sortedBy : {
@@ -54,7 +61,7 @@
                     template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                 }
             ), 
-            generateRequest : constructUrlFunction
+            generateRequest : requestConstructor
         };
 
         // The actual DataTable instance
@@ -65,10 +72,27 @@
             tableConfiguration
         );
         
+        // Register data table with Fisma.Search -- this allows it to be found after this scope disappears
+        // @todo This is an undesirable dependency, but its not easy to fix without a registry (I think).
+        Fisma.Search.setTable(dataTable);
+        
         // Update number of returned records
         dataTable.handleDataReturnPayload = function(request, response, payload) { 
             payload.totalRecords = response.meta.totalRecords; 
-            
+
+            // Display total records in the search results header
+            var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+            if (searchResultsHeader) {
+                var totalRecords = response.meta.totalRecords ? response.meta.totalRecords : 0;
+                var searchResultsTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+                
+                if (searchResultsHeader.firstChild) {
+                    searchResultsHeader.removeChild(searchResultsHeader.firstChild);
+                }
+                
+                searchResultsHeader.appendChild(searchResultsTotalFound);
+            }
+
             return payload; 
         }
         
@@ -76,15 +100,94 @@
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
 
-        // Enable row click event handler if it was defined
-        dataTable.subscribe("rowClickEvent", function (clickEvent) {
+        // Enable cell click event handler
+        dataTable.subscribe("cellClickEvent", function (clickEvent) {
             var targetEl = clickEvent.target;
             var rowData = this.getRecord(targetEl);
 
+            // Reject clicks in columns that contain checkboxes (that would be cruel for the user)
+            var column = this.getColumn(targetEl);
+            if (column.formatter == Fisma.TableFormat.formatCheckbox) {
+                return;
+            }
+            
+            // Reject clicks for deleted records
+            if (rowData.getData('deleted_at')) {
+                alert('This record cannot be viewed because it was deleted.');
+                
+                return;
+            }
+            
             var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
                     + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
+
+            // A shift+click pops up a new window for the record view
+            if (clickEvent.event.shiftKey) {
+                var popup = window.open(url);
+                
+                // A shift+alt+click will pop under a new window for the record view
+                if (clickEvent.event.altKey) {
+                    popup.blur();
+                    window.focus();
+                }
+            } else {
+                document.location = url;
+            }                    
+        });
+        
+        <?php if (isset($this->renderEventFunction)): ?>
+            var renderEventFunctionName = "<?php echo $this->escape($this->renderEventFunction); ?>";
+            var renderEventFunction = Fisma.Util.getObjectFromName(renderEventFunctionName);
+
+            dataTable.subscribe("renderEvent", renderEventFunction);
+        <?php endif; ?>
+        
+        // Set up thead click events for columns which contain checkboxes
+        dataTable.subscribe("theadCellClickEvent", function (clickEvent) {
+            var column = this.getColumn(clickEvent.target);
+            
+            if (column.formatter == Fisma.TableFormat.formatCheckbox) {
+                var theadCheckbox = YAHOO.util.Dom.get('dt-checkbox');
+                var records = this.getRecordSet().getRecords();
+                
+                for (var i = 0; i < records.length; i++) {
+                    if (records[i].getData('deleted_at')) {
+                        continue;
+                    }
+
+                    if (theadCheckbox.checked) {
+                        this.selectRow(records[i]);
+                    } else {
+                        this.unselectRow(records[i]);
+                    }
                     
-            document.location = url;
+                    this.getRecordSet().updateRecordValue(records[i], column.key, theadCheckbox.checked);
+                }
+                
+                this.render();
+            }
+        });
+        
+        // Highlight/unhighlight rows in response to checkbox clicks
+        dataTable.subscribe("checkboxClickEvent", function (clickEvent) {
+            var target = clickEvent.target;
+            var checked = target.checked;
+            var record = this.getRecord(target);
+            
+            this.getRecordSet().updateRecordValue(record, 'checked', checked);
+            
+            if (checked) {
+                this.selectRow(record);
+            } else {
+                this.unselectRow(record);
+            }
+        });
+        
+        // Make sure that the header checkbox is unchecked on page changes
+        dataTable.get("paginator").subscribe("pageChange", function (event) {
+            var checkbox = YAHOO.util.Dom.get('dt-checkbox');
+            
+            checkbox.checked = false;
         });
     });
 </script>
