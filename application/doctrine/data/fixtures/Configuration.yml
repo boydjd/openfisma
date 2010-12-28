@@ -56,6 +56,6 @@ Configuration:
 
         app_version: 2.10.0
 
-        yui_version: 2.8.0r4
+        yui_version: 2.8.2
 
         default_security_control_catalog_id: 4
