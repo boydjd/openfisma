@@ -124,7 +124,7 @@ Fisma.Search.Panel.prototype = {
                 var numberOfOperands = this.getNumberOfOperands(fieldDefinition, operator, criterionDefinition);
                 
                 // Now we know how many operands there, push that number of tokens onto a stack
-                operands = [];
+                var operands = [];
                 
                 for (; numberOfOperands > 0; numberOfOperands--) {
                     operands.push(this.defaultQueryTokens[index]);
@@ -132,7 +132,7 @@ Fisma.Search.Panel.prototype = {
                 }
                 
                 // URI Decode the operands
-                var unescapedOperands = operands.map(decodeURIComponent);
+                var unescapedOperands = $P.array_map(decodeURIComponent, operands);
 
                 // Render the element and then set its default values
                 var criterionElement = criterion.render(field, operator, unescapedOperands);
@@ -140,7 +140,12 @@ Fisma.Search.Panel.prototype = {
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
             }
-            
+
+            // If only one criterion, disable its "minus" button
+            if (1 == this.criteria.length) {
+                this.criteria[0].setRemoveButtonEnabled(false);
+            }
+
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
             Fisma.Search.onSetTable(function () {
@@ -173,6 +178,8 @@ Fisma.Search.Panel.prototype = {
         if (1 == this.criteria.length) {
             this.criteria[0].setRemoveButtonEnabled(true);
         }
+
+        if (!this.searchableFields[this.criteria.length]) throw "No field defined for search";
 
         var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
         this.criteria.push(criteria);

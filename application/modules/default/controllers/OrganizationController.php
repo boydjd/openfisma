@@ -101,7 +101,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                       . $organization['nickname'] 
                       . ' - '
                       . $organization['name'];
-                $form->getElement('parent')->addMultiOptions(array($value => $text));
+                      
+                $parent = $form->getElement('parent');
+                if ($parent) {
+                    $form->getElement('parent')->addMultiOptions(array($value => $text));
+                }
             }
         } else {
             // If there are no other organizations, the parent only shows the option "None"
@@ -224,6 +228,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         return $objectId;
     }
 
+    public function _isDeletable()
+    {
+        return false;
+    }
+
     /**
      * Delete a specified organization.
      *
@@ -246,6 +255,29 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msg, $model);
         }
         $this->_redirect('/organization/list');
+    }
+
+    /**
+     * Override parent to check if the object is a system object, in which case the user is redirected.
+     * 
+     * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong 
+     * controller. It will write a log message for any bad URLs, so after some time in production we can see where
+     * the other bad links are and eventually remove this crutch.
+     */
+    public function viewAction()
+    {
+        $organization = Doctrine::getTable('Organization')->find($this->getRequest()->getParam('id'));
+
+        if ('system' == $organization->orgType) {
+            $message = "Organization controller: expected an organization object but got a system object. Referer: "
+                     . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a');
+
+            Fisma::getLogInstance(CurrentUser::getInstance())->warn($message);
+
+            $this->_redirect('/system/view/oid/' . $organization->id);
+        }
+
+        parent::viewAction();
     }
 
     /**
@@ -340,7 +372,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
         $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
-            ->leftJoin('o.System s');
+                     ->leftJoin('o.System s')
+                     ->orderBy('o.lft');
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();
@@ -387,6 +420,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $item['orgType'] = $node->getType();
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();
                 $item['children'] = array();
+
                 // Number of stack items
                 $l = count($stack);
                 // Check if we're dealing with different levels
@@ -417,7 +451,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                             }
                         }
                     }
-                } elseif ($l == 0) {
+                } else {
                     // Assigning the root node
                     $i = count($trees);
                     $trees[$i] = $item;
@@ -425,6 +459,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
             }
         }
+
         return $trees;
     }
 

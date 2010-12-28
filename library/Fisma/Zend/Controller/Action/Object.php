@@ -28,6 +28,14 @@
 abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller_Action_Security
 {
     /**
+     * The maximum number of records this controller will export during its search action when the format is PDF
+     * or XLS
+     * 
+     * @var int
+     */
+    const MAX_EXPORT_RECORDS = 1000;
+
+    /**
      * Default pagination parameters
      *
      * @var array
@@ -272,11 +280,26 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Create a subject model/record
+     * Display a create page for a single record. 
+     *
+     * All of the default logic for creating a record is performed in _createObject, so that child classes can use the
+     * default logic but still render their own views.
      *
      * @return void
      */
     public function createAction()
+    {
+        $this->_createObject();
+
+        $this->renderScript('object/create.phtml');
+    }
+
+    /**
+     * A protected method which holds all of the logic for the create page but does not actually render a view
+     *
+     * @return void
+     */
+    public function _createObject()
     {
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
@@ -311,10 +334,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
-
-        $this->renderScript('object/create.phtml');
     }
-
     /**
      * Display an edit page for a single record.
      *
@@ -397,6 +417,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $id = $this->_request->getParam('id');
         $subject = Doctrine::getTable($this->_modelName)->find($id);
 
+        if (!$this->_isDeletable()) {
+            throw new Fisma_Zend_Exception("This model is marked as not deletable");
+        }
+
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('delete', $subject);
         }
@@ -437,6 +461,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->_acl->requirePrivilegeForClass('delete', $this->getAclResourceName());
         $recordIds = Zend_Json::decode($this->_request->getParam('records'));
 
+        if (!$this->_isDeletable()) {
+            throw new Fisma_Zend_Exception("This model is marked as not deletable");
+        }
+
         if (empty($recordIds)) {
             return $this->_helper->json(array('msg' => 'An error has occured.', 'status' => 'warning'));
         }
@@ -472,9 +500,23 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             
             $message = "$numRecords $noun $verb deleted.";
             $status = 'notice';
+            
+        } catch (Doctrine_Exception $e) {
+            
+            Doctrine_Manager::connection()->rollback();
+            
+            if (Fisma::debug()) {
+                $message .= $e->getMessage();
+            } else {
+                $message .= 'An error has occured while deleting selected record(s)';
+            }
+            $status = 'warning';
+            
+            $logger = Fisma::getLogInstance(CurrentUser::getInstance());
+            $logger->log($e->getMessage() . "\n" . $e->getTraceAsString(), Zend_Log::ERR);
+            
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
-
             $message = $e->getMessage();
             $status = 'warning';
         }
@@ -521,7 +563,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         reset($searchableFields);
         
         // If user can delete objects, then add a checkbox column
-        if ($this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+        if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $column = new Fisma_Yui_DataTable_Column('<input id="dt-checkbox" type="checkbox">',
                                                      false,
                                                      "Fisma.TableFormat.formatCheckbox",
@@ -641,13 +683,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $sortBoolean = ('asc' == $sortDirection);
         $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
         
-        // For HTML UI, add a limit/offset to query
         if (empty($format)) {
+            // For HTML UI, add a limit/offset to query
             $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
             $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
         } else {
-            $start = null;
-            $rows = null;
+            // For PDF/XLS export, $rows is an arbitrarily high number (that won't DoS the system)
+            $start = 0;
+            $rows = self::MAX_EXPORT_RECORDS;
         }
 
         // Execute simple search (default) or advanced search (if explicitly requested)
@@ -737,18 +780,22 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 if (isset($visibleColumns)) {
                     $visible = (bool)($visibleColumns & (1 << $currentColumn));
                 } else {
-                    $visible = $searchableField['initiallyVisible'];
+                    $visible = isset($searchableField['initiallyVisible']) && $searchableField['initiallyVisible'];
                 }
                 
                 // For visible columns, display the column in the report and add data from the 
                 // raw result for that column
                 if ($visible) {
                     $report->addColumn(
-                        new Fisma_Report_Column($searchableField['label'], $searchableFields['sortable'])
+                        new Fisma_Report_Column($searchableField['label']), $searchableField['sortable']
                     );
 
                     foreach ($rawSearchData as $index => $datum) {
-                        $reformattedSearchData[$index][$fieldName] = $rawSearchData[$index][$fieldName];
+                        if (isset($rawSearchData[$index][$fieldName])) {
+                            $reformattedSearchData[$index][$fieldName] = $rawSearchData[$index][$fieldName];
+                        } else {
+                            $reformattedSearchData[$index][$fieldName] = '';
+                        }
                     }
                 }
                 
@@ -851,7 +898,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         
         // Remove the delete button if the user doesn't have the right to click it
-        if (!$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+        if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');
         }
 
@@ -884,7 +931,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
@@ -907,10 +954,23 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject)) {
+        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
         return $links;
+    }
+    
+    /**
+     * Returns true if the model is deletable, false otherwise.
+     * 
+     * The default implementation returns true because most models are deletable. Models which are not deletable should
+     * override this method in their controller and return false.
+     * 
+     * @return bool
+     */
+    protected function _isDeletable()
+    {
+        return true;
     }
 }

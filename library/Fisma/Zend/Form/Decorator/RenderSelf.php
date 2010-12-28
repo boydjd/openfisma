@@ -39,7 +39,7 @@ class Fisma_Zend_Form_Decorator_RenderSelf extends Zend_Form_Decorator_Abstract
     {
         $render = $content;
         
-        // Replace content with the element's own self-rendering, if it has a selfRender method
+        // Replace content with the element's own self-rendering, if it has a renderSelf method
         $element = $this->getElement();
         if (method_exists($element, 'renderSelf')) {
             $render = $element->renderSelf();

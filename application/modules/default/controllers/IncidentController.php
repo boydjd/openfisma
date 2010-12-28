@@ -35,6 +35,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'Incident';
 
     /**
+     * Override parent in order to turn off default ACL checks.
+     * 
+     * Incident ACL checks are unusual and are performed within this controller, not the parent.
+     */
+    protected $_enforceAcl = false;
+
+    /**
      * Timezones
      * 
      * @todo this doesn't belong here
@@ -267,8 +274,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 // Decorators for the timestamp
                 $timestamp = $formPart->getElement('incidentDate');
                 $timestamp->clearDecorators();
-                $timestamp->addDecorator('ViewScript', array('viewScript'=>'datepicker.phtml'));
                 $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Incident_Create);
+                $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Date);
                 $tz = $formPart->getElement('incidentTimezone');
                 $tz->addMultiOptions($this->_timezones);
                 break;

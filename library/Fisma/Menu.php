@@ -61,7 +61,7 @@ class Fisma_Menu
             }
 
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/index/create'));
+                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/remediation/create'));
             }
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {

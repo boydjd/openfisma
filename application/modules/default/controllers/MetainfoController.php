@@ -63,7 +63,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $organization = trim(substr($this->view->selected, 0, strpos($this->view->selected, '-')-1));
 
             foreach ($list as $item) {
-                if ($pos = strpos($item, $organization)) {
+                if (!empty($organization) && $pos = strpos($item, $organization)) {
                     $organization = substr($item, 0, $pos) . $organization;
                     break;
                 }

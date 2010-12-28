@@ -9,18 +9,13 @@
 ; Version   $Id$
 
 [finding]
-elementPrefixPath.prefix = Fisma_Zend_Form
-elementPrefixPath.path = Fisma/Zend/Form
-elementPrefixPath.type = Validate
-method = "post"
-elementFilters.trim = "StringTrim"
 
 elements.discoveredDate.type = "text"
 elements.discoveredDate.options.label = "Discovered Date"
 elements.discoveredDate.options.class = "date"
 elements.discoveredDate.options.required = true
 elements.discoveredDate.options.tooltip = "<p>If this finding was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
-elements.discoveredDate.options.validators.discoveredDate.validator = "date"
+elements.discoveredDate.options.validators.dateValidator.validator = "date"
 displayGroups.finding.elements.discoveredDate = "discoveredDate"
 
 elements.sourceId.type = "select"
@@ -53,26 +48,27 @@ elements.securityControlAutocomplete.options.attribs.hiddenField = "securityCont
 elements.securityControlAutocomplete.options.attribs.queryPrepend = "/keyword/"
 elements.securityControlAutocomplete.options.attribs.containerId = "securityControlAutocompleteContainer"
 elements.securityControlAutocomplete.options.tooltip = "<p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching controls. You must select a control from that list.</p>"
+elements.securityControlAutocomplete.options.required = true
 displayGroups.finding.elements.securityControlAutocomplete = "securityControlAutocomplete"
 
 elements.threatLevel.type = "select"
 elements.threatLevel.options.label = "Threat Level"
-elements.threatLevel.options.MultiOptions.LOW = "LOW"
-elements.threatLevel.options.MultiOptions.MODERATE = "MODERATE"
-elements.threatLevel.options.MultiOptions.HIGH = "HIGH"
+elements.threatLevel.options.required = true
+; Options are populated by the controller
 displayGroups.finding.elements.threatLevel = "threatLevel"
 
 elements.threat.type = "textarea"
 elements.threat.options.label = "Threat Description"
 elements.threat.options.cols = "100"
 elements.threat.options.rows = "8"
+elements.threat.options.required = true
+elements.threat.options.validators.mce.validator = "MceNotEmpty"
 displayGroups.finding.elements.threat = "threat"
 
-elements.orgSystemId.type = "select"
-elements.orgSystemId.options.style = "width:172px"
-elements.orgSystemId.options.label = "System"
-elements.orgSystemId.options.url = "/asset/search"
-displayGroups.finding.elements.orgSystemId = "orgSystemId"
+elements.responsibleOrganizationId.type = "select"
+elements.responsibleOrganizationId.options.label = "System"
+elements.responsibleOrganizationId.options.required = true
+displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Create Finding"

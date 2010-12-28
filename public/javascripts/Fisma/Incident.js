@@ -159,9 +159,12 @@ Fisma.Incident = {
      */
     addIncidentStepAbove : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         rowEl.parentNode.insertBefore(rowElClone, rowEl);
+
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
         
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
@@ -170,7 +173,8 @@ Fisma.Incident = {
     
     addIncidentStepBelow : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         // There is no "insertAfter" method for DOM elements, so this is a little tricky
         if (rowEl.nextSibling) {
@@ -179,6 +183,8 @@ Fisma.Incident = {
             rowEl.parentNode.appendChild(rowElClone);
         }
         
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
+
         this.renumberAllIncidentSteps(rowEl.parentNode);
 
         return false;
@@ -192,5 +198,85 @@ Fisma.Incident = {
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
         return false; 
+    },
+
+    /** 
+    * This takes a tr element and an unique id as  parameters, and it generates a new incident step form fields 
+    * including name, description and buttons. And compose newly generated elements to a tr element node.
+    *    
+    * @param tableEl
+    * @param textareaId an unique id for textarea so that tinyMCE can be added.
+    * @return a <tr> element node containing sub form fields.
+    */
+    generateIncidentStep: function (rowEl, textareaId) {
+        //To check the tr node structure, see the render() at class Fisma_Zend_Form_Element_IncidentWorkflowStep
+        //clone tr node without its children
+        var rowElClone = rowEl.cloneNode(false);
+        var tableEl = rowEl.parentNode;
+
+        //create first td node containing "Step " text
+        var newTdElStep = document.createElement('td');
+        newTdElStep.innerHTML = 'Step : ';
+        rowElClone.appendChild(newTdElStep);
+
+        //create second td node containing all the form fields
+        var newTdElForm = document.createElement('td');
+        rowElClone.appendChild(newTdElForm);
+
+        //the last child of rowEl is <td> block containing the subform fields
+        var tdForm = YAHOO.util.Dom.getLastChild(rowEl);
+
+        //The first child of <td> block should be Name field.
+        var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
+        var nameElClone = nameField.cloneNode(true) 
+
+        //The next sibling should be role field  
+        var roleField = YAHOO.util.Dom.getNextSibling(nameField);
+        var roleElClone = roleField.cloneNode(true) 
+
+        newTdElForm.appendChild(nameElClone); 
+        newTdElForm.appendChild(roleElClone); 
+
+        //create p node for Desription and textarea
+        var elP = document.createElement('p');
+        elP.innerHTML = 'Description: ';
+
+        var newTextareaEl = document.createElement('textarea');
+        newTextareaEl.setAttribute('id',textareaId);
+
+        var descField = YAHOO.util.Dom.getNextSibling(roleField);
+        var textareaField = YAHOO.util.Dom.getFirstChild(descField);
+
+        //get original textarea attribute value
+        var textareaRows = YAHOO.util.Dom.getAttribute(textareaField, 'rows');
+        var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
+        var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
+
+        newTextareaEl.setAttribute('rows',textareaRows);
+        newTextareaEl.setAttribute('cols',textareaCols);
+        newTextareaEl.setAttribute('name',textareaName);
+ 
+        elP.appendChild(newTextareaEl);
+        newTdElForm.appendChild(elP); 
+
+        //get button field of form 
+        var buttonField = YAHOO.util.Dom.getNextSibling(descField);
+        var buttonElClone = buttonField.cloneNode(true);
+        newTdElForm.appendChild(buttonElClone); 
+
+        return rowElClone;
+    },
+
+    /** 
+    * This takes a table element  as  parameters, and it generates an unique Id for textarea 
+    *    
+    * @param tableEl
+    * @return ID.
+    */
+    generateTextareaId: function (element) {
+        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', element);
+        var stepNumber = 1 + trEls.length;
+        var textareaId = 'textareaid' + stepNumber;
+        return textareaId;
     }
 };

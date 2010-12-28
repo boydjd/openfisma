@@ -116,7 +116,15 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
      */
     public function getAclFields()
     {
-        return array('orgSystemId' => 'AssetTable::getOrganizationIds');
+        $aclFields = array();
+        $currentUser = CurrentUser::getInstance();
+
+        // Invoke the ACL constraint only if the user doesn't have the "unaffiliated assets" privilege
+        if (!$currentUser->acl()->hasPrivilegeForClass('unaffiliated', 'Asset')) {
+            $aclFields['orgSystemId'] = 'AssetTable::getOrganizationIds';
+        }
+
+        return $aclFields;
     }
 
     /**

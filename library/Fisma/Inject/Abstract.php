@@ -65,7 +65,7 @@ abstract class Fisma_Inject_Abstract
      * 
      * @var array
      */
-    private $_totals = array('created' => 0, 'deleted' => 0, 'reviewed' => 0);
+    private $_totals = array('reopened' => 0, 'created' => 0, 'deleted' => 0, 'reviewed' => 0);
 
     /**
      * collection of findings to be created 
@@ -197,7 +197,7 @@ abstract class Fisma_Inject_Abstract
         if ($duplicateFinding) {
             $this->_duplicates[] = array(
                 'vulnerability' => $duplicateFinding,
-                'action' => $duplicateFinding->status == 'CLOSED' ? 'REOPEN' : 'SUPPRESS',
+                'action' => $duplicateFinding->status == 'FIXED' ? 'REOPEN' : 'SUPPRESS',
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
             );
             // Deleted findings are not saved, so we exit the _save routine
@@ -322,9 +322,9 @@ abstract class Fisma_Inject_Abstract
     {
         // Verify whether asset exists or not
         $assetQuery = Doctrine_Query::create()
-                        ->select('id')
-                        ->from('Asset a')
-                        ->where('a.networkId = ?', $assetData['networkId']);
+                      ->select('id, deleted_at')
+                      ->from('Asset a')
+                      ->where('a.networkId = ?', $assetData['networkId']);
         if (empty($assetData['addressIp'])) {
             $assetQuery->andWhere('a.addressIp IS NULL');
         } else {
@@ -335,10 +335,21 @@ abstract class Fisma_Inject_Abstract
         } else {
             $assetQuery->andWhere('a.addressPort = ?', $assetData['addressPort']);
         }
-        $assetRecord = $assetQuery->setHydrationMode(Doctrine::HYDRATE_NONE)
+        $assetRecord = $assetQuery->orWhere('a.deleted_at IS NOT NULL')
+                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                                   ->execute();
 
-        return ($assetRecord) ? $assetRecord[0][0] : FALSE;
+        //  If the vulnerability references to the existing and soft delete'd asset, then active asset.
+        $deletedAt = ($assetRecord) ? $assetRecord[0]['deleted_at'] : FALSE;
+        if ($deletedAt) {
+            $query = Doctrine_Query::create()
+                     ->update('Asset a')
+                     ->set('a.deleted_at', 'NULL')
+                     ->where('a.id = ?', $assetRecord[0]['id'])
+                     ->execute();
+        }
+
+        return ($assetRecord) ? $assetRecord[0]['id'] : FALSE;
     }
 
     /**

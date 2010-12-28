@@ -1474,14 +1474,6 @@ function setupEditFields() {
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
                      target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
-                     calendarIcon = document.createElement('img');
-                     calendarIcon.id = t_name + "_show";
-                     calendarIcon.src = "/images/calendar.png";
-                     calendarIcon.alt = "Calendar";
-                     target.parentNode.appendChild(calendarIcon);
-                     YAHOO.util.Event.on(t_name+'_show', "click", function() {
-                        showCalendar(t_name, t_name+'_show');
-                     });
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
@@ -3577,7 +3569,7 @@ Fisma.Finding = {
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
-            '/security-control-catalog/single-control/id/' + securityControlId, 
+            '/security-control/single-control/id/' + securityControlId, 
             {
                 success: function (connection) {
                     controlContainer.innerHTML = connection.responseText;
@@ -4548,9 +4540,12 @@ Fisma.Incident = {
      */
     addIncidentStepAbove : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         rowEl.parentNode.insertBefore(rowElClone, rowEl);
+
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
         
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
@@ -4559,7 +4554,8 @@ Fisma.Incident = {
     
     addIncidentStepBelow : function (element) {
         var rowEl = this.getIncidentStepParentElement(element);
-        var rowElClone = rowEl.cloneNode(true);
+        var textareaId = this.generateTextareaId(rowEl.parentNode);
+        var rowElClone = this.generateIncidentStep(rowEl, textareaId);
         
         // There is no "insertAfter" method for DOM elements, so this is a little tricky
         if (rowEl.nextSibling) {
@@ -4568,6 +4564,8 @@ Fisma.Incident = {
             rowEl.parentNode.appendChild(rowElClone);
         }
         
+        tinyMCE.execCommand ('mceAddControl', false, textareaId);
+
         this.renumberAllIncidentSteps(rowEl.parentNode);
 
         return false;
@@ -4581,6 +4579,86 @@ Fisma.Incident = {
         this.renumberAllIncidentSteps(rowEl.parentNode);
         
         return false; 
+    },
+
+    /** 
+    * This takes a tr element and an unique id as  parameters, and it generates a new incident step form fields 
+    * including name, description and buttons. And compose newly generated elements to a tr element node.
+    *    
+    * @param tableEl
+    * @param textareaId an unique id for textarea so that tinyMCE can be added.
+    * @return a <tr> element node containing sub form fields.
+    */
+    generateIncidentStep: function (rowEl, textareaId) {
+        //To check the tr node structure, see the render() at class Fisma_Zend_Form_Element_IncidentWorkflowStep
+        //clone tr node without its children
+        var rowElClone = rowEl.cloneNode(false);
+        var tableEl = rowEl.parentNode;
+
+        //create first td node containing "Step " text
+        var newTdElStep = document.createElement('td');
+        newTdElStep.innerHTML = 'Step : ';
+        rowElClone.appendChild(newTdElStep);
+
+        //create second td node containing all the form fields
+        var newTdElForm = document.createElement('td');
+        rowElClone.appendChild(newTdElForm);
+
+        //the last child of rowEl is <td> block containing the subform fields
+        var tdForm = YAHOO.util.Dom.getLastChild(rowEl);
+
+        //The first child of <td> block should be Name field.
+        var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
+        var nameElClone = nameField.cloneNode(true) 
+
+        //The next sibling should be role field  
+        var roleField = YAHOO.util.Dom.getNextSibling(nameField);
+        var roleElClone = roleField.cloneNode(true) 
+
+        newTdElForm.appendChild(nameElClone); 
+        newTdElForm.appendChild(roleElClone); 
+
+        //create p node for Desription and textarea
+        var elP = document.createElement('p');
+        elP.innerHTML = 'Description: ';
+
+        var newTextareaEl = document.createElement('textarea');
+        newTextareaEl.setAttribute('id',textareaId);
+
+        var descField = YAHOO.util.Dom.getNextSibling(roleField);
+        var textareaField = YAHOO.util.Dom.getFirstChild(descField);
+
+        //get original textarea attribute value
+        var textareaRows = YAHOO.util.Dom.getAttribute(textareaField, 'rows');
+        var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
+        var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
+
+        newTextareaEl.setAttribute('rows',textareaRows);
+        newTextareaEl.setAttribute('cols',textareaCols);
+        newTextareaEl.setAttribute('name',textareaName);
+ 
+        elP.appendChild(newTextareaEl);
+        newTdElForm.appendChild(elP); 
+
+        //get button field of form 
+        var buttonField = YAHOO.util.Dom.getNextSibling(descField);
+        var buttonElClone = buttonField.cloneNode(true);
+        newTdElForm.appendChild(buttonElClone); 
+
+        return rowElClone;
+    },
+
+    /** 
+    * This takes a table element  as  parameters, and it generates an unique Id for textarea 
+    *    
+    * @param tableEl
+    * @return ID.
+    */
+    generateTextareaId: function (element) {
+        var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', element);
+        var stepNumber = 1 + trEls.length;
+        var textareaId = 'textareaid' + stepNumber;
+        return textareaId;
     }
 };
 /**
@@ -4784,7 +4862,13 @@ Fisma.Remediation = {
         if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
             return false;
         }
-        Fisma.UrlPanel.showPanel('Upload Evidence', '/finding/remediation/upload-form', Fisma.Remediation.upload_evidence_form_init);
+
+        Fisma.UrlPanel.showPanel(
+            'Upload Evidence', 
+            '/finding/remediation/upload-form', 
+            Fisma.Remediation.upload_evidence_form_init
+        );
+
         return false;
     },
 
@@ -5116,6 +5200,12 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent : function (form) {
+
+            // Ensure the search type is simple when advance search is hidden
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+                document.getElementById('searchType').value = 'simple';
+            }
+
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -5492,16 +5582,16 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText);
 
                         if (response.success) {
-                            message("Your column preferences have been saved", "notice");
+                            message("Your column preferences have been saved", "notice", true);
                         } else {
-                            message(response.message, "warning");
+                            message(response.message, "warning", true);
                         }
                     },
 
                     failure : function (o) {
                         Fisma.Search.columnPreferencesSpinner.hide();
 
-                        message('Error: ' + o.statusText, 'warning');
+                        message('Error: ' + o.statusText, 'warning', true);
                     }
                 }
             );
@@ -5553,6 +5643,34 @@ Fisma.Search = function() {
             urlPieces[urlPieces.length-1] = 'multi-delete';
             
             var multiDeleteUrl = urlPieces.join('/');
+
+            var onDataTableRefresh = {
+                success : function (request, response, payload) {
+                    dataTable.onDataReturnReplaceRows(request, response, payload);
+
+                    // Update YUI's visual state to show sort on first data column
+                    var sortColumnIndex = 0;
+                    var sortColumn;
+                    
+                    do {
+                        sortColumn = dataTable.getColumn(sortColumnIndex);
+                        
+                        sortColumnIndex++;
+                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
+                    dataTable.get('paginator').setPage(1, true);
+                },
+                failure : dataTable.onDataReturnReplaceRows,
+                scope : dataTable,
+                argument : dataTable.getState()
+            }
+
+            // Create a post string containing the IDs of the records to delete and the CSRF token
+            var postString = "csrf="
+                           + document.getElementById('searchForm').csrf.value
+                           + "&records="
+                           + YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -5569,8 +5687,12 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
-                        var searchForm = document.getElementById('searchForm');
-                        Fisma.Search.handleSearchEvent(searchForm);
+                        dataTable.showTableMessage("Loading...");
+                        var postData = "csrf="
+                           + document.getElementById('searchForm').csrf.value;
+                        var dataSource = dataTable.getDataSource();
+                        dataSource.connMethodPost = true;
+                        dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
@@ -5578,7 +5700,7 @@ Fisma.Search = function() {
                         message(text, "warning", true);
                     }
                 },
-                "records=" + YAHOO.lang.JSON.stringify(checkedRecords)
+                postString
             );
         },
         
@@ -6570,7 +6692,7 @@ Fisma.Search.Panel.prototype = {
                 var numberOfOperands = this.getNumberOfOperands(fieldDefinition, operator, criterionDefinition);
                 
                 // Now we know how many operands there, push that number of tokens onto a stack
-                operands = [];
+                var operands = [];
                 
                 for (; numberOfOperands > 0; numberOfOperands--) {
                     operands.push(this.defaultQueryTokens[index]);
@@ -6578,7 +6700,7 @@ Fisma.Search.Panel.prototype = {
                 }
                 
                 // URI Decode the operands
-                var unescapedOperands = operands.map(decodeURIComponent);
+                var unescapedOperands = $P.array_map(decodeURIComponent, operands);
 
                 // Render the element and then set its default values
                 var criterionElement = criterion.render(field, operator, unescapedOperands);
@@ -6586,7 +6708,12 @@ Fisma.Search.Panel.prototype = {
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
             }
-            
+
+            // If only one criterion, disable its "minus" button
+            if (1 == this.criteria.length) {
+                this.criteria[0].setRemoveButtonEnabled(false);
+            }
+
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
             Fisma.Search.onSetTable(function () {
@@ -6619,6 +6746,8 @@ Fisma.Search.Panel.prototype = {
         if (1 == this.criteria.length) {
             this.criteria[0].setRemoveButtonEnabled(true);
         }
+
+        if (!this.searchableFields[this.criteria.length]) throw "No field defined for search";
 
         var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
         this.criteria.push(criteria);
@@ -7349,7 +7478,7 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
 
         // Handle organization field
         var organization = oRecord.getData('System');
@@ -7395,6 +7524,17 @@ Fisma.TableFormat = {
             overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
         } else if (from) {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+        } else {
+            // This is the TOTAL column
+            var yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            var yesterdayString = yesterday.getFullYear() 
+                                + '-' 
+                                + (yesterday.getMonth() + 1) 
+                                + '-' 
+                                + yesterday.getDate();
+
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
 
         elCell.innerHTML = "<a href="
@@ -7458,7 +7598,7 @@ Fisma.TableFormat = {
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
      */
-    formatCheckbox : function(elCell, oRecord, oColumn, oData) {
+    formatCheckbox : function (elCell, oRecord, oColumn, oData) {
         
         if (oRecord.getData('deleted_at')) {
 
@@ -7772,9 +7912,12 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null){
-                        for (var i in ldapColumns)
-                        {
+                    if (data.accountInfo != null) {
+                        for (var i in ldapColumns) {
+                            if (!ldapColumns.hasOwnProperty(i)) {
+                                continue;
+                            }
+
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
                             if (columnValue != null) {
@@ -7990,7 +8133,7 @@ Fisma.Vulnerability = {
         rowBlinker.start();
         
         // Update the comment count in the tab UI
-        var commentCountEl = document.getElementById('findingCommentsCount').firstChild;
+        var commentCountEl = document.getElementById('vulnerabilityCommentsCount').firstChild;
         commentCountEl.nodeValue++;
                 
         // Hide YUI dialog

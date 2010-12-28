@@ -296,7 +296,7 @@ Event:
 
     MITIGATION_REVISE:
         name: MITIGATION_REVISE
-        description: Mitiation Strategy Revised
+        description: Mitigation Strategy Revised
         Privilege: notification_finding
 
     # System document is versionable. "CREATE" refers to version 1, and "UPDATE" refers to creating versions 2..n

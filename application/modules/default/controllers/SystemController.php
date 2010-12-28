@@ -48,11 +48,21 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     public function viewAction()
     {
+        // Either 'id' (system ID) or 'oid' (organization ID) is required
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organizationId = $this->getRequest()->getParam('oid');
+        
+        if ($id) {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);            
+        } elseif ($organizationId) {
+            $organization = Doctrine::getTable('Organization')->find($organizationId);            
+            $id = $organization->System->id;
+        } else {
+            throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
+        }
+
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
-        $organization = Doctrine::getTable('Organization')->find($id);
         $this->view->organization = $organization;
 
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
@@ -64,15 +74,23 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
 
+        $findingSearchUrl = '/finding/remediation/list/queryType/advanced/organization/textExactMatch/'
+                          . $organization->nickname;
+
         $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
             'showFindings',
             array(
                 'value' => 'Show Findings',
-                'href' => "/finding/remediation/search/responsibleOrganizationId/$id"
+                'href' => $findingSearchUrl
             )
         );
 
         $this->view->tabView = $tabView;
+    }
+
+    public function _isDeletable()
+    {
+        return false;
     }
 
     /**
@@ -83,11 +101,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function systemAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
-        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->organization = $organization;
         $this->view->system = $this->view->organization->System;
 
         $this->render();
@@ -101,7 +119,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function fipsAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
@@ -257,11 +275,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function fismaAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
-        $this->view->organization = Doctrine::getTable('Organization')->find($id);
+        $this->view->organization = $organization;
         $this->view->system = $this->view->organization->System;
 
         $this->render();
@@ -275,11 +293,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function artifactsAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
-        $organization = Doctrine::getTable('Organization')->find($id);
         $system = $organization->System;
         $documents = $system->Documents;
 
@@ -335,7 +352,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
-        $organization = Doctrine::getTable('Organization')->find($id);
         $system = $organization->System;
 
         $post = $this->_request->getPost();
@@ -372,7 +388,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msg, $type);
         }
 
-        $this->_redirect("/system/view/id/$id");
+        $this->_redirect("/system/view/oid/$id");
     }
 
     /**
@@ -415,6 +431,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $system->Organization->getNode()->insertAsLastChildOf($parentNode);
         $system->Organization->save();
 
+        // Quick hack to force re-indexing of the system, since intially it won't index its organization fields
+        $system->state(Doctrine_Record::STATE_DIRTY);
+        $system->save();
+
         // Add the system to the user's ACL if the flag was set above
         if ($addSystemToUserAcl) {
             $userRoles = CurrentUser::getInstance()->getRolesByPrivilege('organization', 'create');
@@ -428,7 +448,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             CurrentUser::getInstance()->invalidateAcl();
         }
 
-        return $system->Organization->id;
+        return $system->id;
     }
 
     /**
@@ -440,8 +460,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout->disableLayout();
 
-        $organizationId = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($organizationId);
+        $id = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         $this->_acl->requirePrivilegeForObject('update', $organization);
 
         $documentTypeId = $this->getRequest()->getParam('documentTypeId');
@@ -486,7 +506,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
             }
             $file = $_FILES['file'];
-            $destinationPath = Fisma::getPath('systemDocument') . "/$organizationId";
+            $destinationPath = Fisma::getPath('systemDocument') . '/' . $organization->id;
             if (!is_dir($destinationPath)) {
                 mkdir($destinationPath);
             }

@@ -359,6 +359,7 @@ class Fisma_Inject_Excel
             
             $findingRecord = new Finding();
             $findingRecord->merge($poam);
+            $findingRecord->CreatedBy = CurrentUser::getInstance();
             $findingRecord->save();
             $rowNumber++;
         }

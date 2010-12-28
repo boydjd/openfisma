@@ -1096,3 +1096,10 @@ form .searchForm {
 div#addInformationTypes {
     display: none;
 }
+
+/* Date inputs have a calendar icon rendered on them */
+input[type=text].date {
+    background: url(/images/calendar.png) no-repeat 98%;
+    background-color: white;
+    width: 10em;
+}

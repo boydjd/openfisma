@@ -110,7 +110,7 @@ class Fisma_Zend_Acl extends Zend_Acl
                 }
             }
         }
-        
+
         return $hasPrivilege;
     }
     

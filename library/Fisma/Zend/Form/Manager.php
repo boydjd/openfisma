@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2009 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -26,7 +26,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Form
- * @version    $Id$
  */
 class Fisma_Zend_Form_Manager
 {
@@ -61,6 +60,9 @@ class Fisma_Zend_Form_Manager
         $form->addPrefixPath('Fisma_Zend_Form', 'Fisma/Zend/Form', 'element');
         $form->addPrefixPath('Fisma_Zend_Form_Decorator', 'Fisma/Zend/Form/Decorator', 'decorator');
         $form->addPrefixPath('Fisma_Yui', 'Fisma/Yui', 'element');
+        
+        $form->addElementPrefixPath('Fisma_Zend_Form_Validate', 'Fisma/Zend/Form/Validate', 'validate');
+
         $form->setConfig($config);
 
         return $form;
@@ -110,31 +112,6 @@ class Fisma_Zend_Form_Manager
                 $element->addFilter('StringTrim');
             }
         }
-        
-        return $form;
-    }
-
-   /**
-     * Adds the standard decorators and filters to the create finding form
-	 * 
-     * @param Zend_Form $form The specified zend form to be decorated
-     * @return Zend_Form The modified form
-     */
-    static function prepareCreateFindingForm($form) 
-    {
-        $form->setMethod('post');
-        
-        $form->setDisplayGroupDecorators(
-            array(
-                new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_Decorator_Finding_Create()
-            )
-        );
-
-        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Finding_Create()));
-        
-        // By default, all input is trimmed of extraneous white space
-        $form->setElementFilters(array('StringTrim'));
         
         return $form;
     }

@@ -96,7 +96,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      private static $_sdlcPhaseMap = array(
                 'initiation' => 'Initiation',
                 'development' => 'Development/Acquisition',
-                'imlementation' => 'Implementation/Assessment',
+                'implementation' => 'Implementation/Assessment',
                 'operations' => 'Operations/Maintenance',
                 'disposal' => 'Disposal'
      );
@@ -373,4 +373,14 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
             }
         }
     }
+    
+    public function preDelete($event)
+    {
+        if ($this->Organization->Incidents->count() > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'You cannot delete a organization/system that has Incidents associated with it'
+            );
+        }
+    }
+    
 }

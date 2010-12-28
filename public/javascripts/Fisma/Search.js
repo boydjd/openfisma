@@ -110,6 +110,12 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent : function (form) {
+
+            // Ensure the search type is simple when advance search is hidden
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+                document.getElementById('searchType').value = 'simple';
+            }
+
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -486,16 +492,16 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText);
 
                         if (response.success) {
-                            message("Your column preferences have been saved", "notice");
+                            message("Your column preferences have been saved", "notice", true);
                         } else {
-                            message(response.message, "warning");
+                            message(response.message, "warning", true);
                         }
                     },
 
                     failure : function (o) {
                         Fisma.Search.columnPreferencesSpinner.hide();
 
-                        message('Error: ' + o.statusText, 'warning');
+                        message('Error: ' + o.statusText, 'warning', true);
                     }
                 }
             );
@@ -547,6 +553,34 @@ Fisma.Search = function() {
             urlPieces[urlPieces.length-1] = 'multi-delete';
             
             var multiDeleteUrl = urlPieces.join('/');
+
+            var onDataTableRefresh = {
+                success : function (request, response, payload) {
+                    dataTable.onDataReturnReplaceRows(request, response, payload);
+
+                    // Update YUI's visual state to show sort on first data column
+                    var sortColumnIndex = 0;
+                    var sortColumn;
+                    
+                    do {
+                        sortColumn = dataTable.getColumn(sortColumnIndex);
+                        
+                        sortColumnIndex++;
+                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
+                    dataTable.get('paginator').setPage(1, true);
+                },
+                failure : dataTable.onDataReturnReplaceRows,
+                scope : dataTable,
+                argument : dataTable.getState()
+            }
+
+            // Create a post string containing the IDs of the records to delete and the CSRF token
+            var postString = "csrf="
+                           + document.getElementById('searchForm').csrf.value
+                           + "&records="
+                           + YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -563,8 +597,12 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
-                        var searchForm = document.getElementById('searchForm');
-                        Fisma.Search.handleSearchEvent(searchForm);
+                        dataTable.showTableMessage("Loading...");
+                        var postData = "csrf="
+                           + document.getElementById('searchForm').csrf.value;
+                        var dataSource = dataTable.getDataSource();
+                        dataSource.connMethodPost = true;
+                        dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
@@ -572,7 +610,7 @@ Fisma.Search = function() {
                         message(text, "warning", true);
                     }
                 },
-                "records=" + YAHOO.lang.JSON.stringify(checkedRecords)
+                postString
             );
         },
         

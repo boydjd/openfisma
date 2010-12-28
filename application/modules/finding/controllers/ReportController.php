@@ -198,19 +198,19 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function overdueAction()
     {
-        $systemId = $this->getRequest()->getParam('systemId');
+        $organizationId = $this->getRequest()->getParam('organizationId');
         $sourceId = $this->getRequest()->getParam('sourceId');
 
         if (!empty($systemId)) {
-            $organization = Doctrine::getTable('Organization')->find($systemId);
+            $organization = Doctrine::getTable('Organization')->find($organizationId);
 
             $this->_acl->requirePrivilegeForObject('read', $organization);
         } else {
             $this->_acl->requirePrivilegeForClass('read', 'Organization');
         }
 
-        $systems = $this->_me->getSystemsByPrivilege('finding', 'read');
-        $systemList = array('' => '') + $this->view->systemSelect($systems);
+        $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
+        $organizationList = array('' => '') + $this->view->systemSelect($organizations);
 
         $sourceList = array('' => '') + Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         asort($sourceList);
@@ -218,7 +218,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         // Set up the filter options in the toolbar
         $toolbarForm = Fisma_Zend_Form_Manager::loadForm('overdue_report_filters');
 
-        $toolbarForm->getElement('systemId')->setMultiOptions($systemList);
+        $toolbarForm->getElement('organizationId')->setMultiOptions($organizationList);
         $toolbarForm->getElement('sourceId')->setMultiOptions($sourceList);
 
         $toolbarForm->setDefaults($this->getRequest()->getParams());
@@ -241,10 +241,10 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         // If the user selects one organization then display that one only. Otherwise display all of this users systems.
-        if (!empty($systemId)) {
-            $overdueQuery->andWhere('o.id = ?', $systemId);
+        if (!empty($organizationId)) {
+            $overdueQuery->andWhere('o.id = ?', $organizationId);
         } else {
-            $overdueQuery->whereIn('o.id', $systems->toKeyValueArray('id', 'id'));
+            $overdueQuery->whereIn('o.id', $organizations->toKeyValueArray('id', 'id'));
         }
 
         if (!empty($sourceId)) {

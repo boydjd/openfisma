@@ -35,7 +35,7 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
+            - vulnerability_comment
             - notification_vulnerability
             - sa_it_read
 
@@ -103,7 +103,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability         
             - sa_it_read
@@ -152,7 +151,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - vulnerability_resolution_read
             - notification_vulnerability
             - sa_it_read
@@ -239,6 +237,7 @@ Role:
             - incident_close
             - incident_create
             - incident_update
+            - incident_lock
             - ir_workflow_def_read
             - ir_workflow_def_create
             - ir_workflow_def_update
@@ -253,9 +252,8 @@ Role:
             - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
-            - vulnerability_update
             - vulnerability_delete
-            - vulnerability_status
+            - vulnerability_update
             - vulnerability_resolution_create
             - vulnerability_resolution_read
             - vulnerability_resolution_update
@@ -355,7 +353,7 @@ Role:
             - vulnerability_comment
             - vulnerability_report_area
             - vulnerability_read
-            - vulnerability_status
+            - vulnerability_update
             - notification_vulnerability
             - sa_it_read
 
@@ -388,7 +386,6 @@ Role:
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
-            - vulnerability_status
             - notification_vulnerability
 
     oig_role:

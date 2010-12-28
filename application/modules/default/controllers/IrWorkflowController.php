@@ -73,19 +73,23 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
         // Handle special cases of merging workflow steps
         $post = $this->getRequest()->getPost();
 
-        if (isset($post['stepName']) && is_array($post['stepName'])) {
-            
-            // Get existing steps
-            $stepsQuery = Doctrine_Query::create()
-                          ->from('IrStep')
-                          ->where('workflowId = ?', $workflowId)
-                          ->orderBy('cardinality');
+        // Get existing steps
+        $stepsQuery = Doctrine_Query::create()
+                      ->from('IrStep')
+                      ->where('workflowId = ?', $workflowId)
+                      ->orderBy('cardinality');
 
-            $steps = $stepsQuery->execute();
+        $steps = $stepsQuery->execute();
+
+        if (isset($post['stepName']) && is_array($post['stepName'])) {
             $currentStepNumber = 1;
 
             // Loop over posted steps' data
             foreach ($post['stepName'] as $index => $postedStepName) {
+
+                // Skip a blank step
+                $stepDescription = trim(strip_tags($post['stepDescription'][$index]));
+                if (empty($postedStepName) && empty($post['stepRole'][$index]) && empty($stepDescription)) continue;
 
                 // If the user posts more steps than the workflow has, then create new steps
                 if (isset($steps[$index])) {
@@ -116,6 +120,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             // Deep-refresh the workflow object instance in case somebody else wants to use it (and we've mucked with
             // it's relations in the loops above)
             $workflowDefinition->refresh(true);
+        } else if (count($steps) > 0) {
+            $steps->delete();
         }
 
         Doctrine_Manager::connection()->commit();
@@ -132,6 +138,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
      */
     protected function setForm($workflowDef, $form)
     {
+        $actionName = $this->getRequest()->getActionName();
+
         $parentForm = parent::setForm($workflowDef, $form);
 
         // Get roles
@@ -150,7 +158,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
         $steps = $stepsQuery->execute();
 
         // If no steps exist, create a blank step
-        if (0 === count($steps)) {
+        if (0 === count($steps) && 'edit' == $actionName) {
             $defaultStep = new IrStep();
             $defaultStep->cardinality = 1;
 
@@ -172,7 +180,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
              * @todo Kludge... the readonly attribute of the form isn't getting carried down to the step elements.
              * I dont' have time to fix it, so I'm going to set it directly when the action is 'view'. This is bad.
              */
-            if ('view' == $this->getRequest()->getActionName()) {
+            if ('view' == $actionName) {
                 $stepElement->readOnly = true;
             }
 

@@ -73,8 +73,7 @@ $data = array(array("<b>Finding Number:</b>",    $finding->id,
                     "<b>Finding Source:</b>",    htmlentities($this->plainText($finding->Source->name))),
               array("<b>Date Opened:</b>",       $finding->createdTs,
                     "<b>Date Discovered:</b>",   $finding->discoveredDate),
-              array("<b>Organization:</b>",      htmlentities($system->Organization->name),"",""),
-              array("<b>Asset(s) Affected:</b>", htmlentities($finding->Asset->name),"",""));
+              array("<b>Organization:</b>",      htmlentities($system->Organization->name),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 $data = array(array("<b>Finding Description:</b>", htmlentities($this->plainText($finding->description)),"",""),

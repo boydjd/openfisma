@@ -130,7 +130,7 @@ Fisma.Finding = {
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
-            '/security-control-catalog/single-control/id/' + securityControlId, 
+            '/security-control/single-control/id/' + securityControlId, 
             {
                 success: function (connection) {
                     controlContainer.innerHTML = connection.responseText;

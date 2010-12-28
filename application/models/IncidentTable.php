@@ -149,7 +149,13 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
      */
     public function getAclFields()
     {
-        return array('id' => 'IncidentTable::getIncidentIds');
+        if (CurrentUser::getInstance()->acl()->hasPrivilegeForClass('read', 'Incident')) {
+            // If the user has the privilege to view all incidents, then no ACL is required.
+            return array();
+        } else {
+            // Otherwise use the IrIncidentUser join table to determine access rights
+            return array('id' => 'IncidentTable::getIncidentIds');            
+        }
     }
 
     /**

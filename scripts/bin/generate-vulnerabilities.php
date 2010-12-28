@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,117 +17,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-/**
- * Generate random findings, number to create specified as argument on command line 
- * 
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Scripts
- * @version    $Id$
- */
-require_once(realpath(dirname(__FILE__) . '/../../library/Fisma.php'));
+require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-try {
-    $startTime = time();
-    
-    defined('APPLICATION_ENV')
-        || define(
-            'APPLICATION_ENV',
-            (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-        );
-    defined('APPLICATION_PATH') || define(
-        'APPLICATION_PATH',
-        realpath(dirname(__FILE__) . '/../../application')
-    );
-
-    set_include_path(
-        APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
-        APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
-        get_include_path()
-    );
-
-    require_once 'Fisma.php';
-    require_once 'Zend/Application.php';
-
-    $application = new Zend_Application(
-        APPLICATION_ENV,
-        APPLICATION_PATH . '/config/application.ini'
-    );
-    Fisma::setAppConfig($application->getOptions());
-    Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-    Fisma::connectDb();
-    Fisma::setNotificationEnabled(false);
-    Fisma::setListenerEnabled(false);
-
-    /** @todo temporary hack to load large datasets */
-    ini_set('memory_limit', '-1');
-
-    // The CLI needs an in-memory configuration object, since it might drop and/or reload the configuration table
-    $inMemoryConfig = new Fisma_Configuration_Array();
-    $inMemoryConfig->setConfig('hash_type', 'sha1');
-    $inMemoryConfig->setConfig('session_inactivity_period', '9999999');
-    Fisma::setConfiguration($inMemoryConfig, true);    
-
-    $configuration = Zend_Registry::get('doctrine_config');
-
-    $numEntries = $argv[1];
-    $entries = array();
-
-    // Get Assets
-    $assetIds = Doctrine_Query::create()
-                    ->select('a.id')
-                    ->from('Asset a')
-                    ->setHydrationMode(Doctrine::HYDRATE_NONE)
-                    ->execute();
-
-    $status = array('OPEN', 'FIXED', 'WONTFIX');
-    $threat = array('LOW', 'MODERATE', 'HIGH');
-
-    $statusCount = count($status)-1;
-    $threatCount = count($threat)-1;
-    $assetIdsCount = count($assetIds)-1;
-
-    for ($numEntries; $numEntries > 0; $numEntries--) {
-        $discoveredDate = rand(0, time());
-
-        $entry = array();
-        $randomstatus = $status[rand(0, $statusCount)];
-        
-        //Status defaults to OPEN and state transition does not allow from OPEN to OPEN
-        if ($randomstatus != 'OPEN') {
-            $entry['status'] = $randomstatus;
-        }
-        $entry['threatLevel'] = $threat[rand(0, $threatCount)];
-        $entry['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
-        $entry['description'] = Fisma_String::loremIpsum(rand(2, 1000));
-        $entry['recommendation'] = Fisma_String::loremIpsum(rand(2, 1000));
-        $entry['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
-        $entry['discoveredDate'] = date("Y-m-d", $discoveredDate);
-        $entries[] = $entry;
-        unset($entry);
-    }
-
-    try {
-        Doctrine_Manager::connection()->beginTransaction();
-
-        foreach ($entries as $entry) {
-            $e = new Vulnerability();
-            $e->merge($entry);
-            $e->save();
-            $e->free();
-            unset($e);
-        }
-        
-        Doctrine_Manager::connection()->commit();
-    } catch (Exception $e) {
-        Doctrine_Manager::connection()->rollBack();
-        throw $e;
-    }
-
-    $stopTime = time();
-
-    print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");
-} catch (Exception $e) {
-    echo (string)$e;
-}
+$cli = new Fisma_Cli_GenerateVulnerabilities();
+$cli->run();

@@ -275,22 +275,25 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         if (isset($keywordTokens)) {
             foreach ($keywordTokens as $keyword) {
-                $zslQuery->addTerm(new Zend_Search_Lucene_Index_Term($keyword));
+                $zslQuery->addTerm(new Zend_Search_Lucene_Index_Term(strtolower($keyword)));
             }
 
             // Use lucene index to get IDs of matching documents     
             $index = $this->_openIndex($type);
             $zslResult = $index->find($zslQuery);
         }
-        
+
         // Now use matched IDs to query Doctrine for actual document contents
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
-                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+        if (!isset($searchableFields['id'])) {
+            $doctrineQuery->select('a.id');
+        }
+
         $currentAlias = 'a';
-        $relationAliases = array();
+        $relationAliases = array($type => $currentAlias);
 
         // Add any join tables required to get related records
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -306,8 +309,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                     // First relation is related directly to the base table
                     $doctrineQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $doctrineQuery->addSelect("$currentAlias.id");
-                    
+
                     // Remaining relations are recursively related to each other
                     for ($i = 1; $i < count($relationParts); $i++) {
                         $previousAlias = $currentAlias;
@@ -326,27 +328,38 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 $name = $fieldDefinition['join']['field'];
 
-                $doctrineQuery->addSelect("$relationAlias.$name");
+                $doctrineQuery->addSelect("$relationAlias.$name $fieldName");
             } else {
                 $doctrineQuery->addSelect("a.$fieldName");
             }
         }
 
         if (isset($zslResult)) {
-            // Create an array of matched Ids from lucene and add to doctrine query 
+            // Create an array of matched Ids from lucene and add to doctrine query.
             $ids = array();
     
             foreach ($zslResult as $hit) {
                 $ids[] = $hit->getDocument()->getField('id')->value;
             }
-            
-            $doctrineQuery->whereIn('a.id', $ids);
+
+            if (count($ids)) {
+                $doctrineQuery->whereIn('a.id', $ids);   
+            } else {
+                // If no matches in Lucene, then we don't need to go any further.
+                return new Fisma_Search_Result(0, 0, array());
+            }      
         }
 
         // Handle soft delete records
-        if ($deleted && $table->hasColumn('deleted_at')) {
-            $doctrineQuery->addSelect('a.deleted_at')
-                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+        if ($table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at');
+
+            if ($deleted) {
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+            } else {
+                // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
+                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+            }
         }
         
         // Add ACL constraints
@@ -364,11 +377,17 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
-            $relationTable = $searchableFields[$aclField]['join']['relation'];
-            $relationAlias = $relationAliases[$relationTable];
-            $relationField = $searchableFields[$aclField]['join']['field'];
+            if (isset($searchableFields[$aclField]['join'])) {
+                $relationTable = $searchableFields[$aclField]['join']['relation'];
+                $relationAlias = $relationAliases[$relationTable];
+                $relationField = $searchableFields[$aclField]['join']['field'];
 
-            $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+                $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
+            } else {
+                $relationAlias = $relationAliases[$type];
+
+                $doctrineQuery->whereIn("$relationAlias.$aclField", $aclValues);
+            }
         }
 
         // Add sorting and limit/offset
@@ -380,14 +399,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $relationAlias = $relationAliases[$relationTable];
             $relationField = $sortDefinition['join']['field'];
 
-            $doctrineQuery->orderBy("relationAlias.$relationField $sortOrder");
+            $doctrineQuery->orderBy("$relationAlias.$relationField $sortOrder");
         } else {
             $doctrineQuery->orderBy("a.$sortColumn $sortOrder");
         }
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }
@@ -397,18 +416,32 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();
+        $rootAlias = $relationAliases[$type];
 
         foreach ($doctrineResult as $row) {
             $rowData = array();
 
-            foreach ($row as $columnName => $columnValue) {
-                $newColumnName = substr($columnName, 2);
-                $newColumnValue = $this->_convertHtmlToIndexString($columnValue);
+            // Some models don't explicitly include "id" but that needs to be included in the search results
+            if (!isset($searchableFields['id'])) {
+                $rowData['id'] = $row[$rootAlias . '_id'];
+            }
+
+            foreach ($searchableFields as $columnName => $columnDefinition) {
+
+                if (isset($columnDefinition['join'])) {
+                    $tableAlias = $relationAliases[$columnDefinition['join']['relation']];
+                } else {
+                    $tableAlias = $relationAliases[$type];
+                }
+
+                $doctrineColumnName = $tableAlias . '_' . $columnName;
+
+                $columnValue = $this->_convertHtmlToIndexString($row[$doctrineColumnName]);
 
                 $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($newColumnValue) > $maxRowLength) {
-                    $shortValue = substr($newColumnValue, 0, $maxRowLength);
+                if ($maxRowLength && strlen($columnValue) > $maxRowLength) {
+                    $shortValue = substr($columnValue, 0, $maxRowLength);
 
                     // Trim after the last white space (so as not to break in the middle of a word)
                     $spacePosition = strrpos($shortValue, ' ');
@@ -417,14 +450,16 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                         $shortValue = substr($shortValue, 0, $spacePosition);
                     }
 
-                    $newColumnValue = $shortValue . '...';
-                } else {
-                    $newColumnValue = $newColumnValue;
+                    $columnValue = $shortValue . '...';
                 }
-                
-                $rowData[$newColumnName] = $newColumnValue;
+
+                $rowData[$columnName] = $columnValue;
             }
-            
+
+            if ($deleted && $table->hasColumn('deleted_at')) {
+                $rowData['deleted_at'] = $row[$rootAlias . '_deleted_at'];
+            }
+
             $tableData[] = $rowData;
         }
 
@@ -462,16 +497,18 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         }
 
         // Create a lucene query AND a doctrine query. Each index is used to search different fields.
-        $zslQuery = new Zend_Search_Lucene_Search_Query_Boolean;
         $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
 
         $doctrineQuery = Doctrine_Query::create()
                          ->from("$type a")
-                         ->select('a.id')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+         if (!isset($searchableFields['id'])) {
+             $doctrineQuery->select('a.id');
+         }
+
         $currentAlias = 'a';
-        $relationAliases = array();
+        $relationAliases = array($type => $currentAlias);
 
         // Add any join tables required to get related records
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -487,13 +524,13 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                     // First relation is related directly to the base table
                     $doctrineQuery->leftJoin("a.{$relationParts[0]} $currentAlias");
-                    $doctrineQuery->addSelect("$currentAlias.id");
-                    
+
                     // Remaining relations are recursively related to each other
                     for ($i = 1; $i < count($relationParts); $i++) {
                         $previousAlias = $currentAlias;
+
                         $currentAlias = chr(ord($currentAlias) + 1);
-                        
+
                         $relationPart = $relationParts[$i];
                         
                         $doctrineQuery->leftJoin("$previousAlias.$relationPart $currentAlias");
@@ -507,7 +544,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
                 $name = $fieldDefinition['join']['field'];
 
-                $doctrineQuery->addSelect("$relationAlias.$name");
+                $doctrineQuery->addSelect("$relationAlias.$name $fieldName");
             } else {
                 $doctrineQuery->addSelect("a.$fieldName");
             }
@@ -527,7 +564,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 $relationAlias = $relationAliases[$relationTable];
                 $relationField = $searchDefinition['join']['field'];
     
-                $sqlFieldName = "relationAlias.$relationField";
+                $sqlFieldName = "$relationAlias.$relationField";
                 $luceneFieldName = $criterion->getField();
             } else {
                 $sqlFieldName = 'a.' . $criterion->getField();
@@ -540,7 +577,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
             switch ($operator) {
                 case 'dateAfter':
-                    $doctrineQuery->andWhere("$sqlFieldName => ?", $operands[0]);
+                    $doctrineQuery->andWhere("$sqlFieldName >= ?", $operands[0]);
                     break;
 
                 case 'dateBefore':
@@ -612,35 +649,41 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     $doctrineQuery->andWhere("$sqlFieldName < ?", $operands[0]);
                     break;
 
-                // The following cases intentionally fall through
                 case 'textContains':
+                    $text = strtolower($operands[0]);
+                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($text, $luceneFieldName), true);
+                    break;
+
                 case 'enumIs':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), true);
+                    $doctrineQuery->andWhere("$sqlFieldName = ?", $operands[0]);
                     break;
 
-                // The following cases intentionally fall through
                 case 'textDoesNotContain':
-                case 'enumIsNot':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), false);
+                    $text = strtolower($operands[0]);
+                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($text, $luceneFieldName), false);
                     break;
 
-                // ZSL doesn't really have an exact match syntax... so fake it
+                case 'enumIsNot':
+                    $doctrineQuery->andWhere("$sqlFieldName <> ?", $operands[0]);
+                    break;
+
+                // ZSL doesn't really have an exact match syntax... so use Doctrine instead
                 case 'textExactMatch':
-                    $zslTermQuery->addTerm(new Zend_Search_Lucene_Index_Term($operands[0], $luceneFieldName), true);
+                    $doctrineQuery->andWhere("$sqlFieldName LIKE ?", $operands[0]);
                     break;
 
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
-                    if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
-                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idProvider'];
+                    if (isset($searchableFields[$luceneFieldName]['extraCriteria'][$operator])) {
+                        $callback = $searchableFields[$luceneFieldName]['extraCriteria'][$operator]['idProvider'];
 
                         $ids = call_user_func_array($callback, $operands);
 
-                        if ($customTerms === false) {
+                        if ($ids === false) {
                             throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
                         }
 
-                        $fieldName = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idField'];
+                        $fieldName = $searchableFields[$luceneFieldName]['extraCriteria'][$operator]['idField'];
                         
                         $doctrineQuery->whereIn("a.$fieldName", $ids);
                     } else {
@@ -648,38 +691,84 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     }
             }
         }
-        
-        $zslQuery->addSubquery($zslTermQuery, true);
+
+        // If the query contains only negative terms, then ZSL won't return any results. We need to detect this 
+        // condition and invert the meaning of the query (i.e. turn it from pure negative to pure positive)
+        $signs = $zslTermQuery->getSigns();
+        $flipSigns = true;
+
+        if ($signs) {
+            foreach ($signs as $sign) {
+                if ($sign !== false) {
+                    $flipSigns = false;
+                    break;
+                }
+            }
+        } else {
+            $flipSigns = false;
+        }
+
+        if ($flipSigns) {
+            $terms = $zslTermQuery->getTerms();
+
+            // Recreate the multiterm query with positive terms instead of negative terms
+            $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
+            
+            foreach ($terms as $term) {
+                $zslTermQuery->addTerm($term, true);
+            }
+        }
 
         $index = $this->_openIndex($type);
-        $zslResult = $index->find($zslQuery);
+        
+        if (count($zslTermQuery->getQueryTerms())) {
+            $zslResult = $index->find($zslTermQuery);            
+        }
 
         if (isset($zslResult)) {
-            // Create an array of matched Ids from lucene and add to doctrine query 
+            // Create an array of matched Ids from lucene and add to doctrine query.
             $ids = array();
     
             foreach ($zslResult as $hit) {
                 $ids[] = $hit->getDocument()->getField('id')->value;
             }
-            
-            $doctrineQuery->whereIn('a.id', $ids);
+
+            if (count($ids)) {
+                if ($flipSigns) {
+                    $doctrineQuery->whereNotIn('a.id', $ids);                    
+                } else {
+                    $doctrineQuery->whereIn('a.id', $ids);                    
+                }
+            } else {
+                // If no matches in Lucene, then we don't need to go any further.
+                return new Fisma_Search_Result(0, 0, array());
+            }      
         }
 
-        if ($deleted && $table->hasColumn('deleted_at')) {
-            $doctrineQuery->addSelect('a.deleted_at')
-                          ->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+        // Handle soft delete records
+        if ($table->hasColumn('deleted_at')) {
+            $doctrineQuery->addSelect('a.deleted_at');
+
+            if ($deleted) {
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+            } else {
+                // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
+                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+            }
         }
         
         // Add ACL constraints
         $aclTerms = $this->_getAclTerms($table);
         $aclFields = array();
 
-        foreach ($aclTerms as $aclTerm) {
-            if (!isset($aclFields[$aclTerm['field']])) {
-                $aclFields[$aclTerm['field']] = array();
-            }
+        if ($aclTerms) {
+            foreach ($aclTerms as $aclTerm) {
+                if (!isset($aclFields[$aclTerm['field']])) {
+                    $aclFields[$aclTerm['field']] = array();
+                }
 
-            $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+                $aclFields[$aclTerm['field']][] = $aclTerm['value'];
+            }
         }
 
         foreach ($aclFields as $aclField => $aclValues) {
@@ -690,7 +779,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 $relationAlias = $relationAliases[$relationTable];
                 $relationField = $aclFieldDefinition['join']['field'];
     
-                $doctrineQuery->whereIn("relationAlias.$relationField", $aclValues);
+                $doctrineQuery->whereIn("$relationAlias.$relationField", $aclValues);
             } else {
                 $doctrineQuery->whereIn("a.$aclField", $aclValues);
             }
@@ -705,14 +794,14 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $relationAlias = $relationAliases[$relationTable];
             $relationField = $sortDefinition['join']['field'];
 
-            $doctrineQuery->orderBy("relationAlias.$relationField $sortOrder");
+            $doctrineQuery->orderBy("$relationAlias.$relationField $sortOrder");
         } else {
             $doctrineQuery->orderBy("a.$sortColumn $sortOrder");
         }
 
         $doctrineCount = $doctrineQuery->count();
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $doctrineQuery->limit($rows)
                           ->offset($start);
         }
@@ -722,18 +811,32 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
 
         // Remove table alias prefixes (first two characters) from column name
         $tableData = array();
+        $rootAlias = $relationAliases[$type];
 
         foreach ($doctrineResult as $row) {
             $rowData = array();
+            
+            // Some models don't explicitly include "id" but that needs to be included in the search results
+            if (!isset($searchableFields['id'])) {
+                $rowData['id'] = $row[$rootAlias . '_id'];
+            }
 
-            foreach ($row as $columnName => $columnValue) {
-                $newColumnName = substr($columnName, 2);
-                $newColumnValue = $this->_convertHtmlToIndexString($columnValue);
+            foreach ($searchableFields as $columnName => $columnDefinition) {
+
+                if (isset($columnDefinition['join'])) {
+                    $tableAlias = $relationAliases[$columnDefinition['join']['relation']];
+                } else {
+                    $tableAlias = $relationAliases[$type];
+                }
+
+                $doctrineColumnName = $tableAlias . '_' . $columnName;
+
+                $columnValue = $this->_convertHtmlToIndexString($row[$doctrineColumnName]);
 
                 $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($newColumnValue) > $maxRowLength) {
-                    $shortValue = substr($newColumnValue, 0, $maxRowLength);
+                if ($maxRowLength && strlen($columnValue) > $maxRowLength) {
+                    $shortValue = substr($columnValue, 0, $maxRowLength);
 
                     // Trim after the last white space (so as not to break in the middle of a word)
                     $spacePosition = strrpos($shortValue, ' ');
@@ -742,14 +845,16 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                         $shortValue = substr($shortValue, 0, $spacePosition);
                     }
 
-                    $newColumnValue = $shortValue . '...';
-                } else {
-                    $newColumnValue = $newColumnValue;
+                    $columnValue = $shortValue . '...';
                 }
-                
-                $rowData[$newColumnName] = $newColumnValue;
+
+                $rowData[$columnName] = $columnValue;
             }
-            
+
+            if ($deleted && $table->hasColumn('deleted_at')) {
+                $rowData['deleted_at'] = $row[$rootAlias . '_deleted_at'];
+            }
+
             $tableData[] = $rowData;
         }
 

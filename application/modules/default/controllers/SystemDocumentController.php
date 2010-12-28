@@ -149,4 +149,14 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
     {
         return 'System Documents';
     }
+
+    /**
+     * Override to indicate that this model is not deletable. (Since its versioned, we never delete a document.)
+     * 
+     * @return bool
+     */
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }

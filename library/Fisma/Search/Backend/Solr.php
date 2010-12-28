@@ -197,12 +197,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
               $query->setStart($start)
                     ->setRows($rows);
-        } else {
-            // Solr will automatically limit to 10 rows if we don't explicitly give it a higher limit
-            $query->setRows(PHP_INT_MAX);
         }
 
         $trimmedKeyword = trim($keyword);
@@ -267,10 +264,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 }
 
                 foreach ($keywordTokens as $keywordToken) {
-
                     // Don't search for strings in integer fields (Solr emits an error)
-                    if ( !('integer' == $fieldDefinition['type'] && !is_numeric($keywordToken)) ) {
-                        $searchTerms[] = $documentFieldName . ':' . $keywordToken;
+                    $isNumberField = ('integer' == $fieldDefinition['type'] || 'float' == $fieldDefinition['type']);
+                    $canSearch = (is_numeric($keywordToken) || !$isNumberField);
+
+                    if ($canSearch) {
+                        $searchTerms[] = $documentFieldName . ':"' . $keywordToken . '"';
                     }
                 }
             }
@@ -326,12 +325,9 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
               ->addField('luceneDocumentId')
               ->addSortField($sortColumnParam, $sortDirectionParam);
 
-        if ($rows && $start) {
+        if (isset($rows) && isset($start)) {
             $query->setStart($start)
                   ->setRows($rows);
-        } else {
-            // Solr will automatically limit to 10 rows if we don't explicitly give it a higher limit
-            $query->setRows(PHP_INT_MAX);
         }
 
         $filterQuery = 'luceneDocumentType:' . $this->escape($type);
@@ -436,7 +432,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                         throw new Fisma_Search_Exception("Invalid operands to floatBetween criterion.");
                     }
 
-                    $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
+                    if ($operands[0] < $operands[1]) {
+                        $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
+                    } else {
+                        $searchTerms[] = "$fieldName:[{$operands[1]} TO {$operands[0]}]";
+                    }
                     break;
 
                 case 'floatGreaterThan':
@@ -444,8 +444,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                         throw new Fisma_Search_Exception("Invalid operands to floatGreaterThan criterion.");
                     }
 
-                    $floatValue = (float)$operands[0];
-                    $searchTerms[] = "$fieldName:[5 TO *]";
+                    $searchTerms[] = "$fieldName:[{$operands[0]} TO *]";
                     break;
 
                 case 'floatLessThan':
@@ -459,7 +458,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                 case 'integerBetween':
                     $lowEndIntValue = intval($operands[0]);
                     $highEndIntValue = intval($operands[1]);
-                    $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
+                    
+                    if ($lowEndIntValue < $highEndIntValue) {
+                        $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
+                    } else {
+                        $searchTerms[] = "$fieldName:[$highEndIntValue TO $lowEndIntValue]";
+                    }
                     break;
 
                 case 'integerDoesNotEqual':
@@ -507,7 +511,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
                         $ids = call_user_func_array($callback, $operands);
 
-                        if ($customTerms === false) {
+                        if ($ids === false) {
                             throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
                         }
 
@@ -650,63 +654,70 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     {
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
-        $highlighting = (array)$solrResult->highlighting;
+        
+        if (isset($solrResult->highlighting)) {
+            $highlighting = (array)$solrResult->highlighting;    
+        } else {
+            $highlighting = array();
+        }
 
         $tableData = array();
 
         $table = Doctrine::getTable($type);
         $searchableFields = $this->_getSearchableFields($type);
 
-        // Construct initial table data from documents part of the response
-        foreach ($solrResult->response->docs as $document) {
+        if ($solrResult->response->docs) {
+            // Construct initial table data from documents part of the response
+            foreach ($solrResult->response->docs as $document) {
 
-            $row = array();
+                $row = array();
 
-            foreach ($document as $columnName => $columnValue) {
-                $newColumnName = $this->_removeSuffixFromColumnName($columnName);
+                foreach ($document as $columnName => $columnValue) {
+                    $newColumnName = $this->_removeSuffixFromColumnName($columnName);
 
-                $maxRowLength = $this->getMaxRowLength();
+                    $maxRowLength = $this->getMaxRowLength();
 
-                if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
-                    $shortValue = substr($columnValue[0], 0, $maxRowLength);
+                    if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
+                        $shortValue = substr($columnValue[0], 0, $maxRowLength);
 
-                    // Trim after the last white space (so as not to break in the middle of a word)
-                    $spacePosition = strrpos($shortValue, ' ');
+                        // Trim after the last white space (so as not to break in the middle of a word)
+                        $spacePosition = strrpos($shortValue, ' ');
 
-                    if ($spacePosition) {
-                        $shortValue = substr($shortValue, 0, $spacePosition);
-                    }
+                        if ($spacePosition) {
+                            $shortValue = substr($shortValue, 0, $spacePosition);
+                        }
 
-                    // Solr has a weird format. Each field is an array with length 1, so we take index 0
-                    $row[$newColumnName] = $shortValue . '...';
-                } else {
-                    $row[$newColumnName] = $columnValue[0];
-                }
-            }
-
-            // Convert any dates or datetimes from Solr's UTC format back to native format
-            foreach ($row as $fieldName => $fieldValue) {
-                // Skip fields that are not model-specific like luceneDocumentType, luceneDocumentId, etc.
-                if (!isset($searchableFields[$fieldName])) {
-                    continue;
-                }
-                
-                $fieldDefinition = $searchableFields[$fieldName];
-
-                if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
-                    $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
-
-                    if ('date' == $fieldDefinition['type']) {
-                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
+                        $row[$newColumnName] = $shortValue . '...';
                     } else {
-                        $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATETIME);
+                        // Solr has a weird format. Each field is an array with length 1, so we take index 0
+                        $row[$newColumnName] = $columnValue[0];
                     }
                 }
+
+                // Convert any dates or datetimes from Solr's UTC format back to native format
+                foreach ($row as $fieldName => $fieldValue) {
+                    // Skip fields that are not model-specific like luceneDocumentType, luceneDocumentId, etc.
+                    if (!isset($searchableFields[$fieldName])) {
+                        continue;
+                    }
+                
+                    $fieldDefinition = $searchableFields[$fieldName];
+
+                    if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
+                        $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
+
+                        if ('date' == $fieldDefinition['type']) {
+                            $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
+                        } else {
+                            $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATETIME);
+                        }
+                    }
+                }
+
+                $luceneDocumentId = $row['luceneDocumentId'];
+
+                $tableData[$luceneDocumentId] = $row;
             }
-
-            $luceneDocumentId = $row['luceneDocumentId'];
-
-            $tableData[$luceneDocumentId] = $row;
         }
 
         // Now merge any highlighted fields into the table data

@@ -12,5 +12,25 @@
  */
 class IrWorkflowDef extends BaseIrWorkflowDef
 {
+    /**
+     * preDelete 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
+    public function preDelete($event)
+    {
+        if (count($this->Steps) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This workflow can not be deleted because it is already associated with one or more steps'
+            );
+        }
 
+        if (count($this->SubCategories) > 0) {
+            throw new Fisma_Zend_Exception_User(
+                'This workflow can not be deleted because it is already associated with one or more sub-categories'
+            );
+        }
+    }
 }

@@ -34,4 +34,40 @@ class Vm_ProductController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Product';
+
+    /**
+     * Set up context switch
+     */
+    public function init()
+    {
+        parent::init();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('autocomplete', 'json')
+                      ->initContext();
+    }
+
+    /**
+     * Handle autocomplete requests
+     */
+    public function autocompleteAction()
+    {
+        $keyword = $this->getRequest()->getParam('keyword');
+        
+        if (empty($keyword)) {
+            $products = array();
+        } else {
+            $productQuery = Doctrine_Query::create()
+                            ->from('Product p')
+                            ->select('p.id, p.name')
+                            ->where('p.name LIKE ?', "$keyword%")
+                            ->orderBy('p.name')
+                            ->limit(50)
+                            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+            $products = $productQuery->execute();
+        }
+
+        $this->view->products = $products;
+    }
 }

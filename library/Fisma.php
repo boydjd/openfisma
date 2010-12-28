@@ -505,7 +505,7 @@ class Fisma
                 $username = '(none)';
             }
                 
-            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n";
+            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n\n";
             $formatter = new Zend_Log_Formatter_Simple($format);
 
             $writer->setFormatter($formatter);
@@ -563,7 +563,8 @@ class Fisma
             $frontendOptions = array(
                 'caching' => true,
                 'lifetime' => 0,
-                'automatic_serialization' => true
+                'automatic_serialization' => true,
+                'cache_id_prefix' => (isset($_SERVER['SERVER_NAME'])) ? substr(md5($_SERVER['SERVER_NAME']), 0, 5) : ''
             );
 
             if (function_exists('apc_fetch')) {

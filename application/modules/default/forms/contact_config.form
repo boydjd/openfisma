@@ -18,6 +18,7 @@ displayGroups.general.elements.contact_name = "contact_name"
 
 elements.contact_phone.type = "Element_Phone"
 elements.contact_phone.options.label = "Technical Support Phone Number"
+elements.contact_phone.options.required = false
 displayGroups.general.elements.contact_phone = "contact_phone"
 
 elements.contact_email.type = "text"

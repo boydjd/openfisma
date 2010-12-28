@@ -10,9 +10,9 @@
 method=GET
 action=/finding/report/overdue/format/html
 
-elements.systemId.type = "select"
-elements.systemId.options.label = "System"
-elements.systemId.options.value = "0"
+elements.organizationId.type = "select"
+elements.organizationId.options.label = "Organization"
+elements.organizationId.options.value = "0"
 
 elements.sourceId.type = "select"
 elements.sourceId.options.label = "Source"
