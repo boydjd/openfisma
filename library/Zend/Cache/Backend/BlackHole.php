@@ -17,18 +17,18 @@
  * @subpackage Zend_Cache_Backend
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: BlackHole.php 17867 2009-08-28 09:42:11Z yoshida@zend.co.jp $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Cache_Backend_Interface
  */
-require_once 'Zend/Cache/Backend/ExtendedInterface.php';
+// require_once 'Zend/Cache/Backend/ExtendedInterface.php';
 
 /**
  * @see Zend_Cache_Backend
  */
-require_once 'Zend/Cache/Backend.php';
+// require_once 'Zend/Cache/Backend.php';
 
 /**
  * @package    Zend_Cache
@@ -36,8 +36,8 @@ require_once 'Zend/Cache/Backend.php';
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Cache_Backend_BlackHole 
-    extends Zend_Cache_Backend 
+class Zend_Cache_Backend_BlackHole
+    extends Zend_Cache_Backend
     implements Zend_Cache_Backend_ExtendedInterface
 {
     /**

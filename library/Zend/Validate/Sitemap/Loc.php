@@ -23,12 +23,12 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @see Zend_Uri
  */
-require_once 'Zend/Uri.php';
+// require_once 'Zend/Uri.php';
 
 /**
  * Validates whether a given value is valid as a sitemap <loc> value
@@ -57,7 +57,7 @@ class Zend_Validate_Sitemap_Loc extends Zend_Validate_Abstract
      */
     protected $_messageTemplates = array(
         self::NOT_VALID => "'%value%' is no valid sitemap location",
-        self::INVALID   => "Invalid type given, the value should be a string",
+        self::INVALID   => "Invalid type given. String expected",
     );
 
     /**

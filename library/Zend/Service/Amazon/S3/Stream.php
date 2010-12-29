@@ -23,7 +23,7 @@
 /**
  * @see Zend_Service_Amazon_S3
  */
-require_once 'Zend/Service/Amazon/S3.php';
+// require_once 'Zend/Service/Amazon/S3.php';
 
 /**
  * Amazon S3 PHP stream wrapper
@@ -86,7 +86,7 @@ class Zend_Service_Amazon_S3_Stream
                 /**
                  * @see Zend_Service_Amazon_S3_Exception
                  */
-                require_once 'Zend/Service/Amazon/S3/Exception.php';
+                // require_once 'Zend/Service/Amazon/S3/Exception.php';
                 throw new Zend_Service_Amazon_S3_Exception("Unable to parse URL $path");
             }
 
@@ -95,7 +95,7 @@ class Zend_Service_Amazon_S3_Stream
                 /**
                  * @see Zend_Service_Amazon_S3_Exception
                  */
-                require_once 'Zend/Service/Amazon/S3/Exception.php';
+                // require_once 'Zend/Service/Amazon/S3/Exception.php';
                 throw new Zend_Service_Amazon_S3_Exception("Unknown client for wrapper {$url[0]}");
             }
         }
@@ -175,9 +175,9 @@ class Zend_Service_Amazon_S3_Stream
     /**
      * Read from the stream
      *
-     * http://bugs.php.net/21641 - stream_read() is always passed PHP's 
-     * internal read buffer size (8192) no matter what is passed as $count 
-     * parameter to fread(). 
+     * http://bugs.php.net/21641 - stream_read() is always passed PHP's
+     * internal read buffer size (8192) no matter what is passed as $count
+     * parameter to fread().
      *
      * @param  integer $count
      * @return string

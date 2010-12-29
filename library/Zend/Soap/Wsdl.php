@@ -22,12 +22,12 @@
 /**
  * @see Zend_Soap_Wsdl_Strategy_Interface
  */
-require_once "Zend/Soap/Wsdl/Strategy/Interface.php";
+// require_once "Zend/Soap/Wsdl/Strategy/Interface.php";
 
 /**
  * @see Zend_Soap_Wsdl_Strategy_Abstract
  */
-require_once "Zend/Soap/Wsdl/Strategy/Abstract.php";
+// require_once "Zend/Soap/Wsdl/Strategy/Abstract.php";
 
 /**
  * Zend_Soap_Wsdl
@@ -98,7 +98,7 @@ class Zend_Soap_Wsdl
                     xmlns:wsdl='http://schemas.xmlsoap.org/wsdl/'></definitions>";
         $this->_dom = new DOMDocument();
         if (!$this->_dom->loadXML($wsdl)) {
-            require_once 'Zend/Server/Exception.php';
+            // require_once 'Zend/Server/Exception.php';
             throw new Zend_Server_Exception('Unable to create DomDocument');
         } else {
             $this->_wsdl = $this->_dom->documentElement;
@@ -142,16 +142,16 @@ class Zend_Soap_Wsdl
     public function setComplexTypeStrategy($strategy)
     {
         if($strategy === true) {
-            require_once "Zend/Soap/Wsdl/Strategy/DefaultComplexType.php";
+            // require_once "Zend/Soap/Wsdl/Strategy/DefaultComplexType.php";
             $strategy = new Zend_Soap_Wsdl_Strategy_DefaultComplexType();
         } else if($strategy === false) {
-            require_once "Zend/Soap/Wsdl/Strategy/AnyType.php";
+            // require_once "Zend/Soap/Wsdl/Strategy/AnyType.php";
             $strategy = new Zend_Soap_Wsdl_Strategy_AnyType();
         } else if(is_string($strategy)) {
             if(class_exists($strategy)) {
                 $strategy = new $strategy();
             } else {
-                require_once "Zend/Soap/Wsdl/Exception.php";
+                // require_once "Zend/Soap/Wsdl/Exception.php";
                 throw new Zend_Soap_Wsdl_Exception(
                     sprintf("Strategy with name '%s does not exist.", $strategy
                 ));
@@ -159,7 +159,7 @@ class Zend_Soap_Wsdl
         }
 
         if(!($strategy instanceof Zend_Soap_Wsdl_Strategy_Interface)) {
-            require_once "Zend/Soap/Wsdl/Exception.php";
+            // require_once "Zend/Soap/Wsdl/Exception.php";
             throw new Zend_Soap_Wsdl_Exception("Set a strategy that is not of type 'Zend_Soap_Wsdl_Strategy_Interface'");
         }
         $this->_strategy = $strategy;
@@ -317,11 +317,17 @@ class Zend_Soap_Wsdl
 
         if (is_array($fault)) {
             $node = $this->_dom->createElement('fault');
+            /**
+             * Note. Do we really need name attribute to be also set at wsdl:fault node???
+             * W3C standard doesn't mention it (http://www.w3.org/TR/wsdl#_soap:fault)
+             * But some real world WSDLs use it, so it may be required for compatibility reasons.
+             */
             if (isset($fault['name'])) {
                 $node->setAttribute('name', $fault['name']);
             }
-            $soap_node = $this->_dom->createElement('soap:body');
-            foreach ($output as $name => $value) {
+
+            $soap_node = $this->_dom->createElement('soap:fault');
+            foreach ($fault as $name => $value) {
                 $soap_node->setAttribute($name, $value);
             }
             $node->appendChild($soap_node);
@@ -424,7 +430,7 @@ class Zend_Soap_Wsdl
         }
 
         $doc = $this->_dom->createElement('documentation');
-        $doc_cdata = $this->_dom->createTextNode($documentation);
+        $doc_cdata = $this->_dom->createTextNode(str_replace(array("\r\n", "\r"), "\n", $documentation));
         $doc->appendChild($doc_cdata);
 
         if($node->hasChildNodes()) {
@@ -612,7 +618,7 @@ class Zend_Soap_Wsdl
     private function _parseElement($element)
     {
         if (!is_array($element)) {
-            require_once "Zend/Soap/Wsdl/Exception.php";
+            // require_once "Zend/Soap/Wsdl/Exception.php";
             throw new Zend_Soap_Wsdl_Exception("The 'element' parameter needs to be an associative array.");
         }
 

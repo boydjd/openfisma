@@ -24,12 +24,12 @@
 /**
  * @see Zend_OpenId
  */
-require_once "Zend/OpenId.php";
+// require_once "Zend/OpenId.php";
 
 /**
  * @see Zend_OpenId_Extension
  */
-require_once "Zend/OpenId/Extension.php";
+// require_once "Zend/OpenId/Extension.php";
 
 /**
  * OpenID provider (server) implementation
@@ -123,13 +123,13 @@ class Zend_OpenId_Provider
         }
         $this->_trustUrl = $trustUrl;
         if ($user === null) {
-            require_once "Zend/OpenId/Provider/User/Session.php";
+            // require_once "Zend/OpenId/Provider/User/Session.php";
             $this->_user = new Zend_OpenId_Provider_User_Session();
         } else {
             $this->_user = $user;
         }
         if ($storage === null) {
-            require_once "Zend/OpenId/Provider/Storage/File.php";
+            // require_once "Zend/OpenId/Provider/Storage/File.php";
             $this->_storage = new Zend_OpenId_Provider_Storage_File();
         } else {
             $this->_storage = $storage;
@@ -770,12 +770,34 @@ class Zend_OpenId_Provider
                 $data .= $params['openid_' . strtr($key,'.','_')]."\n";
             }
         }
-        if (base64_decode($params['openid_sig']) ===
-            Zend_OpenId::hashHmac($macFunc, $data, $secret)) {
+        if ($this->_secureStringCompare(base64_decode($params['openid_sig']),
+            Zend_OpenId::hashHmac($macFunc, $data, $secret))) {
             $ret['is_valid'] = 'true';
         } else {
             $ret['is_valid'] = 'false';
         }
         return $ret;
+    }
+
+    /**
+     * Securely compare two strings for equality while avoided C level memcmp()
+     * optimisations capable of leaking timing information useful to an attacker
+     * attempting to iteratively guess the unknown string (e.g. password) being
+     * compared against.
+     *
+     * @param string $a
+     * @param string $b
+     * @return bool
+     */
+    protected function _secureStringCompare($a, $b)
+    {
+        if (strlen($a) !== strlen($b)) {
+            return false;
+        }
+        $result = 0;
+        for ($i = 0; $i < strlen($a); $i++) {
+            $result |= ord($a[$i]) ^ ord($b[$i]);
+        }
+        return $result == 0;
     }
 }

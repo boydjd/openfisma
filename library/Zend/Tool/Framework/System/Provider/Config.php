@@ -22,22 +22,22 @@
 /**
  * @see Zend_Tool_Framework_Provider_Abstract
  */
-require_once "Zend/Tool/Framework/Provider/Abstract.php";
+// require_once "Zend/Tool/Framework/Provider/Abstract.php";
 
 /**
  * @see Zend_Config
  */
-require_once "Zend/Config.php";
+// require_once "Zend/Config.php";
 
 /**
  * @see Zend_Config_Writer_Ini
  */
-require_once "Zend/Config/Writer/Ini.php";
+// require_once "Zend/Config/Writer/Ini.php";
 
 /**
  * @see Zend_Loader
  */
-require_once "Zend/Loader.php";
+// require_once "Zend/Loader.php";
 
 /**
  * Configuration Provider
@@ -59,11 +59,11 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
 
     /**
      * array of specialties handled by this provider
-     * 
+     *
      * @var array
      */
     protected $_specialties = array('Manifest', 'Provider');
-    
+
     /**
      * @param string $type
      */
@@ -74,7 +74,7 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
 
         $resp = $this->_registry->getResponse();
         if ($userConfig->exists()) {
-            require_once "Zend/Tool/Framework/Exception.php";
+            // require_once "Zend/Tool/Framework/Exception.php";
             throw new Zend_Tool_Framework_Exception(
                 "A configuration already exists, cannot create a new one.");
         }
@@ -87,7 +87,7 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
 
         $config = array(
             'php' => array(
-                'includepath' => get_include_path(),
+                'include_path' => get_include_path(),
             ),
         );
         $writer->write($filename, new Zend_Config($config));
@@ -109,7 +109,7 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
                 return $homeDirectory;
             }
         }
-        require_once "Zend/Tool/Framework/Exception.php";
+        // require_once "Zend/Tool/Framework/Exception.php";
         throw new Zend_Tool_Framework_Exception("Cannot detect user home directory, set ZF_HOME enviroment variable.");
     }
 
@@ -180,6 +180,18 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
         return $tree;
     }
 
+    public function enable()
+    {
+        $resp = $this->_registry->getResponse();
+        $resp->appendContent('Use either "zf enable config.provider" or "zf enable config.manifest".');
+    }
+
+    public function disable()
+    {
+        $resp = $this->_registry->getResponse();
+        $resp->appendContent('Use either "zf disable config.provider" or "zf disable config.manifest".');
+    }
+
     /**
      * @param string $className
      */
@@ -188,7 +200,7 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
         Zend_Loader::loadClass($className);
         $reflClass = new ReflectionClass($className);
         if (!in_array("Zend_Tool_Framework_Provider_Interface", $reflClass->getInterfaceNames())) {
-            require_once "Zend/Tool/Framework/Exception.php";
+            // require_once "Zend/Tool/Framework/Exception.php";
             throw new Zend_Tool_Framework_Exception("Given class is not a provider");
         }
         $this->_doEnable($className);
@@ -221,13 +233,13 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
                     array("color" => "green", "aligncenter" => true)
                 );
             } else {
-                require_once "Zend/Tool/Framework/Exception.php";
+                // require_once "Zend/Tool/Framework/Exception.php";
                 throw new Zend_Tool_Framework_Exception(
                     "Could not write user configuration to persistence."
                 );
             }
         } else {
-            require_once "Zend/Tool/Framework/Exception.php";
+            // require_once "Zend/Tool/Framework/Exception.php";
             throw new Zend_Tool_Framework_Exception(
                 "Provider/Manifest '".$className."' is already enabled."
             );
@@ -242,7 +254,7 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
         Zend_Loader::loadClass($className);
         $reflClass = new ReflectionClass($className);
         if (!in_array("Zend_Tool_Framework_Manifest_Interface", $reflClass->getInterfaceNames())) {
-            require_once "Zend/Tool/Framework/Exception.php";
+            // require_once "Zend/Tool/Framework/Exception.php";
             throw new Zend_Tool_Framework_Exception("Given class is not a manifest.");
         }
         $this->_doEnable($className);
@@ -280,13 +292,13 @@ class Zend_Tool_Framework_System_Provider_Config extends Zend_Tool_Framework_Pro
                     array("color" => "green", "aligncenter" => true)
                 );
             } else {
-                require_once "Zend/Tool/Framework/Exception.php";
+                // require_once "Zend/Tool/Framework/Exception.php";
                 throw new Zend_Tool_Framework_Exception(
                     "Could not write user configuration to persistence."
                 );
             }
         } else {
-            require_once "Zend/Tool/Framework/Exception.php";
+            // require_once "Zend/Tool/Framework/Exception.php";
             throw new Zend_Tool_Framework_Exception(
                 "Provider/Manifest '".$className."' is not enabled."
             );

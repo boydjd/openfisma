@@ -20,7 +20,7 @@
  */
 
 /** Zend_Form_Decorator_Abstract */
-require_once 'Zend/Form/Decorator/Abstract.php';
+// require_once 'Zend/Form/Decorator/Abstract.php';
 
 /**
  * Zend_Form_Decorator_FormErrors
@@ -345,7 +345,7 @@ class Zend_Form_Decorator_FormErrors extends Zend_Form_Decorator_Abstract
 
     /**
      * Get showCustomFormErrors
-     * 
+     *
      * @return bool
      */
     public function getShowCustomFormErrors()
@@ -375,7 +375,7 @@ class Zend_Form_Decorator_FormErrors extends Zend_Form_Decorator_Abstract
 
     /**
      * Get onlyCustomFormErrors
-     * 
+     *
      * @return bool
      */
     public function getOnlyCustomFormErrors()

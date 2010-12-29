@@ -23,12 +23,12 @@
 /**
  * @see Zend_Tool_Framework_Provider_Signature
  */
-require_once 'Zend/Tool/Framework/Provider/Signature.php';
+// require_once 'Zend/Tool/Framework/Provider/Signature.php';
 
 /**
  * @see Zend_Tool_Framework_Registry_EnabledInterface
  */
-require_once 'Zend/Tool/Framework/Registry/EnabledInterface.php';
+// require_once 'Zend/Tool/Framework/Registry/EnabledInterface.php';
 
 /**
  * @category   Zend
@@ -112,7 +112,7 @@ class Zend_Tool_Framework_Provider_Repository
             (array_key_exists($providerName, $this->_unprocessedProviders)
                 || array_key_exists($providerName, $this->_providers)))
         {
-            require_once 'Zend/Tool/Framework/Provider/Exception.php';
+            // require_once 'Zend/Tool/Framework/Provider/Exception.php';
             throw new Zend_Tool_Framework_Provider_Exception('A provider by the name ' . $providerName
                 . ' is already registered and $overrideExistingProvider is set to false.');
         }
@@ -160,7 +160,12 @@ class Zend_Tool_Framework_Provider_Repository
     {
 
         // process all providers in the unprocessedProviders array
-        foreach ($this->_unprocessedProviders as $providerName => $provider) {
+        //foreach ($this->_unprocessedProviders as $providerName => $provider) {
+        reset($this->_unprocessedProviders);
+        while ($this->_unprocessedProviders) {
+
+            $providerName = key($this->_unprocessedProviders);
+            $provider = array_shift($this->_unprocessedProviders);
 
             // create a signature for the provided provider
             $providerSignature = new Zend_Tool_Framework_Provider_Signature($provider);
@@ -178,8 +183,10 @@ class Zend_Tool_Framework_Provider_Repository
             $this->_providerSignatures[$providerName] = $providerSignature;
             $this->_providers[$providerName]          = $providerSignature->getProvider();
 
-            // remove from unprocessed array
-            unset($this->_unprocessedProviders[$providerName]);
+            if ($provider instanceof Zend_Tool_Framework_Provider_Initializable) {
+                $provider->initialize();
+            }
+
         }
 
     }
@@ -255,7 +262,10 @@ class Zend_Tool_Framework_Provider_Repository
     protected function _parseName(Zend_Tool_Framework_Provider_Interface $provider)
     {
         $className = get_class($provider);
-        $providerName = substr($className, strrpos($className, '_')+1);
+        $providerName = $className;
+        if (strpos($providerName, '_') !== false) {
+            $providerName = substr($providerName, strrpos($providerName, '_')+1);
+        }
         if (substr($providerName, -8) == 'Provider') {
             $providerName = substr($providerName, 0, strlen($providerName)-8);
         }

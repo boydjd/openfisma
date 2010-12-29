@@ -22,22 +22,22 @@
 /**
  * @see Zend_Feed_Reader
  */
-require_once 'Zend/Feed/Reader.php';
+// require_once 'Zend/Feed/Reader.php';
 
 /**
  * @see Zend_Feed_Reader_EntryInterface
  */
-require_once 'Zend/Feed/Reader/EntryInterface.php';
+// require_once 'Zend/Feed/Reader/EntryInterface.php';
 
 /**
  * @see Zend_Feed_Reader_EntryAbstract
  */
-require_once 'Zend/Feed/Reader/EntryAbstract.php';
+// require_once 'Zend/Feed/Reader/EntryAbstract.php';
 
 /**
  * @see Zend_Feed_Reader_Extension_Atom_Entry
  */
-require_once 'Zend/Feed/Reader/Extension/Atom/Entry.php';
+// require_once 'Zend/Feed/Reader/Extension/Atom/Entry.php';
 
 /**
  * @category   Zend
@@ -74,7 +74,7 @@ class Zend_Feed_Reader_Entry_Atom extends Zend_Feed_Reader_EntryAbstract impleme
 
         $threadClass = Zend_Feed_Reader::getPluginLoader()->getClassName('Thread_Entry');
         $this->_extensions['Thread_Entry'] = new $threadClass($entry, $entryKey, $type);
-        
+
         $threadClass = Zend_Feed_Reader::getPluginLoader()->getClassName('DublinCore_Entry');
         $this->_extensions['DublinCore_Entry'] = new $threadClass($entry, $entryKey, $type);
     }
@@ -344,7 +344,7 @@ class Zend_Feed_Reader_Entry_Atom extends Zend_Feed_Reader_EntryAbstract impleme
 
         return $this->_data['commentfeedlink'];
     }
-    
+
     /**
      * Get category data as a Zend_Feed_Reader_Collection_Category object
      *
@@ -357,7 +357,7 @@ class Zend_Feed_Reader_Entry_Atom extends Zend_Feed_Reader_EntryAbstract impleme
         }
 
         $categoryCollection = $this->getExtension('Atom')->getCategories();
-        
+
         if (count($categoryCollection) == 0) {
             $categoryCollection = $this->getExtension('DublinCore')->getCategories();
         }
@@ -366,7 +366,7 @@ class Zend_Feed_Reader_Entry_Atom extends Zend_Feed_Reader_EntryAbstract impleme
 
         return $this->_data['categories'];
     }
-    
+
     /**
      * Get source feed metadata from the entry
      *
@@ -382,7 +382,7 @@ class Zend_Feed_Reader_Entry_Atom extends Zend_Feed_Reader_EntryAbstract impleme
 
         $this->_data['source'] = $source;
 
-        return $this->_data['source']; 
+        return $this->_data['source'];
     }
 
     /**

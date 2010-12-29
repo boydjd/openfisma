@@ -20,8 +20,11 @@
  * @version    $Id$
  */
 
+/** Zend_Log */
+// require_once 'Zend/Log.php';
+
 /** Zend_Log_Writer_Abstract */
-require_once 'Zend/Log/Writer/Abstract.php';
+// require_once 'Zend/Log/Writer/Abstract.php';
 
 /**
  * Writes log messages to syslog
@@ -36,6 +39,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
 {
     /**
      * Maps Zend_Log priorities to PHP's syslog priorities
+     *
      * @var array
      */
     protected $_priorities = array(
@@ -51,36 +55,41 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
 
     /**
      * The default log priority - for unmapped custom priorities
+     *
      * @var string
      */
     protected $_defaultPriority = LOG_NOTICE;
 
     /**
      * Last application name set by a syslog-writer instance
+     *
      * @var string
      */
     protected static $_lastApplication;
 
     /**
      * Last facility name set by a syslog-writer instance
+     *
      * @var string
      */
     protected static $_lastFacility;
 
     /**
      * Application name used by this syslog-writer instance
+     *
      * @var string
      */
     protected $_application = 'Zend_Log';
 
     /**
      * Facility used by this syslog-writer instance
+     *
      * @var int
      */
     protected $_facility = LOG_USER;
 
     /**
-     * _validFacilities
+     * Types of program available to logging of message
      *
      * @var array
      */
@@ -89,7 +98,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
     /**
      * Class constructor
      *
-     * @param  array $options Array of options; may include "application" and "facility" keys
+     * @param  array $params Array of options; may include "application" and "facility" keys
      * @return void
      */
     public function __construct(array $params = array())
@@ -100,7 +109,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
 
         $runInitializeSyslog = true;
         if (isset($params['facility'])) {
-            $this->_facility = $this->setFacility($params['facility']);
+            $this->setFacility($params['facility']);
             $runInitializeSyslog = false;
         }
 
@@ -114,7 +123,6 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      *
      * @param  array|Zend_Config $config
      * @return Zend_Log_Writer_Syslog
-     * @throws Zend_Log_Exception
      */
     static public function factory($config)
     {
@@ -173,13 +181,13 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
      * Set syslog facility
      *
      * @param  int $facility Syslog facility
-     * @return void
+     * @return Zend_Log_Writer_Syslog
      * @throws Zend_Log_Exception for invalid log facility
      */
     public function setFacility($facility)
     {
         if ($this->_facility === $facility) {
-            return;
+            return $this;
         }
 
         if (!count($this->_validFacilities)) {
@@ -187,34 +195,36 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
         }
 
         if (!in_array($facility, $this->_validFacilities)) {
-            require_once 'Zend/Log/Exception.php';
+            // require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception('Invalid log facility provided; please see http://php.net/openlog for a list of valid facility values');
         }
 
         if ('WIN' == strtoupper(substr(PHP_OS, 0, 3))
             && ($facility !== LOG_USER)
         ) {
-            require_once 'Zend/Log/Exception.php';
+            // require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception('Only LOG_USER is a valid log facility on Windows');
         }
 
         $this->_facility = $facility;
         $this->_initializeSyslog();
+        return $this;
     }
 
     /**
      * Set application name
      *
      * @param  string $application Application name
-     * @return void
+     * @return Zend_Log_Writer_Syslog
      */
     public function setApplicationName($application)
     {
         if ($this->_application === $application) {
-            return;
+            return $this;
         }
         $this->_application = $application;
         $this->_initializeSyslog();
+        return $this;
     }
 
     /**
@@ -230,7 +240,7 @@ class Zend_Log_Writer_Syslog extends Zend_Log_Writer_Abstract
     /**
      * Write a message to syslog.
      *
-     * @param  array $event  event data
+     * @param  array $event event data
      * @return void
      */
     protected function _write($event)

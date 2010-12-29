@@ -23,7 +23,7 @@
 /**
  * @see Zend_Application_Resource_ResourceAbstract
  */
-require_once 'Zend/Application/Resource/ResourceAbstract.php';
+// require_once 'Zend/Application/Resource/ResourceAbstract.php';
 
 
 /**
@@ -68,7 +68,13 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
                     break;
 
                 case 'moduledirectory':
-                    $front->addModuleDirectory($value);
+                    if (is_string($value)) {
+                        $front->addModuleDirectory($value);
+                    } elseif (is_array($value)) {
+                        foreach($value as $moduleDir) {
+                            $front->addModuleDirectory($moduleDir);
+                        }
+                    }
                     break;
 
                 case 'defaultcontrollername':
@@ -95,9 +101,9 @@ class Zend_Application_Resource_Frontcontroller extends Zend_Application_Resourc
 
                 case 'plugins':
                     foreach ((array) $value as $pluginClass) {
-                    	$stackIndex = null;
-                    	if(is_array($pluginClass)) {
-                    	    $pluginClass = array_change_key_case($pluginClass, CASE_LOWER);
+                        $stackIndex = null;
+                        if(is_array($pluginClass)) {
+                            $pluginClass = array_change_key_case($pluginClass, CASE_LOWER);
                             if(isset($pluginClass['class']))
                             {
                                 if(isset($pluginClass['stackindex'])) {

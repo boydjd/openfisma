@@ -22,27 +22,27 @@
 /**
  * @see Zend_Feed_Reader_FeedAbstract
  */
-require_once 'Zend/Feed/Reader/FeedAbstract.php';
+// require_once 'Zend/Feed/Reader/FeedAbstract.php';
 
 /**
  * @see Zend_feed_Reader_Extension_Atom_Feed
  */
-require_once 'Zend/Feed/Reader/Extension/Atom/Feed.php';
+// require_once 'Zend/Feed/Reader/Extension/Atom/Feed.php';
 
 /**
  * @see Zend_Feed_Reader_Extension_DublinCore_Feed
  */
-require_once 'Zend/Feed/Reader/Extension/DublinCore/Feed.php';
+// require_once 'Zend/Feed/Reader/Extension/DublinCore/Feed.php';
 
 /**
  * @see Zend_Date
  */
-require_once 'Zend/Date.php';
+// require_once 'Zend/Date.php';
 
 /**
  * @see Zend_Feed_Reader_Collection_Author
  */
-require_once 'Zend/Feed/Reader/Collection/Author.php';
+// require_once 'Zend/Feed/Reader/Collection/Author.php';
 
 /**
  * @category   Zend
@@ -105,7 +105,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
         if (array_key_exists('authors', $this->_data)) {
             return $this->_data['authors'];
         }
-        
+
         $authors = array();
         $authors_dc = $this->getExtension('DublinCore')->getAuthors();
         if (!empty($authors_dc)) {
@@ -139,7 +139,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
                         $data['name'] = $matches[1];
                     }
                     $authors[] = $data;
-                } 
+                }
             }
         }
 
@@ -178,7 +178,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
             $copyright = $this->_xpath->evaluate('string(/rss/channel/copyright)');
         }
 
-        if (!$copyright && !is_null($this->getExtension('DublinCore'))) {
+        if (!$copyright && $this->getExtension('DublinCore') !== null) {
             $copyright = $this->getExtension('DublinCore')->getCopyright();
         }
 
@@ -239,7 +239,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
                             break;
                         } catch (Zend_Date_Exception $e) {
                             if ($standard == Zend_Date::DATES) {
-                                require_once 'Zend/Feed/Exception.php';
+                                // require_once 'Zend/Feed/Exception.php';
                                 throw new Zend_Feed_Exception(
                                     'Could not load date due to unrecognised'
                                     .' format (should follow RFC 822 or 2822):'
@@ -301,7 +301,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
                             break;
                         } catch (Zend_Date_Exception $e) {
                             if ($standard == Zend_Date::DATES) {
-                                require_once 'Zend/Feed/Exception.php';
+                                // require_once 'Zend/Feed/Exception.php';
                                 throw new Zend_Feed_Exception(
                                     'Could not load date due to unrecognised'
                                     .' format (should follow RFC 822 or 2822):'
@@ -344,7 +344,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
             $description = $this->_xpath->evaluate('string(/rdf:RDF/rss:channel/rss:description)');
         }
 
-        if (!$description && !is_null($this->getExtension('DublinCore'))) {
+        if (!$description && $this->getExtension('DublinCore') !== null) {
             $description = $this->getExtension('DublinCore')->getDescription();
         }
 
@@ -379,7 +379,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
             $id = $this->_xpath->evaluate('string(/rss/channel/guid)');
         }
 
-        if (!$id && !is_null($this->getExtension('DublinCore'))) {
+        if (!$id && $this->getExtension('DublinCore') !== null) {
             $id = $this->getExtension('DublinCore')->getId();
         }
 
@@ -474,7 +474,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
             $language = $this->_xpath->evaluate('string(/rss/channel/language)');
         }
 
-        if (!$language && !is_null($this->getExtension('DublinCore'))) {
+        if (!$language && $this->getExtension('DublinCore') !== null) {
             $language = $this->getExtension('DublinCore')->getLanguage();
         }
 
@@ -543,7 +543,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
 
         $link = $this->getExtension('Atom')->getFeedLink();
 
-        if (is_null($link) || empty($link)) {
+        if ($link === null || empty($link)) {
             $link = $this->getOriginalSourceUri();
         }
 
@@ -612,7 +612,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
             $title = $this->_xpath->evaluate('string(/rdf:RDF/rss:channel/rss:title)');
         }
 
-        if (!$title && !is_null($this->getExtension('DublinCore'))) {
+        if (!$title && $this->getExtension('DublinCore') !== null) {
             $title = $this->getExtension('DublinCore')->getTitle();
         }
 
@@ -652,7 +652,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
 
         return $this->_data['hubs'];
     }
-    
+
     /**
      * Get all categories
      *
@@ -683,7 +683,7 @@ class Zend_Feed_Reader_Feed_Rss extends Zend_Feed_Reader_FeedAbstract
         } else {
             $categoryCollection = $this->getExtension('DublinCore')->getCategories();
         }
-        
+
         if (count($categoryCollection) == 0) {
             $categoryCollection = $this->getExtension('Atom')->getCategories();
         }

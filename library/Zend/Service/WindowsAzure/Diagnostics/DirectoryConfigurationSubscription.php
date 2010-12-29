@@ -23,12 +23,12 @@
 /**
  * @see Zend_Service_WindowsAzure_Diagnostics_Exception
  */
-require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
+// require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
 
 /**
  * @see Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
  */
-require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstract.php';
+// require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstract.php';
 
 /**
  * @category   Zend
@@ -37,26 +37,35 @@ require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstr
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  *
- * @property	string	Path					Path
- * @property	string	Container				Container
- * @property	int		DirectoryQuotaInMB		Directory quota in MB
+ * @property    string    Path                    Path
+ * @property    string    Container                Container
+ * @property    int        DirectoryQuotaInMB        Directory quota in MB
  */
 class Zend_Service_WindowsAzure_Diagnostics_DirectoryConfigurationSubscription
-	extends Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
+    extends Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
 {
     /**
      * Constructor
-     * 
+     *
+<<<<<<< HEAD
+     * @param    string    $path                    Path
+     * @param    string    $container                Container
+     * @param    int        $directoryQuotaInMB        Directory quota in MB
+     */
+    public function __construct($path, $container, $directoryQuotaInMB = 1024)
+    {    
+=======
 	 * @param	string	$path					Path
 	 * @param	string	$container				Container
 	 * @param	int		$directoryQuotaInMB		Directory quota in MB
 	 */
-    public function __construct($path, $container, $directoryQuotaInMB = 1024) 
-    {	        
+    public function __construct($path, $container, $directoryQuotaInMB = 1024)
+    {	
+>>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
-            'path'      			=> $path,
-            'container' 			=> $container,
-        	'directoryquotainmb' 	=> $directoryQuotaInMB
+            'path'                  => $path,
+            'container'             => $container,
+            'directoryquotainmb'     => $directoryQuotaInMB
         );
     }
 }

@@ -22,7 +22,7 @@
 /**
  * @see Zend_Validate_File_Hash
  */
-require_once 'Zend/Validate/File/Hash.php';
+// require_once 'Zend/Validate/File/Hash.php';
 
 /**
  * Validator for the md5 hash of given files
@@ -47,7 +47,7 @@ class Zend_Validate_File_Md5 extends Zend_Validate_File_Hash
     protected $_messageTemplates = array(
         self::DOES_NOT_MATCH => "File '%value%' does not match the given md5 hashes",
         self::NOT_DETECTED   => "A md5 hash could not be evaluated for the given file",
-        self::NOT_FOUND      => "File '%value%' could not be found",
+        self::NOT_FOUND      => "File '%value%' is not readable or does not exist",
     );
 
     /**
@@ -72,7 +72,7 @@ class Zend_Validate_File_Md5 extends Zend_Validate_File_Hash
         } elseif (is_scalar($options)) {
             $options = array('hash1' => $options);
         } elseif (!is_array($options)) {
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid options to validator provided');
         }
 
@@ -161,7 +161,7 @@ class Zend_Validate_File_Md5 extends Zend_Validate_File_Hash
     public function isValid($value, $file = null)
     {
         // Is file readable ?
-        require_once 'Zend/Loader.php';
+        // require_once 'Zend/Loader.php';
         if (!Zend_Loader::isReadable($value)) {
             return $this->_throw($file, self::NOT_FOUND);
         }

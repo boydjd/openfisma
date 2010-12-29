@@ -87,6 +87,7 @@ class Zend_Crypt
         self::_detectHashSupport($algorithm);
         $supportedMethod = '_digest' . ucfirst(self::$_type);
         $result = self::$supportedMethod($algorithm, $data, $binaryOutput);
+        return $result;
     }
 
     /**
@@ -119,7 +120,7 @@ class Zend_Crypt
         /**
          * @see Zend_Crypt_Exception
          */
-        require_once 'Zend/Crypt/Exception.php';
+        // require_once 'Zend/Crypt/Exception.php';
         throw new Zend_Crypt_Exception('\'' . $algorithm . '\' is not supported by any available extension or native function');
     }
 

@@ -22,7 +22,7 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @category   Zend
@@ -64,13 +64,13 @@ class Zend_Validate_CreditCard extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::CHECKSUM       => "Luhn algorithm (mod-10 checksum) failed on '%value%'",
+        self::CHECKSUM       => "'%value%' seems to contain an invalid checksum",
         self::CONTENT        => "'%value%' must contain only digits",
-        self::INVALID        => "Invalid type given, value should be a string",
+        self::INVALID        => "Invalid type given. String expected",
         self::LENGTH         => "'%value%' contains an invalid amount of digits",
         self::PREFIX         => "'%value%' is not from an allowed institute",
-        self::SERVICE        => "Validation of '%value%' has been failed by the service",
-        self::SERVICEFAILURE => "The service returned a failure while validating '%value%'",
+        self::SERVICE        => "'%value%' seems to be an invalid creditcard number",
+        self::SERVICEFAILURE => "An exception has been raised while validating '%value%'",
     );
 
     /**
@@ -227,7 +227,7 @@ class Zend_Validate_CreditCard extends Zend_Validate_Abstract
     public function setService($service)
     {
         if (!is_callable($service)) {
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid callback given');
         }
 
@@ -299,7 +299,7 @@ class Zend_Validate_CreditCard extends Zend_Validate_Abstract
 
         if (!empty($this->_service)) {
             try {
-                require_once 'Zend/Validate/Callback.php';
+                // require_once 'Zend/Validate/Callback.php';
                 $callback = new Zend_Validate_Callback($this->_service);
                 $callback->setOptions($this->_type);
                 if (!$callback->isValid($value)) {

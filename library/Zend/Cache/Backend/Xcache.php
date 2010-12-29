@@ -24,12 +24,12 @@
 /**
  * @see Zend_Cache_Backend_Interface
  */
-require_once 'Zend/Cache/Backend/Interface.php';
+// require_once 'Zend/Cache/Backend/Interface.php';
 
 /**
  * @see Zend_Cache_Backend
  */
-require_once 'Zend/Cache/Backend.php';
+// require_once 'Zend/Cache/Backend.php';
 
 
 /**
@@ -182,7 +182,12 @@ class Zend_Cache_Backend_Xcache extends Zend_Cache_Backend implements Zend_Cache
                 if ($this->_options['password']) {
                     $_SERVER['PHP_AUTH_PW'] = $this->_options['password'];
                 }
-                xcache_clear_cache(XC_TYPE_VAR, 0);
+
+                $cnt = xcache_count(XC_TYPE_VAR);
+                for ($i=0; $i < $cnt; $i++) {
+                    xcache_clear_cache(XC_TYPE_VAR, $i);
+                }
+
                 if (isset($backup['PHP_AUTH_USER'])) {
                     $_SERVER['PHP_AUTH_USER'] = $backup['PHP_AUTH_USER'];
                     $_SERVER['PHP_AUTH_PW'] = $backup['PHP_AUTH_PW'];

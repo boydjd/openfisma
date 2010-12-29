@@ -23,7 +23,7 @@
 /**
  * @see Zend_Service_DeveloperGarden_RequestAbstract
  */
-require_once 'Zend/Service/DeveloperGarden/Request/RequestAbstract.php';
+// require_once 'Zend/Service/DeveloperGarden/Request/RequestAbstract.php';
 
 /**
  * @category   Zend
@@ -65,8 +65,8 @@ class Zend_Service_DeveloperGarden_Request_LocalSearch_LocalSearchRequest
      * @param integer $account
      * @return Zend_Service_DeveloperGarden_Request_RequestAbstract
      */
-    public function __construct($environment, 
-        Zend_Service_DeveloperGarden_LocalSearch_SearchParameters $searchParameters, 
+    public function __construct($environment,
+        Zend_Service_DeveloperGarden_LocalSearch_SearchParameters $searchParameters,
         $account = null
     ) {
         parent::__construct($environment);

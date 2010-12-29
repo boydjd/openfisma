@@ -17,17 +17,18 @@
  * @subpackage Callback
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Feed_Pubsubhubbub_CallbackInterface
  */
-require_once 'Zend/Feed/Pubsubhubbub/CallbackInterface.php';
+// require_once 'Zend/Feed/Pubsubhubbub/CallbackInterface.php';
 
 /**
  * @see Zend_Feed_Pubsubhubbub_HttpResponse
  */
-require_once 'Zend/Feed/Pubsubhubbub/HttpResponse.php';
+// require_once 'Zend/Feed/Pubsubhubbub/HttpResponse.php';
 
 /**
  * @category   Zend
@@ -40,7 +41,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
     implements Zend_Feed_Pubsubhubbub_CallbackInterface
 {
     /**
-     * An instance of Zend_Feed_Pubsubhubbub_Model_SubscriptionInterface used 
+     * An instance of Zend_Feed_Pubsubhubbub_Model_SubscriptionInterface used
      * to background save any verification tokens associated with a subscription
      * or other.
      *
@@ -73,7 +74,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
      */
     public function __construct($config = null)
     {
-        if (!is_null($config)) {
+        if ($config !== null) {
             $this->setConfig($config);
         }
     }
@@ -89,7 +90,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
         if ($config instanceof Zend_Config) {
             $config = $config->toArray();
         } elseif (!is_array($config)) {
-            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            // require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('Array or Zend_Config object'
             . 'expected, got ' . gettype($config));
         }
@@ -136,7 +137,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
     public function getStorage()
     {
         if ($this->_storage === null) {
-            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            // require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('No storage object has been'
                 . ' set that subclasses Zend_Feed_Pubsubhubbub_Model_SubscriptionInterface');
         }
@@ -157,7 +158,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
             || (!$httpResponse instanceof Zend_Feed_Pubsubhubbub_HttpResponse
                 && !$httpResponse instanceof Zend_Controller_Response_Http)
         ) {
-            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            // require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('HTTP Response object must'
                 . ' implement one of Zend_Feed_Pubsubhubbub_HttpResponse or'
                 . ' Zend_Controller_Response_Http');
@@ -193,7 +194,7 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
     {
         $count = intval($count);
         if ($count <= 0) {
-            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            // require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('Subscriber count must be'
                 . ' greater than zero');
         }

@@ -23,7 +23,7 @@
 /**
  * include needed classes
  */
-require_once 'Zend/Locale.php';
+// require_once 'Zend/Locale.php';
 
 /**
  * Locale data reader, handles the CLDR
@@ -59,6 +59,13 @@ class Zend_Locale_Data
      * @access private
      */
     private static $_cache = null;
+
+    /**
+     * Internal value to remember if cache supports tags
+     *
+     * @var boolean
+     */
+    private static $_cacheTags = false;
 
     /**
      * Internal option, cache disabled
@@ -147,7 +154,7 @@ class Zend_Locale_Data
         if (empty(self::$_ldml[(string) $locale])) {
             $filename = dirname(__FILE__) . '/Data/' . $locale . '.xml';
             if (!file_exists($filename)) {
-                require_once 'Zend/Locale/Exception.php';
+                // require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Missing locale file '$filename' for '$locale' locale.");
             }
 
@@ -278,7 +285,7 @@ class Zend_Locale_Data
         }
 
         if (!(Zend_Locale::isLocale((string) $locale, null, false))) {
-            require_once 'Zend/Locale/Exception.php';
+            // require_once 'Zend/Locale/Exception.php';
             throw new Zend_Locale_Exception("Locale (" . (string) $locale . ") is a unknown locale");
         }
 
@@ -299,7 +306,7 @@ class Zend_Locale_Data
         $locale = self::_checkLocale($locale);
 
         if (!isset(self::$_cache) && !self::$_cacheDisabled) {
-            require_once 'Zend/Cache.php';
+            // require_once 'Zend/Cache.php';
             self::$_cache = Zend_Cache::factory(
                 'Core',
                 'File',
@@ -895,13 +902,17 @@ class Zend_Locale_Data
                 break;
 
             default :
-                require_once 'Zend/Locale/Exception.php';
+                // require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Unknown list ($path) for parsing locale data.");
                 break;
         }
 
         if (isset(self::$_cache)) {
-            self::$_cache->save( serialize($temp), $id);
+            if (self::$_cacheTags) {
+                self::$_cache->save( serialize($temp), $id, array('Zend_Locale'));
+            } else {
+                self::$_cache->save( serialize($temp), $id);
+            }
         }
 
         return $temp;
@@ -921,7 +932,7 @@ class Zend_Locale_Data
         $locale = self::_checkLocale($locale);
 
         if (!isset(self::$_cache) && !self::$_cacheDisabled) {
-            require_once 'Zend/Cache.php';
+            // require_once 'Zend/Cache.php';
             self::$_cache = Zend_Cache::factory(
                 'Core',
                 'File',
@@ -1395,7 +1406,7 @@ class Zend_Locale_Data
                 break;
 
             default :
-                require_once 'Zend/Locale/Exception.php';
+                // require_once 'Zend/Locale/Exception.php';
                 throw new Zend_Locale_Exception("Unknown detail ($path) for parsing locale data.");
                 break;
         }
@@ -1404,7 +1415,11 @@ class Zend_Locale_Data
             $temp = current($temp);
         }
         if (isset(self::$_cache)) {
-            self::$_cache->save( serialize($temp), $id);
+            if (self::$_cacheTags) {
+                self::$_cache->save( serialize($temp), $id, array('Zend_Locale'));
+            } else {
+                self::$_cache->save( serialize($temp), $id);
+            }
         }
 
         return $temp;
@@ -1428,6 +1443,7 @@ class Zend_Locale_Data
     public static function setCache(Zend_Cache_Core $cache)
     {
         self::$_cache = $cache;
+        self::_getTagSupportForCache();
     }
 
     /**
@@ -1461,7 +1477,11 @@ class Zend_Locale_Data
      */
     public static function clearCache()
     {
-        self::$_cache->clean();
+        if (self::$_cacheTags) {
+            self::$_cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('Zend_Locale'));
+        } else {
+            self::$_cache->clean(Zend_Cache::CLEANING_MODE_ALL);
+        }
     }
 
     /**
@@ -1472,5 +1492,23 @@ class Zend_Locale_Data
     public static function disableCache($flag)
     {
         self::$_cacheDisabled = (boolean) $flag;
+    }
+
+    /**
+     * Internal method to check if the given cache supports tags
+     *
+     * @param Zend_Cache $cache
+     */
+    private static function _getTagSupportForCache()
+    {
+        $backend = self::$_cache->getBackend();
+        if ($backend instanceof Zend_Cache_Backend_ExtendedInterface) {
+            $cacheOptions = $backend->getCapabilities();
+            self::$_cacheTags = $cacheOptions['tags'];
+        } else {
+            self::$_cacheTags = false;
+        }
+
+        return self::$_cacheTags;
     }
 }

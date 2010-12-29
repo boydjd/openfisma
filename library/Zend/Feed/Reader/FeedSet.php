@@ -22,12 +22,12 @@
 /**
  * @see Zend_Feed_Reader
  */
-require_once 'Zend/Feed/Reader.php';
+// require_once 'Zend/Feed/Reader.php';
 
 /**
  * @see Zend_Uri
  */
-require_once 'Zend/Uri.php';
+// require_once 'Zend/Uri.php';
 
 /**
  * @category   Zend
@@ -81,14 +81,14 @@ class Zend_Feed_Reader_FeedSet extends ArrayObject
             ));
         }
     }
-    
+
     /**
      *  Attempt to turn a relative URI into an absolute URI
      */
     protected function _absolutiseUri($link, $uri = null)
     {
         if (!Zend_Uri::check($link)) {
-            if (!is_null($uri)) {
+            if ($uri !== null) {
                 $uri = Zend_Uri::factory($uri);
 
                 if ($link[0] !== '/') {
@@ -103,7 +103,7 @@ class Zend_Feed_Reader_FeedSet extends ArrayObject
         }
         return $link;
     }
-    
+
     /**
      *  Canonicalize relative path
      */

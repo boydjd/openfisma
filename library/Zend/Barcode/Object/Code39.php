@@ -23,12 +23,12 @@
 /**
  * @see Zend_Barcode_Object_ObjectAbstract
  */
-require_once 'Zend/Barcode/Object/ObjectAbstract.php';
+// require_once 'Zend/Barcode/Object/ObjectAbstract.php';
 
 /**
  * @see 'Zend_Validate_Barcode'
  */
-require_once 'Zend/Validate/Barcode.php';
+// require_once 'Zend/Validate/Barcode.php';
 
 /**
  * Class for generate Code39 barcode
@@ -110,6 +110,17 @@ class Zend_Barcode_Object_Code39 extends Zend_Barcode_Object_ObjectAbstract
         $characterLength = (6 * $this->_barThinWidth + 3 * $this->_barThickWidth + 1) * $this->_factor;
         $encodedData     = strlen($this->getText()) * $characterLength - $this->_factor;
         return $quietZone + $encodedData + $quietZone;
+    }
+
+    /**
+     * Set text to encode
+     * @param string $value
+     * @return Zend_Barcode_Object
+     */
+    public function setText($value)
+    {
+        $this->_text = $value;
+        return $this;
     }
 
     /**

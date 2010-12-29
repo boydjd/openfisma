@@ -18,11 +18,11 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
- 
+
 /**
  * @see Zend_Feed_Reader_Collection_CollectionAbstract
  */
-require_once 'Zend/Feed/Reader/Collection/CollectionAbstract.php';
+// require_once 'Zend/Feed/Reader/Collection/CollectionAbstract.php';
 
 /**
  * @category   Zend

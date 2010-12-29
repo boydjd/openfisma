@@ -21,19 +21,19 @@
  */
 
 /** Zend_Controller_Request_Abstract */
-require_once('Zend/Controller/Request/Abstract.php');
+// require_once('Zend/Controller/Request/Abstract.php');
 
 /** Zend_Controller_Response_Abstract */
-require_once('Zend/Controller/Response/Abstract.php');
+// require_once('Zend/Controller/Response/Abstract.php');
 
 /** Zend_Wildfire_Channel_HttpHeaders */
-require_once 'Zend/Wildfire/Channel/HttpHeaders.php';
+// require_once 'Zend/Wildfire/Channel/HttpHeaders.php';
 
 /** Zend_Wildfire_Protocol_JsonStream */
-require_once 'Zend/Wildfire/Protocol/JsonStream.php';
+// require_once 'Zend/Wildfire/Protocol/JsonStream.php';
 
 /** Zend_Wildfire_Plugin_Interface */
-require_once 'Zend/Wildfire/Plugin/Interface.php';
+// require_once 'Zend/Wildfire/Plugin/Interface.php';
 
 /**
  * Primary class for communicating with the FirePHP Firefox Extension.
@@ -175,23 +175,23 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
     public static function init($class = null)
     {
         if (self::$_instance !== null) {
-            require_once 'Zend/Wildfire/Exception.php';
+            // require_once 'Zend/Wildfire/Exception.php';
             throw new Zend_Wildfire_Exception('Singleton instance of Zend_Wildfire_Plugin_FirePhp already exists!');
         }
         if ($class !== null) {
             if (!is_string($class)) {
-                require_once 'Zend/Wildfire/Exception.php';
+                // require_once 'Zend/Wildfire/Exception.php';
                 throw new Zend_Wildfire_Exception('Third argument is not a class string');
             }
 
             if (!class_exists($class)) {
-                require_once 'Zend/Loader.php';
+                // require_once 'Zend/Loader.php';
                 Zend_Loader::loadClass($class);
             }
             self::$_instance = new $class();
             if (!self::$_instance instanceof Zend_Wildfire_Plugin_FirePhp) {
                 self::$_instance = null;
-                require_once 'Zend/Wildfire/Exception.php';
+                // require_once 'Zend/Wildfire/Exception.php';
                 throw new Zend_Wildfire_Exception('Invalid class to third argument. Must be subclass of Zend_Wildfire_Plugin_FirePhp.');
             }
         } else {
@@ -323,11 +323,12 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
      * Starts a group in the Firebug Console
      *
      * @param string $title The title of the group
+     * @param array $options OPTIONAL Setting 'Collapsed' to true will initialize group collapsed instead of expanded
      * @return TRUE if the group instruction was added to the response headers or buffered.
      */
-    public static function group($title)
+    public static function group($title, $options=array())
     {
-        return self::send(null, $title, self::GROUP_START);
+        return self::send(null, $title, self::GROUP_START, $options);
     }
 
     /**
@@ -466,7 +467,7 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
             case self::GROUP_END:
                 break;
             default:
-                require_once 'Zend/Wildfire/Exception.php';
+                // require_once 'Zend/Wildfire/Exception.php';
                 throw new Zend_Wildfire_Exception('Log style "'.$meta['Type'].'" not recognized!');
                 break;
         }
@@ -475,7 +476,8 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
             if (!isset($meta['File']) || !isset($meta['Line'])) {
 
                 if (!$trace) {
-                    $trace = $firephp->_getStackTrace($options);
+                    $trace = $firephp->_getStackTrace(array_merge($options,
+                                                                  array('maxTraceDepth'=>$options['maxTraceDepth']+1)));
                 }
 
                 $meta['File'] = isset($trace[0]['file'])?$trace[0]['file']:'';
@@ -485,6 +487,12 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
         } else {
             unset($meta['File']);
             unset($meta['Line']);
+        }
+
+        if ($meta['Type'] == self::GROUP_START) {
+            if (isset($options['Collapsed'])) {
+                $meta['Collapsed'] = ($options['Collapsed'])?'true':'false';
+            }
         }
 
         if ($meta['Type'] == self::DUMP) {
@@ -513,7 +521,22 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
     {
         $trace = debug_backtrace();
 
-        return array_splice($trace, $options['traceOffset'], $options['maxTraceDepth']);
+        $trace = array_splice($trace, $options['traceOffset']);
+
+        if (!count($trace)) {
+            return $trace;
+        }
+
+        if (isset($options['fixZendLogOffsetIfApplicable']) && $options['fixZendLogOffsetIfApplicable']) {
+            if (count($trace) >=3 &&
+                isset($trace[0]['file']) && substr($trace[0]['file'], -7, 7)=='Log.php' &&
+                isset($trace[1]['function']) && $trace[1]['function']=='__call') {
+
+                $trace = array_splice($trace, 2);
+            }
+        }
+
+        return array_splice($trace, 0, $options['maxTraceDepth']);
     }
 
     /**
@@ -532,11 +555,11 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
             case self::STRUCTURE_URI_DUMP:
 
                 if (!isset($data['key'])) {
-                    require_once 'Zend/Wildfire/Exception.php';
+                    // require_once 'Zend/Wildfire/Exception.php';
                     throw new Zend_Wildfire_Exception('You must supply a key.');
                 }
                 if (!array_key_exists('data',$data)) {
-                    require_once 'Zend/Wildfire/Exception.php';
+                    // require_once 'Zend/Wildfire/Exception.php';
                     throw new Zend_Wildfire_Exception('You must supply data.');
                 }
 
@@ -556,11 +579,11 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
                     !is_array($data['meta']) ||
                     !array_key_exists('Type',$data['meta'])) {
 
-                    require_once 'Zend/Wildfire/Exception.php';
+                    // require_once 'Zend/Wildfire/Exception.php';
                     throw new Zend_Wildfire_Exception('You must supply a "Type" in the meta information.');
                 }
                 if (!array_key_exists('data',$data)) {
-                    require_once 'Zend/Wildfire/Exception.php';
+                    // require_once 'Zend/Wildfire/Exception.php';
                     throw new Zend_Wildfire_Exception('You must supply data.');
                 }
 
@@ -576,7 +599,7 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
                                                $value));
 
             default:
-                require_once 'Zend/Wildfire/Exception.php';
+                // require_once 'Zend/Wildfire/Exception.php';
                 throw new Zend_Wildfire_Exception('Structure of name "'.$structure.'" is not recognized.');
                 break;
         }

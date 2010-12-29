@@ -24,17 +24,17 @@
 /**
  * @see Zend_Db
  */
-require_once 'Zend/Db.php';
+// require_once 'Zend/Db.php';
 
 /**
  * @see Zend_Db_Adapter_Abstract
  */
-require_once 'Zend/Db/Adapter/Abstract.php';
+// require_once 'Zend/Db/Adapter/Abstract.php';
 
 /**
  * @see Zend_Db_Statement_Db2
  */
-require_once 'Zend/Db/Statement/Db2.php';
+// require_once 'Zend/Db/Statement/Db2.php';
 
 
 /**
@@ -127,7 +127,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception('The IBM DB2 extension is required for this adapter but the extension is not loaded');
         }
 
@@ -152,6 +152,14 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 Zend_Db::CASE_LOWER   => DB2_CASE_LOWER
             );
             $this->_config['driver_options']['DB2_ATTR_CASE'] = $caseAttrMap[$this->_config['options'][Zend_Db::CASE_FOLDING]];
+        }
+
+        if ($this->_isI5 && isset($this->_config['driver_options']['i5_naming'])) {
+            if ($this->_config['driver_options']['i5_naming']) {
+                $this->_config['driver_options']['i5_naming'] = DB2_I5_NAMING_ON;
+            } else {
+                $this->_config['driver_options']['i5_naming'] = DB2_I5_NAMING_OFF;
+            }
         }
 
         if ($this->_config['host'] !== 'localhost' && !$this->_isI5) {
@@ -184,7 +192,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(db2_conn_errormsg(), db2_conn_error());
         }
     }
@@ -224,7 +232,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
         $this->_connect();
         $stmtClass = $this->_defaultStmtClass;
         if (!class_exists($stmtClass)) {
-            require_once 'Zend/Loader.php';
+            // require_once 'Zend/Loader.php';
             Zend_Loader::loadClass($stmtClass);
         }
         $stmt = new $stmtClass($this, $sql);
@@ -258,7 +266,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                // require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception("execution mode not supported");
                 break;
         }
@@ -411,7 +419,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                        AND C.TABLE_NAME = k.TABLE_NAME
                        AND C.COLUMN_NAME = k.COLUMN_NAME)
                 WHERE "
-                 . $this->quoteInto('UPPER(C.TABLE_NAME) = UPPER(?)', $tableName);
+                . $this->quoteInto('UPPER(C.TABLE_NAME) = UPPER(?)', $tableName);
 
             if ($schemaName) {
                 $sql .= $this->quoteInto(' AND UPPER(C.TABLE_SCHEMA) = UPPER(?)', $schemaName);
@@ -583,7 +591,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));
@@ -603,7 +611,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception(
                 db2_conn_errormsg($this->_connection),
                 db2_conn_error($this->_connection));
@@ -631,14 +639,14 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                // require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception('FETCH_BOUND is not supported yet');
                 break;
             default:
                 /**
                  * @see Zend_Db_Adapter_Db2_Exception
                  */
-                require_once 'Zend/Db/Adapter/Db2/Exception.php';
+                // require_once 'Zend/Db/Adapter/Db2/Exception.php';
                 throw new Zend_Db_Adapter_Db2_Exception("Invalid fetch mode '$mode' specified");
                 break;
         }
@@ -659,7 +667,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception("LIMIT argument count=$count is not valid");
         }
 
@@ -668,7 +676,7 @@ class Zend_Db_Adapter_Db2 extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Db2_Exception
              */
-            require_once 'Zend/Db/Adapter/Db2/Exception.php';
+            // require_once 'Zend/Db/Adapter/Db2/Exception.php';
             throw new Zend_Db_Adapter_Db2_Exception("LIMIT argument offset=$offset is not valid");
         }
 

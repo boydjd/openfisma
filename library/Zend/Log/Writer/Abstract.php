@@ -21,7 +21,7 @@
  */
 
 /** Zend_Log_Filter_Priority */
-require_once 'Zend/Log/Filter/Priority.php';
+// require_once 'Zend/Log/Filter/Priority.php';
 
 /**
  * @category   Zend
@@ -40,6 +40,7 @@ abstract class Zend_Log_Writer_Abstract implements Zend_Log_FactoryInterface
 
     /**
      * Formats the log message before writing.
+     *
      * @var Zend_Log_Formatter_Interface
      */
     protected $_formatter;
@@ -48,27 +49,28 @@ abstract class Zend_Log_Writer_Abstract implements Zend_Log_FactoryInterface
      * Add a filter specific to this writer.
      *
      * @param  Zend_Log_Filter_Interface  $filter
-     * @return void
+     * @return Zend_Log_Writer_Abstract
      */
     public function addFilter($filter)
     {
-        if (is_integer($filter)) {
+        if (is_int($filter)) {
             $filter = new Zend_Log_Filter_Priority($filter);
         }
 
         if (!$filter instanceof Zend_Log_Filter_Interface) {
             /** @see Zend_Log_Exception */
-            require_once 'Zend/Log/Exception.php';
+            // require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception('Invalid filter provided');
         }
 
         $this->_filters[] = $filter;
+        return $this;
     }
 
     /**
      * Log a message to this writer.
      *
-     * @param  array     $event  log data event
+     * @param  array $event log data event
      * @return void
      */
     public function write($event)
@@ -87,11 +89,12 @@ abstract class Zend_Log_Writer_Abstract implements Zend_Log_FactoryInterface
      * Set a new formatter for this writer
      *
      * @param  Zend_Log_Formatter_Interface $formatter
-     * @return void
+     * @return Zend_Log_Writer_Abstract
      */
     public function setFormatter(Zend_Log_Formatter_Interface $formatter)
     {
         $this->_formatter = $formatter;
+        return $this;
     }
 
     /**
@@ -124,10 +127,10 @@ abstract class Zend_Log_Writer_Abstract implements Zend_Log_FactoryInterface
         }
 
         if (!is_array($config)) {
-            require_once 'Zend/Log/Exception.php';
+            // require_once 'Zend/Log/Exception.php';
             throw new Zend_Log_Exception(
-				'Configuration must be an array or instance of Zend_Config'
-			);
+                'Configuration must be an array or instance of Zend_Config'
+            );
         }
 
         return $config;

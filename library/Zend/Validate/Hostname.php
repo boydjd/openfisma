@@ -22,12 +22,12 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @see Zend_Validate_Ip
  */
-require_once 'Zend/Validate/Ip.php';
+// require_once 'Zend/Validate/Ip.php';
 
 /**
  * Please note there are two standalone test scripts for testing IDN characters due to problems
@@ -46,31 +46,33 @@ require_once 'Zend/Validate/Ip.php';
  */
 class Zend_Validate_Hostname extends Zend_Validate_Abstract
 {
-    const INVALID                 = 'hostnameInvalid';
-    const IP_ADDRESS_NOT_ALLOWED  = 'hostnameIpAddressNotAllowed';
-    const UNKNOWN_TLD             = 'hostnameUnknownTld';
-    const INVALID_DASH            = 'hostnameDashCharacter';
-    const INVALID_HOSTNAME_SCHEMA = 'hostnameInvalidHostnameSchema';
-    const UNDECIPHERABLE_TLD      = 'hostnameUndecipherableTld';
-    const INVALID_HOSTNAME        = 'hostnameInvalidHostname';
-    const INVALID_LOCAL_NAME      = 'hostnameInvalidLocalName';
-    const LOCAL_NAME_NOT_ALLOWED  = 'hostnameLocalNameNotAllowed';
     const CANNOT_DECODE_PUNYCODE  = 'hostnameCannotDecodePunycode';
+    const INVALID                 = 'hostnameInvalid';
+    const INVALID_DASH            = 'hostnameDashCharacter';
+    const INVALID_HOSTNAME        = 'hostnameInvalidHostname';
+    const INVALID_HOSTNAME_SCHEMA = 'hostnameInvalidHostnameSchema';
+    const INVALID_LOCAL_NAME      = 'hostnameInvalidLocalName';
+    const INVALID_URI             = 'hostnameInvalidUri';
+    const IP_ADDRESS_NOT_ALLOWED  = 'hostnameIpAddressNotAllowed';
+    const LOCAL_NAME_NOT_ALLOWED  = 'hostnameLocalNameNotAllowed';
+    const UNDECIPHERABLE_TLD      = 'hostnameUndecipherableTld';
+    const UNKNOWN_TLD             = 'hostnameUnknownTld';
 
     /**
      * @var array
      */
     protected $_messageTemplates = array(
-        self::INVALID                 => "Invalid type given, value should be a string",
-        self::IP_ADDRESS_NOT_ALLOWED  => "'%value%' appears to be an IP address, but IP addresses are not allowed",
-        self::UNKNOWN_TLD             => "'%value%' appears to be a DNS hostname but cannot match TLD against known list",
-        self::INVALID_DASH            => "'%value%' appears to be a DNS hostname but contains a dash in an invalid position",
-        self::INVALID_HOSTNAME_SCHEMA => "'%value%' appears to be a DNS hostname but cannot match against hostname schema for TLD '%tld%'",
-        self::UNDECIPHERABLE_TLD      => "'%value%' appears to be a DNS hostname but cannot extract TLD part",
-        self::INVALID_HOSTNAME        => "'%value%' does not match the expected structure for a DNS hostname",
-        self::INVALID_LOCAL_NAME      => "'%value%' does not appear to be a valid local network name",
-        self::LOCAL_NAME_NOT_ALLOWED  => "'%value%' appears to be a local network name but local network names are not allowed",
         self::CANNOT_DECODE_PUNYCODE  => "'%value%' appears to be a DNS hostname but the given punycode notation cannot be decoded",
+        self::INVALID                 => "Invalid type given. String expected",
+        self::INVALID_DASH            => "'%value%' appears to be a DNS hostname but contains a dash in an invalid position",
+        self::INVALID_HOSTNAME        => "'%value%' does not match the expected structure for a DNS hostname",
+        self::INVALID_HOSTNAME_SCHEMA => "'%value%' appears to be a DNS hostname but cannot match against hostname schema for TLD '%tld%'",
+        self::INVALID_LOCAL_NAME      => "'%value%' does not appear to be a valid local network name",
+        self::INVALID_URI             => "'%value%' does not appear to be a valid URI hostname",
+        self::IP_ADDRESS_NOT_ALLOWED  => "'%value%' appears to be an IP address, but IP addresses are not allowed",
+        self::LOCAL_NAME_NOT_ALLOWED  => "'%value%' appears to be a local network name but local network names are not allowed",
+        self::UNDECIPHERABLE_TLD      => "'%value%' appears to be a DNS hostname but cannot extract TLD part",
+        self::UNKNOWN_TLD             => "'%value%' appears to be a DNS hostname but cannot match TLD against known list",
     );
 
     /**
@@ -99,6 +101,11 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
      * Allows all types of hostnames
      */
     const ALLOW_ALL   = 7;
+
+    /**
+     * Allows all types of hostnames
+     */
+    const ALLOW_URI = 8;
 
     /**
      * Array of valid top-level-domains
@@ -505,6 +512,21 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
             }
         }
 
+        // RFC3986 3.2.2 states:
+        // 
+        //     The rightmost domain label of a fully qualified domain name
+        //     in DNS may be followed by a single "." and should be if it is 
+        //     necessary to distinguish between the complete domain name and
+        //     some local domain.
+        //     
+        // Strip trailing '.' since it is not necessary to validate a non-IP
+        // hostname.
+        //
+        // (see ZF-6363)
+        if (substr($value, -1) === '.') {
+            $value = substr($value, 0, strlen($value)-1);
+        }
+        
         // Check input against DNS hostname schema
         $domainParts = explode('.', $value);
         if ((count($domainParts) > 1) && (strlen($value) >= 4) && (strlen($value) <= 254)) {
@@ -615,6 +637,15 @@ class Zend_Validate_Hostname extends Zend_Validate_Abstract
             }
         } else if ($this->_options['allow'] & self::ALLOW_DNS) {
             $this->_error(self::INVALID_HOSTNAME);
+        }
+
+        // Check for URI Syntax (RFC3986)
+        if ($this->_options['allow'] & self::ALLOW_URI) {
+            if (preg_match("/^([a-zA-Z0-9-._~!$&\'()*+,;=]|%[[:xdigit:]]{2}){1,254}$/i", $value)) {
+                return true;
+            } else {
+                $this->_error(self::INVALID_URI);
+            }
         }
 
         // Check input against local network name schema; last chance to pass validation

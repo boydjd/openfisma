@@ -23,7 +23,7 @@
 /**
  * @see Zend_Tool_Project_Context_Filesystem_Directory
  */
-require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
+// require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
@@ -53,7 +53,7 @@ class Zend_Tool_Project_Context_Zf_DocsDirectory extends Zend_Tool_Project_Conte
     {
         return 'DocsDirectory';
     }
-    
+
     public function create(){
         parent::create();
     }

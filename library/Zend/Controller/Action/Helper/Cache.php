@@ -22,17 +22,17 @@
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
-require_once 'Zend/Controller/Action/Helper/Abstract.php';
+// require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
  * @see Zend_Controller_Action_Exception
  */
-require_once 'Zend/Controller/Action/Exception.php';
+// require_once 'Zend/Controller/Action/Exception.php';
 
 /**
  * @see Zend_Cache_Manager
  */
-require_once 'Zend/Cache/Manager.php';
+// require_once 'Zend/Cache/Manager.php';
 
 /**
  * @category   Zend
@@ -64,7 +64,7 @@ class Zend_Controller_Action_Helper_Cache
      * @var array
      */
     protected $_tags = array();
-    
+
     /**
      * Indexed map of Extensions by Controller and Action
      *
@@ -189,7 +189,7 @@ class Zend_Controller_Action_Helper_Cache
                 ->start($this->_encodeCacheId($reqUri), $tags, $extension);
         }
     }
-    
+
     /**
      * Encode a Cache ID as hexadecimal. This is a workaround because Backend ID validation
      * is trapped in the Frontend classes. Will try to get this reversed for ZF 2.0
@@ -223,7 +223,7 @@ class Zend_Controller_Action_Helper_Cache
      */
     public function getManager()
     {
-        if (!is_null($this->_manager)) {
+        if ($this->_manager !== null) {
             return $this->_manager;
         }
         $front = Zend_Controller_Front::getInstance();

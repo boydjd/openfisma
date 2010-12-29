@@ -17,13 +17,13 @@
  * @subpackage Framework
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ViewScriptFile.php 18386 2009-09-23 20:44:43Z ralph $
+ * @version    $Id$
  */
 
 /**
  * @see Zend_Tool_Project_Context_Filesystem_File
  */
-require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
+// require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project

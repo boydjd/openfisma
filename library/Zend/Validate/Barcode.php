@@ -22,12 +22,12 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @see Zend_Loader
  */
-require_once 'Zend/Loader.php';
+// require_once 'Zend/Loader.php';
 
 /**
  * @category   Zend
@@ -46,7 +46,7 @@ class Zend_Validate_Barcode extends Zend_Validate_Abstract
         self::FAILED         => "'%value%' failed checksum validation",
         self::INVALID_CHARS  => "'%value%' contains invalid characters",
         self::INVALID_LENGTH => "'%value%' should have a length of %length% characters",
-        self::INVALID        => "Invalid type given, value should be string",
+        self::INVALID        => "Invalid type given. String expected",
     );
 
     /**
@@ -100,7 +100,7 @@ class Zend_Validate_Barcode extends Zend_Validate_Abstract
             if (array_key_exists('adapter', $adapter)) {
                 $adapter = $adapter['adapter'];
             } else {
-                require_once 'Zend/Validate/Exception.php';
+                // require_once 'Zend/Validate/Exception.php';
                 throw new Zend_Validate_Exception("Missing option 'adapter'");
             }
         }
@@ -132,7 +132,7 @@ class Zend_Validate_Barcode extends Zend_Validate_Abstract
     public function setAdapter($adapter, $options = null)
     {
         $adapter = ucfirst(strtolower($adapter));
-        require_once 'Zend/Loader.php';
+        // require_once 'Zend/Loader.php';
         if (Zend_Loader::isReadable('Zend/Validate/Barcode/' . $adapter. '.php')) {
             $adapter = 'Zend_Validate_Barcode_' . $adapter;
         }
@@ -143,7 +143,7 @@ class Zend_Validate_Barcode extends Zend_Validate_Abstract
 
         $this->_adapter = new $adapter($options);
         if (!$this->_adapter instanceof Zend_Validate_Barcode_AdapterInterface) {
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception(
                 "Adapter " . $adapter . " does not implement Zend_Validate_Barcode_AdapterInterface"
             );

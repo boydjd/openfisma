@@ -23,22 +23,22 @@
 /**
  * @see Zend_Tool_Project_Provider_Abstract
  */
-require_once 'Zend/Tool/Project/Provider/Abstract.php';
+// require_once 'Zend/Tool/Project/Provider/Abstract.php';
 
 /**
  * @see Zend_Tool_Framework_Provider_Pretendable
  */
-require_once 'Zend/Tool/Framework/Provider/Pretendable.php';
+// require_once 'Zend/Tool/Framework/Provider/Pretendable.php';
 
 /**
  * @see Zend_Tool_Project_Profile_Iterator_ContextFilter
  */
-require_once 'Zend/Tool/Project/Profile/Iterator/ContextFilter.php';
+// require_once 'Zend/Tool/Project/Profile/Iterator/ContextFilter.php';
 
 /**
  * @see Zend_Tool_Project_Profile_Iterator_EnabledResourceFilter
  */
-require_once 'Zend/Tool/Project/Profile/Iterator/EnabledResourceFilter.php';
+// require_once 'Zend/Tool/Project/Profile/Iterator/EnabledResourceFilter.php';
 
 /**
  * @category   Zend
@@ -154,13 +154,18 @@ class Zend_Tool_Project_Provider_Module
                 $response->appendContent($resource->getContext()->getPath());
                 $resource->create();
             }
-            
+
+            $response->appendContent('Added a key for path module directory to the application.ini file');
+            $appConfigFile = $this->_loadedProfile->search('ApplicationConfigFile');
+            $appConfigFile->removeStringItem('resources.frontController.moduleDirectory', 'production');
+            $appConfigFile->addStringItem('resources.frontController.moduleDirectory', 'APPLICATION_PATH "/modules"', 'production', false);
+
             if (strtolower($name) == 'default') {
                 $response->appendContent('Added a key for the default module to the application.ini file');
-                $appConfigFile = $this->_loadedProfile->search('ApplicationConfigFile');
                 $appConfigFile->addStringItem('resources.frontController.params.prefixDefaultModule', '1', 'production');
-                $appConfigFile->create();
             }
+
+            $appConfigFile->create();
 
             // store changes to the profile
             $this->_storeProfile();

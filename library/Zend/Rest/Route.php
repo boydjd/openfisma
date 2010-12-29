@@ -22,22 +22,22 @@
 /**
  * @see Zend_Controller_Router_Route_Interface
  */
-require_once 'Zend/Controller/Router/Route/Interface.php';
+// require_once 'Zend/Controller/Router/Route/Interface.php';
 
 /**
  * @see Zend_Controller_Router_Route_Module
  */
-require_once 'Zend/Controller/Router/Route/Module.php';
+// require_once 'Zend/Controller/Router/Route/Module.php';
 
 /**
  * @see Zend_Controller_Dispatcher_Interface
  */
-require_once 'Zend/Controller/Dispatcher/Interface.php';
+// require_once 'Zend/Controller/Dispatcher/Interface.php';
 
 /**
  * @see Zend_Controller_Request_Abstract
  */
-require_once 'Zend/Controller/Request/Abstract.php';
+// require_once 'Zend/Controller/Request/Abstract.php';
 
 /**
  * Rest Route
@@ -98,13 +98,13 @@ class Zend_Rest_Route extends Zend_Controller_Router_Route_Module
         $defaultsArray = array();
         $restfulConfigArray = array();
         foreach ($config as $key => $values) {
-        	if ($key == 'type') {
-        		// do nothing
-        	} elseif ($key == 'defaults') {
-        		$defaultsArray = $values->toArray();
-        	} else {
-        		$restfulConfigArray[$key] = explode(',', $values);
-        	}
+            if ($key == 'type') {
+                // do nothing
+            } elseif ($key == 'defaults') {
+                $defaultsArray = $values->toArray();
+            } else {
+                $restfulConfigArray[$key] = explode(',', $values);
+            }
         }
         $instance = new self($frontController, $defaultsArray, $restfulConfigArray);
         return $instance;
@@ -161,10 +161,10 @@ class Zend_Rest_Route extends Zend_Controller_Router_Route_Module
                     return false;
                 }
             } elseif ($this->_checkRestfulController($moduleName, $controllerName)) {
-            	$values[$this->_controllerKey] = $controllerName;
-            	$values[$this->_actionKey] = 'get';
+                $values[$this->_controllerKey] = $controllerName;
+                $values[$this->_actionKey] = 'get';
             } else {
-            	return false;
+                return false;
             }
 
             //Store path count for method mapping
@@ -274,15 +274,27 @@ class Zend_Rest_Route extends Zend_Controller_Router_Route_Module
         $controller = $params[$this->_controllerKey];
         unset($params[$this->_controllerKey]);
 
+        // set $action if value given is 'new' or 'edit'
+        if (in_array($params[$this->_actionKey], array('new', 'edit'))) {
+            $action = $params[$this->_actionKey];
+        }
         unset($params[$this->_actionKey]);
 
         if (isset($params['index']) && $params['index']) {
             unset($params['index']);
             $url .= '/index';
+            if (isset($params['id'])) {
+                $url .= '/'.$params['id'];
+                unset($params['id']);
+            }
             foreach ($params as $key => $value) {
                 if ($encode) $value = urlencode($value);
                 $url .= '/' . $key . '/' . $value;
             }
+        } elseif (! empty($action) && isset($params['id'])) {
+            $url .= sprintf('/%s/%s', $params['id'], $action);
+        } elseif (! empty($action)) {
+            $url .= sprintf('/%s', $action);
         } elseif (isset($params['id'])) {
             $url .= '/' . $params['id'];
         }

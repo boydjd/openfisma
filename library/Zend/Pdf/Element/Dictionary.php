@@ -21,11 +21,11 @@
 
 
 /** Internally used classes */
-require_once 'Zend/Pdf/Element/Name.php';
+// require_once 'Zend/Pdf/Element/Name.php';
 
 
 /** Zend_Pdf_Element */
-require_once 'Zend/Pdf/Element.php';
+// require_once 'Zend/Pdf/Element.php';
 
 /**
  * PDF file 'dictionary' element implementation
@@ -57,17 +57,17 @@ class Zend_Pdf_Element_Dictionary extends Zend_Pdf_Element
         if ($val === null) {
             return;
         } else if (!is_array($val)) {
-            require_once 'Zend/Pdf/Exception.php';
+            // require_once 'Zend/Pdf/Exception.php';
             throw new Zend_Pdf_Exception('Argument must be an array');
         }
 
         foreach ($val as $name => $element) {
             if (!$element instanceof Zend_Pdf_Element) {
-                require_once 'Zend/Pdf/Exception.php';
+                // require_once 'Zend/Pdf/Exception.php';
                 throw new Zend_Pdf_Exception('Array elements must be Zend_Pdf_Element objects');
             }
             if (!is_string($name)) {
-                require_once 'Zend/Pdf/Exception.php';
+                // require_once 'Zend/Pdf/Exception.php';
                 throw new Zend_Pdf_Exception('Array keys must be strings');
             }
             $this->_items[$name] = $element;
@@ -151,7 +151,7 @@ class Zend_Pdf_Element_Dictionary extends Zend_Pdf_Element
 
         foreach ($this->_items as $name => $element) {
             if (!is_object($element)) {
-                require_once 'Zend/Pdf/Exception.php';
+                // require_once 'Zend/Pdf/Exception.php';
                 throw new Zend_Pdf_Exception('Wrong data');
             }
 
@@ -168,6 +168,53 @@ class Zend_Pdf_Element_Dictionary extends Zend_Pdf_Element
         return $outStr;
     }
 
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @param Zend_Pdf_ElementFactory $factory  The factory to attach
+     * @param array &$processed  List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns Zend_Pdf_Element
+     * @throws Zend_Pdf_Exception
+     */
+    public function makeClone(Zend_Pdf_ElementFactory $factory, array &$processed, $mode)
+    {
+        if (isset($this->_items['Type'])) {
+            if ($this->_items['Type']->value == 'Pages') {
+                // It's a page tree node
+                // skip it and its children
+                return new Zend_Pdf_Element_Null();
+            }
+
+            if ($this->_items['Type']->value == 'Page'  &&
+                $mode == Zend_Pdf_Element::CLONE_MODE_SKIP_PAGES
+            ) {
+                // It's a page node, skip it
+                return new Zend_Pdf_Element_Null();
+            }
+        }
+
+        $newDictionary = new self();
+        foreach ($this->_items as $key => $value) {
+            $newDictionary->_items[$key] = $value->makeClone($factory, $processed, $mode);
+        }
+
+        return $newDictionary;
+    }
+
+    /**
+     * Set top level parent indirect object.
+     *
+     * @param Zend_Pdf_Element_Object $parent
+     */
+    public function setParentObject(Zend_Pdf_Element_Object $parent)
+    {
+        parent::setParentObject($parent);
+
+        foreach ($this->_items as $item) {
+            $item->setParentObject($parent);
+        }
+    }
 
     /**
      * Convert PDF element to PHP type.

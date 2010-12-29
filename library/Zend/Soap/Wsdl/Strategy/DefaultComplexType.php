@@ -23,7 +23,7 @@
 /**
  * @see Zend_Soap_Wsdl_Strategy_Abstract
  */
-require_once "Zend/Soap/Wsdl/Strategy/Abstract.php";
+// require_once "Zend/Soap/Wsdl/Strategy/Abstract.php";
 
 /**
  * Zend_Soap_Wsdl_Strategy_DefaultComplexType
@@ -45,7 +45,7 @@ class Zend_Soap_Wsdl_Strategy_DefaultComplexType extends Zend_Soap_Wsdl_Strategy
     public function addComplexType($type)
     {
         if(!class_exists($type)) {
-            require_once "Zend/Soap/Wsdl/Exception.php";
+            // require_once "Zend/Soap/Wsdl/Exception.php";
             throw new Zend_Soap_Wsdl_Exception(sprintf(
                 "Cannot add a complex type %s that is not an object or where ".
                 "class could not be found in 'DefaultComplexType' strategy.", $type
@@ -54,6 +54,8 @@ class Zend_Soap_Wsdl_Strategy_DefaultComplexType extends Zend_Soap_Wsdl_Strategy
 
         $dom = $this->getContext()->toDomDocument();
         $class = new ReflectionClass($type);
+
+        $defaultProperties = $class->getDefaultProperties();
 
         $complexType = $dom->createElement('xsd:complexType');
         $complexType->setAttribute('name', $type);
@@ -68,8 +70,14 @@ class Zend_Soap_Wsdl_Strategy_DefaultComplexType extends Zend_Soap_Wsdl_Strategy
                  * node for describing other classes used as attribute types for current class
                  */
                 $element = $dom->createElement('xsd:element');
-                $element->setAttribute('name', $property->getName());
+                $element->setAttribute('name', $propertyName = $property->getName());
                 $element->setAttribute('type', $this->getContext()->getType(trim($matches[1][0])));
+
+                // If the default value is null, then this property is nillable.
+                if ($defaultProperties[$propertyName] === null) {
+                    $element->setAttribute('nillable', 'true');
+                }
+
                 $all->appendChild($element);
             }
         }

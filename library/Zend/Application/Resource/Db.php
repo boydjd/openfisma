@@ -23,7 +23,7 @@
 /**
  * @see Zend_Application_Resource_ResourceAbstract
  */
-require_once 'Zend/Application/Resource/ResourceAbstract.php';
+// require_once 'Zend/Application/Resource/ResourceAbstract.php';
 
 /**
  * Resource for creating database adapter
@@ -157,5 +157,37 @@ class Zend_Application_Resource_Db extends Zend_Application_Resource_ResourceAbs
             }
             return $db;
         }
+    }
+
+    /**
+     * Set the default metadata cache
+     *
+     * @param string|Zend_Cache_Core $cache
+     * @return Zend_Application_Resource_Db
+     */
+    public function setDefaultMetadataCache($cache)
+    {
+        $metadataCache = null;
+
+        if (is_string($cache)) {
+            $bootstrap = $this->getBootstrap();
+            if ($bootstrap instanceof Zend_Application_Bootstrap_ResourceBootstrapper
+                && $bootstrap->hasPluginResource('CacheManager')
+            ) {
+                $cacheManager = $bootstrap->bootstrap('CacheManager')
+                    ->getResource('CacheManager');
+                if (null !== $cacheManager && $cacheManager->hasCache($cache)) {
+                    $metadataCache = $cacheManager->getCache($cache);
+                }
+            }
+        } else if ($cache instanceof Zend_Cache_Core) {
+            $metadataCache = $cache;
+        }
+
+        if ($metadataCache instanceof Zend_Cache_Core) {
+            Zend_Db_Table::setDefaultMetadataCache($metadataCache);
+        }
+
+        return $this;
     }
 }

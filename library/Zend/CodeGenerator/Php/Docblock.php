@@ -23,12 +23,12 @@
 /**
  * @see Zend_CodeGenerator_Php_Abstract
  */
-require_once 'Zend/CodeGenerator/Php/Abstract.php';
+// require_once 'Zend/CodeGenerator/Php/Abstract.php';
 
 /**
  * @see Zend_CodeGenerator_Php_Docblock_Tag
  */
-require_once 'Zend/CodeGenerator/Php/Docblock/Tag.php';
+// require_once 'Zend/CodeGenerator/Php/Docblock/Tag.php';
 
 /**
  * @category   Zend
@@ -151,7 +151,7 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         if (is_array($tag)) {
             $tag = new Zend_CodeGenerator_Php_Docblock_Tag($tag);
         } elseif (!$tag instanceof Zend_CodeGenerator_Php_Docblock_Tag) {
-            require_once 'Zend/CodeGenerator/Php/Exception.php';
+            // require_once 'Zend/CodeGenerator/Php/Exception.php';
             throw new Zend_CodeGenerator_Php_Exception(
                 'setTag() expects either an array of method options or an '
                 . 'instance of Zend_CodeGenerator_Php_Docblock_Tag'
@@ -211,7 +211,11 @@ class Zend_CodeGenerator_Php_Docblock extends Zend_CodeGenerator_Php_Abstract
         $content = wordwrap($content, 80, self::LINE_FEED);
         $lines = explode(self::LINE_FEED, $content);
         foreach ($lines as $line) {
-            $output .= $indent . ' * ' . $line . self::LINE_FEED;
+            $output .= $indent . ' *';
+            if ($line) {
+                $output .= " $line";
+            }
+            $output .= self::LINE_FEED;
         }
         $output .= $indent . ' */' . self::LINE_FEED;
         return $output;

@@ -23,7 +23,7 @@
 /**
  * @see Zend_Service_Amazon_Ec2_Abstract
  */
-require_once 'Zend/Service/Amazon/Ec2/Abstract.php';
+// require_once 'Zend/Service/Amazon/Ec2/Abstract.php';
 
 /**
  * An Amazon EC2 interface that allows yout to run, terminate, reboot and describe Amazon
@@ -281,7 +281,7 @@ class Zend_Service_Amazon_Ec2_CloudWatch extends Zend_Service_Amazon_Ec2_Abstrac
                 $options['Dimensions.member.' . $x . '.Value'] = $dimVal;
                 $x++;
             }
-            
+
             unset($options['Dimensions']);
         }
 

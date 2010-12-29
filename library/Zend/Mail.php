@@ -23,22 +23,22 @@
 /**
  * @see Zend_Mail_Transport_Abstract
  */
-require_once 'Zend/Mail/Transport/Abstract.php';
+// require_once 'Zend/Mail/Transport/Abstract.php';
 
 /**
  * @see Zend_Mime
  */
-require_once 'Zend/Mime.php';
+// require_once 'Zend/Mime.php';
 
 /**
  * @see Zend_Mime_Message
  */
-require_once 'Zend/Mime/Message.php';
+// require_once 'Zend/Mime/Message.php';
 
 /**
  * @see Zend_Mime_Part
  */
-require_once 'Zend/Mime/Part.php';
+// require_once 'Zend/Mime/Part.php';
 
 
 /**
@@ -77,7 +77,7 @@ class Zend_Mail extends Zend_Mime_Message
      * Mail character set
      * @var string
      */
-    protected $_charset = null;
+    protected $_charset = 'iso-8859-1';
 
     /**
      * Mail headers
@@ -208,11 +208,14 @@ class Zend_Mail extends Zend_Mime_Message
     /**
      * Public constructor
      *
-     * @param string $charset
+     * @param  string $charset
+     * @return void
      */
-    public function __construct($charset = 'iso-8859-1')
+    public function __construct($charset = null)
     {
-        $this->_charset = $charset;
+        if ($charset != null) {
+            $this->_charset = $charset;
+        }
     }
 
     /**
@@ -245,7 +248,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Invalid content type "' . $type . '"');
         }
 
@@ -339,7 +342,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Invalid encoding "' . $encoding . '"');
         }
         $this->_headerEncoding = $encoding;
@@ -535,12 +538,11 @@ class Zend_Mail extends Zend_Mime_Message
      * Clear header from the message
      *
      * @param string $headerName
+     * @deprecated use public method directly
      */
     protected function _clearHeader($headerName)
     {
-        if (isset($this->_headers[$headerName])){
-            unset($this->_headers[$headerName]);
-        }
+        $this->clearHeader($headerName);
     }
 
     /**
@@ -630,6 +632,20 @@ class Zend_Mail extends Zend_Mime_Message
     }
 
     /**
+     * Clear header from the message
+     *
+     * @param string $headerName
+     * @return Zend_Mail Provides fluent inter
+     */
+    public function clearHeader($headerName)
+    {
+        if (isset($this->_headers[$headerName])){
+            unset($this->_headers[$headerName]);
+        }
+        return $this;
+    }
+
+    /**
      * Clears list of recipient email addresses
      *
      * @return Zend_Mail Provides fluent interface
@@ -639,9 +655,9 @@ class Zend_Mail extends Zend_Mime_Message
         $this->_recipients = array();
         $this->_to = array();
 
-        $this->_clearHeader('To');
-        $this->_clearHeader('Cc');
-        $this->_clearHeader('Bcc');
+        $this->clearHeader('To');
+        $this->clearHeader('Cc');
+        $this->clearHeader('Bcc');
 
         return $this;
     }
@@ -660,7 +676,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('From Header set twice');
         }
 
@@ -686,7 +702,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Reply-To Header set twice');
         }
 
@@ -726,7 +742,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearFrom()
     {
         $this->_from = null;
-        $this->_clearHeader('From');
+        $this->clearHeader('From');
 
         return $this;
     }
@@ -739,7 +755,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearReplyTo()
     {
         $this->_replyTo = null;
-        $this->_clearHeader('Reply-To');
+        $this->clearHeader('Reply-To');
 
         return $this;
     }
@@ -784,7 +800,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function setFromToDefaultFrom() {
         $from = self::getDefaultFrom();
         if($from === null) {
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception(
                 'No default From Address set to use');
         }
@@ -834,7 +850,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function setReplyToFromDefault() {
         $replyTo = self::getDefaultReplyTo();
         if($replyTo === null) {
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception(
                 'No default Reply-To Address set to use');
         }
@@ -861,7 +877,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Return-Path Header set twice');
         }
         return $this;
@@ -891,7 +907,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearReturnPath()
     {
         $this->_returnPath = null;
-        $this->_clearHeader('Return-Path');
+        $this->clearHeader('Return-Path');
 
         return $this;
     }
@@ -913,7 +929,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Subject set twice');
         }
         return $this;
@@ -937,7 +953,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearSubject()
     {
         $this->_subject = null;
-        $this->_clearHeader('Subject');
+        $this->clearHeader('Subject');
 
         return $this;
     }
@@ -962,7 +978,7 @@ class Zend_Mail extends Zend_Mime_Message
                     /**
                      * @see Zend_Mail_Exception
                      */
-                    require_once 'Zend/Mail/Exception.php';
+                    // require_once 'Zend/Mail/Exception.php';
                     throw new Zend_Mail_Exception('String representations of Date Header must be ' .
                                                   'strtotime()-compatible');
                 }
@@ -973,7 +989,7 @@ class Zend_Mail extends Zend_Mime_Message
                 /**
                  * @see Zend_Mail_Exception
                  */
-                require_once 'Zend/Mail/Exception.php';
+                // require_once 'Zend/Mail/Exception.php';
                 throw new Zend_Mail_Exception(__METHOD__ . ' only accepts UNIX timestamps, Zend_Date objects, ' .
                                               ' and strtotime()-compatible strings');
             }
@@ -983,7 +999,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Date Header set twice');
         }
         return $this;
@@ -1007,7 +1023,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearDate()
     {
         $this->_date = null;
-        $this->_clearHeader('Date');
+        $this->clearHeader('Date');
 
         return $this;
     }
@@ -1039,7 +1055,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Message-ID set twice');
         }
 
@@ -1065,7 +1081,7 @@ class Zend_Mail extends Zend_Mime_Message
     public function clearMessageId()
     {
         $this->_messageId = null;
-        $this->_clearHeader('Message-Id');
+        $this->clearHeader('Message-Id');
 
         return $this;
     }
@@ -1123,7 +1139,7 @@ class Zend_Mail extends Zend_Mime_Message
             /**
              * @see Zend_Mail_Exception
              */
-            require_once 'Zend/Mail/Exception.php';
+            // require_once 'Zend/Mail/Exception.php';
             throw new Zend_Mail_Exception('Cannot set standard header from addHeader()');
         }
 
@@ -1156,7 +1172,7 @@ class Zend_Mail extends Zend_Mime_Message
     {
         if ($transport === null) {
             if (! self::$_defaultTransport instanceof Zend_Mail_Transport_Abstract) {
-                require_once 'Zend/Mail/Transport/Sendmail.php';
+                // require_once 'Zend/Mail/Transport/Sendmail.php';
                 $transport = new Zend_Mail_Transport_Sendmail();
             } else {
                 $transport = self::$_defaultTransport;

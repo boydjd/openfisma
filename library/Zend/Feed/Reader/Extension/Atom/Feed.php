@@ -22,22 +22,22 @@
 /**
  * @see Zend_Feed_Reader_Extension_FeedAbstract
  */
-require_once 'Zend/Feed/Reader/Extension/FeedAbstract.php';
+// require_once 'Zend/Feed/Reader/Extension/FeedAbstract.php';
 
 /**
  * @see Zend_Date
  */
-require_once 'Zend/Date.php';
+// require_once 'Zend/Date.php';
 
 /**
  * @see Zend_Uri
  */
-require_once 'Zend/Uri.php';
+// require_once 'Zend/Uri.php';
 
 /**
  * @see Zend_Feed_Reader_Collection_Author
  */
-require_once 'Zend/Feed/Reader/Collection/Author.php';
+// require_once 'Zend/Feed/Reader/Collection/Author.php';
 
 /**
  * @category   Zend
@@ -317,6 +317,30 @@ class Zend_Feed_Reader_Extension_Atom_Feed
     }
 
     /**
+     * Get the feed image
+     *
+     * @return array|null
+     */
+    public function getIcon()
+    {
+        if (array_key_exists('icon', $this->_data)) {
+            return $this->_data['icon'];
+        }
+
+        $imageUrl = $this->_xpath->evaluate('string(' . $this->getXpathPrefix() . '/atom:icon)');
+
+        if (!$imageUrl) {
+            $image = null;
+        } else {
+            $image = array('uri'=>$imageUrl);
+        }
+
+        $this->_data['icon'] = $image;
+
+        return $this->_data['icon'];
+    }
+
+    /**
      * Get the base URI of the feed (if set).
      *
      * @return string|null
@@ -396,7 +420,7 @@ class Zend_Feed_Reader_Extension_Atom_Feed
             return $this->_data['hubs'];
         }
         $hubs = array();
-        
+
         $list = $this->_xpath->query($this->getXpathPrefix()
             . '//atom:link[@rel="hub"]/@href');
 
@@ -434,7 +458,7 @@ class Zend_Feed_Reader_Extension_Atom_Feed
 
         return $this->_data['title'];
     }
-    
+
     /**
      * Get all categories
      *
@@ -489,7 +513,7 @@ class Zend_Feed_Reader_Extension_Atom_Feed
         $emailNode = $element->getElementsByTagName('email');
         $nameNode  = $element->getElementsByTagName('name');
         $uriNode   = $element->getElementsByTagName('uri');
-        
+
         if ($emailNode->length && strlen($emailNode->item(0)->nodeValue) > 0) {
             $author['email'] = $emailNode->item(0)->nodeValue;
         }
@@ -515,7 +539,7 @@ class Zend_Feed_Reader_Extension_Atom_Feed
     protected function _absolutiseUri($link)
     {
         if (!Zend_Uri::check($link)) {
-            if (!is_null($this->getBaseUrl())) {
+            if ($this->getBaseUrl() !== null) {
                 $link = $this->getBaseUrl() . $link;
                 if (!Zend_Uri::check($link)) {
                     $link = null;

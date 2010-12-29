@@ -21,7 +21,7 @@
  */
 
 /** Zend_Log_Writer_Abstract */
-require_once 'Zend/Log/Writer/Abstract.php';
+// require_once 'Zend/Log/Writer/Abstract.php';
 
 /**
  * @category   Zend
@@ -35,11 +35,15 @@ class Zend_Log_Writer_Mock extends Zend_Log_Writer_Abstract
 {
     /**
      * array of log events
+     *
+     * @var array
      */
     public $events = array();
 
     /**
      * shutdown called?
+     *
+     * @var boolean
      */
     public $shutdown = false;
 
@@ -66,12 +70,11 @@ class Zend_Log_Writer_Mock extends Zend_Log_Writer_Abstract
 
     /**
      * Create a new instance of Zend_Log_Writer_Mock
-     * 
+     *
      * @param  array|Zend_Config $config
      * @return Zend_Log_Writer_Mock
-     * @throws Zend_Log_Exception
      */
-    static public function factory($config) 
+    static public function factory($config)
     {
         return new self();
     }

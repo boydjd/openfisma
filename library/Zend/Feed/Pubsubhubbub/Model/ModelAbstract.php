@@ -16,17 +16,18 @@
  * @package    Zend_Feed_Pubsubhubbub
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
  */
 
 
 /** @see Zend_Db_Table */
-require_once 'Zend/Db/Table.php';
+// require_once 'Zend/Db/Table.php';
 
-/** 
+/**
  * @see Zend_Registry
  * Seems to fix the file not being included by Zend_Db_Table...
  */
-require_once 'Zend/Registry.php';
+// require_once 'Zend/Registry.php';
 
 /**
  * @category   Zend
@@ -42,17 +43,17 @@ class Zend_Feed_Pubsubhubbub_Model_ModelAbstract
      * @var Zend_Db_Table
      */
     protected $_db = null;
- 
+
     /**
      * Constructor
-     * 
-     * @param  array $data 
-     * @param  Zend_Db_Table_Abstract $tableGateway 
+     *
+     * @param  array $data
+     * @param  Zend_Db_Table_Abstract $tableGateway
      * @return void
      */
     public function __construct(Zend_Db_Table_Abstract $tableGateway = null)
     {
-        if (is_null($tableGateway)) {
+        if ($tableGateway === null) {
             $parts = explode('_', get_class($this));
             $table = strtolower(array_pop($parts));
             $this->_db = new Zend_Db_Table($table);

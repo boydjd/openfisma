@@ -23,15 +23,15 @@
 /**
  * @see Zend_Uri
  */
-require_once "Zend/Uri.php";
+// require_once "Zend/Uri.php";
 /**
  * @see Zend_Http_Cookie
  */
-require_once "Zend/Http/Cookie.php";
+// require_once "Zend/Http/Cookie.php";
 /**
  * @see Zend_Http_Response
  */
-require_once "Zend/Http/Response.php";
+// require_once "Zend/Http/Response.php";
 
 /**
  * A Zend_Http_CookieJar object is designed to contain and maintain HTTP cookies, and should
@@ -116,11 +116,12 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
      *
      * @param Zend_Http_Cookie|string $cookie
      * @param Zend_Uri_Http|string    $ref_uri Optional reference URI (for domain, path, secure)
+     * @param boolean $encodeValue
      */
-    public function addCookie($cookie, $ref_uri = null)
+    public function addCookie($cookie, $ref_uri = null, $encodeValue = true)
     {
         if (is_string($cookie)) {
-            $cookie = Zend_Http_Cookie::fromString($cookie, $ref_uri);
+            $cookie = Zend_Http_Cookie::fromString($cookie, $ref_uri, $encodeValue);
         }
 
         if ($cookie instanceof Zend_Http_Cookie) {
@@ -131,7 +132,7 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
             $this->cookies[$domain][$path][$cookie->getName()] = $cookie;
             $this->_rawCookies[] = $cookie;
         } else {
-            require_once 'Zend/Http/Exception.php';
+            // require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('Supplient argument is not a valid cookie string or object');
         }
     }
@@ -142,11 +143,12 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
      *
      * @param Zend_Http_Response $response
      * @param Zend_Uri_Http|string $ref_uri Requested URI
+     * @param boolean $encodeValue
      */
-    public function addCookiesFromResponse($response, $ref_uri)
+    public function addCookiesFromResponse($response, $ref_uri, $encodeValue = true)
     {
         if (! $response instanceof Zend_Http_Response) {
-            require_once 'Zend/Http/Exception.php';
+            // require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('$response is expected to be a Response object, ' .
                 gettype($response) . ' was passed');
         }
@@ -155,10 +157,10 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
 
         if (is_array($cookie_hdrs)) {
             foreach ($cookie_hdrs as $cookie) {
-                $this->addCookie($cookie, $ref_uri);
+                $this->addCookie($cookie, $ref_uri, $encodeValue);
             }
         } elseif (is_string($cookie_hdrs)) {
-            $this->addCookie($cookie_hdrs, $ref_uri);
+            $this->addCookie($cookie_hdrs, $ref_uri, $encodeValue);
         }
     }
 
@@ -190,7 +192,7 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
     {
         if (is_string($uri)) $uri = Zend_Uri::factory($uri);
         if (! $uri instanceof Zend_Uri_Http) {
-            require_once 'Zend/Http/Exception.php';
+            // require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception("Invalid URI string or object passed");
         }
 
@@ -226,7 +228,7 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
         }
 
         if (! $uri instanceof Zend_Uri_Http) {
-            require_once 'Zend/Http/Exception.php';
+            // require_once 'Zend/Http/Exception.php';
             throw new Zend_Http_Exception('Invalid URI specified');
         }
 
@@ -249,7 +251,7 @@ class Zend_Http_CookieJar implements Countable, IteratorAggregate
                     break;
 
                 default:
-                    require_once 'Zend/Http/Exception.php';
+                    // require_once 'Zend/Http/Exception.php';
                     throw new Zend_Http_Exception("Invalid value passed for \$ret_as: {$ret_as}");
                     break;
             }

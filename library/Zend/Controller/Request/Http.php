@@ -20,10 +20,10 @@
  */
 
 /** @see Zend_Controller_Request_Abstract */
-require_once 'Zend/Controller/Request/Abstract.php';
+// require_once 'Zend/Controller/Request/Abstract.php';
 
 /** @see Zend_Uri */
-require_once 'Zend/Uri.php';
+// require_once 'Zend/Uri.php';
 
 /**
  * Zend_Controller_Request_Http
@@ -121,7 +121,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
 
                 $this->setRequestUri($path);
             } else {
-                require_once 'Zend/Controller/Request/Exception.php';
+                // require_once 'Zend/Controller/Request/Exception.php';
                 throw new Zend_Controller_Request_Exception('Invalid URI provided to constructor');
             }
         } else {
@@ -186,7 +186,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
      */
     public function __set($key, $value)
     {
-        require_once 'Zend/Controller/Request/Exception.php';
+        // require_once 'Zend/Controller/Request/Exception.php';
         throw new Zend_Controller_Request_Exception('Setting values in superglobals not allowed; please use setParam()');
     }
 
@@ -249,7 +249,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
     public function setQuery($spec, $value = null)
     {
         if ((null === $value) && !is_array($spec)) {
-            require_once 'Zend/Controller/Exception.php';
+            // require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Invalid value passed to setQuery(); must be either array of values or key/value pair');
         }
         if ((null === $value) && is_array($spec)) {
@@ -291,7 +291,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
     public function setPost($spec, $value = null)
     {
         if ((null === $value) && !is_array($spec)) {
-            require_once 'Zend/Controller/Exception.php';
+            // require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Invalid value passed to setPost(); must be either array of values or key/value pair');
         }
         if ((null === $value) && is_array($spec)) {
@@ -551,7 +551,7 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
             $this->setBaseUrl();
         }
 
-        return $this->_baseUrl;
+        return urldecode($this->_baseUrl);
     }
 
     /**
@@ -623,17 +623,19 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
                 $requestUri = substr($requestUri, 0, $pos);
             }
 
+            $requestUri = urldecode($requestUri);
+
             if (null !== $baseUrl
-                && ((!empty($baseUrl) && 0 === strpos($requestUri, $baseUrl)) 
+                && ((!empty($baseUrl) && 0 === strpos($requestUri, $baseUrl))
                     || empty($baseUrl))
                     && false === ($pathInfo = substr($requestUri, strlen($baseUrl)))
-            ){ 
-                // If substr() returns false then PATH_INFO is set to an empty string 
+            ){
+                // If substr() returns false then PATH_INFO is set to an empty string
                 $pathInfo = '';
-            } elseif (null === $baseUrl 
+            } elseif (null === $baseUrl
                     || (!empty($baseUrl) && false === strpos($requestUri, $baseUrl))
-            ) { 
-                $pathInfo = $requestUri; 
+            ) {
+                $pathInfo = $requestUri;
             }
         }
 
@@ -973,13 +975,13 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
     public function getHeader($header)
     {
         if (empty($header)) {
-            require_once 'Zend/Controller/Request/Exception.php';
+            // require_once 'Zend/Controller/Request/Exception.php';
             throw new Zend_Controller_Request_Exception('An HTTP header name is required');
         }
 
         // Try to get it from the $_SERVER array first
         $temp = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
-        if (!empty($_SERVER[$temp])) {
+        if (isset($_SERVER[$temp])) {
             return $_SERVER[$temp];
         }
 
@@ -987,8 +989,14 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
         // Apache
         if (function_exists('apache_request_headers')) {
             $headers = apache_request_headers();
-            if (!empty($headers[$header])) {
+            if (isset($headers[$header])) {
                 return $headers[$header];
+            }
+            $header = strtolower($header);
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) == $header) {
+                    return $value;
+                }
             }
         }
 
@@ -1025,7 +1033,10 @@ class Zend_Controller_Request_Http extends Zend_Controller_Request_Abstract
         $name   = $this->getServer('SERVER_NAME');
         $port   = $this->getServer('SERVER_PORT');
 
-        if (($scheme == self::SCHEME_HTTP && $port == 80) || ($scheme == self::SCHEME_HTTPS && $port == 443)) {
+        if(null === $name) {
+            return '';
+        }
+        elseif (($scheme == self::SCHEME_HTTP && $port == 80) || ($scheme == self::SCHEME_HTTPS && $port == 443)) {
             return $name;
         } else {
             return $name . ':' . $port;

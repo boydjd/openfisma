@@ -20,7 +20,7 @@
  */
 
 /** Zend_Form_Element_Xhtml */
-require_once 'Zend/Form/Element/Xhtml.php';
+// require_once 'Zend/Form/Element/Xhtml.php';
 
 /**
  * Submit form element
@@ -52,7 +52,7 @@ class Zend_Form_Element_Submit extends Zend_Form_Element_Xhtml
         if (is_string($spec) && ((null !== $options) && is_string($options))) {
             $options = array('label' => $options);
         }
-        
+
         if (!isset($options['ignore'])) {
             $options['ignore'] = true;
         }

@@ -23,7 +23,7 @@
 /**
  * @see Zend_Application_Bootstrap_Bootstrap
  */
-require_once 'Zend/Application/Bootstrap/Bootstrap.php';
+// require_once 'Zend/Application/Bootstrap/Bootstrap.php';
 
 /**
  * Base bootstrap class for modules
@@ -97,9 +97,9 @@ abstract class Zend_Application_Module_Bootstrap
     /**
      * Get default application namespace
      *
-     * Proxies to {@link getModuleName()}, and returns the current module 
+     * Proxies to {@link getModuleName()}, and returns the current module
      * name
-     * 
+     *
      * @return string
      */
     public function getAppNamespace()

@@ -22,12 +22,12 @@
 /**
  * @see Zend_Dom_Query_Css2Xpath
  */
-require_once 'Zend/Dom/Query/Css2Xpath.php';
+// require_once 'Zend/Dom/Query/Css2Xpath.php';
 
 /**
  * @see Zend_Dom_Query_Result
  */
-require_once 'Zend/Dom/Query/Result.php';
+// require_once 'Zend/Dom/Query/Result.php';
 
 /**
  * Query DOM structures based on CSS selectors and/or XPath
@@ -65,47 +65,87 @@ class Zend_Dom_Query
     protected $_docType;
 
     /**
+     * Document encoding
+     * @var null|string
+     */
+    protected $_encoding;
+
+    /**
+     * XPath namespaces
+     * @var array
+     */
+    protected $_xpathNamespaces = array();
+
+    /**
      * Constructor
      *
      * @param  null|string $document
      * @return void
      */
-    public function __construct($document = null)
+    public function __construct($document = null, $encoding = null)
     {
+        $this->setEncoding($encoding);
         $this->setDocument($document);
+    }
+
+    /**
+     * Set document encoding
+     *
+     * @param  string $encoding
+     * @return Zend_Dom_Query
+     */
+    public function setEncoding($encoding)
+    {
+        $this->_encoding = (null === $encoding) ? null : (string) $encoding;
+        return $this;
+    }
+
+    /**
+     * Get document encoding
+     *
+     * @return null|string
+     */
+    public function getEncoding()
+    {
+        return $this->_encoding;
     }
 
     /**
      * Set document to query
      *
      * @param  string $document
+     * @param  null|string $encoding Document encoding
      * @return Zend_Dom_Query
      */
-    public function setDocument($document)
+    public function setDocument($document, $encoding = null)
     {
         if (0 === strlen($document)) {
             return $this;
         }
         // breaking XML declaration to make syntax highlighting work
         if ('<' . '?xml' == substr(trim($document), 0, 5)) {
-            return $this->setDocumentXml($document);
+            return $this->setDocumentXml($document, $encoding);
         }
         if (strstr($document, 'DTD XHTML')) {
-            return $this->setDocumentXhtml($document);
+            return $this->setDocumentXhtml($document, $encoding);
         }
-        return $this->setDocumentHtml($document);
+        return $this->setDocumentHtml($document, $encoding);
     }
 
     /**
      * Register HTML document
      *
      * @param  string $document
+     * @param  null|string $encoding Document encoding
      * @return Zend_Dom_Query
      */
-    public function setDocumentHtml($document)
+    public function setDocumentHtml($document, $encoding = null)
     {
         $this->_document = (string) $document;
         $this->_docType  = self::DOC_HTML;
+        if (null !== $encoding) {
+            $this->setEncoding($encoding);
+        }
         return $this;
     }
 
@@ -113,12 +153,16 @@ class Zend_Dom_Query
      * Register XHTML document
      *
      * @param  string $document
+     * @param  null|string $encoding Document encoding
      * @return Zend_Dom_Query
      */
-    public function setDocumentXhtml($document)
+    public function setDocumentXhtml($document, $encoding = null)
     {
         $this->_document = (string) $document;
         $this->_docType  = self::DOC_XHTML;
+        if (null !== $encoding) {
+            $this->setEncoding($encoding);
+        }
         return $this;
     }
 
@@ -126,12 +170,16 @@ class Zend_Dom_Query
      * Register XML document
      *
      * @param  string $document
+     * @param  null|string $encoding Document encoding
      * @return Zend_Dom_Query
      */
-    public function setDocumentXml($document)
+    public function setDocumentXml($document, $encoding = null)
     {
         $this->_document = (string) $document;
         $this->_docType  = self::DOC_XML;
+        if (null !== $encoding) {
+            $this->setEncoding($encoding);
+        }
         return $this;
     }
 
@@ -157,7 +205,7 @@ class Zend_Dom_Query
 
     /**
      * Get any DOMDocument errors found
-     * 
+     *
      * @return false|array
      */
     public function getDocumentErrors()
@@ -187,12 +235,17 @@ class Zend_Dom_Query
     public function queryXpath($xpathQuery, $query = null)
     {
         if (null === ($document = $this->getDocument())) {
-            require_once 'Zend/Dom/Exception.php';
+            // require_once 'Zend/Dom/Exception.php';
             throw new Zend_Dom_Exception('Cannot query; no document registered');
         }
 
+        $encoding = $this->getEncoding();
         libxml_use_internal_errors(true);
-        $domDoc = new DOMDocument;
+        if (null === $encoding) {
+            $domDoc = new DOMDocument('1.0');
+        } else {
+            $domDoc = new DOMDocument('1.0', $encoding);
+        }
         $type   = $this->getDocumentType();
         switch ($type) {
             case self::DOC_XML:
@@ -212,12 +265,23 @@ class Zend_Dom_Query
         libxml_use_internal_errors(false);
 
         if (!$success) {
-            require_once 'Zend/Dom/Exception.php';
+            // require_once 'Zend/Dom/Exception.php';
             throw new Zend_Dom_Exception(sprintf('Error parsing document (type == %s)', $type));
         }
 
         $nodeList   = $this->_getNodeList($domDoc, $xpathQuery);
         return new Zend_Dom_Query_Result($query, $xpathQuery, $domDoc, $nodeList);
+    }
+
+    /**
+     * Register XPath namespaces
+     *
+     * @param   array $xpathNamespaces
+     * @return  void
+     */
+    public function registerXpathNamespaces($xpathNamespaces)
+    {
+        $this->_xpathNamespaces = $xpathNamespaces;
     }
 
     /**
@@ -230,6 +294,9 @@ class Zend_Dom_Query
     protected function _getNodeList($document, $xpathQuery)
     {
         $xpath      = new DOMXPath($document);
+        foreach ($this->_xpathNamespaces as $prefix => $namespaceUri) {
+            $xpath->registerNamespace($prefix, $namespaceUri);
+        }
         $xpathQuery = (string) $xpathQuery;
         if (preg_match_all('|\[contains\((@[a-z0-9_-]+),\s?\' |i', $xpathQuery, $matches)) {
             foreach ($matches[1] as $attribute) {

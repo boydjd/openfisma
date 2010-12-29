@@ -23,12 +23,12 @@
 /**
  * @see Zend_Service_WindowsAzure_Diagnostics_Exception
  */
-require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
+// require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
 
 /**
  * @see Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
  */
-require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstract.php';
+// require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstract.php';
 
 /**
  * @category   Zend
@@ -37,23 +37,31 @@ require_once 'Zend/Service/WindowsAzure/Diagnostics/ConfigurationObjectBaseAbstr
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  *
- * @property	string	CounterSpecifier					Counter specifier
- * @property	int		SampleRateInSeconds					Sample rate in seconds
+ * @property    string    CounterSpecifier                    Counter specifier
+ * @property    int        SampleRateInSeconds                    Sample rate in seconds
  */
 class Zend_Service_WindowsAzure_Diagnostics_PerformanceCounterSubscription
-	extends Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
+    extends Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbstract
 {
     /**
      * Constructor
-     * 
+     *
+<<<<<<< HEAD
+      * @param    string    $counterSpecifier                    Counter specifier
+      * @param    int        $sampleRateInSeconds                Sample rate in seconds
+     */
+    public function __construct($counterSpecifier, $sampleRateInSeconds = 1)
+    {    
+=======
  	 * @param	string	$counterSpecifier					Counter specifier
  	 * @param	int		$sampleRateInSeconds				Sample rate in seconds
 	 */
-    public function __construct($counterSpecifier, $sampleRateInSeconds = 1) 
-    {	        
+    public function __construct($counterSpecifier, $sampleRateInSeconds = 1)
+    {	
+>>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
             'counterspecifier'      => $counterSpecifier,
-            'samplerateinseconds' 	=> $sampleRateInSeconds
+            'samplerateinseconds'     => $sampleRateInSeconds
         );
     }
 }

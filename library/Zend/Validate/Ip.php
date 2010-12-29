@@ -22,7 +22,7 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @category   Zend
@@ -39,7 +39,7 @@ class Zend_Validate_Ip extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::INVALID        => "Invalid type given, value should be a string",
+        self::INVALID        => "Invalid type given. String expected",
         self::NOT_IP_ADDRESS => "'%value%' does not appear to be a valid IP address",
     );
 
@@ -104,7 +104,7 @@ class Zend_Validate_Ip extends Zend_Validate_Abstract
         }
 
         if (!$this->_options['allowipv4'] && !$this->_options['allowipv6']) {
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Nothing to validate. Check your options');
         }
 

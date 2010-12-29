@@ -23,7 +23,23 @@
 /**
  * @see Zend_Tool_Project_Context_Filesystem_Directory
  */
-require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
+// require_once 'Zend/Tool/Project/Context/Filesystem/Directory.php';
+
+/**
+ * @see Zend_Filter
+ */
+// require_once 'Zend/Filter.php';
+
+/**
+ * @see Zend_Filter_Word_CamelCaseToDash
+ */
+// require_once 'Zend/Filter/Word/CamelCaseToDash.php';
+
+/**
+ * @see Zend_Filter_StringToLower
+ */
+// require_once 'Zend/Filter/StringToLower.php';
+
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
@@ -83,7 +99,7 @@ class Zend_Tool_Project_Context_Zf_ViewControllerScriptsDirectory extends Zend_T
     {
         return 'ViewControllerScriptsDirectory';
     }
-    
+
     protected function _convertControllerNameToFilesystemName($controllerName)
     {
         $filter = new Zend_Filter();

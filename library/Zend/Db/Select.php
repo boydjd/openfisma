@@ -24,12 +24,12 @@
 /**
  * @see Zend_Db_Adapter_Abstract
  */
-require_once 'Zend/Db/Adapter/Abstract.php';
+// require_once 'Zend/Db/Adapter/Abstract.php';
 
 /**
  * @see Zend_Db_Expr
  */
-require_once 'Zend/Db/Expr.php';
+// require_once 'Zend/Db/Expr.php';
 
 
 /**
@@ -207,8 +207,8 @@ class Zend_Db_Select
      * The first parameter $name can be a simple string, in which case the
      * correlation name is generated automatically.  If you want to specify
      * the correlation name, the first parameter must be an associative
-     * array in which the key is the physical table name, and the value is
-     * the correlation name.  For example, array('table' => 'alias').
+     * array in which the key is the correlation name, and the value is
+     * the physical table name.  For example, array('alias' => 'table').
      * The correlation name is prepended to all columns fetched for this
      * table.
      *
@@ -219,8 +219,8 @@ class Zend_Db_Select
      * no correlation name is generated or prepended to the columns named
      * in the second parameter.
      *
-     * @param  array|string|Zend_Db_Expr $name The table name or an associative array relating table name to
-     *                                         correlation name.
+     * @param  array|string|Zend_Db_Expr $name The table name or an associative array
+     *                                         relating correlation name to table name.
      * @param  array|string|Zend_Db_Expr $cols The columns to select from this table.
      * @param  string $schema The schema name to specify, if any.
      * @return Zend_Db_Select This Zend_Db_Select object.
@@ -251,7 +251,7 @@ class Zend_Db_Select
             /**
              * @see Zend_Db_Select_Exception
              */
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("No table has been specified for the FROM clause");
         }
 
@@ -280,14 +280,14 @@ class Zend_Db_Select
     public function union($select = array(), $type = self::SQL_UNION)
     {
         if (!is_array($select)) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception(
                 "union() only accepts an array of Zend_Db_Select instances of sql query strings."
             );
         }
 
         if (!in_array($type, self::$_unionTypes)) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("Invalid union type '{$type}'");
         }
 
@@ -467,7 +467,7 @@ class Zend_Db_Select
      *
      * @param string   $cond  The WHERE condition.
      * @param mixed    $value OPTIONAL The value to quote into the condition.
-     * @param constant $type  OPTIONAL The type of the given value
+     * @param int      $type  OPTIONAL The type of the given value
      * @return Zend_Db_Select This Zend_Db_Select object.
      */
     public function where($cond, $value = null, $type = null)
@@ -484,7 +484,7 @@ class Zend_Db_Select
      *
      * @param string   $cond  The WHERE condition.
      * @param mixed    $value OPTIONAL The value to quote into the condition.
-     * @param constant $type  OPTIONAL The type of the given value
+     * @param int      $type  OPTIONAL The type of the given value
      * @return Zend_Db_Select This Zend_Db_Select object.
      *
      * @see where()
@@ -526,14 +526,14 @@ class Zend_Db_Select
      * appears. See {@link where()} for an example
      *
      * @param string $cond The HAVING condition.
-     * @param string|Zend_Db_Expr $val The value to quote into the condition.
+     * @param mixed    $value OPTIONAL The value to quote into the condition.
+     * @param int      $type  OPTIONAL The type of the given value
      * @return Zend_Db_Select This Zend_Db_Select object.
      */
-    public function having($cond)
+    public function having($cond, $value = null, $type = null)
     {
-        if (func_num_args() > 1) {
-            $val = func_get_arg(1);
-            $cond = $this->_adapter->quoteInto($cond, $val);
+        if ($value !== null) {
+            $cond = $this->_adapter->quoteInto($cond, $value, $type);
         }
 
         if ($this->_parts[self::HAVING]) {
@@ -551,16 +551,16 @@ class Zend_Db_Select
      * Otherwise identical to orHaving().
      *
      * @param string $cond The HAVING condition.
-     * @param mixed  $val  The value to quote into the condition.
+     * @param mixed    $value OPTIONAL The value to quote into the condition.
+     * @param int      $type  OPTIONAL The type of the given value
      * @return Zend_Db_Select This Zend_Db_Select object.
      *
      * @see having()
      */
-    public function orHaving($cond)
+    public function orHaving($cond, $value = null, $type = null)
     {
-        if (func_num_args() > 1) {
-            $val = func_get_arg(1);
-            $cond = $this->_adapter->quoteInto($cond, $val);
+        if ($value !== null) {
+            $cond = $this->_adapter->quoteInto($cond, $value, $type);
         }
 
         if ($this->_parts[self::HAVING]) {
@@ -664,7 +664,7 @@ class Zend_Db_Select
     {
         $part = strtolower($part);
         if (!array_key_exists($part, $this->_parts)) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("Invalid Select part '$part'");
         }
         return $this->_parts[$part];
@@ -757,12 +757,12 @@ class Zend_Db_Select
             /**
              * @see Zend_Db_Select_Exception
              */
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("Invalid join type '$type'");
         }
 
         if (count($this->_parts[self::UNION])) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("Invalid use of table with " . self::SQL_UNION);
         }
 
@@ -804,7 +804,7 @@ class Zend_Db_Select
                 /**
                  * @see Zend_Db_Select_Exception
                  */
-                require_once 'Zend/Db/Select/Exception.php';
+                // require_once 'Zend/Db/Select/Exception.php';
                 throw new Zend_Db_Select_Exception("You cannot define a correlation name '$correlationName' more than once");
             }
 
@@ -873,7 +873,7 @@ class Zend_Db_Select
     public function _joinUsing($type, $name, $cond, $cols = '*', $schema = null)
     {
         if (empty($this->_parts[self::FROM])) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("You can only perform a joinUsing after specifying a FROM table");
         }
 
@@ -992,7 +992,7 @@ class Zend_Db_Select
     protected function _where($condition, $value = null, $type = null, $bool = true)
     {
         if (count($this->_parts[self::UNION])) {
-            require_once 'Zend/Db/Select/Exception.php';
+            // require_once 'Zend/Db/Select/Exception.php';
             throw new Zend_Db_Select_Exception("Invalid use of where clause with " . self::SQL_UNION);
         }
 
@@ -1314,11 +1314,11 @@ class Zend_Db_Select
             if ($type) {
                 $type .= ' join';
                 if (!in_array($type, self::$_joinTypes)) {
-                    require_once 'Zend/Db/Select/Exception.php';
+                    // require_once 'Zend/Db/Select/Exception.php';
                     throw new Zend_Db_Select_Exception("Unrecognized method '$method()'");
                 }
                 if (in_array($type, array(self::CROSS_JOIN, self::NATURAL_JOIN))) {
-                    require_once 'Zend/Db/Select/Exception.php';
+                    // require_once 'Zend/Db/Select/Exception.php';
                     throw new Zend_Db_Select_Exception("Cannot perform a joinUsing with method '$method()'");
                 }
             } else {
@@ -1328,7 +1328,7 @@ class Zend_Db_Select
             return call_user_func_array(array($this, '_joinUsing'), $args);
         }
 
-        require_once 'Zend/Db/Select/Exception.php';
+        // require_once 'Zend/Db/Select/Exception.php';
         throw new Zend_Db_Select_Exception("Unrecognized method '$method()'");
     }
 

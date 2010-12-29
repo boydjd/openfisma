@@ -23,17 +23,17 @@
 /**
  * @see Zend_Rest_Client
  */
-require_once 'Zend/Rest/Client.php';
+// require_once 'Zend/Rest/Client.php';
 
 /**
  * @see Zend_Rest_Client_Result
  */
-require_once 'Zend/Rest/Client/Result.php';
+// require_once 'Zend/Rest/Client/Result.php';
 
 /**
  * @see Zend_Oauth_Consumer
  */
-require_once 'Zend/Oauth/Consumer.php';
+// require_once 'Zend/Oauth/Consumer.php';
 
 /**
  * @category   Zend
@@ -54,45 +54,45 @@ class Zend_Service_Twitter extends Zend_Rest_Client
      * This should be reviewed in the future...
      */
     const STATUS_MAX_CHARACTERS = 246;
-    
+
     /**
      * OAuth Endpoint
      */
     const OAUTH_BASE_URI = 'http://twitter.com/oauth';
-    
+
     /**
      * @var Zend_Http_CookieJar
      */
     protected $_cookieJar;
-    
+
     /**
      * Date format for 'since' strings
      *
      * @var string
      */
     protected $_dateFormat = 'D, d M Y H:i:s T';
-    
+
     /**
      * Username
      *
      * @var string
      */
     protected $_username;
-    
+
     /**
      * Current method type (for method proxying)
      *
      * @var string
      */
     protected $_methodType;
-    
+
     /**
      * Zend_Oauth Consumer
      *
      * @var Zend_Oauth_Consumer
      */
     protected $_oauthConsumer = null;
-    
+
     /**
      * Types of API methods
      *
@@ -107,7 +107,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
         'favorite',
         'block'
     );
-    
+
     /**
      * Options passed to constructor
      *
@@ -145,7 +145,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
             $this->setLocalHttpClient($options['accessToken']->getHttpClient($options));
         } else {
             $this->setLocalHttpClient(clone self::getHttpClient());
-            if (is_null($consumer)) {
+            if ($consumer === null) {
                 $this->_oauthConsumer = new Zend_Oauth_Consumer($options);
             } else {
                 $this->_oauthConsumer = $consumer;
@@ -166,7 +166,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
         $this->_localHttpClient->setHeaders('Accept-Charset', 'ISO-8859-1,utf-8');
         return $this;
     }
-    
+
     /**
      * Get the local HTTP client as distinct from the static HTTP client
      * inherited from Zend_Rest_Client
@@ -177,7 +177,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
     {
         return $this->_localHttpClient;
     }
-    
+
     /**
      * Checks for an authorised state
      *
@@ -274,7 +274,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
     protected function _init()
     {
         if (!$this->isAuthorised() && $this->getUsername() !== null) {
-            require_once 'Zend/Service/Twitter/Exception.php';
+            // require_once 'Zend/Service/Twitter/Exception.php';
             throw new Zend_Service_Twitter_Exception(
                 'Twitter session is unauthorised. You need to initialize '
                 . 'Zend_Service_Twitter with an OAuth Access Token or use '
@@ -376,8 +376,11 @@ class Zend_Service_Twitter extends Zend_Rest_Client
      * - page: return page X of results
      * - count: how many statuses to return
      * - max_id: returns only statuses with an ID less than or equal to the specified ID
-     * - user_id: specfies the ID of the user for whom to return the user_timeline
+     * - user_id: specifies the ID of the user for whom to return the user_timeline
      * - screen_name: specfies the screen name of the user for whom to return the user_timeline
+     * - include_rts: whether or not to return retweets
+     * - trim_user: whether to return just the user ID or a full user object; omit to return full object
+     * - include_entities: whether or not to return entities nodes with tweet metadata
      *
      * @throws Zend_Http_Client_Exception if HTTP request fails or times out
      * @return Zend_Rest_Client_Result
@@ -415,6 +418,11 @@ class Zend_Service_Twitter extends Zend_Rest_Client
                     break;
                 case 'max_id':
                     $_params['max_id'] = $this->_validInteger($value);
+                    break;
+                case 'include_rts':
+                case 'trim_user':
+                case 'include_entities':
+                    $_params[strtolower($key)] = $value ? '1' : '0';
                     break;
                 default:
                     break;
@@ -936,8 +944,8 @@ class Zend_Service_Twitter extends Zend_Rest_Client
      */
     protected function _validateScreenName($name)
     {
-        if (!preg_match('/^[a-zA-Z0-9_]{0,20}$/', $name)) {
-            require_once 'Zend/Service/Twitter/Exception.php';
+        if (!preg_match('/^[a-zA-Z0-9_]{0,15}$/', $name)) {
+            // require_once 'Zend/Service/Twitter/Exception.php';
             throw new Zend_Service_Twitter_Exception(
                 'Screen name, "' . $name
                 . '" should only contain alphanumeric characters and'
@@ -957,7 +965,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
     {
         // Get the URI object and configure it
         if (!$this->_uri instanceof Zend_Uri_Http) {
-            require_once 'Zend/Rest/Client/Exception.php';
+            // require_once 'Zend/Rest/Client/Exception.php';
             throw new Zend_Rest_Client_Exception(
                 'URI object must be set before performing call'
             );

@@ -21,7 +21,7 @@
 /**
  * Zend_Exception
  */
-require_once 'Zend/Exception.php';
+// require_once 'Zend/Exception.php';
 
 /**
  * Zend_Barcode_Exception
@@ -41,8 +41,8 @@ class Zend_Barcode_Exception extends Zend_Exception
 
     /**
      * Set renderable flag
-     * 
-     * @param  bool $flag 
+     *
+     * @param  bool $flag
      * @return Zend_Barcode_Exception
      */
     public function setIsRenderable($flag)
@@ -53,7 +53,7 @@ class Zend_Barcode_Exception extends Zend_Exception
 
     /**
      * Retrieve renderable flag
-     * 
+     *
      * @return bool
      */
     public function isRenderable()

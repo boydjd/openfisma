@@ -23,7 +23,7 @@
 /**
  * @see Zend_Queue_Stomp_FrameInterface
  */
-require_once 'Zend/Queue/Stomp/FrameInterface.php';
+// require_once 'Zend/Queue/Stomp/FrameInterface.php';
 
 /**
  * This class represents a Stomp Frame
@@ -105,7 +105,7 @@ class Zend_Queue_Stomp_Frame
     public function setAutoContentLength($auto)
     {
         if (!is_bool($auto)) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$auto is not a boolean');
         }
 
@@ -151,12 +151,12 @@ class Zend_Queue_Stomp_Frame
      */
     public function setHeader($header, $value) {
         if (!is_string($header)) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$header is not a string: ' . print_r($header, true));
         }
 
         if (!is_scalar($value)) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$value is not a string: ' . print_r($value, true));
         }
 
@@ -177,7 +177,7 @@ class Zend_Queue_Stomp_Frame
     public function getHeader($header)
     {
         if (!is_string($header)) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$header is not a string');
         }
 
@@ -195,7 +195,7 @@ class Zend_Queue_Stomp_Frame
      */
     public function getBody()
     {
-        return is_null($this->_body)
+        return $this->_body === null
             ? false
             : $this->_body;
     }
@@ -211,8 +211,8 @@ class Zend_Queue_Stomp_Frame
      */
     public function setBody($body)
     {
-        if (!is_string($body) && !is_null($body)) {
-            require_once 'Zend/Queue/Exception.php';
+        if (!is_string($body) && $body !== null) {
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$body is not a string or null');
         }
 
@@ -229,7 +229,7 @@ class Zend_Queue_Stomp_Frame
      */
     public function getCommand()
     {
-        return is_null($this->_command)
+        return $this->_command === null
             ? false
             : $this->_command;
     }
@@ -243,8 +243,8 @@ class Zend_Queue_Stomp_Frame
      */
     public function setCommand($command)
     {
-        if (!is_string($command) && !is_null($command)) {
-            require_once 'Zend/Queue/Exception.php';
+        if (!is_string($command) && $command !== null) {
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$command is not a string or null');
         }
 
@@ -261,7 +261,7 @@ class Zend_Queue_Stomp_Frame
     public function toFrame()
     {
         if ($this->getCommand() === false) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('You must set the command');
         }
 
@@ -319,7 +319,7 @@ class Zend_Queue_Stomp_Frame
     public function fromFrame($frame)
     {
         if (!is_string($frame)) {
-            require_once 'Zend/Queue/Exception.php';
+            // require_once 'Zend/Queue/Exception.php';
             throw new Zend_Queue_Exception('$frame is not a string');
         }
 

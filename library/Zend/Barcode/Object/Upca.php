@@ -23,12 +23,12 @@
 /**
  * @see Zend_Barcode_Object_Ean13
  */
-require_once 'Zend/Barcode/Object/Ean13.php';
+// require_once 'Zend/Barcode/Object/Ean13.php';
 
 /**
  * @see Zend_Validate_Barcode
  */
-require_once 'Zend/Validate/Barcode.php';
+// require_once 'Zend/Validate/Barcode.php';
 
 /**
  * Class for generate UpcA barcode
@@ -49,6 +49,7 @@ class Zend_Barcode_Object_Upca extends Zend_Barcode_Object_Ean13
     {
         $this->_barcodeLength = 12;
         $this->_mandatoryChecksum = true;
+        $this->_mandatoryQuietZones = true;
     }
 
     /**

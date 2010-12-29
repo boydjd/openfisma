@@ -22,12 +22,12 @@
 /**
  * @see Zend_Feed_Reader_FeedAbstract
  */
-require_once 'Zend/Feed/Reader/FeedAbstract.php';
+// require_once 'Zend/Feed/Reader/FeedAbstract.php';
 
 /**
  * @see Zend_Feed_Reader_Extension_Atom_Feed
  */
-require_once 'Zend/Feed/Reader/Extension/Atom/Feed.php';
+// require_once 'Zend/Feed/Reader/Extension/Atom/Feed.php';
 
 /**
  * @category   Zend
@@ -318,7 +318,7 @@ class Zend_Feed_Reader_Feed_Atom extends Zend_Feed_Reader_FeedAbstract
 
         $link = $this->getExtension('Atom')->getFeedLink();
 
-        if (is_null($link) || empty($link)) {
+        if ($link === null || empty($link)) {
             $link = $this->getOriginalSourceUri();
         }
 
@@ -362,7 +362,7 @@ class Zend_Feed_Reader_Feed_Atom extends Zend_Feed_Reader_FeedAbstract
 
         return $this->_data['hubs'];
     }
-    
+
     /**
      * Get all categories
      *
@@ -375,7 +375,7 @@ class Zend_Feed_Reader_Feed_Atom extends Zend_Feed_Reader_FeedAbstract
         }
 
         $categoryCollection = $this->getExtension('Atom')->getCategories();
-        
+
         if (count($categoryCollection) == 0) {
             $categoryCollection = $this->getExtension('DublinCore')->getCategories();
         }

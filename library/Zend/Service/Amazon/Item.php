@@ -114,20 +114,24 @@ class Zend_Service_Amazon_Item
      *
      * @param  null|DOMElement $dom
      * @return void
+<<<<<<< HEAD
+     * @throws    Zend_Service_Amazon_Exception
+=======
      * @throws	Zend_Service_Amazon_Exception
-     * 
+>>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
+     *
      * @group ZF-9547
      */
     public function __construct($dom)
     {
-    	if (null === $dom) {
-    		require_once 'Zend/Service/Amazon/Exception.php';
-    		throw new Zend_Service_Amazon_Exception('Item element is empty');
-    	}
-    	if (!$dom instanceof DOMElement) {
-    		require_once 'Zend/Service/Amazon/Exception.php';
-    		throw new Zend_Service_Amazon_Exception('Item is not a valid DOM element');
-    	}
+        if (null === $dom) {
+            // require_once 'Zend/Service/Amazon/Exception.php';
+            throw new Zend_Service_Amazon_Exception('Item element is empty');
+        }
+        if (!$dom instanceof DOMElement) {
+            // require_once 'Zend/Service/Amazon/Exception.php';
+            throw new Zend_Service_Amazon_Exception('Item is not a valid DOM element');
+        }
         $xpath = new DOMXPath($dom->ownerDocument);
         $xpath->registerNamespace('az', 'http://webservices.amazon.com/AWSECommerceService/2005-10-05');
         $this->ASIN = $xpath->query('./az:ASIN/text()', $dom)->item(0)->data;
@@ -164,7 +168,7 @@ class Zend_Service_Amazon_Item
                 /**
                  * @see Zend_Service_Amazon_Image
                  */
-                require_once 'Zend/Service/Amazon/Image.php';
+                // require_once 'Zend/Service/Amazon/Image.php';
                 $this->$im = new Zend_Service_Amazon_Image($result->item(0));
             }
         }
@@ -179,7 +183,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_CustomerReview
              */
-            require_once 'Zend/Service/Amazon/CustomerReview.php';
+            // require_once 'Zend/Service/Amazon/CustomerReview.php';
             foreach ($result as $review) {
                 $this->CustomerReviews[] = new Zend_Service_Amazon_CustomerReview($review);
             }
@@ -192,7 +196,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_EditorialReview
              */
-            require_once 'Zend/Service/Amazon/EditorialReview.php';
+            // require_once 'Zend/Service/Amazon/EditorialReview.php';
             foreach ($result as $r) {
                 $this->EditorialReviews[] = new Zend_Service_Amazon_EditorialReview($r);
             }
@@ -203,7 +207,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_SimilarProduct
              */
-            require_once 'Zend/Service/Amazon/SimilarProduct.php';
+            // require_once 'Zend/Service/Amazon/SimilarProduct.php';
             foreach ($result as $r) {
                 $this->SimilarProducts[] = new Zend_Service_Amazon_SimilarProduct($r);
             }
@@ -214,7 +218,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_ListmaniaList
              */
-            require_once 'Zend/Service/Amazon/ListmaniaList.php';
+            // require_once 'Zend/Service/Amazon/ListmaniaList.php';
             foreach ($result as $r) {
                 $this->ListmaniaLists[] = new Zend_Service_Amazon_ListmaniaList($r);
             }
@@ -241,7 +245,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_OfferSet
              */
-            require_once 'Zend/Service/Amazon/OfferSet.php';
+            // require_once 'Zend/Service/Amazon/OfferSet.php';
             $this->Offers = new Zend_Service_Amazon_OfferSet($dom);
         }
 
@@ -250,7 +254,7 @@ class Zend_Service_Amazon_Item
             /**
              * @see Zend_Service_Amazon_Accessories
              */
-            require_once 'Zend/Service/Amazon/Accessories.php';
+            // require_once 'Zend/Service/Amazon/Accessories.php';
             foreach ($result as $r) {
                 $this->Accessories[] = new Zend_Service_Amazon_Accessories($r);
             }

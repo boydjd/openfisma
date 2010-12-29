@@ -16,11 +16,12 @@
  * @package    Zend_Pdf
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id$
  */
 
 
 /** Zend_Pdf_Filter_Interface */
-require_once 'Zend/Pdf/Filter/Interface.php';
+// require_once 'Zend/Pdf/Filter/Interface.php';
 
 /**
  * RunLength stream filter

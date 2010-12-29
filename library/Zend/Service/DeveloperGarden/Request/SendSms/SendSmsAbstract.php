@@ -24,7 +24,7 @@
 /**
  * @see Zend_Service_DeveloperGarden_Request_RequestAbstract
  */
-require_once 'Zend/Service/DeveloperGarden/Request/RequestAbstract.php';
+// require_once 'Zend/Service/DeveloperGarden/Request/RequestAbstract.php';
 
 /**
  * @category   Zend
@@ -72,14 +72,14 @@ abstract class Zend_Service_DeveloperGarden_Request_SendSms_SendSmsAbstract
      * @var array
      */
     private $_specialChars = array(
-        '|', 
-        '^', 
-        '{', 
-        '}', 
-        '[', 
-        ']', 
-        '~', 
-        '\\', 
+        '|',
+        '^',
+        '{',
+        '}',
+        '[',
+        ']',
+        '~',
+        '\\',
         "\n",
         // '€', removed because its counted in utf8 correctly
     );
@@ -139,7 +139,7 @@ abstract class Zend_Service_DeveloperGarden_Request_SendSms_SendSmsAbstract
     {
         $this->number = $number;
         if ($this->getNumberCount() > $this->_maxNumbers) {
-            require_once 'Zend/Service/DeveloperGarden/Request/Exception.php';
+            // require_once 'Zend/Service/DeveloperGarden/Request/Exception.php';
             throw new Zend_Service_DeveloperGarden_Request_Exception('The message is too long.');
         }
         return $this;
@@ -167,7 +167,7 @@ abstract class Zend_Service_DeveloperGarden_Request_SendSms_SendSmsAbstract
     {
         $this->message = $message;
         if ($this->getMessageLength() > $this->_maxLength) {
-            require_once 'Zend/Service/DeveloperGarden/Request/Exception.php';
+            // require_once 'Zend/Service/DeveloperGarden/Request/Exception.php';
             throw new Zend_Service_DeveloperGarden_Request_Exception('The message is too long.');
         }
         return $this;

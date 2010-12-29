@@ -23,22 +23,22 @@
 /**
  * @see Zend_Tool_Project_Context_Filesystem_File
  */
-require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
+// require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
 
 /**
  * @see Zend_Tool_Project_Context_System_Interface
  */
-require_once 'Zend/Tool/Project/Context/System/Interface.php';
+// require_once 'Zend/Tool/Project/Context/System/Interface.php';
 
 /**
  * @see Zend_Tool_Project_Context_System_NotOverwritable
  */
-require_once 'Zend/Tool/Project/Context/System/NotOverwritable.php';
+// require_once 'Zend/Tool/Project/Context/System/NotOverwritable.php';
 
 /**
  * @see Zend_Tool_Project_Profile_FileParser_Xml
  */
-require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
+// require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
@@ -66,7 +66,7 @@ class Zend_Tool_Project_Context_System_ProjectProfileFile
      * @var Zend_Tool_Project_Profile
      */
     protected $_profile = null;
-    
+
     /**
      * getName()
      *
@@ -76,7 +76,7 @@ class Zend_Tool_Project_Context_System_ProjectProfileFile
     {
         return 'ProjectProfileFile';
     }
-    
+
     /**
      * setProfile()
      *

@@ -22,7 +22,7 @@
 /**
  * @see Zend_Validate_Abstract
  */
-require_once 'Zend/Validate/Abstract.php';
+// require_once 'Zend/Validate/Abstract.php';
 
 /**
  * @category   Zend
@@ -44,7 +44,7 @@ class Zend_Validate_Isbn extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::INVALID => "Invalid type given, value should be string or integer",
+        self::INVALID => "Invalid type given. String or integer expected",
         self::NO_ISBN => "'%value%' is no valid ISBN number",
     );
 
@@ -79,7 +79,7 @@ class Zend_Validate_Isbn extends Zend_Validate_Abstract
             /**
              * @see Zend_Validate_Exception
              */
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid options provided.');
         }
 
@@ -227,7 +227,7 @@ class Zend_Validate_Isbn extends Zend_Validate_Abstract
             /**
              * @see Zend_Validate_Exception
              */
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid ISBN separator.');
         }
 
@@ -259,7 +259,7 @@ class Zend_Validate_Isbn extends Zend_Validate_Abstract
             /**
              * @see Zend_Validate_Exception
              */
-            require_once 'Zend/Validate/Exception.php';
+            // require_once 'Zend/Validate/Exception.php';
             throw new Zend_Validate_Exception('Invalid ISBN type');
         }
 

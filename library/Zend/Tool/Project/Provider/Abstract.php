@@ -23,27 +23,29 @@
 /**
  * @see Zend_Tool_Project_Profile
  */
-require_once 'Zend/Tool/Project/Profile.php';
+// require_once 'Zend/Tool/Project/Profile.php';
 
 /**
  * @see Zend_Tool_Framework_Provider_Abstract
  */
-require_once 'Zend/Tool/Framework/Provider/Abstract.php';
+// require_once 'Zend/Tool/Framework/Provider/Abstract.php';
 
 /**
  * @see Zend_Tool_Project_Context_Repository
  */
-require_once 'Zend/Tool/Project/Context/Repository.php';
+// require_once 'Zend/Tool/Project/Context/Repository.php';
 
 /**
  * @see Zend_Tool_Project_Profile_FileParser_Xml
  */
-require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
+// require_once 'Zend/Tool/Project/Profile/FileParser/Xml.php';
 
 /**
  * @see Zend_Tool_Framework_Registry
  */
-require_once 'Zend/Tool/Framework/Registry.php';
+// require_once 'Zend/Tool/Framework/Registry.php';
+
+// require_once 'Zend/Tool/Framework/Provider/Initializable.php';
 
 /**
  * @category   Zend
@@ -51,7 +53,9 @@ require_once 'Zend/Tool/Framework/Registry.php';
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_Provider_Abstract
+abstract class Zend_Tool_Project_Provider_Abstract
+    extends Zend_Tool_Framework_Provider_Abstract
+    implements Zend_Tool_Framework_Provider_Initializable
 {
 
     const NO_PROFILE_THROW_EXCEPTION = true;
@@ -69,16 +73,12 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
      */
     protected $_loadedProfile = null;
 
-    /**
-     * constructor
-     *
-     * YOU SHOULD NOT OVERRIDE THIS, unless you know what you are doing
-     *
-     */
-    public function __construct()
+    public function initialize()
     {
         // initialize the ZF Contexts (only once per php request)
         if (!self::$_isInitialized) {
+
+            // load all base contexts ONCE
             $contextRegistry = Zend_Tool_Project_Context_Repository::getInstance();
             $contextRegistry->addContextsFromDirectory(
                 dirname(dirname(__FILE__)) . '/Context/Zf/', 'Zend_Tool_Project_Context_Zf_'
@@ -86,6 +86,16 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
             $contextRegistry->addContextsFromDirectory(
                 dirname(dirname(__FILE__)) . '/Context/Filesystem/', 'Zend_Tool_Project_Context_Filesystem_'
             );
+
+            // determine if there are project specfic providers ONCE
+            $profilePath = $this->_findProfileDirectory();
+            if ($this->_hasProjectProviderDirectory($profilePath . DIRECTORY_SEPARATOR . '.zfproject.xml')) {
+                $profile = $this->_loadProfile();
+                // project providers directory resource
+                $ppd = $profile->search('ProjectProvidersDirectory');
+                $ppd->loadProviders($this->_registry);
+            }
+
             self::$_isInitialized = true;
         }
 
@@ -115,6 +125,25 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
      */
     protected function _loadProfile($loadProfileFlag = self::NO_PROFILE_THROW_EXCEPTION, $projectDirectory = null, $searchParentDirectories = true)
     {
+        $foundPath = $this->_findProfileDirectory($projectDirectory, $searchParentDirectories);
+
+        if ($foundPath == false) {
+            if ($loadProfileFlag == self::NO_PROFILE_THROW_EXCEPTION) {
+                throw new Zend_Tool_Project_Provider_Exception('A project profile was not found.');
+            } else {
+                return false;
+            }
+        }
+
+        $profile = new Zend_Tool_Project_Profile();
+        $profile->setAttribute('projectDirectory', $foundPath);
+        $profile->loadFromFile();
+        $this->_loadedProfile = $profile;
+        return $profile;
+    }
+
+    protected function _findProfileDirectory($projectDirectory = null, $searchParentDirectories = true)
+    {
         // use the cwd if no directory was provided
         if ($projectDirectory == null) {
             $projectDirectory = getcwd();
@@ -134,11 +163,8 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
 
             $profile->setAttribute('projectDirectory', $projectDirectoryAssembled);
             if ($profile->isLoadableFromFile()) {
-                chdir($projectDirectoryAssembled);
-
-                $profile->loadFromFile();
-                $this->_loadedProfile = $profile;
-                break;
+                unset($profile);
+                return $projectDirectoryAssembled;
             }
 
             // break after first run if we are not to check upper directories
@@ -149,15 +175,7 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
             array_pop($parentDirectoriesArray);
         }
 
-        if ($this->_loadedProfile == null) {
-            if ($loadProfileFlag == self::NO_PROFILE_THROW_EXCEPTION) {
-                throw new Zend_Tool_Project_Provider_Exception('A project profile was not found.');
-            } elseif ($loadProfileFlag == self::NO_PROFILE_RETURN_FALSE) {
-                return false;
-            }
-        }
-
-        return $profile;
+        return false;
     }
 
     /**
@@ -169,7 +187,7 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
     {
         $profile = $this->_loadProfile();
         if ($profile === false) {
-            require_once 'Zend/Tool/Project/Provider/Exception.php';
+            // require_once 'Zend/Tool/Project/Provider/Exception.php';
             throw new Zend_Tool_Project_Provider_Exception('A project profile was not found in the current working directory.');
         }
         return $profile;
@@ -216,11 +234,31 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
         }
 
         if (!class_exists('Zend_Tool_Project_Context_Content_Engine')) {
-            require_once 'Zend/Tool/Project/Context/Content/Engine.php';
+            // require_once 'Zend/Tool/Project/Context/Content/Engine.php';
         }
 
         $engine = new Zend_Tool_Project_Context_Content_Engine($storage);
         return $engine->getContent($context, $methodName, $parameters);
+    }
+
+    protected function _hasProjectProviderDirectory($pathToProfileFile)
+    {
+        // do some static analysis of the file so that we can determin whether or not to incure
+        // the cost of loading the profile before the system is fully bootstrapped
+        if (!file_exists($pathToProfileFile)) {
+            return false;
+        }
+
+        $contents = file_get_contents($pathToProfileFile);
+        if (strstr($contents, '<projectProvidersDirectory') === false) {
+            return false;
+        }
+
+        if (strstr($contents, '<projectProvidersDirectory enabled="false"')) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

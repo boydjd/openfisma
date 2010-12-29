@@ -24,7 +24,7 @@
 /**
  * @see Zend_OpenId_Provider_Storage
  */
-require_once "Zend/OpenId/Provider/Storage.php";
+// require_once "Zend/OpenId/Provider/Storage.php";
 
 /**
  * External storage implemmentation using serialized files
@@ -257,7 +257,7 @@ class Zend_OpenId_Provider_Storage_File extends Zend_OpenId_Provider_Storage
             fclose($lock);
             return false;
         }
-        try { 
+        try {
             $f = @fopen($name, 'r');
             if ($f === false) {
                 fclose($lock);

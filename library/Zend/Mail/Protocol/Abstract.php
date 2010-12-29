@@ -25,13 +25,13 @@
 /**
  * @see Zend_Validate
  */
-require_once 'Zend/Validate.php';
+// require_once 'Zend/Validate.php';
 
 
 /**
  * @see Zend_Validate_Hostname
  */
-require_once 'Zend/Validate/Hostname.php';
+// require_once 'Zend/Validate/Hostname.php';
 
 
 /**
@@ -62,8 +62,9 @@ abstract class Zend_Mail_Protocol_Abstract
 
     /**
      * Maximum of the transaction log
+     * @var integer
      */
-    const MAXIMUM_LOG = 64;
+    protected $_maximumLog = 64;
 
 
     /**
@@ -140,7 +141,7 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception(join(', ', $this->_validHost->getMessages()));
         }
 
@@ -157,6 +158,28 @@ abstract class Zend_Mail_Protocol_Abstract
     public function __destruct()
     {
         $this->_disconnect();
+    }
+
+    /**
+     * Set the maximum log size
+     *
+     * @param integer $maximumLog Maximum log size
+     * @return void
+     */
+    public function setMaximumLog($maximumLog)
+    {
+        $this->_maximumLog = (int) $maximumLog;
+    }
+
+
+    /**
+     * Get the maximum log size
+     *
+     * @return int the maximum log size
+     */
+    public function getMaximumLog()
+    {
+        return $this->_maximumLog;
     }
 
 
@@ -219,7 +242,7 @@ abstract class Zend_Mail_Protocol_Abstract
      */
     protected function _addLog($value)
     {
-        if (count($this->_log) >= self::MAXIMUM_LOG) {
+        if ($this->_maximumLog >= 0 && count($this->_log) >= $this->_maximumLog) {
             array_shift($this->_log);
         }
 
@@ -250,15 +273,15 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception($errorStr);
         }
 
-        if (($result = stream_set_timeout($this->_socket, self::TIMEOUT_CONNECTION)) === false) {
+        if (($result = $this->_setStreamTimeout(self::TIMEOUT_CONNECTION)) === false) {
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('Could not set stream timeout');
         }
 
@@ -292,7 +315,7 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('No connection has been established to ' . $this->_host);
         }
 
@@ -307,7 +330,7 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('Could not send request to ' . $this->_host);
         }
 
@@ -328,13 +351,13 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('No connection has been established to ' . $this->_host);
         }
 
         // Adapters may wish to supply per-commend timeouts according to appropriate RFC
         if ($timeout !== null) {
-           stream_set_timeout($this->_socket, $timeout);
+            $this->_setStreamTimeout($timeout);
         }
 
         // Retrieve response
@@ -350,7 +373,7 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception($this->_host . ' has timed out');
         }
 
@@ -358,7 +381,7 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('Could not read from ' . $this->_host);
         }
 
@@ -404,10 +427,21 @@ abstract class Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Zend_Mail_Protocol_Exception($errMsg);
+            // require_once 'Zend/Mail/Protocol/Exception.php';
+            throw new Zend_Mail_Protocol_Exception($errMsg, $cmd);
         }
 
         return $msg;
+    }
+
+    /**
+     * Set stream timeout
+     *
+     * @param integer $timeout
+     * @return boolean
+     */
+    protected function _setStreamTimeout($timeout)
+    {
+       return stream_set_timeout($this->_socket, $timeout);
     }
 }

@@ -20,10 +20,10 @@
  */
 
 /** Zend_Oauth_Signature_SignatureAbstract */
-require_once 'Zend/Oauth/Signature/SignatureAbstract.php';
+// require_once 'Zend/Oauth/Signature/SignatureAbstract.php';
 
 /** Zend_Crypt_Rsa */
-require_once 'Zend/Crypt/Rsa.php';
+// require_once 'Zend/Crypt/Rsa.php';
 
 /**
  * @category   Zend
@@ -35,13 +35,13 @@ class Zend_Oauth_Signature_Rsa extends Zend_Oauth_Signature_SignatureAbstract
 {
     /**
      * Sign a request
-     * 
-     * @param  array $params 
-     * @param  null|string $method 
-     * @param  null|string $url 
+     *
+     * @param  array $params
+     * @param  null|string $method
+     * @param  null|string $url
      * @return string
      */
-    public function sign(array $params, $method = null, $url = null) 
+    public function sign(array $params, $method = null, $url = null)
     {
         $rsa = new Zend_Crypt_Rsa;
         $rsa->setHashAlgorithm($this->_hashAlgorithm);
@@ -55,7 +55,7 @@ class Zend_Oauth_Signature_Rsa extends Zend_Oauth_Signature_SignatureAbstract
 
     /**
      * Assemble encryption key
-     * 
+     *
      * @return string
      */
     protected function _assembleKey()

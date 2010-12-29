@@ -20,7 +20,7 @@
  */
 
 /** Zend_Oauth_Token */
-require_once 'Zend/Oauth/Token.php';
+// require_once 'Zend/Oauth/Token.php';
 
 /**
  * @category   Zend
@@ -44,14 +44,14 @@ class Zend_Oauth_Token_AuthorizedRequest extends Zend_Oauth_Token
      */
     public function __construct(array $data = null, Zend_Oauth_Http_Utility $utility = null)
     {
-        if (!is_null($data)) {
+        if ($data !== null) {
             $this->_data = $data;
             $params = $this->_parseData();
             if (count($params) > 0) {
                 $this->setParams($params);
             }
         }
-        if (!is_null($utility)) {
+        if ($utility !== null) {
             $this->_httpUtility = $utility;
         } else {
             $this->_httpUtility = new Zend_Oauth_Http_Utility;
@@ -60,7 +60,7 @@ class Zend_Oauth_Token_AuthorizedRequest extends Zend_Oauth_Token
 
     /**
      * Retrieve token data
-     * 
+     *
      * @return array
      */
     public function getData()
@@ -70,7 +70,7 @@ class Zend_Oauth_Token_AuthorizedRequest extends Zend_Oauth_Token
 
     /**
      * Indicate if token is valid
-     * 
+     *
      * @return bool
      */
     public function isValid()
@@ -85,7 +85,7 @@ class Zend_Oauth_Token_AuthorizedRequest extends Zend_Oauth_Token
 
     /**
      * Parse string data into array
-     * 
+     *
      * @return array
      */
     protected function _parseData()

@@ -23,7 +23,7 @@
 /**
  * @see Zend_Tool_Project_Context_Filesystem_Abstract
  */
-require_once 'Zend/Tool/Project/Context/Filesystem/Abstract.php';
+// require_once 'Zend/Tool/Project/Context/Filesystem/Abstract.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
@@ -41,14 +41,14 @@ class Zend_Tool_Project_Context_Filesystem_Directory extends Zend_Tool_Project_C
 
     /**
      * getName()
-     * 
+     *
      * @return string
      */
     public function getName()
     {
         return 'directory';
     }
-    
+
     /**
      * create()
      *

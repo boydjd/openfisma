@@ -23,7 +23,7 @@
 /**
  * @see Zend_Service_WindowsAzure_Diagnostics_Exception
  */
-require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
+// require_once 'Zend/Service/WindowsAzure/Diagnostics/Exception.php';
 
 /**
  * @category   Zend
@@ -36,14 +36,14 @@ abstract class Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbst
 {
     /**
      * Data
-     * 
+     *
      * @var array
      */
     protected $_data = null;
-    
+
     /**
      * Magic overload for setting properties
-     * 
+     *
      * @param string $name     Name of the property
      * @param string $value    Value to set
      */
@@ -58,7 +58,7 @@ abstract class Zend_Service_WindowsAzure_Diagnostics_ConfigurationObjectBaseAbst
 
     /**
      * Magic overload for getting properties
-     * 
+     *
      * @param string $name     Name of the property
      */
     public function __get($name) {

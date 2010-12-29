@@ -23,7 +23,7 @@
 /**
  * @see Zend_Markup_TokenList
  */
-require_once 'Zend/Markup/TokenList.php';
+// require_once 'Zend/Markup/TokenList.php';
 
 /**
  * @category   Zend
@@ -260,7 +260,7 @@ class Zend_Markup_Token
         return $this->_children;
     }
 
-	/**
+    /**
      * Does this token have any children
      *
      * @return bool

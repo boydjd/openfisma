@@ -20,7 +20,7 @@
  */
 
 /** Zend_Oauth_Signature_SignatureAbstract */
-require_once 'Zend/Oauth/Signature/SignatureAbstract.php';
+// require_once 'Zend/Oauth/Signature/SignatureAbstract.php';
 
 /**
  * @category   Zend
@@ -32,15 +32,15 @@ class Zend_Oauth_Signature_Plaintext extends Zend_Oauth_Signature_SignatureAbstr
 {
     /**
      * Sign a request
-     * 
-     * @param  array $params 
-     * @param  null|string $method 
-     * @param  null|string $url 
+     *
+     * @param  array $params
+     * @param  null|string $method
+     * @param  null|string $url
      * @return string
      */
     public function sign(array $params, $method = null, $url = null)
     {
-        if (is_null($this->_tokenSecret)) {
+        if ($this->_tokenSecret === null) {
             return $this->_consumerSecret . '&';
         }
         $return = implode('&', array($this->_consumerSecret, $this->_tokenSecret));

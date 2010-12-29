@@ -25,13 +25,13 @@
 /**
  * @see Zend_Mime
  */
-require_once 'Zend/Mime.php';
+// require_once 'Zend/Mime.php';
 
 
 /**
  * @see Zend_Mail_Protocol_Abstract
  */
-require_once 'Zend/Mail/Protocol/Abstract.php';
+// require_once 'Zend/Mail/Protocol/Abstract.php';
 
 
 /**
@@ -140,7 +140,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
                     /**
                      * @see Zend_Mail_Protocol_Exception
                      */
-                    require_once 'Zend/Mail/Protocol/Exception.php';
+                    // require_once 'Zend/Mail/Protocol/Exception.php';
                     throw new Zend_Mail_Protocol_Exception($config['ssl'] . ' is unsupported SSL type');
                     break;
             }
@@ -182,7 +182,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('Cannot issue HELO to existing session');
         }
 
@@ -191,7 +191,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception(join(', ', $this->_validHost->getMessages()));
         }
 
@@ -207,7 +207,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
                 /**
                  * @see Zend_Mail_Protocol_Exception
                  */
-                require_once 'Zend/Mail/Protocol/Exception.php';
+                // require_once 'Zend/Mail/Protocol/Exception.php';
                 throw new Zend_Mail_Protocol_Exception('Unable to connect via TLS');
             }
             $this->_ehlo($host);
@@ -253,7 +253,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('A valid session has not been started');
         }
 
@@ -280,7 +280,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('No sender reverse path has been supplied');
         }
 
@@ -305,7 +305,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('No recipient forward path has been supplied');
         }
 
@@ -327,7 +327,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
 
 
     /**
-     * Issues the RSET command end validates answer
+     * Issues the RSET command and validates answer
      *
      * Can be used to restore a clean smtp communication state when a transaction has been cancelled or commencing a new transaction.
      *
@@ -346,7 +346,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
 
 
     /**
-     * Issues the NOOP command end validates answer
+     * Issues the NOOP command and validates answer
      *
      * Not used by Zend_Mail, could be used to keep a connection alive or check if it is still open.
      *
@@ -360,7 +360,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
 
 
     /**
-     * Issues the VRFY command end validates answer
+     * Issues the VRFY command and validates answer
      *
      * Not used by Zend_Mail.
      *
@@ -403,7 +403,7 @@ class Zend_Mail_Protocol_Smtp extends Zend_Mail_Protocol_Abstract
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
+            // require_once 'Zend/Mail/Protocol/Exception.php';
             throw new Zend_Mail_Protocol_Exception('Already authenticated for this session');
         }
     }

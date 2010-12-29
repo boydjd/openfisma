@@ -23,19 +23,15 @@
 /** Internally used classes */
 
 /** Zend_Pdf_Element_Name */
-require_once 'Zend/Pdf/Element/Name.php';
+// require_once 'Zend/Pdf/Element/Name.php';
 
 
 /** Zend_Pdf_Resource */
-require_once 'Zend/Pdf/Resource.php';
+// require_once 'Zend/Pdf/Resource.php';
 
 
 /**
  * Image abstraction.
- *
- * Class is named not in accordance to the name convention.
- * It's "end-user" class, but its ancestor is not.
- * Thus part of the common class name is removed.
  *
  * @package    Zend_Pdf
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)

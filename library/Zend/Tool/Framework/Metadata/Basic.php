@@ -23,12 +23,12 @@
 /**
  * @see Zend_Tool_Framework_Metadata_Interface
  */
-require_once 'Zend/Tool/Framework/Metadata/Interface.php';
+// require_once 'Zend/Tool/Framework/Metadata/Interface.php';
 
 /**
  * @see Zend_Tool_Framework_Metadata_Attributable
  */
-require_once 'Zend/Tool/Framework/Metadata/Attributable.php';
+// require_once 'Zend/Tool/Framework/Metadata/Attributable.php';
 
 /**
  * @category   Zend
@@ -36,7 +36,7 @@ require_once 'Zend/Tool/Framework/Metadata/Attributable.php';
  * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Framework_Metadata_Basic 
+class Zend_Tool_Framework_Metadata_Basic
     implements Zend_Tool_Framework_Metadata_Interface, Zend_Tool_Framework_Metadata_Attributable
 {
 
@@ -203,7 +203,7 @@ class Zend_Tool_Framework_Metadata_Basic
                     $varValue = '(object)';
                 }
 
-                if (is_null($varValue)) {
+                if ($varValue === null) {
                     $varValue = '(null)';
                 }
 

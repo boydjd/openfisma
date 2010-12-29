@@ -22,17 +22,17 @@
 /**
  * @see Zend_Feed_Reader_Extension_FeedAbstract
  */
-require_once 'Zend/Feed/Reader/Extension/FeedAbstract.php';
+// require_once 'Zend/Feed/Reader/Extension/FeedAbstract.php';
 
 /**
  * @see Zend_Date
  */
-require_once 'Zend/Date.php';
+// require_once 'Zend/Date.php';
 
 /**
  * @see Zend_Feed_Reader_Collection_Author
  */
-require_once 'Zend/Feed/Reader/Collection/Author.php';
+// require_once 'Zend/Feed/Reader/Collection/Author.php';
 
 /**
  * @category   Zend
@@ -84,7 +84,7 @@ class Zend_Feed_Reader_Extension_DublinCore_Feed
                 $list = $this->_xpath->query('//dc10:publisher');
             }
         }
-        
+
         if ($list->length) {
             foreach ($list as $author) {
                 $authors[] = array(
@@ -261,7 +261,7 @@ class Zend_Feed_Reader_Extension_DublinCore_Feed
 
         return $this->_data['date'];
     }
-    
+
     /**
      * Get categories (subjects under DC)
      *
@@ -272,13 +272,13 @@ class Zend_Feed_Reader_Extension_DublinCore_Feed
         if (array_key_exists('categories', $this->_data)) {
             return $this->_data['categories'];
         }
-        
+
         $list = $this->_xpath->evaluate($this->getXpathPrefix() . '//dc11:subject');
 
         if (!$list->length) {
             $list = $this->_xpath->evaluate($this->getXpathPrefix() . '//dc10:subject');
         }
-        
+
         if ($list->length) {
             $categoryCollection = new Zend_Feed_Reader_Collection_Category;
             foreach ($list as $category) {
@@ -291,9 +291,9 @@ class Zend_Feed_Reader_Extension_DublinCore_Feed
         } else {
             $categoryCollection = new Zend_Feed_Reader_Collection_Category;
         }
-        
+
         $this->_data['categories'] = $categoryCollection;
-        return $this->_data['categories'];  
+        return $this->_data['categories'];
     }
 
     /**

@@ -23,7 +23,7 @@
 /**
  * @see Zend_Controller_Action_Helper_Abstract
  */
-require_once 'Zend/Controller/Action/Helper/Abstract.php';
+// require_once 'Zend/Controller/Action/Helper/Abstract.php';
 
 /**
  * @category   Zend
@@ -92,7 +92,7 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
     {
         $code = (int)$code;
         if ((300 > $code) || (307 < $code) || (304 == $code) || (306 == $code)) {
-            require_once 'Zend/Controller/Action/Exception.php';
+            // require_once 'Zend/Controller/Action/Exception.php';
             throw new Zend_Controller_Action_Exception('Invalid redirect HTTP status code (' . $code  . ')');
         }
 
@@ -215,7 +215,10 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
             $port  = (isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:80);
             $uri   = $proto . '://' . $host;
             if ((('http' == $proto) && (80 != $port)) || (('https' == $proto) && (443 != $port))) {
-                $uri .= ':' . $port;
+                // do not append if HTTP_HOST already contains port
+                if (strrchr($host, ':') === false) {
+                    $uri .= ':' . $port;
+                }
             }
             $url = $uri . '/' . ltrim($url, '/');
         }
@@ -463,7 +466,7 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
      */
     public function gotoUrlAndExit($url, array $options = array())
     {
-        $this->gotoUrl($url, $options);
+        $this->setGotoUrl($url, $options);
         $this->redirectAndExit();
     }
 
@@ -525,7 +528,7 @@ class Zend_Controller_Action_Helper_Redirector extends Zend_Controller_Action_He
             return call_user_func_array(array($this, 'gotoSimpleAndExit'), $args);
         }
 
-        require_once 'Zend/Controller/Action/Exception.php';
+        // require_once 'Zend/Controller/Action/Exception.php';
         throw new Zend_Controller_Action_Exception(sprintf('Invalid method "%s" called on redirector', $method));
     }
 }

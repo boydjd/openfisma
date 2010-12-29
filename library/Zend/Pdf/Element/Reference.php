@@ -21,11 +21,11 @@
 
 
 /** Internally used classes */
-require_once 'Zend/Pdf/Element/Null.php';
+// require_once 'Zend/Pdf/Element/Null.php';
 
 
 /** Zend_Pdf_Element */
-require_once 'Zend/Pdf/Element.php';
+// require_once 'Zend/Pdf/Element.php';
 
 /**
  * PDF file 'reference' element implementation
@@ -91,11 +91,11 @@ class Zend_Pdf_Element_Reference extends Zend_Pdf_Element
     public function __construct($objNum, $genNum = 0, Zend_Pdf_Element_Reference_Context $context, Zend_Pdf_ElementFactory $factory)
     {
         if ( !(is_integer($objNum) && $objNum > 0) ) {
-            require_once 'Zend/Pdf/Exception.php';
+            // require_once 'Zend/Pdf/Exception.php';
             throw new Zend_Pdf_Exception('Object number must be positive integer');
         }
         if ( !(is_integer($genNum) && $genNum >= 0) ) {
-            require_once 'Zend/Pdf/Exception.php';
+            // require_once 'Zend/Pdf/Exception.php';
             throw new Zend_Pdf_Exception('Generation number must be non-negative integer');
         }
 
@@ -174,11 +174,37 @@ class Zend_Pdf_Element_Reference extends Zend_Pdf_Element
         }
 
         if ($obj->toString() != $this->_objNum . ' ' . $this->_genNum . ' R') {
-            require_once 'Zend/Pdf/Exception.php';
+            // require_once 'Zend/Pdf/Exception.php';
             throw new Zend_Pdf_Exception('Incorrect reference to the object');
         }
 
         $this->_ref = $obj;
+    }
+
+    /**
+     * Detach PDF object from the factory (if applicable), clone it and attach to new factory.
+     *
+     * @param Zend_Pdf_ElementFactory $factory  The factory to attach
+     * @param array &$processed  List of already processed indirect objects, used to avoid objects duplication
+     * @param integer $mode  Cloning mode (defines filter for objects cloning)
+     * @returns Zend_Pdf_Element
+     */
+    public function makeClone(Zend_Pdf_ElementFactory $factory, array &$processed, $mode)
+    {
+        if ($this->_ref === null) {
+            $this->_dereference();
+        }
+
+        // This code duplicates code in Zend_Pdf_Element_Object class,
+        // but allows to avoid unnecessary method call in most cases
+        $id = spl_object_hash($this->_ref);
+        if (isset($processed[$id])) {
+            // Do nothing if object is already processed
+            // return it
+            return $processed[$id];
+        }
+
+        return $this->_ref->makeClone($factory, $processed, $mode);
     }
 
     /**

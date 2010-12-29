@@ -23,12 +23,12 @@
 /**
  * @see Zend_Db_Adapter_Abstract
  */
-require_once 'Zend/Db/Adapter/Abstract.php';
+// require_once 'Zend/Db/Adapter/Abstract.php';
 
 /**
  * @see Zend_Db_Statement_Oracle
  */
-require_once 'Zend/Db/Statement/Oracle.php';
+// require_once 'Zend/Db/Statement/Oracle.php';
 
 /**
  * @category   Zend
@@ -115,7 +115,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception('The OCI8 extension is required for this adapter but the extension is not loaded');
         }
 
@@ -134,7 +134,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception(oci_error());
         }
     }
@@ -147,7 +147,8 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
     public function isConnected()
     {
         return ((bool) (is_resource($this->_connection)
-                     && get_resource_type($this->_connection) == 'oci8 connection'));
+                    && (get_resource_type($this->_connection) == 'oci8 connection'
+                     || get_resource_type($this->_connection) == 'oci8 persistent connection')));
     }
 
     /**
@@ -205,7 +206,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
         $this->_connect();
         $stmtClass = $this->_defaultStmtClass;
         if (!class_exists($stmtClass)) {
-            require_once 'Zend/Loader.php';
+            // require_once 'Zend/Loader.php';
             Zend_Loader::loadClass($stmtClass);
         }
         $stmt = new $stmtClass($this, $sql);
@@ -467,7 +468,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception(oci_error($this->_connection));
         }
         $this->_setExecuteMode(OCI_COMMIT_ON_SUCCESS);
@@ -485,7 +486,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception(oci_error($this->_connection));
         }
         $this->_setExecuteMode(OCI_COMMIT_ON_SUCCESS);
@@ -513,14 +514,14 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Oracle_Exception
                  */
-                require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+                // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
                 throw new Zend_Db_Adapter_Oracle_Exception('FETCH_BOUND is not supported yet');
                 break;
             default:
                 /**
                  * @see Zend_Db_Adapter_Oracle_Exception
                  */
-                require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+                // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
                 throw new Zend_Db_Adapter_Oracle_Exception("Invalid fetch mode '$mode' specified");
                 break;
         }
@@ -542,7 +543,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception("LIMIT argument count=$count is not valid");
         }
 
@@ -551,7 +552,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
             /**
              * @see Zend_Db_Adapter_Oracle_Exception
              */
-            require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+            // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
             throw new Zend_Db_Adapter_Oracle_Exception("LIMIT argument offset=$offset is not valid");
         }
 
@@ -588,7 +589,7 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
                 /**
                  * @see Zend_Db_Adapter_Oracle_Exception
                  */
-                require_once 'Zend/Db/Adapter/Oracle/Exception.php';
+                // require_once 'Zend/Db/Adapter/Oracle/Exception.php';
                 throw new Zend_Db_Adapter_Oracle_Exception("Invalid execution mode '$mode' specified");
                 break;
         }
@@ -600,46 +601,6 @@ class Zend_Db_Adapter_Oracle extends Zend_Db_Adapter_Abstract
     public function _getExecuteMode()
     {
         return $this->_execute_mode;
-    }
-
-    /**
-     * Inserts a table row with specified data.
-     *
-     * Oracle does not support anonymous ('?') binds.
-     *
-     * @param mixed $table The table to insert data into.
-     * @param array $bind Column-value pairs.
-     * @return int The number of affected rows.
-     */
-    public function insert($table, array $bind)
-    {
-        $i = 0;
-        // extract and quote col names from the array keys
-        $cols = array();
-        $vals = array();
-        foreach ($bind as $col => $val) {
-            $cols[] = $this->quoteIdentifier($col, true);
-            if ($val instanceof Zend_Db_Expr) {
-                $vals[] = $val->__toString();
-                unset($bind[$col]);
-            } else {
-                $vals[] = ':'.$col.$i;
-                unset($bind[$col]);
-                $bind[':'.$col.$i] = $val;
-            }
-            $i++;
-        }
-
-        // build the statement
-        $sql = "INSERT INTO "
-             . $this->quoteIdentifier($table, true)
-             . ' (' . implode(', ', $cols) . ') '
-             . 'VALUES (' . implode(', ', $vals) . ')';
-
-        // execute the statement and return the number of affected rows
-        $stmt = $this->query($sql, $bind);
-        $result = $stmt->rowCount();
-        return $result;
     }
 
     /**
