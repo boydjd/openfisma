@@ -1024,12 +1024,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $message = 'This incident has been opened and a workflow has been assigned. ';
 
                 $currentStep = $incident->CurrentWorkflowStep;
-
-                foreach ($this->_getAssociatedUsers($id) as $user) {
-                    $mail = new Fisma_Zend_Mail();
-                    $mail->IRStep($user['userId'], $id, $currentStep->name, $this->_me->username);
+                if (isset($currentStep)) {
+                    foreach ($this->_getAssociatedUsers($id) as $user) {
+                        $mail = new Fisma_Zend_Mail();
+                        $mail->IRStep($user['userId'], $id, $currentStep->name, $this->_me->username);
+                    }
                 }
-
                 $this->view->priorityMessenger($message, 'notice');
             }
             
