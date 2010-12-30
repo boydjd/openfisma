@@ -451,7 +451,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $summary->addSelect("SUM(IF(finding.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
 
         if (isset($source)) {
-            $summary->addSelect("SUM(IF(finding.sourceId = $source, 1, 0)) total");
+            $summary->addSelect("SUM(IF(finding.sourceId = $sourceId, 1, 0)) total");
         } else {
             $summary->addSelect("COUNT(finding.id) total");
         }
