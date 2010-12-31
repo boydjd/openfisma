@@ -169,56 +169,46 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $orgValues = $form->getValues();
 
             // save the data, if failure then return false
-            try {
-                if (!$subject) {
-                    // Create new object
-                    $organization = new Organization();
+            if (!$subject) {
+                // Create new object
+                $organization = new Organization();
 
-                    $organization->merge($orgValues);
-                    $organization->save();
+                $organization->merge($orgValues);
+                $organization->save();
 
-                    // 0 is a special value (see setForm()) that indicates a root node
-                    if ((int)$orgValues['parent'] == 0) {
-                        $treeObject = Doctrine::getTable('Organization')->getTree();
-                        $treeObject->createRoot($organization);
-                    } else {
-                        $organization->getNode()
-                                     ->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
-                    }
-
-                    // Add this organization to the user's ACL so they can see it immediately
-                    $userRoles = $this->_me->getRolesByPrivilege('organization', 'create');
-
-                    foreach ($userRoles as $userRole) {
-                        $userRole->Organizations[] = $organization;
-                    }
-
-                    $userRoles->save();
-                    $this->_me->invalidateAcl();
-
+                // 0 is a special value (see setForm()) that indicates a root node
+                if ((int)$orgValues['parent'] == 0) {
+                    $treeObject = Doctrine::getTable('Organization')->getTree();
+                    $treeObject->createRoot($organization);
                 } else {
-                    $organization = $subject;
-                    
-                    $organization->merge($orgValues);
-                    
-                    if ($orgValues['parent'] != $organization->getNode()->getParent()->id) {
-
-                        $organization->getNode()
-                                     ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
-                    }
-                    $organization->save();
-
+                    $organization->getNode()
+                                 ->insertAsLastChildOf($organization->getTable()->find($orgValues['parent']));
                 }
+
+                // Add this organization to the user's ACL so they can see it immediately
+                $userRoles = $this->_me->getRolesByPrivilege('organization', 'create');
+
+                foreach ($userRoles as $userRole) {
+                    $userRole->Organizations[] = $organization;
+                }
+
+                $userRoles->save();
+                $this->_me->invalidateAcl();
+
+            } else {
+                $organization = $subject;
                 
-                $objectId = $organization->id;
+                $organization->merge($orgValues);
+                
+                if ($orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
-            } catch (Doctrine_Validator_Exception $e) {
-                $msg = $e->getMessage();
-                $model = 'warning';
-
-                $this->view->priorityMessenger($msg, $model);
+                    $organization->getNode()
+                                 ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                }
+                $organization->save();
             }
 
+            $objectId = $organization->id;
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
 
