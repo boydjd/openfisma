@@ -133,7 +133,7 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                      . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
                      . ' name="' . $groupName . '[' . $group . '][]"'
                      . ' value="' . $name . '"'
-                     . ' onclick="YAHOO.fisma.CheckboxTree.handleClick(this, event);"'
+                     . ' onclick="Fisma.CheckboxTree.handleClick(this, event);"'
                      . ' nestedLevel="' . $checkbox['level'] . '"'
                      . $class . $checked . $disabled . '>&nbsp;'
                      . '<label for="' . $groupName . '[' . $group . '][' . $name . ']">'

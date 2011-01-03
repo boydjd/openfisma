@@ -33,3 +33,5 @@ IrSubCategory:
             updated:
                 name: modifiedTs
                 type: timestamp
+
+        SoftDelete: true
