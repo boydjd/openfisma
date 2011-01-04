@@ -200,6 +200,14 @@ class Fisma
         $loader = Zend_Loader_Autoloader::getInstance();
         $loader->setFallbackAutoloader(true);
 
+        // Enable autoloading for application resources
+        $resourceLoader = new Zend_Loader_Autoloader_Resource(array(
+            'basePath'  => self::$_rootPath,
+            'namespace' => 'Application_'
+        ));
+
+        $resourceLoader->addResourceType('service', 'application/services/', 'Service_');
+
         // Set the initialized flag
         self::$_initialized = true;
         
