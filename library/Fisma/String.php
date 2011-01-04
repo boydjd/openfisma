@@ -101,7 +101,7 @@ class Fisma_String
         $html = html_entity_decode($html);
         
         // Remove excess whitespace
-        $html = preg_replace('/[ ]*\r[ ]*/', "\n", $html);
+        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
         $html = preg_replace('/^\s+/', '', $html);
         $html = preg_replace('/\s+$/', '', $html);
         $html = preg_replace('/ +/', ' ', $html);
@@ -146,7 +146,7 @@ class Fisma_String
         $html = strip_tags($html, '<i><b><u>');
         
         // Remove excess whitespace
-        $html = preg_replace('/[ ]*\r[ ]*/', "\n", $html);
+        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
         $html = preg_replace('/^\s+/', '', $html);
         $html = preg_replace('/\s+$/', '', $html);
         $html = preg_replace('/ +/', ' ', $html);
