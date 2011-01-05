@@ -341,9 +341,13 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                           . ')';
         }
 
-        // Filter out deleted items, if this model has soft delete
-        if ($table->hasColumn('deleted_at') && !$deleted) {
-            $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+        // Handle soft delete
+        if ($table->hasColumn('deleted_at')) {
+            $query->addField('deleted_at_datetime');
+            
+            if (!$deleted) {
+                $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+            }
         }
 
         // Enable highlighting
