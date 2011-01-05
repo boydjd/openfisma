@@ -103,8 +103,12 @@ function menuHandler(source) {
         $statusId = 'finding_summary_search_' 
                   . $this->escape($status, 'url');
 
-        $url = '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/'
-             . $this->escape($status, 'url');
+        if ('TOTAL' == $status):
+            $url = '/finding/remediation/list/queryType/advanced';
+        else:
+            $url = '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/'
+                 . $this->escape($status, 'url');
+        endif;
     ?>
         var href = "<?php echo $this->escape($url, 'none'); ?>"
                  + ((selectedType.value == 'ALL') ? '' : '/type/enumIs/' + selectedType.value)
