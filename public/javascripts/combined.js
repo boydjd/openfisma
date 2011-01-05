@@ -5032,6 +5032,11 @@ Fisma.Search = function() {
 
             var searchType = document.getElementById('searchType').value;
 
+            // Ensure the search type is simple when advance search is hidden
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+                searchType = 'simple';
+            }
+
             var postData = "sort=" + tableState.sortedBy.key +
                            "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
                            "&start=" + tableState.pagination.recordOffset +
