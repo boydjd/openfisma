@@ -622,11 +622,20 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
+            //Some fields are stored in their join table, for example, description field of system is actually
+            //stored in organization table. So, it needs to get doctrine definition from its join table.
+            if (isset($searchFieldDefinition['join']['model']) &&
+                      $searchFieldDefinition['join']['model']) {
+                $joinTable = Doctrine::getTable($searchFieldDefinition['join']['model']);
+                $doctrineDefinition = $joinTable
+                                      ->getColumnDefinition($joinTable->getColumnName($doctrineFieldName));
+            }
+
             $containsHtml = isset($doctrineDefinition['extra']['purify']['html']) &&
                                   $doctrineDefinition['extra']['purify']['html'];
 
             $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
-
+ 
             $document->addField($documentFieldName, $documentFieldValue);
 
             // For sortable text columns, add a separate 'textsort' column (see design document)
