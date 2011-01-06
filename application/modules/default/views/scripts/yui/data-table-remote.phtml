@@ -26,10 +26,10 @@
         <?php else: ?>
             requestConstructor = function (tableState, self) {    
                 // Build custom request
-                var request = "sort=" + tableState.sortedBy.key +
-                              "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
-                              "&start=" + tableState.pagination.recordOffset +
-                              "&count=" + tableState.pagination.rowsPerPage;
+                var request = "/sort/" + tableState.sortedBy.key +
+                              "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') + 
+                              "/start/" + tableState.pagination.recordOffset +
+                              "/count/" + tableState.pagination.rowsPerPage;
 
                 return request;
             };
@@ -49,7 +49,9 @@
         // DataTable configuration
         var tableConfiguration = {
             initialLoad : <?php echo $this->escape($this->deferData ? 'false' : 'true'); ?>,
-            initialRequest : "<?php echo $this->escape($this->dataUrl, 'javascript'); ?>",
+            initialRequest : "/sort/<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>"
+                           + "/dir/<?php echo $this->escape($this->sortDirection, 'javascript'); ?>"
+                           + "/count/<?php echo $this->escape($this->rowCount, 'javascript'); ?>",
             dynamicData : true, 
             sortedBy : {
                 key : "<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>", 
