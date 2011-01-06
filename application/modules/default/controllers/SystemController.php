@@ -160,14 +160,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             );
 
             $availableInformationTypesTable->setDataUrl(
-                "/sa/informationType/active-types/organizationId/{$id}/format/json"
+                "/sa/informationType/active-types/systemId/{$id}/format/json"
             );
 
             $this->view->availableInformationTypesTable = $availableInformationTypesTable;
             // END: Building of the data table
 
             $this->view->informationTypesTable->addColumn(
-                new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', 'id')
+                new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', null, 'id')
             );
 
             $addInformationTypeButton = new Fisma_Yui_Form_Button(
@@ -198,14 +198,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $sort  = $this->getRequest()->getParam('sort', 'category');
         $dir   = $this->getRequest()->getParam('dir', 'asc');
 
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = Doctrine::getTable('System')->find($id);
 
-        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
 
-        $systemId = $organization->System->id;
+        $systemId = $system->id;
 
         $informationTypes = Doctrine_Query::create()
-            ->select("sat.*, {$id} as organization")
+            ->select("sat.*, {$system->id} as system")
             ->from('SaInformationType sat, SaInformationTypeSystem sats')
             ->where('sats.systemid = ?', $systemId)
             ->andWhere('sats.sainformationtypeid = sat.id')
@@ -230,11 +230,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $informationTypeId = $this->getRequest()->getParam('sitId');
         $id = $this->getRequest()->getParam('id');
 
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = Doctrine::getTable('System')->find($id);
 
-        $this->_acl->requirePrivilegeForObject('update', $organization);
+        $this->_acl->requirePrivilegeForObject('update', $system->Organization);
 
-        $systemId = $organization->System->id;
+        $systemId = $system->id;
 
         $informationTypeSystem = new SaInformationTypeSystem();
         $informationTypeSystem->sainformationtypeid = $informationTypeId;
@@ -254,16 +254,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $informationTypeId = $this->getRequest()->getParam('sitId');
         $id = $this->getRequest()->getParam('id');
 
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $system = Doctrine::getTable('System')->find($id);
 
-        $this->_acl->requirePrivilegeForObject('update', $organization);
-
-        $systemId = $organization->System->id;
+        $this->_acl->requirePrivilegeForObject('update', $system->Organization);
 
         $informationType = Doctrine_Query::create()
             ->from('SaInformationTypeSystem saits')
             ->where('saits.sainformationtypeid = ?', $informationTypeId)
-            ->andWhere('saits.systemid = ?', $systemId)
+            ->andWhere('saits.systemid = ?', $id)
             ->execute();
 
         $informationType->delete();

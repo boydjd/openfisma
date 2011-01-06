@@ -49,21 +49,20 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout->setLayout('ajax');
 
-        $organizationId = $this->getRequest()->getParam('organizationId');
+        $systemId = $this->getRequest()->getParam('systemId');
         $count          = $this->getRequest()->getParam('count', 10);
         $start          = $this->getRequest()->getParam('start', 0);
         $sort           = $this->getRequest()->getParam('sort', 'category');
         $dir            = $this->getRequest()->getParam('dir', 'asc');
 
-        $organization = Doctrine::getTable('Organization')->find($organizationId);
+        $system = Doctrine::getTable('System')->find($systemId);
+        $organizationId = $system->Organization->id;
 
-        $this->_acl->requirePrivilegeForObject('read', $organization);
-
-        $systemId = $organization->System->id;
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
 
         $informationTypes = Doctrine_Query::create()
                             // TODO: Make sure not vulnerable to injection
-                            ->select("*, {$organizationId} as organization")
+                            ->select("*, {$systemId} as system")
                             ->from('SaInformationType sat')
                             ->where('sat.hidden = FALSE')
                             ->andWhere(

@@ -43,7 +43,7 @@ Fisma.System = {
      * Build URL for adding information type to the system 
      */
     addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('organization') + "/sitId/" + oData + "'>Add</a>";
+        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
     },
 
 
@@ -51,6 +51,6 @@ Fisma.System = {
      * Build URL for removing information types from a system 
      */
     removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('organization') + "/sitId/" + oData + "'>Remove</a>";
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Remove</a>";
     }
 };
