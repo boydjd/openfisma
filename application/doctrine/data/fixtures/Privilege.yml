@@ -518,3 +518,21 @@ Privilege:
         resource: assessment_plan_entry
         action: delete
         description: Delete Assessment Plan Entry
+
+    # Implementation CRUD
+    sa_imp_create:
+        resource: sa_implementation
+        action: create
+        description: Create Implementation
+    sa_imp_read:
+        resource: sa_implementation
+        action: read
+        description: Read Implementation
+    sa_imp_update:
+        resource: sa_implementation
+        action: update
+        description: Update Implementation
+    sa_imp_delete:
+        resource: sa_implementation
+        action: delete
+        description: Delete Implementation
