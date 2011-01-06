@@ -108,28 +108,24 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
      * 
      * @return array
      */
-    public function getSystemDocuments()
+    public function getSystemDocumentQuery()
     {
-        $organizationIds = CurrentUser::getInstance()
-                           ->getOrganizationsByPrivilege('organization', 'read')
-                           ->toKeyValueArray('id', 'id');
+        $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
         $docTypeRequiredCount = Doctrine::getTable('DocumentType')->getRequiredDocTypeCount();
 
         // Get data for the report
-        $systemDocumentQuery = Doctrine_Query::create()
+        $systemDocumentQuery = $baseQuery
                                ->select('s.id As id')
                                ->addSelect('o.name AS name')
                                ->addSelect(
                                    "CONCAT(ROUND(SUM(IF(dt.required = true, 1, 0)) / "
                                    . "($docTypeRequiredCount)*100, 1), '%') AS percentage"
                                )
-                               ->from('System s')
+                               ->leftJoin('o.System s')
                                ->leftJoin('s.Documents sd')
                                ->leftJoin('sd.DocumentType dt')
-                               ->leftJoin('s.Organization o')
                                ->leftJoin('Organization bureau')
-                               ->whereIn('o.id', $organizationIds)
                                ->andWhere('o.orgType = ?', array('system'))
                                ->andWhere('s.sdlcPhase <> ?', 'disposal')
                                ->andWhere('bureau.orgType = ?', array('bureau'))
@@ -138,6 +134,6 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                                ->orderBy('bureau.name, o.name')
                                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        return $systemDocumentQuery->execute();
+        return $systemDocumentQuery;
     }
 }

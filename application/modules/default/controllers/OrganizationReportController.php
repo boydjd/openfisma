@@ -199,7 +199,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function documentationComplianceAction()
     {
-        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocuments();
+        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocumentQuery()->execute();
 
         $systemData = array();
         $documentType = Doctrine::getTable('DocumentType');
