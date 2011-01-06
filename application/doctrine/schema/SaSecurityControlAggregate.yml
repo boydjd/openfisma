@@ -9,4 +9,5 @@ SaSecurityControlAggregate:
             local: saImplementationId 
             foreign: id
             foreignType: one
+            foreignAlias: SaSecurityControlAggregate
             type: one
