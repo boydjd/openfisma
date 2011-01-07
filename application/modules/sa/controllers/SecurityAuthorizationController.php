@@ -172,7 +172,47 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         return $saId;
     }
-   
+
+    public function implementationAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
+        $this->view->id = $this->_request->getParam('id');
+        $dataTable = new Fisma_Yui_DataTable_Remote();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, null, 'id', true))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'code'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Enhancement', true, null, null, 'enhancement'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Status', true, null, null, 'status'))
+                  ->setDataUrl('/sa/implementation/search/said/' . $this->view->id)
+                  ->setResultVariable('table.records')
+                  ->setRowCount(20)
+                  ->setInitialSortColumn('id')
+                  ->setSortAscending(true)
+                  ->setClickEventBaseUrl('/sa/implementation/view/id/')
+                  ->setClickEventVariableName('id');
+        $this->view->dataTable = $dataTable;
+ 
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        $this->view->sa = $sa;
+        $buttonbar = array();
+        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
+            'goBack',
+             array(
+                 'value' => 'Go Back',
+                 'imageSrc' => '/images/left_arrow.png',
+                 'href' => '/sa/security-authorization/view/id/' . $sa->id
+             )
+        );
+
+        $buttonbar[] = new Fisma_Yui_Form_Button(
+            'completeImplementation',
+             array('label' => 'Complete Implementation', 'onClickFunction' => 'submitCompleteForm')
+        );
+
+        $buttonbar[] = $this->_createCompleteStepForm($sa);
+
+        $this->view->buttonbar = $buttonbar;
+    }
+
     public function assessmentPlanAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');

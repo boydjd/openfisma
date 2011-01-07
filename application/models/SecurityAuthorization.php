@@ -40,11 +40,13 @@ class SecurityAuthorization extends BaseSecurityAuthorization
 
         switch ($this->status) {
             case 'Select':
-                $this->initAssessmentPlan();
-                // @todo skips implement
-                $this->status = 'Assessment Plan';
+                $this->initImplementation();
+                $this->status = 'Implement';
                 break;
             case 'Implement':
+                $this->initAssessmentPlan();
+                $this->status = 'Assessment Plan';
+                break;
             case 'Assessment Plan':
                 $this->status = 'Assessment';
                 break;
@@ -106,5 +108,22 @@ class SecurityAuthorization extends BaseSecurityAuthorization
         $ape->interview = $ap->interview;
         $ape->test = $ap->test;
         return $ape;
+    }
+
+    protected function initImplementation()
+    {
+        // populate implementations for security controls
+        $coll = new Doctrine_Collection('SaSecurityControlAggregate');
+
+        foreach ($this->SaSecurityControls as $sasc) {
+            $sasc->Implementation = new SaImplementation();
+            $coll->add($sasc);
+            foreach ($sasc->SaSecurityControlEnhancements as $sasce) {
+                $sasce->Implementation = new SaImplementation();
+                $coll->add($sasce);
+            }
+        }
+
+        $coll->save();
     }
 }

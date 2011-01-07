@@ -8,7 +8,7 @@ SecurityAuthorization:
             notnull: true
         status:
             type: enum
-            values: [Select, "Assessment Plan", Assessment, Authorization, Active, Retired]
+            values: [Select, Implement, "Assessment Plan", Assessment, Authorization, Active, Retired]
             notnull: true
             default: Select
         result:
