@@ -194,14 +194,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         $this->view->sa = $sa;
         $buttonbar = array();
-        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
-            'goBack',
-             array(
-                 'value' => 'Go Back',
-                 'imageSrc' => '/images/left_arrow.png',
-                 'href' => '/sa/security-authorization/view/id/' . $sa->id
-             )
-        );
 
         $buttonbar[] = new Fisma_Yui_Form_Button(
             'completeImplementation',
@@ -222,14 +214,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         $this->view->sa = $sa;
         $buttonbar = array();
-        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
-            'goBack',
-             array(
-                 'value' => 'Go Back',
-                 'imageSrc' => '/images/left_arrow.png',
-                 'href' => '/sa/security-authorization/view/id/' . $sa->id
-             )
-        );
 
         if ($sa->status == 'Assessment Plan') {
             $buttonbar[] = new Fisma_Yui_Form_Button(

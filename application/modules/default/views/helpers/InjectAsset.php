@@ -91,6 +91,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',
+                                      '/stylesheets/SecurityAuthorization.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css'

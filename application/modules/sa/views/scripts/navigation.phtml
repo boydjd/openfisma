@@ -23,18 +23,19 @@ switch ($this->sa->status) {
     default:
         throw new Fisma_Zend_Exception('Unknown SA status encountered.');
 }
-
-foreach ($links as $label => &$value) {
-    if ($label == $this->current) {
-        $value = '<b>' . $label . '</b>';
-    } else if (empty($value)) {
-        $value = '<i>' . $label . '</i>';
-    } else {
-        $value = '<a href="' . $value . '">' . $label . '</a>';
-    }
-}
-$links = implode(' | ', $links);
 ?>
 Security Authorization <?php echo $this->escape($this->sa->id); ?><br />
-[ <?php echo $this->escape($links, 'none'); ?> ]
+<div class="yui-navset yui-navset-top">
+    <ul class="yui-nav">
+    <?php foreach ($links as $label => &$value): ?>
+        <?php if ($label == $this->current): ?>
+            <li class="selected"><a href="#"><em><?php echo $this->escape($label); ?></em></a></li>
+        <?php elseif (empty($value)): ?>
+            <li class="disabled"><a href="#"><em><?php echo $this->escape($label); ?></em></a></i></li>
+        <?php else: ?>
+            <li><a href="<?php echo $this->escape($value); ?>"><em><?php echo $this->escape($label); ?></em></a></li>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    </ul>
+</div>
 
