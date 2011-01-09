@@ -15,6 +15,7 @@ SecurityAuthorization:
             type: enum
             values: ["Pending Authorization Decision", "Authorized to Operate", "Authorization Rescinded"]
         atoDate: date
+        implementStartTs: timestamp
 
     relations:
         Organization:

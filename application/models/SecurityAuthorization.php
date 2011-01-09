@@ -42,6 +42,7 @@ class SecurityAuthorization extends BaseSecurityAuthorization
             case 'Select':
                 $this->initImplementation();
                 $this->status = 'Implement';
+                $this->implementStartTs = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATETIME);
                 break;
             case 'Implement':
                 $this->initAssessmentPlan();
