@@ -46,4 +46,27 @@ class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
         // HTML purifier should blank out the entire string, since it is all malicious
         $this->assertEquals('', trim($role->description));
     }
+
+    /**
+     * Test that listener is properly disabled 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testListenerDisabled()
+    {
+        Fisma::setListenerEnabled(false);
+
+        $role = new Role();
+
+        $role->name = "XSS Listener Test";
+        $role->nickname = "XSSLT";
+        $role->description = "<script type='text/javascript'>alert('hello')</script>";
+
+        $role->invokeSaveHooks('pre', 'save');
+
+        $this->assertEquals("<script type='text/javascript'>alert('hello')</script>", $role->description);
+
+        Fisma::setListenerEnabled(true);
+    }
 }
