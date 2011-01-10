@@ -159,11 +159,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
         $this->_viewObject();
 
         $sasca = $this->view->subject->SaSecurityControlAggregate;
-        if ($sasca instanceof SaSecurityControl) {
-            $this->view->sa = $sasca->SecurityAuthorization;
-        } else if ($sasca instanceof SaSecurityControlEnhancement) {
-            $this->view->sa = $sasca->SaSecurityControl->SecurityAuthorization;
-        }
+        $this->view->sa = $sasca->getSecurityAuthorization();
 
         $this->_addArtifactUploadButton();
         $this->_addArtifactsArray();
@@ -300,4 +296,25 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
 
         return $id;
     }
+
+    /**
+     * Display an edit page for a single record.
+     *
+     * All of the default logic for editing a record is performed in _editObject, so that child classes can use the
+     * default logic but still render their own views.
+     *
+     * @return void
+     */
+    public function editAction()
+    {
+        $this->_helper->redirector->setExit(false);
+        $this->_editObject();
+        $this->view->sa = $this->view->subject->SaSecurityControlAggregate->getSecurityAuthorization();
+        $redirectUrl = $this->_helper->redirector->getRedirectUrl();
+        if (!empty($redirectUrl)) {
+            // override default redirect location
+            $this->_redirect('/sa/security-authorization/assessment-plan/id/' . $this->view->sa->id);
+        }
+    }
+
 }

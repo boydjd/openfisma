@@ -1,4 +1,6 @@
 <?php
+echo $this->partial('navigation.phtml', array('sa' => $this->sa, 'current' => 'Assessment'));
+
 $sectionTitle = 'AssessmentPlanEntry';
 $sectionTitle .= ' [<a href="/sa/assessment-plan-entry/edit/id/' . $this->id . '">Edit</a>]';
 Fisma_Format_Section::startSection($sectionTitle); ?>
