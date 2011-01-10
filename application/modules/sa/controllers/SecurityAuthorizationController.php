@@ -298,7 +298,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             }
         }
 
-        $this->_redirect('/sa/security-authorization/view/id/' . $id);
+        // redirect map
+        $map = array(
+            'Implement' => 'implementation',
+            'Assessment Plan' => 'assessment-plan',
+            'Assessment' => 'assessment-plan',
+            'Authorization' => 'authorization',
+            'Active' => 'view'
+        );
+        $url = '/sa/security-authorization/' . $map[$sa->status] . '/id/' . $sa->id;
+        $this->_redirect($url);
     }
 
     protected function _createCompleteStepForm(SecurityAuthorization $sa)
