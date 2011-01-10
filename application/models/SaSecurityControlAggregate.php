@@ -26,5 +26,11 @@
  */
 class SaSecurityControlAggregate extends BaseSaSecurityControlAggregate
 {
-
+    public function getSecurityAuthorization()
+    {
+        throw new Fisma_Zend_Exception (
+            "Cannot call SaSecurityControlAggregate::getSecurityAuthorization(), only available from implementing " .
+            "subclasses."
+        );
+    }
 }

@@ -12,4 +12,8 @@
  */
 class SaSecurityControl extends BaseSaSecurityControl
 {
+    public function getSecurityAuthorization()
+    {
+        return $this->_get('SecurityAuthorization');
+    }
 }

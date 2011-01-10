@@ -138,4 +138,39 @@ class Sa_ImplementationController extends Fisma_Zend_Controller_Action_Object
         $tableData['table']['records'] = $rows;
         return $this->_helper->json($tableData);
     }
+
+    /**
+     * Display details for a single record.
+     *
+     * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
+     * default logic but still render their own views.
+     *
+     * @return void
+     */
+    public function viewAction()
+    {
+        $this->_viewObject();
+        $this->view->sa = $this->view->subject->SaSecurityControlAggregate->getSecurityAuthorization();
+    }
+
+    /**
+     * Display an edit page for a single record.
+     *
+     * All of the default logic for editing a record is performed in _editObject, so that child classes can use the
+     * default logic but still render their own views.
+     *
+     * @return void
+     */
+    public function editAction()
+    {
+        $this->_helper->redirector->setExit(false);
+        $this->_editObject();
+        $this->view->sa = $this->view->subject->SaSecurityControlAggregate->getSecurityAuthorization();
+        $redirectUrl = $this->_helper->redirector->getRedirectUrl();
+        if (!empty($redirectUrl)) {
+            // override default redirect location
+            $this->_redirect('/sa/security-authorization/implementation/id/' . $this->view->sa->id);
+        }
+    }
+
 }
