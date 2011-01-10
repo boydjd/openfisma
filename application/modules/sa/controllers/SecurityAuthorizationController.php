@@ -247,14 +247,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         $this->view->sa = $sa;
         $buttonbar = array();
-        $buttonbar[] = new Fisma_Yui_Form_Button_Link(
-            'goBack',
-            array(
-                'value' => 'Go Back',
-                'imageSrc' => '/images/left_arrow.png',
-                'href' => '/sa/security-authorization/view/id/' . $this->id
-            )
-        );
         $buttonbar[] = new Fisma_Yui_Form_Button(
             'completeAuthorization',
              array('label' => 'Complete Authorization', 'onClickFunction' => 'submitCompleteForm')
@@ -336,28 +328,28 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected function _implementationProgress(SecurityAuthorization $sa)
     {
         $sasc = Doctrine_Query::create()
-            ->from ('SaSecurityControl sasc')
-            ->where ('sasc.securityAuthorizationId = ?', $sa->id)
+            ->from('SaSecurityControl sasc')
+            ->where('sasc.securityAuthorizationId = ?', $sa->id)
             ->execute();
         $sasce = Doctrine_Query::create()
-            ->from ('SaSecurityControlEnhancement sasce, sasce.SaSecurityControl sasc')
-            ->where ('sasc.securityAuthorizationId = ?', $sa->id)
+            ->from('SaSecurityControlEnhancement sasce, sasce.SaSecurityControl sasc')
+            ->where('sasc.securityAuthorizationId = ?', $sa->id)
             ->execute();
         $sasca = new Doctrine_Collection('SaSecurityControlAggregate');
         $sasca->merge($sasc);
         $sasca->merge($sasce);
         $ids = $sasca->toKeyValueArray('id', 'id');
         $allCount = Doctrine_Query::create()
-            ->from ('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
+            ->from('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
             ->whereIn('sasca.id', $ids)
             ->count();
         if ($allCount == 0) {
             return '(No implementations)';
         }
         $completeCount = Doctrine_Query::create()
-            ->from ('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
+            ->from('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
             ->whereIn('sasca.id', $ids)
-            ->andWhere ('sai.status = ?', 'Complete')
+            ->andWhere('sai.status = ?', 'Complete')
             ->count();
         if ($completeCount == 0) {
             return '0% Complete';
@@ -365,10 +357,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $ratio = $completeCount / $allCount;
         $percent = $ratio * 100;
         $startDate = new Zend_Date($sa->implementStartTs, Fisma_Date::FORMAT_DATETIME);
-        $duration = ((int)Zend_Date::now()->toString(Zend_Date::TIMESTAMP)) - ((int)$startDate->toString(Zend_Date::TIMESTAMP));
+        $nowTs = (int)Zend_Date::now()->toString(Zend_Date::TIMESTAMP);
+        $startTs = (int)$startDate->toString(Zend_Date::TIMESTAMP);
+        $duration = $nowTs - $startTs;
         $duration = round($duration / $ratio);
         $completionDate = Zend_Date::now()->add($duration);
-        return round($percent, 1) . '% Complete, Estimating Complection on ' . $completionDate->toString(Zend_Date::DATE_FULL);
+        return sprintf(
+            '%s%% Complete, Estimating Complection on %s',
+            round($percent, 1),
+            $completionDate->toString(Zend_Date::DATE_FULL)
+        );
     }
 
 }
