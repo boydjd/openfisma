@@ -46,8 +46,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
      */
     protected function _initErrorHandler()
     {
-        $errorHandler = function ($code, $error, $file = NULL, $line = NULL)
-        {
+        $errorHandler = create_function(
+            '$code, $error, $file = NULL, $line = NULL', '
             if (error_reporting() & $code) {
                 // This error is not suppressed by current error reporting settings
                 // Convert the error into an ErrorException
@@ -55,8 +55,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
             }
 
             // Do not execute the PHP error handler
-            return TRUE;
-        };
+            return TRUE;'
+        );
 
         set_error_handler($errorHandler);
     }
