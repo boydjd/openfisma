@@ -93,7 +93,7 @@ class Fisma
      * 
      * @var Zend_Config_Ini
      */
-    private static $_appConf;
+    public static $_appConf;
     
     /**
      * The root path of the application.
@@ -252,61 +252,6 @@ class Fisma
     }
 
     /**
-     * Connect to the database
-     * 
-     * @return void
-     */
-    public static function connectDb()
-    {
-        // Connect to the database
-        if (self::mode() != self::RUN_MODE_TEST) {
-            $db = self::$_appConf['db'];
-        } else {
-            $db = self::$_appConf['testdb'];
-        }
-        $connectString = $db['adapter'] . '://' . $db['username'] . ':' 
-                         . $db['password'] . '@' . $db['host'] 
-                         . ($db['port'] ? ':' . $db['port'] : '') . '/' . $db['schema'];
-
-        Doctrine_Manager::connection($connectString);
-        $manager = Doctrine_Manager::getInstance();
-        $manager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
-        $manager->setAttribute(Doctrine::ATTR_USE_NATIVE_ENUM, true);
-        $manager->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-        $manager->registerValidators(
-            array('Fisma_Doctrine_Validator_Ip', 'Fisma_Doctrine_Validator_Url', 'Fisma_Doctrine_Validator_Phone')
-        );
-
-        /**
-         * @todo We want to enable VALIDATE_ALL in release 2.6
-         */
-        $manager->setAttribute(Doctrine::ATTR_VALIDATE, Doctrine::VALIDATE_CONSTRAINTS);
-
-        /**
-         * Set up the cache driver and connect to the manager.
-         * Make sure that we only cache in web app mode, and that the application is installed.
-         **/
-        if (function_exists('apc_fetch') && self::isInstall() && self::mode() == self::RUN_MODE_WEB_APP) {
-            $cacheDriver = new Doctrine_Cache_Apc();
-            $manager->setAttribute(Doctrine::ATTR_QUERY_CACHE, $cacheDriver);
-        }
-
-        Zend_Registry::set(
-            'doctrine_config', 
-            array(
-                'data_fixtures_path'  =>  self::getPath('fixture'),
-                'models_path'         =>  self::getPath('model'),
-                'migrations_path'     =>  self::getPath('migration'),
-                'yaml_schema_path'    =>  self::getPath('schema'),
-                'generate_models_options' => array(
-                    'generateTableClasses' => true,
-                    'baseClassName' => 'Fisma_Doctrine_Record'
-                )
-            )
-        );
-    }
-    
-    /**
      * Configure the front controller and then dispatch it
      * 
      * @return void
@@ -341,34 +286,7 @@ class Fisma
 
         $frontController->setControllerDirectory(Fisma::getPath('controller'));
         
-        Zend_Layout::startMvc(
-            array(
-                'layoutPath' => self::getPath('layout'),
-                'view' => new Fisma_Zend_View()
-            )
-        );
-        
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
-
-        if (!self::isInstall()) {
-            set_time_limit(0);
-
-            // set the fixed controller when Openfisma has not been installed 
-            $router = $frontController->getRouter();
-            $defaults = array('controller' => 'help', 'action' => 'install');
-            $route = new Zend_Controller_Router_Route_Regex ( '.*', $defaults);
-            $router->addRoute('default', $route);
-        }
-        // Configure the views
-        $view = Zend_Layout::getMvcInstance()->getView();
-        $view->addHelperPath(self::getPath('viewHelper'), 'View_Helper_');
-        $view->addScriptPath(self::getPath('application') . '/modules/default/views/scripts');
-        $view->doctype('HTML4_STRICT');
-        // Make sure that we don't double encode
-        $view->setEscape(array('Fisma', 'htmlentities'));
-        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-        $viewRenderer->setView($view);
-        $viewRenderer->setViewSuffix('phtml');
     }
     
     /**
@@ -646,45 +564,15 @@ class Fisma
     }
 
     /**
-     * Wrapper for htmlentities to turn off double encoding 
+     * setAppConfig 
      * 
-     * @param mixed $value 
-     * @return string 
-     */
-    public static function htmlentities($value)
-    {
-        return htmlentities($value, ENT_COMPAT, 'UTF-8', FALSE);
-    }
-
-    /**
-     * @todo
+     * @param array $config 
+     * @static
+     * @access public
+     * @return void
      */
     public static function setAppConfig(array $config)
     {
         self::$_appConf = $config;
-    }
-
-    /**
-     * PHP error handler, converts all errors into ErrorExceptions. This handler
-     * respects error_reporting settings.
-     * 
-     * @param mixed $code 
-     * @param mixed $error 
-     * @param mixed $file 
-     * @param mixed $line 
-     * @throws ErrorException
-     * @access public
-     * @return true 
-     */
-    public static function errorHandler($code, $error, $file = NULL, $line = NULL)
-    {
-        if (error_reporting() & $code) {
-            // This error is not suppressed by current error reporting settings
-            // Convert the error into an ErrorException
-            throw new ErrorException($error, $code, 0, $file, $line);
-        }
-
-        // Do not execute the PHP error handler
-        return TRUE;
     }
 }
