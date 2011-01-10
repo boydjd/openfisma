@@ -28,12 +28,12 @@ Security Authorization <?php echo $this->escape($this->sa->id); ?><br />
 <div class="yui-navset yui-navset-top">
     <ul class="yui-nav">
     <?php foreach ($links as $label => &$value): ?>
-        <?php if ($label == $this->current): ?>
-            <li class="selected"><a href="#"><em><?php echo $this->escape($label); ?></em></a></li>
-        <?php elseif (empty($value)): ?>
+        <?php if (empty($value)): ?>
             <li class="disabled"><a href="#"><em><?php echo $this->escape($label); ?></em></a></i></li>
         <?php else: ?>
-            <li><a href="<?php echo $this->escape($value); ?>"><em><?php echo $this->escape($label); ?></em></a></li>
+            <li class="<?php echo $this->escape($label == $this->current ? 'selected' : ''); ?>">
+                <a href="<?php echo $this->escape($value); ?>"><em><?php echo $this->escape($label); ?></em></a>
+            </li>
         <?php endif; ?>
     <?php endforeach; ?>
     </ul>
