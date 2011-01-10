@@ -155,13 +155,6 @@ class Fisma
     private static $_cacheManager;
     
     /**
-     * A flag that indicates whether the Fisma system has been installed yet
-     * 
-     * @var boolean
-     */
-    private static $_isInstall = false;
-
-    /**
      * A zend session that OpenFISMA can use without worries about collisions to other frameworks that may
      * be running.
      * 
@@ -225,16 +218,6 @@ class Fisma
         
         // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
-    }
-    
-    /**
-     * To determine whether the Openfisma is installed
-     *
-     * @return boolean Ture if Openfisma is installed, false otherwise
-     */
-    public static function isInstall()
-    {
-        return true;
     }
     
     /**
