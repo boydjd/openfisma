@@ -7,6 +7,8 @@
             <directory>../library/Fisma</directory>
             <exclude>
                 <directory>../application/modules/default/controllers</directory>
+                <directory>../application/modules/finding/controllers</directory>
+                <directory>../application/modules/vm/controllers</directory>
                 <directory>../application/models/generated</directory>
                 <directory>../application/doctrine/migrations</directory>
             </exclude>
