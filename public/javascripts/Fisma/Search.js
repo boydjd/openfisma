@@ -116,6 +116,9 @@ Fisma.Search = function() {
                 document.getElementById('searchType').value = 'simple';
             }
 
+            // The error message of advance search should be hidden before handles a new search
+            document.getElementById('msgbar').style.display = 'none';
+
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -265,22 +268,31 @@ Fisma.Search = function() {
                 searchType = 'simple';
             }
 
+            // The error message of advance search should be hidden before handles YUI data
+            document.getElementById('msgbar').style.display = 'none';
+
             var postData = "sort=" + tableState.sortedBy.key +
                            "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
                            "&start=" + tableState.pagination.recordOffset +
                            "&count=" + tableState.pagination.rowsPerPage +
                            "&csrf=" + document.getElementById('searchForm').csrf.value;
 
-            if ('simple' == searchType) {
-                postData += "&queryType=simple&keywords=" 
-                          + document.getElementById('keywords').value;
-            } else if ('advanced' == searchType) {
-                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
+            try {
+                if ('simple' == searchType) {
+                    postData += "&queryType=simple&keywords=" 
+                              + document.getElementById('keywords').value;
+                } else if ('advanced' == searchType) {
+                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
-                postData += "&queryType=advanced&query=" 
-                          + YAHOO.lang.JSON.stringify(queryData);
-            } else {
-                throw "Invalid value for search type: " + searchType;
+                    postData += "&queryType=advanced&query=" 
+                              + YAHOO.lang.JSON.stringify(queryData);
+                } else {
+                    throw "Invalid value for search type: " + searchType;
+                }
+            } catch (error) {
+                if ('string' == typeof error) {
+                    message(error, 'warning', true);
+                }
             }
 
             postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
@@ -326,6 +338,9 @@ Fisma.Search = function() {
                 document.getElementById('keywords').style.visibility = 'visible';
                 document.getElementById('searchType').value = 'simple';
 
+                // The error message of advance search should not be displayed
+                // after the advanced search options is hidden
+                document.getElementById('msgbar').style.display = 'none';
             }
         },
 
