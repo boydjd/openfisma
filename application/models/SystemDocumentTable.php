@@ -89,6 +89,15 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 ),
                 'sortable' => true,
                 'type' => 'text'
+            ),
+            'systemId' => array(
+                'hidden' => true,
+                'join' => array(
+                    'model' => 'System',
+                    'relation' => 'System',
+                    'field' => 'id'
+                ),
+                'type' => 'integer'
             )
         );
     }
@@ -100,7 +109,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
      */
     public function getAclFields()
     {
-        return array();
+        return array('systemId' => 'SystemTable::getSystemIds');
     }
 
     /*
