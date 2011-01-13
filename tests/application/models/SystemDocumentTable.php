@@ -40,7 +40,7 @@ class Test_Application_Models_SystemDocumentTable extends Test_FismaUnitTest
         $searchableFields = SystemDocumentTable::getSearchableFields();
 
         $this->assertTrue(is_array($searchableFields));
-        $this->assertEquals(7, count($searchableFields));
+        $this->assertEquals(8, count($searchableFields));
     }
 
     /**
