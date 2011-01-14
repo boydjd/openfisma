@@ -1,1 +1,0 @@
-function delok(b){var a="Are you sure that you want to delete this "+b+"?";if(confirm(a)==true){return true}return false};

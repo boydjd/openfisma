@@ -201,7 +201,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $organizationId = $this->getRequest()->getParam('organizationId');
         $sourceId = $this->getRequest()->getParam('sourceId');
 
-        if (!empty($systemId)) {
+        if (!empty($organizationId)) {
             $organization = Doctrine::getTable('Organization')->find($organizationId);
 
             $this->_acl->requirePrivilegeForObject('read', $organization);
