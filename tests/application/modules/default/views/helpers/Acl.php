@@ -29,10 +29,20 @@ require_once(realpath(dirname(__FILE__) . '/../../../../../FismaUnitTest.php'));
  */
 class Test_Application_Modules_Default_Views_Helpers_Acl extends Test_FismaUnitTest
 {
-    private $_view;
+    /**
+     * _helper 
+     * 
+     * @var View_Helper_Acl 
+     * @access private
+     */
     private $_helper;
-    private $_headStyleMock;
 
+    /**
+     * setUp 
+     * 
+     * @access public
+     * @return void
+     */
     public function setUp()
     {
         require_once(
@@ -41,11 +51,23 @@ class Test_Application_Modules_Default_Views_Helpers_Acl extends Test_FismaUnitT
         $this->_helper = new View_Helper_Acl();
     }
 
+    /**
+     * testGetNullAcl 
+     * 
+     * @access public
+     * @return void
+     */
     public function testGetNullAcl()
     {
         $this->assertNull($this->_helper->acl());
     }
 
+    /**
+     * testSetAcl 
+     * 
+     * @access public
+     * @return void
+     */
     public function testSetAcl()
     {
         $this->_helper->setAcl(new Fisma_Zend_Acl());
