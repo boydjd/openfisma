@@ -44,7 +44,7 @@ $application = new Zend_Application(
 
 Fisma::setAppConfig($application->getOptions());
 Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-Fisma::connectDb();
+$application->bootstrap('Db');
 Fisma::setConfiguration(new Fisma_Configuration_Database);
 
 // Warning message if somebody tries to run the bootstrap file directly

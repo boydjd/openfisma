@@ -71,13 +71,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                             ->setHydrationMode(Doctrine::HYDRATE_NONE)
                             ->execute();
 
-        // Get Assets
-        $assetIds = Doctrine_Query::create()
-                        ->select('a.id')
-                        ->from('Asset a')
-                        ->setHydrationMode(Doctrine::HYDRATE_NONE)
-                        ->execute();
-
         // Get sources
         $sourceIds = Doctrine_Query::create()
                         ->select('s.id')
@@ -121,7 +114,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $threatCount = count($threat)-1;
         $effectivenessCount = count($effectiveness)-1;
         $organizationIdsCount = count($organizationIds)-1;
-        $assetIdsCount = count($assetIds)-1;
         $sourceIdsCount = count($sourceIds)-1;
         $securityControlIdsCount = count($securityControlIds)-1;
 
@@ -144,7 +136,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
             $finding['responsibleOrganizationId'] = $organizationIds[rand(0, $organizationIdsCount)][0];
-            $finding['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
             $finding['sourceId'] = $sourceIds[rand(0, $sourceIdsCount)][0];
             $finding['securityControlId'] = $securityControlIds[rand(0, $securityControlIdsCount)][0];
             $finding['description'] = Fisma_String::loremIpsum(rand(2, 1000));

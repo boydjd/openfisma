@@ -1486,64 +1486,6 @@ if (window.HTMLElement) {
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- * @fileoverview Helper function for the on-line help feature in OpenFISMA
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license   http://www.openfisma.org/content/license
- * @version   $Id$
- */
-
-var helpPanels = new Array();
-function showHelp(event, helpModule) {
-    if (helpPanels[helpModule]) {
-        helpPanels[helpModule].show();
-    } else {
-        // Create new panel
-        var newPanel = new YAHOO.widget.Panel('helpPanel', {width:"400px"} );
-        newPanel.setHeader("Help");
-        newPanel.setBody("Loading...");
-        newPanel.render(document.body);
-        newPanel.center();
-        newPanel.show();
-        
-        // Load the help content for this module
-        YAHOO.util.Connect.asyncRequest('GET', 
-                                        '/help/help/module/' + helpModule, 
-                                        {
-                                            success: function(o) {
-                                                // Set the content of the panel to the text of the help module
-                                                o.argument.setBody(o.responseText);
-                                                // Re-center the panel (because the content has changed)
-                                                o.argument.center();
-                                            },
-                                            failure: function(o) {alert('Failed to load the help module.');},
-                                            argument: newPanel
-                                        }, 
-                                        null);
-        
-        // Store this panel to be re-used on subsequent calls
-        helpPanels[helpModule] = newPanel;
-    }
-}
-/**
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
  * @fileoverview This function is unsafe because it selects all checkboxes on the page,
  *               regardless of what grouping they belong to.
  *
@@ -1592,43 +1534,6 @@ function elDump(el) {
         props += prop + ' : ' + el[prop] + '\n';
     }
     alert(props);
-}
-/**
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Used to present the user an alert box asking them if they are sure they want to 
- *               delete the item they selected, the entryname should be defined in the form.
- *               If the user selects ok the function returns true, if the user selects cancel the 
- *               function returns false
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license   http://www.openfisma.org/content/license
- * @version   $Id$
- */
-
-function delok(entryname)
-{
-    var str = "Are you sure that you want to delete this " + entryname + "?";
-    if(confirm(str) == true){
-        return true;
-    }
-    return false;
 }
 //v1.7
 // Flash Player Version Detection
@@ -5206,6 +5111,9 @@ Fisma.Search = function() {
                 document.getElementById('searchType').value = 'simple';
             }
 
+            // The error message of advance search should be hidden before handles a new search
+            document.getElementById('msgbar').style.display = 'none';
+
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -5350,22 +5258,36 @@ Fisma.Search = function() {
 
             var searchType = document.getElementById('searchType').value;
 
+            // Ensure the search type is simple when advance search is hidden
+            if (document.getElementById('advancedSearch').style.display == 'none') {
+                searchType = 'simple';
+            }
+
+            // The error message of advance search should be hidden before handles YUI data
+            document.getElementById('msgbar').style.display = 'none';
+
             var postData = "sort=" + tableState.sortedBy.key +
                            "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
                            "&start=" + tableState.pagination.recordOffset +
                            "&count=" + tableState.pagination.rowsPerPage +
                            "&csrf=" + document.getElementById('searchForm').csrf.value;
 
-            if ('simple' == searchType) {
-                postData += "&queryType=simple&keywords=" 
-                          + document.getElementById('keywords').value;
-            } else if ('advanced' == searchType) {
-                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
+            try {
+                if ('simple' == searchType) {
+                    postData += "&queryType=simple&keywords=" 
+                              + document.getElementById('keywords').value;
+                } else if ('advanced' == searchType) {
+                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
-                postData += "&queryType=advanced&query=" 
-                          + YAHOO.lang.JSON.stringify(queryData);
-            } else {
-                throw "Invalid value for search type: " + searchType;
+                    postData += "&queryType=advanced&query=" 
+                              + YAHOO.lang.JSON.stringify(queryData);
+                } else {
+                    throw "Invalid value for search type: " + searchType;
+                }
+            } catch (error) {
+                if ('string' == typeof error) {
+                    message(error, 'warning', true);
+                }
             }
 
             postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
@@ -5411,6 +5333,9 @@ Fisma.Search = function() {
                 document.getElementById('keywords').style.visibility = 'visible';
                 document.getElementById('searchType').value = 'simple';
 
+                // The error message of advance search should not be displayed
+                // after the advanced search options is hidden
+                document.getElementById('msgbar').style.display = 'none';
             }
         },
 
@@ -7154,7 +7079,7 @@ Fisma.System = {
      * Build URL for adding information type to the system 
      */
     addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('organization') + "/sitId/" + oData + "'>Add</a>";
+        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
     },
 
 
@@ -7162,7 +7087,7 @@ Fisma.System = {
      * Build URL for removing information types from a system 
      */
     removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('organization') + "/sitId/" + oData + "'>Remove</a>";
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Remove</a>";
     }
 };
 /**

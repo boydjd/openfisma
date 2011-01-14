@@ -63,6 +63,7 @@ table.modules td:first-child{font-weight:bold;}
 .searchAddCriteriaButton{background:url(/images/add.png) center center no-repeat;overflow:hidden;width:2em;}
 .searchRemoveCriteriaButton{background:url(/images/remove.png) center center no-repeat;overflow:hidden;width:2em;}
 .highlight{background-color:yellow;}
+.yui-skin-sam .yui-navset .yui-nav .disabled a em{color:grey;}
 div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
 div.switchButton span.border{background-position:left top;margin:0;}
 div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}

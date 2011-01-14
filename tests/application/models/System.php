@@ -126,4 +126,173 @@ class Test_Application_Models_System extends Test_FismaUnitTest
         $system->uniqueProjectId = '0123456789';
         $this->assertEquals('012-34-56-78-90-0000-00', $system->uniqueProjectId);
     }
+
+    /**
+     * testGetTypeLabelForGss 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetTypeLabelForGss()
+    {
+        $system = new System();
+
+        $system->type = 'gss';
+
+        $this->assertEquals('General Support System', $system->getTypeLabel());
+    }
+
+    /**
+     * testGetTypeLabelForMajorApplication 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetTypeLabelForMajorApplication()
+    {
+        $system = new System();
+
+        $system->type = 'major';
+
+        $this->assertEquals('Major Application', $system->getTypeLabel());
+    }
+
+    /**
+     * testGetTypeLabelForMinorApplication 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetTypeLabelForMinorApplication()
+    {
+        $system = new System();
+
+        $system->type = 'minor';
+
+        $this->assertEquals('Minor Application', $system->getTypeLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseLabelForInitiation 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseLabelForInitiation()
+    {
+        $system = new System();
+
+        $system->sdlcPhase = 'initiation';
+
+        $this->assertEquals('Initiation', $system->getSdlcPhaseLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseLabelForDevelopment 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseLabelForDevelopment()
+    {
+        $system = new System();
+
+        $system->sdlcPhase = 'development';
+
+        $this->assertEquals('Development/Acquisition', $system->getSdlcPhaseLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseLabelForImplementation 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseLabelForImplementation()
+    {
+        $system = new System();
+
+        $system->sdlcPhase = 'implementation';
+
+        $this->assertEquals('Implementation/Assessment', $system->getSdlcPhaseLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseLabelForOperations 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseLabelForOperations()
+    {
+        $system = new System();
+
+        $system->sdlcPhase = 'operations';
+
+        $this->assertEquals('Operations/Maintenance', $system->getSdlcPhaseLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseLabelForDisposal 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseLabelForDisposal()
+    {
+        $system = new System();
+
+        $system->sdlcPhase = 'disposal';
+
+        $this->assertEquals('Disposal', $system->getSdlcPhaseLabel());
+    }
+
+    /**
+     * testGetSdlcPhaseMap 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSdlcPhaseMap()
+    {
+        $system = new System();
+
+        $this->assertTrue(is_array($system->getSdlcPhaseMap()));
+    }
+
+    /**
+     * testCalculateThreatLikelihood 
+     * 
+     * @access public
+     * @return void
+     * @dataProvider threatLikelihoodProvider
+     */
+    public function testCalculateThreatLikelihood($expected, $threat, $countermeasure)
+    {
+        $system = new System();
+
+        $this->assertEquals($expected, $system->calculateThreatLikelihood($threat, $countermeasure));
+    }
+
+    /**
+     * threatLikelihoodProvider 
+     * 
+     * @static
+     * @access public
+     * @return void
+     */
+    static public function threatLikelihoodProvider()
+    {
+        return array(
+            array('expected' => 'HIGH', 'threat' => 'HIGH', 'countermeasure' => 'LOW'),
+            array('expected' => 'MODERATE', 'threat' => 'HIGH', 'countermeasure' => 'MODERATE'),
+            array('expected' => 'LOW', 'threat' => 'HIGH', 'countermeasure' => 'HIGH'),
+            array('expected' => 'MODERATE', 'threat' => 'MODERATE', 'countermeasure' => 'LOW'),
+            array('expected' => 'MODERATE', 'threat' => 'MODERATE', 'countermeasure' => 'MODERATE'),
+            array('expected' => 'LOW', 'threat' => 'MODERATE', 'countermeasure' => 'HIGH'),
+            array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'LOW'),
+            array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'MODERATE'),
+            array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'HIGH')
+        );
+    }
 }
