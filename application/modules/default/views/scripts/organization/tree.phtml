@@ -39,6 +39,9 @@ var tree;
 // This is necessary due to a limitation in YUI (see below)
 var treeMap = {};
 
+// Global reference to the context menu
+var contextMenu;
+
 function showTree(treeNodes) {
     tree = new YAHOO.widget.TreeView("orgTree");
 
@@ -48,8 +51,13 @@ function showTree(treeNodes) {
     
     treeEl = document.getElementById("orgTree");
 
+    // Ensure the only one context menu exists.
+    if ("undefined" != typeof contextMenu){
+        contextMenu.destroy();
+    }
+
     var contextMenuItems = ["View"];    
-    var contextMenu = new YAHOO.widget.ContextMenu( 
+    contextMenu = new YAHOO.widget.ContextMenu( 
         "contextMenu",  
         { 
             trigger: treeEl, 
