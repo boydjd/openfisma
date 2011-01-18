@@ -40,6 +40,7 @@ class View_Helper_InjectAsset
                                 '/javascripts/combined.js' => 
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
+                                      '/javascripts/nesteddatatable.js',
                                       '/javascripts/fisma.js',
                                       '/javascripts/editable.js',
                                       '/javascripts/selectallselectnone.js',
@@ -67,6 +68,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Search/CriteriaQuery.js',
                                       '/javascripts/Fisma/Search/CriteriaRenderer.js',
                                       '/javascripts/Fisma/Search/Panel.js',
+                                      '/javascripts/Fisma/SecurityControlTable.js',
                                       '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
@@ -92,7 +94,9 @@ class View_Helper_InjectAsset
                                       '/stylesheets/SecurityAuthorization.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css'
+                                      '/stylesheets/User.css',
+
+                                      '/stylesheets/nesteddatatable.css'
                                 )
                             );
 

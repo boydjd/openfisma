@@ -1,0 +1,29 @@
+.yui-skin-sam .yui-dt td.__NESTED__ a {
+	text-decoration:none;
+	color:white;
+}
+
+.yui-skin-sam .yui-dt td.__NESTED__ div {
+	width:14px;
+	padding:0;
+	margin:5px 3px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.expand {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.collapse {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;
+}
+/*
+ * .yui-skin-sam .yui-dt tr {
+ */
+.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr {
+    vertical-align:top;
+}
+
+.__NESTED_TABLE__ {
+	position:absolute;
+}
+.__NESTED_TABLE__ table {
+	width:100%;
+}

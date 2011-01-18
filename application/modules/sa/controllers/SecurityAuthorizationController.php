@@ -28,6 +28,20 @@
 class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Object
 {
     /**
+     * Initialize internal members.
+     * 
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('control-table-master', 'json')
+                      ->addActionContext('control-table-nested', 'json')
+                      ->initContext();
+    }
+
+    /**
      * The main name of the model.
      * 
      * This model is the main subject which the controller operates on.
@@ -378,4 +392,70 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         );
     }
 
+    public function controlTableAction()
+    {
+        $this->_viewObject();
+        $this->view->buttons = array(
+            new Fisma_Yui_Form_Button(
+                'addControl',
+                array(
+                    'label' => 'Add Control',
+                    'onClickFunction' => 'Fisma.SecurityControlTable.addControl',
+                    'onClickArgument' => $this->view->id
+                )
+            ),
+            new Fisma_Yui_Form_Button(
+                'completeSelection',
+                 array('label' => 'Complete Selection', 'onClickFunction' => 'completeSelect')
+            )
+        );
+        $completeForm = new Fisma_Zend_Form();
+        $completeForm->setAction('/sa/security-authorization/complete-step')
+                     ->setAttrib('id', 'completeForm')
+                     ->addElement(new Zend_Form_Element_Hidden('id'))
+                     ->addElement(new Zend_Form_Element_Hidden('step'))
+                     ->setElementDecorators(array('ViewHelper'))
+                     ->setDefaults(array('id' => $this->view->id, 'step' => 'Select'));
+        $this->view->buttons[] = $completeForm;
+
+    }
+
+    public function controlTableMasterAction()
+    {
+        $id = $this->_getParam('id');
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+        $records = array();
+        foreach ($sa->SaSecurityControls as $sasc) {
+            $sceCount = $sasc->SecurityControl->Enhancements->count();
+            $sasceCount = $sasc->SaSecurityControlEnhancements->count();
+            $records[] = array(
+                'id' => $sasc->id,
+                'securityControlId' => $sasc->SecurityControl->id,
+                'code' => $sasc->SecurityControl->code,
+                'name' => $sasc->SecurityControl->name,
+                'class' => $sasc->SecurityControl->class,
+                'family' => $sasc->SecurityControl->family,
+                'hasEnhancements' => $sasceCount > 0,
+                'hasMoreEnhancements' => $sceCount > $sasceCount
+            );
+        }
+        $this->view->records = $records;
+        $this->view->totalRecords = count($records);
+    }
+
+    public function controlTableNestedAction()
+    {
+        $id = $this->_getParam('id');
+        $sasc = Doctrine::getTable('SaSecurityControl')->find($id);
+        $records = array();
+        foreach ($sasc->SaSecurityControlEnhancements as $sasce) {
+            $records[] = array(
+                'id' => $sasce->id,
+                'securityControlEnhancementId' => $sasce->SecurityControlEnhancement->id,
+                'number' => $sasce->SecurityControlEnhancement->number
+            );
+        }
+        $this->view->records = $records;
+        $this->view->totalRecords = count($records);
+    }
 }
