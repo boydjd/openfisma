@@ -93,7 +93,7 @@ class Fisma
      * 
      * @var Zend_Config_Ini
      */
-    public static $_appConf;
+    public static $appConf;
     
     /**
      * The root path of the application.
@@ -205,14 +205,14 @@ class Fisma
         self::$_initialized = true;
         
         // Timezone configuration
-        if (isset(self::$_appConf['timezone'])) {
-            ini_set("date.timezone", self::$_appConf['timezone']);
+        if (isset(self::$appConf['timezone'])) {
+            ini_set("date.timezone", self::$appConf['timezone']);
         } else {
             ini_set("date.timezone", "America/New_York");
         }
 
         // Session configuration
-        $sessionOptions = self::$_appConf['session'];
+        $sessionOptions = self::$appConf['session'];
         $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
         Zend_Session::setOptions($sessionOptions);
         
@@ -359,10 +359,10 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
 
-        if (!isset(self::$_appConf['debug'])) {
+        if (!isset(self::$appConf['debug'])) {
             return false;
         } else {
-            return (self::$_appConf['debug'] == 1);
+            return (self::$appConf['debug'] == 1);
         }
     }
    
@@ -383,8 +383,8 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
         
-        if (isset(self::$_appConf['includePaths'][$key])) {
-            return self::$_appConf['includePaths'][$key];
+        if (isset(self::$appConf['includePaths'][$key])) {
+            return self::$appConf['includePaths'][$key];
         } elseif (isset(self::$_applicationPath[$key])) {
             return self::$_rootPath . '/' . self::$_applicationPath[$key];
         } else {
@@ -556,6 +556,6 @@ class Fisma
      */
     public static function setAppConfig(array $config)
     {
-        self::$_appConf = $config;
+        self::$appConf = $config;
     }
 }
