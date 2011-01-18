@@ -211,11 +211,6 @@ class Fisma
             ini_set("date.timezone", "America/New_York");
         }
 
-        // Session configuration
-        $sessionOptions = self::$appConf['session'];
-        $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
-        Zend_Session::setOptions($sessionOptions);
-        
         // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
     }
