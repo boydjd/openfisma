@@ -73,6 +73,6 @@ try {
                    . $exception->getTraceAsString() 
                    . "\n";
         
-        Fisma::getLogInstance()->err($logString);
+        Zend_Registry::get('Zend_Log')->err($logString);
     }
 }

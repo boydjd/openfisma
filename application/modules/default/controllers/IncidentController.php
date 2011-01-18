@@ -1210,7 +1210,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            $this->getInvokeArg('bootstrap')->getResource('log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
         $this->view->response = json_encode($response);

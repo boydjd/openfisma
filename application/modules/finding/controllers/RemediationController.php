@@ -816,7 +816,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 } else {
                     $message = 'The file upload failed due to a server configuration error.' 
                              . ' Please contact the administrator.';
-                    $logger = Fisma::getLogInstance($this->_me);
+                    $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
                     $logger->log('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'], Zend_Log::ERR);
                     throw new Fisma_Zend_Exception($message);
                 }

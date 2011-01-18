@@ -512,7 +512,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
             $status = 'warning';
             
-            $logger = Fisma::getLogInstance(CurrentUser::getInstance());
+            $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
             $logger->log($e->getMessage() . "\n" . $e->getTraceAsString(), Zend_Log::ERR);
             
         } catch (Exception $e) {
