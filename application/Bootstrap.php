@@ -82,9 +82,9 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     {
         // Connect to the database
         if (Fisma::mode() != Fisma::RUN_MODE_TEST) {
-            $db = Fisma::$_appConf['db'];
+            $db = Fisma::$appConf['db'];
         } else {
-            $db = Fisma::$_appConf['testdb'];
+            $db = Fisma::$appConf['testdb'];
         }
         $connectString = $db['adapter'] . '://' . $db['username'] . ':' 
                          . $db['password'] . '@' . $db['host'] 
