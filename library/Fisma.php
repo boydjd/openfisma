@@ -204,13 +204,6 @@ class Fisma
         // Set the initialized flag
         self::$_initialized = true;
         
-        // Timezone configuration
-        if (isset(self::$appConf['timezone'])) {
-            ini_set("date.timezone", self::$appConf['timezone']);
-        } else {
-            ini_set("date.timezone", "America/New_York");
-        }
-
         // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
     }
