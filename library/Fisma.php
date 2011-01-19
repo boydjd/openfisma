@@ -381,38 +381,6 @@ class Fisma
     }
     
     /**
-     * Initialize the cache instance
-     *
-     * make the directory "/path/to/data/cache" writable
-     * 
-     * @param string $identify The specified file name prefix
-     * @return Zend_Cache The instance of Zend_Cache
-     */
-    public static function getCacheInstance($identify = null)
-    {
-        if (null === self::$_cache) {
-            $frontendOptions = array(
-                'caching'                 => true,
-                // cache life same as system expiring period
-                'lifetime'                => Fisma::configuration()->getConfig('session_inactivity_period'), 
-                'automatic_serialization' => true
-            );
-
-            $backendOptions = array(
-                'cache_dir' => Fisma::getPath('cache'),
-                'file_name_prefix' => $identify
-            );
-            self::$_cache = Zend_Cache::factory(
-                'Core',
-                'File',
-                $frontendOptions,
-                $backendOptions
-            );
-        }
-        return self::$_cache;
-    }
-
-    /**
      * Initialize the cache manager 
      * 
      * If APC is available, create an APC cache, if it's not, use a file cache.
