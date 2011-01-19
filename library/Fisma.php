@@ -203,48 +203,6 @@ class Fisma
     }
 
     /**
-     * Configure the front controller and then dispatch it
-     * 
-     * @return void
-     * @todo this is a bit ugly, it's got some unrelated stuff in it
-     */
-    public static function dispatch() 
-    {
-        $frontController = Zend_Controller_Front::getInstance();
-
-        if (self::$_mode != self::RUN_MODE_TEST && self::debug()) {
-            $manager = $frontController->getParam('bootstrap')
-                        ->getResource('cachemanager')
-                        ->getCacheManager();
-
-            $cache = $manager->getCache('default');
-
-            $zfDebugOptions = array(
-                                'jquery_path' => '/javascripts/jquery-min.js',
-                                'plugins' => array(
-                                    'Variables',
-                                    'Html',
-                                    'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
-                                    'File' => array('base_path' => self::$_rootPath),
-                                    'Memory',
-                                    'Cache' => array('backend' => $cache->getBackend()),
-                                    'Time',
-                                    'Registry',
-                                    'Exception')
-                                );
-
-            $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
-            $debug->registerPlugin(new Fisma_ZfDebug_Plugin_YuiLogging);
-
-            $frontController->registerPlugin($debug);
-        }
-
-        $frontController->setControllerDirectory(Fisma::getPath('controller'));
-        
-        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
-    }
-    
-    /**
      * Returns the current execution mode.
      * 
      * @return int The current execution mode

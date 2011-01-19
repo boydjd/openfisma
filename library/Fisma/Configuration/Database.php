@@ -40,7 +40,6 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         $cache = Zend_Controller_Front::getInstance()
                     ->getParam('bootstrap')
                     ->getResource('cachemanager')
-                    ->getCacheManager()
                     ->getCache('default');
 
         if (!$config = $cache->load('configuration_' . $name)) {
@@ -86,7 +85,6 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
         $cache = Zend_Controller_Front::getInstance()
                     ->getParam('bootstrap')
                     ->getResource('cachemanager')
-                    ->getCacheManager()
                     ->getCache('default');
 
         if ($dirtyConfig = $cache->load('configuration_' . $name)) {

@@ -208,15 +208,14 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
     /**
      * Returns a reference to the default cache
      * 
-     * @access private
+     * @access protected 
      * @return void
      */
-    private function _getCache()
+    protected function _getCache()
     {
         return Zend_Controller_Front::getInstance()
             ->getParam('bootstrap')
             ->getResource('cachemanager')
-            ->getCacheManager()
             ->getCache('default');
     }
 }
