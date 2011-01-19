@@ -47,7 +47,6 @@ try {
 
     $frontController = Zend_Controller_Front::getInstance();
     $frontController->setControllerDirectory(Fisma::getPath('controller'));
-//    $application->bootstrap('fisma');
     error_reporting(E_ALL & ~E_NOTICE);
 } catch (Exception $exception) {
     echo get_class($exception) . ": " . $exception->getMessage() . "\n";
