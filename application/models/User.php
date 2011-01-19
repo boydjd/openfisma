@@ -282,7 +282,7 @@ class User extends BaseUser
      */
     public function acl()
     {
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache = $this->_getCache();
 
         if (!$acl = $cache->load(md5($this->username) . '_acl')) {
             // Refresh the user object to ensure latest user's data is reloaded from database since there are probably
@@ -378,7 +378,7 @@ class User extends BaseUser
      */
     public function invalidateAcl()
     {
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache = $this->_getCache();
         $cache->remove(md5($this->username) . '_acl');
     }
 

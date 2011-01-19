@@ -135,26 +135,6 @@ class Fisma
     );
    
     /**
-     * A single instance of Zend_Log which the application components share
-     * 
-     * @var Zend_Log
-     */
-    private static $_log;
-
-    /**
-     * A single instance of Zend_Cache which the application components share
-     *
-     * @todo Move into the cache manager 
-     * @var Zend_Cache
-     */
-    private static $_cache;
-
-    /**
-     * A single instance of Zend_Cache_Manager which the application components share 
-     */
-    private static $_cacheManager;
-    
-    /**
      * A zend session that OpenFISMA can use without worries about collisions to other frameworks that may
      * be running.
      * 
@@ -232,8 +212,12 @@ class Fisma
     {
         $frontController = Zend_Controller_Front::getInstance();
 
-        if (self::debug()) {
-            $cache = self::getCacheManager()->getCache('default');
+        if (self::$_mode != self::RUN_MODE_TEST && self::debug()) {
+            $manager = $frontController->getParam('bootstrap')
+                        ->getResource('cachemanager')
+                        ->getCacheManager();
+
+            $cache = $manager->getCache('default');
 
             $zfDebugOptions = array(
                                 'jquery_path' => '/javascripts/jquery-min.js',
@@ -380,50 +364,6 @@ class Fisma
         }
     }
     
-    /**
-     * Initialize the cache manager 
-     * 
-     * If APC is available, create an APC cache, if it's not, use a file cache.
-     *
-     * @return Zend_Cache_Manager 
-     */
-    public static function getCacheManager()
-    {
-        if (null === self::$_cacheManager) {
-            $manager = new Zend_Cache_Manager();
-
-            $frontendOptions = array(
-                'caching' => true,
-                'lifetime' => 0,
-                'automatic_serialization' => true,
-                'cache_id_prefix' => (isset($_SERVER['SERVER_NAME'])) ? substr(md5($_SERVER['SERVER_NAME']), 0, 5) : ''
-            );
-
-            if (function_exists('apc_fetch')) {
-                $cache = Zend_Cache::factory(
-                    'Core',
-                    'Apc',
-                    $frontendOptions
-                );
-            } else {
-                $backendOptions = array(
-                    'cache_dir' => Fisma::getPath('cache'),
-                );
-                $cache = Zend_Cache::factory(
-                    'Core',
-                    'File',
-                    $frontendOptions,
-                    $backendOptions
-                );
-            }
-
-            $manager->setCache('default', $cache);
-            self::$_cacheManager = $manager;
-        }
-
-        return self::$_cacheManager;
-    }
-
     /**
      * Returns the current timestamp in DB friendly format
      * 

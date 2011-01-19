@@ -153,7 +153,11 @@ class Fisma_Search_ReverseIndexer
      */
     private function _getReverseIndex()
     {
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache = Zend_Controller_Front::getInstance()
+                    ->getParam('bootstrap')
+                    ->getResource('cachemanager')
+                    ->getCacheManager()
+                    ->getCache('default');
         
         if (($reverseIndex = $cache->load('searchEngineReverseIndex')) === false ) {
         

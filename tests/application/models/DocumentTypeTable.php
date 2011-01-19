@@ -62,7 +62,7 @@ class Test_Application_Models_DocumentTypeTable extends Test_FismaUnitTest
      */
     public function testGetMissingDocumentTypeNameWithEmptySystemId()
     {
-        $missing = DocumentTypeTable::getMissingDocumentTypeName();
+        $missing = DocumentTypeTable::getMissingDocumentTypeName(null);
 
         $this->assertNull($missing);
     }
