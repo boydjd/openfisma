@@ -108,20 +108,14 @@ class Incident extends BaseIncident
      * This moves the incident from 'new' status to 'open' and also assigns a category and a workflow
      * 
      * @param IrSubCategory $category
-     * @param string $comment The user's comment associated with opening the incident
      */
-    public function open(IrSubCategory $category, $comment)
+    public function open(IrSubCategory $category)
     {
         $conn = Doctrine_Manager::connection();
         $conn->beginTransaction();
 
         $this->status = 'open';
         $this->Category = $category;
-        
-        // Validate that comment is not empty
-        if ('' == trim($comment)) {
-            throw new Fisma_Zend_Exception_User('You must provide a comment');
-        }
         
         /*
          * Insert an initial workflow step which reflects the opening of the incident
@@ -158,9 +152,6 @@ class Incident extends BaseIncident
             $iw->save();
         }
 
-        // Now mark the first step (the opening step) as being complete
-        $this->completeStep($comment);   
-        
         $conn->commit();
     }
     
