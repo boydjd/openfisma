@@ -30,6 +30,19 @@ YAHOO.util.Event.onDOMReady(function () {
                                         }
                                     }, 
                                     null);
+
+    var treeEl = document.getElementById("orgTree");
+
+    var contextMenuItems = ["View"];
+    var oTreeContextMenu = new YAHOO.widget.ContextMenu(
+        "treeContextMenu",
+        { 
+            trigger: treeEl,
+            itemdata: contextMenuItems,
+            lazyload: true
+        }
+    );
+    oTreeContextMenu.subscribe("click", contextMenuHandler);
 });
 
 // Global reference to the tree view
@@ -39,33 +52,12 @@ var tree;
 // This is necessary due to a limitation in YUI (see below)
 var treeMap = {};
 
-// Global reference to the context menu
-var contextMenu;
-
 function showTree(treeNodes) {
     tree = new YAHOO.widget.TreeView("orgTree");
 
     renderTreeNodes(treeNodes, tree.getRoot(), 0);
     
     tree.draw();
-    
-    treeEl = document.getElementById("orgTree");
-
-    // Ensure the only one context menu exists.
-    if ("undefined" != typeof contextMenu){
-        contextMenu.destroy();
-    }
-
-    var contextMenuItems = ["View"];    
-    contextMenu = new YAHOO.widget.ContextMenu( 
-        "contextMenu",  
-        { 
-            trigger: treeEl, 
-            itemdata: contextMenuItems, 
-            lazyload: true                                     
-        }  
-    );
-    contextMenu.subscribe("click", contextMenuHandler);
 }
 
 function contextMenuHandler(event, eventArgs) {
