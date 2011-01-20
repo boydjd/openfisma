@@ -226,18 +226,12 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
      * 
      * @return array
      */
-    static function getSystemIds()
+    public static function getSystemIds()
     {
-        $ids = CurrentUser::getInstance()->getSystemsByPrivilegeQuery('organization', 'read')
-               ->addSelect('s.id as id')
-               ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
-               ->execute();
+        $systemIds = CurrentUser::getInstance()
+                     ->getSystemsByPrivilege('organization', 'read')
+                     ->toKeyValueArray('systemId', 'systemId');
 
-        $systemIds = array();
-        foreach ($ids as $id) {
-                $systemIds[] = $id['s_id'];
-        }
-
-        return $systemIds;
+        return array_keys($systemIds);
     }
 }
