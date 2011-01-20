@@ -151,7 +151,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
 
         $frontController = Zend_Controller_Front::getInstance();
 
-        if (Fisma::mode() != Fisma::RUN_MODE_TEST && Fisma::debug()) {
+        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP && Fisma::debug) {
             $manager = $this->getResource('cachemanager');
             $cache = $manager->getCache('default');
 
