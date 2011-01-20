@@ -54,7 +54,7 @@ try {
     );
     Fisma::setAppConfig($application->getOptions());
     Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-    $application->bootstrap('Db');
+    $application->bootstrap(array('configuration', 'db', 'registerLogger'));
     Fisma::setNotificationEnabled(false);
     Fisma::setListenerEnabled(false);
 

@@ -379,7 +379,10 @@ class User extends BaseUser
     public function invalidateAcl()
     {
         $cache = $this->_getCache();
-        $cache->remove(md5($this->username) . '_acl');
+
+        if ($cache) {
+            $cache->remove(md5($this->username) . '_acl');
+        }
     }
 
     /**
