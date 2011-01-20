@@ -282,7 +282,7 @@ abstract class Zend_Controller_Response_Abstract
     public function setHttpResponseCode($code)
     {
         if (!is_int($code) || (100 > $code) || (599 < $code)) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Invalid HTTP response code');
         }
 
@@ -317,7 +317,7 @@ abstract class Zend_Controller_Response_Abstract
     {
         $ok = headers_sent($file, $line);
         if ($ok && $throw && $this->headersSentThrowsException) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Cannot send headers; headers already sent in ' . $file . ', line ' . $line);
         }
 
@@ -483,7 +483,7 @@ abstract class Zend_Controller_Response_Abstract
     public function append($name, $content)
     {
         if (!is_string($name)) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Invalid body segment key ("' . gettype($name) . '")');
         }
 
@@ -507,7 +507,7 @@ abstract class Zend_Controller_Response_Abstract
     public function prepend($name, $content)
     {
         if (!is_string($name)) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Invalid body segment key ("' . gettype($name) . '")');
         }
 
@@ -534,12 +534,12 @@ abstract class Zend_Controller_Response_Abstract
     public function insert($name, $content, $parent = null, $before = false)
     {
         if (!is_string($name)) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Invalid body segment key ("' . gettype($name) . '")');
         }
 
         if ((null !== $parent) && !is_string($parent)) {
-            require_once 'Zend/Controller/Response/Exception.php';
+            // require_once 'Zend/Controller/Response/Exception.php';
             throw new Zend_Controller_Response_Exception('Invalid body segment parent key ("' . gettype($parent) . '")');
         }
 

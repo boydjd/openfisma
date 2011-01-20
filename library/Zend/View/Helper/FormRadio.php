@@ -24,7 +24,7 @@
 /**
  * Abstract class for extension
  */
-require_once 'Zend/View/Helper/FormElement.php';
+// require_once 'Zend/View/Helper/FormElement.php';
 
 
 /**
@@ -130,7 +130,7 @@ class Zend_View_Helper_FormRadio extends Zend_View_Helper_FormElement
         }
 
         // add radio buttons to the list.
-        require_once 'Zend/Filter/Alnum.php';
+        // require_once 'Zend/Filter/Alnum.php';
         $filter = new Zend_Filter_Alnum();
         foreach ($options as $opt_value => $opt_label) {
 
