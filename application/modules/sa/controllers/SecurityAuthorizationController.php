@@ -38,6 +38,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->contextSwitch()
                       ->addActionContext('control-table-master', 'json')
                       ->addActionContext('control-table-nested', 'json')
+                      ->addActionContext('remove-control', 'json')
+                      ->addActionContext('remove-enhancement', 'json')
+                      ->initContext();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('add-control', 'html')
+                      ->addActionContext('add-enhancements', 'html')
+                      ->addActionContext('edit-common-control', 'html')
                       ->initContext();
     }
 
@@ -392,7 +399,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         );
     }
 
-    public function controlTableAction()
+    public function selectControlsAction()
     {
         $this->_viewObject();
         $this->view->buttons = array(
@@ -457,5 +464,220 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
         $this->view->records = $records;
         $this->view->totalRecords = count($records);
+    }
+
+    /**
+     * @return void
+     */
+    public function removeControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        $controlId = $this->_request->getParam('securityControlId');
+        $this->view->securityAuthorizationId = $id;
+        $this->view->controlId = $controlId;
+
+        $saScCollection = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->leftJoin('saSc.SaSecurityControlEnhancement saSce')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $controlId)
+            ->execute();
+        $this->view->saSc = $saScCollection->toArray(true);
+
+        foreach ($saScCollection as $saSc) {
+            foreach ($saSc->SaSecurityControlEnhancement as $saSce) {
+                $saSce->delete();
+            }
+            $saSc->delete();
+        }
+        $this->view->result = 'ok';
+    }
+
+    /**
+     * @return void
+     */
+    public function removeEnhancementAction()
+    {
+        $id = $this->_request->getParam('id');
+        $enhancementId = $this->_request->getParam('securityControlEnhancementId');
+        $this->view->securityAuthorizationId = $id;
+        $this->view->controlEnhancementId = $enhancementId;
+
+        $saSceCollection = Doctrine_Query::create()
+            ->from('SaSecurityControlEnhancement saSce')
+            ->innerJoin('saSce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSce.securityControlEnhancementId = ?', $enhancementId)
+            ->execute();
+        $this->view->saSce = $saSceCollection->toArray(true);
+
+        foreach ($saSceCollection as $saSce) {
+            $saSce->delete();
+        }
+        $this->view->result = 'ok';
+    }
+
+    /**
+     * @return void
+     */
+    public function addControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            $saSc = new SaSecurityControl();
+            $saSc->merge($post);
+            $saSc->save();
+            $this->_redirect('/sa/security-authorization/select-controls/id/'.$id);
+            return;
+        }
+
+        // get list of controls for the form
+        $currentControls = Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->innerJoin('sc.SaSecurityControls saSc')
+            ->innerJoin('saSc.SecurityAuthorization sa')
+            ->where('sa.id = ?', array($id))
+            ->execute()
+            ->toKeyValueArray('id', 'id');
+        $this->view->currentControls = $currentControls;
+        $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
+        $controls = Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->whereNotIn('sc.id', $currentControls)
+            ->andWhere('sc.securityControlCatalogId = ?', $catalogId)
+            ->execute();
+        $controlArray = array();
+        foreach ($controls as $control) {
+            $controlArray[$control->id] = $control->code . ' ' . $control->name;
+        }
+
+        // build form
+        $form = $this->getForm('securityauthorizationaddcontrol');
+        $form->setAction('/sa/security-authorization/add-control/id/'.$id);
+        $form->setDefault('securityAuthorizationId', $id);
+        $form->getElement('securityControlId')->addMultiOptions($controlArray);
+        $this->view->id = $id;
+        $this->view->addControlForm = $form;
+    }
+
+    /**
+     * @return void
+     */
+    public function addEnhancementsAction()
+    {
+        $id = $this->_request->getParam('id');
+        $securityControlId = $this->_request->getParam('securityControlId');
+
+        $saSecurityControl = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->execute();
+        $saSecurityControl = $saSecurityControl[0];
+
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            foreach ($post['securityControlEnhancementIds'] as $securityControlEnhancementId) {
+                $saSce = new SaSecurityControlEnhancement();
+                $saSce->saSecurityControlId = $saSecurityControl->id;
+                $saSce->securityControlEnhancementId = $securityControlEnhancementId;
+                $saSce->save();
+                $saSce->free();
+            }
+            $this->_redirect('/sa/security-authorization/select-controls/id/'.$id);
+            return;
+        }
+
+        $this->view->id = $id;
+        $this->view->securityControlId = $securityControlId;
+
+        $currentControlEnhancements = Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce')
+            ->innerJoin('sce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->execute()
+            ->toKeyValueArray('id', 'id');
+        $this->view->currentControlEnhancementss = $currentControlEnhancements;
+
+        $enhancementObjects = Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce')
+            ->whereNotIn('sce.id', $currentControlEnhancements)
+            ->andWhere('sce.securityControlId = ?', $securityControlId)
+            ->execute();
+        $enhancements = array();
+        foreach ($enhancementObjects as $enh) {
+            $enhancements[$enh->id] = $enh->Control->code . " (" . $enh->number . ")";
+        }
+        $this->view->availableEnhancements = $enhancements;
+
+        // build form
+        $form = $this->getForm('securityauthorizationaddenhancements');
+        $form->setAction(
+            '/sa/security-authorization/add-enhancements/id/'.$id . '/securityControlId/' . $securityControlId
+        );
+        $form->getElement('securityControlEnhancementIds')->addMultiOptions($enhancements);
+        $this->view->form = $form;
+    }
+
+    /**
+     * @return void
+     */
+    public function editCommonControlAction()
+    {
+        $id = $this->_request->getParam('id');
+        $securityControlId = $this->_request->getParam('securityControlId');
+
+        $saSecurityControl = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->innerJoin('saSc.SecurityAuthorization sa')
+            ->where('saSc.securityAuthorizationId = ?', $id)
+            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+            ->fetchOne();
+
+        if ($this->_request->isPost()) {
+            $post = $this->_request->getPost();
+            $common = $post['common'];
+            $sysOrgId = $post['sysOrgId'];
+            $saSecurityControl->common = $common == 'common';
+            $saSecurityControl->inheritsId = $common == 'inherits' ? $sysOrgId : null;
+            $saSecurityControl->save();
+            $saSecurityControl->free();
+            $this->_redirect('/sa/security-authorization/select-controls/id/'.$id);
+            return;
+        }
+
+        $this->view->id = $id;
+        $this->view->securityControlId = $securityControlId;
+
+        // get a list of systems from which to inherit
+        $commonSysOrgs = Doctrine_Query::create()
+            ->from('Organization org')
+            ->leftJoin('org.SecurityAuthorizations sa')
+            ->leftJoin('sa.SaSecurityControls saSc')
+            ->where('org.id != ?', $saSecurityControl->SecurityAuthorization->sysOrgId)
+            ->andWhere('saSc.common = ?', true)
+            ->orderBy('org.nickname')
+            ->execute();
+        $commonSysOrgs = $this->view->systemSelect($commonSysOrgs);
+
+        // build form
+        $form = $this->getForm('securityauthorization_editcommoncontrol');
+        $form->setAction(
+            '/sa/security-authorization/edit-common-control/id/'.$id . '/securityControlId/' . $securityControlId
+        );
+        $inheritsId = $form->getElement('sysOrgId');
+        $common = $form->getElement('common');
+        $inheritsId->addMultiOptions($commonSysOrgs);
+        if ($saSecurityControl->common) {
+            $common->setValue('common');
+        } else if (!empty($saSecurityControl->inheritsId)) {
+            $common->setValue('inherits');
+            $inheritsId->setValue($saSecurityControl->inheritsId);
+        } else {
+            $common->setValue('none');
+        }
+        $this->view->form = $form;
     }
 }

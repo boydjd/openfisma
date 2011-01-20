@@ -74,7 +74,7 @@
     SCT.addControl = function (ev) {
         var id = ev.detail,
             panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
-            url = "/sa/select-controls/add-control/format/html/id/" + id;
+            url = "/sa/security-authorization/add-control/format/html/id/" + id;
         var callbacks = {
                 success: function(o) {
                     var panel = o.argument;
@@ -110,7 +110,7 @@
             var id = ev.detail,
                 securityControlId = obj.getData("securityControlId"),
                 panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
-                getUrl = "/sa/select-controls/add-enhancements/format/html/id/" + id + "/securityControlId/" + securityControlId,
+                getUrl = "/sa/security-authorization/add-enhancements/format/html/id/" + id + "/securityControlId/" + securityControlId,
                 ctObj = this;
             var callbacks = {
                 success: function(o) {
@@ -131,7 +131,7 @@
             var id = ev.detail,
                 securityControlId = obj.getData("securityControlId"),
                 panel = Fisma.HtmlPanel.showPanel("Edit Common Security Control", null, null, { modal : true }),
-                getUrl = "/sa/select-controls/edit-common-control/format/html/id/" + id + "/securityControlId/" + securityControlId,
+                getUrl = "/sa/security-authorization/edit-common-control/format/html/id/" + id + "/securityControlId/" + securityControlId,
                 ctObj = this;
             var callbacks = {
                 success: function(o) {
@@ -150,13 +150,13 @@
         },
 
         _removeControl: function (ev, obj) {
-            var actionUrl = "/sa/select-controls/remove-control/format/json/id/" + ev.detail,
+            var actionUrl = "/sa/security-authorization/remove-control/format/json/id/" + ev.detail,
                 post = "securityControlId=" + obj.getData("securityControlId");
             this._removeEntry(actionUrl, post);
         },
     
         _removeEnhancement: function (ev, obj) {
-            var actionUrl = "/sa/select-controls/remove-enhancement/format/json/id/" + ev.detail,
+            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json/id/" + ev.detail,
                 post = "securityControlEnhancementId=" + obj.getData("securityControlEnhancementId");
             this._removeEntry(actionUrl, post);
         },
