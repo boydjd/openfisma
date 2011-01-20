@@ -318,6 +318,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
 
         foreach ($data as &$row) {
             $row = array_map('Fisma_String::htmlToPdfText', array_values($row));
+            $row = array_map('htmlentities', array_values($row));
         }
 
         $view->data = $data;
