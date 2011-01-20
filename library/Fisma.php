@@ -379,4 +379,17 @@ class Fisma
     {
         self::$appConf = $config;
     }
+
+    /**
+     * Wrapper for htmlentities to turn off double encoding 
+     * 
+     * @param mixed $value 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function htmlentities($value)
+    {
+        return htmlentities($value, ENT_COMPAT, 'UTF-8', FALSE);
+    }
 }
