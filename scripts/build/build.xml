@@ -9,7 +9,7 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,editable.js,selectallselectnone.js,AC_RunActiveContent.js,jquery-min.js,jquery142min.js,jquery-ui-181custom_min.js,jquery_jqplot.js,jqplot_canvasTextRenderer_min.js,jqplot_canvasAxisLabelRenderer_min.js,jqplot_canvasAxisTickRenderer_min.js,jqplot_categoryAxisRenderer.js,jqplot_barRenderer.js,jqplot_pointLabels.js,jqplot_pieRenderer.js,jqplotWrapper.js"/>
+            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,editable.js,selectallselectnone.js,AC_RunActiveContent.js"/>
             <fileset dir="${location.js}/Fisma" includes="**/*.js"/>
         </concat>
         <echo message="JavaScript concatenated."/>

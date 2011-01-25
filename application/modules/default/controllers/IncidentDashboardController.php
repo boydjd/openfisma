@@ -87,32 +87,9 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function chartsAction()
     {
-        $statusChart = new Fisma_Chart(450, 300, 'incidentHistory', '/incident-chart/history/format/json');
-        $statusChart
-            ->setTitle('Incident History')
-            ->addWidget(
-                'period',
-                'Show:',
-                'combo',
-                '6 months of history',
-                array(
-                    '4 months of history',
-                    '5 months of history',
-                    '6 months of history',
-                    '7 months of history',
-                    '8 months of history'
-                )
-            );
-            
-        $this->view->statusChart = $statusChart->export('html');
-        
-        $categoryChart = new Fisma_Chart(450, 300, 'incidentCategories', '/incident-chart/category/format/json');
-        $categoryChart->setTitle('Incident Categories');
-        $this->view->categoryChart = $categoryChart->export('html');
-
-        $bureauChart = new Fisma_Chart(900, 300, 'incidentBureau', '/incident-chart/bureau/format/json');
-        $bureauChart->setTitle('Reported Incidents By Bureau');
-        $this->view->bureauChart = $bureauChart->export('html');
+        $this->view->statusChart = new Fisma_Chart('/incident-chart/history/period/6/format/xml', 450, 300);
+        $this->view->categoryChart = new Fisma_Chart('/incident-chart/category/format/xml', 450, 300);
+        $this->view->bureauChart = new Fisma_Chart('/incident-chart/bureau/format/xml', 900, 300);
     }
     
     /**

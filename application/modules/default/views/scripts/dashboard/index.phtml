@@ -85,23 +85,40 @@ if (isset($this->notifications)) {
 }
 ?>
 
+<script type="text/javascript">
+    function barChartClick(status) {
+        document.location = "<?php echo $this->escape($this->barChartBaseUrl, 'javascript'); ?>"
+                          + $P.rawurlencode(status);
+    }
+
+    function pieChartClick(columnNumber) {
+        // Lookup table for converting the column number to the remediation type code
+        var columns = ['NONE', 'CAP', 'FP', 'AR'];
+        var type = columns[columnNumber-1];
+        document.location = "<?php echo $this->escape($this->pieChartBaseUrl, 'javascript'); ?>"
+                          + $P.urlencode(type);
+    }
+</script>
 <?php 
 if ( !empty( $this->alert['TOTAL'] ) ) { 
 ?>
-    <b>Management Overview </b><br/>
-
-    <div class="column left">
-        <div style='text-align: center;'>
-            <?php echo $this->escape($this->chartTotalStatus, 'none'); ?>
-        </div>
+    <div class="panel clear">
+        <table width="100%">
+            <tr><td colspan="2"><b>&nbsp;&nbsp;&nbsp;Management Overview </b></td></tr>
+            <tr>
+                <td align="center">
+                <?php echo $this->escape($this->statusChart, 'none'); ?>
+                </td>
+                <td align="center">
+                <?php echo $this->escape($this->typeChart, 'none'); ?>
+                </td>
+            </tr>
+            <tr>
+                <td align="center"><b>Finding Status<br>Distribution</b></td>
+                <td align="center"><b>Mitigation Strategy<br>Distribution</b></td>
+            </tr>
+        </table>
     </div>
-
-    <div class="column right">
-        <div style='text-align: center;'>
-            <?php echo $this->escape($this->chartTotalType, 'none'); ?>
-        </div>
-    </div>
-    
 <?php 
 } 
 ?>

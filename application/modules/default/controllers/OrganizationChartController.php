@@ -37,9 +37,7 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
         
         $this->_helper->fismaContextSwitch()
                       ->setActionContext('fips-category', 'xml')
-                      ->setActionContext('fips-category', 'json')                      
                       ->setActionContext('agency-contractor', 'xml')
-                      ->setActionContext('agency-contractor', 'json')
                       ->initContext();
     }
     
@@ -71,29 +69,7 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
                            ->orderBy('s.fipsCategory DESC')
                            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        $catQueryRslt = $categoriesQuery->execute();
-        
-        $rtnChart = new Fisma_Chart();
-        $rtnChart
-            ->setTitle('FIPS-199 Categorizations')
-            ->setChartType('pie')
-            ->setColors(
-                array(
-                    '#FF0000',
-                    '#FF6600',
-                    '#FFC000'
-                )
-            );
-        
-        foreach ($catQueryRslt as $thisElement) {
-            //$chartData[] = (integer) $thisElement['s_fips_count'];
-            //$chartDataText[] = $thisElement['s_fips_category'];
-            
-            $rtnChart->addColumn($thisElement['s_fips_category'], $thisElement['s_fips_count']);
-            
-        }
-
-        $this->view->chart = $rtnChart->export('array');
+        $this->view->categories = $categoriesQuery->execute();
     }
     
     /**
@@ -114,20 +90,6 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
                                  ->orderBy('s.controlledBy')
                                  ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        $rslt = $agencyContractorQuery->execute();
-        
-        $rtnChart = new Fisma_Chart();
-        $rtnChart
-            ->setTitle('Agency & Contractor Systems')
-            ->setChartType('pie');
-        
-        foreach ($rslt as $thisRslt) {
-            $rtnChart->addColumn(
-                $thisRslt['s_controlled_by'],
-                $thisRslt['s_count']
-            );
-        }
-        
-        $this->view->chart = $rtnChart->export('array');
+        $this->view->agencyContractor = $agencyContractorQuery->execute();
     }
 }

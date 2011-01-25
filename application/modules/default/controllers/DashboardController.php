@@ -57,7 +57,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->_myOrgSystemIds = $orgSystemIds;
 
         $this->_helper->fismaContextSwitch()
-                      ->addActionContext('totaltype', 'json')
+                      ->addActionContext('totalstatus', 'xml')
+                      ->addActionContext('totaltype', 'xml')
                       ->initContext();
     }
 
@@ -146,6 +147,10 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                                              . '/denormalizedStatus/textExactMatch/EN'
                                              . '/nextDueDate/dateBefore/'
                                              . $today;
+                                             
+        // URLs for chart click event handlers
+        $this->view->barChartBaseUrl = $baseUrl . '/denormalizedStatus/textExactMatch/';
+        $this->view->pieChartBaseUrl = $baseUrl . '/type/enumIs/';
         
         // Look up the last login information. If it's their first time logging in, then the view
         // script will show a different message.
@@ -164,37 +169,57 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $this->view->notifications = $user->Notifications;
             $this->view->dismissUrl = "/dashboard/index/dismiss/notifications";
         }
-        
-        // left-side chart (bar) - Finding Status chart
-        $extSrcUrl = '/finding/dashboard/chartfinding/format/json';
 
-        $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
-        $chartTotalStatus
-            ->setTitle('Finding Status Distribution')
-            ->addWidget(
-                'findingType',
-                'Threat Level:',
-                'combo',
-                'Totals',
-                array(
-                    'Totals',
-                    'High, Moderate, and Low',
-                    'High',
-                    'Moderate',
-                    'Low')
-            );
-
-        $this->view->chartTotalStatus = $chartTotalStatus->export();
-        
-        // right-side chart (pie) - Mit Strategy Distribution chart
-        $chartTotalType = new Fisma_Chart(380, 275, 'chartTotalType', '/dashboard/totaltype/format/json');
-        $chartTotalType
-            ->setTitle('Mitigation Strategy Distribution');
-
-        $this->view->chartTotalType = $chartTotalType->export();
-        
+        $this->view->statusChart = new Fisma_Chart('/dashboard/totalstatus/format/xml', 380, 275);
+        $this->view->typeChart = new Fisma_Chart('/dashboard/totaltype/format/xml', 380, 275);
     }
     
+    /**
+     * Calculate the statistics by status
+     * 
+     * @return void
+     */
+    public function totalstatusAction()
+    {        
+        $q = Doctrine_Query::create()
+             ->select('f.status, e.nickname')
+             ->addSelect('COUNT(f.status) AS statusCount, COUNT(e.nickname) AS subStatusCount')
+             ->from('Finding f')
+             ->leftJoin('f.CurrentEvaluation e')
+             ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
+             ->groupBy('f.status, e.nickname')
+             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $results = $q->execute();
+        
+        // initialize 3 basic status
+        $arrTotal = array('NEW' => 0, 'DRAFT' => 0);
+        // initialize current evaluation status
+        $q = Doctrine_Query::create()
+             ->select()
+             ->from('Evaluation e')
+             // keep the the 'action' approvalGroup is first fetched
+             ->orderBy('e.approvalGroup ASC')
+             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $evaluations = $q->execute();
+
+        foreach ($evaluations as $evaluation) {
+            if ($evaluation['approvalGroup'] == 'evidence') {
+                $arrTotal['EN'] = 0;
+            }
+            $arrTotal[$evaluation['nickname']] = 0;
+        }
+
+        foreach ($results as $result) {
+            if (in_array($result['status'], array_keys($arrTotal))) {
+                $arrTotal[$result['status']] = $result['statusCount'];
+            } elseif (!empty($result['CurrentEvaluation']['nickname'])) {
+                $arrTotal[$result['CurrentEvaluation']['nickname']] = $result['subStatusCount'];
+            }
+        }
+
+        $this->view->summary = $arrTotal;
+    }
+
     /**
      * Calculate the statistics by type
      * 
@@ -202,7 +227,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function totaltypeAction()
     {
-        $summary = array(
+        $this->view->summary = array(
             'NONE' => 0,
             'CAP' => 0,
             'FP' => 0,
@@ -216,37 +241,11 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
             ->groupBy('f.type');
         $results =$q->execute()->toArray();
-        $types = array_keys($summary);
+        $types = array_keys($this->view->summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
-                $summary[$result['type']] = (integer) $result['typeCount'];
+                $this->view->summary["{$result['type']}"] = $result['typeCount'];
             }
         }
-        
-        $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setTitle('Mitigation Strategy Distribution')
-            ->setChartType('pie')
-            ->setData(array_values($summary))
-            ->setAxisLabelsX(array_keys($summary))
-            ->setColors(
-                array(
-                    '#FFA347',
-                    '#75FF75',
-                    '#47D147',
-                    '#FF2B2B'
-                )
-            )
-            ->setLinks(
-                array(
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/NONE',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/CAP',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/FP',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/AR'
-                )
-            );
-        
-        // export as array, the context switch will translate it to a JSON responce
-        $this->view->chart = $thisChart->export('array');
     }
 }

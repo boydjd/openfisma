@@ -1,0 +1,81 @@
+<?php if(!empty($this->summary)) : ?>
+<chart>
+    <license>FTA9HNF7P2O.H4X5CWK-2XOI1X0-7L</license>
+    
+    <context_menu about='false'
+                  print='false'
+                  full_screen='true'
+                  save_as_bmp='false'
+                  save_as_jpeg='true'
+                  save_as_png='true' />
+
+    <link_data url="javascript:pieChartClick(_col_)" target="javascript" />
+    <chart_data>
+        <row>
+            <null />
+            <string>None</string>
+            <string>CAP: Corrective Action Plan</string>
+            <string>FP: False Positive</string>
+            <string>AR: Accepted Risk</string>
+        </row>
+        <row>
+            <string>count</string>
+            <number tooltip='<?php echo $this->escape($this->summary['NONE'])?> findings without a mitigation strategy'>
+                <?php echo $this->escape($this->summary['NONE']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['CAP'])?> CAP findings'>
+                <?php echo $this->escape($this->summary['CAP']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['FP'])?> FP findings'>
+                <?php echo $this->escape($this->summary['FP']); ?></number>
+            <number tooltip='<?php echo $this->escape($this->summary['AR'])?> AR findings'>
+                <?php echo $this->escape($this->summary['AR']); ?></number>
+        </row>
+    </chart_data>
+
+    <chart_grid_h thickness='0' />
+
+    <chart_rect x='175'
+                y='50'
+                width='180'
+                height='175' />
+
+    <chart_type><?php
+        if (array_sum($this->summary) == 0) {
+            echo $this->escape('bar', 'none');
+        } else {
+            echo $this->escape('pie', 'none');
+        }
+    ?></chart_type>
+    
+    <chart_label font='arial'
+                 bold='true'
+                 size='12'
+                 position='outside'
+                 as_percentage='true' />
+
+    <legend layout='vertical'
+            bullet='circle'
+            font='arial'
+            bold='true'
+            size='10'
+            x='0'
+            y='75'
+            width='100'
+            height='100' />
+
+    <series_color>
+        <color>ff9933</color>
+        <color>66ff66</color>
+        <color>33cc33</color>
+        <color>ff3333</color>
+    </series_color>
+
+    <series_explode>
+        <number>5</number>
+        <number>5</number>
+        <number>5</number>
+        <number>5</number>
+    </series_explode>
+</chart> 
+<?php else:
+echo $this->partial('chart/nodata.xml.phtml', array('width' => '380', 'height' => '275'));
+endif; ?>
