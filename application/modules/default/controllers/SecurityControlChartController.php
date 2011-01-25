@@ -79,10 +79,8 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
             // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
             $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textExactMatch/#ColumnLabel#'
-                );
+                ->setLinks('/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
+                '/securityControl/textExactMatch/#ColumnLabel#');
             
         } else {
             
@@ -116,10 +114,8 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
             // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
             $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textContains/#ColumnLabel#'
-                );
+                ->setLinks('/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
+                '/securityControl/textContains/#ColumnLabel#');
         }
             
         // the context switch will convert this array to a JSON resonce
