@@ -36,8 +36,12 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         
         $this->_helper->fismaContextSwitch()
                       ->setActionContext('history', 'xml')
+                      ->setActionContext('history', 'json')
                       ->setActionContext('category', 'xml')
+                      ->setActionContext('category', 'json')
                       ->setActionContext('bureau', 'xml')
+                      ->setActionContext('bureau', 'json')
+                      
                       ->initContext();
     }
     
@@ -68,6 +72,19 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
          * the query is structured (indexed by month number, which would wrap around with a 12+ month period)
          */
         $period = $this->getRequest()->getParam('period');
+        $period = substr($period, 0, 1) * 1;    // converts "5 months of history" to 5
+        
+        $rtnChart = new Fisma_Chart();
+        $rtnChart
+            ->setLayerLabels(
+                array(
+                    'Reported Incidents',
+                    'Resolved Incidents',
+                    'Rejected Incidents'
+                )
+            )
+            ->setChartType('stackedbar')
+            ->setTitle('Incidents reported, resolved, and rejected (past ' . $period . ' months)');
         
         if (!is_int((int)$period) || $period > 12) {
             $message = "Incident status chart period parameter must be an integer less than or equal to 12.";
@@ -103,38 +120,41 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $mergedData = array();
         $firstMonth = Zend_Date::now()->sub($period, Zend_Date::MONTH);
 
+        $chartData = array('reported' => array(), 'resolved' => array(), 'rejected' => array());
+
         for ($monthOffset = 1; $monthOffset <= $period; $monthOffset++) {
             $currentMonth = clone $firstMonth;
             $currentMonth->add($monthOffset, Zend_Date::MONTH);
             
             // Fill in default values in case one or both queries had no matching records for this month
-            $monthData = array(
-                'reported' => 0, 
-                'resolved' => 0, 
-                'rejected' => 0,
-                'monthName' => $currentMonth->get(Zend_Date::MONTH_NAME_SHORT), // short name for month
-                'year' => $currentMonth->get(Zend_Date::YEAR)
-                
-            );
-
+            $thisReported = 0;
+            $thisResolved = 0;
+            $thisRejected = 0;
+            $thisMonthName = $currentMonth->get(Zend_Date::MONTH_NAME_SHORT); // short name for month
+            $thisYear = $currentMonth->get(Zend_Date::YEAR);
+            
             // Merge reported counts with rejected/resolved counts for each month
             
             // Current month as number with no leading zero
             $currentMonthNumber = $currentMonth->get(Zend_Date::MONTH_SHORT);
             
             if (isset($reportedIncidents[$currentMonthNumber])) {
-                $monthData['reported'] = $reportedIncidents[$currentMonthNumber]['reported'];
+                $thisReported = $reportedIncidents[$currentMonthNumber]['reported'];
             }
 
             if (isset($closedIncidents[$currentMonthNumber])) {
-                $monthData['resolved'] = $closedIncidents[$currentMonthNumber]['resolved'];
-                $monthData['rejected'] = $closedIncidents[$currentMonthNumber]['rejected'];
+                $thisResolved = $closedIncidents[$currentMonthNumber]['resolved'];
+                $thisRejected = $closedIncidents[$currentMonthNumber]['rejected'];
             }
 
-            $mergedData[$currentMonthNumber] = $monthData;
+            $rtnChart->addColumn(
+                $thisMonthName,
+                array($thisReported, $thisResolved, $thisRejected)
+            );
+                
         }
         
-        $this->view->months = $mergedData;
+        $this->view->chart = $rtnChart->export('array');
     }
     
     /**
@@ -142,6 +162,11 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function categoryAction()
     {
+        $rtnChart = new Fisma_Chart();
+        $rtnChart
+            ->setChartType('pie')
+            ->setTitle('Breakdown of all open incidents by category');
+    
         $categoryQuery = Doctrine_Query::create()
                          ->select('category.name, category.category, COUNT(category.id) AS count')
                          ->from('IrCategory category INDEXBY category')
@@ -151,7 +176,21 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                          ->groupBy('category.id')
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         
-        $this->view->categoryCounts = $categoryQuery->execute();
+        $catQueryRslt = $categoryQuery->execute();
+        
+        $chartData = array();
+        $chartDataText = array();
+        
+        reset($catQueryRslt);
+        while ($thisElement = current($catQueryRslt)) {
+            
+            $thisLabel = key($catQueryRslt) . ' - ' . $thisElement['name'];
+            $rtnChart->addColumn($thisLabel, $thisElement['count']);
+            
+            next($catQueryRslt);
+        }
+        
+        $this->view->chart = $rtnChart->export('array');
     }
     
     /**
@@ -159,6 +198,11 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
+        $rtnChart = new Fisma_Chart();
+        $rtnChart
+            ->setChartType('bar')
+            ->setTitle('Incidents per bureau reported in the last 90 days');
+    
         $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);
 
         $bureauQuery = Doctrine_Query::create()
@@ -173,6 +217,12 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                        ->groupBy('bureau.id')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
-        $this->view->bureaus = $bureauQuery->execute();
+        $burQueryRslt = $bureauQuery->execute();
+        
+        foreach ($burQueryRslt as $thisElement) {
+            $rtnChart->addColumn($thisElement['bureau_nickname'], $thisElement['i_count']);
+        }
+
+        $this->view->chart = $rtnChart->export('array'); 
     }
 }

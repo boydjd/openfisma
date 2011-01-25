@@ -75,7 +75,19 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
-                                      '/javascripts/AC_RunActiveContent.js'
+                                      '/javascripts/AC_RunActiveContent.js',
+                                      '/javascripts/jquery-min.js',
+                                      '/javascripts/jquery142min.js',
+                                      '/javascripts/jquery-ui-181custom_min.js',
+                                      '/javascripts/jquery_jqplot.js',
+                                      '/javascripts/jqplot_canvasTextRenderer.js',
+                                      '/javascripts/jqplot_canvasAxisLabelRenderer.js',
+                                      '/javascripts/jqplot_canvasAxisTickRenderer.js',
+                                      '/javascripts/jqplot_categoryAxisRenderer.js',
+                                      '/javascripts/jqplot_barRenderer.js',
+                                      '/javascripts/jqplot_pointLabels.js',
+                                      '/javascripts/jqplot_pieRenderer.js',
+                                      '/javascripts/jqplotWrapper.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
@@ -89,7 +101,8 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Search.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css'
+                                      '/stylesheets/User.css',
+                                      '/stylesheets/jquery_jqplot.css'
                                 )
                             );
 
@@ -113,7 +126,7 @@ class View_Helper_InjectAsset
      * @param string $type Type of asset
      * @param boolean $combo Whether the asset is a combo package or not
      * @param string $media Media settings for CSS files
-     * @param string $conditional Conditional settings for CSS files
+     * @param string $conditional Conditional settings for CSS/JS files
      * @access public
      * @return void
      */
@@ -150,7 +163,9 @@ class View_Helper_InjectAsset
         switch ($type) {
             case 'js':
                 foreach ($assets as $asset) {
-                    $this->view->headScript()->appendFile($asset);
+                    $this->view->headScript()->appendFile(
+                        $asset, 'text/javascript', array('conditional' => $conditional)
+                    );
                 }
 
                 break;
