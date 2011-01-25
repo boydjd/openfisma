@@ -1,42 +1,154 @@
-<?php
-    $flashVars = 'library_path=/flash/charts_library&xml_source=' . $this->sourceUrl;
-?>
-<div id="<?php echo $this->escape($this->containerId, 'none')?>">
+<?php /* Customized header based on Fisma_Format_Section::startSection */ ?>
+
+<div class="sectionHeader">
+    <span $editableText>
+        <table width="100%">
+            <tr>
+                <td align="left">
+                    <?php echo $this->escape($this->chartParamArr['title'], 'none'); ?>
+                </td>
+                <td align=right>
+                    <a 
+                        href="JavaScript: // Click to show chart options" 
+                        style ="text-decoration: none" 
+                        onClick="setChartSettingsVisibility('<?php 
+                            echo $this->escape($this->chartId, 'none'); 
+                        ?>', 'toggle');">
+                        <img src="/images/gear.png" alt="Click to edit chart options" width="20" />
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </span>
+</div>
+<div class="section">
+
+<?php /* the div for jqPlot to use (the JavaScript will create canvases in this */ ?>
+
+<div class="yui-navset">
+
+    <div id="<?php echo $this->escape($this->chartId, 'none'); ?>loader" class="loading" style="width: 100%;">
+        
+        <div>
+        </div>
+        
+    </div>
+    
+    <div id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
+                    echo $this->escape($this->divContainerArgs, 'none'); ?> >
+    
+            <div id="<?php echo $this->escape($this->chartId, 'none'); ?>toplegend">
+            </div>
+            
+            <div id="<?php echo $this->escape($this->chartId, 'none'); ?>" >
+                Loading chart data...
+            </div>
+    </div>
+    
+    <div
+        id="<?php echo $this->escape($this->chartId, 'none'); ?>table"
+        style="display: none; width: 100%;"
+        width="100%"
+    >
+    </div>   
+    
+    <br/>
+    <div 
+        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" 
+        class="yui-navset" 
+        style="display: none; width: 400px; margin-left: auto; margin-right: auto; text-align: left;"
+    >
+        <ul class="yui-nav">
+            <li class="selected">
+                <a href="#tab1" onClick="showSetingMode(true);">
+                    <em>Chart Parameters</em>
+                </a>
+            </li>
+            <li>
+                <a href="#tab1" onClick="showSetingMode(false);">
+                    <em>Global Settings</em>
+                </a>
+            </li>
+        </ul>
+        <div class="yui-content">
+            <div id="tab1" >
+            
+                <div id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpace">
+                    <!-- char params and widgets placed here by JavaScript -->
+                </div>
+                
+                <div style="width: 100%; text-align: right;">
+                    <input 
+                        type="button" value="Hide Settings" 
+                        onClick="setChartSettingsVisibility('<?php 
+                            echo $this->escape($this->chartId, 'none');
+                            ?>', false);"
+                        id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnMainSet"
+                    />
+                </div>
+                
+            </div>
+            <div id="tab2">
+                
+                <div 
+                    id="<?php echo $this->escape($this->chartId, 'none');?>GlobSettings" 
+                    onClick="globalSettingUpdate('<?php echo $this->escape($this->chartId, 'none');?>');" 
+                    style="text-align: left; ">
+                <input type="checkbox" id="pointLabels" />
+                    Draw data labels (numbers on top of bars) <br/>
+                <input type="checkbox" id="pointLabelsOutline" />
+                    Outline data labels* <br/>
+                <input type="checkbox" id="barShadows" />
+                    Draw shadows behind bars <br/>
+                <input type="textbox" id="barShadowDepth" value="3" style="width:10px" />
+                    Depth of shadows behind bars (in pixels) <br/>                            
+                <input type="checkbox" id="dropShadows" />
+                    Draw shadows behind charts <br/>
+                <input type="checkbox" id="gridLines"/>
+                    Draw grid-lines <br/>
+                <input type="checkbox" id="fadingEnabled"/>
+                    Enable fading effects* <br/>
+                <input type="checkbox" id="showDataTable"/>
+                    Show table of raw numbers instead of chart <br/>
+                    * = This option is not supported in IE
+                </div>
+                
+                <div style="width: 100%; text-align: right;">
+                    <input type="button" value="Hide Settings"
+                        onClick="setChartSettingsVisibility('<?php 
+                            echo $this->escape($this->chartId, 'none'); 
+                            ?>', false);"
+                        id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnGlobSet"
+                    />
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>    
+    
 </div>
 
-<script language="JavaScript" type="text/javascript">
-    var hasRightVersion = DetectFlashVer(10, 0, 0);
-    if (hasRightVersion) {
-        var flashContent = AC_FL_RunContent(
-			'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,45,2',
-            'width', '<?php echo $this->escape($this->width, 'javascript')?>',
-            'height', '<?php echo $this->escape($this->height, 'javascript')?>',
-            'scale', 'noscale',
-            'salign', 'TL',
-            'bgcolor', '#FFFFFF',
-            'wmode', 'opaque',
-            'movie', '/flash/charts',
-            'src', '/flash/charts',
-            'FlashVars', '<?php echo $this->escape($flashVars, 'javascript')?>',
-            'id', 'my_chart',
-            'name', 'my_chart',
-            'menu', 'true',
-            'allowFullScreen', 'true',
-            'allowScriptAccess', 'sameDomain',
-            'quality', 'high',
-            'align', 'middle',
-            'pluginspage', 'https://www.macromedia.com/go/getflashplayer',
-            'play', 'true',
-            'devicefont', 'false'
-        );
-        var containerEl = document.getElementById('<?php echo $this->escape($this->containerId, 'javascript')?>');
-        containerEl.innerHTML = flashContent;
-    } else {
-        var alternateContent = 'This content requires the Adobe Flash Player.';
-        alert(alternateContent);
-    }
+<?php /* call javascript:createChartJQChart(obj) defined in jqplotWrapper.js which will create the chart */ ?>
+<script>
+    var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
+    createJQChart(thisChartObjData);
 </script>
 
-<noscript>
-    <p>This content requires JavaScript.</p>
-</noscript>
+<?php /* Customized container-foot based on Fisma_Format_Section::stopSection */ ?>
+<div class='clear'></div>
+
+</div>
+<?php /* JavaScript is nessesarry for YUI widgets */ ?>
+<script type="text/javascript">
+    <!-- YUI TabView -->
+    var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
+    var tabView = new YAHOO.widget.TabView(thisName);
+    <!-- YUI buttons -->
+    var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
+    var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
+    var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
+    var thisBtnGlob = new YAHOO.widget.Button(thisChartId + "BtnGlobSet", yuiBtnEventObj1);
+    var thisBtnMain = new YAHOO.widget.Button(thisChartId + "BtnMainSet", yuiBtnEventObj2);
+</script>

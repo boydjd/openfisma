@@ -1,17 +1,7 @@
 <div class="column left">
     <div style='text-align: center;'>
         <?php
-        Fisma_Format_Section::startSection('Incident History');
-
-        echo $this->escape($this->statusChart, 'none');
-        ?>
-        
-        <em>
-            Incidents reported, resolved, and rejected each month for the last 6 months.
-        </em>
-
-        <?php
-        Fisma_Format_Section::stopSection();
+            echo $this->escape($this->statusChart, 'none');
         ?>
     </div>
 </div>
@@ -19,17 +9,7 @@
 <div class="column right">
     <div style='text-align: center;'>
         <?php
-        Fisma_Format_Section::startSection('Incident Categories');
-
-        echo $this->escape($this->categoryChart, 'none');
-        ?>
-        
-        <em>
-            Breakdown of all open incidents by category.
-        </em>
-
-        <?php
-        Fisma_Format_Section::stopSection();
+            echo $this->escape($this->categoryChart, 'none');
         ?>
     </div>
 </div>
@@ -39,17 +19,7 @@
 <div>
     <div style='text-align: center;'>
         <?php
-        Fisma_Format_Section::startSection('Reported Incidents By Bureau');
-
-        echo $this->escape($this->bureauChart, 'none');
-        ?>
-        
-        <em>
-            Incidents per bureau reported in the last 90 days.
-        </em>
-
-        <?php
-        Fisma_Format_Section::stopSection();
+            echo $this->escape($this->bureauChart, 'none');
         ?>
     </div>
 </div>
