@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -23,7 +23,7 @@
  * in which will define how the chart will be created and what it will plot.
  * 
  * @author     Dale Frey
- * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Chart
