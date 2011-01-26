@@ -171,7 +171,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
         $chartTotalStatus
             ->setTitle('Finding Status Distribution')
-            ->addWidget('findingType',
+            ->addWidget(
+                'findingType',
                 'Threat Level:',
                 'combo',
                 'Totals',
@@ -180,7 +181,9 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                     'High, Moderate, and Low',
                     'High',
                     'Moderate',
-                    'Low'));
+                    'Low'
+                )
+            );
 
         $this->view->chartTotalStatus = $chartTotalStatus->export();
         
@@ -227,18 +230,22 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setChartType('pie')
             ->setData(array_values($summary))
             ->setAxisLabelsX(array_keys($summary))
-            ->setColors(array(
+            ->setColors(
+                array(
                     '#FFA347',
                     '#75FF75',
                     '#47D147',
                     '#FF2B2B'
-                ))
-            ->setLinks(array(
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/NONE',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/CAP',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/FP',
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/AR'
-                ));
+                )
+            )
+            ->setLinks(
+                array(
+                        '/finding/remediation/list/queryType/advanced/type/enumIs/NONE',
+                        '/finding/remediation/list/queryType/advanced/type/enumIs/CAP',
+                        '/finding/remediation/list/queryType/advanced/type/enumIs/FP',
+                        '/finding/remediation/list/queryType/advanced/type/enumIs/AR'
+                    )
+            );
         
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
