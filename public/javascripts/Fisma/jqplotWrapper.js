@@ -1192,9 +1192,44 @@ function setChartWidthAttribs(param) {
  */
 function getTableFromChartData(param)
 {
+    if (param['chartType'] === 'pie') {
+        return getTableFromChartData_pieChart(param);
+    } else {
+        return getTableFromChartData_barChart(param);
+    }
+}
+
+function getTableFromChartData_pieChart(param)
+{
+    var HTML = '<table width="100%" border=1><tr>';
+    
+    // row of slice-labels
+    for (var x = 0; x < param['chartDataText'].length; x++) {
+        HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
+    }
+    HTML += '</tr><tr>';
+
+    // row of data
+    for (var x = 0; x < param['chartData'].length; x++) {
+
+        HTML += '<td>' + param['chartData'][x] + '</td>';
+
+    }
+
+    HTML += '</tr></table>';
+
+    return HTML;
+}
+
+function getTableFromChartData_barChart(param)
+{
     var HTML = '<table width="100%" border=1>';
     
-    HTML += '<tr><td></td>';
+    // add a column for layer names if this is a stacked chart
+    if (typeof param['chartLayerText'] != 'undefined') {
+        HTML += '<tr><td></td>';
+    }
+    
     for (var x = 0; x < param['chartDataText'].length; x++) {
         HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
     }
@@ -1204,15 +1239,19 @@ function getTableFromChartData(param)
 
         var thisEle = param['chartData'][x];
         HTML += '<tr>';
-        HTML += '<th><b>' + param['chartDataText'][x] + '</b></th>';
-
+        
+        // each layer label
+        if (typeof param['chartLayerText'] != 'undefined') {
+            HTML += '<th><b>' + param['chartLayerText'][x] + '</b></th>';
+        }
+        
         if (typeof(thisEle) == 'object') {
 
             for (var y = 0; y < thisEle.length; y++) {
 
                 HTML += '<td>' + thisEle[y] + '</td>';
             }
-
+            
         } else {
 
             HTML += '<td>' + thisEle + '</td>';
