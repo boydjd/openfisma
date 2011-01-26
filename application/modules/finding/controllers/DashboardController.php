@@ -1132,6 +1132,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $modCount = array();
         $lowCount = array();
         $chartDataText = array();
+        $totalChartLinks = array();
 
         $thisChart = new Fisma_Chart();
         $thisChart
@@ -1200,6 +1201,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
+            // Add column assuming this is a stacked-bar chart with High, Mod, and Low findings
             $thisChart
                 ->addColumn(
                     $thisColumnLabel,
@@ -1222,6 +1224,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         '/threatLevel/enumIs/LOW'
                     )
                 );
+                
+            // Note the links to set in the even this is a totals (basic-bar) chart
+            $totalChartLinks[] = '/finding/remediation/list/queryType/advanced' .
+                        '/currentEcd/dateBetween/' . 
+                        $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
         }
 
         // Show, hide and filter chart data as requested
@@ -1230,6 +1237,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Crunch numbers
                 $thisChart
                     ->convertFromStackedToRegular()
+                    ->setLinks($totalChartLinks)
                     ->setThreatLegendVisibility(false)
                     ->setColors(array('#3366FF'));
                 break;
