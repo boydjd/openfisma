@@ -90,7 +90,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
         $statusChart = new Fisma_Chart(450, 300, 'incidentHistory', '/incident-chart/history/format/json');
         $statusChart
             ->setTitle('Incident History')
-            ->addWidget('period',
+            ->addWidget(
+                'period',
                 'Show:',
                 'combo',
                 '6 months of history',

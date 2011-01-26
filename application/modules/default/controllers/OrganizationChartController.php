@@ -77,11 +77,13 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
         $rtnChart
             ->setTitle('FIPS-199 Categorizations')
             ->setChartType('pie')
-            ->setColors(array(
+            ->setColors(
+                array(
                     '#FF0000',
                     '#FF6600',
                     '#FFC000'
-                ));
+                )
+            );
         
         foreach ($catQueryRslt as $thisElement) {
             //$chartData[] = (integer) $thisElement['s_fips_count'];
@@ -120,8 +122,10 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
             ->setChartType('pie');
         
         foreach ($rslt as $thisRslt) {
-            $rtnChart->addColumn($thisRslt['s_controlled_by'],
-                $thisRslt['s_count']);
+            $rtnChart->addColumn(
+                $thisRslt['s_controlled_by'],
+                $thisRslt['s_count']
+            );
         }
         
         $this->view->chart = $rtnChart->export('array');
