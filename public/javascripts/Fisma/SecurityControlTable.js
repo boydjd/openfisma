@@ -4,6 +4,8 @@
         NDT = YAHOO.widget.NestedDataTable;
 
     var SCT = function (container, id) {
+        this._securityAuthorizationId = id;
+
         var responseSchema = {
             resultsList : "records",
             metaFields : { 
@@ -71,8 +73,8 @@
     /**
      * @static
      */
-    SCT.addControl = function (ev) {
-        var id = ev.detail,
+    SCT.addControl = function (ev, obj) {
+        var id = obj,
             panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
             url = "/sa/security-authorization/add-control/format/html/id/" + id;
         var callbacks = {
@@ -91,6 +93,11 @@
         YAHOO.util.Connect.asyncRequest( 'GET', url, callbacks, null);
     };
     Lang.extend(SCT, NDT, {
+        /**
+         * Security Authorization id
+         */
+        _securityAuthorizationId: null,
+
         _toggleFormatter: function (el, oRecord, oColumn, oData) {
             if (oRecord.getData('hasEnhancements')) {
                 Fisma.SecurityControlTable.superclass._toggleFormatter.apply(this, arguments);
@@ -107,7 +114,7 @@
         },
 
         _addEnhancements: function(ev, obj) {
-            var id = ev.detail,
+            var id = this._securityAuthorizationId,
                 securityControlId = obj.getData("securityControlId"),
                 panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
                 getUrl = "/sa/security-authorization/add-enhancements/format/html/id/" + id + "/securityControlId/" + securityControlId,
@@ -128,7 +135,7 @@
             YAHOO.util.Connect.asyncRequest( 'GET', getUrl, callbacks);
         },
         _editCommonControl: function(ev, obj) {
-            var id = ev.detail,
+            var id = this._securityAuthorizationId,
                 securityControlId = obj.getData("securityControlId"),
                 panel = Fisma.HtmlPanel.showPanel("Edit Common Security Control", null, null, { modal : true }),
                 getUrl = "/sa/security-authorization/edit-common-control/format/html/id/" + id + "/securityControlId/" + securityControlId,
@@ -150,13 +157,15 @@
         },
 
         _removeControl: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-control/format/json/id/" + ev.detail,
+            var actionUrl = "/sa/security-authorization/remove-control/format/json"
+                          + "/id/" + this._securityAuthorizationId,
                 post = "securityControlId=" + obj.getData("securityControlId");
             this._removeEntry(actionUrl, post);
         },
     
         _removeEnhancement: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json/id/" + ev.detail,
+            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json"
+                          + "/id/" + this._securityAuthorizationId,
                 post = "securityControlEnhancementId=" + obj.getData("securityControlEnhancementId");
             this._removeEntry(actionUrl, post);
         },
