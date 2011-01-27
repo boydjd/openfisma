@@ -27,5 +27,33 @@
  */
 class SecurityControlEnhancementTable extends Fisma_Doctrine_Table
 {
+    /**
+     * Get enhancements associated with a SecurityAuthorization and SecurityControl.
+     *
+     * @param integer $said SecurityAuthorization id
+     * @param integer $controlId SecurityControl id.
+     * @return Doctrine_Query
+     */
+    public function getSaAndControlQuery($said, $controlId)
+    {
+        return Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce, sce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $said)
+            ->andWhere('saSc.securityControlId = ?', $controlId);
+    }
 
+    /**
+     * Get enhancements of control other than the ones passed in.
+     *
+     * @param integer $controlId SecurityControl id.
+     * @param array $excludeEnhancementIds Ids of SecurityControlEnhancements to be excluded from the results.
+     * @return Doctrine_Query
+     */
+    public function getControlExcludeEnhancementsQuery($controlId, array $excludeEnhancementIds)
+    {
+        return Doctrine_Query::create()
+            ->from('SecurityControlEnhancement sce')
+            ->whereNotIn('sce.id', $excludeEnhancementIds)
+            ->andWhere('sce.securityControlId = ?', $controlId);
+    }
 }

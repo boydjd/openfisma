@@ -157,4 +157,21 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         
         return $ids;
     }
+
+    /**
+     * Get organizations with common controls other than the specified organization.
+     *
+     * @param integer $orgId Organization to exclude from the results.
+     * @return Doctrine_Query
+     */
+    public function getCommonControlExcludeOrgQuery($orgId)
+    {
+        return         $commonSysOrgs = Doctrine_Query::create()
+            ->from('Organization org')
+            ->leftJoin('org.SecurityAuthorizations sa')
+            ->leftJoin('sa.SaSecurityControls saSc')
+            ->where('org.id != ?', $orgId)
+            ->andWhere('saSc.common = ?', true)
+            ->orderBy('org.nickname');
+    }
 }

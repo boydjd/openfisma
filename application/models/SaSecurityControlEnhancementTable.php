@@ -27,5 +27,32 @@
  */
 class SaSecurityControlEnhancementTable extends Fisma_Doctrine_Table
 {
+    /**
+     * Queries by SecurityAuthorization id
+     *
+     * @param integer $said SecurityAuthorization id
+     * @return Doctrine_Query
+     */
+    public function getSecurityAuthorizationQuery($said)
+    {
+        return Doctrine_Query::create()
+            ->from('SaSecurityControlEnhancement sasce, sasce.SaSecurityControl sasc')
+            ->where('sasc.securityAuthorizationId = ?', $said);
+    }
 
+    /**
+     * Get SaSecurityControlEnhancement from SecurityAuthorization and SecurityControlEnhancement.
+     *
+     * @param integer $said SecurityAuthorization id.
+     * @param integer $sceid SecurityControlEnhancement id.
+     * @return Doctrine_Query
+     */
+    public function getSaAndEnhancementQuery($said, $sceid)
+    {
+        return Doctrine_Query::create()
+            ->from('SaSecurityControlEnhancement saSce')
+            ->innerJoin('saSce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $said)
+            ->andWhere('saSce.securityControlEnhancementId = ?', $sceid);
+    }
 }

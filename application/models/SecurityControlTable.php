@@ -106,4 +106,58 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
     {
         return array();
     }
+
+    /**
+     * Return query for security controls filtered by catalog and impact level.
+     *
+     * @param integer $catalogId SecurityControlCatalog id.
+     * @param string $impact Impact level
+     * @return Doctrine_Query
+     */
+    public function getCatalogIdAndImpactQuery($catalogId, $impact)
+    {
+        // HIGH implies MODERATE and MODERATE implies LOW
+        $controlLevels = array();
+        switch($impact) {
+            case 'HIGH':
+                $controlLevels[] = 'HIGH';
+            case 'MODERATE':
+                $controlLevels[] = 'MODERATE';
+            default:
+                $controlLevels[] = 'LOW';
+        }
+
+        return Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->where('sc.securityControlCatalogId = ?', $catalogId)
+            ->andWhereIn('sc.controlLevel', $controlLevels);
+    }
+
+    /**
+     * Get controls associated with a SecurityAuthorization.
+     *
+     * @param integer $said SecurityAuthorization id
+     * @return Doctrine_Query
+     */
+    public function getSaQuery($said)
+    {
+        return Doctrine_Query::create()
+            ->from('SecurityControl sc, sc.SaSecurityControls saSc, saSc.SecurityAuthorization sa')
+            ->where('sa.id = ?', $said);
+    }
+
+    /**
+     * Get controls in catalog other than the ones passed in.
+     *
+     * @param integer $catalogId SecurityControlCatalog id.
+     * @param array $excludeControlIds Ids of SecurityControls to be excluded from the results.
+     * @return Doctrine_Query
+     */
+    public function getCatalogExcludeControlsQuery($catalogId, array $excludeControlIds)
+    {
+        return Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->whereNotIn('sc.id', $excludeControlIds)
+            ->andWhere('sc.securityControlCatalogId = ?', $catalogId);
+    }
 }

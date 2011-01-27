@@ -26,5 +26,29 @@
  */
 class SaImplementationTable extends Fisma_Doctrine_Table
 {
+    /**
+     * Get SaImplementions from list of SaSecurityControlAggregates.
+     *
+     * @param array $ids SaSecuritycontrolAggregate ids.
+     * @return Doctrine_Query
+     */
+    public function getSaSecurityControlAggregateQuery(array $ids)
+    {
+        return Doctrine_Query::create()
+            ->from('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
+            ->whereIn('sasca.id', $ids);
+    }
 
+    /**
+     * Get SaImplementions from list of SaSecurityControlAggregates.
+     *
+     * @param array $ids SaSecuritycontrolAggregate ids.
+     * @param string $status SaImplementation status
+     * @return Doctrine_Query
+     */
+    public function getSaSecurityControlAggregateAndStatusQuery(array $ids, $status)
+    {
+        return $this->getSaSecurityControlAggregateQuery($ids)
+            ->andWhere('sai.status = ?', $status);
+    }
 }

@@ -140,23 +140,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         // if subject null, we're creating a new object and we need to populate relations
         if (is_null($subject)) {
-            $impact = $sa->impact;
-            $controlLevels = array();
-            switch($impact) {
-                case 'HIGH':
-                    $controlLevels[] = 'HIGH';
-                case 'MODERATE':
-                    $controlLevels[] = 'MODERATE';
-                default:
-                    $controlLevels[] = 'LOW';
-            }
             $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
 
             // associate suggested controls
-            $controls = Doctrine_Query::create()
-                ->from('SecurityControl sc')
-                ->where('sc.securityControlCatalogId = ?', array($catalogId))
-                ->andWhereIn('sc.controlLevel', $controlLevels)
+            $controls = Doctrine::getTable('SecurityControl')
+                ->getCatalogIdAndImpactQuery($catalogId, $sa->impact)
                 ->execute();
             foreach ($controls as $control) {
                 $sacontrol = new SaSecurityControl();
@@ -169,12 +157,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             unset($controls);
 
             // associate suggested enhancements
-            $sacontrols = Doctrine_Query::create()
-                ->from('SaSecurityControl sasc')
-                ->leftJoin('sasc.SecurityControl sc')
-                ->leftJoin('sc.Enhancements sce')
-                ->where('sasc.securityAuthorizationId = ?', $sa->id)
-                ->andWhereIn('sce.level', $controlLevels)
+            $sacontrols = Doctrine::getTable('SaSecurityControl')
+                ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->impact)
                 ->execute();
             foreach ($sacontrols as $sacontrol) {
                 $control = $sacontrol->SecurityControl;
@@ -357,30 +341,18 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
     protected function _implementationProgress(SecurityAuthorization $sa)
     {
-        $sasc = Doctrine_Query::create()
-            ->from('SaSecurityControl sasc')
-            ->where('sasc.securityAuthorizationId = ?', $sa->id)
-            ->execute();
-        $sasce = Doctrine_Query::create()
-            ->from('SaSecurityControlEnhancement sasce, sasce.SaSecurityControl sasc')
-            ->where('sasc.securityAuthorizationId = ?', $sa->id)
-            ->execute();
+        $sasc = Doctrine::getTable('SaSecurityControl')->getSecurityAuthorizationQuery($sa->id)->execute();
+        $sasce = Doctrine::getTable('SaSecurityControlEnhancement')->getSecurityAuthorizationQuery($sa->id)->execute();
         $sasca = new Doctrine_Collection('SaSecurityControlAggregate');
         $sasca->merge($sasc);
         $sasca->merge($sasce);
         $ids = $sasca->toKeyValueArray('id', 'id');
-        $allCount = Doctrine_Query::create()
-            ->from('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
-            ->whereIn('sasca.id', $ids)
-            ->count();
+        $saiTable = Doctrine::getTable('SaImplementation');
+        $allCount = $saiTable->getSaSecurityControlAggregateQuery($ids)->count();
         if ($allCount == 0) {
             return '(No implementations)';
         }
-        $completeCount = Doctrine_Query::create()
-            ->from('SaImplementation sai, sai.SaSecurityControlAggregate sasca')
-            ->whereIn('sasca.id', $ids)
-            ->andWhere('sai.status = ?', 'Complete')
-            ->count();
+        $completeCount = $saiTable->getSaSecurityControlAggregateAndStatusQuery($ids, 'Complete')->count();
         if ($completeCount == 0) {
             return '0% Complete';
         }
@@ -476,12 +448,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->securityAuthorizationId = $id;
         $this->view->controlId = $controlId;
 
-        $saScCollection = Doctrine_Query::create()
-            ->from('SaSecurityControl saSc')
-            ->leftJoin('saSc.SaSecurityControlEnhancement saSce')
-            ->where('saSc.securityAuthorizationId = ?', $id)
-            ->andWhere('saSc.securityControlId = ?', $controlId)
-            ->execute();
+        $saScCollection = Doctrine::getTable('SaSecurityControl')->getSaAndControlQuery($id, $controlId)->execute();
         $this->view->saSc = $saScCollection->toArray(true);
 
         foreach ($saScCollection as $saSc) {
@@ -503,11 +470,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->securityAuthorizationId = $id;
         $this->view->controlEnhancementId = $enhancementId;
 
-        $saSceCollection = Doctrine_Query::create()
-            ->from('SaSecurityControlEnhancement saSce')
-            ->innerJoin('saSce.SaSecurityControl saSc')
-            ->where('saSc.securityAuthorizationId = ?', $id)
-            ->andWhere('saSce.securityControlEnhancementId = ?', $enhancementId)
+        $saSceCollection = Doctrine::getTable('SaSecurityControlEnhancement')
+            ->getSaAndEnhancementQuery($id, $enhancementId)
             ->execute();
         $this->view->saSce = $saSceCollection->toArray(true);
 
@@ -533,20 +497,15 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
 
         // get list of controls for the form
-        $currentControls = Doctrine_Query::create()
-            ->from('SecurityControl sc')
-            ->innerJoin('sc.SaSecurityControls saSc')
-            ->innerJoin('saSc.SecurityAuthorization sa')
-            ->where('sa.id = ?', array($id))
+        $currentControls = Doctrine::getTable('SecurityControl')
+            ->getSaQuery($id)
             ->execute()
             ->toKeyValueArray('id', 'id');
         $this->view->currentControls = $currentControls;
         $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
-        $controls = Doctrine_Query::create()
-            ->from('SecurityControl sc')
-            ->whereNotIn('sc.id', $currentControls)
-            ->andWhere('sc.securityControlCatalogId = ?', $catalogId)
-            ->execute();
+        $controls = Doctrine::getTable('SecurityControl')
+            ->getCatalogExcludeControlsQuery($catalogId, $currentControls)
+             ->execute();
         $controlArray = array();
         foreach ($controls as $control) {
             $controlArray[$control->id] = $control->code . ' ' . $control->name;
@@ -569,12 +528,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $id = $this->_request->getParam('id');
         $securityControlId = $this->_request->getParam('securityControlId');
 
-        $saSecurityControl = Doctrine_Query::create()
-            ->from('SaSecurityControl saSc')
-            ->where('saSc.securityAuthorizationId = ?', $id)
-            ->andWhere('saSc.securityControlId = ?', $securityControlId)
-            ->execute();
-        $saSecurityControl = $saSecurityControl[0];
+        $saSecurityControl = Doctrine::getTable('SaSecurityControl')
+            ->getSaAndControlQuery($id, $securityControlId)
+            ->fetchOne();
 
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
@@ -592,19 +548,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->id = $id;
         $this->view->securityControlId = $securityControlId;
 
-        $currentControlEnhancements = Doctrine_Query::create()
-            ->from('SecurityControlEnhancement sce')
-            ->innerJoin('sce.SaSecurityControl saSc')
-            ->where('saSc.securityAuthorizationId = ?', $id)
-            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+        $currentControlEnhancements = Doctrine::getTable('SecurityControlEnhancement')->getSaAndControlQuery($id, $securityControlId)
             ->execute()
             ->toKeyValueArray('id', 'id');
         $this->view->currentControlEnhancementss = $currentControlEnhancements;
 
-        $enhancementObjects = Doctrine_Query::create()
-            ->from('SecurityControlEnhancement sce')
-            ->whereNotIn('sce.id', $currentControlEnhancements)
-            ->andWhere('sce.securityControlId = ?', $securityControlId)
+        $enhancementObjects = Doctrine::getTable('SecurityControlEnhancement')
+            ->getControlExcludeEnhancementsQuery($securityControlId, $currentControlEnhancements)
             ->execute();
         $enhancements = array();
         foreach ($enhancementObjects as $enh) {
@@ -629,11 +579,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $id = $this->_request->getParam('id');
         $securityControlId = $this->_request->getParam('securityControlId');
 
-        $saSecurityControl = Doctrine_Query::create()
-            ->from('SaSecurityControl saSc')
-            ->innerJoin('saSc.SecurityAuthorization sa')
-            ->where('saSc.securityAuthorizationId = ?', $id)
-            ->andWhere('saSc.securityControlId = ?', $securityControlId)
+        $saSecurityControl = Doctrine::getTable('SaSecurityControl')
+            ->getSaAndControlQuery($id, $securityControlId)
             ->fetchOne();
 
         if ($this->_request->isPost()) {
@@ -652,14 +599,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->securityControlId = $securityControlId;
 
         // get a list of systems from which to inherit
-        $commonSysOrgs = Doctrine_Query::create()
-            ->from('Organization org')
-            ->leftJoin('org.SecurityAuthorizations sa')
-            ->leftJoin('sa.SaSecurityControls saSc')
-            ->where('org.id != ?', $saSecurityControl->SecurityAuthorization->sysOrgId)
-            ->andWhere('saSc.common = ?', true)
-            ->orderBy('org.nickname')
-            ->execute();
+        $sysOrgId = $saSecurityControl->SecurityAuthorization->sysOrgId;
+        $commonSysOrgs = Doctrine::getTable('Organization')->getCommonControlExcludeOrgQuery($sysOrgId)->execute();
         $commonSysOrgs = $this->view->systemSelect($commonSysOrgs);
 
         // build form
