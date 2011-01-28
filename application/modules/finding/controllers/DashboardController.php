@@ -475,8 +475,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $findingType = urldecode($this->_request->getParam('pastThreatLvl'));
 
-        $this->view->query = array();
-
         $thisChart = new Fisma_Chart();
         $thisChart
             ->setChartType('stackedbar')
@@ -499,6 +497,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW'
                 )
             );
+
+        $nonStackedLinks = array();
 
         // Get counts in between the day ranges given
         for ($x = 0; $x < count($dayRanges) - 1; $x++) {
@@ -553,6 +553,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisColLabel = $fromDayDiff . '-' . $toDayDiff;
             }
             
+            // The links to associate with entire columns when this is not a stacked bar chart
+            $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced/' .
+                'nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
+
             $thisChart->addColumn(
                 $thisColLabel,
                 array(
@@ -582,7 +586,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array('#3366FF'));
+                    ->setColors(array('#3366FF'))
+                    ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
                 // $thisChart is already in this form
@@ -1016,6 +1021,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
             );
 
+        $nonStackedLinks = array();
+
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
             
             $fromDayInt = $dayRange[$x];
@@ -1071,6 +1078,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $basicSearchLink = '/finding/remediation/list/queryType/advanced/createdTs/dateBetween/'
                 . $fromDayStr . '/' . $toDayStr;
             
+            // remembers links for a non-stacked bar chart in the even the user is querying "totals"
+            $nonStackedLinks[] = $basicSearchLink;
+            
             $noMitChart->addColumn(
                 $thisColumnLabel,
                 array(
@@ -1094,7 +1104,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $noMitChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array('#3366FF'));
+                    ->setColors(array('#3366FF'))
+                    ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
                 // $noMitChart is already in this form
