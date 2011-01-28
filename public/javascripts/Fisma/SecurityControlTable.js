@@ -50,8 +50,7 @@
             container,
             masterColumnDefs, masterDataSource,
             nestedColumnDefs, nestedDataSource,
-            masterConfiguration, nestedConfiguration
-        );
+            masterConfiguration, nestedConfiguration);
 
         SCT._instanceMap[container] = this;
     };
@@ -68,7 +67,7 @@
      */
     SCT.getByName = function(name) {
         return SCT._instanceMap[name];
-    }
+    };
 
     /**
      * @static
@@ -157,15 +156,15 @@
         },
 
         _removeControl: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-control/format/json"
-                          + "/id/" + this._securityAuthorizationId,
+            var actionUrl = "/sa/security-authorization/remove-control/format/json" +
+                            "/id/" + this._securityAuthorizationId,
                 post = "securityControlId=" + obj.getData("securityControlId");
             this._removeEntry(actionUrl, post);
         },
     
         _removeEnhancement: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json"
-                          + "/id/" + this._securityAuthorizationId,
+            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json" +
+                            "/id/" + this._securityAuthorizationId,
                 post = "securityControlEnhancementId=" + obj.getData("securityControlEnhancementId");
             this._removeEntry(actionUrl, post);
         },
