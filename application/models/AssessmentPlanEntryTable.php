@@ -27,5 +27,16 @@
  */
 class AssessmentPlanEntryTable extends Fisma_Doctrine_Table
 {
-
+    /**
+     * Get AssessmentPlanEntries for a collection of SaSecurityControlAggregates.
+     *
+     * @param array $saScaIds SaSecurityControlAggregate ids
+     * @return Doctrine_Query
+     */
+    public function getSaSecurityControlAggregatesQuery(array $saScaIds)
+    {
+        return Doctrine_Query::create()
+            ->from('AssessmentPlanEntry ape, ape.SaSecurityControlAggregate sasca')
+            ->whereIn('sasca.id', $saScaIds);
+    }
 }

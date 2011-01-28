@@ -84,26 +84,13 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             $order = 'ASC'; //ignore other values
         }
         
-        $sasc = Doctrine_Query::create()
-            ->from('SaSecurityControl sasc, sasc.SecurityControl sc')
-            ->where('sasc.securityAuthorizationId = ?', $saId)
-            ->execute();
-        $sasce = Doctrine_Query::create()
-            ->from(
-                'SaSecurityControlEnhancement sasce, ' .
-                'sasce.SecurityControlEnhancement sce, ' .
-                'sasce.SaSecurityControl sasc, ' .
-                'sasc.SecurityControl sc'
-            )
-            ->where('sasc.securityAuthorizationId = ?', $saId)
-            ->execute();
+        $sasc = Doctrine::getTable('SaSecurityControl')->getSecurityAuthorizationQuery($saId)->execute();
+        $sasce = Doctrine::getTable('SaSecurityControlEnhancement')->getSecurityAuthorizationQuery($saId)->execute();
         $sasca = new Doctrine_Collection('SaSecurityControlAggregate');
         $sasca->merge($sasc);
         $sasca->merge($sasce);
-        $query  = Doctrine_Query::create()
-            ->from('AssessmentPlanEntry ape')
-            ->leftJoin('ape.SaSecurityControlAggregate sasca')
-            ->whereIn('sasca.id', $sasca->toKeyValueArray('id', 'id'))
+        $query  = Doctrine::getTable('AssessmentPlanEntry')
+            ->getSaSecurityControlAggregatesQuery($sasca->toKeyValueArray('id', 'id'))
             ->orderBy("$sortBy $order")
             ->limit($this->_paging['count'])
             ->offset($offset);
