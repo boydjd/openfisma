@@ -9532,3212 +9532,7 @@ function getCookie(c_name, defaultValue)
         return '';
     }
 }
-/**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {
-    
-    // Class: $.jqplot.BarRenderer
-    // A plugin renderer for jqPlot to draw a bar plot.
-    // Draws series as a line.
-    
-    $.jqplot.BarRenderer = function(){
-        $.jqplot.LineRenderer.call(this);
-    };
-    
-    $.jqplot.BarRenderer.prototype = new $.jqplot.LineRenderer();
-    $.jqplot.BarRenderer.prototype.constructor = $.jqplot.BarRenderer;
-    
-    // called with scope of series.
-    $.jqplot.BarRenderer.prototype.init = function(options, plot) {
-        // Group: Properties
-        //
-        // prop: barPadding
-        // Number of pixels between adjacent bars at the same axis value.
-        this.barPadding = 8;
-        // prop: barMargin
-        // Number of pixels between groups of bars at adjacent axis values.
-        this.barMargin = 10;
-        // prop: barDirection
-        // 'vertical' = up and down bars, 'horizontal' = side to side bars
-        this.barDirection = 'vertical';
-        // prop: barWidth
-        // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
-        this.barWidth = null;
-        // prop: shadowOffset
-        // offset of the shadow from the slice and offset of 
-        // each succesive stroke of the shadow from the last.
-        this.shadowOffset = 2;
-        // prop: shadowDepth
-        // number of strokes to apply to the shadow, 
-        // each stroke offset shadowOffset from the last.
-        this.shadowDepth = 5;
-        // prop: shadowAlpha
-        // transparency of the shadow (0 = transparent, 1 = opaque)
-        this.shadowAlpha = 0.08;
-        // prop: waterfall
-        // true to enable waterfall plot.
-        this.waterfall = false;
-        // prop: groups
-        // group bars into this many groups
-        this.groups = 1;
-        // prop: varyBarColor
-        // true to color each bar separately.
-        this.varyBarColor = false;
-        // prop: highlightMouseOver
-        // True to highlight slice when moused over.
-        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
-        this.highlightMouseOver = true;
-        // prop: highlightMouseDown
-        // True to highlight when a mouse button is pressed over a slice.
-        // This will be disabled if highlightMouseOver is true.
-        this.highlightMouseDown = false;
-        // prop: highlightColors
-        // an array of colors to use when highlighting a bar.
-        this.highlightColors = [];
-        
-        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
-        if (options.highlightMouseDown && options.highlightMouseOver == null) {
-            options.highlightMouseOver = false;
-        }
-        
-        $.extend(true, this, options);
-        // fill is still needed to properly draw the legend.
-        // bars have to be filled.
-        this.fill = true;
-        
-        if (this.waterfall) {
-            this.fillToZero = false;
-            this.disableStack = true;
-        }
-        
-        if (this.barDirection == 'vertical' ) {
-            this._primaryAxis = '_xaxis';
-            this._stackAxis = 'y';
-            this.fillAxis = 'y';
-        }
-        else {
-            this._primaryAxis = '_yaxis';
-            this._stackAxis = 'x';
-            this.fillAxis = 'x';
-        }
-        // index of the currenty highlighted point, if any
-        this._highlightedPoint = null;
-        // total number of values for all bar series, total number of bar series, and position of this series
-        this._plotSeriesInfo = null;
-        // Array of actual data colors used for each data point.
-        this._dataColors = [];
-        this._barPoints = [];
-        
-        // set the shape renderer options
-        var opts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
-        this.renderer.shapeRenderer.init(opts);
-        // set the shadow renderer options
-        var sopts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
-        this.renderer.shadowRenderer.init(sopts);
-        
-        plot.postInitHooks.addOnce(postInit);
-        plot.postDrawHooks.addOnce(postPlotDraw);
-        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
-        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
-        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
-        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
-        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick); 
-    };
-    
-    // called with scope of series
-    function barPreInit(target, data, seriesDefaults, options) {
-        if (this.rendererOptions.barDirection == 'horizontal') {
-            this._stackAxis = 'x';
-            this._primaryAxis = '_yaxis';
-        }
-        if (this.rendererOptions.waterfall == true) {
-            this._data = $.extend(true, [], this.data);
-            var sum = 0;
-            var pos = (!this.rendererOptions.barDirection || this.rendererOptions.barDirection == 'vertical') ? 1 : 0;
-            for(var i=0; i<this.data.length; i++) {
-                sum += this.data[i][pos];
-                if (i>0) {
-                    this.data[i][pos] += this.data[i-1][pos];
-                }
-            }
-            this.data[this.data.length] = (pos == 1) ? [this.data.length+1, sum] : [sum, this.data.length+1];
-            this._data[this._data.length] = (pos == 1) ? [this._data.length+1, sum] : [sum, this._data.length+1];
-        }
-        if (this.rendererOptions.groups > 1) {
-            this.breakOnNull = true;
-            var l = this.data.length;
-            var skip = parseInt(l/this.rendererOptions.groups, 10);
-            var count = 0;
-            for (var i=skip; i<l; i+=skip) {
-                this.data.splice(i+count, 0, [null, null]);
-                count++;
-            }
-            for (i=0; i<this.data.length; i++) {
-                if (this._primaryAxis == '_xaxis') {
-                    this.data[i][0] = i+1;
-                }
-                else {
-                    this.data[i][1] = i+1;
-                }
-            }
-        }
-    }
-    
-    $.jqplot.preSeriesInitHooks.push(barPreInit);
-    
-    // needs to be called with scope of series, not renderer.
-    $.jqplot.BarRenderer.prototype.calcSeriesNumbers = function() {
-        var nvals = 0;
-        var nseries = 0;
-        var paxis = this[this._primaryAxis];
-        var s, series, pos;
-        // loop through all series on this axis
-        for (var i=0; i < paxis._series.length; i++) {
-            series = paxis._series[i];
-            if (series === this) {
-                pos = i;
-            }
-            // is the series rendered as a bar?
-            if (series.renderer.constructor == $.jqplot.BarRenderer) {
-                // gridData may not be computed yet, use data length insted
-                nvals += series.data.length;
-                nseries += 1;
-            }
-        }
-        // return total number of values for all bar series, total number of bar series, and position of this series
-        return [nvals, nseries, pos];
-    };
-
-    $.jqplot.BarRenderer.prototype.setBarWidth = function() {
-        // need to know how many data values we have on the approprate axis and figure it out.
-        var i;
-        var nvals = 0;
-        var nseries = 0;
-        var paxis = this[this._primaryAxis];
-        var s, series, pos;
-        var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        var nticks = paxis.numberTicks;
-        var nbins = (nticks-1)/2;
-        // so, now we have total number of axis values.
-        if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
-            if (this._stack) {
-                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
-            }
-            else {
-                this.barWidth = ((paxis._offsets.max - paxis._offsets.min)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
-                // this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/nseries;
-            }
-        }
-        else {
-            if (this._stack) {
-                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
-            }
-            else {
-                this.barWidth = ((paxis._offsets.min - paxis._offsets.max)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
-                // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
-            }
-        }
-        return [nvals, nseries];
-    };
-
-    function computeHighlightColors (colors) {
-        var ret = [];
-        for (var i=0; i<colors.length; i++){
-            var rgba = $.jqplot.getColorComponents(colors[i]);
-            var newrgb = [rgba[0], rgba[1], rgba[2]];
-            var sum = newrgb[0] + newrgb[1] + newrgb[2];
-            for (var j=0; j<3; j++) {
-                // when darkening, lowest color component can be is 60.
-                newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
-                newrgb[j] = parseInt(newrgb[j], 10);
-            }
-            ret.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
-        }
-        return ret;
-    }
-    
-    $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
-        var i;
-        var opts = (options != undefined) ? options : {};
-        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
-        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
-        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var xaxis = this.xaxis;
-        var yaxis = this.yaxis;
-        var xp = this._xaxis.series_u2p;
-        var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
-        // clear out data colors.
-        this._dataColors = [];
-        this._barPoints = [];
-        
-        if (this.barWidth == null) {
-            this.renderer.setBarWidth.call(this);
-        }
-        
-        var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        pos = temp[2];
-        
-        if (this._stack) {
-            this._barNudge = 0;
-        }
-        else {
-            this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
-        }
-        if (showLine) {
-            var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
-            var positiveColors = new $.jqplot.ColorGenerator(this.seriesColors);
-            var negativeColor = negativeColors.get(this.index);
-            if (! this.useNegativeColors) {
-                negativeColor = opts.fillStyle;
-            }
-            var positiveColor = opts.fillStyle;
-            
-            if (this.barDirection == 'vertical') {
-                for (var i=0; i<gridData.length; i++) {
-                    if (this.data[i][1] == null) {
-                        continue;
-                    }
-                    points = [];
-                    var base = gridData[i][0] + this._barNudge;
-                    var ystart;
-                    
-                    // stacked
-                    if (this._stack && this._prevGridData.length) {
-                        ystart = this._prevGridData[i][1];
-                    }
-                    // not stacked and first series in stack
-                    else {
-                        if (this.fillToZero) {
-                            ystart = this._yaxis.series_u2p(0);
-                        }
-                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
-                            ystart = this.gridData[i-1][1];
-                        }
-                        else {
-                            ystart = ctx.canvas.height;
-                        }
-                    }
-                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
-                            if (this.useNegativeColors) {
-                                opts.fillStyle = negativeColors.next();
-                            }
-                            else {
-                                opts.fillStyle = positiveColors.next();
-                            }
-                        }
-                        else {
-                            opts.fillStyle = negativeColor;
-                        }
-                    }
-                    else {
-                        if (this.varyBarColor) {
-                            opts.fillStyle = positiveColors.next();
-                        }
-                        else {
-                            opts.fillStyle = positiveColor;
-                        }
-                    }
-                    
-                    points.push([base-this.barWidth/2, ystart]);
-                    points.push([base-this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, ystart]);
-                    this._barPoints.push(points);
-                    // now draw the shadows if not stacked.
-                    // for stacked plots, they are predrawn by drawShadow
-                    if (shadow && !this._stack) {
-                        var sopts = $.extend(true, {}, opts);
-                        // need to get rid of fillStyle on shadow.
-                        delete sopts.fillStyle;
-                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
-                    }
-                    var clr = opts.fillStyle || this.color;
-                    this._dataColors.push(clr);
-                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
-                }
-            }
-            
-            else if (this.barDirection == 'horizontal'){
-                for (var i=0; i<gridData.length; i++) {
-                    if (this.data[i][0] == null) {
-                        continue;
-                    }
-                    points = [];
-                    var base = gridData[i][1] - this._barNudge;
-                    var xstart;
-                    
-                    if (this._stack && this._prevGridData.length) {
-                        xstart = this._prevGridData[i][0];
-                    }
-                    // not stacked and first series in stack
-                    else {
-                        if (this.fillToZero) {
-                            xstart = this._xaxis.series_u2p(0);
-                        }
-                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
-                            xstart = this.gridData[i-1][1];
-                        }
-                        else {
-                            xstart = 0;
-                        }
-                    }
-                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
-                            if (this.useNegativeColors) {
-                                opts.fillStyle = negativeColors.next();
-                            }
-                            else {
-                                opts.fillStyle = positiveColors.next();
-                            }
-                        }
-                    }
-                    else {
-                        if (this.varyBarColor) {
-                            opts.fillStyle = positiveColors.next();
-                        }
-                        else {
-                            opts.fillStyle = positiveColor;
-                        }                    
-                    }
-                    
-                    points.push([xstart, base+this.barWidth/2]);
-                    points.push([xstart, base-this.barWidth/2]);
-                    points.push([gridData[i][0], base-this.barWidth/2]);
-                    points.push([gridData[i][0], base+this.barWidth/2]);
-                    this._barPoints.push(points);
-                    // now draw the shadows if not stacked.
-                    // for stacked plots, they are predrawn by drawShadow
-                    if (shadow && !this._stack) {
-                        var sopts = $.extend(true, {}, opts);
-                        delete sopts.fillStyle;
-                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
-                    }
-                    var clr = opts.fillStyle || this.color;
-                    this._dataColors.push(clr);
-                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
-                }  
-            }
-        }                
-        
-        if (this.highlightColors.length == 0) {
-            this.highlightColors = computeHighlightColors(this._dataColors);
-        }
-        
-        else if (typeof(this.highlightColors) == 'string') {
-            var temp = this.highlightColors;
-            this.highlightColors = [];
-            for (var i=0; i<this._dataColors.length; i++) {
-                this.highlightColors.push(temp);
-            }
-        }
-        
-    };
-    
-     
-    // for stacked plots, shadows will be pre drawn by drawShadow.
-    $.jqplot.BarRenderer.prototype.drawShadow = function(ctx, gridData, options) {
-        var i;
-        var opts = (options != undefined) ? options : {};
-        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
-        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
-        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var xaxis = this.xaxis;
-        var yaxis = this.yaxis;
-        var xp = this._xaxis.series_u2p;
-        var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
-        
-        if (this._stack && this.shadow) {
-            if (this.barWidth == null) {
-                this.renderer.setBarWidth.call(this);
-            }
-        
-            var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-            nvals = temp[0];
-            nseries = temp[1];
-            pos = temp[2];
-        
-            if (this._stack) {
-                this._barNudge = 0;
-            }
-            else {
-                this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
-            }
-            if (showLine) {
-            
-                if (this.barDirection == 'vertical') {
-                    for (var i=0; i<gridData.length; i++) {
-                        if (this.data[i][1] == null) {
-                            continue;
-                        }
-                        points = [];
-                        var base = gridData[i][0] + this._barNudge;
-                        var ystart;
-                    
-                        if (this._stack && this._prevGridData.length) {
-                            ystart = this._prevGridData[i][1];
-                        }
-                        else {
-                            if (this.fillToZero) {
-                                ystart = this._yaxis.series_u2p(0);
-                            }
-                            else {
-                                ystart = ctx.canvas.height;
-                            }
-                        }
-                    
-                        points.push([base-this.barWidth/2, ystart]);
-                        points.push([base-this.barWidth/2, gridData[i][1]]);
-                        points.push([base+this.barWidth/2, gridData[i][1]]);
-                        points.push([base+this.barWidth/2, ystart]);
-                        this.renderer.shadowRenderer.draw(ctx, points, opts);
-                    }
-                }
-            
-                else if (this.barDirection == 'horizontal'){
-                    for (var i=0; i<gridData.length; i++) {
-                        if (this.data[i][0] == null) {
-                            continue;
-                        }
-                        points = [];
-                        var base = gridData[i][1] - this._barNudge;
-                        var xstart;
-                    
-                        if (this._stack && this._prevGridData.length) {
-                            xstart = this._prevGridData[i][0];
-                        }
-                        else {
-                            xstart = 0;
-                        }
-                    
-                        points.push([xstart, base+this.barWidth/2]);
-                        points.push([gridData[i][0], base+this.barWidth/2]);
-                        points.push([gridData[i][0], base-this.barWidth/2]);
-                        points.push([xstart, base-this.barWidth/2]);
-                        this.renderer.shadowRenderer.draw(ctx, points, opts);
-                    }  
-                }
-            }   
-            
-        }
-    };
-    
-    function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
-            if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
-                // don't allow mouseover and mousedown at same time.
-                if (this.series[i].highlightMouseOver) {
-                    this.series[i].highlightMouseDown = false;
-                }
-            }
-        }
-        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
-    }
-    
-    // called within context of plot
-    // create a canvas which we can draw on.
-    // insert it before the eventCanvas, so eventCanvas will still capture events.
-    function postPlotDraw() {
-        this.plugins.barRenderer = {highlightedSeriesIndex:null};
-        this.plugins.barRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
-        
-        this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
-    }   
-    
-    function highlight (plot, sidx, pidx, points) {
-        var s = plot.series[sidx];
-        var canvas = plot.plugins.barRenderer.highlightCanvas;
-        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
-        s._highlightedPoint = pidx;
-        plot.plugins.barRenderer.highlightedSeriesIndex = sidx;
-        var opts = {fillStyle: s.highlightColors[pidx]};
-        s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
-    }
-    
-    function unhighlight (plot) {
-        var canvas = plot.plugins.barRenderer.highlightCanvas;
-        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
-        for (var i=0; i<plot.series.length; i++) {
-            plot.series[i]._highlightedPoint = null;
-        }
-        plot.plugins.barRenderer.highlightedSeriesIndex = null;
-        plot.target.trigger('jqplotDataUnhighlight');
-    }
-    
-    
-    function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var evt1 = jQuery.Event('jqplotDataMouseOver');
-            evt1.pageX = ev.pageX;
-            evt1.pageY = ev.pageY;
-            plot.target.trigger(evt1, ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                var evt = jQuery.Event('jqplotDataHighlight');
-                evt.pageX = ev.pageX;
-                evt.pageY = ev.pageY;
-                plot.target.trigger(evt, ins);
-                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
-            }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
-    }
-    
-    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                var evt = jQuery.Event('jqplotDataHighlight');
-                evt.pageX = ev.pageX;
-                evt.pageY = ev.pageY;
-                plot.target.trigger(evt, ins);
-                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
-            }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
-    }
-    
-    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
-        var idx = plot.plugins.barRenderer.highlightedSeriesIndex;
-        if (idx != null && plot.series[idx].highlightMouseDown) {
-            unhighlight(plot);
-        }
-    }
-    
-    function handleClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var evt = jQuery.Event('jqplotDataClick');
-            evt.pageX = ev.pageX;
-            evt.pageY = ev.pageY;
-            plot.target.trigger(evt, ins);
-        }
-    }
-    
-    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var idx = plot.plugins.barRenderer.highlightedSeriesIndex;
-            if (idx != null && plot.series[idx].highlightMouseDown) {
-                unhighlight(plot);
-            }
-            var evt = jQuery.Event('jqplotDataRightClick');
-            evt.pageX = ev.pageX;
-            evt.pageY = ev.pageY;
-            plot.target.trigger(evt, ins);
-        }
-    }
-    
-    
-})(jQuery);    /**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {
-    /**
-    * Class: $.jqplot.CanvasAxisLabelRenderer
-    * Renderer to draw axis labels with a canvas element to support advanced
-    * featrues such as rotated text.  This renderer uses a separate rendering engine
-    * to draw the text on the canvas.  Two modes of rendering the text are available.
-    * If the browser has native font support for canvas fonts (currently Mozila 3.5
-    * and Safari 4), you can enable text rendering with the canvas fillText method.
-    * You do so by setting the "enableFontSupport" option to true. 
-    * 
-    * Browsers lacking native font support will have the text drawn on the canvas
-    * using the Hershey font metrics.  Even if the "enableFontSupport" option is true
-    * non-supporting browsers will still render with the Hershey font.
-    * 
-    */
-    $.jqplot.CanvasAxisLabelRenderer = function(options) {
-        // Group: Properties
-        
-        // prop: angle
-        // angle of text, measured clockwise from x axis.
-        this.angle = 0;
-        // name of the axis associated with this tick
-        this.axis;
-        // prop: show
-        // wether or not to show the tick (mark and label).
-        this.show = true;
-        // prop: showLabel
-        // wether or not to show the label.
-        this.showLabel = true;
-        // prop: label
-        // label for the axis.
-        this.label = '';
-        // prop: fontFamily
-        // CSS spec for the font-family css attribute.
-        // Applies only to browsers supporting native font rendering in the
-        // canvas tag.  Currently Mozilla 3.5 and Safari 4.
-        this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
-        // prop: fontSize
-        // CSS spec for font size.
-        this.fontSize = '11pt';
-        // prop: fontWeight
-        // CSS spec for fontWeight:  normal, bold, bolder, lighter or a number 100 - 900
-        this.fontWeight = 'normal';
-        // prop: fontStretch
-        // Multiplier to condense or expand font width.  
-        // Applies only to browsers which don't support canvas native font rendering.
-        this.fontStretch = 1.0;
-        // prop: textColor
-        // css spec for the color attribute.
-        this.textColor = '#666666';
-        // prop: enableFontSupport
-        // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
-        // If true, label will be drawn with canvas tag native support for fonts.
-        // If false, label will be drawn with Hershey font metrics.
-        this.enableFontSupport = true;
-        // prop: pt2px
-        // Point to pixel scaling factor, used for computing height of bounding box
-        // around a label.  The labels text renderer has a default setting of 1.4, which 
-        // should be suitable for most fonts.  Leave as null to use default.  If tops of
-        // letters appear clipped, increase this.  If bounding box seems too big, decrease.
-        // This is an issue only with the native font renderering capabilities of Mozilla
-        // 3.5 and Safari 4 since they do not provide a method to determine the font height.
-        this.pt2px = null;
-        
-        this._elem;
-        this._ctx;
-        this._plotWidth;
-        this._plotHeight;
-        this._plotDimensions = {height:null, width:null};
-        
-        $.extend(true, this, options);
-        
-        if (options.angle == null && this.axis != 'xaxis' && this.axis != 'x2axis') {
-            this.angle = -90;
-        }
-        
-        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
-        if (this.pt2px) {
-            ropts.pt2px = this.pt2px;
-        }
-        
-        if (this.enableFontSupport) {
-            
-            function support_canvas_text() {
-                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-            }
-            
-            if (support_canvas_text()) {
-                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
-            }
-            
-            else {
-                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-            }
-        }
-        else {
-            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-        }
-    };
-    
-    $.jqplot.CanvasAxisLabelRenderer.prototype.init = function(options) {
-        $.extend(true, this, options);
-        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
-    };
-    
-    // return width along the x axis
-    // will check first to see if an element exists.
-    // if not, will return the computed text box width.
-    $.jqplot.CanvasAxisLabelRenderer.prototype.getWidth = function(ctx) {
-        if (this._elem) {
-         return this._elem.outerWidth(true);
-        }
-        else {
-            var tr = this._textRenderer;
-            var l = tr.getWidth(ctx);
-            var h = tr.getHeight(ctx);
-            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
-            return w;
-        }
-    };
-    
-    // return height along the y axis.
-    $.jqplot.CanvasAxisLabelRenderer.prototype.getHeight = function(ctx) {
-        if (this._elem) {
-         return this._elem.outerHeight(true);
-        }
-        else {
-            var tr = this._textRenderer;
-            var l = tr.getWidth(ctx);
-            var h = tr.getHeight(ctx);
-            var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
-            return w;
-        }
-    };
-    
-    $.jqplot.CanvasAxisLabelRenderer.prototype.getAngleRad = function() {
-        var a = this.angle * Math.PI/180;
-        return a;
-    };
-    
-    $.jqplot.CanvasAxisLabelRenderer.prototype.draw = function(ctx) {
-        // create a canvas here, but can't draw on it untill it is appended
-        // to dom for IE compatability.
-        var domelem = document.createElement('canvas');
-        this._textRenderer.setText(this.label, ctx);
-        var w = this.getWidth(ctx);
-        var h = this.getHeight(ctx);
-        domelem.width = w;
-        domelem.height = h;
-        domelem.style.width = w;
-        domelem.style.height = h;
-        // domelem.style.textAlign = 'center';
-        domelem.style.position = 'absolute';
-        this._domelem = domelem;
-        this._elem = $(domelem);
-        this._elem.addClass('jqplot-'+this.axis+'-label');
-        
-        return this._elem;
-    };
-    
-    $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
-            window.G_vmlCanvasManager.init_(document);
-            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
-        }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
-    };
-    
-})(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {
-    /**
-    *  Class: $.jqplot.CanvasAxisTickRenderer
-    * Renderer to draw axis ticks with a canvas element to support advanced
-    * featrues such as rotated text.  This renderer uses a separate rendering engine
-    * to draw the text on the canvas.  Two modes of rendering the text are available.
-    * If the browser has native font support for canvas fonts (currently Mozila 3.5
-    * and Safari 4), you can enable text rendering with the canvas fillText method.
-    * You do so by setting the "enableFontSupport" option to true. 
-    * 
-    * Browsers lacking native font support will have the text drawn on the canvas
-    * using the Hershey font metrics.  Even if the "enableFontSupport" option is true
-    * non-supporting browsers will still render with the Hershey font.
-    */
-    $.jqplot.CanvasAxisTickRenderer = function(options) {
-        // Group: Properties
-        
-        // prop: mark
-        // tick mark on the axis.  One of 'inside', 'outside', 'cross', '' or null.
-        this.mark = 'outside';
-        // prop: showMark
-        // wether or not to show the mark on the axis.
-        this.showMark = true;
-        // prop: showGridline
-        // wether or not to draw the gridline on the grid at this tick.
-        this.showGridline = true;
-        // prop: isMinorTick
-        // if this is a minor tick.
-        this.isMinorTick = false;
-        // prop: angle
-        // angle of text, measured clockwise from x axis.
-        this.angle = 0;
-        // prop:  markSize
-        // Length of the tick marks in pixels.  For 'cross' style, length
-        // will be stoked above and below axis, so total length will be twice this.
-        this.markSize = 4;
-        // prop: show
-        // wether or not to show the tick (mark and label).
-        this.show = true;
-        // prop: showLabel
-        // wether or not to show the label.
-        this.showLabel = true;
-        // prop: labelPosition
-        // 'auto', 'start', 'middle' or 'end'.
-        // Whether tick label should be positioned so the start, middle, or end
-        // of the tick mark.
-        this.labelPosition = 'auto';
-        this.label = '';
-        this.value = null;
-        this._styles = {};
-        // prop: formatter
-        // A class of a formatter for the tick text.
-        // The default $.jqplot.DefaultTickFormatter uses sprintf.
-        this.formatter = $.jqplot.DefaultTickFormatter;
-        // prop: formatString
-        // string passed to the formatter.
-        this.formatString = '';
-        // prop: prefix
-        // string appended to the tick label if no formatString is specified.
-        this.prefix = '';
-        // prop: fontFamily
-        // css spec for the font-family css attribute.
-        this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
-        // prop: fontSize
-        // CSS spec for font size.
-        this.fontSize = '10pt';
-        // prop: fontWeight
-        // CSS spec for fontWeight
-        this.fontWeight = 'normal';
-        // prop: fontStretch
-        // Multiplier to condense or expand font width.  
-        // Applies only to browsers which don't support canvas native font rendering.
-        this.fontStretch = 1.0;
-        // prop: textColor
-        // css spec for the color attribute.
-        this.textColor = '#666666';
-        // prop: enableFontSupport
-        // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
-        // If true, tick label will be drawn with canvas tag native support for fonts.
-        // If false, tick label will be drawn with Hershey font metrics.
-        this.enableFontSupport = true;
-        // prop: pt2px
-        // Point to pixel scaling factor, used for computing height of bounding box
-        // around a label.  The labels text renderer has a default setting of 1.4, which 
-        // should be suitable for most fonts.  Leave as null to use default.  If tops of
-        // letters appear clipped, increase this.  If bounding box seems too big, decrease.
-        // This is an issue only with the native font renderering capabilities of Mozilla
-        // 3.5 and Safari 4 since they do not provide a method to determine the font height.
-        this.pt2px = null;
-        
-        this._elem;
-        this._ctx;
-        this._plotWidth;
-        this._plotHeight;
-        this._plotDimensions = {height:null, width:null};
-        
-        $.extend(true, this, options);
-        
-        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
-        if (this.pt2px) {
-            ropts.pt2px = this.pt2px;
-        }
-        
-        if (this.enableFontSupport) {
-            
-            function support_canvas_text() {
-                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-            }
-            
-            if (support_canvas_text()) {
-                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
-            }
-            
-            else {
-                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-            }
-        }
-        else {
-            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
-        }
-    };
-    
-    $.jqplot.CanvasAxisTickRenderer.prototype.init = function(options) {
-        $.extend(true, this, options);
-        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
-    };
-    
-    // return width along the x axis
-    // will check first to see if an element exists.
-    // if not, will return the computed text box width.
-    $.jqplot.CanvasAxisTickRenderer.prototype.getWidth = function(ctx) {
-        if (this._elem) {
-         return this._elem.outerWidth(true);
-        }
-        else {
-            var tr = this._textRenderer;
-            var l = tr.getWidth(ctx);
-            var h = tr.getHeight(ctx);
-            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
-            return w;
-        }
-    };
-    
-    // return height along the y axis.
-    $.jqplot.CanvasAxisTickRenderer.prototype.getHeight = function(ctx) {
-        if (this._elem) {
-         return this._elem.outerHeight(true);
-        }
-        else {
-            var tr = this._textRenderer;
-            var l = tr.getWidth(ctx);
-            var h = tr.getHeight(ctx);
-            var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
-            return w;
-        }
-    };
-    
-    $.jqplot.CanvasAxisTickRenderer.prototype.getAngleRad = function() {
-        var a = this.angle * Math.PI/180;
-        return a;
-    };
-    
-    
-    $.jqplot.CanvasAxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
-        this.value = value;
-        if (isMinor) {
-            this.isMinorTick = true;
-        }
-        return this;
-    };
-    
-    $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
-        if (!this.label) {
-            this.label = this.formatter(this.formatString, this.value);
-        }
-        // add prefix if needed
-        if (this.prefix && !this.formatString) {
-            this.label = this.prefix + this.label;
-        }
-        // create a canvas here, but can't draw on it untill it is appended
-        // to dom for IE compatability.
-        var domelem = document.createElement('canvas');
-        this._textRenderer.setText(this.label, ctx);
-        var w = this.getWidth(ctx);
-        var h = this.getHeight(ctx);
-        domelem.width = w;
-        domelem.height = h;
-        domelem.style.width = w;
-        domelem.style.height = h;
-        domelem.style.textAlign = 'left';
-        domelem.style.position = 'absolute';
-        this._domelem = domelem;
-        this._elem = $(domelem);
-        this._elem.css(this._styles);
-        this._elem.addClass('jqplot-'+this.axis+'-tick');
-        
-        return this._elem;
-    };
-    
-    $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
-            window.G_vmlCanvasManager.init_(document);
-            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
-        }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
-    };
-    
-})(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {    
-    // This code is a modified version of the canvastext.js code, copyright below:
-    //
-    // This code is released to the public domain by Jim Studt, 2007.
-    // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
-    //
-    $.jqplot.CanvasTextRenderer = function(options){
-        this.fontStyle = 'normal';  // normal, italic, oblique [not implemented]
-        this.fontVariant = 'normal';    // normal, small caps [not implemented]
-        this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
-        this.fontSize = '10px'; 
-        this.fontFamily = 'sans-serif';
-        this.fontStretch = 1.0;
-        this.fillStyle = '#666666';
-        this.angle = 0;
-        this.textAlign = 'start';
-        this.textBaseline = 'alphabetic';
-        this.text;
-        this.width;
-        this.height;
-        this.pt2px = 1.28;
-
-        $.extend(true, this, options);
-        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
-        this.setHeight();
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.init = function(options) {
-        $.extend(true, this, options);
-        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
-        this.setHeight();
-    };
-    
-    // convert css spec into point size
-    // returns float
-    $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
-        sz = String(sz);
-        n = parseFloat(sz);
-        if (sz.indexOf('px') > -1) {
-            return n/this.pt2px;
-        }
-        else if (sz.indexOf('pt') > -1) {
-            return n;
-        }
-        else if (sz.indexOf('em') > -1) {
-            return n*12;
-        }
-        else if (sz.indexOf('%') > -1) {
-            return n*12/100;
-        }
-        // default to pixels;
-        else {
-            return n/this.pt2px;
-        }
-    };
-    
-    
-    $.jqplot.CanvasTextRenderer.prototype.fontWeight2Float = function(w) {
-        // w = normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
-        // return values adjusted for Hershey font.
-        if (Number(w)) {
-            return w/400;
-        }
-        else {
-            switch (w) {
-                case 'normal':
-                    return 1;
-                    break;
-                case 'bold':
-                    return 1.75;
-                    break;
-                case 'bolder':
-                    return 2.25;
-                    break;
-                case 'lighter':
-                    return 0.75;
-                    break;
-                default:
-                    return 1;
-                    break;
-             }   
-        }
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.getText = function() {
-        return this.text;
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.setText = function(t, ctx) {
-        this.text = t;
-        this.setWidth(ctx);
-        return this;
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.getWidth = function(ctx) {
-        return this.width;
-    };
-    
-    $.jqplot.CanvasTextRenderer.prototype.setWidth = function(ctx, w) {
-        if (!w) {
-            this.width = this.measure(ctx, this.text);
-        }
-        else {
-            this.width = w;   
-        }
-        return this;
-    };
-    
-    // return height in pixels.
-    $.jqplot.CanvasTextRenderer.prototype.getHeight = function(ctx) {
-        return this.height;
-    };
-    
-    // w - height in pt
-    // set heigh in px
-    $.jqplot.CanvasTextRenderer.prototype.setHeight = function(w) {
-        if (!w) {
-            //height = this.fontSize /0.75;
-            this.height = this.normalizedFontSize * this.pt2px;
-        }
-        else {
-            this.height = w;   
-        }
-        return this;
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.letter = function (ch)
-    {
-        return this.letters[ch];
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.ascent = function()
-    {
-        return this.normalizedFontSize;
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.descent = function()
-    {
-        return 7.0*this.normalizedFontSize/25.0;
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.measure = function(ctx, str)
-    {
-        var total = 0;
-        var len = str.length;
- 
-        for ( i = 0; i < len; i++) {
-            var c = this.letter(str.charAt(i));
-            if (c) {
-                total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
-            }
-        }
-        return total;
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.draw = function(ctx,str)
-    {
-        var x = 0;
-        // leave room at bottom for descenders.
-        var y = this.height*0.72;
-         var total = 0;
-         var len = str.length;
-         var mag = this.normalizedFontSize / 25.0;
-
-         ctx.save();
-         var tx, ty;
-         
-         // 1st quadrant
-         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
-             tx = 0;
-             ty = -Math.sin(this.angle) * this.width;
-         }
-         // 4th quadrant
-         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
-             tx = Math.sin(this.angle) * this.height;
-             ty = 0;
-         }
-         // 2nd quadrant
-         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
-             tx = -Math.cos(this.angle) * this.width;
-             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
-         }
-         // 3rd quadrant
-         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
-             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
-             ty = -Math.cos(this.angle) * this.height;
-         }
-         
-         ctx.strokeStyle = this.fillStyle;
-         ctx.fillStyle = this.fillStyle;
-         ctx.translate(tx, ty);
-         ctx.rotate(this.angle);
-         ctx.lineCap = "round";
-         // multiplier was 2.0
-         var fact = (this.normalizedFontSize > 30) ? 2.0 : 2 + (30 - this.normalizedFontSize)/20;
-         ctx.lineWidth = fact * mag * this.fontWeight2Float(this.fontWeight);
-         
-         for ( var i = 0; i < len; i++) {
-            var c = this.letter( str.charAt(i));
-            if ( !c) {
-                continue;
-            }
-
-            ctx.beginPath();
-
-            var penUp = 1;
-            var needStroke = 0;
-            for ( var j = 0; j < c.points.length; j++) {
-              var a = c.points[j];
-              if ( a[0] == -1 && a[1] == -1) {
-                  penUp = 1;
-                  continue;
-              }
-              if ( penUp) {
-                  ctx.moveTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
-                  penUp = false;
-              } else {
-                  ctx.lineTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
-              }
-            }
-            ctx.stroke();
-            x += c.width*mag*this.fontStretch;
-         }
-         ctx.restore();
-         return total;
-    };
-
-    $.jqplot.CanvasTextRenderer.prototype.letters = {
-         ' ': { width: 16, points: [] },
-         '!': { width: 10, points: [[5,21],[5,7],[-1,-1],[5,2],[4,1],[5,0],[6,1],[5,2]] },
-         '"': { width: 16, points: [[4,21],[4,14],[-1,-1],[12,21],[12,14]] },
-         '#': { width: 21, points: [[11,25],[4,-7],[-1,-1],[17,25],[10,-7],[-1,-1],[4,12],[18,12],[-1,-1],[3,6],[17,6]] },
-         '$': { width: 20, points: [[8,25],[8,-4],[-1,-1],[12,25],[12,-4],[-1,-1],[17,18],[15,20],[12,21],[8,21],[5,20],[3,18],[3,16],[4,14],[5,13],[7,12],[13,10],[15,9],[16,8],[17,6],[17,3],[15,1],[12,0],[8,0],[5,1],[3,3]] },
-         '%': { width: 24, points: [[21,21],[3,0],[-1,-1],[8,21],[10,19],[10,17],[9,15],[7,14],[5,14],[3,16],[3,18],[4,20],[6,21],[8,21],[10,20],[13,19],[16,19],[19,20],[21,21],[-1,-1],[17,7],[15,6],[14,4],[14,2],[16,0],[18,0],[20,1],[21,3],[21,5],[19,7],[17,7]] },
-         '&': { width: 26, points: [[23,12],[23,13],[22,14],[21,14],[20,13],[19,11],[17,6],[15,3],[13,1],[11,0],[7,0],[5,1],[4,2],[3,4],[3,6],[4,8],[5,9],[12,13],[13,14],[14,16],[14,18],[13,20],[11,21],[9,20],[8,18],[8,16],[9,13],[11,10],[16,3],[18,1],[20,0],[22,0],[23,1],[23,2]] },
-         '\'': { width: 10, points: [[5,19],[4,20],[5,21],[6,20],[6,18],[5,16],[4,15]] },
-         '(': { width: 14, points: [[11,25],[9,23],[7,20],[5,16],[4,11],[4,7],[5,2],[7,-2],[9,-5],[11,-7]] },
-         ')': { width: 14, points: [[3,25],[5,23],[7,20],[9,16],[10,11],[10,7],[9,2],[7,-2],[5,-5],[3,-7]] },
-         '*': { width: 16, points: [[8,21],[8,9],[-1,-1],[3,18],[13,12],[-1,-1],[13,18],[3,12]] },
-         '+': { width: 26, points: [[13,18],[13,0],[-1,-1],[4,9],[22,9]] },
-         ',': { width: 10, points: [[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
-         '-': { width: 18, points: [[6,9],[12,9]] },
-         '.': { width: 10, points: [[5,2],[4,1],[5,0],[6,1],[5,2]] },
-         '/': { width: 22, points: [[20,25],[2,-7]] },
-         '0': { width: 20, points: [[9,21],[6,20],[4,17],[3,12],[3,9],[4,4],[6,1],[9,0],[11,0],[14,1],[16,4],[17,9],[17,12],[16,17],[14,20],[11,21],[9,21]] },
-         '1': { width: 20, points: [[6,17],[8,18],[11,21],[11,0]] },
-         '2': { width: 20, points: [[4,16],[4,17],[5,19],[6,20],[8,21],[12,21],[14,20],[15,19],[16,17],[16,15],[15,13],[13,10],[3,0],[17,0]] },
-         '3': { width: 20, points: [[5,21],[16,21],[10,13],[13,13],[15,12],[16,11],[17,8],[17,6],[16,3],[14,1],[11,0],[8,0],[5,1],[4,2],[3,4]] },
-         '4': { width: 20, points: [[13,21],[3,7],[18,7],[-1,-1],[13,21],[13,0]] },
-         '5': { width: 20, points: [[15,21],[5,21],[4,12],[5,13],[8,14],[11,14],[14,13],[16,11],[17,8],[17,6],[16,3],[14,1],[11,0],[8,0],[5,1],[4,2],[3,4]] },
-         '6': { width: 20, points: [[16,18],[15,20],[12,21],[10,21],[7,20],[5,17],[4,12],[4,7],[5,3],[7,1],[10,0],[11,0],[14,1],[16,3],[17,6],[17,7],[16,10],[14,12],[11,13],[10,13],[7,12],[5,10],[4,7]] },
-         '7': { width: 20, points: [[17,21],[7,0],[-1,-1],[3,21],[17,21]] },
-         '8': { width: 20, points: [[8,21],[5,20],[4,18],[4,16],[5,14],[7,13],[11,12],[14,11],[16,9],[17,7],[17,4],[16,2],[15,1],[12,0],[8,0],[5,1],[4,2],[3,4],[3,7],[4,9],[6,11],[9,12],[13,13],[15,14],[16,16],[16,18],[15,20],[12,21],[8,21]] },
-         '9': { width: 20, points: [[16,14],[15,11],[13,9],[10,8],[9,8],[6,9],[4,11],[3,14],[3,15],[4,18],[6,20],[9,21],[10,21],[13,20],[15,18],[16,14],[16,9],[15,4],[13,1],[10,0],[8,0],[5,1],[4,3]] },
-         ':': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[5,2],[4,1],[5,0],[6,1],[5,2]] },
-         ';': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
-         '<': { width: 24, points: [[20,18],[4,9],[20,0]] },
-         '=': { width: 26, points: [[4,12],[22,12],[-1,-1],[4,6],[22,6]] },
-         '>': { width: 24, points: [[4,18],[20,9],[4,0]] },
-         '?': { width: 18, points: [[3,16],[3,17],[4,19],[5,20],[7,21],[11,21],[13,20],[14,19],[15,17],[15,15],[14,13],[13,12],[9,10],[9,7],[-1,-1],[9,2],[8,1],[9,0],[10,1],[9,2]] },
-         '@': { width: 27, points: [[18,13],[17,15],[15,16],[12,16],[10,15],[9,14],[8,11],[8,8],[9,6],[11,5],[14,5],[16,6],[17,8],[-1,-1],[12,16],[10,14],[9,11],[9,8],[10,6],[11,5],[-1,-1],[18,16],[17,8],[17,6],[19,5],[21,5],[23,7],[24,10],[24,12],[23,15],[22,17],[20,19],[18,20],[15,21],[12,21],[9,20],[7,19],[5,17],[4,15],[3,12],[3,9],[4,6],[5,4],[7,2],[9,1],[12,0],[15,0],[18,1],[20,2],[21,3],[-1,-1],[19,16],[18,8],[18,6],[19,5]] },
-         'A': { width: 18, points: [[9,21],[1,0],[-1,-1],[9,21],[17,0],[-1,-1],[4,7],[14,7]] },
-         'B': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,15],[17,13],[16,12],[13,11],[-1,-1],[4,11],[13,11],[16,10],[17,9],[18,7],[18,4],[17,2],[16,1],[13,0],[4,0]] },
-         'C': { width: 21, points: [[18,16],[17,18],[15,20],[13,21],[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5]] },
-         'D': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[11,21],[14,20],[16,18],[17,16],[18,13],[18,8],[17,5],[16,3],[14,1],[11,0],[4,0]] },
-         'E': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,21],[17,21],[-1,-1],[4,11],[12,11],[-1,-1],[4,0],[17,0]] },
-         'F': { width: 18, points: [[4,21],[4,0],[-1,-1],[4,21],[17,21],[-1,-1],[4,11],[12,11]] },
-         'G': { width: 21, points: [[18,16],[17,18],[15,20],[13,21],[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[18,8],[-1,-1],[13,8],[18,8]] },
-         'H': { width: 22, points: [[4,21],[4,0],[-1,-1],[18,21],[18,0],[-1,-1],[4,11],[18,11]] },
-         'I': { width: 8, points: [[4,21],[4,0]] },
-         'J': { width: 16, points: [[12,21],[12,5],[11,2],[10,1],[8,0],[6,0],[4,1],[3,2],[2,5],[2,7]] },
-         'K': { width: 21, points: [[4,21],[4,0],[-1,-1],[18,21],[4,7],[-1,-1],[9,12],[18,0]] },
-         'L': { width: 17, points: [[4,21],[4,0],[-1,-1],[4,0],[16,0]] },
-         'M': { width: 24, points: [[4,21],[4,0],[-1,-1],[4,21],[12,0],[-1,-1],[20,21],[12,0],[-1,-1],[20,21],[20,0]] },
-         'N': { width: 22, points: [[4,21],[4,0],[-1,-1],[4,21],[18,0],[-1,-1],[18,21],[18,0]] },
-         'O': { width: 22, points: [[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[19,8],[19,13],[18,16],[17,18],[15,20],[13,21],[9,21]] },
-         'P': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,14],[17,12],[16,11],[13,10],[4,10]] },
-         'Q': { width: 22, points: [[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[19,8],[19,13],[18,16],[17,18],[15,20],[13,21],[9,21],[-1,-1],[12,4],[18,-2]] },
-         'R': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,15],[17,13],[16,12],[13,11],[4,11],[-1,-1],[11,11],[18,0]] },
-         'S': { width: 20, points: [[17,18],[15,20],[12,21],[8,21],[5,20],[3,18],[3,16],[4,14],[5,13],[7,12],[13,10],[15,9],[16,8],[17,6],[17,3],[15,1],[12,0],[8,0],[5,1],[3,3]] },
-         'T': { width: 16, points: [[8,21],[8,0],[-1,-1],[1,21],[15,21]] },
-         'U': { width: 22, points: [[4,21],[4,6],[5,3],[7,1],[10,0],[12,0],[15,1],[17,3],[18,6],[18,21]] },
-         'V': { width: 18, points: [[1,21],[9,0],[-1,-1],[17,21],[9,0]] },
-         'W': { width: 24, points: [[2,21],[7,0],[-1,-1],[12,21],[7,0],[-1,-1],[12,21],[17,0],[-1,-1],[22,21],[17,0]] },
-         'X': { width: 20, points: [[3,21],[17,0],[-1,-1],[17,21],[3,0]] },
-         'Y': { width: 18, points: [[1,21],[9,11],[9,0],[-1,-1],[17,21],[9,11]] },
-         'Z': { width: 20, points: [[17,21],[3,0],[-1,-1],[3,21],[17,21],[-1,-1],[3,0],[17,0]] },
-         '[': { width: 14, points: [[4,25],[4,-7],[-1,-1],[5,25],[5,-7],[-1,-1],[4,25],[11,25],[-1,-1],[4,-7],[11,-7]] },
-         '\\': { width: 14, points: [[0,21],[14,-3]] },
-         ']': { width: 14, points: [[9,25],[9,-7],[-1,-1],[10,25],[10,-7],[-1,-1],[3,25],[10,25],[-1,-1],[3,-7],[10,-7]] },
-         '^': { width: 16, points: [[6,15],[8,18],[10,15],[-1,-1],[3,12],[8,17],[13,12],[-1,-1],[8,17],[8,0]] },
-         '_': { width: 16, points: [[0,-2],[16,-2]] },
-         '`': { width: 10, points: [[6,21],[5,20],[4,18],[4,16],[5,15],[6,16],[5,17]] },
-         'a': { width: 19, points: [[15,14],[15,0],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'b': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,11],[6,13],[8,14],[11,14],[13,13],[15,11],[16,8],[16,6],[15,3],[13,1],[11,0],[8,0],[6,1],[4,3]] },
-         'c': { width: 18, points: [[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'd': { width: 19, points: [[15,21],[15,0],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'e': { width: 18, points: [[3,8],[15,8],[15,10],[14,12],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'f': { width: 12, points: [[10,21],[8,21],[6,20],[5,17],[5,0],[-1,-1],[2,14],[9,14]] },
-         'g': { width: 19, points: [[15,14],[15,-2],[14,-5],[13,-6],[11,-7],[8,-7],[6,-6],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'h': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0]] },
-         'i': { width: 8, points: [[3,21],[4,20],[5,21],[4,22],[3,21],[-1,-1],[4,14],[4,0]] },
-         'j': { width: 10, points: [[5,21],[6,20],[7,21],[6,22],[5,21],[-1,-1],[6,14],[6,-3],[5,-6],[3,-7],[1,-7]] },
-         'k': { width: 17, points: [[4,21],[4,0],[-1,-1],[14,14],[4,4],[-1,-1],[8,8],[15,0]] },
-         'l': { width: 8, points: [[4,21],[4,0]] },
-         'm': { width: 30, points: [[4,14],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0],[-1,-1],[15,10],[18,13],[20,14],[23,14],[25,13],[26,10],[26,0]] },
-         'n': { width: 19, points: [[4,14],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0]] },
-         'o': { width: 19, points: [[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3],[16,6],[16,8],[15,11],[13,13],[11,14],[8,14]] },
-         'p': { width: 19, points: [[4,14],[4,-7],[-1,-1],[4,11],[6,13],[8,14],[11,14],[13,13],[15,11],[16,8],[16,6],[15,3],[13,1],[11,0],[8,0],[6,1],[4,3]] },
-         'q': { width: 19, points: [[15,14],[15,-7],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
-         'r': { width: 13, points: [[4,14],[4,0],[-1,-1],[4,8],[5,11],[7,13],[9,14],[12,14]] },
-         's': { width: 17, points: [[14,11],[13,13],[10,14],[7,14],[4,13],[3,11],[4,9],[6,8],[11,7],[13,6],[14,4],[14,3],[13,1],[10,0],[7,0],[4,1],[3,3]] },
-         't': { width: 12, points: [[5,21],[5,4],[6,1],[8,0],[10,0],[-1,-1],[2,14],[9,14]] },
-         'u': { width: 19, points: [[4,14],[4,4],[5,1],[7,0],[10,0],[12,1],[15,4],[-1,-1],[15,14],[15,0]] },
-         'v': { width: 16, points: [[2,14],[8,0],[-1,-1],[14,14],[8,0]] },
-         'w': { width: 22, points: [[3,14],[7,0],[-1,-1],[11,14],[7,0],[-1,-1],[11,14],[15,0],[-1,-1],[19,14],[15,0]] },
-         'x': { width: 17, points: [[3,14],[14,0],[-1,-1],[14,14],[3,0]] },
-         'y': { width: 16, points: [[2,14],[8,0],[-1,-1],[14,14],[8,0],[6,-4],[4,-6],[2,-7],[1,-7]] },
-         'z': { width: 17, points: [[14,14],[3,0],[-1,-1],[3,14],[14,14],[-1,-1],[3,0],[14,0]] },
-         '{': { width: 14, points: [[9,25],[7,24],[6,23],[5,21],[5,19],[6,17],[7,16],[8,14],[8,12],[6,10],[-1,-1],[7,24],[6,22],[6,20],[7,18],[8,17],[9,15],[9,13],[8,11],[4,9],[8,7],[9,5],[9,3],[8,1],[7,0],[6,-2],[6,-4],[7,-6],[-1,-1],[6,8],[8,6],[8,4],[7,2],[6,1],[5,-1],[5,-3],[6,-5],[7,-6],[9,-7]] },
-         '|': { width: 8, points: [[4,25],[4,-7]] },
-         '}': { width: 14, points: [[5,25],[7,24],[8,23],[9,21],[9,19],[8,17],[7,16],[6,14],[6,12],[8,10],[-1,-1],[7,24],[8,22],[8,20],[7,18],[6,17],[5,15],[5,13],[6,11],[10,9],[6,7],[5,5],[5,3],[6,1],[7,0],[8,-2],[8,-4],[7,-6],[-1,-1],[8,8],[6,6],[6,4],[7,2],[8,1],[9,-1],[9,-3],[8,-5],[7,-6],[5,-7]] },
-         '~': { width: 24, points: [[3,6],[3,8],[4,11],[6,12],[8,12],[10,11],[14,8],[16,7],[18,7],[20,8],[21,10],[-1,-1],[3,8],[4,10],[6,11],[8,11],[10,10],[14,7],[16,6],[18,6],[20,7],[21,10],[21,12]] }
-     };
-     
-    $.jqplot.CanvasFontRenderer = function(options) {
-        options = options || {};
-        if (!options.pt2px) {
-            options.pt2px = 1.5;
-        }
-        $.jqplot.CanvasTextRenderer.call(this, options);
-    };
-    
-    $.jqplot.CanvasFontRenderer.prototype = new $.jqplot.CanvasTextRenderer({});
-    $.jqplot.CanvasFontRenderer.prototype.constructor = $.jqplot.CanvasFontRenderer;
-
-    $.jqplot.CanvasFontRenderer.prototype.measure = function(ctx, str)
-    {
-        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
-        var fstyle = this.fontSize+' '+this.fontFamily;
-        ctx.save();
-        ctx.font = fstyle;
-        var w = ctx.measureText(str).width;
-        ctx.restore();
-        return w;
-    };
-
-    $.jqplot.CanvasFontRenderer.prototype.draw = function(ctx, str)
-    {
-        var x = 0;
-        // leave room at bottom for descenders.
-        var y = this.height*0.72;
-        //var y = 12;
-
-         ctx.save();
-         var tx, ty;
-         
-         // 1st quadrant
-         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
-             tx = 0;
-             ty = -Math.sin(this.angle) * this.width;
-         }
-         // 4th quadrant
-         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
-             tx = Math.sin(this.angle) * this.height;
-             ty = 0;
-         }
-         // 2nd quadrant
-         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
-             tx = -Math.cos(this.angle) * this.width;
-             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
-         }
-         // 3rd quadrant
-         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
-             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
-             ty = -Math.cos(this.angle) * this.height;
-         }
-         ctx.strokeStyle = this.fillStyle;
-         ctx.fillStyle = this.fillStyle;
-        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
-        var fstyle = this.fontSize+' '+this.fontFamily;
-         ctx.font = fstyle;
-         ctx.translate(tx, ty);
-         ctx.rotate(this.angle);
-         ctx.fillText(str, x, y);
-         // ctx.strokeText(str, x, y);
-
-         ctx.restore();
-    };
-    
-})(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {   
-    /**
-    *  class: $.jqplot.CategoryAxisRenderer
-    *  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
-    *  
-    *  To use this renderer, include the plugin in your source
-    *  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
-    *  
-    *  and supply the appropriate options to your plot
-    *  
-    *  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
-    **/
-    $.jqplot.CategoryAxisRenderer = function(options) {
-        $.jqplot.LinearAxisRenderer.call(this);
-        // prop: sortMergedLabels
-        // True to sort tick labels when labels are created by merging
-        // x axis values from multiple series.  That is, say you have
-        // two series like:
-        // > line1 = [[2006, 4],            [2008, 9], [2009, 16]];
-        // > line2 = [[2006, 3], [2007, 7], [2008, 6]];
-        // If no label array is specified, tick labels will be collected
-        // from the x values of the series.  With sortMergedLabels
-        // set to true, tick labels will be:
-        // > [2006, 2007, 2008, 2009]
-        // With sortMergedLabels set to false, tick labels will be:
-        // > [2006, 2008, 2009, 2007]
-        //
-        // Note, this property is specified on the renderOptions for the 
-        // axes when creating a plot:
-        // > axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer, rendererOptions:{sortMergedLabels:true}}}
-        this.sortMergedLabels = false;
-    };
-    
-    $.jqplot.CategoryAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
-    $.jqplot.CategoryAxisRenderer.prototype.constructor = $.jqplot.CategoryAxisRenderer;
-    
-    $.jqplot.CategoryAxisRenderer.prototype.init = function(options){
-        this.groups = 1;
-        this.groupLabels = [];
-        this._groupLabels = [];
-        this._grouped = false;
-        this._barsPerGroup = null;
-        // prop: tickRenderer
-        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
-        // See <$.jqplot.AxisTickRenderer>.
-        // this.tickRenderer = $.jqplot.AxisTickRenderer;
-        // this.labelRenderer = $.jqplot.AxisLabelRenderer;
-        $.extend(true, this, {tickOptions:{formatString:'%d'}}, options);
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            if (s.groups) {
-                this.groups = s.groups;
-            }
-            var d = s.data;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if (d[j][0] > db.max || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if (d[j][1] < db.min || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if (d[j][1] > db.max || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }              
-            }
-        }
-        
-        if (this.groupLabels.length) {
-            this.groups = this.groupLabels.length;
-        }
-    };
- 
-
-    $.jqplot.CategoryAxisRenderer.prototype.createTicks = function() {
-        // we're are operating on an axis here
-        var ticks = this._ticks;
-        var userTicks = this.ticks;
-        var name = this.name;
-        // databounds were set on axis initialization.
-        var db = this._dataBounds;
-        var dim, interval;
-        var min, max;
-        var pos1, pos2;
-        var tt, i;
-
-        // if we already have ticks, use them.
-        if (userTicks.length) {
-            // adjust with blanks if we have groups
-            if (this.groups > 1 && !this._grouped) {
-                var l = userTicks.length;
-                var skip = parseInt(l/this.groups, 10);
-                var count = 0;
-                for (var i=skip; i<l; i+=skip) {
-                    userTicks.splice(i+count, 0, ' ');
-                    count++;
-                }
-                this._grouped = true;
-            }
-            this.min = 0.5;
-            this.max = userTicks.length + 0.5;
-            var range = this.max - this.min;
-            this.numberTicks = 2*userTicks.length + 1;
-            for (i=0; i<userTicks.length; i++){
-                tt = this.min + 2 * i * range / (this.numberTicks-1);
-                // need a marker before and after the tick
-                var t = new this.tickRenderer(this.tickOptions);
-                t.showLabel = false;
-                t.showMark = true;
-                t.setTick(tt, this.name);
-                this._ticks.push(t);
-                var t = new this.tickRenderer(this.tickOptions);
-                t.label = userTicks[i];
-                t.showLabel = true;
-                t.showMark = false;
-                t.showGridline = false;
-                t.setTick(tt+0.5, this.name);
-                this._ticks.push(t);
-            }
-            // now add the last tick at the end
-            var t = new this.tickRenderer(this.tickOptions);
-            t.showLabel = false;
-            t.showMark = true;
-            t.setTick(tt+1, this.name);
-            this._ticks.push(t);
-        }
-
-        // we don't have any ticks yet, let's make some!
-        else {
-            if (name == 'xaxis' || name == 'x2axis') {
-                dim = this._plotDimensions.width;
-            }
-            else {
-                dim = this._plotDimensions.height;
-            }
-            
-            // if min, max and number of ticks specified, user can't specify interval.
-            if (this.min != null && this.max != null && this.numberTicks != null) {
-                this.tickInterval = null;
-            }
-            
-            // if max, min, and interval specified and interval won't fit, ignore interval.
-            if (this.min != null && this.max != null && this.tickInterval != null) {
-                if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
-                    this.tickInterval = null;
-                }
-            }
-        
-            // find out how many categories are in the lines and collect labels
-            var labels = [];
-            var numcats = 0;
-            var min = 0.5;
-            var max, val;
-            var isMerged = false;
-            for (var i=0; i<this._series.length; i++) {
-                var s = this._series[i];
-                for (var j=0; j<s.data.length; j++) {
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        val = s.data[j][0];
-                    }
-                    else {
-                        val = s.data[j][1];
-                    }
-                    if ($.inArray(val, labels) == -1) {
-                        isMerged = true;
-                        numcats += 1;      
-                        labels.push(val);
-                    }
-                }
-            }
-            
-            if (isMerged && this.sortMergedLabels) {
-                labels.sort(function(a,b) { return a - b; });
-            }
-            
-            // keep a reference to these tick labels to use for redrawing plot (see bug #57)
-            this.ticks = labels;
-            
-            // now bin the data values to the right lables.
-            for (var i=0; i<this._series.length; i++) {
-                var s = this._series[i];
-                for (var j=0; j<s.data.length; j++) {
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        val = s.data[j][0];
-                    }
-                    else {
-                        val = s.data[j][1];
-                    }
-                    // for category axis, force the values into category bins.
-                    // we should have the value in the label array now.
-                    var idx = $.inArray(val, labels)+1;
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        s.data[j][0] = idx;
-                    }
-                    else {
-                        s.data[j][1] = idx;
-                    }
-                }
-            }
-            
-            // adjust with blanks if we have groups
-            if (this.groups > 1 && !this._grouped) {
-                var l = labels.length;
-                var skip = parseInt(l/this.groups, 10);
-                var count = 0;
-                for (var i=skip; i<l; i+=skip+1) {
-                    labels[i] = ' ';
-                }
-                this._grouped = true;
-            }
-        
-            max = numcats + 0.5;
-            if (this.numberTicks == null) {
-                this.numberTicks = 2*numcats + 1;
-            }
-
-            var range = max - min;
-            this.min = min;
-            this.max = max;
-            var track = 0;
-            
-            // todo: adjust this so more ticks displayed.
-            var maxVisibleTicks = parseInt(3+dim/20, 10);
-            var skip = parseInt(numcats/maxVisibleTicks, 10);
-
-            if (this.tickInterval == null) {
-
-                this.tickInterval = range / (this.numberTicks-1);
-
-            }
-            // if tickInterval is specified, we will ignore any computed maximum.
-            for (var i=0; i<this.numberTicks; i++){
-                tt = this.min + i * this.tickInterval;
-                var t = new this.tickRenderer(this.tickOptions);
-                // if even tick, it isn't a category, it's a divider
-                if (i/2 == parseInt(i/2, 10)) {
-                    t.showLabel = false;
-                    t.showMark = true;
-                }
-                else {
-                    if (skip>0 && track<skip) {
-                        t.showLabel = false;
-                        track += 1;
-                    }
-                    else {
-                        t.showLabel = true;
-                        track = 0;
-                    } 
-                    t.label = t.formatter(t.formatString, labels[(i-1)/2]);
-                    t.showMark = false;
-                    t.showGridline = false;
-                }
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
-                t.setTick(tt, this.name);
-                this._ticks.push(t);
-            }
-        }
-        
-    };
-    
-    // called with scope of axis
-    $.jqplot.CategoryAxisRenderer.prototype.draw = function(ctx) {
-        if (this.show) {
-            // populate the axis label and value properties.
-            // createTicks is a method on the renderer, but
-            // call it within the scope of the axis.
-            this.renderer.createTicks.call(this);
-            // fill a div with axes labels in the right direction.
-            // Need to pregenerate each axis to get it's bounds and
-            // position it and the labels correctly on the plot.
-            var dim=0;
-            var temp;
-            // Added for theming.
-            if (this._elem) {
-                this._elem.empty();
-            }
-            
-            this._elem = this._elem || $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
-            
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
-                this._elem.width(this._plotDimensions.width);
-            }
-            else {
-                this._elem.height(this._plotDimensions.height);
-            }
-            
-            // create a _label object.
-            this.labelOptions.axis = this.name;
-            this._label = new this.labelRenderer(this.labelOptions);
-            if (this._label.show) {
-                var elem = this._label.draw(ctx);
-                elem.appendTo(this._elem);
-            }
-    
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
-                }
-            }
-        
-            this._groupLabels = [];
-            // now make group labels
-            for (var i=0; i<this.groupLabels.length; i++)
-            {
-                var elem = $('<div style="position:absolute;" class="jqplot-'+this.name+'-groupLabel"></div>');
-                elem.html(this.groupLabels[i]);
-                this._groupLabels.push(elem);
-                elem.appendTo(this._elem);
-            }
-        }
-        return this._elem;
-    };
-    
-    // called with scope of axis
-    $.jqplot.CategoryAxisRenderer.prototype.set = function() { 
-        var dim = 0;
-        var temp;
-        var w = 0;
-        var h = 0;
-        var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
-            var t = this._ticks;
-            for (var i=0; i<t.length; i++) {
-                var tick = t[i];
-                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                    if (this.name == 'xaxis' || this.name == 'x2axis') {
-                        temp = tick._elem.outerHeight(true);
-                    }
-                    else {
-                        temp = tick._elem.outerWidth(true);
-                    }
-                    if (temp > dim) {
-                        dim = temp;
-                    }
-                }
-            }
-            
-            var dim2 = 0;
-            for (var i=0; i<this._groupLabels.length; i++) {
-                var l = this._groupLabels[i];
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    temp = l.outerHeight(true);
-                }
-                else {
-                    temp = l.outerWidth(true);
-                }
-                if (temp > dim2) {
-                    dim2 = temp;
-                }
-            }
-            
-            if (lshow) {
-                w = this._label._elem.outerWidth(true);
-                h = this._label._elem.outerHeight(true); 
-            }
-            if (this.name == 'xaxis') {
-                dim += dim2 + h;
-                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
-            }
-            else if (this.name == 'x2axis') {
-                dim += dim2 + h;
-                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
-            }
-            else if (this.name == 'yaxis') {
-                dim += dim2 + w;
-                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
-                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
-                    this._label._elem.css('width', w+'px');
-                }
-            }
-            else {
-                dim += dim2 + w;
-                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
-                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
-                    this._label._elem.css('width', w+'px');
-                }
-            }
-        }  
-    };
-    
-    // called with scope of axis
-    $.jqplot.CategoryAxisRenderer.prototype.pack = function(pos, offsets) {
-        var ticks = this._ticks;
-        var max = this.max;
-        var min = this.min;
-        var offmax = offsets.max;
-        var offmin = offsets.min;
-        var lshow = (this._label == null) ? false : this._label.show;
-        
-        for (var p in pos) {
-            this._elem.css(p, pos[p]);
-        }
-        
-        this._offsets = offsets;
-        // pixellength will be + for x axes and - for y axes becasue pixels always measured from top left.
-        var pixellength = offmax - offmin;
-        var unitlength = max - min;
-        
-        // point to unit and unit to point conversions references to Plot DOM element top left corner.
-        this.p2u = function(p){
-            return (p - offmin) * unitlength / pixellength + min;
-        };
-        
-        this.u2p = function(u){
-            return (u - min) * pixellength / unitlength + offmin;
-        };
-                
-        if (this.name == 'xaxis' || this.name == 'x2axis'){
-            this.series_u2p = function(u){
-                return (u - min) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + min;
-            };
-        }
-        
-        else {
-            this.series_u2p = function(u){
-                return (u - max) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + max;
-            };
-        }
-        
-        if (this.show) {
-            if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
-                    var t = ticks[i];
-                    if (t.show && t.showLabel) {
-                        var shim;
-                        
-                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
-                            // will need to adjust auto positioning based on which axis this is.
-                            var temp = (this.name == 'xaxis') ? 1 : -1;
-                            switch (t.labelPosition) {
-                                case 'auto':
-                                    // position at end
-                                    if (temp * t.angle < 0) {
-                                        shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    }
-                                    // position at start
-                                    else {
-                                        shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'end':
-                                    shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
-                                case 'start':
-                                    shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    break;
-                                case 'middle':
-                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
-                                default:
-                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    break;
-                            }
-                        }
-                        else {
-                            shim = -t.getWidth()/2;
-                        }
-                        var val = this.u2p(t.value) + shim + 'px';
-                        t._elem.css('left', val);
-                        t.pack();
-                    }
-                }
-                
-                var labeledge=['bottom', 0];
-                if (lshow) {
-                    var w = this._label._elem.outerWidth(true);
-                    this._label._elem.css('left', offmin + pixellength/2 - w/2 + 'px');
-                    if (this.name == 'xaxis') {
-                        this._label._elem.css('bottom', '0px');
-                        labeledge = ['bottom', this._label._elem.outerHeight(true)];
-                    }
-                    else {
-                        this._label._elem.css('top', '0px');
-                        labeledge = ['top', this._label._elem.outerHeight(true)];
-                    }
-                    this._label.pack();
-                }
-                
-                // draw the group labels
-                var step = parseInt(this._ticks.length/this.groups, 10);
-                for (i=0; i<this._groupLabels.length; i++) {
-                    var mid = 0;
-                    var count = 0;
-                    for (var j=i*step; j<=(i+1)*step; j++) {
-                        if (this._ticks[j]._elem && this._ticks[j].label != " ") {
-                            var t = this._ticks[j]._elem;
-                            var p = t.position();
-                            mid += p.left + t.outerWidth(true)/2;
-                            count++;
-                        }
-                    }
-                    mid = mid/count;
-                    this._groupLabels[i].css({'left':(mid - this._groupLabels[i].outerWidth(true)/2)});
-                    this._groupLabels[i].css(labeledge[0], labeledge[1]);
-                }
-            }
-            else {
-                for (i=0; i<ticks.length; i++) {
-                    var t = ticks[i];
-                    if (t.show && t.showLabel) {                        
-                        var shim;
-                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
-                            // will need to adjust auto positioning based on which axis this is.
-                            var temp = (this.name == 'yaxis') ? 1 : -1;
-                            switch (t.labelPosition) {
-                                case 'auto':
-                                    // position at end
-                                case 'end':
-                                    if (temp * t.angle < 0) {
-                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
-                                    }
-                                    else {
-                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'start':
-                                    if (t.angle > 0) {
-                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
-                                    }
-                                    else {
-                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
-                                    }
-                                    break;
-                                case 'middle':
-                                    // if (t.angle > 0) {
-                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
-                                    // }
-                                    // else {
-                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
-                                    // }
-                                    shim = -t.getHeight()/2;
-                                    break;
-                                default:
-                                    shim = -t.getHeight()/2;
-                                    break;
-                            }
-                        }
-                        else {
-                            shim = -t.getHeight()/2;
-                        }
-                        
-                        var val = this.u2p(t.value) + shim + 'px';
-                        t._elem.css('top', val);
-                        t.pack();
-                    }
-                }
-                
-                var labeledge=['left', 0];
-                if (lshow) {
-                    var h = this._label._elem.outerHeight(true);
-                    this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
-                    if (this.name == 'yaxis') {
-                        this._label._elem.css('left', '0px');
-                        labeledge = ['left', this._label._elem.outerWidth(true)];
-                    }
-                    else {
-                        this._label._elem.css('right', '0px');
-                        labeledge = ['right', this._label._elem.outerWidth(true)];
-                    }   
-                    this._label.pack();
-                }
-                
-                // draw the group labels, position top here, do left after label position.
-                var step = parseInt(this._ticks.length/this.groups, 10);
-                for (i=0; i<this._groupLabels.length; i++) {
-                    var mid = 0;
-                    var count = 0;
-                    for (var j=i*step; j<=(i+1)*step; j++) {
-                        if (this._ticks[j]._elem && this._ticks[j].label != " ") {
-                            var t = this._ticks[j]._elem;
-                            var p = t.position();
-                            mid += p.top + t.outerHeight()/2;
-                            count++;
-                        }
-                    }
-                    mid = mid/count;
-                    this._groupLabels[i].css({'top':mid - this._groupLabels[i].outerHeight()/2});
-                    this._groupLabels[i].css(labeledge[0], labeledge[1]);
-                    
-                }
-            }
-        }
-    };    
-    
-    
-})(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {
-    /**
-     * Class: $.jqplot.PieRenderer
-     * Plugin renderer to draw a pie chart.
-     * x values, if present, will be used as slice labels.
-     * y values give slice size.
-     * 
-     * To use this renderer, you need to include the 
-     * pie renderer plugin, for example:
-     * 
-     * > <script type="text/javascript" src="plugins/jqplot.pieRenderer.js"></script>
-     * 
-     * Properties described here are passed into the $.jqplot function
-     * as options on the series renderer.  For example:
-     * 
-     * > plot2 = $.jqplot('chart2', [s1, s2], {
-     * >     seriesDefaults: {
-     * >         renderer:$.jqplot.PieRenderer,
-     * >         rendererOptions:{
-     * >              sliceMargin: 2,
-     * >              startAngle: -90
-     * >          }
-     * >      }
-     * > });
-     * 
-     * A pie plot will trigger events on the plot target
-     * according to user interaction.  All events return the event object,
-     * the series index, the point (slice) index, and the point data for 
-     * the appropriate slice.
-     * 
-     * 'jqplotDataMouseOver' - triggered when user mouseing over a slice.
-     * 'jqplotDataHighlight' - triggered the first time user mouses over a slice,
-     * if highlighting is enabled.
-     * 'jqplotDataUnhighlight' - triggered when a user moves the mouse out of
-     * a highlighted slice.
-     * 'jqplotDataClick' - triggered when the user clicks on a slice.
-     * 'jqplotDataRightClick' - tiggered when the user right clicks on a slice if
-     * the "captureRightClick" option is set to true on the plot.
-     */
-    $.jqplot.PieRenderer = function(){
-        $.jqplot.LineRenderer.call(this);
-    };
-    
-    $.jqplot.PieRenderer.prototype = new $.jqplot.LineRenderer();
-    $.jqplot.PieRenderer.prototype.constructor = $.jqplot.PieRenderer;
-    
-    // called with scope of a series
-    $.jqplot.PieRenderer.prototype.init = function(options, plot) {
-        // Group: Properties
-        //
-        // prop: diameter
-        // Outer diameter of the pie, auto computed by default
-        this.diameter = null;
-        // prop: padding
-        // padding between the pie and plot edges, legend, etc.
-        this.padding = 20;
-        // prop: sliceMargin
-        // angular spacing between pie slices in degrees.
-        this.sliceMargin = 0;
-        // prop: fill
-        // true or false, wether to fil the slices.
-        this.fill = true;
-        // prop: shadowOffset
-        // offset of the shadow from the slice and offset of 
-        // each succesive stroke of the shadow from the last.
-        this.shadowOffset = 2;
-        // prop: shadowAlpha
-        // transparency of the shadow (0 = transparent, 1 = opaque)
-        this.shadowAlpha = 0.07;
-        // prop: shadowDepth
-        // number of strokes to apply to the shadow, 
-        // each stroke offset shadowOffset from the last.
-        this.shadowDepth = 5;
-        // prop: highlightMouseOver
-        // True to highlight slice when moused over.
-        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
-        this.highlightMouseOver = true;
-        // prop: highlightMouseDown
-        // True to highlight when a mouse button is pressed over a slice.
-        // This will be disabled if highlightMouseOver is true.
-        this.highlightMouseDown = false;
-        // prop: highlightColors
-        // an array of colors to use when highlighting a slice.
-        this.highlightColors = [];
-        // prop: dataLabels
-        // Either 'label', 'value', 'percent' or an array of labels to place on the pie slices.
-        // Defaults to percentage of each pie slice.
-        this.dataLabels = 'percent';
-        // prop: showDataLabels
-        // true to show data labels on slices.
-        this.showDataLabels = false;
-        // prop: dataLabelFormatString
-        // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
-        this.dataLabelFormatString = null;
-        // prop: dataLabelThreshold
-        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
-        // This applies to all label types, not just to percentage labels.
-        this.dataLabelThreshold = 3;
-        // prop: dataLabelPositionFactor
-        // A Multiplier (0-1) of the pie radius which controls position of label on slice.
-        // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
-        this.dataLabelPositionFactor = 0.52;
-        // prop: dataLabelNudge
-        // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
-        this.dataLabelNudge = 2;
-        // prop: dataLabelCenterOn
-        // True to center the data label at its position.
-        // False to set the inside facing edge of the label at its position.
-        this.dataLabelCenterOn = true;
-        // prop: startAngle
-        // Angle to start drawing pie in degrees.  
-        // According to orientation of canvas coordinate system:
-        // 0 = on the positive x axis
-        // -90 = on the positive y axis.
-        // 90 = on the negaive y axis.
-        // 180 or - 180 = on the negative x axis.
-        this.startAngle = -90;
-        this.tickRenderer = $.jqplot.PieTickRenderer;
-        // Used as check for conditions where pie shouldn't be drawn.
-        this._drawData = true;
-        
-        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
-        if (options.highlightMouseDown && options.highlightMouseOver == null) {
-            options.highlightMouseOver = false;
-        }
-        
-        $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
-        this._diameter = null;
-        this._radius = null;
-        // array of [start,end] angles arrays, one for each slice.  In radians.
-        this._sliceAngles = [];
-        // index of the currenty highlighted point, if any
-        this._highlightedPoint = null;
-        
-        // set highlight colors if none provided
-        if (this.highlightColors.length == 0) {
-            for (var i=0; i<this.seriesColors.length; i++){
-                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
-                var newrgb = [rgba[0], rgba[1], rgba[2]];
-                var sum = newrgb[0] + newrgb[1] + newrgb[2];
-                for (var j=0; j<3; j++) {
-                    // when darkening, lowest color component can be is 60.
-                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
-                    newrgb[j] = parseInt(newrgb[j], 10);
-                }
-                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
-            }
-        }
-        
-        this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
-        
-        plot.postParseOptionsHooks.addOnce(postParseOptions);
-        plot.postInitHooks.addOnce(postInit);
-        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
-        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
-        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
-        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
-        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
-        plot.postDrawHooks.addOnce(postPlotDraw);
-    };
-    
-    $.jqplot.PieRenderer.prototype.setGridData = function(plot) {
-        // set gridData property.  This will hold angle in radians of each data point.
-        var stack = [];
-        var td = [];
-        var sa = this.startAngle/180*Math.PI;
-        var tot = 0;
-        // don't know if we have any valid data yet, so set plot to not draw.
-        this._drawData = false;
-        for (var i=0; i<this.data.length; i++){
-            if (this.data[i][1] != 0) {
-                // we have data, O.K. to draw.
-                this._drawData = true;
-            }
-            stack.push(this.data[i][1]);
-            td.push([this.data[i][0]]);
-            if (i>0) {
-                stack[i] += stack[i-1];
-            }
-            tot += this.data[i][1];
-        }
-        var fact = Math.PI*2/stack[stack.length - 1];
-        
-        for (var i=0; i<stack.length; i++) {
-            td[i][1] = stack[i] * fact;
-            td[i][2] = this.data[i][1]/tot;
-        }
-        this.gridData = td;
-    };
-    
-    $.jqplot.PieRenderer.prototype.makeGridData = function(data, plot) {
-        var stack = [];
-        var td = [];
-        var tot = 0;
-        var sa = this.startAngle/180*Math.PI;
-        // don't know if we have any valid data yet, so set plot to not draw.
-        this._drawData = false;
-        for (var i=0; i<data.length; i++){
-            if (this.data[i][1] != 0) {
-                // we have data, O.K. to draw.
-                this._drawData = true;
-            }
-            stack.push(data[i][1]);
-            td.push([data[i][0]]);
-            if (i>0) {
-                stack[i] += stack[i-1];
-            }
-            tot += data[i][1];
-        }
-        var fact = Math.PI*2/stack[stack.length - 1];
-        
-        for (var i=0; i<stack.length; i++) {
-            td[i][1] = stack[i] * fact;
-            td[i][2] = data[i][1]/tot;
-        }
-        return td;
-    };
-    
-    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
-        if (this._drawData) {
-            var r = this._diameter / 2;
-            var fill = this.fill;
-            var lineWidth = this.lineWidth;
-            ctx.save();
-            ctx.translate(this._center[0], this._center[1]);
-            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-    
-            if (isShadow) {
-                for (var i=0; i<this.shadowDepth; i++) {
-                    ctx.save();
-                    ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
-                    doDraw();
-                }
-            }
-    
-            else {
-                doDraw();
-            }
-        }
-    
-        function doDraw () {
-            // Fix for IE and Chrome that can't seem to draw circles correctly.
-            // ang2 should always be <= 2 pi since that is the way the data is converted.
-             if (ang2 > 6.282 + this.startAngle) {
-                ang2 = 6.282 + this.startAngle;
-                if (ang1 > ang2) {
-                    ang1 = 6.281 + this.startAngle;
-                }
-            }
-            // Fix for IE, where it can't seem to handle 0 degree angles.  Also avoids
-            // ugly line on unfilled pies.
-            if (ang1 >= ang2) {
-                return;
-            }            
-        
-            ctx.beginPath();  
-            ctx.fillStyle = color;
-            ctx.strokeStyle = color;
-            ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
-            ctx.lineTo(0,0);
-            ctx.closePath();
-        
-            if (fill) {
-                ctx.fill();
-            }
-            else {
-                ctx.stroke();
-            }
-        }
-        
-        if (isShadow) {
-            for (var i=0; i<this.shadowDepth; i++) {
-                ctx.restore();
-            }
-        }
-        
-        ctx.restore();
-    };
-    
-    // called with scope of series
-    $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options, plot) {
-        var i;
-        var opts = (options != undefined) ? options : {};
-        // offset and direction of offset due to legend placement
-        var offx = 0;
-        var offy = 0;
-        var trans = 1;
-        var colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
-        if (options.legendInfo && options.legendInfo.placement == 'insideGrid') {
-            var li = options.legendInfo;
-            switch (li.location) {
-                case 'nw':
-                    offx = li.width + li.xoffset;
-                    break;
-                case 'w':
-                    offx = li.width + li.xoffset;
-                    break;
-                case 'sw':
-                    offx = li.width + li.xoffset;
-                    break;
-                case 'ne':
-                    offx = li.width + li.xoffset;
-                    trans = -1;
-                    break;
-                case 'e':
-                    offx = li.width + li.xoffset;
-                    trans = -1;
-                    break;
-                case 'se':
-                    offx = li.width + li.xoffset;
-                    trans = -1;
-                    break;
-                case 'n':
-                    offy = li.height + li.yoffset;
-                    break;
-                case 's':
-                    offy = li.height + li.yoffset;
-                    trans = -1;
-                    break;
-                default:
-                    break;
-            }
-        }
-        
-        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
-        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
-        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
-        var cw = ctx.canvas.width;
-        var ch = ctx.canvas.height;
-        var w = cw - offx - 2 * this.padding;
-        var h = ch - offy - 2 * this.padding;
-        var mindim = Math.min(w,h);
-        var d = mindim;
-        // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d - this.sliceMargin;
-
-        var r = this._radius = this._diameter/2;
-        var sa = this.startAngle / 180 * Math.PI;
-        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
-        
-        if (this.shadow) {
-            var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
-            for (var i=0; i<gd.length; i++) {
-                var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
-                // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
-                this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
-            }
-            
-        }
-        
-         // damian: required for line labels
-         var origin = {
-                 x: parseInt(ctx.canvas.style.left) + cw/2,
-                 y: parseInt(ctx.canvas.style.top) + ch/2
-         };
-
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
-        
-        for (var i=0; i<gd.length; i++) {
-            var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
-            // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
-            var ang2 = gd[i][1] + sa;
-            this._sliceAngles.push([ang1, ang2]);
-                      
-            this.renderer.drawSlice.call (this, ctx, ang1, ang2, colorGenerator.next(), false);
-        
-            if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
-                var fstr, avgang = (ang1+ang2)/2, label;
-            
-                if (this.dataLabels == 'label') {
-                    fstr = this.dataLabelFormatString || '%s';
-                    label = $.jqplot.sprintf(fstr, gd[i][0]);
-                }
-                else if (this.dataLabels == 'value') {
-                    fstr = this.dataLabelFormatString || '%d';
-                    label = $.jqplot.sprintf(fstr, this.data[i][1]);
-                }
-                else if (this.dataLabels == 'percent') {
-                    fstr = this.dataLabelFormatString || '%d%%';
-                    label = $.jqplot.sprintf(fstr, gd[i][2]*100);
-                }
-                else if (this.dataLabels.constructor == Array) {
-                    fstr = this.dataLabelFormatString || '%s';
-                    label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
-                }
-            
-                var fact = (this._radius ) * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
-            
-                var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
-                var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
-            
-                var labelelem = $('<div class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</div>').insertBefore(plot.eventCanvas._elem);
-                if (this.dataLabelCenterOn) {
-                    x -= labelelem.width()/2;
-                    y -= labelelem.height()/2;
-                }
-                else {
-                    x -= labelelem.width() * Math.sin(avgang/2);
-                    y -= labelelem.height()/2;
-                }
-                x = Math.round(x);
-                y = Math.round(y);
-                labelelem.css({left: x, top: y});
-            }
-            
-             // damian: line labels
-             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
-             
-                 // percentage
-                 var percentage = this._plotData[i][1] * 100 / total;
-                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-                    
-                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
-                 
-                 // line 1
-                 var incDiameter = 10;
-                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 
-                 // line 2
-                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
-                 var line2_end_x = line1_end_x + line2_end_x_offset;
-                 var line2_end_y = line1_end_y;    
-                 
-                 // label
-                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
-                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
-                 var l_y_offset = -1 * l.height() / 2;
-                 var l_x = line2_end_x + origin.x + l_x_offset;
-                 var l_y = line2_end_y + origin.y + l_y_offset;
-                 l_x -= 30;
-                 //l_y += 10;
-                 l.css({left: l_x+"px", top: l_y+"px"});
-            }    
-            
-        }
-               
-    };
-    
-    $.jqplot.PieAxisRenderer = function() {
-        $.jqplot.LinearAxisRenderer.call(this);
-    };
-    
-    $.jqplot.PieAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
-    $.jqplot.PieAxisRenderer.prototype.constructor = $.jqplot.PieAxisRenderer;
-        
-    
-    // There are no traditional axes on a pie chart.  We just need to provide
-    // dummy objects with properties so the plot will render.
-    // called with scope of axis object.
-    $.jqplot.PieAxisRenderer.prototype.init = function(options){
-        //
-        this.tickRenderer = $.jqplot.PieTickRenderer;
-        $.extend(true, this, options);
-        // I don't think I'm going to need _dataBounds here.
-        // have to go Axis scaling in a way to fit chart onto plot area
-        // and provide u2p and p2u functionality for mouse cursor, etc.
-        // for convienence set _dataBounds to 0 and 100 and
-        // set min/max to 0 and 100.
-        this._dataBounds = {min:0, max:100};
-        this.min = 0;
-        this.max = 100;
-        this.showTicks = false;
-        this.ticks = [];
-        this.showMark = false;
-        this.show = false; 
-    };
-    
-    
-    
-    
-    $.jqplot.PieLegendRenderer = function(){
-        $.jqplot.TableLegendRenderer.call(this);
-    };
-    
-    $.jqplot.PieLegendRenderer.prototype = new $.jqplot.TableLegendRenderer();
-    $.jqplot.PieLegendRenderer.prototype.constructor = $.jqplot.PieLegendRenderer;
-    
-    /**
-     * Class: $.jqplot.PieLegendRenderer
-     * Legend Renderer specific to pie plots.  Set by default
-     * when user creates a pie plot.
-     */
-    $.jqplot.PieLegendRenderer.prototype.init = function(options) {
-        // Group: Properties
-        //
-        // prop: numberRows
-        // Maximum number of rows in the legend.  0 or null for unlimited.
-        this.numberRows = null;
-        // prop: numberColumns
-        // Maximum number of columns in the legend.  0 or null for unlimited.
-        this.numberColumns = null;
-        $.extend(true, this, options);
-    };
-    
-    // called with context of legend
-    $.jqplot.PieLegendRenderer.prototype.draw = function() {
-        var legend = this;
-        if (this.show) {
-            var series = this._series;
-            var ss = 'position:absolute;';
-            ss += (this.background) ? 'background:'+this.background+';' : '';
-            ss += (this.border) ? 'border:'+this.border+';' : '';
-            ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
-            ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
-            ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
-            ss += (this.marginTop != null) ? 'margin-top:'+this.marginTop+';' : '';
-            ss += (this.marginBottom != null) ? 'margin-bottom:'+this.marginBottom+';' : '';
-            ss += (this.marginLeft != null) ? 'margin-left:'+this.marginLeft+';' : '';
-            ss += (this.marginRight != null) ? 'margin-right:'+this.marginRight+';' : '';
-            this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
-            // Pie charts legends don't go by number of series, but by number of data points
-            // in the series.  Refactor things here for that.
-            
-            var pad = false, 
-                reverse = false,
-                nr, nc;
-            var s = series[0];
-            var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
-            
-            if (s.show) {
-                var pd = s.data;
-                if (this.numberRows) {
-                    nr = this.numberRows;
-                    if (!this.numberColumns){
-                        nc = Math.ceil(pd.length/nr);
-                    }
-                    else{
-                        nc = this.numberColumns;
-                    }
-                }
-                else if (this.numberColumns) {
-                    nc = this.numberColumns;
-                    nr = Math.ceil(pd.length/this.numberColumns);
-                }
-                else {
-                    nr = pd.length;
-                    nc = 1;
-                }
-                
-                var i, j, tr, td1, td2, lt, rs, color;
-                var idx = 0;    
-                
-                for (i=0; i<nr; i++) {
-                    if (reverse){
-                        tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
-                    }
-                    else{
-                        tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
-                    }
-                    for (j=0; j<nc; j++) {
-                        if (idx < pd.length){
-                            lt = this.labels[idx] || pd[idx][0].toString();
-                            color = colorGenerator.next();
-                            if (!reverse){
-                                if (i>0){
-                                    pad = true;
-                                }
-                                else{
-                                    pad = false;
-                                }
-                            }
-                            else{
-                                if (i == nr -1){
-                                    pad = false;
-                                }
-                                else{
-                                    pad = true;
-                                }
-                            }
-                            rs = (pad) ? this.rowSpacing : '0';
-                
-                            td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
-                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
-                                '</div></td>');
-                            td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
-                            if (this.escapeHtml){
-                                td2.text(lt);
-                            }
-                            else {
-                                td2.html(lt);
-                            }
-                            if (reverse) {
-                                td2.prependTo(tr);
-                                td1.prependTo(tr);
-                            }
-                            else {
-                                td1.appendTo(tr);
-                                td2.appendTo(tr);
-                            }
-                            pad = true;
-                        }
-                        idx++;
-                    }   
-                }
-            }
-        }
-        return this._elem;                
-    };
-    
-    $.jqplot.PieRenderer.prototype.handleMove = function(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            plot.target.trigger('jqplotDataMouseOver', ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                plot.target.trigger('jqplotDataHighlight', ins);
-                highlight (plot, ins[0], ins[1]);
-            }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
-    };
-    
-    
-    // this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
-    
-    // setup default renderers for axes and legend so user doesn't have to
-    // called with scope of plot
-    function preInit(target, data, options) {
-        options = options || {};
-        options.axesDefaults = options.axesDefaults || {};
-        options.legend = options.legend || {};
-        options.seriesDefaults = options.seriesDefaults || {};
-        // only set these if there is a pie series
-        var setopts = false;
-        if (options.seriesDefaults.renderer == $.jqplot.PieRenderer) {
-            setopts = true;
-        }
-        else if (options.series) {
-            for (var i=0; i < options.series.length; i++) {
-                if (options.series[i].renderer == $.jqplot.PieRenderer) {
-                    setopts = true;
-                }
-            }
-        }
-        
-        if (setopts) {
-            options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
-            options.legend.renderer = $.jqplot.PieLegendRenderer;
-            options.legend.preDraw = true;
-            options.seriesDefaults.pointLabels = {show: false};
-        }
-    }
-    
-    function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
-            if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
-                // don't allow mouseover and mousedown at same time.
-                if (this.series[i].highlightMouseOver) {
-                    this.series[i].highlightMouseDown = false;
-                }
-            }
-        }
-        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
-    }
-    
-    // called with scope of plot
-    function postParseOptions(options) {
-        for (var i=0; i<this.series.length; i++) {
-            this.series[i].seriesColors = this.seriesColors;
-            this.series[i].colorGenerator = this.colorGenerator;
-        }
-    }
-    
-    function highlight (plot, sidx, pidx) {
-        var s = plot.series[sidx];
-        var canvas = plot.plugins.pieRenderer.highlightCanvas;
-        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
-        s._highlightedPoint = pidx;
-        plot.plugins.pieRenderer.highlightedSeriesIndex = sidx;
-        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
-    }
-    
-    function unhighlight (plot) {
-        var canvas = plot.plugins.pieRenderer.highlightCanvas;
-        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
-        for (var i=0; i<plot.series.length; i++) {
-            plot.series[i]._highlightedPoint = null;
-        }
-        plot.plugins.pieRenderer.highlightedSeriesIndex = null;
-        plot.target.trigger('jqplotDataUnhighlight');
-    }
- 
-    function handleMove(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var evt1 = jQuery.Event('jqplotDataMouseOver');
-            evt1.pageX = ev.pageX;
-            evt1.pageY = ev.pageY;
-            plot.target.trigger(evt1, ins);
-            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                var evt = jQuery.Event('jqplotDataHighlight');
-                evt.pageX = ev.pageX;
-                evt.pageY = ev.pageY;
-                plot.target.trigger(evt, ins);
-                highlight (plot, ins[0], ins[1]);
-            }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
-    } 
-    
-    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
-                var evt = jQuery.Event('jqplotDataHighlight');
-                evt.pageX = ev.pageX;
-                evt.pageY = ev.pageY;
-                plot.target.trigger(evt, ins);
-                highlight (plot, ins[0], ins[1]);
-            }
-        }
-        else if (neighbor == null) {
-            unhighlight (plot);
-        }
-    }
-    
-    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
-        var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
-        if (idx != null && plot.series[idx].highlightMouseDown) {
-            unhighlight(plot);
-        }
-    }
-    
-    function handleClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var evt = jQuery.Event('jqplotDataClick');
-            evt.pageX = ev.pageX;
-            evt.pageY = ev.pageY;
-            plot.target.trigger(evt, ins);
-        }
-    }
-    
-    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
-        if (neighbor) {
-            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
-            var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
-            if (idx != null && plot.series[idx].highlightMouseDown) {
-                unhighlight(plot);
-            }
-            var evt = jQuery.Event('jqplotDataRightClick');
-            evt.pageX = ev.pageX;
-            evt.pageY = ev.pageY;
-            plot.target.trigger(evt, ins);
-        }
-    }    
-    
-    // called within context of plot
-    // create a canvas which we can draw on.
-    // insert it before the eventCanvas, so eventCanvas will still capture events.
-    function postPlotDraw() {
-        this.plugins.pieRenderer = {highlightedSeriesIndex:null};
-        this.plugins.pieRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
-        
-        // do we have any data labels?  if so, put highlight canvas before those
-        var labels = $(this.targetId+' .jqplot-data-label');
-        if (labels.length) {
-            $(labels[0]).before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
-        }
-        // else put highlight canvas before event canvas.
-        else {
-            this.eventCanvas._elem.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
-        }
-        
-        var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
-    }
-    
-    $.jqplot.preInitHooks.push(preInit);
-    
-    $.jqplot.PieTickRenderer = function() {
-        $.jqplot.AxisTickRenderer.call(this);
-    };
-    
-    $.jqplot.PieTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
-    $.jqplot.PieTickRenderer.prototype.constructor = $.jqplot.PieTickRenderer;
-    
-})(jQuery);
-    
-    /**
- * Copyright (c) 2009 - 2010 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly. 
- *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
- *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php .
- *
- * Thanks for using jqPlot!
- * 
- */
-(function($) {
-    
-    /**
-     * Class: $.jqplot.PointLabels
-     * Plugin for putting labels at the data points.
-     * 
-     * To use this plugin, include the js
-     * file in your source:
-     * 
-     * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js"></script>
-     * 
-     * By default, the last value in the data ponit array in the data series is used
-     * for the label.  For most series renderers, extra data can be added to the 
-     * data point arrays and the last value will be used as the label.
-     * 
-     * For instance, 
-     * this series:
-     * 
-     * > [[1,4], [3,5], [7,2]]
-     * 
-     * Would, by default, use the y values in the labels.
-     * Extra data can be added to the series like so:
-     * 
-     * > [[1,4,'mid'], [3 5,'hi'], [7,2,'low']]
-     * 
-     * And now the point labels would be 'mid', 'low', and 'hi'.
-     * 
-     * Options to the point labels and a custom labels array can be passed into the
-     * "pointLabels" option on the series option like so:
-     * 
-     * > series:[{pointLabels:{
-     * >    labels:['mid', 'hi', 'low'],
-     * >    location:'se',
-     * >    ypadding: 12
-     * >    }
-     * > }]
-     * 
-     * A custom labels array in the options takes precendence over any labels
-     * in the series data.  If you have a custom labels array in the options,
-     * but still want to use values from the series array as labels, set the
-     * "labelsFromSeries" option to true.
-     * 
-     * By default, html entities (<, >, etc.) are escaped in point labels.  
-     * If you want to include actual html markup in the labels, 
-     * set the "escapeHTML" option to false.
-     * 
-     */
-    $.jqplot.PointLabels = function(options) {
-        // Group: Properties
-        //
-        // prop: show
-        // show the labels or not.
-        this.show = $.jqplot.config.enablePlugins;
-        // prop: location
-        // compass location where to position the label around the point.
-        // 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
-        this.location = 'n';
-        // prop: labelsFromSeries
-        // true to use labels within data point arrays.
-        this.labelsFromSeries = false;
-        // prop: seriesLabelIndex
-        // array index for location of labels within data point arrays.
-        // if null, will use the last element of teh data point array.
-        this.seriesLabelIndex = null;
-        // prop: labels
-        // array of arrays of labels, one array for each series.
-        this.labels = [];
-        // actual labels that will get displayed.
-        // needed to preserve user specified labels in labels array.
-        this._labels = [];
-        // prop: stackedValue
-        // true to display value as stacked in a stacked plot.
-        // no effect if labels is specified.
-        this.stackedValue = false;
-        // prop: ypadding
-        // vertical padding in pixels between point and label
-        this.ypadding = 6;
-        // prop: xpadding
-        // horizontal padding in pixels between point and label
-        this.xpadding = 6;
-        // prop: escapeHTML
-        // true to escape html entities in the labels.
-        // If you want to include markup in the labels, set to false.
-        this.escapeHTML = true;
-        // prop: edgeTolerance
-        // Number of pixels that the label must be away from an axis
-        // boundary in order to be drawn.  Negative values will allow overlap
-        // with the grid boundaries.
-        this.edgeTolerance = -5;
-        // prop: formatter
-        // A class of a formatter for the tick text.  sprintf by default.
-        this.formatter = $.jqplot.DefaultTickFormatter;
-        // prop: formatString
-        // string passed to the formatter.
-        this.formatString = '';
-        // prop: hideZeros
-        // true to not show a label for a value which is 0.
-        this.hideZeros = false;
-        this._elems = [];
-        
-        $.extend(true, this, options);
-    };
-    
-    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
-    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
-    
-    // called with scope of a series
-    $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
-        var options = $.extend(true, {}, seriesDefaults, opts);
-        options.pointLabels = options.pointLabels || {};
-        if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal' && !options.pointLabels.location) {
-            options.pointLabels.location = 'e';
-        }
-        // add a pointLabels attribute to the series plugins
-        this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
-        this.plugins.pointLabels.setLabels.call(this);
-    };
-    
-    // called with scope of series
-    $.jqplot.PointLabels.prototype.setLabels = function() {   
-        var p = this.plugins.pointLabels; 
-        var labelIdx;
-        if (p.seriesLabelIndex != null) {
-            labelIdx = p.seriesLabelIndex;
-        }
-        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
-            labelIdx = 0;
-        }
-        else {
-            labelIdx = this._plotData[0].length -1;
-        }
-        p._labels = [];
-        if (p.labels.length == 0 || p.labelsFromSeries) {    
-            if (p.stackedValue) {
-                if (this._plotData.length && this._plotData[0].length){
-                    // var idx = p.seriesLabelIndex || this._plotData[0].length -1;
-                    for (var i=0; i<this._plotData.length; i++) {
-                        p._labels.push(this._plotData[i][labelIdx]);
-                    }
-                }
-            }
-            else {
-                var d = this.data;
-                if (this.renderer.constructor == $.jqplot.BarRenderer && this.waterfall) {
-                    d = this._data;
-                }
-                if (d.length && d[0].length) {
-                    // var idx = p.seriesLabelIndex || d[0].length -1;
-                    for (var i=0; i<d.length; i++) {
-                        p._labels.push(d[i][labelIdx]);
-                    }
-                }
-            }
-        }
-        else if (p.labels.length){
-            p._labels = p.labels;
-        }
-    };
-    
-    $.jqplot.PointLabels.prototype.xOffset = function(elem, location, padding) {
-        location = location || this.location;
-        padding = padding || this.xpadding;
-        var offset;
-        
-        switch (location) {
-            case 'nw':
-                offset = -elem.outerWidth(true) - this.xpadding;
-                break;
-            case 'n':
-                offset = -elem.outerWidth(true)/2;
-                break;
-            case 'ne':
-                offset =  this.xpadding;
-                break;
-            case 'e':
-                offset = this.xpadding;
-                break;
-            case 'se':
-                offset = this.xpadding;
-                break;
-            case 's':
-                offset = -elem.outerWidth(true)/2;
-                break;
-            case 'sw':
-                offset = -elem.outerWidth(true) - this.xpadding;
-                break;
-            case 'w':
-                offset = -elem.outerWidth(true) - this.xpadding;
-                break;
-            default: // same as 'nw'
-                offset = -elem.outerWidth(true) - this.xpadding;
-                break;
-        }
-        return offset; 
-    };
-    
-    $.jqplot.PointLabels.prototype.yOffset = function(elem, location, padding) {
-        location = location || this.location;
-        padding = padding || this.xpadding;
-        var offset;
-        
-        switch (location) {
-            case 'nw':
-                offset = -elem.outerHeight(true) - this.ypadding;
-                break;
-            case 'n':
-                offset = -elem.outerHeight(true) - this.ypadding;
-                break;
-            case 'ne':
-                offset = -elem.outerHeight(true) - this.ypadding;
-                break;
-            case 'e':
-                offset = -elem.outerHeight(true)/2;
-                break;
-            case 'se':
-                offset = this.ypadding;
-                break;
-            case 's':
-                offset = this.ypadding;
-                break;
-            case 'sw':
-                offset = this.ypadding;
-                break;
-            case 'w':
-                offset = -elem.outerHeight(true)/2;
-                break;
-            default: // same as 'nw'
-                offset = -elem.outerHeight(true) - this.ypadding;
-                break;
-        }
-        return offset; 
-    };
-    
-    // called with scope of series
-    $.jqplot.PointLabels.draw = function (sctx, options) {
-        var p = this.plugins.pointLabels;
-        // set labels again in case they have changed.
-        p.setLabels.call(this);
-        // remove any previous labels
-        for (var i=0; i<p._elems.length; i++) {
-            p._elems[i].remove();
-        }
-        if (p.show) {
-            var ax = '_'+this._stackAxis+'axis';
-        
-            if (!p.formatString) {
-                p.formatString = this[ax]._ticks[0].formatString;
-                p.formatter = this[ax]._ticks[0].formatter;
-            }
-        
-            var pd = this._plotData;
-            var xax = this._xaxis;
-            var yax = this._yaxis;
-
-            for (var i=p._labels.length-1; i>=0; i--) {
-                var label = p._labels[i];
-                
-                if (p.hideZeros && parseInt(p._labels[i], 10) == 0) {
-                    label = '';
-                }
-                
-                if (label != null) {
-                    label = p.formatter(p.formatString, label);
-                } 
-                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
-                elem.insertAfter(sctx.canvas);
-                p._elems.push(elem);
-                if (p.escapeHTML) {
-                    elem.text(label);
-                }
-                else {
-                    elem.html(label);
-                }
-                var location = p.location;
-                if (this.waterfall && parseInt(label, 10) < 0) {
-                    location = oppositeLocations[locationIndicies[location]];
-                }
-                var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);
-                var elt = yax.u2p(pd[i][1]) + p.yOffset(elem, location);
-                if (this.renderer.constructor == $.jqplot.BarRenderer) {
-                    if (this.barDirection == "vertical") {
-                        ell += this._barNudge;
-                    }
-                    else {
-                        elt -= this._barNudge;
-                    }
-                }
-                elem.css('left', ell);
-                elem.css('top', elt);
-                var elr = ell + $(elem).width();
-                var elb = elt + $(elem).height();
-                var et = p.edgeTolerance;
-                var scl = $(sctx.canvas).position().left;
-                var sct = $(sctx.canvas).position().top;
-                var scr = sctx.canvas.width + scl;
-                var scb = sctx.canvas.height + sct;
-                // if label is outside of allowed area, remove it
-                if (ell - et < scl || elt - et < sct || elr + et > scr || elb + et > scb) {
-                    $(elem).detach();
-                }
-            }
-        }
-    };
-    
-    $.jqplot.postSeriesInitHooks.push($.jqplot.PointLabels.init);
-    $.jqplot.postDrawSeriesHooks.push($.jqplot.PointLabels.draw);
-})(jQuery);/*!
+/*!
  * jQuery UI 1.8.1
  *
  * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
@@ -20432,4 +17227,3209 @@ b.dequeue()})})}})(jQuery);
     
     $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0& ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
-})(jQuery);  
+})(jQuery);  /**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {
+    /**
+    * Class: $.jqplot.CanvasAxisLabelRenderer
+    * Renderer to draw axis labels with a canvas element to support advanced
+    * featrues such as rotated text.  This renderer uses a separate rendering engine
+    * to draw the text on the canvas.  Two modes of rendering the text are available.
+    * If the browser has native font support for canvas fonts (currently Mozila 3.5
+    * and Safari 4), you can enable text rendering with the canvas fillText method.
+    * You do so by setting the "enableFontSupport" option to true. 
+    * 
+    * Browsers lacking native font support will have the text drawn on the canvas
+    * using the Hershey font metrics.  Even if the "enableFontSupport" option is true
+    * non-supporting browsers will still render with the Hershey font.
+    * 
+    */
+    $.jqplot.CanvasAxisLabelRenderer = function(options) {
+        // Group: Properties
+        
+        // prop: angle
+        // angle of text, measured clockwise from x axis.
+        this.angle = 0;
+        // name of the axis associated with this tick
+        this.axis;
+        // prop: show
+        // wether or not to show the tick (mark and label).
+        this.show = true;
+        // prop: showLabel
+        // wether or not to show the label.
+        this.showLabel = true;
+        // prop: label
+        // label for the axis.
+        this.label = '';
+        // prop: fontFamily
+        // CSS spec for the font-family css attribute.
+        // Applies only to browsers supporting native font rendering in the
+        // canvas tag.  Currently Mozilla 3.5 and Safari 4.
+        this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
+        // prop: fontSize
+        // CSS spec for font size.
+        this.fontSize = '11pt';
+        // prop: fontWeight
+        // CSS spec for fontWeight:  normal, bold, bolder, lighter or a number 100 - 900
+        this.fontWeight = 'normal';
+        // prop: fontStretch
+        // Multiplier to condense or expand font width.  
+        // Applies only to browsers which don't support canvas native font rendering.
+        this.fontStretch = 1.0;
+        // prop: textColor
+        // css spec for the color attribute.
+        this.textColor = '#666666';
+        // prop: enableFontSupport
+        // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
+        // If true, label will be drawn with canvas tag native support for fonts.
+        // If false, label will be drawn with Hershey font metrics.
+        this.enableFontSupport = true;
+        // prop: pt2px
+        // Point to pixel scaling factor, used for computing height of bounding box
+        // around a label.  The labels text renderer has a default setting of 1.4, which 
+        // should be suitable for most fonts.  Leave as null to use default.  If tops of
+        // letters appear clipped, increase this.  If bounding box seems too big, decrease.
+        // This is an issue only with the native font renderering capabilities of Mozilla
+        // 3.5 and Safari 4 since they do not provide a method to determine the font height.
+        this.pt2px = null;
+        
+        this._elem;
+        this._ctx;
+        this._plotWidth;
+        this._plotHeight;
+        this._plotDimensions = {height:null, width:null};
+        
+        $.extend(true, this, options);
+        
+        if (options.angle == null && this.axis != 'xaxis' && this.axis != 'x2axis') {
+            this.angle = -90;
+        }
+        
+        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
+        if (this.pt2px) {
+            ropts.pt2px = this.pt2px;
+        }
+        
+        if (this.enableFontSupport) {
+            
+            function support_canvas_text() {
+                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+            }
+            
+            if (support_canvas_text()) {
+                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+            }
+            
+            else {
+                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
+            }
+        }
+        else {
+            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
+        }
+    };
+    
+    $.jqplot.CanvasAxisLabelRenderer.prototype.init = function(options) {
+        $.extend(true, this, options);
+        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
+    };
+    
+    // return width along the x axis
+    // will check first to see if an element exists.
+    // if not, will return the computed text box width.
+    $.jqplot.CanvasAxisLabelRenderer.prototype.getWidth = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerWidth(true);
+        }
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
+            return w;
+        }
+    };
+    
+    // return height along the y axis.
+    $.jqplot.CanvasAxisLabelRenderer.prototype.getHeight = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerHeight(true);
+        }
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
+            return w;
+        }
+    };
+    
+    $.jqplot.CanvasAxisLabelRenderer.prototype.getAngleRad = function() {
+        var a = this.angle * Math.PI/180;
+        return a;
+    };
+    
+    $.jqplot.CanvasAxisLabelRenderer.prototype.draw = function(ctx) {
+        // create a canvas here, but can't draw on it untill it is appended
+        // to dom for IE compatability.
+        var domelem = document.createElement('canvas');
+        this._textRenderer.setText(this.label, ctx);
+        var w = this.getWidth(ctx);
+        var h = this.getHeight(ctx);
+        domelem.width = w;
+        domelem.height = h;
+        domelem.style.width = w;
+        domelem.style.height = h;
+        // domelem.style.textAlign = 'center';
+        domelem.style.position = 'absolute';
+        this._domelem = domelem;
+        this._elem = $(domelem);
+        this._elem.addClass('jqplot-'+this.axis+'-label');
+        
+        return this._elem;
+    };
+    
+    $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
+        }
+        var ctx = this._elem.get(0).getContext("2d");
+        this._textRenderer.draw(ctx, this.label);
+    };
+    
+})(jQuery);/**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {
+    /**
+    *  Class: $.jqplot.CanvasAxisTickRenderer
+    * Renderer to draw axis ticks with a canvas element to support advanced
+    * featrues such as rotated text.  This renderer uses a separate rendering engine
+    * to draw the text on the canvas.  Two modes of rendering the text are available.
+    * If the browser has native font support for canvas fonts (currently Mozila 3.5
+    * and Safari 4), you can enable text rendering with the canvas fillText method.
+    * You do so by setting the "enableFontSupport" option to true. 
+    * 
+    * Browsers lacking native font support will have the text drawn on the canvas
+    * using the Hershey font metrics.  Even if the "enableFontSupport" option is true
+    * non-supporting browsers will still render with the Hershey font.
+    */
+    $.jqplot.CanvasAxisTickRenderer = function(options) {
+        // Group: Properties
+        
+        // prop: mark
+        // tick mark on the axis.  One of 'inside', 'outside', 'cross', '' or null.
+        this.mark = 'outside';
+        // prop: showMark
+        // wether or not to show the mark on the axis.
+        this.showMark = true;
+        // prop: showGridline
+        // wether or not to draw the gridline on the grid at this tick.
+        this.showGridline = true;
+        // prop: isMinorTick
+        // if this is a minor tick.
+        this.isMinorTick = false;
+        // prop: angle
+        // angle of text, measured clockwise from x axis.
+        this.angle = 0;
+        // prop:  markSize
+        // Length of the tick marks in pixels.  For 'cross' style, length
+        // will be stoked above and below axis, so total length will be twice this.
+        this.markSize = 4;
+        // prop: show
+        // wether or not to show the tick (mark and label).
+        this.show = true;
+        // prop: showLabel
+        // wether or not to show the label.
+        this.showLabel = true;
+        // prop: labelPosition
+        // 'auto', 'start', 'middle' or 'end'.
+        // Whether tick label should be positioned so the start, middle, or end
+        // of the tick mark.
+        this.labelPosition = 'auto';
+        this.label = '';
+        this.value = null;
+        this._styles = {};
+        // prop: formatter
+        // A class of a formatter for the tick text.
+        // The default $.jqplot.DefaultTickFormatter uses sprintf.
+        this.formatter = $.jqplot.DefaultTickFormatter;
+        // prop: formatString
+        // string passed to the formatter.
+        this.formatString = '';
+        // prop: prefix
+        // string appended to the tick label if no formatString is specified.
+        this.prefix = '';
+        // prop: fontFamily
+        // css spec for the font-family css attribute.
+        this.fontFamily = '"Trebuchet MS", Arial, Helvetica, sans-serif';
+        // prop: fontSize
+        // CSS spec for font size.
+        this.fontSize = '10pt';
+        // prop: fontWeight
+        // CSS spec for fontWeight
+        this.fontWeight = 'normal';
+        // prop: fontStretch
+        // Multiplier to condense or expand font width.  
+        // Applies only to browsers which don't support canvas native font rendering.
+        this.fontStretch = 1.0;
+        // prop: textColor
+        // css spec for the color attribute.
+        this.textColor = '#666666';
+        // prop: enableFontSupport
+        // true to turn on native canvas font support in Mozilla 3.5+ and Safari 4+.
+        // If true, tick label will be drawn with canvas tag native support for fonts.
+        // If false, tick label will be drawn with Hershey font metrics.
+        this.enableFontSupport = true;
+        // prop: pt2px
+        // Point to pixel scaling factor, used for computing height of bounding box
+        // around a label.  The labels text renderer has a default setting of 1.4, which 
+        // should be suitable for most fonts.  Leave as null to use default.  If tops of
+        // letters appear clipped, increase this.  If bounding box seems too big, decrease.
+        // This is an issue only with the native font renderering capabilities of Mozilla
+        // 3.5 and Safari 4 since they do not provide a method to determine the font height.
+        this.pt2px = null;
+        
+        this._elem;
+        this._ctx;
+        this._plotWidth;
+        this._plotHeight;
+        this._plotDimensions = {height:null, width:null};
+        
+        $.extend(true, this, options);
+        
+        var ropts = {fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily};
+        if (this.pt2px) {
+            ropts.pt2px = this.pt2px;
+        }
+        
+        if (this.enableFontSupport) {
+            
+            function support_canvas_text() {
+                return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+            }
+            
+            if (support_canvas_text()) {
+                this._textRenderer = new $.jqplot.CanvasFontRenderer(ropts);
+            }
+            
+            else {
+                this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
+            }
+        }
+        else {
+            this._textRenderer = new $.jqplot.CanvasTextRenderer(ropts); 
+        }
+    };
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.init = function(options) {
+        $.extend(true, this, options);
+        this._textRenderer.init({fontSize:this.fontSize, fontWeight:this.fontWeight, fontStretch:this.fontStretch, fillStyle:this.textColor, angle:this.getAngleRad(), fontFamily:this.fontFamily});
+    };
+    
+    // return width along the x axis
+    // will check first to see if an element exists.
+    // if not, will return the computed text box width.
+    $.jqplot.CanvasAxisTickRenderer.prototype.getWidth = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerWidth(true);
+        }
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.sin(tr.angle)*h) + Math.abs(Math.cos(tr.angle)*l);
+            return w;
+        }
+    };
+    
+    // return height along the y axis.
+    $.jqplot.CanvasAxisTickRenderer.prototype.getHeight = function(ctx) {
+        if (this._elem) {
+         return this._elem.outerHeight(true);
+        }
+        else {
+            var tr = this._textRenderer;
+            var l = tr.getWidth(ctx);
+            var h = tr.getHeight(ctx);
+            var w = Math.abs(Math.cos(tr.angle)*h) + Math.abs(Math.sin(tr.angle)*l);
+            return w;
+        }
+    };
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.getAngleRad = function() {
+        var a = this.angle * Math.PI/180;
+        return a;
+    };
+    
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.setTick = function(value, axisName, isMinor) {
+        this.value = value;
+        if (isMinor) {
+            this.isMinorTick = true;
+        }
+        return this;
+    };
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.draw = function(ctx) {
+        if (!this.label) {
+            this.label = this.formatter(this.formatString, this.value);
+        }
+        // add prefix if needed
+        if (this.prefix && !this.formatString) {
+            this.label = this.prefix + this.label;
+        }
+        // create a canvas here, but can't draw on it untill it is appended
+        // to dom for IE compatability.
+        var domelem = document.createElement('canvas');
+        this._textRenderer.setText(this.label, ctx);
+        var w = this.getWidth(ctx);
+        var h = this.getHeight(ctx);
+        domelem.width = w;
+        domelem.height = h;
+        domelem.style.width = w;
+        domelem.style.height = h;
+        domelem.style.textAlign = 'left';
+        domelem.style.position = 'absolute';
+        this._domelem = domelem;
+        this._elem = $(domelem);
+        this._elem.css(this._styles);
+        this._elem.addClass('jqplot-'+this.axis+'-tick');
+        
+        return this._elem;
+    };
+    
+    $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
+        if ($.browser.msie) {
+            window.G_vmlCanvasManager.init_(document);
+            this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
+        }
+        var ctx = this._elem.get(0).getContext("2d");
+        this._textRenderer.draw(ctx, this.label);
+    };
+    
+})(jQuery);/**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {    
+    // This code is a modified version of the canvastext.js code, copyright below:
+    //
+    // This code is released to the public domain by Jim Studt, 2007.
+    // He may keep some sort of up to date copy at http://www.federated.com/~jim/canvastext/
+    //
+    $.jqplot.CanvasTextRenderer = function(options){
+        this.fontStyle = 'normal';  // normal, italic, oblique [not implemented]
+        this.fontVariant = 'normal';    // normal, small caps [not implemented]
+        this.fontWeight = 'normal'; // normal, bold, bolder, lighter, 100 - 900
+        this.fontSize = '10px'; 
+        this.fontFamily = 'sans-serif';
+        this.fontStretch = 1.0;
+        this.fillStyle = '#666666';
+        this.angle = 0;
+        this.textAlign = 'start';
+        this.textBaseline = 'alphabetic';
+        this.text;
+        this.width;
+        this.height;
+        this.pt2px = 1.28;
+
+        $.extend(true, this, options);
+        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
+        this.setHeight();
+    };
+    
+    $.jqplot.CanvasTextRenderer.prototype.init = function(options) {
+        $.extend(true, this, options);
+        this.normalizedFontSize = this.normalizeFontSize(this.fontSize);
+        this.setHeight();
+    };
+    
+    // convert css spec into point size
+    // returns float
+    $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
+        sz = String(sz);
+        n = parseFloat(sz);
+        if (sz.indexOf('px') > -1) {
+            return n/this.pt2px;
+        }
+        else if (sz.indexOf('pt') > -1) {
+            return n;
+        }
+        else if (sz.indexOf('em') > -1) {
+            return n*12;
+        }
+        else if (sz.indexOf('%') > -1) {
+            return n*12/100;
+        }
+        // default to pixels;
+        else {
+            return n/this.pt2px;
+        }
+    };
+    
+    
+    $.jqplot.CanvasTextRenderer.prototype.fontWeight2Float = function(w) {
+        // w = normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+        // return values adjusted for Hershey font.
+        if (Number(w)) {
+            return w/400;
+        }
+        else {
+            switch (w) {
+                case 'normal':
+                    return 1;
+                    break;
+                case 'bold':
+                    return 1.75;
+                    break;
+                case 'bolder':
+                    return 2.25;
+                    break;
+                case 'lighter':
+                    return 0.75;
+                    break;
+                default:
+                    return 1;
+                    break;
+             }   
+        }
+    };
+    
+    $.jqplot.CanvasTextRenderer.prototype.getText = function() {
+        return this.text;
+    };
+    
+    $.jqplot.CanvasTextRenderer.prototype.setText = function(t, ctx) {
+        this.text = t;
+        this.setWidth(ctx);
+        return this;
+    };
+    
+    $.jqplot.CanvasTextRenderer.prototype.getWidth = function(ctx) {
+        return this.width;
+    };
+    
+    $.jqplot.CanvasTextRenderer.prototype.setWidth = function(ctx, w) {
+        if (!w) {
+            this.width = this.measure(ctx, this.text);
+        }
+        else {
+            this.width = w;   
+        }
+        return this;
+    };
+    
+    // return height in pixels.
+    $.jqplot.CanvasTextRenderer.prototype.getHeight = function(ctx) {
+        return this.height;
+    };
+    
+    // w - height in pt
+    // set heigh in px
+    $.jqplot.CanvasTextRenderer.prototype.setHeight = function(w) {
+        if (!w) {
+            //height = this.fontSize /0.75;
+            this.height = this.normalizedFontSize * this.pt2px;
+        }
+        else {
+            this.height = w;   
+        }
+        return this;
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.letter = function (ch)
+    {
+        return this.letters[ch];
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.ascent = function()
+    {
+        return this.normalizedFontSize;
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.descent = function()
+    {
+        return 7.0*this.normalizedFontSize/25.0;
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.measure = function(ctx, str)
+    {
+        var total = 0;
+        var len = str.length;
+ 
+        for ( i = 0; i < len; i++) {
+            var c = this.letter(str.charAt(i));
+            if (c) {
+                total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
+            }
+        }
+        return total;
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.draw = function(ctx,str)
+    {
+        var x = 0;
+        // leave room at bottom for descenders.
+        var y = this.height*0.72;
+         var total = 0;
+         var len = str.length;
+         var mag = this.normalizedFontSize / 25.0;
+
+         ctx.save();
+         var tx, ty;
+         
+         // 1st quadrant
+         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
+             tx = 0;
+             ty = -Math.sin(this.angle) * this.width;
+         }
+         // 4th quadrant
+         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
+             tx = Math.sin(this.angle) * this.height;
+             ty = 0;
+         }
+         // 2nd quadrant
+         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
+             tx = -Math.cos(this.angle) * this.width;
+             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
+         }
+         // 3rd quadrant
+         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
+             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
+             ty = -Math.cos(this.angle) * this.height;
+         }
+         
+         ctx.strokeStyle = this.fillStyle;
+         ctx.fillStyle = this.fillStyle;
+         ctx.translate(tx, ty);
+         ctx.rotate(this.angle);
+         ctx.lineCap = "round";
+         // multiplier was 2.0
+         var fact = (this.normalizedFontSize > 30) ? 2.0 : 2 + (30 - this.normalizedFontSize)/20;
+         ctx.lineWidth = fact * mag * this.fontWeight2Float(this.fontWeight);
+         
+         for ( var i = 0; i < len; i++) {
+            var c = this.letter( str.charAt(i));
+            if ( !c) {
+                continue;
+            }
+
+            ctx.beginPath();
+
+            var penUp = 1;
+            var needStroke = 0;
+            for ( var j = 0; j < c.points.length; j++) {
+              var a = c.points[j];
+              if ( a[0] == -1 && a[1] == -1) {
+                  penUp = 1;
+                  continue;
+              }
+              if ( penUp) {
+                  ctx.moveTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
+                  penUp = false;
+              } else {
+                  ctx.lineTo( x + a[0]*mag*this.fontStretch, y - a[1]*mag);
+              }
+            }
+            ctx.stroke();
+            x += c.width*mag*this.fontStretch;
+         }
+         ctx.restore();
+         return total;
+    };
+
+    $.jqplot.CanvasTextRenderer.prototype.letters = {
+         ' ': { width: 16, points: [] },
+         '!': { width: 10, points: [[5,21],[5,7],[-1,-1],[5,2],[4,1],[5,0],[6,1],[5,2]] },
+         '"': { width: 16, points: [[4,21],[4,14],[-1,-1],[12,21],[12,14]] },
+         '#': { width: 21, points: [[11,25],[4,-7],[-1,-1],[17,25],[10,-7],[-1,-1],[4,12],[18,12],[-1,-1],[3,6],[17,6]] },
+         '$': { width: 20, points: [[8,25],[8,-4],[-1,-1],[12,25],[12,-4],[-1,-1],[17,18],[15,20],[12,21],[8,21],[5,20],[3,18],[3,16],[4,14],[5,13],[7,12],[13,10],[15,9],[16,8],[17,6],[17,3],[15,1],[12,0],[8,0],[5,1],[3,3]] },
+         '%': { width: 24, points: [[21,21],[3,0],[-1,-1],[8,21],[10,19],[10,17],[9,15],[7,14],[5,14],[3,16],[3,18],[4,20],[6,21],[8,21],[10,20],[13,19],[16,19],[19,20],[21,21],[-1,-1],[17,7],[15,6],[14,4],[14,2],[16,0],[18,0],[20,1],[21,3],[21,5],[19,7],[17,7]] },
+         '&': { width: 26, points: [[23,12],[23,13],[22,14],[21,14],[20,13],[19,11],[17,6],[15,3],[13,1],[11,0],[7,0],[5,1],[4,2],[3,4],[3,6],[4,8],[5,9],[12,13],[13,14],[14,16],[14,18],[13,20],[11,21],[9,20],[8,18],[8,16],[9,13],[11,10],[16,3],[18,1],[20,0],[22,0],[23,1],[23,2]] },
+         '\'': { width: 10, points: [[5,19],[4,20],[5,21],[6,20],[6,18],[5,16],[4,15]] },
+         '(': { width: 14, points: [[11,25],[9,23],[7,20],[5,16],[4,11],[4,7],[5,2],[7,-2],[9,-5],[11,-7]] },
+         ')': { width: 14, points: [[3,25],[5,23],[7,20],[9,16],[10,11],[10,7],[9,2],[7,-2],[5,-5],[3,-7]] },
+         '*': { width: 16, points: [[8,21],[8,9],[-1,-1],[3,18],[13,12],[-1,-1],[13,18],[3,12]] },
+         '+': { width: 26, points: [[13,18],[13,0],[-1,-1],[4,9],[22,9]] },
+         ',': { width: 10, points: [[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
+         '-': { width: 18, points: [[6,9],[12,9]] },
+         '.': { width: 10, points: [[5,2],[4,1],[5,0],[6,1],[5,2]] },
+         '/': { width: 22, points: [[20,25],[2,-7]] },
+         '0': { width: 20, points: [[9,21],[6,20],[4,17],[3,12],[3,9],[4,4],[6,1],[9,0],[11,0],[14,1],[16,4],[17,9],[17,12],[16,17],[14,20],[11,21],[9,21]] },
+         '1': { width: 20, points: [[6,17],[8,18],[11,21],[11,0]] },
+         '2': { width: 20, points: [[4,16],[4,17],[5,19],[6,20],[8,21],[12,21],[14,20],[15,19],[16,17],[16,15],[15,13],[13,10],[3,0],[17,0]] },
+         '3': { width: 20, points: [[5,21],[16,21],[10,13],[13,13],[15,12],[16,11],[17,8],[17,6],[16,3],[14,1],[11,0],[8,0],[5,1],[4,2],[3,4]] },
+         '4': { width: 20, points: [[13,21],[3,7],[18,7],[-1,-1],[13,21],[13,0]] },
+         '5': { width: 20, points: [[15,21],[5,21],[4,12],[5,13],[8,14],[11,14],[14,13],[16,11],[17,8],[17,6],[16,3],[14,1],[11,0],[8,0],[5,1],[4,2],[3,4]] },
+         '6': { width: 20, points: [[16,18],[15,20],[12,21],[10,21],[7,20],[5,17],[4,12],[4,7],[5,3],[7,1],[10,0],[11,0],[14,1],[16,3],[17,6],[17,7],[16,10],[14,12],[11,13],[10,13],[7,12],[5,10],[4,7]] },
+         '7': { width: 20, points: [[17,21],[7,0],[-1,-1],[3,21],[17,21]] },
+         '8': { width: 20, points: [[8,21],[5,20],[4,18],[4,16],[5,14],[7,13],[11,12],[14,11],[16,9],[17,7],[17,4],[16,2],[15,1],[12,0],[8,0],[5,1],[4,2],[3,4],[3,7],[4,9],[6,11],[9,12],[13,13],[15,14],[16,16],[16,18],[15,20],[12,21],[8,21]] },
+         '9': { width: 20, points: [[16,14],[15,11],[13,9],[10,8],[9,8],[6,9],[4,11],[3,14],[3,15],[4,18],[6,20],[9,21],[10,21],[13,20],[15,18],[16,14],[16,9],[15,4],[13,1],[10,0],[8,0],[5,1],[4,3]] },
+         ':': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[5,2],[4,1],[5,0],[6,1],[5,2]] },
+         ';': { width: 10, points: [[5,14],[4,13],[5,12],[6,13],[5,14],[-1,-1],[6,1],[5,0],[4,1],[5,2],[6,1],[6,-1],[5,-3],[4,-4]] },
+         '<': { width: 24, points: [[20,18],[4,9],[20,0]] },
+         '=': { width: 26, points: [[4,12],[22,12],[-1,-1],[4,6],[22,6]] },
+         '>': { width: 24, points: [[4,18],[20,9],[4,0]] },
+         '?': { width: 18, points: [[3,16],[3,17],[4,19],[5,20],[7,21],[11,21],[13,20],[14,19],[15,17],[15,15],[14,13],[13,12],[9,10],[9,7],[-1,-1],[9,2],[8,1],[9,0],[10,1],[9,2]] },
+         '@': { width: 27, points: [[18,13],[17,15],[15,16],[12,16],[10,15],[9,14],[8,11],[8,8],[9,6],[11,5],[14,5],[16,6],[17,8],[-1,-1],[12,16],[10,14],[9,11],[9,8],[10,6],[11,5],[-1,-1],[18,16],[17,8],[17,6],[19,5],[21,5],[23,7],[24,10],[24,12],[23,15],[22,17],[20,19],[18,20],[15,21],[12,21],[9,20],[7,19],[5,17],[4,15],[3,12],[3,9],[4,6],[5,4],[7,2],[9,1],[12,0],[15,0],[18,1],[20,2],[21,3],[-1,-1],[19,16],[18,8],[18,6],[19,5]] },
+         'A': { width: 18, points: [[9,21],[1,0],[-1,-1],[9,21],[17,0],[-1,-1],[4,7],[14,7]] },
+         'B': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,15],[17,13],[16,12],[13,11],[-1,-1],[4,11],[13,11],[16,10],[17,9],[18,7],[18,4],[17,2],[16,1],[13,0],[4,0]] },
+         'C': { width: 21, points: [[18,16],[17,18],[15,20],[13,21],[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5]] },
+         'D': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[11,21],[14,20],[16,18],[17,16],[18,13],[18,8],[17,5],[16,3],[14,1],[11,0],[4,0]] },
+         'E': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,21],[17,21],[-1,-1],[4,11],[12,11],[-1,-1],[4,0],[17,0]] },
+         'F': { width: 18, points: [[4,21],[4,0],[-1,-1],[4,21],[17,21],[-1,-1],[4,11],[12,11]] },
+         'G': { width: 21, points: [[18,16],[17,18],[15,20],[13,21],[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[18,8],[-1,-1],[13,8],[18,8]] },
+         'H': { width: 22, points: [[4,21],[4,0],[-1,-1],[18,21],[18,0],[-1,-1],[4,11],[18,11]] },
+         'I': { width: 8, points: [[4,21],[4,0]] },
+         'J': { width: 16, points: [[12,21],[12,5],[11,2],[10,1],[8,0],[6,0],[4,1],[3,2],[2,5],[2,7]] },
+         'K': { width: 21, points: [[4,21],[4,0],[-1,-1],[18,21],[4,7],[-1,-1],[9,12],[18,0]] },
+         'L': { width: 17, points: [[4,21],[4,0],[-1,-1],[4,0],[16,0]] },
+         'M': { width: 24, points: [[4,21],[4,0],[-1,-1],[4,21],[12,0],[-1,-1],[20,21],[12,0],[-1,-1],[20,21],[20,0]] },
+         'N': { width: 22, points: [[4,21],[4,0],[-1,-1],[4,21],[18,0],[-1,-1],[18,21],[18,0]] },
+         'O': { width: 22, points: [[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[19,8],[19,13],[18,16],[17,18],[15,20],[13,21],[9,21]] },
+         'P': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,14],[17,12],[16,11],[13,10],[4,10]] },
+         'Q': { width: 22, points: [[9,21],[7,20],[5,18],[4,16],[3,13],[3,8],[4,5],[5,3],[7,1],[9,0],[13,0],[15,1],[17,3],[18,5],[19,8],[19,13],[18,16],[17,18],[15,20],[13,21],[9,21],[-1,-1],[12,4],[18,-2]] },
+         'R': { width: 21, points: [[4,21],[4,0],[-1,-1],[4,21],[13,21],[16,20],[17,19],[18,17],[18,15],[17,13],[16,12],[13,11],[4,11],[-1,-1],[11,11],[18,0]] },
+         'S': { width: 20, points: [[17,18],[15,20],[12,21],[8,21],[5,20],[3,18],[3,16],[4,14],[5,13],[7,12],[13,10],[15,9],[16,8],[17,6],[17,3],[15,1],[12,0],[8,0],[5,1],[3,3]] },
+         'T': { width: 16, points: [[8,21],[8,0],[-1,-1],[1,21],[15,21]] },
+         'U': { width: 22, points: [[4,21],[4,6],[5,3],[7,1],[10,0],[12,0],[15,1],[17,3],[18,6],[18,21]] },
+         'V': { width: 18, points: [[1,21],[9,0],[-1,-1],[17,21],[9,0]] },
+         'W': { width: 24, points: [[2,21],[7,0],[-1,-1],[12,21],[7,0],[-1,-1],[12,21],[17,0],[-1,-1],[22,21],[17,0]] },
+         'X': { width: 20, points: [[3,21],[17,0],[-1,-1],[17,21],[3,0]] },
+         'Y': { width: 18, points: [[1,21],[9,11],[9,0],[-1,-1],[17,21],[9,11]] },
+         'Z': { width: 20, points: [[17,21],[3,0],[-1,-1],[3,21],[17,21],[-1,-1],[3,0],[17,0]] },
+         '[': { width: 14, points: [[4,25],[4,-7],[-1,-1],[5,25],[5,-7],[-1,-1],[4,25],[11,25],[-1,-1],[4,-7],[11,-7]] },
+         '\\': { width: 14, points: [[0,21],[14,-3]] },
+         ']': { width: 14, points: [[9,25],[9,-7],[-1,-1],[10,25],[10,-7],[-1,-1],[3,25],[10,25],[-1,-1],[3,-7],[10,-7]] },
+         '^': { width: 16, points: [[6,15],[8,18],[10,15],[-1,-1],[3,12],[8,17],[13,12],[-1,-1],[8,17],[8,0]] },
+         '_': { width: 16, points: [[0,-2],[16,-2]] },
+         '`': { width: 10, points: [[6,21],[5,20],[4,18],[4,16],[5,15],[6,16],[5,17]] },
+         'a': { width: 19, points: [[15,14],[15,0],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'b': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,11],[6,13],[8,14],[11,14],[13,13],[15,11],[16,8],[16,6],[15,3],[13,1],[11,0],[8,0],[6,1],[4,3]] },
+         'c': { width: 18, points: [[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'd': { width: 19, points: [[15,21],[15,0],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'e': { width: 18, points: [[3,8],[15,8],[15,10],[14,12],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'f': { width: 12, points: [[10,21],[8,21],[6,20],[5,17],[5,0],[-1,-1],[2,14],[9,14]] },
+         'g': { width: 19, points: [[15,14],[15,-2],[14,-5],[13,-6],[11,-7],[8,-7],[6,-6],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'h': { width: 19, points: [[4,21],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0]] },
+         'i': { width: 8, points: [[3,21],[4,20],[5,21],[4,22],[3,21],[-1,-1],[4,14],[4,0]] },
+         'j': { width: 10, points: [[5,21],[6,20],[7,21],[6,22],[5,21],[-1,-1],[6,14],[6,-3],[5,-6],[3,-7],[1,-7]] },
+         'k': { width: 17, points: [[4,21],[4,0],[-1,-1],[14,14],[4,4],[-1,-1],[8,8],[15,0]] },
+         'l': { width: 8, points: [[4,21],[4,0]] },
+         'm': { width: 30, points: [[4,14],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0],[-1,-1],[15,10],[18,13],[20,14],[23,14],[25,13],[26,10],[26,0]] },
+         'n': { width: 19, points: [[4,14],[4,0],[-1,-1],[4,10],[7,13],[9,14],[12,14],[14,13],[15,10],[15,0]] },
+         'o': { width: 19, points: [[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3],[16,6],[16,8],[15,11],[13,13],[11,14],[8,14]] },
+         'p': { width: 19, points: [[4,14],[4,-7],[-1,-1],[4,11],[6,13],[8,14],[11,14],[13,13],[15,11],[16,8],[16,6],[15,3],[13,1],[11,0],[8,0],[6,1],[4,3]] },
+         'q': { width: 19, points: [[15,14],[15,-7],[-1,-1],[15,11],[13,13],[11,14],[8,14],[6,13],[4,11],[3,8],[3,6],[4,3],[6,1],[8,0],[11,0],[13,1],[15,3]] },
+         'r': { width: 13, points: [[4,14],[4,0],[-1,-1],[4,8],[5,11],[7,13],[9,14],[12,14]] },
+         's': { width: 17, points: [[14,11],[13,13],[10,14],[7,14],[4,13],[3,11],[4,9],[6,8],[11,7],[13,6],[14,4],[14,3],[13,1],[10,0],[7,0],[4,1],[3,3]] },
+         't': { width: 12, points: [[5,21],[5,4],[6,1],[8,0],[10,0],[-1,-1],[2,14],[9,14]] },
+         'u': { width: 19, points: [[4,14],[4,4],[5,1],[7,0],[10,0],[12,1],[15,4],[-1,-1],[15,14],[15,0]] },
+         'v': { width: 16, points: [[2,14],[8,0],[-1,-1],[14,14],[8,0]] },
+         'w': { width: 22, points: [[3,14],[7,0],[-1,-1],[11,14],[7,0],[-1,-1],[11,14],[15,0],[-1,-1],[19,14],[15,0]] },
+         'x': { width: 17, points: [[3,14],[14,0],[-1,-1],[14,14],[3,0]] },
+         'y': { width: 16, points: [[2,14],[8,0],[-1,-1],[14,14],[8,0],[6,-4],[4,-6],[2,-7],[1,-7]] },
+         'z': { width: 17, points: [[14,14],[3,0],[-1,-1],[3,14],[14,14],[-1,-1],[3,0],[14,0]] },
+         '{': { width: 14, points: [[9,25],[7,24],[6,23],[5,21],[5,19],[6,17],[7,16],[8,14],[8,12],[6,10],[-1,-1],[7,24],[6,22],[6,20],[7,18],[8,17],[9,15],[9,13],[8,11],[4,9],[8,7],[9,5],[9,3],[8,1],[7,0],[6,-2],[6,-4],[7,-6],[-1,-1],[6,8],[8,6],[8,4],[7,2],[6,1],[5,-1],[5,-3],[6,-5],[7,-6],[9,-7]] },
+         '|': { width: 8, points: [[4,25],[4,-7]] },
+         '}': { width: 14, points: [[5,25],[7,24],[8,23],[9,21],[9,19],[8,17],[7,16],[6,14],[6,12],[8,10],[-1,-1],[7,24],[8,22],[8,20],[7,18],[6,17],[5,15],[5,13],[6,11],[10,9],[6,7],[5,5],[5,3],[6,1],[7,0],[8,-2],[8,-4],[7,-6],[-1,-1],[8,8],[6,6],[6,4],[7,2],[8,1],[9,-1],[9,-3],[8,-5],[7,-6],[5,-7]] },
+         '~': { width: 24, points: [[3,6],[3,8],[4,11],[6,12],[8,12],[10,11],[14,8],[16,7],[18,7],[20,8],[21,10],[-1,-1],[3,8],[4,10],[6,11],[8,11],[10,10],[14,7],[16,6],[18,6],[20,7],[21,10],[21,12]] }
+     };
+     
+    $.jqplot.CanvasFontRenderer = function(options) {
+        options = options || {};
+        if (!options.pt2px) {
+            options.pt2px = 1.5;
+        }
+        $.jqplot.CanvasTextRenderer.call(this, options);
+    };
+    
+    $.jqplot.CanvasFontRenderer.prototype = new $.jqplot.CanvasTextRenderer({});
+    $.jqplot.CanvasFontRenderer.prototype.constructor = $.jqplot.CanvasFontRenderer;
+
+    $.jqplot.CanvasFontRenderer.prototype.measure = function(ctx, str)
+    {
+        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
+        var fstyle = this.fontSize+' '+this.fontFamily;
+        ctx.save();
+        ctx.font = fstyle;
+        var w = ctx.measureText(str).width;
+        ctx.restore();
+        return w;
+    };
+
+    $.jqplot.CanvasFontRenderer.prototype.draw = function(ctx, str)
+    {
+        var x = 0;
+        // leave room at bottom for descenders.
+        var y = this.height*0.72;
+        //var y = 12;
+
+         ctx.save();
+         var tx, ty;
+         
+         // 1st quadrant
+         if ((-Math.PI/2 <= this.angle && this.angle <= 0) || (Math.PI*3/2 <= this.angle && this.angle <= Math.PI*2)) {
+             tx = 0;
+             ty = -Math.sin(this.angle) * this.width;
+         }
+         // 4th quadrant
+         else if ((0 < this.angle && this.angle <= Math.PI/2) || (-Math.PI*2 <= this.angle && this.angle <= -Math.PI*3/2)) {
+             tx = Math.sin(this.angle) * this.height;
+             ty = 0;
+         }
+         // 2nd quadrant
+         else if ((-Math.PI < this.angle && this.angle < -Math.PI/2) || (Math.PI <= this.angle && this.angle <= Math.PI*3/2)) {
+             tx = -Math.cos(this.angle) * this.width;
+             ty = -Math.sin(this.angle) * this.width - Math.cos(this.angle) * this.height;
+         }
+         // 3rd quadrant
+         else if ((-Math.PI*3/2 < this.angle && this.angle < Math.PI) || (Math.PI/2 < this.angle && this.angle < Math.PI)) {
+             tx = Math.sin(this.angle) * this.height - Math.cos(this.angle)*this.width;
+             ty = -Math.cos(this.angle) * this.height;
+         }
+         ctx.strokeStyle = this.fillStyle;
+         ctx.fillStyle = this.fillStyle;
+        // var fstyle = this.fontStyle+' '+this.fontVariant+' '+this.fontWeight+' '+this.fontSize+' '+this.fontFamily;
+        var fstyle = this.fontSize+' '+this.fontFamily;
+         ctx.font = fstyle;
+         ctx.translate(tx, ty);
+         ctx.rotate(this.angle);
+         ctx.fillText(str, x, y);
+         // ctx.strokeText(str, x, y);
+
+         ctx.restore();
+    };
+    
+})(jQuery);/**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {   
+    /**
+    *  class: $.jqplot.CategoryAxisRenderer
+    *  A plugin for jqPlot to render a category style axis, with equal pixel spacing between y data values of a series.
+    *  
+    *  To use this renderer, include the plugin in your source
+    *  > <script type="text/javascript" language="javascript" src="plugins/jqplot.categoryAxisRenderer.js"></script>
+    *  
+    *  and supply the appropriate options to your plot
+    *  
+    *  > {axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer}}}
+    **/
+    $.jqplot.CategoryAxisRenderer = function(options) {
+        $.jqplot.LinearAxisRenderer.call(this);
+        // prop: sortMergedLabels
+        // True to sort tick labels when labels are created by merging
+        // x axis values from multiple series.  That is, say you have
+        // two series like:
+        // > line1 = [[2006, 4],            [2008, 9], [2009, 16]];
+        // > line2 = [[2006, 3], [2007, 7], [2008, 6]];
+        // If no label array is specified, tick labels will be collected
+        // from the x values of the series.  With sortMergedLabels
+        // set to true, tick labels will be:
+        // > [2006, 2007, 2008, 2009]
+        // With sortMergedLabels set to false, tick labels will be:
+        // > [2006, 2008, 2009, 2007]
+        //
+        // Note, this property is specified on the renderOptions for the 
+        // axes when creating a plot:
+        // > axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer, rendererOptions:{sortMergedLabels:true}}}
+        this.sortMergedLabels = false;
+    };
+    
+    $.jqplot.CategoryAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
+    $.jqplot.CategoryAxisRenderer.prototype.constructor = $.jqplot.CategoryAxisRenderer;
+    
+    $.jqplot.CategoryAxisRenderer.prototype.init = function(options){
+        this.groups = 1;
+        this.groupLabels = [];
+        this._groupLabels = [];
+        this._grouped = false;
+        this._barsPerGroup = null;
+        // prop: tickRenderer
+        // A class of a rendering engine for creating the ticks labels displayed on the plot, 
+        // See <$.jqplot.AxisTickRenderer>.
+        // this.tickRenderer = $.jqplot.AxisTickRenderer;
+        // this.labelRenderer = $.jqplot.AxisLabelRenderer;
+        $.extend(true, this, {tickOptions:{formatString:'%d'}}, options);
+        var db = this._dataBounds;
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            if (s.groups) {
+                this.groups = s.groups;
+            }
+            var d = s.data;
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if (d[j][0] < db.min || db.min == null) {
+                        db.min = d[j][0];
+                    }
+                    if (d[j][0] > db.max || db.max == null) {
+                        db.max = d[j][0];
+                    }
+                }              
+                else {
+                    if (d[j][1] < db.min || db.min == null) {
+                        db.min = d[j][1];
+                    }
+                    if (d[j][1] > db.max || db.max == null) {
+                        db.max = d[j][1];
+                    }
+                }              
+            }
+        }
+        
+        if (this.groupLabels.length) {
+            this.groups = this.groupLabels.length;
+        }
+    };
+ 
+
+    $.jqplot.CategoryAxisRenderer.prototype.createTicks = function() {
+        // we're are operating on an axis here
+        var ticks = this._ticks;
+        var userTicks = this.ticks;
+        var name = this.name;
+        // databounds were set on axis initialization.
+        var db = this._dataBounds;
+        var dim, interval;
+        var min, max;
+        var pos1, pos2;
+        var tt, i;
+
+        // if we already have ticks, use them.
+        if (userTicks.length) {
+            // adjust with blanks if we have groups
+            if (this.groups > 1 && !this._grouped) {
+                var l = userTicks.length;
+                var skip = parseInt(l/this.groups, 10);
+                var count = 0;
+                for (var i=skip; i<l; i+=skip) {
+                    userTicks.splice(i+count, 0, ' ');
+                    count++;
+                }
+                this._grouped = true;
+            }
+            this.min = 0.5;
+            this.max = userTicks.length + 0.5;
+            var range = this.max - this.min;
+            this.numberTicks = 2*userTicks.length + 1;
+            for (i=0; i<userTicks.length; i++){
+                tt = this.min + 2 * i * range / (this.numberTicks-1);
+                // need a marker before and after the tick
+                var t = new this.tickRenderer(this.tickOptions);
+                t.showLabel = false;
+                t.showMark = true;
+                t.setTick(tt, this.name);
+                this._ticks.push(t);
+                var t = new this.tickRenderer(this.tickOptions);
+                t.label = userTicks[i];
+                t.showLabel = true;
+                t.showMark = false;
+                t.showGridline = false;
+                t.setTick(tt+0.5, this.name);
+                this._ticks.push(t);
+            }
+            // now add the last tick at the end
+            var t = new this.tickRenderer(this.tickOptions);
+            t.showLabel = false;
+            t.showMark = true;
+            t.setTick(tt+1, this.name);
+            this._ticks.push(t);
+        }
+
+        // we don't have any ticks yet, let's make some!
+        else {
+            if (name == 'xaxis' || name == 'x2axis') {
+                dim = this._plotDimensions.width;
+            }
+            else {
+                dim = this._plotDimensions.height;
+            }
+            
+            // if min, max and number of ticks specified, user can't specify interval.
+            if (this.min != null && this.max != null && this.numberTicks != null) {
+                this.tickInterval = null;
+            }
+            
+            // if max, min, and interval specified and interval won't fit, ignore interval.
+            if (this.min != null && this.max != null && this.tickInterval != null) {
+                if (parseInt((this.max-this.min)/this.tickInterval, 10) != (this.max-this.min)/this.tickInterval) {
+                    this.tickInterval = null;
+                }
+            }
+        
+            // find out how many categories are in the lines and collect labels
+            var labels = [];
+            var numcats = 0;
+            var min = 0.5;
+            var max, val;
+            var isMerged = false;
+            for (var i=0; i<this._series.length; i++) {
+                var s = this._series[i];
+                for (var j=0; j<s.data.length; j++) {
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        val = s.data[j][0];
+                    }
+                    else {
+                        val = s.data[j][1];
+                    }
+                    if ($.inArray(val, labels) == -1) {
+                        isMerged = true;
+                        numcats += 1;      
+                        labels.push(val);
+                    }
+                }
+            }
+            
+            if (isMerged && this.sortMergedLabels) {
+                labels.sort(function(a,b) { return a - b; });
+            }
+            
+            // keep a reference to these tick labels to use for redrawing plot (see bug #57)
+            this.ticks = labels;
+            
+            // now bin the data values to the right lables.
+            for (var i=0; i<this._series.length; i++) {
+                var s = this._series[i];
+                for (var j=0; j<s.data.length; j++) {
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        val = s.data[j][0];
+                    }
+                    else {
+                        val = s.data[j][1];
+                    }
+                    // for category axis, force the values into category bins.
+                    // we should have the value in the label array now.
+                    var idx = $.inArray(val, labels)+1;
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        s.data[j][0] = idx;
+                    }
+                    else {
+                        s.data[j][1] = idx;
+                    }
+                }
+            }
+            
+            // adjust with blanks if we have groups
+            if (this.groups > 1 && !this._grouped) {
+                var l = labels.length;
+                var skip = parseInt(l/this.groups, 10);
+                var count = 0;
+                for (var i=skip; i<l; i+=skip+1) {
+                    labels[i] = ' ';
+                }
+                this._grouped = true;
+            }
+        
+            max = numcats + 0.5;
+            if (this.numberTicks == null) {
+                this.numberTicks = 2*numcats + 1;
+            }
+
+            var range = max - min;
+            this.min = min;
+            this.max = max;
+            var track = 0;
+            
+            // todo: adjust this so more ticks displayed.
+            var maxVisibleTicks = parseInt(3+dim/20, 10);
+            var skip = parseInt(numcats/maxVisibleTicks, 10);
+
+            if (this.tickInterval == null) {
+
+                this.tickInterval = range / (this.numberTicks-1);
+
+            }
+            // if tickInterval is specified, we will ignore any computed maximum.
+            for (var i=0; i<this.numberTicks; i++){
+                tt = this.min + i * this.tickInterval;
+                var t = new this.tickRenderer(this.tickOptions);
+                // if even tick, it isn't a category, it's a divider
+                if (i/2 == parseInt(i/2, 10)) {
+                    t.showLabel = false;
+                    t.showMark = true;
+                }
+                else {
+                    if (skip>0 && track<skip) {
+                        t.showLabel = false;
+                        track += 1;
+                    }
+                    else {
+                        t.showLabel = true;
+                        track = 0;
+                    } 
+                    t.label = t.formatter(t.formatString, labels[(i-1)/2]);
+                    t.showMark = false;
+                    t.showGridline = false;
+                }
+                if (!this.showTicks) {
+                    t.showLabel = false;
+                    t.showMark = false;
+                }
+                else if (!this.showTickMarks) {
+                    t.showMark = false;
+                }
+                t.setTick(tt, this.name);
+                this._ticks.push(t);
+            }
+        }
+        
+    };
+    
+    // called with scope of axis
+    $.jqplot.CategoryAxisRenderer.prototype.draw = function(ctx) {
+        if (this.show) {
+            // populate the axis label and value properties.
+            // createTicks is a method on the renderer, but
+            // call it within the scope of the axis.
+            this.renderer.createTicks.call(this);
+            // fill a div with axes labels in the right direction.
+            // Need to pregenerate each axis to get it's bounds and
+            // position it and the labels correctly on the plot.
+            var dim=0;
+            var temp;
+            // Added for theming.
+            if (this._elem) {
+                this._elem.empty();
+            }
+            
+            this._elem = this._elem || $('<div class="jqplot-axis jqplot-'+this.name+'" style="position:absolute;"></div>');
+            
+            if (this.name == 'xaxis' || this.name == 'x2axis') {
+                this._elem.width(this._plotDimensions.width);
+            }
+            else {
+                this._elem.height(this._plotDimensions.height);
+            }
+            
+            // create a _label object.
+            this.labelOptions.axis = this.name;
+            this._label = new this.labelRenderer(this.labelOptions);
+            if (this._label.show) {
+                var elem = this._label.draw(ctx);
+                elem.appendTo(this._elem);
+            }
+    
+            if (this.showTicks) {
+                var t = this._ticks;
+                for (var i=0; i<t.length; i++) {
+                    var tick = t[i];
+                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                        var elem = tick.draw(ctx);
+                        elem.appendTo(this._elem);
+                    }
+                }
+            }
+        
+            this._groupLabels = [];
+            // now make group labels
+            for (var i=0; i<this.groupLabels.length; i++)
+            {
+                var elem = $('<div style="position:absolute;" class="jqplot-'+this.name+'-groupLabel"></div>');
+                elem.html(this.groupLabels[i]);
+                this._groupLabels.push(elem);
+                elem.appendTo(this._elem);
+            }
+        }
+        return this._elem;
+    };
+    
+    // called with scope of axis
+    $.jqplot.CategoryAxisRenderer.prototype.set = function() { 
+        var dim = 0;
+        var temp;
+        var w = 0;
+        var h = 0;
+        var lshow = (this._label == null) ? false : this._label.show;
+        if (this.show && this.showTicks) {
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    if (this.name == 'xaxis' || this.name == 'x2axis') {
+                        temp = tick._elem.outerHeight(true);
+                    }
+                    else {
+                        temp = tick._elem.outerWidth(true);
+                    }
+                    if (temp > dim) {
+                        dim = temp;
+                    }
+                }
+            }
+            
+            var dim2 = 0;
+            for (var i=0; i<this._groupLabels.length; i++) {
+                var l = this._groupLabels[i];
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    temp = l.outerHeight(true);
+                }
+                else {
+                    temp = l.outerWidth(true);
+                }
+                if (temp > dim2) {
+                    dim2 = temp;
+                }
+            }
+            
+            if (lshow) {
+                w = this._label._elem.outerWidth(true);
+                h = this._label._elem.outerHeight(true); 
+            }
+            if (this.name == 'xaxis') {
+                dim += dim2 + h;
+                this._elem.css({'height':dim+'px', left:'0px', bottom:'0px'});
+            }
+            else if (this.name == 'x2axis') {
+                dim += dim2 + h;
+                this._elem.css({'height':dim+'px', left:'0px', top:'0px'});
+            }
+            else if (this.name == 'yaxis') {
+                dim += dim2 + w;
+                this._elem.css({'width':dim+'px', left:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w+'px');
+                }
+            }
+            else {
+                dim += dim2 + w;
+                this._elem.css({'width':dim+'px', right:'0px', top:'0px'});
+                if (lshow && this._label.constructor == $.jqplot.AxisLabelRenderer) {
+                    this._label._elem.css('width', w+'px');
+                }
+            }
+        }  
+    };
+    
+    // called with scope of axis
+    $.jqplot.CategoryAxisRenderer.prototype.pack = function(pos, offsets) {
+        var ticks = this._ticks;
+        var max = this.max;
+        var min = this.min;
+        var offmax = offsets.max;
+        var offmin = offsets.min;
+        var lshow = (this._label == null) ? false : this._label.show;
+        
+        for (var p in pos) {
+            this._elem.css(p, pos[p]);
+        }
+        
+        this._offsets = offsets;
+        // pixellength will be + for x axes and - for y axes becasue pixels always measured from top left.
+        var pixellength = offmax - offmin;
+        var unitlength = max - min;
+        
+        // point to unit and unit to point conversions references to Plot DOM element top left corner.
+        this.p2u = function(p){
+            return (p - offmin) * unitlength / pixellength + min;
+        };
+        
+        this.u2p = function(u){
+            return (u - min) * pixellength / unitlength + offmin;
+        };
+                
+        if (this.name == 'xaxis' || this.name == 'x2axis'){
+            this.series_u2p = function(u){
+                return (u - min) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return p * unitlength / pixellength + min;
+            };
+        }
+        
+        else {
+            this.series_u2p = function(u){
+                return (u - max) * pixellength / unitlength;
+            };
+            this.series_p2u = function(p){
+                return p * unitlength / pixellength + max;
+            };
+        }
+        
+        if (this.show) {
+            if (this.name == 'xaxis' || this.name == 'x2axis') {
+                for (i=0; i<ticks.length; i++) {
+                    var t = ticks[i];
+                    if (t.show && t.showLabel) {
+                        var shim;
+                        
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'xaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                    if (temp * t.angle < 0) {
+                                        shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    }
+                                    // position at start
+                                    else {
+                                        shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'end':
+                                    shim = -t.getWidth() + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                case 'start':
+                                    shim = -t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    break;
+                                case 'middle':
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                                default:
+                                    shim = -t.getWidth()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getWidth()/2;
+                        }
+                        var val = this.u2p(t.value) + shim + 'px';
+                        t._elem.css('left', val);
+                        t.pack();
+                    }
+                }
+                
+                var labeledge=['bottom', 0];
+                if (lshow) {
+                    var w = this._label._elem.outerWidth(true);
+                    this._label._elem.css('left', offmin + pixellength/2 - w/2 + 'px');
+                    if (this.name == 'xaxis') {
+                        this._label._elem.css('bottom', '0px');
+                        labeledge = ['bottom', this._label._elem.outerHeight(true)];
+                    }
+                    else {
+                        this._label._elem.css('top', '0px');
+                        labeledge = ['top', this._label._elem.outerHeight(true)];
+                    }
+                    this._label.pack();
+                }
+                
+                // draw the group labels
+                var step = parseInt(this._ticks.length/this.groups, 10);
+                for (i=0; i<this._groupLabels.length; i++) {
+                    var mid = 0;
+                    var count = 0;
+                    for (var j=i*step; j<=(i+1)*step; j++) {
+                        if (this._ticks[j]._elem && this._ticks[j].label != " ") {
+                            var t = this._ticks[j]._elem;
+                            var p = t.position();
+                            mid += p.left + t.outerWidth(true)/2;
+                            count++;
+                        }
+                    }
+                    mid = mid/count;
+                    this._groupLabels[i].css({'left':(mid - this._groupLabels[i].outerWidth(true)/2)});
+                    this._groupLabels[i].css(labeledge[0], labeledge[1]);
+                }
+            }
+            else {
+                for (i=0; i<ticks.length; i++) {
+                    var t = ticks[i];
+                    if (t.show && t.showLabel) {                        
+                        var shim;
+                        if (t.constructor == $.jqplot.CanvasAxisTickRenderer && t.angle) {
+                            // will need to adjust auto positioning based on which axis this is.
+                            var temp = (this.name == 'yaxis') ? 1 : -1;
+                            switch (t.labelPosition) {
+                                case 'auto':
+                                    // position at end
+                                case 'end':
+                                    if (temp * t.angle < 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'start':
+                                    if (t.angle > 0) {
+                                        shim = -t._textRenderer.height * Math.cos(-t._textRenderer.angle) / 2;
+                                    }
+                                    else {
+                                        shim = -t.getHeight() + t._textRenderer.height * Math.cos(t._textRenderer.angle) / 2;
+                                    }
+                                    break;
+                                case 'middle':
+                                    // if (t.angle > 0) {
+                                    //     shim = -t.getHeight()/2 + t._textRenderer.height * Math.sin(-t._textRenderer.angle) / 2;
+                                    // }
+                                    // else {
+                                    //     shim = -t.getHeight()/2 - t._textRenderer.height * Math.sin(t._textRenderer.angle) / 2;
+                                    // }
+                                    shim = -t.getHeight()/2;
+                                    break;
+                                default:
+                                    shim = -t.getHeight()/2;
+                                    break;
+                            }
+                        }
+                        else {
+                            shim = -t.getHeight()/2;
+                        }
+                        
+                        var val = this.u2p(t.value) + shim + 'px';
+                        t._elem.css('top', val);
+                        t.pack();
+                    }
+                }
+                
+                var labeledge=['left', 0];
+                if (lshow) {
+                    var h = this._label._elem.outerHeight(true);
+                    this._label._elem.css('top', offmax - pixellength/2 - h/2 + 'px');
+                    if (this.name == 'yaxis') {
+                        this._label._elem.css('left', '0px');
+                        labeledge = ['left', this._label._elem.outerWidth(true)];
+                    }
+                    else {
+                        this._label._elem.css('right', '0px');
+                        labeledge = ['right', this._label._elem.outerWidth(true)];
+                    }   
+                    this._label.pack();
+                }
+                
+                // draw the group labels, position top here, do left after label position.
+                var step = parseInt(this._ticks.length/this.groups, 10);
+                for (i=0; i<this._groupLabels.length; i++) {
+                    var mid = 0;
+                    var count = 0;
+                    for (var j=i*step; j<=(i+1)*step; j++) {
+                        if (this._ticks[j]._elem && this._ticks[j].label != " ") {
+                            var t = this._ticks[j]._elem;
+                            var p = t.position();
+                            mid += p.top + t.outerHeight()/2;
+                            count++;
+                        }
+                    }
+                    mid = mid/count;
+                    this._groupLabels[i].css({'top':mid - this._groupLabels[i].outerHeight()/2});
+                    this._groupLabels[i].css(labeledge[0], labeledge[1]);
+                    
+                }
+            }
+        }
+    };    
+    
+    
+})(jQuery);/**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {
+    
+    // Class: $.jqplot.BarRenderer
+    // A plugin renderer for jqPlot to draw a bar plot.
+    // Draws series as a line.
+    
+    $.jqplot.BarRenderer = function(){
+        $.jqplot.LineRenderer.call(this);
+    };
+    
+    $.jqplot.BarRenderer.prototype = new $.jqplot.LineRenderer();
+    $.jqplot.BarRenderer.prototype.constructor = $.jqplot.BarRenderer;
+    
+    // called with scope of series.
+    $.jqplot.BarRenderer.prototype.init = function(options, plot) {
+        // Group: Properties
+        //
+        // prop: barPadding
+        // Number of pixels between adjacent bars at the same axis value.
+        this.barPadding = 8;
+        // prop: barMargin
+        // Number of pixels between groups of bars at adjacent axis values.
+        this.barMargin = 10;
+        // prop: barDirection
+        // 'vertical' = up and down bars, 'horizontal' = side to side bars
+        this.barDirection = 'vertical';
+        // prop: barWidth
+        // Width of the bar in pixels (auto by devaul).  null = calculated automatically.
+        this.barWidth = null;
+        // prop: shadowOffset
+        // offset of the shadow from the slice and offset of 
+        // each succesive stroke of the shadow from the last.
+        this.shadowOffset = 2;
+        // prop: shadowDepth
+        // number of strokes to apply to the shadow, 
+        // each stroke offset shadowOffset from the last.
+        this.shadowDepth = 5;
+        // prop: shadowAlpha
+        // transparency of the shadow (0 = transparent, 1 = opaque)
+        this.shadowAlpha = 0.08;
+        // prop: waterfall
+        // true to enable waterfall plot.
+        this.waterfall = false;
+        // prop: groups
+        // group bars into this many groups
+        this.groups = 1;
+        // prop: varyBarColor
+        // true to color each bar separately.
+        this.varyBarColor = false;
+        // prop: highlightMouseOver
+        // True to highlight slice when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a slice.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        // prop: highlightColors
+        // an array of colors to use when highlighting a bar.
+        this.highlightColors = [];
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
+        $.extend(true, this, options);
+        // fill is still needed to properly draw the legend.
+        // bars have to be filled.
+        this.fill = true;
+        
+        if (this.waterfall) {
+            this.fillToZero = false;
+            this.disableStack = true;
+        }
+        
+        if (this.barDirection == 'vertical' ) {
+            this._primaryAxis = '_xaxis';
+            this._stackAxis = 'y';
+            this.fillAxis = 'y';
+        }
+        else {
+            this._primaryAxis = '_yaxis';
+            this._stackAxis = 'x';
+            this.fillAxis = 'x';
+        }
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        // total number of values for all bar series, total number of bar series, and position of this series
+        this._plotSeriesInfo = null;
+        // Array of actual data colors used for each data point.
+        this._dataColors = [];
+        this._barPoints = [];
+        
+        // set the shape renderer options
+        var opts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, strokeStyle:this.color, fillStyle:this.color, closePath:this.fill};
+        this.renderer.shapeRenderer.init(opts);
+        // set the shadow renderer options
+        var sopts = {lineJoin:'miter', lineCap:'round', fill:true, isarc:false, angle:this.shadowAngle, offset:this.shadowOffset, alpha:this.shadowAlpha, depth:this.shadowDepth, closePath:this.fill};
+        this.renderer.shadowRenderer.init(sopts);
+        
+        plot.postInitHooks.addOnce(postInit);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick); 
+    };
+    
+    // called with scope of series
+    function barPreInit(target, data, seriesDefaults, options) {
+        if (this.rendererOptions.barDirection == 'horizontal') {
+            this._stackAxis = 'x';
+            this._primaryAxis = '_yaxis';
+        }
+        if (this.rendererOptions.waterfall == true) {
+            this._data = $.extend(true, [], this.data);
+            var sum = 0;
+            var pos = (!this.rendererOptions.barDirection || this.rendererOptions.barDirection == 'vertical') ? 1 : 0;
+            for(var i=0; i<this.data.length; i++) {
+                sum += this.data[i][pos];
+                if (i>0) {
+                    this.data[i][pos] += this.data[i-1][pos];
+                }
+            }
+            this.data[this.data.length] = (pos == 1) ? [this.data.length+1, sum] : [sum, this.data.length+1];
+            this._data[this._data.length] = (pos == 1) ? [this._data.length+1, sum] : [sum, this._data.length+1];
+        }
+        if (this.rendererOptions.groups > 1) {
+            this.breakOnNull = true;
+            var l = this.data.length;
+            var skip = parseInt(l/this.rendererOptions.groups, 10);
+            var count = 0;
+            for (var i=skip; i<l; i+=skip) {
+                this.data.splice(i+count, 0, [null, null]);
+                count++;
+            }
+            for (i=0; i<this.data.length; i++) {
+                if (this._primaryAxis == '_xaxis') {
+                    this.data[i][0] = i+1;
+                }
+                else {
+                    this.data[i][1] = i+1;
+                }
+            }
+        }
+    }
+    
+    $.jqplot.preSeriesInitHooks.push(barPreInit);
+    
+    // needs to be called with scope of series, not renderer.
+    $.jqplot.BarRenderer.prototype.calcSeriesNumbers = function() {
+        var nvals = 0;
+        var nseries = 0;
+        var paxis = this[this._primaryAxis];
+        var s, series, pos;
+        // loop through all series on this axis
+        for (var i=0; i < paxis._series.length; i++) {
+            series = paxis._series[i];
+            if (series === this) {
+                pos = i;
+            }
+            // is the series rendered as a bar?
+            if (series.renderer.constructor == $.jqplot.BarRenderer) {
+                // gridData may not be computed yet, use data length insted
+                nvals += series.data.length;
+                nseries += 1;
+            }
+        }
+        // return total number of values for all bar series, total number of bar series, and position of this series
+        return [nvals, nseries, pos];
+    };
+
+    $.jqplot.BarRenderer.prototype.setBarWidth = function() {
+        // need to know how many data values we have on the approprate axis and figure it out.
+        var i;
+        var nvals = 0;
+        var nseries = 0;
+        var paxis = this[this._primaryAxis];
+        var s, series, pos;
+        var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
+        nvals = temp[0];
+        nseries = temp[1];
+        var nticks = paxis.numberTicks;
+        var nbins = (nticks-1)/2;
+        // so, now we have total number of axis values.
+        if (paxis.name == 'xaxis' || paxis.name == 'x2axis') {
+            if (this._stack) {
+                this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals * nseries - this.barMargin;
+            }
+            else {
+                this.barWidth = ((paxis._offsets.max - paxis._offsets.min)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
+                // this.barWidth = (paxis._offsets.max - paxis._offsets.min) / nvals - this.barPadding - this.barMargin/nseries;
+            }
+        }
+        else {
+            if (this._stack) {
+                this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals * nseries - this.barMargin;
+            }
+            else {
+                this.barWidth = ((paxis._offsets.min - paxis._offsets.max)/nbins  - this.barPadding * (nseries-1) - this.barMargin*2)/nseries;
+                // this.barWidth = (paxis._offsets.min - paxis._offsets.max) / nvals - this.barPadding - this.barMargin/nseries;
+            }
+        }
+        return [nvals, nseries];
+    };
+
+    function computeHighlightColors (colors) {
+        var ret = [];
+        for (var i=0; i<colors.length; i++){
+            var rgba = $.jqplot.getColorComponents(colors[i]);
+            var newrgb = [rgba[0], rgba[1], rgba[2]];
+            var sum = newrgb[0] + newrgb[1] + newrgb[2];
+            for (var j=0; j<3; j++) {
+                // when darkening, lowest color component can be is 60.
+                newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                newrgb[j] = parseInt(newrgb[j], 10);
+            }
+            ret.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+        }
+        return ret;
+    }
+    
+    $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
+        var i;
+        var opts = (options != undefined) ? options : {};
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        var pointx, pointy, nvals, nseries, pos;
+        // clear out data colors.
+        this._dataColors = [];
+        this._barPoints = [];
+        
+        if (this.barWidth == null) {
+            this.renderer.setBarWidth.call(this);
+        }
+        
+        var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
+        nvals = temp[0];
+        nseries = temp[1];
+        pos = temp[2];
+        
+        if (this._stack) {
+            this._barNudge = 0;
+        }
+        else {
+            this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
+        }
+        if (showLine) {
+            var negativeColors = new $.jqplot.ColorGenerator(this.negativeSeriesColors);
+            var positiveColors = new $.jqplot.ColorGenerator(this.seriesColors);
+            var negativeColor = negativeColors.get(this.index);
+            if (! this.useNegativeColors) {
+                negativeColor = opts.fillStyle;
+            }
+            var positiveColor = opts.fillStyle;
+            
+            if (this.barDirection == 'vertical') {
+                for (var i=0; i<gridData.length; i++) {
+                    if (this.data[i][1] == null) {
+                        continue;
+                    }
+                    points = [];
+                    var base = gridData[i][0] + this._barNudge;
+                    var ystart;
+                    
+                    // stacked
+                    if (this._stack && this._prevGridData.length) {
+                        ystart = this._prevGridData[i][1];
+                    }
+                    // not stacked and first series in stack
+                    else {
+                        if (this.fillToZero) {
+                            ystart = this._yaxis.series_u2p(0);
+                        }
+                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
+                            ystart = this.gridData[i-1][1];
+                        }
+                        else {
+                            ystart = ctx.canvas.height;
+                        }
+                    }
+                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
+                        if (this.varyBarColor) {
+                            if (this.useNegativeColors) {
+                                opts.fillStyle = negativeColors.next();
+                            }
+                            else {
+                                opts.fillStyle = positiveColors.next();
+                            }
+                        }
+                        else {
+                            opts.fillStyle = negativeColor;
+                        }
+                    }
+                    else {
+                        if (this.varyBarColor) {
+                            opts.fillStyle = positiveColors.next();
+                        }
+                        else {
+                            opts.fillStyle = positiveColor;
+                        }
+                    }
+                    
+                    points.push([base-this.barWidth/2, ystart]);
+                    points.push([base-this.barWidth/2, gridData[i][1]]);
+                    points.push([base+this.barWidth/2, gridData[i][1]]);
+                    points.push([base+this.barWidth/2, ystart]);
+                    this._barPoints.push(points);
+                    // now draw the shadows if not stacked.
+                    // for stacked plots, they are predrawn by drawShadow
+                    if (shadow && !this._stack) {
+                        var sopts = $.extend(true, {}, opts);
+                        // need to get rid of fillStyle on shadow.
+                        delete sopts.fillStyle;
+                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
+                    }
+                    var clr = opts.fillStyle || this.color;
+                    this._dataColors.push(clr);
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
+                }
+            }
+            
+            else if (this.barDirection == 'horizontal'){
+                for (var i=0; i<gridData.length; i++) {
+                    if (this.data[i][0] == null) {
+                        continue;
+                    }
+                    points = [];
+                    var base = gridData[i][1] - this._barNudge;
+                    var xstart;
+                    
+                    if (this._stack && this._prevGridData.length) {
+                        xstart = this._prevGridData[i][0];
+                    }
+                    // not stacked and first series in stack
+                    else {
+                        if (this.fillToZero) {
+                            xstart = this._xaxis.series_u2p(0);
+                        }
+                        else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
+                            xstart = this.gridData[i-1][1];
+                        }
+                        else {
+                            xstart = 0;
+                        }
+                    }
+                    if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
+                        if (this.varyBarColor) {
+                            if (this.useNegativeColors) {
+                                opts.fillStyle = negativeColors.next();
+                            }
+                            else {
+                                opts.fillStyle = positiveColors.next();
+                            }
+                        }
+                    }
+                    else {
+                        if (this.varyBarColor) {
+                            opts.fillStyle = positiveColors.next();
+                        }
+                        else {
+                            opts.fillStyle = positiveColor;
+                        }                    
+                    }
+                    
+                    points.push([xstart, base+this.barWidth/2]);
+                    points.push([xstart, base-this.barWidth/2]);
+                    points.push([gridData[i][0], base-this.barWidth/2]);
+                    points.push([gridData[i][0], base+this.barWidth/2]);
+                    this._barPoints.push(points);
+                    // now draw the shadows if not stacked.
+                    // for stacked plots, they are predrawn by drawShadow
+                    if (shadow && !this._stack) {
+                        var sopts = $.extend(true, {}, opts);
+                        delete sopts.fillStyle;
+                        this.renderer.shadowRenderer.draw(ctx, points, sopts);
+                    }
+                    var clr = opts.fillStyle || this.color;
+                    this._dataColors.push(clr);
+                    this.renderer.shapeRenderer.draw(ctx, points, opts); 
+                }  
+            }
+        }                
+        
+        if (this.highlightColors.length == 0) {
+            this.highlightColors = computeHighlightColors(this._dataColors);
+        }
+        
+        else if (typeof(this.highlightColors) == 'string') {
+            var temp = this.highlightColors;
+            this.highlightColors = [];
+            for (var i=0; i<this._dataColors.length; i++) {
+                this.highlightColors.push(temp);
+            }
+        }
+        
+    };
+    
+     
+    // for stacked plots, shadows will be pre drawn by drawShadow.
+    $.jqplot.BarRenderer.prototype.drawShadow = function(ctx, gridData, options) {
+        var i;
+        var opts = (options != undefined) ? options : {};
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var xaxis = this.xaxis;
+        var yaxis = this.yaxis;
+        var xp = this._xaxis.series_u2p;
+        var yp = this._yaxis.series_u2p;
+        var pointx, pointy, nvals, nseries, pos;
+        
+        if (this._stack && this.shadow) {
+            if (this.barWidth == null) {
+                this.renderer.setBarWidth.call(this);
+            }
+        
+            var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
+            nvals = temp[0];
+            nseries = temp[1];
+            pos = temp[2];
+        
+            if (this._stack) {
+                this._barNudge = 0;
+            }
+            else {
+                this._barNudge = (-Math.abs(nseries/2 - 0.5) + pos) * (this.barWidth + this.barPadding);
+            }
+            if (showLine) {
+            
+                if (this.barDirection == 'vertical') {
+                    for (var i=0; i<gridData.length; i++) {
+                        if (this.data[i][1] == null) {
+                            continue;
+                        }
+                        points = [];
+                        var base = gridData[i][0] + this._barNudge;
+                        var ystart;
+                    
+                        if (this._stack && this._prevGridData.length) {
+                            ystart = this._prevGridData[i][1];
+                        }
+                        else {
+                            if (this.fillToZero) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else {
+                                ystart = ctx.canvas.height;
+                            }
+                        }
+                    
+                        points.push([base-this.barWidth/2, ystart]);
+                        points.push([base-this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, gridData[i][1]]);
+                        points.push([base+this.barWidth/2, ystart]);
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }
+                }
+            
+                else if (this.barDirection == 'horizontal'){
+                    for (var i=0; i<gridData.length; i++) {
+                        if (this.data[i][0] == null) {
+                            continue;
+                        }
+                        points = [];
+                        var base = gridData[i][1] - this._barNudge;
+                        var xstart;
+                    
+                        if (this._stack && this._prevGridData.length) {
+                            xstart = this._prevGridData[i][0];
+                        }
+                        else {
+                            xstart = 0;
+                        }
+                    
+                        points.push([xstart, base+this.barWidth/2]);
+                        points.push([gridData[i][0], base+this.barWidth/2]);
+                        points.push([gridData[i][0], base-this.barWidth/2]);
+                        points.push([xstart, base-this.barWidth/2]);
+                        this.renderer.shadowRenderer.draw(ctx, points, opts);
+                    }  
+                }
+            }   
+            
+        }
+    };
+    
+    function postInit(target, data, options) {
+        for (i=0; i<this.series.length; i++) {
+            if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
+                // don't allow mouseover and mousedown at same time.
+                if (this.series[i].highlightMouseOver) {
+                    this.series[i].highlightMouseDown = false;
+                }
+            }
+        }
+        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+    }
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.barRenderer = {highlightedSeriesIndex:null};
+        this.plugins.barRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
+        var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
+    }   
+    
+    function highlight (plot, sidx, pidx, points) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.barRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.barRenderer.highlightedSeriesIndex = sidx;
+        var opts = {fillStyle: s.highlightColors[pidx]};
+        s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.barRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.barRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+    
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt1 = jQuery.Event('jqplotDataMouseOver');
+            evt1.pageX = ev.pageX;
+            evt1.pageY = ev.pageY;
+            plot.target.trigger(evt1, ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.barRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, neighbor.seriesIndex, neighbor.pointIndex, neighbor.points);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.barRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt = jQuery.Event('jqplotDataClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.barRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            var evt = jQuery.Event('jqplotDataRightClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }
+    
+    
+})(jQuery);    /**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
+ * or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {
+    /**
+     * Class: $.jqplot.PieRenderer
+     * Plugin renderer to draw a pie chart.
+     * x values, if present, will be used as slice labels.
+     * y values give slice size.
+     * 
+     * To use this renderer, you need to include the 
+     * pie renderer plugin, for example:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.pieRenderer.js"></script>
+     * 
+     * Properties described here are passed into the $.jqplot function
+     * as options on the series renderer.  For example:
+     * 
+     * > plot2 = $.jqplot('chart2', [s1, s2], {
+     * >     seriesDefaults: {
+     * >         renderer:$.jqplot.PieRenderer,
+     * >         rendererOptions:{
+     * >              sliceMargin: 2,
+     * >              startAngle: -90
+     * >          }
+     * >      }
+     * > });
+     * 
+     * A pie plot will trigger events on the plot target
+     * according to user interaction.  All events return the event object,
+     * the series index, the point (slice) index, and the point data for 
+     * the appropriate slice.
+     * 
+     * 'jqplotDataMouseOver' - triggered when user mouseing over a slice.
+     * 'jqplotDataHighlight' - triggered the first time user mouses over a slice,
+     * if highlighting is enabled.
+     * 'jqplotDataUnhighlight' - triggered when a user moves the mouse out of
+     * a highlighted slice.
+     * 'jqplotDataClick' - triggered when the user clicks on a slice.
+     * 'jqplotDataRightClick' - tiggered when the user right clicks on a slice if
+     * the "captureRightClick" option is set to true on the plot.
+     */
+    $.jqplot.PieRenderer = function(){
+        $.jqplot.LineRenderer.call(this);
+    };
+    
+    $.jqplot.PieRenderer.prototype = new $.jqplot.LineRenderer();
+    $.jqplot.PieRenderer.prototype.constructor = $.jqplot.PieRenderer;
+    
+    // called with scope of a series
+    $.jqplot.PieRenderer.prototype.init = function(options, plot) {
+        // Group: Properties
+        //
+        // prop: diameter
+        // Outer diameter of the pie, auto computed by default
+        this.diameter = null;
+        // prop: padding
+        // padding between the pie and plot edges, legend, etc.
+        this.padding = 20;
+        // prop: sliceMargin
+        // angular spacing between pie slices in degrees.
+        this.sliceMargin = 0;
+        // prop: fill
+        // true or false, wether to fil the slices.
+        this.fill = true;
+        // prop: shadowOffset
+        // offset of the shadow from the slice and offset of 
+        // each succesive stroke of the shadow from the last.
+        this.shadowOffset = 2;
+        // prop: shadowAlpha
+        // transparency of the shadow (0 = transparent, 1 = opaque)
+        this.shadowAlpha = 0.07;
+        // prop: shadowDepth
+        // number of strokes to apply to the shadow, 
+        // each stroke offset shadowOffset from the last.
+        this.shadowDepth = 5;
+        // prop: highlightMouseOver
+        // True to highlight slice when moused over.
+        // This must be false to enable highlightMouseDown to highlight when clicking on a slice.
+        this.highlightMouseOver = true;
+        // prop: highlightMouseDown
+        // True to highlight when a mouse button is pressed over a slice.
+        // This will be disabled if highlightMouseOver is true.
+        this.highlightMouseDown = false;
+        // prop: highlightColors
+        // an array of colors to use when highlighting a slice.
+        this.highlightColors = [];
+        // prop: dataLabels
+        // Either 'label', 'value', 'percent' or an array of labels to place on the pie slices.
+        // Defaults to percentage of each pie slice.
+        this.dataLabels = 'percent';
+        // prop: showDataLabels
+        // true to show data labels on slices.
+        this.showDataLabels = false;
+        // prop: dataLabelFormatString
+        // Format string for data labels.  If none, '%s' is used for "label" and for arrays, '%d' for value and '%d%%' for percentage.
+        this.dataLabelFormatString = null;
+        // prop: dataLabelThreshold
+        // Threshhold in percentage (0 - 100) of pie area, below which no label will be displayed.
+        // This applies to all label types, not just to percentage labels.
+        this.dataLabelThreshold = 3;
+        // prop: dataLabelPositionFactor
+        // A Multiplier (0-1) of the pie radius which controls position of label on slice.
+        // Increasing will slide label toward edge of pie, decreasing will slide label toward center of pie.
+        this.dataLabelPositionFactor = 0.52;
+        // prop: dataLabelNudge
+        // Number of pixels to slide the label away from (+) or toward (-) the center of the pie.
+        this.dataLabelNudge = 2;
+        // prop: dataLabelCenterOn
+        // True to center the data label at its position.
+        // False to set the inside facing edge of the label at its position.
+        this.dataLabelCenterOn = true;
+        // prop: startAngle
+        // Angle to start drawing pie in degrees.  
+        // According to orientation of canvas coordinate system:
+        // 0 = on the positive x axis
+        // -90 = on the positive y axis.
+        // 90 = on the negaive y axis.
+        // 180 or - 180 = on the negative x axis.
+        this.startAngle = -90;
+        this.tickRenderer = $.jqplot.PieTickRenderer;
+        // Used as check for conditions where pie shouldn't be drawn.
+        this._drawData = true;
+        
+        // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
+        if (options.highlightMouseDown && options.highlightMouseOver == null) {
+            options.highlightMouseOver = false;
+        }
+        
+        $.extend(true, this, options);
+        if (this.diameter != null) {
+            this.diameter = this.diameter - this.sliceMargin;
+        }
+        this._diameter = null;
+        this._radius = null;
+        // array of [start,end] angles arrays, one for each slice.  In radians.
+        this._sliceAngles = [];
+        // index of the currenty highlighted point, if any
+        this._highlightedPoint = null;
+        
+        // set highlight colors if none provided
+        if (this.highlightColors.length == 0) {
+            for (var i=0; i<this.seriesColors.length; i++){
+                var rgba = $.jqplot.getColorComponents(this.seriesColors[i]);
+                var newrgb = [rgba[0], rgba[1], rgba[2]];
+                var sum = newrgb[0] + newrgb[1] + newrgb[2];
+                for (var j=0; j<3; j++) {
+                    // when darkening, lowest color component can be is 60.
+                    newrgb[j] = (sum > 570) ?  newrgb[j] * 0.8 : newrgb[j] + 0.3 * (255 - newrgb[j]);
+                    newrgb[j] = parseInt(newrgb[j], 10);
+                }
+                this.highlightColors.push('rgb('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+')');
+            }
+        }
+        
+        this.highlightColorGenerator = new $.jqplot.ColorGenerator(this.highlightColors);
+        
+        plot.postParseOptionsHooks.addOnce(postParseOptions);
+        plot.postInitHooks.addOnce(postInit);
+        plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
+        plot.eventListenerHooks.addOnce('jqplotMouseDown', handleMouseDown);
+        plot.eventListenerHooks.addOnce('jqplotMouseUp', handleMouseUp);
+        plot.eventListenerHooks.addOnce('jqplotClick', handleClick);
+        plot.eventListenerHooks.addOnce('jqplotRightClick', handleRightClick);
+        plot.postDrawHooks.addOnce(postPlotDraw);
+    };
+    
+    $.jqplot.PieRenderer.prototype.setGridData = function(plot) {
+        // set gridData property.  This will hold angle in radians of each data point.
+        var stack = [];
+        var td = [];
+        var sa = this.startAngle/180*Math.PI;
+        var tot = 0;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
+        for (var i=0; i<this.data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
+            stack.push(this.data[i][1]);
+            td.push([this.data[i][0]]);
+            if (i>0) {
+                stack[i] += stack[i-1];
+            }
+            tot += this.data[i][1];
+        }
+        var fact = Math.PI*2/stack[stack.length - 1];
+        
+        for (var i=0; i<stack.length; i++) {
+            td[i][1] = stack[i] * fact;
+            td[i][2] = this.data[i][1]/tot;
+        }
+        this.gridData = td;
+    };
+    
+    $.jqplot.PieRenderer.prototype.makeGridData = function(data, plot) {
+        var stack = [];
+        var td = [];
+        var tot = 0;
+        var sa = this.startAngle/180*Math.PI;
+        // don't know if we have any valid data yet, so set plot to not draw.
+        this._drawData = false;
+        for (var i=0; i<data.length; i++){
+            if (this.data[i][1] != 0) {
+                // we have data, O.K. to draw.
+                this._drawData = true;
+            }
+            stack.push(data[i][1]);
+            td.push([data[i][0]]);
+            if (i>0) {
+                stack[i] += stack[i-1];
+            }
+            tot += data[i][1];
+        }
+        var fact = Math.PI*2/stack[stack.length - 1];
+        
+        for (var i=0; i<stack.length; i++) {
+            td[i][1] = stack[i] * fact;
+            td[i][2] = data[i][1]/tot;
+        }
+        return td;
+    };
+    
+    $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
+        if (this._drawData) {
+            var r = this._diameter / 2;
+            var fill = this.fill;
+            var lineWidth = this.lineWidth;
+            ctx.save();
+            ctx.translate(this._center[0], this._center[1]);
+            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
+    
+            if (isShadow) {
+                for (var i=0; i<this.shadowDepth; i++) {
+                    ctx.save();
+                    ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
+                    doDraw();
+                }
+            }
+    
+            else {
+                doDraw();
+            }
+        }
+    
+        function doDraw () {
+            // Fix for IE and Chrome that can't seem to draw circles correctly.
+            // ang2 should always be <= 2 pi since that is the way the data is converted.
+             if (ang2 > 6.282 + this.startAngle) {
+                ang2 = 6.282 + this.startAngle;
+                if (ang1 > ang2) {
+                    ang1 = 6.281 + this.startAngle;
+                }
+            }
+            // Fix for IE, where it can't seem to handle 0 degree angles.  Also avoids
+            // ugly line on unfilled pies.
+            if (ang1 >= ang2) {
+                return;
+            }            
+        
+            ctx.beginPath();  
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.lineTo(0,0);
+            ctx.closePath();
+        
+            if (fill) {
+                ctx.fill();
+            }
+            else {
+                ctx.stroke();
+            }
+        }
+        
+        if (isShadow) {
+            for (var i=0; i<this.shadowDepth; i++) {
+                ctx.restore();
+            }
+        }
+        
+        ctx.restore();
+    };
+    
+    // called with scope of series
+    $.jqplot.PieRenderer.prototype.draw = function (ctx, gd, options, plot) {
+        var i;
+        var opts = (options != undefined) ? options : {};
+        // offset and direction of offset due to legend placement
+        var offx = 0;
+        var offy = 0;
+        var trans = 1;
+        var colorGenerator = new $.jqplot.ColorGenerator(this.seriesColors);
+        if (options.legendInfo && options.legendInfo.placement == 'insideGrid') {
+            var li = options.legendInfo;
+            switch (li.location) {
+                case 'nw':
+                    offx = li.width + li.xoffset;
+                    break;
+                case 'w':
+                    offx = li.width + li.xoffset;
+                    break;
+                case 'sw':
+                    offx = li.width + li.xoffset;
+                    break;
+                case 'ne':
+                    offx = li.width + li.xoffset;
+                    trans = -1;
+                    break;
+                case 'e':
+                    offx = li.width + li.xoffset;
+                    trans = -1;
+                    break;
+                case 'se':
+                    offx = li.width + li.xoffset;
+                    trans = -1;
+                    break;
+                case 'n':
+                    offy = li.height + li.yoffset;
+                    break;
+                case 's':
+                    offy = li.height + li.yoffset;
+                    trans = -1;
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
+        var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
+        var fill = (opts.fill != undefined) ? opts.fill : this.fill;
+        var cw = ctx.canvas.width;
+        var ch = ctx.canvas.height;
+        var w = cw - offx - 2 * this.padding;
+        var h = ch - offy - 2 * this.padding;
+        var mindim = Math.min(w,h);
+        var d = mindim;
+        // this._diameter = this.diameter || d;
+        this._diameter = this.diameter  || d - this.sliceMargin;
+
+        var r = this._radius = this._diameter/2;
+        var sa = this.startAngle / 180 * Math.PI;
+        this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
+        
+        if (this.shadow) {
+            var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
+            for (var i=0; i<gd.length; i++) {
+                var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
+                // Adjust ang1 and ang2 for sliceMargin
+                ang1 += this.sliceMargin/180*Math.PI;
+                this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
+            }
+            
+        }
+        
+         // damian: required for line labels
+         var origin = {
+                 x: parseInt(ctx.canvas.style.left) + cw/2,
+                 y: parseInt(ctx.canvas.style.top) + ch/2
+         };
+
+         var total = 0;
+         for (var i=0; i<gd.length; i++) {
+             total += this._plotData[i][1];
+         }  
+        
+        for (var i=0; i<gd.length; i++) {
+            var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
+            // Adjust ang1 and ang2 for sliceMargin
+            ang1 += this.sliceMargin/180*Math.PI;
+            var ang2 = gd[i][1] + sa;
+            this._sliceAngles.push([ang1, ang2]);
+                      
+            this.renderer.drawSlice.call (this, ctx, ang1, ang2, colorGenerator.next(), false);
+        
+            if (this.showDataLabels && gd[i][2]*100 >= this.dataLabelThreshold) {
+                var fstr, avgang = (ang1+ang2)/2, label;
+            
+                if (this.dataLabels == 'label') {
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, gd[i][0]);
+                }
+                else if (this.dataLabels == 'value') {
+                    fstr = this.dataLabelFormatString || '%d';
+                    label = $.jqplot.sprintf(fstr, this.data[i][1]);
+                }
+                else if (this.dataLabels == 'percent') {
+                    fstr = this.dataLabelFormatString || '%d%%';
+                    label = $.jqplot.sprintf(fstr, gd[i][2]*100);
+                }
+                else if (this.dataLabels.constructor == Array) {
+                    fstr = this.dataLabelFormatString || '%s';
+                    label = $.jqplot.sprintf(fstr, this.dataLabels[i]);
+                }
+            
+                var fact = (this._radius ) * this.dataLabelPositionFactor + this.sliceMargin + this.dataLabelNudge;
+            
+                var x = this._center[0] + Math.cos(avgang) * fact + this.canvas._offsets.left;
+                var y = this._center[1] + Math.sin(avgang) * fact + this.canvas._offsets.top;
+            
+                var labelelem = $('<div class="jqplot-pie-series jqplot-data-label" style="position:absolute;">' + label + '</div>').insertBefore(plot.eventCanvas._elem);
+                if (this.dataLabelCenterOn) {
+                    x -= labelelem.width()/2;
+                    y -= labelelem.height()/2;
+                }
+                else {
+                    x -= labelelem.width() * Math.sin(avgang/2);
+                    y -= labelelem.height()/2;
+                }
+                x = Math.round(x);
+                y = Math.round(y);
+                labelelem.css({left: x, top: y});
+            }
+            
+             // damian: line labels
+             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
+             
+                 // percentage
+                 var percentage = this._plotData[i][1] * 100 / total;
+                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
+                    
+                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
+                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
+                 
+                 // line 1
+                 var incDiameter = 10;
+                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
+                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
+                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
+                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
+                 
+                 // line 2
+                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
+                 var line2_end_x = line1_end_x + line2_end_x_offset;
+                 var line2_end_y = line1_end_y;    
+                 
+                 // label
+                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
+                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
+                 var l_y_offset = -1 * l.height() / 2;
+                 var l_x = line2_end_x + origin.x + l_x_offset;
+                 var l_y = line2_end_y + origin.y + l_y_offset;
+                 l_x -= 30;
+                 //l_y += 10;
+                 l.css({left: l_x+"px", top: l_y+"px"});
+            }    
+            
+        }
+               
+    };
+    
+    $.jqplot.PieAxisRenderer = function() {
+        $.jqplot.LinearAxisRenderer.call(this);
+    };
+    
+    $.jqplot.PieAxisRenderer.prototype = new $.jqplot.LinearAxisRenderer();
+    $.jqplot.PieAxisRenderer.prototype.constructor = $.jqplot.PieAxisRenderer;
+        
+    
+    // There are no traditional axes on a pie chart.  We just need to provide
+    // dummy objects with properties so the plot will render.
+    // called with scope of axis object.
+    $.jqplot.PieAxisRenderer.prototype.init = function(options){
+        //
+        this.tickRenderer = $.jqplot.PieTickRenderer;
+        $.extend(true, this, options);
+        // I don't think I'm going to need _dataBounds here.
+        // have to go Axis scaling in a way to fit chart onto plot area
+        // and provide u2p and p2u functionality for mouse cursor, etc.
+        // for convienence set _dataBounds to 0 and 100 and
+        // set min/max to 0 and 100.
+        this._dataBounds = {min:0, max:100};
+        this.min = 0;
+        this.max = 100;
+        this.showTicks = false;
+        this.ticks = [];
+        this.showMark = false;
+        this.show = false; 
+    };
+    
+    
+    
+    
+    $.jqplot.PieLegendRenderer = function(){
+        $.jqplot.TableLegendRenderer.call(this);
+    };
+    
+    $.jqplot.PieLegendRenderer.prototype = new $.jqplot.TableLegendRenderer();
+    $.jqplot.PieLegendRenderer.prototype.constructor = $.jqplot.PieLegendRenderer;
+    
+    /**
+     * Class: $.jqplot.PieLegendRenderer
+     * Legend Renderer specific to pie plots.  Set by default
+     * when user creates a pie plot.
+     */
+    $.jqplot.PieLegendRenderer.prototype.init = function(options) {
+        // Group: Properties
+        //
+        // prop: numberRows
+        // Maximum number of rows in the legend.  0 or null for unlimited.
+        this.numberRows = null;
+        // prop: numberColumns
+        // Maximum number of columns in the legend.  0 or null for unlimited.
+        this.numberColumns = null;
+        $.extend(true, this, options);
+    };
+    
+    // called with context of legend
+    $.jqplot.PieLegendRenderer.prototype.draw = function() {
+        var legend = this;
+        if (this.show) {
+            var series = this._series;
+            var ss = 'position:absolute;';
+            ss += (this.background) ? 'background:'+this.background+';' : '';
+            ss += (this.border) ? 'border:'+this.border+';' : '';
+            ss += (this.fontSize) ? 'font-size:'+this.fontSize+';' : '';
+            ss += (this.fontFamily) ? 'font-family:'+this.fontFamily+';' : '';
+            ss += (this.textColor) ? 'color:'+this.textColor+';' : '';
+            ss += (this.marginTop != null) ? 'margin-top:'+this.marginTop+';' : '';
+            ss += (this.marginBottom != null) ? 'margin-bottom:'+this.marginBottom+';' : '';
+            ss += (this.marginLeft != null) ? 'margin-left:'+this.marginLeft+';' : '';
+            ss += (this.marginRight != null) ? 'margin-right:'+this.marginRight+';' : '';
+            this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
+            // Pie charts legends don't go by number of series, but by number of data points
+            // in the series.  Refactor things here for that.
+            
+            var pad = false, 
+                reverse = false,
+                nr, nc;
+            var s = series[0];
+            var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
+            
+            if (s.show) {
+                var pd = s.data;
+                if (this.numberRows) {
+                    nr = this.numberRows;
+                    if (!this.numberColumns){
+                        nc = Math.ceil(pd.length/nr);
+                    }
+                    else{
+                        nc = this.numberColumns;
+                    }
+                }
+                else if (this.numberColumns) {
+                    nc = this.numberColumns;
+                    nr = Math.ceil(pd.length/this.numberColumns);
+                }
+                else {
+                    nr = pd.length;
+                    nc = 1;
+                }
+                
+                var i, j, tr, td1, td2, lt, rs, color;
+                var idx = 0;    
+                
+                for (i=0; i<nr; i++) {
+                    if (reverse){
+                        tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+                    }
+                    else{
+                        tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+                    }
+                    for (j=0; j<nc; j++) {
+                        if (idx < pd.length){
+                            lt = this.labels[idx] || pd[idx][0].toString();
+                            color = colorGenerator.next();
+                            if (!reverse){
+                                if (i>0){
+                                    pad = true;
+                                }
+                                else{
+                                    pad = false;
+                                }
+                            }
+                            else{
+                                if (i == nr -1){
+                                    pad = false;
+                                }
+                                else{
+                                    pad = true;
+                                }
+                            }
+                            rs = (pad) ? this.rowSpacing : '0';
+                
+                            td1 = $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
+                                '<div><div class="jqplot-table-legend-swatch" style="border-color:'+color+';"></div>'+
+                                '</div></td>');
+                            td2 = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+                            if (this.escapeHtml){
+                                td2.text(lt);
+                            }
+                            else {
+                                td2.html(lt);
+                            }
+                            if (reverse) {
+                                td2.prependTo(tr);
+                                td1.prependTo(tr);
+                            }
+                            else {
+                                td1.appendTo(tr);
+                                td2.appendTo(tr);
+                            }
+                            pad = true;
+                        }
+                        idx++;
+                    }   
+                }
+            }
+        }
+        return this._elem;                
+    };
+    
+    $.jqplot.PieRenderer.prototype.handleMove = function(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            plot.target.trigger('jqplotDataMouseOver', ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                plot.target.trigger('jqplotDataHighlight', ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    };
+    
+    
+    // this.eventCanvas._elem.bind($.jqplot.eventListenerHooks[i][0], {plot:this}, $.jqplot.eventListenerHooks[i][1]);
+    
+    // setup default renderers for axes and legend so user doesn't have to
+    // called with scope of plot
+    function preInit(target, data, options) {
+        options = options || {};
+        options.axesDefaults = options.axesDefaults || {};
+        options.legend = options.legend || {};
+        options.seriesDefaults = options.seriesDefaults || {};
+        // only set these if there is a pie series
+        var setopts = false;
+        if (options.seriesDefaults.renderer == $.jqplot.PieRenderer) {
+            setopts = true;
+        }
+        else if (options.series) {
+            for (var i=0; i < options.series.length; i++) {
+                if (options.series[i].renderer == $.jqplot.PieRenderer) {
+                    setopts = true;
+                }
+            }
+        }
+        
+        if (setopts) {
+            options.axesDefaults.renderer = $.jqplot.PieAxisRenderer;
+            options.legend.renderer = $.jqplot.PieLegendRenderer;
+            options.legend.preDraw = true;
+            options.seriesDefaults.pointLabels = {show: false};
+        }
+    }
+    
+    function postInit(target, data, options) {
+        for (i=0; i<this.series.length; i++) {
+            if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
+                // don't allow mouseover and mousedown at same time.
+                if (this.series[i].highlightMouseOver) {
+                    this.series[i].highlightMouseDown = false;
+                }
+            }
+        }
+        this.target.bind('mouseout', {plot:this}, function (ev) { unhighlight(ev.data.plot); });
+    }
+    
+    // called with scope of plot
+    function postParseOptions(options) {
+        for (var i=0; i<this.series.length; i++) {
+            this.series[i].seriesColors = this.seriesColors;
+            this.series[i].colorGenerator = this.colorGenerator;
+        }
+    }
+    
+    function highlight (plot, sidx, pidx) {
+        var s = plot.series[sidx];
+        var canvas = plot.plugins.pieRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0,canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        s._highlightedPoint = pidx;
+        plot.plugins.pieRenderer.highlightedSeriesIndex = sidx;
+        s.renderer.drawSlice.call(s, canvas._ctx, s._sliceAngles[pidx][0], s._sliceAngles[pidx][1], s.highlightColorGenerator.get(pidx), false);
+    }
+    
+    function unhighlight (plot) {
+        var canvas = plot.plugins.pieRenderer.highlightCanvas;
+        canvas._ctx.clearRect(0,0, canvas._ctx.canvas.width, canvas._ctx.canvas.height);
+        for (var i=0; i<plot.series.length; i++) {
+            plot.series[i]._highlightedPoint = null;
+        }
+        plot.plugins.pieRenderer.highlightedSeriesIndex = null;
+        plot.target.trigger('jqplotDataUnhighlight');
+    }
+ 
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt1 = jQuery.Event('jqplotDataMouseOver');
+            evt1.pageX = ev.pageX;
+            evt1.pageY = ev.pageY;
+            plot.target.trigger(evt1, ins);
+            if (plot.series[ins[0]].highlightMouseOver && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    } 
+    
+    function handleMouseDown(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            if (plot.series[ins[0]].highlightMouseDown && !(ins[0] == plot.plugins.pieRenderer.highlightedSeriesIndex && ins[1] == plot.series[ins[0]]._highlightedPoint)) {
+                var evt = jQuery.Event('jqplotDataHighlight');
+                evt.pageX = ev.pageX;
+                evt.pageY = ev.pageY;
+                plot.target.trigger(evt, ins);
+                highlight (plot, ins[0], ins[1]);
+            }
+        }
+        else if (neighbor == null) {
+            unhighlight (plot);
+        }
+    }
+    
+    function handleMouseUp(ev, gridpos, datapos, neighbor, plot) {
+        var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
+        if (idx != null && plot.series[idx].highlightMouseDown) {
+            unhighlight(plot);
+        }
+    }
+    
+    function handleClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var evt = jQuery.Event('jqplotDataClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }
+    
+    function handleRightClick(ev, gridpos, datapos, neighbor, plot) {
+        if (neighbor) {
+            var ins = [neighbor.seriesIndex, neighbor.pointIndex, neighbor.data];
+            var idx = plot.plugins.pieRenderer.highlightedSeriesIndex;
+            if (idx != null && plot.series[idx].highlightMouseDown) {
+                unhighlight(plot);
+            }
+            var evt = jQuery.Event('jqplotDataRightClick');
+            evt.pageX = ev.pageX;
+            evt.pageY = ev.pageY;
+            plot.target.trigger(evt, ins);
+        }
+    }    
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    function postPlotDraw() {
+        this.plugins.pieRenderer = {highlightedSeriesIndex:null};
+        this.plugins.pieRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        // do we have any data labels?  if so, put highlight canvas before those
+        var labels = $(this.targetId+' .jqplot-data-label');
+        if (labels.length) {
+            $(labels[0]).before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        }
+        // else put highlight canvas before event canvas.
+        else {
+            this.eventCanvas._elem.before(this.plugins.pieRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-pieRenderer-highlight-canvas', this._plotDimensions));
+        }
+        
+        var hctx = this.plugins.pieRenderer.highlightCanvas.setContext();
+    }
+    
+    $.jqplot.preInitHooks.push(preInit);
+    
+    $.jqplot.PieTickRenderer = function() {
+        $.jqplot.AxisTickRenderer.call(this);
+    };
+    
+    $.jqplot.PieTickRenderer.prototype = new $.jqplot.AxisTickRenderer();
+    $.jqplot.PieTickRenderer.prototype.constructor = $.jqplot.PieTickRenderer;
+    
+})(jQuery);
+    
+    /**
+ * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * The author would appreciate an email letting him know of any substantial
+ * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
+ * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
+ * not required.
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * Thanks for using jqPlot!
+ * 
+ */
+(function($) {
+    
+    /**
+     * Class: $.jqplot.PointLabels
+     * Plugin for putting labels at the data points.
+     * 
+     * To use this plugin, include the js
+     * file in your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.pointLabels.js"></script>
+     * 
+     * By default, the last value in the data ponit array in the data series is used
+     * for the label.  For most series renderers, extra data can be added to the 
+     * data point arrays and the last value will be used as the label.
+     * 
+     * For instance, 
+     * this series:
+     * 
+     * > [[1,4], [3,5], [7,2]]
+     * 
+     * Would, by default, use the y values in the labels.
+     * Extra data can be added to the series like so:
+     * 
+     * > [[1,4,'mid'], [3 5,'hi'], [7,2,'low']]
+     * 
+     * And now the point labels would be 'mid', 'low', and 'hi'.
+     * 
+     * Options to the point labels and a custom labels array can be passed into the
+     * "pointLabels" option on the series option like so:
+     * 
+     * > series:[{pointLabels:{
+     * >    labels:['mid', 'hi', 'low'],
+     * >    location:'se',
+     * >    ypadding: 12
+     * >    }
+     * > }]
+     * 
+     * A custom labels array in the options takes precendence over any labels
+     * in the series data.  If you have a custom labels array in the options,
+     * but still want to use values from the series array as labels, set the
+     * "labelsFromSeries" option to true.
+     * 
+     * By default, html entities (<, >, etc.) are escaped in point labels.  
+     * If you want to include actual html markup in the labels, 
+     * set the "escapeHTML" option to false.
+     * 
+     */
+    $.jqplot.PointLabels = function(options) {
+        // Group: Properties
+        //
+        // prop: show
+        // show the labels or not.
+        this.show = $.jqplot.config.enablePlugins;
+        // prop: location
+        // compass location where to position the label around the point.
+        // 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        this.location = 'n';
+        // prop: labelsFromSeries
+        // true to use labels within data point arrays.
+        this.labelsFromSeries = false;
+        // prop: seriesLabelIndex
+        // array index for location of labels within data point arrays.
+        // if null, will use the last element of teh data point array.
+        this.seriesLabelIndex = null;
+        // prop: labels
+        // array of arrays of labels, one array for each series.
+        this.labels = [];
+        // actual labels that will get displayed.
+        // needed to preserve user specified labels in labels array.
+        this._labels = [];
+        // prop: stackedValue
+        // true to display value as stacked in a stacked plot.
+        // no effect if labels is specified.
+        this.stackedValue = false;
+        // prop: ypadding
+        // vertical padding in pixels between point and label
+        this.ypadding = 6;
+        // prop: xpadding
+        // horizontal padding in pixels between point and label
+        this.xpadding = 6;
+        // prop: escapeHTML
+        // true to escape html entities in the labels.
+        // If you want to include markup in the labels, set to false.
+        this.escapeHTML = true;
+        // prop: edgeTolerance
+        // Number of pixels that the label must be away from an axis
+        // boundary in order to be drawn.  Negative values will allow overlap
+        // with the grid boundaries.
+        this.edgeTolerance = -5;
+        // prop: formatter
+        // A class of a formatter for the tick text.  sprintf by default.
+        this.formatter = $.jqplot.DefaultTickFormatter;
+        // prop: formatString
+        // string passed to the formatter.
+        this.formatString = '';
+        // prop: hideZeros
+        // true to not show a label for a value which is 0.
+        this.hideZeros = false;
+        this._elems = [];
+        
+        $.extend(true, this, options);
+    };
+    
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
+    
+    // called with scope of a series
+    $.jqplot.PointLabels.init = function (target, data, seriesDefaults, opts){
+        var options = $.extend(true, {}, seriesDefaults, opts);
+        options.pointLabels = options.pointLabels || {};
+        if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal' && !options.pointLabels.location) {
+            options.pointLabels.location = 'e';
+        }
+        // add a pointLabels attribute to the series plugins
+        this.plugins.pointLabels = new $.jqplot.PointLabels(options.pointLabels);
+        this.plugins.pointLabels.setLabels.call(this);
+    };
+    
+    // called with scope of series
+    $.jqplot.PointLabels.prototype.setLabels = function() {   
+        var p = this.plugins.pointLabels; 
+        var labelIdx;
+        if (p.seriesLabelIndex != null) {
+            labelIdx = p.seriesLabelIndex;
+        }
+        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+            labelIdx = 0;
+        }
+        else {
+            labelIdx = this._plotData[0].length -1;
+        }
+        p._labels = [];
+        if (p.labels.length == 0 || p.labelsFromSeries) {    
+            if (p.stackedValue) {
+                if (this._plotData.length && this._plotData[0].length){
+                    // var idx = p.seriesLabelIndex || this._plotData[0].length -1;
+                    for (var i=0; i<this._plotData.length; i++) {
+                        p._labels.push(this._plotData[i][labelIdx]);
+                    }
+                }
+            }
+            else {
+                var d = this.data;
+                if (this.renderer.constructor == $.jqplot.BarRenderer && this.waterfall) {
+                    d = this._data;
+                }
+                if (d.length && d[0].length) {
+                    // var idx = p.seriesLabelIndex || d[0].length -1;
+                    for (var i=0; i<d.length; i++) {
+                        p._labels.push(d[i][labelIdx]);
+                    }
+                }
+            }
+        }
+        else if (p.labels.length){
+            p._labels = p.labels;
+        }
+    };
+    
+    $.jqplot.PointLabels.prototype.xOffset = function(elem, location, padding) {
+        location = location || this.location;
+        padding = padding || this.xpadding;
+        var offset;
+        
+        switch (location) {
+            case 'nw':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            case 'n':
+                offset = -elem.outerWidth(true)/2;
+                break;
+            case 'ne':
+                offset =  this.xpadding;
+                break;
+            case 'e':
+                offset = this.xpadding;
+                break;
+            case 'se':
+                offset = this.xpadding;
+                break;
+            case 's':
+                offset = -elem.outerWidth(true)/2;
+                break;
+            case 'sw':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            case 'w':
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+            default: // same as 'nw'
+                offset = -elem.outerWidth(true) - this.xpadding;
+                break;
+        }
+        return offset; 
+    };
+    
+    $.jqplot.PointLabels.prototype.yOffset = function(elem, location, padding) {
+        location = location || this.location;
+        padding = padding || this.xpadding;
+        var offset;
+        
+        switch (location) {
+            case 'nw':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'n':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'ne':
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+            case 'e':
+                offset = -elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                offset = this.ypadding;
+                break;
+            case 's':
+                offset = this.ypadding;
+                break;
+            case 'sw':
+                offset = this.ypadding;
+                break;
+            case 'w':
+                offset = -elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                offset = -elem.outerHeight(true) - this.ypadding;
+                break;
+        }
+        return offset; 
+    };
+    
+    // called with scope of series
+    $.jqplot.PointLabels.draw = function (sctx, options) {
+        var p = this.plugins.pointLabels;
+        // set labels again in case they have changed.
+        p.setLabels.call(this);
+        // remove any previous labels
+        for (var i=0; i<p._elems.length; i++) {
+            p._elems[i].remove();
+        }
+        if (p.show) {
+            var ax = '_'+this._stackAxis+'axis';
+        
+            if (!p.formatString) {
+                p.formatString = this[ax]._ticks[0].formatString;
+                p.formatter = this[ax]._ticks[0].formatter;
+            }
+        
+            var pd = this._plotData;
+            var xax = this._xaxis;
+            var yax = this._yaxis;
+
+            for (var i=p._labels.length-1; i>=0; i--) {
+                var label = p._labels[i];
+                
+                if (p.hideZeros && parseInt(p._labels[i], 10) == 0) {
+                    label = '';
+                }
+                
+                if (label != null) {
+                    label = p.formatter(p.formatString, label);
+                } 
+                var elem = $('<div class="jqplot-point-label jqplot-series-'+this.index+' jqplot-point-'+i+'" style="position:absolute"></div>');
+                elem.insertAfter(sctx.canvas);
+                p._elems.push(elem);
+                if (p.escapeHTML) {
+                    elem.text(label);
+                }
+                else {
+                    elem.html(label);
+                }
+                var location = p.location;
+                if (this.waterfall && parseInt(label, 10) < 0) {
+                    location = oppositeLocations[locationIndicies[location]];
+                }
+                var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);
+                var elt = yax.u2p(pd[i][1]) + p.yOffset(elem, location);
+                if (this.renderer.constructor == $.jqplot.BarRenderer) {
+                    if (this.barDirection == "vertical") {
+                        ell += this._barNudge;
+                    }
+                    else {
+                        elt -= this._barNudge;
+                    }
+                }
+                elem.css('left', ell);
+                elem.css('top', elt);
+                var elr = ell + $(elem).width();
+                var elb = elt + $(elem).height();
+                var et = p.edgeTolerance;
+                var scl = $(sctx.canvas).position().left;
+                var sct = $(sctx.canvas).position().top;
+                var scr = sctx.canvas.width + scl;
+                var scb = sctx.canvas.height + sct;
+                // if label is outside of allowed area, remove it
+                if (ell - et < scl || elt - et < sct || elr + et > scr || elb + et > scb) {
+                    $(elem).detach();
+                }
+            }
+        }
+    };
+    
+    $.jqplot.postSeriesInitHooks.push($.jqplot.PointLabels.init);
+    $.jqplot.postDrawSeriesHooks.push($.jqplot.PointLabels.draw);
+})(jQuery);
