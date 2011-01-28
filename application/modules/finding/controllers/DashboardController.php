@@ -1017,62 +1017,71 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             );
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
-
-            $fromDay = $dayRange[$x];
-            $toDay = $dayRange[$x+1];
+            
+            $fromDayInt = $dayRange[$x];
+            $fromDay = new Zend_Date();
+            $fromDay = $fromDay->addDay($fromDayInt);
+            $fromDayStr = $fromDay->toString('YYY-MM-dd');
+            
+            $toDayInt = $dayRange[$x+1];
+            $toDay = new Zend_Date();
+            $toDay = $toDay->addDay($toDayInt);
+            $toDayStr = $toDay->toString('YYY-MM-dd');
             
             if ($x === count($dayRange) - 2) {
-                $thisColumnLabel = $fromDay . '-' . $toDay;
+                $thisColumnLabel = $fromDayInt . '-' . $toDayInt;
             } else {
-                $toDay--;
-                $thisColumnLabel = $fromDay . '-' . $toDay;
+                $toDay->addDay(-1);
+                $toDayStr = $toDay->toString('YYY-MM-dd');
+                $toDayInt--;
+                $thisColumnLabel = $fromDayInt . '-' . $toDayInt;
             }
 
             // Get the count of High findings
             $q = Doctrine_Query::create()
-                ->select()
+                ->select('count(f.id), f.threatlevel')
                 ->from('Finding f')
-                ->where(
-                    'f.threatlevel = "LOW" AND ' .
-                    '(f.status="NEW" OR f.status="DRAFT") AND ' .
-                    '(DATEDIFF(NOW(), f.createdts) BETWEEN "' . $fromDay . '" AND "' . $toDay . '")'
-                )
+                ->where('f.status="NEW" OR f.status="DRAFT"')
+                ->andWhere('f.createdts BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
+                ->groupBy('f.threatlevel')
                 ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $highCount = $q->count();
-
-            // Get the count of Moderate findings
-            $q = Doctrine_Query::create()
-                ->select()
-                ->from('Finding f')
-                ->where(
-                    'f.threatlevel = "MODERATE" AND ' .
-                    '(f.status="NEW" OR f.status="DRAFT") AND ' .
-                    '(DATEDIFF(NOW(), f.createdts) BETWEEN "' . $fromDay . '" AND "' . $toDay . '")'
-                )
-                ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $modCount = $q->count();
-
-            // Get the count of Low findings
-            $q = Doctrine_Query::create()
-                ->select()
-                ->from('Finding f')
-                ->where(
-                    'f.threatlevel = "HIGH" AND ' .
-                    '(f.status="NEW" OR f.status="DRAFT") AND ' .
-                    '(DATEDIFF(NOW(), f.createdts) BETWEEN "' . $fromDay . '" AND "' . $toDay . '")'
-                )
-                ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $lowCount = $q->count();
+            $rslts = $q->execute();
+            
+            // initalize to 0 (query may not return values for 0 counts)
+            $thisHigh = 0;
+            $thisMod = 0;
+            $thisLow = 0;
+            
+            foreach ($rslts as $thisLevel) {
+                switch ($thisLevel['threatLevel']) {
+                    case 'LOW':
+                        $thisHigh = $thisLevel['count'];
+                        break;
+                    case 'MODERATE':
+                        $thisMod = $thisLevel['count'];
+                        break;
+                    case 'HIGH':
+                        $thisLow = $thisLevel['count'];
+                        break;
+                }
+            }
+            
+            // make URL to search page with date params
+            $basicSearchLink = '/finding/remediation/list/queryType/advanced/createdTs/dateBetween/'
+                . $fromDayStr . '/' . $toDayStr;
             
             $noMitChart->addColumn(
                 $thisColumnLabel,
                 array(
-                    $highCount,
-                    $modCount,
-                    $lowCount
+                    $thisHigh,
+                    $thisMod,
+                    $thisLow
+                ),
+                array(
+                    $basicSearchLink . '/threatLevel/enumIs/HIGH',
+                    $basicSearchLink . '/threatLevel/enumIs/MODERATE',
+                    $basicSearchLink . '/threatLevel/enumIs/LOW'
                 )
             );
 
