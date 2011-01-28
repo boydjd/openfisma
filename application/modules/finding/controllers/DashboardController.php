@@ -1020,7 +1020,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Low'
                 )
             );
-
+            
         $nonStackedLinks = array();
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
@@ -1074,9 +1074,16 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 }
             }
             
-            // make URL to search page with date params
+            // make URL to the search page with date params
             $basicSearchLink = '/finding/remediation/list/queryType/advanced/createdTs/dateBetween/'
                 . $fromDayStr . '/' . $toDayStr;
+                
+            // make this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
+            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/CLOSED';
+            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/EN';
+            foreach ($this->_getEvaluationNames() as $thisStatus) {
+                $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/' . $thisStatus;
+            }
             
             // remembers links for a non-stacked bar chart in the even the user is querying "totals"
             $nonStackedLinks[] = $basicSearchLink;
@@ -1132,6 +1139,27 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $noMitChart->export('array');
+    }
+
+    /**
+     * Gets all nicknames from the evaluation table
+     *
+     * @return array
+     */
+    private function _getEvaluationNames()
+    {
+        $q = Doctrine_Query::create()
+            ->select('nickname')
+            ->from('Evaluation e')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $results = $q->execute();        
+
+        $rtn = array();
+        foreach($results as $thisEval) {
+            $rtn[] = $thisEval['nickname'];
+        }
+        
+        return $rtn;
     }
 
     /**
