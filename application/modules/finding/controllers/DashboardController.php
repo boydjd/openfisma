@@ -788,123 +788,27 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     {
         $findingType = urldecode($this->_request->getParam('findingType'));
 
-        if ($findingType === 'Totals') {
-
-            $q = Doctrine_Query::create()
-                 ->select('f.status, e.nickname')
-                 ->addSelect('COUNT(f.status) AS statusCount, COUNT(e.nickname) AS subStatusCount')
-                 ->from('Finding f')
-                 ->leftJoin('f.CurrentEvaluation e')
-                 ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
-                 ->groupBy('f.status, e.nickname')
-                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $results = $q->execute();
-
-            // initialize 3 basic status
-            $arrTotal = array('NEW' => 0, 'DRAFT' => 0);
-            // initialize current evaluation status
-            $q = Doctrine_Query::create()
-                 ->select()
-                 ->from('Evaluation e')
-                 // keep the the 'action' approvalGroup is first fetched
-                 ->orderBy('e.approvalGroup ASC')
-                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $evaluations = $q->execute();
-
-            foreach ($evaluations as $evaluation) {
-                if ($evaluation['approvalGroup'] == 'evidence') {
-                    $arrTotal['EN'] = 0;
-                }
-                $arrTotal[$evaluation['nickname']] = 0;
-            }
-
-            foreach ($results as $result) {
-                if (in_array($result['status'], array_keys($arrTotal))) {
-                    $arrTotal[$result['status']] = (integer) $result['statusCount'];
-                } elseif (!empty($result['CurrentEvaluation']['nickname'])) {
-                    $arrTotal[$result['CurrentEvaluation']['nickname']] = (integer) $result['subStatusCount'];
-                }
-            }
-
-            $thisChart = new Fisma_Chart();
-            $thisChart
-                ->setChartType('bar')
-                ->setAxisLabelY('Number of Findings')
-                ->setConcatColumnLabels(false)
-                ->setData(array_values($arrTotal))
-                ->setAxisLabelsX(array_keys($arrTotal))
-                ->setColors(
-                    array(
-                        '#CECECE',
-                        '#67F967',
-                        '#FFCACA',
-                        '#FF2424',
-                        '#FF9E3D',
-                        '#CACAFF',
-                        '#2424FF'
-                    )
-                )
-                ->setLinks(
-                    '/finding/remediation/list/' . 
-                    'queryType/advanced/denormalizedStatus/textExactMatch/#ColumnLabel#'
-                );
-
-            return $thisChart;
-
-        }
-
-        // If we have not returned by this line, then the findingType is either High/Moderate/Low/All-Divided
-
         $thisChart = new Fisma_Chart();
         $thisChart
-            ->setAxisLabelY('Number of Findings')
-            ->setConcatColumnLabels(true);
-
-        if ($findingType === 'High'|| $findingType === 'Moderate' || $findingType === 'Low') {
-
-            // Display a simple bar chart of just High/Mod/Low findings
-            $thisChart
-                ->setChartType('bar')
-                ->setConcatColumnLabels(false);
-
-            // Decise color of every bar based on High/Mod/Low
-            switch (strtoupper($findingType)) {
-            case 'HIGH':
-                $thisChart->setColors(array('#FF0000'));
-                break;
-            case 'MODERATE':
-                $thisChart->setColors(array('#FF6600'));
-                break;
-            case 'LOW':
-                $thisChart->setColors(array('#FFC000'));
-                break;
-            }
-
-        } elseif ($findingType === 'High, Moderate, and Low') {
-
-            // Display a stacked-bar chart with High/Mod/Low findings in each column
-            $thisChart
-                ->setChartType('stackedbar')
-                ->setThreatLegendVisibility(true)
-                ->setColors(
-                    array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
-                    )
+            ->setChartType('stackedbar')
+            ->setThreatLegendVisibility(true)
+            ->setColors(
+                array(
+                    "#FF0000",
+                    "#FF6600",
+                    "#FFC000"
                 )
-                ->setLayerLabels(
-                    array(
-                        'High',
-                        'Moderate',
-                        'Low'
-                    )
-                );
-        }
+            )
+            ->setLayerLabels(
+                array(
+                    'High',
+                    'Moderate',
+                    'Low'
+                )
+            );
 
-        // Query database
         $q = Doctrine_Query::create()
-            ->select('count(*), threatlevel, denormalizedstatus')
+            ->select('count(f.id), threatlevel, denormalizedstatus')
             ->from('Finding f')
             ->groupBy('f.denormalizedstatus, f.threatlevel')
             ->orderBy('f.denormalizedstatus, f.threatlevel')
@@ -912,7 +816,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
 
-        // sort results into $sortedRslts[FindingStatusName][High/Mod/Low] = TheCount
+        // sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
         $sortedRslts = array();
         foreach ($rslts as $thisRslt) {
 
@@ -922,11 +826,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
         }
-
+        
+        $nonStackedLinks = array();
+        
         // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
         for ($x = 0; $x < 7; $x++) {
 
-            // Which status are we adding this time?
+            // Which status are we adding this time? (this will be the column label on the chart)
             switch ($x) {
             case 0:
                 $thisStatus = 'NEW';
@@ -951,38 +857,91 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 break;
             }
 
-            // Is it Or All-Migh&Mod&Low in a stacked bar chart? Or just High, Mod, or Low in a regular chart?
-            if ($findingType === 'High, Moderate, and Low') {
-                $addColumnData = array(
-                        $sortedRslts[$thisStatus]['HIGH'],
-                        $sortedRslts[$thisStatus]['MODERATE'],
-                        $sortedRslts[$thisStatus]['LOW']
-                    );
-                $addLink = array(
-                        '/finding/remediation/list/queryType/advanced' .
-                            '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus) .
-                            '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list/queryType/advanced' .
-                            '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus) .
-                            '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced' .
-                            '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus) .
-                            '/threatLevel/enumIs/LOW'
-                    );
+            // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
+            if (!empty($sortedRslts[$thisStatus]['HIGH'])) {
+                $highCount = $sortedRslts[$thisStatus]['HIGH'];
             } else {
-                $addColumnData = $sortedRslts[$thisStatus][strtoupper($findingType)];
-                $addLink = '/finding/remediation/list/queryType/advanced' .
-                            '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
+                $highCount = 0;
+            }
+            
+            if (!empty($sortedRslts[$thisStatus]['MODERATE'])) {
+                $modCount = $sortedRslts[$thisStatus]['MODERATE'];
+            } else {
+                $modCount = 0;
+            }
+            
+            if (!empty($sortedRslts[$thisStatus]['LOW'])) {
+                $lowCount = $sortedRslts[$thisStatus]['LOW'];
+            } else {
+                $lowCount = 0;
             }
 
+            // Prepare for a stacked-bar chart (these are the counts on each stack within the column)
+            $addColumnCounts = array($highCount, $modCount, $lowCount);
+
+            // Make each area of the chart link
+            $basicLink = '/finding/remediation/list/queryType/advanced' .
+                '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
+            $nonStackedLinks[] = $basicLink;
+            $stackedLinks = array(
+                $basicLink . '/threatLevel/enumIs/HIGH',
+                $basicLink . '/threatLevel/enumIs/MODERATE',
+                $basicLink . '/threatLevel/enumIs/LOW'
+            );
+            
+            // Create this column as a stacked-bar chart for now (filtration later in function)
             $thisChart->addColumn(
                 $thisStatus,
-                $addColumnData,
-                $addLink
+                $addColumnCounts,
+                $stackedLinks
             );
         }
 
+        // Show, hide and filter chart data as requested
+        switch (strtolower($findingType)) {
+            case "totals":
+                // Crunch numbers
+                $thisChart
+                    ->convertFromStackedToRegular()
+                    ->setLinks($nonStackedLinks)
+                    ->setThreatLegendVisibility(false)
+                    ->setColors(
+                        array(
+                            '#CECECE',
+                            '#67F967',
+                            '#FFCACA',
+                            '#FF2424',
+                            '#FF9E3D',
+                            '#CACAFF',
+                            '#2424FF'
+                        )
+                    );
+                break;
+            case "high, moderate, and low":
+                // $thisChart is already in this form
+                break;
+            case "high":
+                // remove the Low and Moderate columns/layers
+                $thisChart->deleteLayer(2);
+                $thisChart->deleteLayer(1);
+                $thisChart->setColors(array('#FF0000'));
+                break;
+            case "moderate":
+                // remove the Low and High columns/layers
+                $thisChart->deleteLayer(2);
+                $thisChart->deleteLayer(0);
+                $thisChart->setColors(array('#FF6600'));
+                break;
+            case "low":
+                // remove the Moderate and High columns/layers
+                $thisChart->deleteLayer(1);
+                $thisChart->deleteLayer(0);
+                $thisChart->setColors(array('#FFC000'));
+                break;
+        }
+
         return $thisChart;
+
     }
 
     /**

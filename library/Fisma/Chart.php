@@ -342,8 +342,10 @@ class Fisma_Chart
      */
     public function addColumn($columnLabel, $addValue, $addLink = null)
     {
-        // Add label for this column
-        $this->chartParamArr['chartDataText'][] = $columnLabel;
+        // Do not add null values
+        if (empty($addValue)) {
+            $addValue = 0;
+        }
         
         // We must know the chart type in order to know howto format the data in the data array
         if (empty($this->chartParamArr['chartType'])) {
@@ -368,6 +370,9 @@ class Fisma_Chart
                 );
             }
         }
+        
+        // Add label for this column
+        $this->chartParamArr['chartDataText'][] = $columnLabel;
         
         // Add data to plot
         if (strpos($this->getChartType(), 'stacked') === false) {
