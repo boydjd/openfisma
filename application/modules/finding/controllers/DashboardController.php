@@ -295,7 +295,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
         
         // set link
-        $rtnChart->setLinks('/finding/remediation/list/queryType/advanced/organization/textExactMatch/#ColumnLabel#');
+        $rtnChart->setLinks('/finding/remediation/list/queryType/advanced/organization/organizationSubtree/#ColumnLabel#');
         
         // the context switch will turn this array into a json reply (the responce to the external source)
         $this->view->chart = $rtnChart->export('array');
