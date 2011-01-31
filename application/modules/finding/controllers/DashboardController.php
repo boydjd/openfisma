@@ -1005,26 +1005,24 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
             
-            $fromDayInt = $dayRange[$x];
+            $fromDayInt = $dayRange[$x+1];
             $fromDay = new Zend_Date();
-            $fromDay = $fromDay->addDay($fromDayInt);
+            $fromDay = $fromDay->addDay(-$fromDayInt);
             $fromDayStr = $fromDay->toString('YYY-MM-dd');
             
-            $toDayInt = $dayRange[$x+1];
+            $toDayInt = $dayRange[$x];
             $toDay = new Zend_Date();
-            $toDay = $toDay->addDay($toDayInt);
+            $toDay = $toDay->addDay(-$toDayInt);
             $toDayStr = $toDay->toString('YYY-MM-dd');
             
-            if ($x === count($dayRange) - 2) {
-                $thisColumnLabel = $fromDayInt . '-' . $toDayInt;
-            } else {
-                $toDay->addDay(-1);
-                $toDayStr = $toDay->toString('YYY-MM-dd');
-                $toDayInt--;
-                $thisColumnLabel = $fromDayInt . '-' . $toDayInt;
+            if ($x !== count($dayRange) - 2) {
+                $fromDay->addDay(-1);
+                $fromDayStr = $fromDay->toString('YYY-MM-dd');
+                $fromDayInt--;
             }
+            $thisColumnLabel = $toDayInt . '-' . $fromDayInt;
 
-            // Get the count of High findings
+            // Get the count of findings
             $q = Doctrine_Query::create()
                 ->select('count(f.id), f.threatlevel')
                 ->from('Finding f')
