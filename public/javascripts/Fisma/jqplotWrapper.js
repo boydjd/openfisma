@@ -122,8 +122,8 @@ function createJQChart(param)
 
     // clear the chart area
     document.getElementById(param['uniqueid']).innerHTML = '';
-        document.getElementById(param['uniqueid']).className = '';
-        document.getElementById(param['uniqueid'] + 'toplegend').innerHTML = '';
+    document.getElementById(param['uniqueid']).className = '';
+    document.getElementById(param['uniqueid'] + 'toplegend').innerHTML = '';
 
     // handel aliases and short-cut vars
     if (typeof param['barMargin'] != 'undefined') {
@@ -138,7 +138,7 @@ function createJQChart(param)
         param = jQuery.extend(true, param, {'legend': {'rendererOptions': {'numberRows': param['legendRowCount']}}});
         param['legendRowCount'] = undefined;
     }
-    
+        
     // make sure the numbers to be plotted in param['chartData'] are infact numbers and not an array of strings of numbers
     param['chartData'] = forceIntegerArray(param['chartData']);
 
@@ -156,51 +156,53 @@ function createJQChart(param)
     // This must be done before the next switch block that translates some data within the param object for jqPlot
     chartsOnDOM[param['uniqueid']] = jQuery.extend(true, {}, param);
     
-    // call the correct function based on chartType
-    switch(param['chartType'])
-    {
-        case 'stackedbar':
-            param['varyBarColor'] = false;
-                        if (typeof param['showlegend'] == 'undefined') { param['showlegend'] = true; }
-            var rtn = createJQChart_StackedBar(param);
-            break;
-        case 'bar':
-
-            // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-            if (typeof param['chartData'][0] =='object') {
-
-                // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
-
+    // call the correct function based on chartType, or state there will be no chart created
+    if (!chartIsEmpty(param)) {
+    
+        switch(param['chartType'])
+        {
+            case 'stackedbar':
                 param['varyBarColor'] = false;
-                param['showlegend'] = true;
+                            if (typeof param['showlegend'] == 'undefined') { param['showlegend'] = true; }
+                var rtn = createJQChart_StackedBar(param);
+                break;
+            case 'bar':
 
-            } else {
-                param['chartData'] = [param['chartData']];  // force to 2 dimensional array
+                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                if (typeof param['chartData'][0] =='object') {
+
+                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+
+                    param['varyBarColor'] = false;
+                    param['showlegend'] = true;
+
+                } else {
+                    param['chartData'] = [param['chartData']];  // force to 2 dimensional array
+                    param['links'] = [param['links']];
+                    param['varyBarColor'] = true;
+                    param['showlegend'] = false;
+                }
+
+                param['stackSeries'] = false;
+                var rtn = createJQChart_StackedBar(param);
+                break;
+
+            case 'line':
+                var rtn = createChartJQStackedLine(param);
+                break;
+            case 'stackedline':
+                var rtn = createChartJQStackedLine(param);
+                break;
+            case 'pie':
                 param['links'] = [param['links']];
-                param['varyBarColor'] = true;
-                param['showlegend'] = false;
-            }
-            
-            param['stackSeries'] = false;
-            var rtn = createJQChart_StackedBar(param);
-            break;
-
-        case 'line':
-            var rtn = createChartJQStackedLine(param);
-            break;
-        case 'stackedline':
-            var rtn = createChartJQStackedLine(param);
-            break;
-        case 'pie':
-            param['links'] = [param['links']];
-            var rtn = createChartJQPie(param);
-            break;
-        default:
-            alert('createJQChart Error - chartType is invalid (' + param['chartType'] + ')');
-            return false;
+                var rtn = createChartJQPie(param);
+                break;
+            default:
+                alert('createJQChart Error - chartType is invalid (' + param['chartType'] + ')');
+                return false;
+        }
     }
-
 
     // chart tweeking external to the jqPlot library
     removeOverlappingPointLabels(param);
@@ -209,6 +211,7 @@ function createJQChart(param)
     createChartThreatLegend(param);
     applyChartBorders(param);
     globalSettingRefreashUI(param);
+    showMsgOnEmptyChart(param);
     
     // Handel table for screen readers
     var dataTableObj = document.getElementById(param['uniqueid'] + 'table');
@@ -571,7 +574,7 @@ function createChartThreatLegend(param)
         Creates a red-orange-yellow legent above the chart
     */
 
-    if (param['showThreatLegend']) {
+    if (param['showThreatLegend'] && !chartIsEmpty(param)) {
         if (param['showThreatLegend'] == true) {
 
             // Is a width given for the width of the legend? OR should we assume 100%?
@@ -1602,6 +1605,42 @@ function redrawAllCharts() {
         globalSettingRefreashUI(thisParamObj);
     }
 
+}
+
+function showMsgOnEmptyChart(param) {
+
+    if (chartIsEmpty(param)) {
+        var targDiv = document.getElementById(param['uniqueid']);
+        var injectHTML = 'No data to plot.';
+        var insertBeforeChild = targDiv.childNodes[1];
+        msgOnDOM = document.createElement('div');
+        msgOnDOM.setAttribute('align', 'center');
+        msgOnDOM.setAttribute('hight', '100%');
+        msgOnDOM.setAttribute('style' , 'position: absolute; width: ' + param['width'] + 'px; height: 100%; text-align: center; vertical-align: middle');
+        var inserted = targDiv.insertBefore(msgOnDOM, insertBeforeChild);
+        inserted.innerHTML = injectHTML;
+    }
+}
+
+function chartIsEmpty(param) {
+
+    // Is all data 0?
+    var isAll0Data = true;
+    for (var x = 0; x < param['chartData'].length; x++) {
+    
+        if (typeof param['chartData'][x] == 'object') {
+            
+            for (var y = 0; y < param['chartData'][x].length; y++) {
+                if (param['chartData'][x][y] * 1 > 0) { isAll0Data = false; }
+            }
+            
+        } else {
+            if (param['chartData'][x] * 1 > 0) { isAll0Data = false; }
+        }
+    
+    }
+    
+    return isAll0Data;
 }
 
 function getNextNumberDivisibleBy5(nbr) {
