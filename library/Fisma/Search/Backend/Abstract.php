@@ -240,7 +240,7 @@ abstract class Fisma_Search_Backend_Abstract
         $html = html_entity_decode($html);
 
         // Remove excess whitespace
-        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
+        $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);
         $html = preg_replace('/^\s+/', '', $html);
         $html = preg_replace('/\s+$/', '', $html);
         $html = preg_replace('/ +/', ' ', $html);

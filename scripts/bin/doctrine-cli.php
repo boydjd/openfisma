@@ -130,7 +130,7 @@ try {
                         // Look for the first YAML tag in the document and remove it. Then set the $write flag to true
                         // so that we can stop looking for the tag.
                         if (preg_match('/[^#]\w+:.*\R/', $buffer, $a)) {
-                            $buffer = preg_replace('/[^#]\w+:.*\R/', '', $buffer, 1);
+                            $buffer = preg_replace('/[^#]\w+:.*(?>\r\n|\n|\x0b|\f|\r|\x85)/', '', $buffer, 1);
                             fwrite($targetHandle, $buffer);
                             $write = true;
                         }
