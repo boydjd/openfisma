@@ -220,6 +220,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
         if ($displayBy === 'everything') {
             
+            /* TODO: remove this, Everything is no longer an option/mode for this chart */
             $rtnChart = $this->_chartfindingorgbasic();
             
         } else {
@@ -256,9 +257,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
                 $childrenTotaled = array_values($childrenTotaled);
 
+                $basicLink =
+                    '/finding/remediation/list/queryType/advanced' . 
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                    '/organization/organizationSubtree/' . $thisParentOrg['nickname'];
+
                 $rtnChart->addColumn(
                     $thisParentOrg['nickname'],
-                    $childrenTotaled
+                    $childrenTotaled,
+                    array(
+                        $basicLink . '/threatLevel/enumIs/HIGH',
+                        $basicLink . '/threatLevel/enumIs/MODERATE',
+                        $basicLink . '/threatLevel/enumIs/LOW'
+                    )
                 );
 
             }
@@ -271,7 +282,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $rtnChart
                         ->convertFromStackedToRegular()
                         ->setColors(array('#3366FF'))
-                        ->setThreatLegendVisibility(false);
+                        ->setThreatLegendVisibility(false)
+                        ->setLinks(
+                            '/finding/remediation/list/queryType/advanced' . 
+                            '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                            '/organization/organizationSubtree/#ColumnLabel#'
+                        );
+
                     break;
                 case 'high':
                     $rtnChart
@@ -293,14 +310,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     break;
             }
         }
-        
-        // set link
-        $rtnChart->setLinks(
-            '/finding/remediation/list/queryType/advanced' . 
-            '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-            '/organization/organizationSubtree/#ColumnLabel#'
-        );
-        
+
         // the context switch will turn this array into a json reply (the responce to the external source)
         $this->view->chart = $rtnChart->export('array');
     }
