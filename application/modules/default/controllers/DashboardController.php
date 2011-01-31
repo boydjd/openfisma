@@ -57,7 +57,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->_myOrgSystemIds = $orgSystemIds;
 
         $this->_helper->fismaContextSwitch()
-                      ->addActionContext('totaltype', 'json')
+                      ->addActionContext('total-type', 'json')
                       ->initContext();
     }
 
@@ -166,7 +166,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         }
         
         // left-side chart (bar) - Finding Status chart
-        $extSrcUrl = '/finding/dashboard/chartfinding/format/json';
+        $extSrcUrl = '/finding/dashboard/chart-finding/format/json';
 
         $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
         $chartTotalStatus
@@ -188,7 +188,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->chartTotalStatus = $chartTotalStatus->export();
         
         // right-side chart (pie) - Mit Strategy Distribution chart
-        $chartTotalType = new Fisma_Chart(380, 275, 'chartTotalType', '/dashboard/totaltype/format/json');
+        $chartTotalType = new Fisma_Chart(380, 275, 'chartTotalType', '/dashboard/total-type/format/json');
         $chartTotalType
             ->setTitle('Mitigation Strategy Distribution');
 
@@ -201,7 +201,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
      * 
      * @return void
      */
-    public function totaltypeAction()
+    public function totalTypeAction()
     {
         $summary = array(
             'NONE' => 0,
@@ -214,13 +214,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->select('f.type')
             ->addSelect('COUNT(f.type) as typeCount')
             ->from('Finding f')
-            ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
+            ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
             ->groupBy('f.type');
         $results =$q->execute()->toArray();
         $types = array_keys($summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
-                $summary[$result['type']] = (integer) $result['typeCount'];
+                $summary[$result['type']] = $result['typeCount'];
             }
         }
         
