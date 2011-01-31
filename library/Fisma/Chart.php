@@ -477,7 +477,7 @@ class Fisma_Chart
      */
     public function convertFromStackedToRegular()
     {
-        // total layers
+        // total the layers
         
         $layers = $this->chartParamArr['chartData'];
         $newColData = array();
@@ -497,6 +497,9 @@ class Fisma_Chart
         $t = $this->getChartType();
         $t = str_replace('stacked', '', $t);
         $this->setChartType($t);
+        
+        // erase layer information (labels)
+        unset($this->chartParamArr['chartLayerText']);
         
         $this->setLinks(array());
         $this->setData($newColData);
