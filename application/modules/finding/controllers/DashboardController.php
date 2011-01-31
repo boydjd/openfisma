@@ -295,7 +295,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
         
         // set link
-        $rtnChart->setLinks('/finding/remediation/list/queryType/advanced/organization/organizationSubtree/#ColumnLabel#');
+        $rtnChart->setLinks(
+            '/finding/remediation/list/queryType/advanced' . 
+            '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+            '/organization/organizationSubtree/#ColumnLabel#'
+        );
         
         // the context switch will turn this array into a json reply (the responce to the external source)
         $this->view->chart = $rtnChart->export('array');
@@ -381,6 +385,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->whereIn('f.responsibleorganizationid=o.id')
             ->andWhereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
             ->where($parLft . ' < o.lft')
+            ->andWhere('f.status <> "CLOSED"')
             ->andWhere($parRgt . ' > o.rgt')
             ->groupBy('o.nickname, f.threatlevel')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -396,6 +401,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->leftJoin('o.Findings f')
                 ->whereIn('f.responsibleorganizationid=o.id')
                 ->where('o.id = ?', $orgId)
+                ->andWhere('f.status <> "CLOSED"')
                 ->groupBy('o.nickname, f.threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -518,6 +524,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->addSelect('threatlevel threat, COUNT(f.id)')
                 ->from('Finding f')
                 ->where('f.nextduedate BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
+                ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
                 ->groupBy('threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -554,8 +561,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             
             // The links to associate with entire columns when this is not a stacked bar chart
-            $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced/' .
-                'nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
+            $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced' .
+                '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
 
             $thisChart->addColumn(
                 $thisColLabel,
@@ -565,14 +573,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisLow
                 ),
                 array(
-                    '/finding/remediation/list/queryType/advanced/nextDueDate/dateBetween/'
-                    . $thisFromDate . '/' . $thisToDate .
+                    '/finding/remediation/list/queryType/advanced' . 
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/HIGH',
-                    '/finding/remediation/list/queryType/advanced/nextDueDate/dateBetween/'
-                    . $thisFromDate . '/' . $thisToDate .
+                    '/finding/remediation/list/queryType/advanced' . 
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/MODERATE',
-                    '/finding/remediation/list/queryType/advanced/nextDueDate/dateBetween/'
-                    . $thisFromDate . '/' . $thisToDate .
+                    '/finding/remediation/list/queryType/advanced' . 
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' .
+                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/LOW'
                 )
             );
@@ -639,6 +650,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->leftJoin('o.Findings f')
                 ->groupBy('o.id')
                 ->orderBy('o.nickname')
+                ->where('f.status <> "CLOSED"')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $orgCounts = $q->execute();
 
@@ -647,7 +659,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisOrg['nickname'],
                     $thisOrg['count'],
-                    '/finding/remediation/list/queryType/advanced/organization/textExactMatch/' . $thisOrg['nickname']
+                    '/finding/remediation/list/queryType/advanced' .
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                    '/organization/textExactMatch/' . $thisOrg['nickname']
                 );
 
             }
@@ -684,6 +698,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->leftJoin('o.Findings f')
                 ->groupBy('o.id, f.threatlevel')
                 ->orderBy('o.nickname, f.threatlevel')
+                ->where('f.status <> "CLOSED"')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
             $orgCounts = $q->execute();
@@ -718,12 +733,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ),
                     array(
                         '/finding/remediation/list/queryType/advanced/' .
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/HIGH',
                         '/finding/remediation/list/queryType/advanced/' .
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/MODERATE',
                         '/finding/remediation/list/queryType/advanced/' .
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/LOW'
                     )
@@ -761,6 +779,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->groupBy('o.id')
                 ->orderBy('o.nickname, f.threatlevel')
                 ->where('f.threatlevel = ?', strtoupper($findingType))
+                ->andWhere('f.status <> "CLOSED"')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
             $orgThisThreatCounts = $q->execute();
@@ -769,7 +788,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisThreatCount['nickname'],
                     $thisThreatCount['count'],
-                    '/finding/remediation/list/queryType/advanced' .
+                    '/finding/remediation/list/queryType/advanced' . 
+                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/textExactMatch/' . $thisThreatCount['nickname'] .
                     '/threatLevel/enumIs/' . strtoupper($findingType)
                 );
@@ -812,6 +832,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->from('Finding f')
             ->groupBy('f.denormalizedstatus, f.threatlevel')
             ->orderBy('f.denormalizedstatus, f.threatlevel')
+            ->where('f.status <> "CLOSED"')
             ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
@@ -1008,6 +1029,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->select('count(f.id), f.threatlevel')
                 ->from('Finding f')
                 ->where('f.status="NEW" OR f.status="DRAFT"')
+                ->andWhere('f.status <> "CLOSED"')
                 ->andWhere('f.createdts BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->groupBy('f.threatlevel')
                 ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
@@ -1034,8 +1056,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             
             // make URL to the search page with date params
-            $basicSearchLink = '/finding/remediation/list/queryType/advanced/createdTs/dateBetween/'
-                . $fromDayStr . '/' . $toDayStr;
+            $basicSearchLink = '/finding/remediation/list/queryType/advanced' . 
+                '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
             // make this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
             $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/CLOSED';
@@ -1114,7 +1137,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $results = $q->execute();        
 
         $rtn = array();
-        foreach($results as $thisEval) {
+        foreach ($results as $thisEval) {
             $rtn[] = $thisEval['nickname'];
         }
         
@@ -1187,6 +1210,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->select('COUNT(f.id), f.threatlevel')
                 ->from('Finding f')
                 ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
+                ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', $this->_myOrgSystemIds)
                 ->groupBy('f.threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -1218,14 +1242,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $lowCount
                     ),
                     array('/finding/remediation/list/queryType/advanced' .
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/HIGH',
                         '/finding/remediation/list/queryType/advanced' .
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced' .
+                        '/finding/remediation/list/queryType/advanced' . 
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/LOW'
@@ -1234,8 +1261,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 
             // Note the links to set in the even this is a totals (basic-bar) chart
             $totalChartLinks[] = '/finding/remediation/list/queryType/advanced' .
-                        '/currentEcd/dateBetween/' . 
-                        $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
+                '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                '/currentEcd/dateBetween/' . $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
         }
 
         // Show, hide and filter chart data as requested
