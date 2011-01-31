@@ -35,14 +35,10 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         parent::init();
         
         $this->_helper->fismaContextSwitch()
-                      ->setActionContext('history', 'xml')
-                      ->setActionContext('history', 'json')
-                      ->setActionContext('category', 'xml')
-                      ->setActionContext('category', 'json')
-                      ->setActionContext('bureau', 'xml')
-                      ->setActionContext('bureau', 'json')
-                      
-                      ->initContext();
+            ->setActionContext('history', 'json')
+            ->setActionContext('category', 'json')
+            ->setActionContext('bureau', 'json')
+            ->initContext();
     }
     
     /**
@@ -127,9 +123,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             $currentMonth->add($monthOffset, Zend_Date::MONTH);
             
             // Fill in default values in case one or both queries had no matching records for this month
-            $thisReported = 0;
-            $thisResolved = 0;
-            $thisRejected = 0;
+            $reportedCount = 0;
+            $resolvedCount = 0;
+            $rejectedCount = 0;
             $thisMonthName = $currentMonth->get(Zend_Date::MONTH_NAME_SHORT); // short name for month
             $thisYear = $currentMonth->get(Zend_Date::YEAR);
             
@@ -139,17 +135,17 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             $currentMonthNumber = $currentMonth->get(Zend_Date::MONTH_SHORT);
             
             if (isset($reportedIncidents[$currentMonthNumber])) {
-                $thisReported = $reportedIncidents[$currentMonthNumber]['reported'];
+                $reportedCount = $reportedIncidents[$currentMonthNumber]['reported'];
             }
 
             if (isset($closedIncidents[$currentMonthNumber])) {
-                $thisResolved = $closedIncidents[$currentMonthNumber]['resolved'];
-                $thisRejected = $closedIncidents[$currentMonthNumber]['rejected'];
+                $resolvedCount = $closedIncidents[$currentMonthNumber]['resolved'];
+                $rejectedCount = $closedIncidents[$currentMonthNumber]['rejected'];
             }
 
             $rtnChart->addColumn(
                 $thisMonthName,
-                array($thisReported, $thisResolved, $thisRejected)
+                array($reportedCount, $resolvedCount, $rejectedCount)
             );
                 
         }
@@ -175,19 +171,11 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                          ->where('i.status = \'open\'')
                          ->groupBy('category.id')
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        
-        $catQueryRslt = $categoryQuery->execute();
-        
-        $chartData = array();
-        $chartDataText = array();
-        
-        reset($catQueryRslt);
-        while ($thisElement = current($catQueryRslt)) {
-            
-            $thisLabel = key($catQueryRslt) . ' - ' . $thisElement['name'];
-            $rtnChart->addColumn($thisLabel, $thisElement['count']);
-            
-            next($catQueryRslt);
+        $queryResults = $categoryQuery->execute();
+
+        foreach ($queryResults as $rsltElement) {
+            $colLabel = $rsltElement['category'] . ' - ' . $rsltElement['name'];
+            $rtnChart->addColumn($colLabel, $rsltElement['count']);
         }
         
         $this->view->chart = $rtnChart->export('array');
