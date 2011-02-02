@@ -5,7 +5,7 @@ is configured to "Solr".
 
 Symlink your Solr installation's schema.xml to this file.
 
-See http://manual.openfisma.org/display/OPENFISMA/Search+Configuration
+See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
 -->
 <schema name="openfisma" version="1.0">
     <types>
