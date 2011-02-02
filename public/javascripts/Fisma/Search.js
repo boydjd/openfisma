@@ -280,12 +280,12 @@ Fisma.Search = function() {
             try {
                 if ('simple' == searchType) {
                     postData += "&queryType=simple&keywords=" 
-                              + document.getElementById('keywords').value;
+                              + encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
                     postData += "&queryType=advanced&query=" 
-                              + YAHOO.lang.JSON.stringify(queryData);
+                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
