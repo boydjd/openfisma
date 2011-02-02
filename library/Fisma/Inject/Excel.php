@@ -46,7 +46,7 @@ class Fisma_Inject_Excel
      * v1 2009-04-30 Introduce versioning of excel template
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
      */
-    const TEMPLATE_VERSION = 2;
+    const TEMPLATE_VERSION = 3;
     
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -59,13 +59,6 @@ class Fisma_Inject_Excel
     private $_excelTemplateColumns = array(
         1 => 'systemNickname',
         'discoveredDate',
-        'network',
-        'assetName',
-        'assetIp',
-        'assetPort',
-        'productName',
-        'productVendor',
-        'productVersion',
         'findingSource',
         'findingDescription',
         'findingRecommendation',
@@ -264,99 +257,7 @@ class Fisma_Inject_Excel
             }
             $poam['resourcesRequired'] = 'None';
             
-            $asset = array();
-            if (!empty($finding['network'])) {
-                $networkTable = Doctrine::getTable('Network')->findOneByNickname($finding['network']);
-                if (!$networkTable) {
-                    throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: Invalid network selected. Your
-                                                          template may
-                                                          be out of date. Please try downloading it again.");
-                }
-                $asset['networkId'] = $networkTable->id;
-            }
-            if (!empty($finding['assetIp'])) {
-                $asset['addressIp'] = $finding['assetIp'];
-            }
-            if (!empty($finding['assetPort'])) {
-                $asset['addressPort'] = $finding['assetPort'];
-            }
-            if (!empty($asset['addressPort']) && !is_numeric($asset['addressPort'])) {
-                throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: The port number is not numeric.");
-            }
-
-            if (empty($finding['assetName'])) {
-                if (!empty($asset['addressIp']) && !empty($asset['addressPort'])) {
-                    $asset['name'] = "{$asset['addressIp']}:{$asset['addressPort']}";
-                } else {
-                    $asset['name'] = 'unknown';
-                }
-            } else {
-                $asset['name'] = $finding['assetName'];
-            }
-            $asset['orgSystemId'] = $poam['responsibleOrganizationId'];
-            
-            $product = array();
-            if (!empty($finding['productName'])) {
-                $product['name'] = $finding['productName'];
-            }
-            if (!empty($finding['productVendor'])) {
-                $product['vendor'] = $finding['productVendor'];
-            }
-            if (!empty($finding['productVersion'])) {
-                $product['version'] = $finding['productVersion'];
-            }
-            
-            // Now persist these objects. Check assets and products to see whether they exist before creating new
-            // ones.
-            if (!empty($product['name']) && !empty($product['vendor']) && !empty($product['version'])) {
-                /** @todo this isn't a very efficient way to lookup products, but there might be no good alternative */
-                $query = Doctrine_Query::create()
-                         ->select()
-                         ->from('Product p')
-                         ->where('p.name = ?', $product['name'])
-                         ->andWhere('p.vendor = ?', $product['vendor'])
-                         ->andWhere('p.version = ?', $product['version']);
-                $productRecord = $query->execute()->toArray();
-                if (empty($productRecord)) {
-                    $productRecord = new Product();
-                    $productRecord->merge($product);
-                    $productRecord->save();
-                    $productId = $productRecord->id;
-                } else {
-                    $productId = $productRecord[0]['id'];
-                }
-            }
-            
-            // Persist the asset, if necessary
-            if (!empty($asset['networkId']) && !empty($asset['addressIp']) && !empty($asset['addressPort'])) {
-                $asset['productId'] = empty($productId) ? null : $productId;
-                // Verify whether asset exists or not
-                $q = Doctrine_Query::create()
-                     ->select()
-                     ->from('Asset a')
-                     ->where('a.networkId = ?', $asset['networkId'])
-                     ->andWhere('a.addressIp = ?', $asset['addressIp'])
-                     ->andWhere('a.addressPort = ?', $asset['addressPort']);
-                $assetRecord = $q->execute()->toArray();
-                
-                if (empty($assetRecord)) {
-                    try {
-                        $assetRecord = new Asset();
-                        $assetRecord->merge($asset);
-                        $assetRecord->save();
-                        $assetId = $assetRecord->id;
-                    } catch (Doctrine_Validator_Exception $e) {
-                        /**@todo english*/
-                        $message = "Row $rowNumber: " . $e->getMessage();
-                        throw new Fisma_Zend_Exception_InvalidFileFormat($message);
-                    }
-                } else {
-                    $assetId = $assetRecord[0]['id'];
-                }
-            }
             // Finally, create the finding
-            $poam['assetId'] = empty($assetId) ? null : $assetId;
-            
             $findingRecord = new Finding();
             $findingRecord->merge($poam);
             $findingRecord->CreatedBy = CurrentUser::getInstance();
