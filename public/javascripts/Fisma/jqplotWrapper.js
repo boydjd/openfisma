@@ -212,22 +212,7 @@ function createJQChart(param)
     applyChartBorders(param);
     globalSettingRefreashUI(param);
     showMsgOnEmptyChart(param);
-    
-    // Handel table for screen readers
-    var dataTableObj = document.getElementById(param['uniqueid'] + 'table');
-    dataTableObj.innerHTML = getTableFromChartData(param);
-    if (getGlobalSetting('showDataTable') === 'true') {
-        // Show the table generated based on chart data
-        dataTableObj.style.display = '';
-        // Hide, erase, and collapse the container of the chart divs
-        document.getElementById(param['uniqueid']).innerHTML = '';
-        document.getElementById(param['uniqueid']).style.width = 0;
-        document.getElementById(param['uniqueid']).style.height = 0;
-        // Ensure the threat-level-legend is hidden
-        document.getElementById(param['uniqueid'] + 'toplegend').style.display = 'none';
-    } else {
-        dataTableObj.style.display = 'none';
-    }
+    getTableFromChartData(param);
 
     return rtn;
 }
@@ -592,7 +577,8 @@ function createChartThreatLegend(param)
     }        
 }
 
-function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj) {
+function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
+{
     
     var theLink = false;
     if (paramObj['links']) {
@@ -638,12 +624,13 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj) {
  *
  * @return array
  */
-function forceIntegerArray(inptArray) {
+function forceIntegerArray(inptArray)
+{
     for (var x = 0; x < inptArray.length; x++) {
         if (typeof inptArray[x] == 'object') {
             inptArray[x] = forceIntegerArray(inptArray[x]);
         } else {
-            inptArray[x] = inptArray[x] * 1;    // make sure this is an int, and not a string of a number
+            inptArray[x] = parseInt(inptArray[x]);    // make sure this is an int, and not a string of a number
         }
     }
 
@@ -659,7 +646,8 @@ function forceIntegerArray(inptArray) {
  *
  * @return void
  */
-function applyChartBorders(param) {
+function applyChartBorders(param)
+{
 
     // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
     if (typeof param['borders'] == 'undefined') {
@@ -731,7 +719,8 @@ function applyChartBorders(param) {
     
 }
 
-function applyChartBackground(param) {
+function applyChartBackground(param)
+{
 
     var targDiv = document.getElementById(param['uniqueid']);
 
@@ -783,7 +772,8 @@ function applyChartBackground(param) {
  *
  * @return void
  */
-function applyChartWidgets(param) {
+function applyChartWidgets(param)
+{
 
     var wigSpace = document.getElementById(param['uniqueid'] + 'WidgetSpace');
 
@@ -859,7 +849,8 @@ function applyChartWidgets(param) {
  *
  * @return void
  */
-function applyChartWidgetSettings(param) {
+function applyChartWidgetSettings(param)
+{
 
     if (param['widgets']) {
 
@@ -901,7 +892,8 @@ function applyChartWidgetSettings(param) {
  *
  * @return Array
  */
-function buildExternalSourceParams(param) {
+function buildExternalSourceParams(param)
+{
 
     // build arguments to send to the remote data source
 
@@ -940,7 +932,8 @@ function buildExternalSourceParams(param) {
     return param;
 }
 
-function widgetEvent(param) {
+function widgetEvent(param)
+{
 
     // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
     if (param['widgets']) {
@@ -967,19 +960,22 @@ function widgetEvent(param) {
 
 }
 
-function makeElementVisible(eleId) {
+function makeElementVisible(eleId)
+{
     var ele = document.getElementById(eleId);
     ele.style.opacity = '1';
     ele.style.filter = "alpha(opacity = '100')";
 }
 
-function makeElementInvisible(eleId) {
+function makeElementInvisible(eleId)
+{
     var ele = document.getElementById(eleId);
     ele.style.opacity = '0';
     ele.style.filter = "alpha(opacity = '0')";
 }
 
-function fadeIn(eid, TimeToFade) {
+function fadeIn(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -1012,7 +1008,8 @@ function fadeIn(eid, TimeToFade) {
     fade(eid, TimeToFade);
 }
 
-function fadeOut(eid, TimeToFade) {
+function fadeOut(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -1044,7 +1041,8 @@ function fadeOut(eid, TimeToFade) {
     fade(eid, TimeToFade);
 }
 
-function fade(eid, TimeToFade) {
+function fade(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -1120,7 +1118,8 @@ function animateFade(lastTick, eid, TimeToFade)
  *
  * @return void
  */
-function setChartWidthAttribs(param) {
+function setChartWidthAttribs(param)
+{
 
     var makeScrollable = false;
 
@@ -1195,78 +1194,133 @@ function setChartWidthAttribs(param) {
  */
 function getTableFromChartData(param)
 {
-    if (param['chartType'] === 'pie') {
-        return getTableFromChartData_pieChart(param);
+    if (chartIsEmpty(param)) {
+        return;
+    }
+
+    var dataTableObj = document.getElementById(param['uniqueid'] + 'table');
+    dataTableObj.innerHTML = '';
+    
+    if (getGlobalSetting('showDataTable') === 'true') {
+    
+        if (param['chartType'] === 'pie') {
+            getTableFromCharPieChart(param);
+        } else {
+            getTableFromBarChart(param);
+        }
+
+        // Show the table generated based on chart data
+        dataTableObj.style.display = '';
+        // Hide, erase, and collapse the container of the chart divs
+        document.getElementById(param['uniqueid']).innerHTML = '';
+        document.getElementById(param['uniqueid']).style.width = 0;
+        document.getElementById(param['uniqueid']).style.height = 0;
+        // Ensure the threat-level-legend is hidden
+        document.getElementById(param['uniqueid'] + 'toplegend').style.display = 'none';
+
     } else {
-        return getTableFromChartData_barChart(param);
+        dataTableObj.style.display = 'none';
     }
 }
 
-function getTableFromChartData_pieChart(param)
+function getTableFromCharPieChart(param)
 {
-    var HTML = '<table width="100%" border=1><tr>';
-    
+    var tbl     = document.createElement("table");
+    var tblBody = document.createElement("tbody");
+
     // row of slice-labels
+    var row = document.createElement("tr");
     for (var x = 0; x < param['chartDataText'].length; x++) {
-        HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
+        var cell = document.createElement("th");
+        var cellText = document.createTextNode(param['chartDataText'][x]);
+        cell.setAttribute("style", "font-style: bold;");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
-    HTML += '</tr><tr>';
+    tblBody.appendChild(row);
 
     // row of data
+    var row = document.createElement("tr");
     for (var x = 0; x < param['chartData'].length; x++) {
-
-        HTML += '<td>' + param['chartData'][x] + '</td>';
-
+        var cell = document.createElement("td");
+        var cellText = document.createTextNode(param['chartData'][x]);
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
+    tblBody.appendChild(row);
 
-    HTML += '</tr></table>';
-
-    return HTML;
+    tbl.appendChild(tblBody);
+    tbl.setAttribute("border", "1");
+    tbl.setAttribute("width", "100%");
+    
+    document.getElementById(param['uniqueid'] + 'table').appendChild(tbl);
 }
 
-function getTableFromChartData_barChart(param)
+function getTableFromBarChart(param)
 {
-    var HTML = '<table width="100%" border=1>';
+    var tbl     = document.createElement("table");
+    var tblBody = document.createElement("tbody");
+    var row = document.createElement("tr");
     
     // add a column for layer names if this is a stacked chart
     if (typeof param['chartLayerText'] != 'undefined') {
-        HTML += '<tr><td></td>';
+        var cell = document.createElement("td");
+        var cellText = document.createTextNode(" ");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
     
     for (var x = 0; x < param['chartDataText'].length; x++) {
-        HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
+        var cell = document.createElement("th");
+        var cellText = document.createTextNode(param['chartDataText'][x]);
+        cell.setAttribute("style", "font-style: bold;");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
-    HTML += '</tr>';
+    tblBody.appendChild(row);
+    
 
     for (var x = 0; x < param['chartData'].length; x++) {
 
         var thisEle = param['chartData'][x];
-        HTML += '<tr>';
+        var row = document.createElement("tr");
         
         // each layer label
         if (typeof param['chartLayerText'] != 'undefined') {
-            HTML += '<th><b>' + param['chartLayerText'][x] + '</b></th>';
+            var cell = document.createElement("th");
+            var cellText = document.createTextNode(param['chartLayerText'][x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
         }
         
         if (typeof(thisEle) == 'object') {
 
             for (var y = 0; y < thisEle.length; y++) {
-
-                HTML += '<td>' + thisEle[y] + '</td>';
+                var cell = document.createElement("td");
+                var cellText = document.createTextNode(thisEle[y]);
+                cell.setAttribute("style", "font-style: bold;");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
             }
             
         } else {
 
-            HTML += '<td>' + thisEle + '</td>';
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(thisEle);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
         }
 
-        HTML += '</tr>';
+        tblBody.appendChild(row);
 
     }
 
-    HTML += '</table>';
-
-    return HTML;
+    tbl.appendChild(tblBody);
+    tbl.setAttribute("border", "1");
+    tbl.setAttribute("width", "100%");
+    
+    document.getElementById(param['uniqueid'] + 'table').appendChild(tbl);
 }
 
 function removeDecFromPointLabels(param)
@@ -1287,12 +1341,12 @@ function removeDecFromPointLabels(param)
                     if (thisChld.classList[0] == 'jqplot-point-label') {
 
                             // convert this from a string to a number to a string again (removes decimal if its needless)
-                            thisLabelValue = thisChld.innerHTML * 1;
+                            thisLabelValue = parseInt(thisChld.innerHTML);
                             thisChld.innerHTML = thisLabelValue;
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (thisChld.innerHTML * 1 == 0) {
+                            if (parseInt(thisChld.innerHTM) == 0) {
                                 thisChld.innerHTML = '';
                             }
 
@@ -1315,8 +1369,8 @@ function removeDecFromPointLabels(param)
                             }
 
                             // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                            var thisLeftNbrValue = String(thisChld.style.left).replace('px', '') * 1;       // remove "px" from string, and conver to number
-                            var thisTopNbrValue = String(thisChld.style.top).replace('px', '') * 1;       // remove "px" from string, and conver to number
+                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''));       // remove "px" from string, and conver to number
+                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''));       // remove "px" from string, and conver to number
                             thisLeftNbrValue += param['pointLabelAdjustX'];
                             thisTopNbrValue += param['pointLabelAdjustY'];
                             if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
@@ -1333,7 +1387,8 @@ function removeDecFromPointLabels(param)
         
 }
 
-function removeOverlappingPointLabels(param) {
+function removeOverlappingPointLabels(param)
+{
 
         // This function will deal with removing point labels that collie with eachother
         // There is no need for this unless this is a stacked-bar or stacked-line chart
@@ -1368,8 +1423,8 @@ function removeOverlappingPointLabels(param) {
                 if (chldIsRemoved == false) {
                     // index this point labels position
 
-                    var thisLeftNbrValue = String(thisChld.style.left).replace('px', '') * 1; // remove "px" from string, and conver to number
-                    var thisTopNbrValue = String(thisChld.style.top).replace('px', '') * 1; // remove "px" from string, and conver to number
+                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', '')); // remove "px" from string, and conver to number
+                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', '')); // remove "px" from string, and conver to number
                     thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
 
                     var thisIndex = 'left_' + thisLeftNbrValue;
@@ -1512,7 +1567,8 @@ function globalSettingRefreashUI(param)
     }
 }
 
-function showSetingMode(showBasic) {
+function showSetingMode(showBasic)
+{
     if (showBasic == true) {
         var showThese = document.getElementsByName('chartSettingsBasic')
         var hideThese = document.getElementsByName('chartSettingsGlobal')
@@ -1531,7 +1587,8 @@ function showSetingMode(showBasic) {
     
 }
 
-function getGlobalSetting(settingName) {
+function getGlobalSetting(settingName)
+{
 
     var rtnValue = getCookie('chartGlobSetting_' + settingName, '-RETURN-DEFAULT-SETTING-');
 
@@ -1548,11 +1605,13 @@ function getGlobalSetting(settingName) {
 
 }
 
-function setGlobalSetting(settingName, newValue) {
+function setGlobalSetting(settingName, newValue)
+{
     setCookie('chartGlobSetting_' + settingName, newValue);
 }
 
-function alterChartByGlobals(chartParamObj) {
+function alterChartByGlobals(chartParamObj)
+{
     
     // Show bar shadows?
     if (getGlobalSetting('barShadows') == 'true') {
@@ -1592,7 +1651,8 @@ function alterChartByGlobals(chartParamObj) {
     return chartParamObj;
 }
 
-function redrawAllCharts() {
+function redrawAllCharts()
+{
 
     for (var uniqueid in chartsOnDOM) {
     
@@ -1607,22 +1667,28 @@ function redrawAllCharts() {
 
 }
 
-function showMsgOnEmptyChart(param) {
+function showMsgOnEmptyChart(param)
+{
 
     if (chartIsEmpty(param)) {
         var targDiv = document.getElementById(param['uniqueid']);
         var injectHTML = 'No data to plot.';
         var insertBeforeChild = targDiv.childNodes[1];
-        msgOnDOM = document.createElement('div');
-        msgOnDOM.setAttribute('align', 'center');
-        msgOnDOM.setAttribute('hight', '100%');
-        msgOnDOM.setAttribute('style' , 'position: absolute; width: ' + param['width'] + 'px; height: 100%; text-align: center; vertical-align: middle');
-        var inserted = targDiv.insertBefore(msgOnDOM, insertBeforeChild);
+        var msgOnDom = document.createElement('div');
+        msgOnDom.height = '100%';
+        msgOnDom.style.align = 'center';
+        msgOnDom.style.position = 'absolute';
+        msgOnDom.style.width = param['width'] + 'px';
+        msgOnDom.style.height = '100%';
+        msgOnDom.style.textAlign = 'center';
+        msgOnDom.style.verticalAlign = 'middle';
+        var inserted = targDiv.insertBefore(msgOnDom, insertBeforeChild);
         inserted.innerHTML = injectHTML;
     }
 }
 
-function chartIsEmpty(param) {
+function chartIsEmpty(param)
+{
 
     // Is all data 0?
     var isAll0Data = true;
@@ -1631,11 +1697,12 @@ function chartIsEmpty(param) {
         if (typeof param['chartData'][x] == 'object') {
             
             for (var y = 0; y < param['chartData'][x].length; y++) {
-                if (param['chartData'][x][y] * 1 > 0) { isAll0Data = false; }
+                if (parseInt(param['chartData'][x][y]) > 0) { isAll0Data = false; }
             }
             
         } else {
-            if (param['chartData'][x] * 1 > 0) { isAll0Data = false; }
+            if (parseInt(param['chartData'][x]) > 0)
+                isAll0Data = false;
         }
     
     }
@@ -1643,13 +1710,14 @@ function chartIsEmpty(param) {
     return isAll0Data;
 }
 
-function getNextNumberDivisibleBy5(nbr) {
+function getNextNumberDivisibleBy5(nbr)
+{
 
     nbr = Math.round(nbr);
 
     for (var x = 0; x < 8; x++ ) {
     
-        var dividedBy5 = (nbr / 5) * 1;
+        var dividedBy5 = (nbr / 5);
 
         // is this a whole number?
         if (dividedBy5 == Math.round(dividedBy5)) {

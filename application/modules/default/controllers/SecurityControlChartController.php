@@ -55,20 +55,13 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->setConcatColumnLabels(false)
             ->setAxisLabelY('number of findings');
         
-        //Get a list of organization IDs that this user can see for findings
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
-        $userOrganizations = array(0);
-        foreach ($orgSystems as $orgSystem) {
-            $userOrganizations[] = $orgSystem['id'];
-        }
-        
         $deficienciesQuery = Doctrine_Query::create()
             ->select('COUNT(*) AS count, sc.code')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.ResponsibleOrganization o')
             ->andWhere('f.status <> ?', 'CLOSED')
-            ->whereIn('o.id', $userOrganizations)
+            ->whereIn('o.id', FindingTable::getOrganizationIds())
             ->groupBy('sc.code')
             ->orderBy('sc.code')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
