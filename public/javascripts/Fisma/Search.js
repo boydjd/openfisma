@@ -201,7 +201,6 @@ Fisma.Search = function() {
 
             for (var key in object) {
                 var value = object[key];
-
                 uriComponents.push(key + "=" + encodeURIComponent(value));
             }
 
@@ -617,9 +616,11 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
+                        var query = Fisma.Search.getQuery(document.getElementById('searchForm'));
+                        var postData = Fisma.Search.convertQueryToPostData(query);
+
                         dataTable.showTableMessage("Loading...");
-                        var postData = "csrf="
-                           + document.getElementById('searchForm').csrf.value;
+
                         var dataSource = dataTable.getDataSource();
                         dataSource.connMethodPost = true;
                         dataSource.sendRequest(postData, onDataTableRefresh);

@@ -45,6 +45,7 @@ class Fisma_Inject_Excel
      * Version history:
      * v1 2009-04-30 Introduce versioning of excel template
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
+     * v3 2011-02-02 Removed asset related fields
      */
     const TEMPLATE_VERSION = 3;
     
