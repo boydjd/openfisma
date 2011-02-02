@@ -333,7 +333,8 @@ function createChartJQPie(chartParamsObj)
                 shadowAlpha: 0.15,
                 shadowOffset: 0,
                 lineLabels: true,
-                lineLabelsLineColor: '#777'
+                lineLabelsLineColor: '#777',
+                diameter: chartParamsObj['height'] * 0.65
             }
         },
         legend: {
@@ -613,6 +614,9 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
         }
     }
     
+    // unescape
+    theLink = unescape(theLink);
+    
     // Does the link contain a variable?
     if (theLink != false) {
         theLink = String(theLink).replace('#ColumnLabel#', paramObj['chartDataText'][pointIndex]);
@@ -627,7 +631,7 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
     
         // We are not in link-debug mode, navigate if there is a link
         if (theLink != false && String(theLink) != 'null') {
-            document.location = unescape(theLink);
+            document.location = theLink;
         }
         
     }
