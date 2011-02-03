@@ -5032,7 +5032,6 @@ Fisma.Search = function() {
 
             for (var key in object) {
                 var value = object[key];
-
                 uriComponents.push(key + "=" + encodeURIComponent(value));
             }
 
@@ -5111,12 +5110,12 @@ Fisma.Search = function() {
             try {
                 if ('simple' == searchType) {
                     postData += "&queryType=simple&keywords=" 
-                              + document.getElementById('keywords').value;
+                              + encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
                     postData += "&queryType=advanced&query=" 
-                              + YAHOO.lang.JSON.stringify(queryData);
+                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
@@ -5448,9 +5447,11 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
+                        var query = Fisma.Search.getQuery(document.getElementById('searchForm'));
+                        var postData = Fisma.Search.convertQueryToPostData(query);
+
                         dataTable.showTableMessage("Loading...");
-                        var postData = "csrf="
-                           + document.getElementById('searchForm').csrf.value;
+
                         var dataSource = dataTable.getDataSource();
                         dataSource.connMethodPost = true;
                         dataSource.sendRequest(postData, onDataTableRefresh);
@@ -7880,27 +7881,6 @@ Fisma.Vulnerability = {
         yuiPanel.destroy();
     }
 }
-/*
-    bool chartObjData(obj)
-    Creates a jgPlot chart based on the data in Obj
-
-    Input
-       Obj[...]
-          Obj['uniqueid']       The name of the div for jqPlot create canvases inside of. The data within this div will be erased before chart plotting.
-          Obj['externalSource'] An internal URL to load any of, or the rest of, the elements of this object. The content of the target URL given is expected to be a json responce. Any and all elements within the "chart" variable/object will be imported into this one.
-          Obj['title']          The title to render above the chart
-          Obj['chartType']      String that must be "bar", "stackedbar", "line", or "pie"
-          Obj['chartData']      Array to pass to jqPlot as the data to plot (numbers).
-          Obj['chartDataText']  Array of labels (strings) for each data set in chartData (x-axis of bar charts)
-          Obj['concatXLabel']   Boolean that states if " (#)" should be concatinated at the end of each x-axis label (default=true)
-          Obj['chartLayerText'] Array of labels (strings) for each different line/layer in a milti-line-char or stacked-bar-chart
-          Obj['colors']         (optional) Array of colors for the chart to use across layers
-          Obj['links']          (optional) Array of links of which the browser should navigate to when a given data element is clicked
-          Obj['linksdebug']     (optional) Boolean, if set true, an alert box of what was clicked on will pop up instead of browser navigation based on Obj['links']
-
-    Output
-       returns true on success, false on failure, or nothing if the success of the chart creation cannot be determind at that time (asynchronous mode)
-*/
 
 // Defaults for global chart settings definition:
 var globalSettingsDefaults = {
@@ -7921,66 +7901,68 @@ var chartsOnDOM = {};
 isIE = (window.ActiveXObject) ? true : false;
 
 /**
- * Creates a chart within a div by the name of param['uniqueid'].
- * All paramiters needed to create the chart are expected to be within the param object.
+ * Creates a chart within a div by the name of chartParamsObj['uniqueid'].
+ * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
  * This function may return before the actual creation of a chart if there is an external source.
  * Returns true on success, false on failure, and the integer 3 when on external source
  *
  * @return boolean/integer
  */
-function createJQChart(param)
+function createJQChart(chartParamsObj)
 {
 
     // load in default values for paramiters, and replace it with any given params
     var defaultParams = {
-            concatXLabel: false,
-            nobackground: true,
-            drawGridLines: false,
-            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
-            pointLabelAdjustX: -3,
-            pointLabelAdjustY: -7,
-            AxisLabelX: '',
-            AxisLabelY: '',
-            DataTextAngle: -30
-        };
-    param = jQuery.extend(true, defaultParams, param);
+        concatXLabel: false,
+        nobackground: true,
+        drawGridLines: false,
+        pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+        pointLabelAdjustX: -3,
+        pointLabelAdjustY: -7,
+        AxisLabelX: '',
+        AxisLabelY: '',
+        DataTextAngle: -30
+    };
+    chartParamsObj = jQuery.extend(true, defaultParams, chartParamsObj);
 
     // param validation
-    if (document.getElementById(param['uniqueid']) == false) {
-        alert('createJQChart Error - The target div/uniqueid does not exists');
+    if (document.getElementById(chartParamsObj['uniqueid']) == false) {
+        throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj['uniqueid'];
         return false;
     }
 
-    // set chart width to param['param']
-    setChartWidthAttribs(param);
+    // set chart width to chartParamsObj['width']
+    setChartWidthAttribs(chartParamsObj);
 
     // Ensure the load spinner is visible
-    makeElementVisible(param['uniqueid'] + 'loader');
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
 
-    // is the data being loaded from an external source? (Or is it all in the param obj?)
-    if (param['externalSource']) {
+    // is the data being loaded from an external source? (Or is it all in the chartParamsObj obj?)
+    if (chartParamsObj['externalSource']) {
         
         /*
-          If it is being loaded from an external source
-            setup a json request
-            have the json request return to createJQChart_asynchReturn
-            exit this function as createJQChart_asynchReturn will call this function again with the same param object with param['externalSource'] taken out
+         * If it is being loaded from an external source
+         *   setup a json request
+         *   have the json request return to createJQChart_asynchReturn
+         *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj['externalSource'] taken out
         */
 
-        document.getElementById(param['uniqueid']).innerHTML = 'Loading chart data...';
+        document.getElementById(chartParamsObj['uniqueid']).innerHTML = 'Loading chart data...';
 
-        // note externalSource, and remove/relocate it from its place in param[] so it dosnt retain and cause us to loop 
-        var externalSource = param['externalSource'];
-        if (!param['oldExternalSource']) { param['oldExternalSource'] = param['externalSource']; }
-        param['externalSource'] = undefined;
+        // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
+        var externalSource = chartParamsObj['externalSource'];
+        if (!chartParamsObj['oldExternalSource']) {
+            chartParamsObj['oldExternalSource'] = chartParamsObj['externalSource'];
+        }
+        chartParamsObj['externalSource'] = undefined;
         
         // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
-        param = buildExternalSourceParams(param);
-        externalSource += String(param['externalSourceParams']).replace(/ /g,'%20');
-        param['lastURLpull'] = externalSource;
+        chartParamsObj = buildExternalSourceParams(chartParamsObj);
+        externalSource += String(chartParamsObj['externalSourceParams']).replace(/ /g,'%20');
+        chartParamsObj['lastURLpull'] = externalSource;
 
         // Are we debugging the external source?
-        if (param['externalSourceDebug']) {
+        if (chartParamsObj['externalSourceDebug']) {
             var doNav = confirm ('Now pulling from external source: ' + externalSource + '\n\nWould you like to navigate here?')
             if (doNav) {
                 document.location = externalSource;
@@ -7991,7 +7973,7 @@ function createJQChart(param)
         myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         myDataSource.responseSchema = {resultsList: "chart"};
 
-        var callBackFunct = new Function ("requestNumber", "value", "exception", "createJQChart_asynchReturn(requestNumber, value, exception, " + YAHOO.lang.JSON.stringify(param) + ");");
+        var callBackFunct = new Function ("requestNumber", "value", "exception", "createJQChart_asynchReturn(requestNumber, value, exception, " + YAHOO.lang.JSON.stringify(chartParamsObj) + ");");
 
         var callback1 = {
             success : callBackFunct,
@@ -8003,110 +7985,98 @@ function createJQChart(param)
     }
 
     // clear the chart area
-    document.getElementById(param['uniqueid']).innerHTML = '';
-        document.getElementById(param['uniqueid']).className = '';
-        document.getElementById(param['uniqueid'] + 'toplegend').innerHTML = '';
+    document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
+    document.getElementById(chartParamsObj['uniqueid']).className = '';
+    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
 
     // handel aliases and short-cut vars
-    if (typeof param['barMargin'] != 'undefined') {
-        param = jQuery.extend(true, param, {'seriesDefaults': {'rendererOptions': {'barMargin': param['barMargin']}}});
-        param['barMargin'] = undefined;
+    if (typeof chartParamsObj['barMargin'] != 'undefined') {
+        chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj['barMargin']}}});
+        chartParamsObj['barMargin'] = undefined;
     }
-    if (typeof param['legendLocation'] != 'undefined') {
-        param = jQuery.extend(true, param, {'legend': {'location': param['legendLocation'] }});
-        param['legendLocation'] = undefined;
+    if (typeof chartParamsObj['legendLocation'] != 'undefined') {
+        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj['legendLocation'] }});
+        chartParamsObj['legendLocation'] = undefined;
     }
-    if (typeof param['legendRowCount'] != 'undefined') {
-        param = jQuery.extend(true, param, {'legend': {'rendererOptions': {'numberRows': param['legendRowCount']}}});
-        param['legendRowCount'] = undefined;
+    if (typeof chartParamsObj['legendRowCount'] != 'undefined') {
+        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj['legendRowCount']}}});
+        chartParamsObj['legendRowCount'] = undefined;
     }
-    
-    // make sure the numbers to be plotted in param['chartData'] are infact numbers and not an array of strings of numbers
-    param['chartData'] = forceIntegerArray(param['chartData']);
+        
+    // make sure the numbers to be plotted in chartParamsObj['chartData'] are infact numbers and not an array of strings of numbers
+    chartParamsObj['chartData'] = forceIntegerArray(chartParamsObj['chartData']);
 
     // hide the loading spinner and show the canvas target
-    document.getElementById(param['uniqueid'] + 'holder').style.display = '';
-    makeElementInvisible(param['uniqueid'] + 'holder');
-    document.getElementById(param['uniqueid'] + 'loader').style.position = 'absolute';
-    document.getElementById(param['uniqueid'] + 'loader').finnishFadeCallback = new Function ("fadeIn('" + param['uniqueid'] + "holder', 500);");
-    fadeOut(param['uniqueid'] + 'loader', 500);
+    document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.display = '';
+    makeElementInvisible(chartParamsObj['uniqueid'] + 'holder');
+    document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.position = 'absolute';
+    document.getElementById(chartParamsObj['uniqueid'] + 'loader').finnishFadeCallback = new Function ("fadeIn('" + chartParamsObj['uniqueid'] + "holder', 500);");
+    fadeOut(chartParamsObj['uniqueid'] + 'loader', 500);
 
-    // now that we have the param['chartData'], do we need to make the chart larger and scrollable?
-    setChartWidthAttribs(param);
+    // now that we have the chartParamsObj['chartData'], do we need to make the chart larger and scrollable?
+    setChartWidthAttribs(chartParamsObj);
 
     // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
-    // This must be done before the next switch block that translates some data within the param object for jqPlot
-    chartsOnDOM[param['uniqueid']] = jQuery.extend(true, {}, param);
+    // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
+    chartsOnDOM[chartParamsObj['uniqueid']] = jQuery.extend(true, {}, chartParamsObj);
     
-    // call the correct function based on chartType
-    switch(param['chartType'])
-    {
-        case 'stackedbar':
-            param['varyBarColor'] = false;
-                        if (typeof param['showlegend'] == 'undefined') { param['showlegend'] = true; }
-            var rtn = createJQChart_StackedBar(param);
-            break;
-        case 'bar':
+    // call the correct function based on chartType, or state there will be no chart created
+    if (!chartIsEmpty(chartParamsObj)) {
+    
+        switch(chartParamsObj['chartType'])
+        {
+            case 'stackedbar':
+                chartParamsObj['varyBarColor'] = false;
+                            if (typeof chartParamsObj['showlegend'] == 'undefined') { chartParamsObj['showlegend'] = true; }
+                var rtn = createJQChart_StackedBar(chartParamsObj);
+                break;
+            case 'bar':
 
-            // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-            if (typeof param['chartData'][0] =='object') {
+                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                if (typeof chartParamsObj['chartData'][0] =='object') {
 
-                // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
 
-                param['varyBarColor'] = false;
-                param['showlegend'] = true;
+                    chartParamsObj['varyBarColor'] = false;
+                    chartParamsObj['showlegend'] = true;
 
-            } else {
-                param['chartData'] = [param['chartData']];  // force to 2 dimensional array
-                param['links'] = [param['links']];
-                param['varyBarColor'] = true;
-                param['showlegend'] = false;
-            }
-            
-            param['stackSeries'] = false;
-            var rtn = createJQChart_StackedBar(param);
-            break;
+                } else {
+                    chartParamsObj['chartData'] = [chartParamsObj['chartData']];  // force to 2 dimensional array
+                    chartParamsObj['links'] = [chartParamsObj['links']];
+                    chartParamsObj['varyBarColor'] = true;
+                    chartParamsObj['showlegend'] = false;
+                }
 
-        case 'line':
-            var rtn = createChartJQStackedLine(param);
-            break;
-        case 'stackedline':
-            var rtn = createChartJQStackedLine(param);
-            break;
-        case 'pie':
-            param['links'] = [param['links']];
-            var rtn = createChartJQPie(param);
-            break;
-        default:
-            alert('createJQChart Error - chartType is invalid (' + param['chartType'] + ')');
-            return false;
+                chartParamsObj['stackSeries'] = false;
+                var rtn = createJQChart_StackedBar(chartParamsObj);
+                break;
+
+            case 'line':
+                var rtn = createChartJQStackedLine(chartParamsObj);
+                break;
+            case 'stackedline':
+                var rtn = createChartJQStackedLine(chartParamsObj);
+                break;
+            case 'pie':
+                chartParamsObj['links'] = [chartParamsObj['links']];
+                var rtn = createChartJQPie(chartParamsObj);
+                break;
+            default:
+                throw 'createJQChart Error - chartType is invalid (' + chartParamsObj['chartType'] + ')';
+                return false;
+        }
     }
-
 
     // chart tweeking external to the jqPlot library
-    removeOverlappingPointLabels(param);
-    applyChartBackground(param);
-    applyChartWidgets(param);
-    createChartThreatLegend(param);
-    applyChartBorders(param);
-    globalSettingRefreashUI(param);
-    
-    // Handel table for screen readers
-    var dataTableObj = document.getElementById(param['uniqueid'] + 'table');
-    dataTableObj.innerHTML = getTableFromChartData(param);
-    if (getGlobalSetting('showDataTable') === 'true') {
-        // Show the table generated based on chart data
-        dataTableObj.style.display = '';
-        // Hide, erase, and collapse the container of the chart divs
-        document.getElementById(param['uniqueid']).innerHTML = '';
-        document.getElementById(param['uniqueid']).style.width = 0;
-        document.getElementById(param['uniqueid']).style.height = 0;
-        // Ensure the threat-level-legend is hidden
-        document.getElementById(param['uniqueid'] + 'toplegend').style.display = 'none';
-    } else {
-        dataTableObj.style.display = 'none';
-    }
+    removeOverlappingPointLabels(chartParamsObj);
+    applyChartBackground(chartParamsObj);
+    applyChartWidgets(chartParamsObj);
+    createChartThreatLegend(chartParamsObj);
+    applyChartBorders(chartParamsObj);
+    globalSettingRefreashUI(chartParamsObj);
+    showMsgOnEmptyChart(chartParamsObj);
+    getTableFromChartData(chartParamsObj);
 
     return rtn;
 }
@@ -8114,73 +8084,110 @@ function createJQChart(param)
 
 /**
  * When an external source is needed, this function should handel the returned JSON request
- * The param object that went into createJQChart(obj) would be the parameter "param" here, and
+ * The chartParamsObj object that went into createJQChart(obj) would be the chartParamsObj here, and
  * the "value" parameter should be the returned JSON request.
- * the param and value objects are merged togeather based in inheritance controle and 
- * Returns the return value of createJQChart(), or false on external source failure.
+ * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
+ * returns the return value of createJQChart(), or false on external source failure.
  *
  * @return boolean/integer
  */
-function createJQChart_asynchReturn(requestNumber, value, exception, param)
+function createJQChart_asynchReturn(requestNumber, value, exception, chartParamsObj)
 {
-
+    // If anything (json) was returned at all...
     if (value) {
         
+        // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
         if (value['results'][0]) {
-            if (value['results'][0]['inheritCtl']) {
-                if (value['results'][0]['inheritCtl'] == 'minimal') {
-                    var joinedParam = value['results'][0];
-                    joinedParam['width'] = param['width'];
-                    joinedParam['height'] = param['height'];
-                    joinedParam['uniqueid'] = param['uniqueid'];
-                    joinedParam['externalSource'] = param['externalSource'];
-                    joinedParam['oldExternalSource'] = param['oldExternalSource'];
-                    joinedParam['widgets'] = param['widgets'];
-                } else if (value['results'][0]['inheritCtl'] == 'none') {
-                    var joinedParam = value['results'][0];
-                } else {
-                    alert('Error - Unknown chart inheritance mode');
-                }
-            } else {
-                var joinedParam = jQuery.extend(true, param, value['results'][0],true);
-            }
+        
+            chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value)
+            
         } else {
             if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-                document.location = param['lastURLpull'];
+                document.location = chartParamsObj['lastURLpull'];
             }
         }
 
-        if (!joinedParam['chartData']) {
-            alert('Chart Error - The remote data source for chart "' + param['uniqueid'] + '" located at ' + param['lastURLpull'] + ' did not return data to plot on a chart');
+        if (typeof chartParamsObj['chartData'] == 'undefined') {
+            throw 'Chart Error - The remote data source for chart "' + chartParamsObj['uniqueid'] + '" located at ' + chartParamsObj['lastURLpull'] + ' did not return data to plot on a chart';
+            return;
         }
 
-        // call the createJQChart() with the param-object initally given to createJQChart() and the merged responce object
-        return createJQChart(joinedParam);
+        // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
+        return createJQChart(chartParamsObj);
         
     } else {
         if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-            document.location = param['lastURLpull'];
+            document.location = chartParamsObj['lastURLpull'];
         }
     }
     
     return false;
 }
 
-function createChartJQPie(param)
+/**
+ * Takes a chartParamsObj and merges content of 
+ * ExternResponce-object into it based in the inheritance mode
+ * set in ExternResponce.
+ * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+ *
+ * @param object
+ * @return void
+ * 
+*/
+function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
 {
-    usedLabelsPie = param['chartDataText'];
+    var joinedParam = {};
+
+    // Is there an inheritance mode? 
+    if (ExternResponce['results'][0]['inheritCtl']) {
+        if (ExternResponce['results'][0]['inheritCtl'] == 'minimal') {
+            // Inheritance mode set to minimal, retain certain attribs and merge
+            var joinedParam = ExternResponce['results'][0];
+            joinedParam['width'] = chartParamsObj['width'];
+            joinedParam['height'] = chartParamsObj['height'];
+            joinedParam['uniqueid'] = chartParamsObj['uniqueid'];
+            joinedParam['externalSource'] = chartParamsObj['externalSource'];
+            joinedParam['oldExternalSource'] = chartParamsObj['oldExternalSource'];
+            joinedParam['widgets'] = chartParamsObj['widgets'];
+        } else if (ExternResponce['results'][0]['inheritCtl'] == 'none') {
+            // Inheritance mode set to none, replace the joinedParam object
+            var joinedParam = ExternResponce['results'][0];
+        } else {
+            throw 'Error - Unknown chart inheritance mode';
+            return;
+        }
+    } else {
+        // No inheritance mode, by default, merge everything
+        var joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce['results'][0],true);
+    }
+
+    return joinedParam;
+}
+
+ /**
+  * Fires the jqPlot library, and creates a pie chart
+  * based on input chart object
+  *
+  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+  *
+  * @param object
+  * @return void
+ */
+function createChartJQPie(chartParamsObj)
+{
+    usedLabelsPie = chartParamsObj['chartDataText'];
 
     var dataSet = [];
 
-    for (var x = 0; x < param['chartData'].length; x++) {
-        param['chartDataText'][x] += ' (' + param['chartData'][x]  + ')';
-        dataSet[dataSet.length] = [param['chartDataText'][x], param['chartData'][x]];
+    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
+        chartParamsObj['chartDataText'][x] += ' (' + chartParamsObj['chartData'][x]  + ')';
+        dataSet[dataSet.length] = [chartParamsObj['chartDataText'][x], chartParamsObj['chartData'][x]];
     }
     
 
     var jPlotParamObj = {
-        title: param['title'],
-        seriesColors: param['colors'],
+        title: chartParamsObj['title'],
+        seriesColors: chartParamsObj['colors'],
         grid: {
             drawBorder: false,
             drawGridlines: false,
@@ -8189,7 +8196,7 @@ function createChartJQPie(param)
         axes: {
             xaxis:{
                 tickOptions: {
-                    angle: param['DataTextAngle'],
+                    angle: chartParamsObj['DataTextAngle'],
                     fontSize: '10pt',
                     formatString: '%.0f'
                 }
@@ -8209,7 +8216,8 @@ function createChartJQPie(param)
                 shadowAlpha: 0.15,
                 shadowOffset: 0,
                 lineLabels: true,
-                lineLabelsLineColor: '#777'
+                lineLabelsLineColor: '#777',
+                diameter: chartParamsObj['height'] * 0.55
             }
         },
         legend: {
@@ -8219,56 +8227,62 @@ function createChartJQPie(param)
                 numberRows: 1
             }
         }
-
-
-
     }
     
     jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
 
     // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+param['uniqueid']+"]").css('height', param['height']);
+    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
 
-    // merge any jqPlot direct param-arguments into jPlotParamObj from param
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, param);
+    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
 
-    plot1 = $.jqplot(param['uniqueid'], [dataSet], jPlotParamObj);
+    plot1 = $.jqplot(chartParamsObj['uniqueid'], [dataSet], jPlotParamObj);
 
     // create an event handeling function that calls chartClickEvent while preserving the parm object
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(param) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
     
     // use the created function as the click-event-handeler
-    $('#' + param['uniqueid']).bind('jqplotDataClick', EvntHandler);
+    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
 
 }
 
-function createJQChart_StackedBar(param)
+ /**
+  * Fires the jqPlot library, and creates a stacked
+  * bar chart based on input chart object
+  *
+  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+  *
+  * @param object
+  * @return void
+ */
+function createJQChart_StackedBar(chartParamsObj)
 {
     var dataSet = [];
     var thisSum = 0;
     var maxSumOfAll = 0;
     var chartCeilingValue = 0;
 
-    for (var x = 0; x < param['chartDataText'].length; x++) {
+    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
     
         thisSum = 0;
         
-        for (var y = 0; y < param['chartData'].length; y++) {
-            thisSum += param['chartData'][y][x];
+        for (var y = 0; y < chartParamsObj['chartData'].length; y++) {
+            thisSum += chartParamsObj['chartData'][y][x];
         }
         
         if (thisSum > maxSumOfAll) { maxSumOfAll = thisSum; }
 
-        if (param['concatXLabel'] == true) {
-            param['chartDataText'][x] += ' (' + thisSum  + ')';
+        if (chartParamsObj['concatXLabel'] == true) {
+            chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
         }
         
     }
 
     var seriesParam = [];
-    if (param['chartLayerText']) {
-        for (x = 0; x < param['chartLayerText'].length; x++) {
-            seriesParam[x] = {label: param['chartLayerText'][x]};
+    if (chartParamsObj['chartLayerText']) {
+        for (x = 0; x < chartParamsObj['chartLayerText'].length; x++) {
+            seriesParam[x] = {label: chartParamsObj['chartLayerText'][x]};
         }
     }
 
@@ -8289,8 +8303,8 @@ function createJQChart_StackedBar(param)
     $.jqplot.config.enablePlugins = true
 
     var jPlotParamObj = {
-        title: param['title'],
-        seriesColors: param['colors'],
+        title: chartParamsObj['title'],
+        seriesColors: chartParamsObj['colors'],
         stackSeries: true,
         series: seriesParam,
         seriesDefaults:{
@@ -8298,7 +8312,7 @@ function createJQChart_StackedBar(param)
             rendererOptions:{
                 barWidth: 35,
                 showDataLabels: true,
-                varyBarColor: param['varyBarColor'],
+                varyBarColor: chartParamsObj['varyBarColor'],
                 shadowAlpha: 0.15,
                 shadowOffset: 0
             },
@@ -8316,19 +8330,19 @@ function createJQChart_StackedBar(param)
         },
         axes: {
             xaxis:{
-                label: param['AxisLabelX'],
+                label: chartParamsObj['AxisLabelX'],
                 labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                 renderer: $.jqplot.CategoryAxisRenderer,
-                ticks: param['chartDataText'],
+                ticks: chartParamsObj['chartDataText'],
                 tickOptions: {
-                    angle: param['DataTextAngle'],
+                    angle: chartParamsObj['DataTextAngle'],
                     fontFamily: 'arial, helvetica, clean, sans-serif',
                     fontSize: '10pt',
                     textColor: '#555555'
                 }
             },
             yaxis:{
-                label: param['AxisLabelY'],
+                label: chartParamsObj['AxisLabelY'],
                 labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                 min: 0,
                 max: chartCeilingValue,
@@ -8352,11 +8366,11 @@ function createJQChart_StackedBar(param)
             borderWidth: 1,
             gridLineColor: '#FFFFFF',
             background: 'transparent',
-            drawGridLines: param['drawGridLines'],
-            show: param['drawGridLines']
+            drawGridLines: chartParamsObj['drawGridLines'],
+            show: chartParamsObj['drawGridLines']
             },
         legend: {
-                    show: param['showlegend'],
+                    show: chartParamsObj['showlegend'],
                     rendererOptions: {
                         numberRows: 1
                     },
@@ -8370,30 +8384,30 @@ function createJQChart_StackedBar(param)
     }
     
     // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+param['uniqueid']+"]").css('height', param['height']);
+    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
     
-    // merge any jqPlot direct param-arguments into jPlotParamObj from param
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, param);
+    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
     
-    // override any jqPlot direct param-arguments based on globals setting from cookies (set by user)
+    // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
     jPlotParamObj = alterChartByGlobals(jPlotParamObj);
 
-    plot1 = $.jqplot(param['uniqueid'], param['chartData'], jPlotParamObj);
+    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], jPlotParamObj);
 
     
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(param) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
-    $('#' + param['uniqueid']).bind('jqplotDataClick', EvntHandler);
+    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
 
-    removeDecFromPointLabels(param);
+    removeDecFromPointLabels(chartParamsObj);
 
 }
 
-function createChartJQStackedLine(param)
+function createChartJQStackedLine(chartParamsObj)
 {
     var dataSet = [];
     var thisSum = 0;
 
-    for (var x = 0; x < param['chartDataText'].length; x++) {
+    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
     
         thisSum = 0;
         
@@ -8401,11 +8415,11 @@ function createChartJQStackedLine(param)
             thisSum += ['chartData'][y][x];
         }
         
-        param['chartDataText'][x] += ' (' + thisSum  + ')';
+        chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
     }
         
-    plot1 = $.jqplot(param['uniqueid'], param['chartData'], {
-        title: param['title'],
+    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], {
+        title: chartParamsObj['title'],
         seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
         series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
         seriesDefaults:{
@@ -8416,7 +8430,7 @@ function createChartJQStackedLine(param)
         axes: {
             xaxis:{
                 renderer:$.jqplot.CategoryAxisRenderer,
-                ticks:param['chartDataText']
+                ticks:chartParamsObj['chartDataText']
             },
             yaxis:{
                 min: 0
@@ -8432,12 +8446,6 @@ function createChartJQStackedLine(param)
                 }
     });
 
-    $('#' + param['uniqueid']).bind('jqplotDataClick',
-        function (ev, seriesIndex, pointIndex, data) {
-            alert('You clicked on bar-level ' + seriesIndex + ' in column: ' + pointIndex);
-        }
-    );
-
 }
 
 /**
@@ -8447,23 +8455,23 @@ function createChartJQStackedLine(param)
  *
  * @return boolean/integer
  */
-function createChartThreatLegend(param)
+function createChartThreatLegend(chartParamsObj)
 {
     /*
         Creates a red-orange-yellow legent above the chart
     */
 
-    if (param['showThreatLegend']) {
-        if (param['showThreatLegend'] == true) {
+    if (chartParamsObj['showThreatLegend'] && !chartIsEmpty(chartParamsObj)) {
+        if (chartParamsObj['showThreatLegend'] == true) {
 
             // Is a width given for the width of the legend? OR should we assume 100%?
             var tLegWidth = '100%';
-            if (param['threatLegendWidth']) {
-                tLegWidth = param['threatLegendWidth'];
+            if (chartParamsObj['threatLegendWidth']) {
+                tLegWidth = chartParamsObj['threatLegendWidth'];
             }
 
             var injectHTML = '<table style="font-size: 12px; color: #555555;" width="' + tLegWidth + '">  <tr>    <td style="text-align: center;" width="40%">Threat Level</td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF0000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;High</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF6600" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Moderate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FFC000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Low</td>      </tr>    </table>    </td>  </tr></table>';
-            var thisChartId = param['uniqueid'];
+            var thisChartId = chartParamsObj['uniqueid'];
             var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
 
             topLegendOnDOM.innerHTML = injectHTML;
@@ -8471,7 +8479,8 @@ function createChartThreatLegend(param)
     }        
 }
 
-function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj) {
+function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
+{
     
     var theLink = false;
     if (paramObj['links']) {
@@ -8487,6 +8496,9 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj) {
             }
         }
     }
+    
+    // unescape
+    theLink = unescape(theLink);
     
     // Does the link contain a variable?
     if (theLink != false) {
@@ -8517,12 +8529,13 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj) {
  *
  * @return array
  */
-function forceIntegerArray(inptArray) {
+function forceIntegerArray(inptArray)
+{
     for (var x = 0; x < inptArray.length; x++) {
         if (typeof inptArray[x] == 'object') {
             inptArray[x] = forceIntegerArray(inptArray[x]);
         } else {
-            inptArray[x] = inptArray[x] * 1;    // make sure this is an int, and not a string of a number
+            inptArray[x] = parseInt(inptArray[x]);    // make sure this is an int, and not a string of a number
         }
     }
 
@@ -8533,18 +8546,19 @@ function forceIntegerArray(inptArray) {
  * Manually draws borders onto the shadow canvas
  * This function is nessesary as jqPlot's API does not allow 
  * you to choose which borders are drawn and which are not.
- * If "L" exists within param['borders'], the left border is
+ * If "L" exists within chartParamsObj['borders'], the left border is
  * drawn, if "R" does (too), then the right is drawn and so on.
  *
  * @return void
  */
-function applyChartBorders(param) {
+function applyChartBorders(chartParamsObj)
+{
 
     // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
-    if (typeof param['borders'] == 'undefined') {
-        if (param['chartType'] == 'bar' || param['chartType'] == 'stackedbar') {
+    if (typeof chartParamsObj['borders'] == 'undefined') {
+        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
             // default for bar and stacked bar charts are bottom-left (BL)
-            param['borders'] = 'BL';
+            chartParamsObj['borders'] = 'BL';
         } else {
             // assume no default for other chart types
             return;
@@ -8552,7 +8566,7 @@ function applyChartBorders(param) {
     }
 
     // Get the area of our containing divs
-    var targDiv = document.getElementById(param['uniqueid']);
+    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
     var children = targDiv.childNodes;
     
     for (var x = children.length - 1; x > 0; x++) {
@@ -8575,28 +8589,28 @@ function applyChartBorders(param) {
                     context.beginPath();
 
                     // Draw left border?
-                    if (param['borders'].indexOf('L') != -1) {
+                    if (chartParamsObj['borders'].indexOf('L') != -1) {
                         context.moveTo(0,0);
                         context.lineTo(0, h);
                         context.stroke();
                     }               
 
                     // Draw bottom border?
-                    if (param['borders'].indexOf('B') != -1) {
+                    if (chartParamsObj['borders'].indexOf('B') != -1) {
                         context.moveTo(0, h);
                         context.lineTo(w, h);
                         context.stroke();
                     }
 
                     // Draw right border?
-                    if (param['borders'].indexOf('R') != -1) {
+                    if (chartParamsObj['borders'].indexOf('R') != -1) {
                         context.moveTo(w, 0);
                         context.lineTo(w, h);
                         context.stroke();
                     }
 
                     // Draw top border?
-                    if (param['borders'].indexOf('T') != -1) {
+                    if (chartParamsObj['borders'].indexOf('T') != -1) {
                         context.moveTo(0, 0);
                         context.lineTo(w, 0);
                         context.stroke();
@@ -8610,34 +8624,35 @@ function applyChartBorders(param) {
     
 }
 
-function applyChartBackground(param) {
+function applyChartBackground(chartParamsObj)
+{
 
-    var targDiv = document.getElementById(param['uniqueid']);
+    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
 
     // Dont display a background? Defined in either nobackground or background.nobackground
-    if (param['nobackground']) {
-        if (param['nobackground'] == true) { return; }
+    if (chartParamsObj['nobackground']) {
+        if (chartParamsObj['nobackground'] == true) { return; }
     }
-    if (param['background']) {
-        if (param['background']['nobackground']) {
-            if (param['background']['nobackground'] == true) { return; }
+    if (chartParamsObj['background']) {
+        if (chartParamsObj['background']['nobackground']) {
+            if (chartParamsObj['background']['nobackground'] == true) { return; }
         }
     }
     
     // What is the HTML we should inject?
     var backURL = '/images/logoShark.png'; // default location
-    if (param['background']) { if (param['background']['URL']) { backURL = param['background']['URL']; } }
+    if (chartParamsObj['background']) { if (chartParamsObj['background']['URL']) { backURL = chartParamsObj['background']['URL']; } }
     var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
 
     // But wait, is there an override issued for the HTML of the background to inject?
-    if (param['background']) {
-        if (param['background']['overrideHTML']) {
-            backURL = param['background']['overrideHTML'];
+    if (chartParamsObj['background']) {
+        if (chartParamsObj['background']['overrideHTML']) {
+            backURL = chartParamsObj['background']['overrideHTML'];
         }
     }
 
     // Where do we inject the background in the DOM? (different for differnt chart rederers)
-    if (param['chartType'] == 'pie') {
+    if (chartParamsObj['chartType'] == 'pie') {
         var cpy = targDiv.childNodes[3];
         var insertBeforeChild = targDiv.childNodes[4];
     } else {    
@@ -8662,31 +8677,32 @@ function applyChartBackground(param) {
  *
  * @return void
  */
-function applyChartWidgets(param) {
+function applyChartWidgets(chartParamsObj)
+{
 
-    var wigSpace = document.getElementById(param['uniqueid'] + 'WidgetSpace');
+    var wigSpace = document.getElementById(chartParamsObj['uniqueid'] + 'WidgetSpace');
 
     // Are there widgets for this chart?
-    if (typeof param['widgets'] == 'undefined') {
+    if (typeof chartParamsObj['widgets'] == 'undefined') {
         wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
         return;
-    } else if (param['widgets'].length == 0) {
+    } else if (chartParamsObj['widgets'].length == 0) {
         wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
         return;
     }
 
-    if (param['widgets']) {
+    if (chartParamsObj['widgets']) {
 
         var addHTML = '';
 
-        for (var x = 0; x < param['widgets'].length; x++) {
+        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
 
-            var thisWidget = param['widgets'][x];
+            var thisWidget = chartParamsObj['widgets'][x];
             
             // create a widget id if one is not explicitly given
             if (!thisWidget['uniqueid']) {
-                thisWidget['uniqueid'] = param['uniqueid'] + '_widget' + x;
-                param['widgets'][x]['uniqueid'] = thisWidget['uniqueid'];
+                thisWidget['uniqueid'] = chartParamsObj['uniqueid'] + '_widget' + x;
+                chartParamsObj['widgets'][x]['uniqueid'] = thisWidget['uniqueid'];
             }
 
             // print the label text to be displayed to the left of the widget if one is given
@@ -8695,7 +8711,7 @@ function applyChartWidgets(param) {
             switch(thisWidget['type']) {
                 case 'combo':
 
-                    addHTML += '<select id="' + thisWidget['uniqueid'] + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(param).replace(/"/g, "'") + ');">';
+                    addHTML += '<select id="' + thisWidget['uniqueid'] + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
                                         // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
 
                     for (var y = 0; y < thisWidget['options'].length; y++) {
@@ -8708,12 +8724,12 @@ function applyChartWidgets(param) {
 
                 case 'text':
     
-                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(param).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget['uniqueid'] + '" />';
+                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget['uniqueid'] + '" />';
                                         // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
                     break;
 
                 default:
-                    alert('Error - Widget ' + x + "'s type (" + thisWidget['type'] + ') is not a known widget type');
+                    throw 'Error - Widget ' + x + "'s type (" + thisWidget['type'] + ') is not a known widget type';
                     return false;
             }
 
@@ -8727,24 +8743,25 @@ function applyChartWidgets(param) {
         
     }
 
-    applyChartWidgetSettings(param);
+    applyChartWidgetSettings(chartParamsObj);
 }
 
 /**
- * Looks at param["widget"], or for every chart-options/widget, loads the
+ * Looks at chartParamsObj["widget"], or for every chart-options/widget, loads the
  * values for this opt/widget into the user-interface object for this option.
  * This value may be loaded froma saved cookie, fallback to a default, or
  * be foreced to a certain value every time if the PHP wrapper demands it.
  *
  * @return void
  */
-function applyChartWidgetSettings(param) {
+function applyChartWidgetSettings(chartParamsObj)
+{
 
-    if (param['widgets']) {
+    if (chartParamsObj['widgets']) {
 
-        for (var x = 0; x < param['widgets'].length; x++) {
+        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
 
-            var thisWidget = param['widgets'][x];
+            var thisWidget = chartParamsObj['widgets'][x];
             
             // load the value for widgets
             var thisWigInDOM = document.getElementById(thisWidget['uniqueid']);
@@ -8753,14 +8770,14 @@ function applyChartWidgetSettings(param) {
                 thisWigInDOM.value = thisWidget['forcevalue'];
                 thisWigInDOM.text = thisWidget['forcevalue'];
             } else {
-                var thisWigCookieValue = getCookie(param['uniqueid'] + '_' + thisWidget['uniqueid']);
+                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
                 if (thisWigCookieValue != '') {
                     // the value has been coosen in the past and is stored as a cookie
                     thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
                     thisWigInDOM.value = thisWigCookieValue;
                     thisWigInDOM.text = thisWigCookieValue;
                 } else {
-                    // no saved value/cookie. Is there a default given in the param object
+                    // no saved value/cookie. Is there a default given in the chartParamsObj object
                     if (thisWidget['defaultvalue']) {
                         thisWigInDOM.value = thisWidget['defaultvalue'];
                         thisWigInDOM.text = thisWidget['defaultvalue'];
@@ -8776,21 +8793,22 @@ function applyChartWidgetSettings(param) {
  * When an external source is queried (JSON query), all chart parameters/options/widgets
  * are placed into the query URL. This function builds the trailing query to be appended
  * to the static external source URL.
- * Returns the param object given to this function with param['externalSourceParams'] altered.
+ * Returns the chartParamsObj object given to this function with chartParamsObj['externalSourceParams'] altered.
  *
  * @return Array
  */
-function buildExternalSourceParams(param) {
+function buildExternalSourceParams(chartParamsObj)
+{
 
     // build arguments to send to the remote data source
 
     var thisWidgetValue = '';
-    param['externalSourceParams'] = '';
+    chartParamsObj['externalSourceParams'] = '';
 
-    if (param['widgets']) {
-        for (var x = 0; x < param['widgets'].length; x++) {
+    if (chartParamsObj['widgets']) {
+        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
 
-            var thisWidget = param['widgets'][x];
+            var thisWidget = chartParamsObj['widgets'][x];
             var thisWidgetName = thisWidget['uniqueid'];
             var thisWidgetOnDOM = document.getElementById(thisWidgetName);
 
@@ -8800,7 +8818,7 @@ function buildExternalSourceParams(param) {
                 thisWidgetValue = thisWidgetOnDOM.value;
             } else {
                 // not on DOM, is there a cookie?
-                var thisWigCookieValue = getCookie(param['uniqueid'] + '_' + thisWidget['uniqueid']);
+                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
                 if (thisWigCookieValue != '') {
                     // there is a cookie value, us it
                     thisWidgetValue = thisWigCookieValue;
@@ -8812,53 +8830,66 @@ function buildExternalSourceParams(param) {
                 }
             }
 
-            param['externalSourceParams'] += '/' + thisWidgetName + '/' + thisWidgetValue 
+            chartParamsObj['externalSourceParams'] += '/' + thisWidgetName + '/' + thisWidgetValue 
         }
     }
 
-    return param;
+    return chartParamsObj;
 }
 
-function widgetEvent(param) {
+ /**
+  * Event handeler for when a user changes combo-boxes or textboxes 
+  * of chart settings.
+  *
+  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+  *
+  * @param object
+  * @return void
+ */
+function widgetEvent(chartParamsObj)
+{
 
     // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
-    if (param['widgets']) {
-        for (var x = 0; x < param['widgets'].length; x++) {
-            var thisWidgetName = param['widgets'][x]['uniqueid'];
+    if (chartParamsObj['widgets']) {
+        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
+            var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            setCookie(param['uniqueid'] + '_' + thisWidgetName,thisWidgetValue,400);
+            setCookie(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue,400);
         }
     }
 
     // build arguments to send to the remote data source
-    param = buildExternalSourceParams(param);
+    chartParamsObj = buildExternalSourceParams(chartParamsObj);
 
     // restore externalSource so a json request is fired when calling createJQPChart
-    param['externalSource'] = param['oldExternalSource'];
-    param['oldExternalSource'] = undefined;
+    chartParamsObj['externalSource'] = chartParamsObj['oldExternalSource'];
+    chartParamsObj['oldExternalSource'] = undefined;
 
-    param['chartData'] = undefined;
-    param['chartDataText'] = undefined;
+    chartParamsObj['chartData'] = undefined;
+    chartParamsObj['chartDataText'] = undefined;
 
     // re-create chart entirly
-    document.getElementById(param['uniqueid'] + 'holder').finnishFadeCallback = new Function ("makeElementVisible('" + param['uniqueid'] + "loader'); createJQChart(" + YAHOO.lang.JSON.stringify(param) + "); this.finnishFadeCallback = '';");
-    fadeOut(param['uniqueid'] + 'holder', 300);
+    document.getElementById(chartParamsObj['uniqueid'] + 'holder').finnishFadeCallback = new Function ("makeElementVisible('" + chartParamsObj['uniqueid'] + "loader'); createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); this.finnishFadeCallback = '';");
+    fadeOut(chartParamsObj['uniqueid'] + 'holder', 300);
 
 }
 
-function makeElementVisible(eleId) {
+function makeElementVisible(eleId)
+{
     var ele = document.getElementById(eleId);
     ele.style.opacity = '1';
     ele.style.filter = "alpha(opacity = '100')";
 }
 
-function makeElementInvisible(eleId) {
+function makeElementInvisible(eleId)
+{
     var ele = document.getElementById(eleId);
     ele.style.opacity = '0';
     ele.style.filter = "alpha(opacity = '0')";
 }
 
-function fadeIn(eid, TimeToFade) {
+function fadeIn(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -8891,7 +8922,8 @@ function fadeIn(eid, TimeToFade) {
     fade(eid, TimeToFade);
 }
 
-function fadeOut(eid, TimeToFade) {
+function fadeOut(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -8923,7 +8955,8 @@ function fadeOut(eid, TimeToFade) {
     fade(eid, TimeToFade);
 }
 
-function fade(eid, TimeToFade) {
+function fade(eid, TimeToFade)
+{
 
     var element = document.getElementById(eid);
     if (element == null) return;
@@ -8990,7 +9023,7 @@ function animateFade(lastTick, eid, TimeToFade)
  * This function controles how width and scrolling is handeled with the chart's canvase's
  * parent div. If autoWidth (or in PHP Fisma_Chart->widthAuto(true);) is set, the parent
  * div will always be scrollable. If not, it may still be automatically set scrollable if
- * the with in param['width'] is less than the minimum with required by the chart (calculated
+ * the with in chartParamsObj['width'] is less than the minimum with required by the chart (calculated
  * in this function).
  *
  * NOTE: This function does not actully look at the DOM. It assumes the author to used
@@ -8999,28 +9032,29 @@ function animateFade(lastTick, eid, TimeToFade)
  *
  * @return void
  */
-function setChartWidthAttribs(param) {
+function setChartWidthAttribs(chartParamsObj)
+{
 
     var makeScrollable = false;
 
     // Determin if we need to make this chart scrollable...
     // Do we really have the chart data to plot?
-    if (param['chartData']) {
+    if (chartParamsObj['chartData']) {
         // Is this a bar chart?
-        if (param['chartType'] == 'bar' || param['chartType'] == 'stackedbar') {
+        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
 
             // How many bars does it have?
-            if (param['chartType'] == 'stackedbar') {
-                var barCount = param['chartData'][0].length;
-            } else if (param['chartType'] == 'bar') {
-                var barCount = param['chartData'].length;
+            if (chartParamsObj['chartType'] == 'stackedbar') {
+                var barCount = chartParamsObj['chartData'][0].length;
+            } else if (chartParamsObj['chartType'] == 'bar') {
+                var barCount = chartParamsObj['chartData'].length;
             }
 
             // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
             var minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
 
             // Do we not have enough space for a non-scrolling chart?
-            if (param['width'] < minSpaceRequired) {
+            if (chartParamsObj['width'] < minSpaceRequired) {
                 
                 // We need to make this chart scrollable
                 makeScrollable = true;
@@ -9029,38 +9063,35 @@ function setChartWidthAttribs(param) {
     }
 
     // Is auto-width enabeled? (set width to 100% and make scrollable)
-    if (typeof param['autoWidth'] != 'undefined') {
-        if (param['autoWidth'] == true) {
+    if (typeof chartParamsObj['autoWidth'] != 'undefined') {
+        if (chartParamsObj['autoWidth'] == true) {
             makeScrollable = true;
         }
     }
 
     if (makeScrollable == true) {
 
-        document.getElementById(param['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(param['uniqueid'] + 'holder').style.width = '100%';
-        document.getElementById(param['uniqueid'] + 'holder').style.overflow = 'auto';
-        document.getElementById(param['uniqueid']).style.width = minSpaceRequired + 'px';
-        //document.getElementById(param['uniqueid']  + 'WidgetSpace').style.width = minSpaceRequired + 'px';
-        document.getElementById(param['uniqueid']  + 'toplegend').style.width = minSpaceRequired + 'px';
+        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
+        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = '100%';
+        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = 'auto';
+        document.getElementById(chartParamsObj['uniqueid']).style.width = minSpaceRequired + 'px';
+        document.getElementById(chartParamsObj['uniqueid']  + 'toplegend').style.width = minSpaceRequired + 'px';
 
         // handel alignment
-        if (param['align'] == 'center') {
-            document.getElementById(param['uniqueid']).style.marginLeft = 'auto';
-            document.getElementById(param['uniqueid']).style.marginRight = 'auto';  
-            //document.getElementById(param['uniqueid'] + 'WidgetSpace').style.marginLeft = 'auto';
-            //document.getElementById(param['uniqueid'] + 'WidgetSpace').style.marginRight = 'auto';
-            document.getElementById(param['uniqueid'] + 'toplegend').style.marginLeft = 'auto';
-            document.getElementById(param['uniqueid'] + 'toplegend').style.marginRight = 'auto';
+        if (chartParamsObj['align'] == 'center') {
+            document.getElementById(chartParamsObj['uniqueid']).style.marginLeft = 'auto';
+            document.getElementById(chartParamsObj['uniqueid']).style.marginRight = 'auto';
+            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginLeft = 'auto';
+            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginRight = 'auto';
         }
         
     } else {
 
-        document.getElementById(param['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(param['uniqueid'] + 'holder').style.width = param['width'] + 'px';
-        document.getElementById(param['uniqueid'] + 'holder').style.overflow = '';
-        document.getElementById(param['uniqueid']).style.width = param['width'] + 'px';
-        document.getElementById(param['uniqueid'] + 'toplegend').width = param['width'] + 'px';
+        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
+        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = chartParamsObj['width'] + 'px';
+        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = '';
+        document.getElementById(chartParamsObj['uniqueid']).style.width = chartParamsObj['width'] + 'px';
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').width = chartParamsObj['width'] + 'px';
     }
     
 }
@@ -9070,88 +9101,155 @@ function setChartWidthAttribs(param) {
  * The generated HTML should generally be placed in a div by the Id of the
  * chart's uniqueId + "table"
  *
+ * @param object
  * @return String
  */
-function getTableFromChartData(param)
+function getTableFromChartData(chartParamsObj)
 {
-    if (param['chartType'] === 'pie') {
-        return getTableFromChartData_pieChart(param);
+    if (chartIsEmpty(chartParamsObj)) {
+        return;
+    }
+
+    var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
+    dataTableObj.innerHTML = '';
+    
+    if (getGlobalSetting('showDataTable') === 'true') {
+    
+        if (chartParamsObj['chartType'] === 'pie') {
+            getTableFromCharPieChart(chartParamsObj);
+        } else {
+            getTableFromBarChart(chartParamsObj);
+        }
+
+        // Show the table generated based on chart data
+        dataTableObj.style.display = '';
+        // Hide, erase, and collapse the container of the chart divs
+        document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
+        document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
+        document.getElementById(chartParamsObj['uniqueid']).style.height = 0;
+        // Ensure the threat-level-legend is hidden
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.display = 'none';
+
     } else {
-        return getTableFromChartData_barChart(param);
+        dataTableObj.style.display = 'none';
     }
 }
 
-function getTableFromChartData_pieChart(param)
+function getTableFromCharPieChart(chartParamsObj)
 {
-    var HTML = '<table width="100%" border=1><tr>';
-    
+    var tbl     = document.createElement("table");
+    var tblBody = document.createElement("tbody");
+
     // row of slice-labels
-    for (var x = 0; x < param['chartDataText'].length; x++) {
-        HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
+    var row = document.createElement("tr");
+    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
+        var cell = document.createElement("th");
+        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
+        cell.setAttribute("style", "font-style: bold;");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
-    HTML += '</tr><tr>';
+    tblBody.appendChild(row);
 
     // row of data
-    for (var x = 0; x < param['chartData'].length; x++) {
-
-        HTML += '<td>' + param['chartData'][x] + '</td>';
-
+    var row = document.createElement("tr");
+    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
+        var cell = document.createElement("td");
+        var cellText = document.createTextNode(chartParamsObj['chartData'][x]);
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
+    tblBody.appendChild(row);
 
-    HTML += '</tr></table>';
-
-    return HTML;
+    tbl.appendChild(tblBody);
+    tbl.setAttribute("border", "1");
+    tbl.setAttribute("width", "100%");
+    
+    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
 }
 
-function getTableFromChartData_barChart(param)
+function getTableFromBarChart(chartParamsObj)
 {
-    var HTML = '<table width="100%" border=1>';
+    var tbl     = document.createElement("table");
+    var tblBody = document.createElement("tbody");
+    var row = document.createElement("tr");
     
     // add a column for layer names if this is a stacked chart
-    if (typeof param['chartLayerText'] != 'undefined') {
-        HTML += '<tr><td></td>';
+    if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
+        var cell = document.createElement("td");
+        var cellText = document.createTextNode(" ");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
     
-    for (var x = 0; x < param['chartDataText'].length; x++) {
-        HTML += '<th nowrap><b>' + param['chartDataText'][x] + '</b></th>';
+    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
+        var cell = document.createElement("th");
+        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
+        cell.setAttribute("style", "font-style: bold;");
+        cell.appendChild(cellText);
+        row.appendChild(cell);
     }
-    HTML += '</tr>';
+    tblBody.appendChild(row);
+    
 
-    for (var x = 0; x < param['chartData'].length; x++) {
+    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
 
-        var thisEle = param['chartData'][x];
-        HTML += '<tr>';
+        var thisEle = chartParamsObj['chartData'][x];
+        var row = document.createElement("tr");
         
         // each layer label
-        if (typeof param['chartLayerText'] != 'undefined') {
-            HTML += '<th><b>' + param['chartLayerText'][x] + '</b></th>';
+        if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
+            var cell = document.createElement("th");
+            var cellText = document.createTextNode(chartParamsObj['chartLayerText'][x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
         }
         
         if (typeof(thisEle) == 'object') {
 
             for (var y = 0; y < thisEle.length; y++) {
-
-                HTML += '<td>' + thisEle[y] + '</td>';
+                var cell = document.createElement("td");
+                var cellText = document.createTextNode(thisEle[y]);
+                cell.setAttribute("style", "font-style: bold;");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
             }
             
         } else {
 
-            HTML += '<td>' + thisEle + '</td>';
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(thisEle);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
         }
 
-        HTML += '</tr>';
+        tblBody.appendChild(row);
 
     }
 
-    HTML += '</table>';
-
-    return HTML;
+    tbl.appendChild(tblBody);
+    tbl.setAttribute("border", "1");
+    tbl.setAttribute("width", "100%");
+    
+    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
 }
 
-function removeDecFromPointLabels(param)
+/**
+ * Removes decimals from point labels, along with some other minor maintenance
+ * - removes data/point-labels that are 0s
+ * - Applies outlines if the globalSettings is set so
+ * - forces color to black, and bolds the font
+ *
+ * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+ *
+ * @param object
+ * @return void
+ */
+function removeDecFromPointLabels(chartParamsObj)
 {
         var outlineStyle = '';
-        var chartOnDOM = document.getElementById(param['uniqueid']);
+        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
     
         for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
                 
@@ -9166,12 +9264,12 @@ function removeDecFromPointLabels(param)
                     if (thisChld.classList[0] == 'jqplot-point-label') {
 
                             // convert this from a string to a number to a string again (removes decimal if its needless)
-                            thisLabelValue = thisChld.innerHTML * 1;
+                            thisLabelValue = parseInt(thisChld.innerHTML);
                             thisChld.innerHTML = thisLabelValue;
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (thisChld.innerHTML * 1 == 0) {
+                            if (parseInt(thisChld.innerHTM) == 0) {
                                 thisChld.innerHTML = '';
                             }
 
@@ -9186,18 +9284,18 @@ function removeDecFromPointLabels(param)
                                 outlineStyle += '#FFFFFF -1px -1px 0px, ';
                                 outlineStyle += '#FFFFFF 1px 1px 0px; ';
                                 
-                                thisChld.innerHTML = '<span style="' + outlineStyle + param['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
+                                thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
                                 thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
                                 
                             } else {
-                                thisChld.innerHTML = '<span style="' + param['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
+                                thisChld.innerHTML = '<span style="' + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
                             }
 
                             // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                            var thisLeftNbrValue = String(thisChld.style.left).replace('px', '') * 1;       // remove "px" from string, and conver to number
-                            var thisTopNbrValue = String(thisChld.style.top).replace('px', '') * 1;       // remove "px" from string, and conver to number
-                            thisLeftNbrValue += param['pointLabelAdjustX'];
-                            thisTopNbrValue += param['pointLabelAdjustY'];
+                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''));       // remove "px" from string, and conver to number
+                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''));       // remove "px" from string, and conver to number
+                            thisLeftNbrValue += chartParamsObj['pointLabelAdjustX'];
+                            thisTopNbrValue += chartParamsObj['pointLabelAdjustY'];
                             if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
                             if (thisLabelValue >= 1000) { thisLeftNbrValue -= 3; }
                             thisChld.style.left = thisLeftNbrValue + 'px';
@@ -9212,15 +9310,16 @@ function removeDecFromPointLabels(param)
         
 }
 
-function removeOverlappingPointLabels(param) {
+function removeOverlappingPointLabels(chartParamsObj)
+{
 
         // This function will deal with removing point labels that collie with eachother
         // There is no need for this unless this is a stacked-bar or stacked-line chart
-        if (param['chartType'] != 'stackedbar' && param['chartType'] != 'stackedline') {
+        if (chartParamsObj['chartType'] != 'stackedbar' && chartParamsObj['chartType'] != 'stackedline') {
             return;
         }
 
-        var chartOnDOM = document.getElementById(param['uniqueid']);
+        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
 
         var pointLabels_info = {};
         var pointLabels_indexes = [];
@@ -9247,8 +9346,8 @@ function removeOverlappingPointLabels(param) {
                 if (chldIsRemoved == false) {
                     // index this point labels position
 
-                    var thisLeftNbrValue = String(thisChld.style.left).replace('px', '') * 1; // remove "px" from string, and conver to number
-                    var thisTopNbrValue = String(thisChld.style.top).replace('px', '') * 1; // remove "px" from string, and conver to number
+                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', '')); // remove "px" from string, and conver to number
+                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', '')); // remove "px" from string, and conver to number
                     thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
 
                     var thisIndex = 'left_' + thisLeftNbrValue;
@@ -9304,7 +9403,7 @@ function removeOverlappingPointLabels(param) {
                         // We jave just removed a point label, so this function will need to be run again
                         // as the labels will need to be reindexed.
                         
-                        removeOverlappingPointLabels(param)
+                        removeOverlappingPointLabels(chartParamsObj)
                         return;
                     }
                 }
@@ -9314,11 +9413,20 @@ function removeOverlappingPointLabels(param) {
         
 }
 
-function hideButtonClick(scope, param, obj)
+function hideButtonClick(scope, chartParamsObj, obj)
 {
-    setChartSettingsVisibility(param , false);
+    setChartSettingsVisibility(chartParamsObj , false);
 }
 
+/**
+ * Controles if the YUI-tab-view of the settings for a given drawn chart on the DOM
+ * is visible or not.
+ *
+ * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+ *
+ * @param object
+ * @return void
+ */
 function setChartSettingsVisibility(chartId, boolVisible)
 {
     var menuHolderId = chartId + 'WidgetSpaceHolder';
@@ -9339,6 +9447,15 @@ function setChartSettingsVisibility(chartId, boolVisible)
     }
 }
 
+/**
+ * Will take values from checkboxes/textboxes within the Global Settings tab of
+ * a chart and save each settings into cookies, and then trigger redrawAllCharts()
+ *
+ * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+ *
+ * @param object
+ * @return void
+ */
 function globalSettingUpdate(chartUniqueId)
 {
     // get this chart's GlobSettings menue
@@ -9361,7 +9478,17 @@ function globalSettingUpdate(chartUniqueId)
     redrawAllCharts();
 }
 
-function globalSettingRefreashUI(param)
+/**
+ * Will update checkboxes/textboxes within the Global Settings tab of
+ * the chart to be equal to the current cookie state for each setting 
+ * or the default stored in globalSettingsDefaults.
+ *
+ * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+ *
+ * @param object
+ * @return void
+ */
+function globalSettingRefreashUI(chartParamsObj)
 {
     /*
         Every input-element (setting UI) has an id equal to the cookie name 
@@ -9370,7 +9497,7 @@ function globalSettingRefreashUI(param)
     */
     
     // get this chart's GlobSettings menue
-    var settingsMenue = document.getElementById(param['uniqueid'] + 'GlobSettings');
+    var settingsMenue = document.getElementById(chartParamsObj['uniqueid'] + 'GlobSettings');
     
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
@@ -9391,7 +9518,8 @@ function globalSettingRefreashUI(param)
     }
 }
 
-function showSetingMode(showBasic) {
+function showSetingMode(showBasic)
+{
     if (showBasic == true) {
         var showThese = document.getElementsByName('chartSettingsBasic')
         var hideThese = document.getElementsByName('chartSettingsGlobal')
@@ -9410,7 +9538,8 @@ function showSetingMode(showBasic) {
     
 }
 
-function getGlobalSetting(settingName) {
+function getGlobalSetting(settingName)
+{
 
     var rtnValue = getCookie('chartGlobSetting_' + settingName, '-RETURN-DEFAULT-SETTING-');
 
@@ -9419,7 +9548,7 @@ function getGlobalSetting(settingName) {
     } else {
     
         if (typeof globalSettingsDefaults[settingName] == 'undefined') {
-            alert('You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js');
+            throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
         } else {
             return String(globalSettingsDefaults[settingName]);
         }
@@ -9427,11 +9556,23 @@ function getGlobalSetting(settingName) {
 
 }
 
-function setGlobalSetting(settingName, newValue) {
+function setGlobalSetting(settingName, newValue)
+{
     setCookie('chartGlobSetting_' + settingName, newValue);
 }
 
-function alterChartByGlobals(chartParamObj) {
+/**
+ * Will alter the input chart object based on 
+ * settings(cookies) or defaults stored in globalSettingsDefaults.
+ *
+ * Expects: A (chart) object generated from Fisma_Chart->export('array')
+ * Returns: The given object, which may or may not have alterations
+ *
+ * @param object
+ * @return object
+ */
+function alterChartByGlobals(chartParamObj)
+{
     
     // Show bar shadows?
     if (getGlobalSetting('barShadows') == 'true') {
@@ -9471,7 +9612,8 @@ function alterChartByGlobals(chartParamObj) {
     return chartParamObj;
 }
 
-function redrawAllCharts() {
+function redrawAllCharts()
+{
 
     for (var uniqueid in chartsOnDOM) {
     
@@ -9486,13 +9628,73 @@ function redrawAllCharts() {
 
 }
 
-function getNextNumberDivisibleBy5(nbr) {
+/**
+ * Will insert a "No data to plot" message when there is no 
+ * data to plot, or all plot data are 0s
+ *
+ * Expects: A (chart) object generated from Fisma_Chart->export('array')
+ * @param object
+ * @return void
+ */
+function showMsgOnEmptyChart(chartParamsObj)
+{
+
+    if (chartIsEmpty(chartParamsObj)) {
+        var targDiv = document.getElementById(chartParamsObj['uniqueid']);
+        var injectHTML = 'No data to plot.';
+        var insertBeforeChild = targDiv.childNodes[1];
+        var msgOnDom = document.createElement('div');
+        msgOnDom.height = '100%';
+        msgOnDom.style.align = 'center';
+        msgOnDom.style.position = 'absolute';
+        msgOnDom.style.width = chartParamsObj['width'] + 'px';
+        msgOnDom.style.height = '100%';
+        msgOnDom.style.textAlign = 'center';
+        msgOnDom.style.verticalAlign = 'middle';
+        var inserted = targDiv.insertBefore(msgOnDom, insertBeforeChild);
+        inserted.innerHTML = injectHTML;
+    }
+}
+
+/**
+ * Returns true if there is no data to 
+ * plot, or if all plot data are 0s
+ *
+ * Expects: A (chart) object generated from Fisma_Chart->export('array')
+ * @param object
+ * @return boolean
+ */
+function chartIsEmpty(chartParamsObj)
+{
+
+    // Is all data 0?
+    var isAll0Data = true;
+    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
+    
+        if (typeof chartParamsObj['chartData'][x] == 'object') {
+            
+            for (var y = 0; y < chartParamsObj['chartData'][x].length; y++) {
+                if (parseInt(chartParamsObj['chartData'][x][y]) > 0) { isAll0Data = false; }
+            }
+            
+        } else {
+            if (parseInt(chartParamsObj['chartData'][x]) > 0)
+                isAll0Data = false;
+        }
+    
+    }
+    
+    return isAll0Data;
+}
+
+function getNextNumberDivisibleBy5(nbr)
+{
 
     nbr = Math.round(nbr);
 
     for (var x = 0; x < 8; x++ ) {
     
-        var dividedBy5 = (nbr / 5) * 1;
+        var dividedBy5 = (nbr / 5);
 
         // is this a whole number?
         if (dividedBy5 == Math.round(dividedBy5)) {
