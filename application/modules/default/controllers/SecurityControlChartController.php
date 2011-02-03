@@ -111,6 +111,9 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
                 $totalCount += $thisElement['sc_count'];
             }
             
+            // add the last found family (not added yet since column additions are done on family-name-change)
+            $rtnChart->addColumn($totalingFamily, $totalCount);
+            
             // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
             $rtnChart
                 ->setLinks(
