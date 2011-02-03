@@ -305,23 +305,6 @@ class Fisma_Chart
         return $this;
     }
     
-    /**
-     * When set to true, will force the JavaScript wrapper to show a message-box popup when firing a JSON request and
-     * state the URL the request is pulling from. Not for use in production mode.
-     * 
-     * @return Fisma_Chart
-     */
-    public function setExternalSourceDebug($inBoolean)
-    {
-        if ($inBoolean) {
-            $this->chartParamArr['externalSourceDebug'] = true;
-        } else {
-            unset($this->chartParamArr['externalSourceDebug']);
-        }
-        
-        return $this;
-    }
-    
     public function setAlign($inString)
     {
         $this->chartParamArr['align'] = $inString;

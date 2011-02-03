@@ -1,4 +1,9 @@
 
+// Constants
+    var CHART_CREATE_SUCCESS = 1;
+    var CHART_CREATE_FAILURE = 2;
+    var CHART_CREATE_EXTERNAL = 3;
+
 // Defaults for global chart settings definition:
 var globalSettingsDefaults = {
     fadingEnabled:      false,
@@ -21,9 +26,8 @@ isIE = (window.ActiveXObject) ? true : false;
  * Creates a chart within a div by the name of chartParamsObj['uniqueid'].
  * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
  * This function may return before the actual creation of a chart if there is an external source.
- * Returns true on success, false on failure, and the integer 3 when on external source
  *
- * @return boolean/integer
+ * @return boolean
  */
 function createJQChart(chartParamsObj)
 {
@@ -45,7 +49,7 @@ function createJQChart(chartParamsObj)
     // param validation
     if (document.getElementById(chartParamsObj['uniqueid']) == false) {
         throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj['uniqueid'];
-        return false;
+        return CHART_CREATE_FAILURE;
     }
 
     // set chart width to chartParamsObj['width']
@@ -78,27 +82,18 @@ function createJQChart(chartParamsObj)
         externalSource += String(chartParamsObj['externalSourceParams']).replace(/ /g,'%20');
         chartParamsObj['lastURLpull'] = externalSource;
 
-        // Are we debugging the external source?
-        if (chartParamsObj['externalSourceDebug']) {
-            var doNav = confirm ('Now pulling from external source: ' + externalSource + '\n\nWould you like to navigate here?')
-            if (doNav) {
-                document.location = externalSource;
-            }
-        }
-
         var myDataSource = new YAHOO.util.DataSource(externalSource);
         myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
         myDataSource.responseSchema = {resultsList: "chart"};
 
-        var callBackFunct = new Function ("requestNumber", "value", "exception", "createJQChart_asynchReturn(requestNumber, value, exception, " + YAHOO.lang.JSON.stringify(chartParamsObj) + ");");
-
         var callback1 = {
-            success : callBackFunct,
-            failure : callBackFunct
+            success : createJQChart_asynchReturn,
+            failure : createJQChart_asynchReturn,
+            argument: chartParamsObj
         };
         myDataSource.sendRequest("", callback1);
 
-        return 3;
+        return CHART_CREATE_EXTERNAL;
     }
 
     // clear the chart area
@@ -181,7 +176,7 @@ function createJQChart(chartParamsObj)
                 break;
             default:
                 throw 'createJQChart Error - chartType is invalid (' + chartParamsObj['chartType'] + ')';
-                return false;
+                return CHART_CREATE_FAILURE;
         }
     }
 
@@ -206,9 +201,9 @@ function createJQChart(chartParamsObj)
  * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
  * returns the return value of createJQChart(), or false on external source failure.
  *
- * @return boolean/integer
+ * @return integer
  */
-function createJQChart_asynchReturn(requestNumber, value, exception, chartParamsObj)
+function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
 {
     // If anything (json) was returned at all...
     if (value) {
@@ -226,7 +221,7 @@ function createJQChart_asynchReturn(requestNumber, value, exception, chartParams
 
         if (typeof chartParamsObj['chartData'] == 'undefined') {
             throw 'Chart Error - The remote data source for chart "' + chartParamsObj['uniqueid'] + '" located at ' + chartParamsObj['lastURLpull'] + ' did not return data to plot on a chart';
-            return;
+            return CHART_CREATE_FAILURE;
         }
 
         // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
@@ -238,7 +233,7 @@ function createJQChart_asynchReturn(requestNumber, value, exception, chartParams
         }
     }
     
-    return false;
+    return CHART_CREATE_FAILURE;
 }
 
 /**
@@ -362,6 +357,7 @@ function createChartJQPie(chartParamsObj)
     // use the created function as the click-event-handeler
     $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
 
+    return CHART_CREATE_SUCCESS;
 }
 
  /**
@@ -517,6 +513,7 @@ function createJQChart_StackedBar(chartParamsObj)
 
     removeDecFromPointLabels(chartParamsObj);
 
+    return CHART_CREATE_SUCCESS;
 }
 
 function createChartJQStackedLine(chartParamsObj)
