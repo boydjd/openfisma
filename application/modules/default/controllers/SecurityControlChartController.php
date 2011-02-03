@@ -115,7 +115,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             $rtnChart
                 ->setLinks(
                     '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textContains/"#ColumnLabel#"'
+                    '/securityControl/textContains/#ColumnLabel#'
                 );
         }
             
