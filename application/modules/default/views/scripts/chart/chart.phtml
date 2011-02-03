@@ -142,10 +142,10 @@
 </div>
 <?php /* JavaScript is nessesarry for YUI widgets */ ?>
 <script type="text/javascript">
-    <!-- YUI TabView -->
+    /* YUI TabView */
     var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
     var tabView = new YAHOO.widget.TabView(thisName);
-    <!-- YUI buttons -->
+    /* YUI buttons */
     var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
     var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
     var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
