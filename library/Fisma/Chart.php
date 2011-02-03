@@ -379,7 +379,7 @@ class Fisma_Chart
             // This is not a stacked chart. Each data-point/column-height should be in each element of the data array
             
             $this->chartParamArr['chartData'][] = $addValue;
-            $this->chartParamArr['links'][] = Fisma_Zend_View::escape($addLink, 'url');
+            $this->chartParamArr['links'][] = Fisma_String::escapeJsString($addLink, 'url');
             
         } else {
             // This is a stacked chart. Each element of the chartParamArr['chartType'] array is a layer, not a column
@@ -405,7 +405,7 @@ class Fisma_Chart
                 $this->chartParamArr['chartData'][$layer][] = $addValue[$layer];
                 
                 if (!empty($addLink)) {
-                    $this->chartParamArr['links'][$layer][] = Fisma_Zend_View::escape($addLink[$layer], 'url');
+                    $this->chartParamArr['links'][$layer][] = Fisma_String::escapeJsString($addLink[$layer], 'url');
                 }
             }
         }
@@ -517,9 +517,9 @@ class Fisma_Chart
         // Escape URL(s)
         if (is_array($inArray)) {
             foreach ($inArray as &$link)
-                $link = Fisma_Zend_View::escape($link, 'url');
+                $link = Fisma_String::escapeJsString($link, 'url');
         } else {
-            $inArray = Fisma_Zend_View::escape($inArray, 'url');
+            $inArray = Fisma_String::escapeJsString($inArray, 'url');
         }
         
         $this->chartParamArr['links'] = $inArray;
