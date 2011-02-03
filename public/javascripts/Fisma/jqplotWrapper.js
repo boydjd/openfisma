@@ -334,7 +334,7 @@ function createChartJQPie(chartParamsObj)
                 shadowOffset: 0,
                 lineLabels: true,
                 lineLabelsLineColor: '#777',
-                diameter: chartParamsObj['height'] * 0.65
+                diameter: chartParamsObj['height'] * 0.55
             }
         },
         legend: {
