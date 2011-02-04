@@ -96,8 +96,8 @@ class Fisma_Index
     public function __construct($class) 
     {        
         try {
-            // Set privileges on index files to be readable only by owner and group
-            Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0660);
+            // Set privileges on index files to match the umask, as by default, the class sets everything to 777
+            Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(umask());
 
             // Create a new lucene object
             $this->_indexPath = Fisma::getPath('index') . '/' . $class;

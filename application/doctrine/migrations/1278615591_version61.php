@@ -45,7 +45,7 @@ class Version61 extends Doctrine_Migration_Base
 
         $tempDir = Fisma::getPath('temp') . '/version59data.' . uniqid();
 
-        if (!mkdir($tempDir, 0777)) {
+        if (!mkdir($tempDir)) {
             throw new Fisma_Zend_Exception("Could not create temp directory: $tempDir");
         }
 
