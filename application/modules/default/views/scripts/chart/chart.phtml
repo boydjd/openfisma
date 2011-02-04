@@ -28,10 +28,8 @@
 <div class="yui-navset">
 
     <div id="<?php echo $this->escape($this->chartId, 'none'); ?>loader" class="loading" style="width: 100%;">
-        
         <div>
         </div>
-        
     </div>
     
     <div id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
@@ -72,9 +70,8 @@
         </ul>
         <div class="yui-content">
             <div id="tab1" >
-            
                 <div id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpace">
-                    <!-- char params and widgets placed here by JavaScript -->
+                    <!-- chart params and widgets placed here by JavaScript -->
                 </div>
                 
                 <div style="width: 100%; text-align: right;">
@@ -95,22 +92,44 @@
                     onClick="globalSettingUpdate('<?php echo $this->escape($this->chartId, 'none');?>');" 
                     style="text-align: left; ">
                 <input type="checkbox" id="pointLabels" />
-                    Draw data labels (numbers on top of bars) <br/>
-                <input type="checkbox" id="pointLabelsOutline" />
-                    Outline data labels* <br/>
+                    <label for="pointLabels">
+                        Draw data labels (numbers on top of bars)
+                    </label><br/>
+                <span class="hideFromIE">
+                    <input type="checkbox" id="pointLabelsOutline" />
+                        <label for="pointLabelsOutline">
+                            Outline data labels* 
+                        </label><br/>
+                </span>
                 <input type="checkbox" id="barShadows" />
-                    Draw shadows behind bars <br/>
+                    <label for="barShadows">
+                        Draw shadows behind bars 
+                    </label><br/>
                 <input type="textbox" id="barShadowDepth" value="3" style="width:10px" />
-                    Depth of shadows behind bars (in pixels) <br/>                            
+                    <label for="barShadowDepth">
+                        Depth of shadows behind bars (in pixels) 
+                    </label><br/>
                 <input type="checkbox" id="dropShadows" />
-                    Draw shadows behind charts <br/>
+                    <label for="dropShadows">
+                        Draw shadows behind charts 
+                    </label><br/>
                 <input type="checkbox" id="gridLines"/>
-                    Draw grid-lines <br/>
-                <input type="checkbox" id="fadingEnabled"/>
-                    Enable fading effects* <br/>
+                    <label for="gridLines">
+                        Draw grid-lines 
+                    </label><br/>
+                <span class="hideFromIE">
+                    <input type="checkbox" id="fadingEnabled"/>
+                        <label for="fadingEnabled">
+                            Enable fading effects* 
+                        </label><br/>
+                </span>
                 <input type="checkbox" id="showDataTable"/>
-                    Show table of raw numbers instead of chart <br/>
+                    <label for="showDataTable">
+                        Show table of raw numbers instead of chart 
+                    </label><br/>
+                <label class="hideFromIE">
                     * = This option is not supported in IE
+                </label>
                 </div>
                 
                 <div style="width: 100%; text-align: right;">
@@ -130,17 +149,14 @@
     
 </div>
 
-<?php /* call javascript:createChartJQChart(obj) defined in jqplotWrapper.js which will create the chart */ ?>
 <script>
     var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
     createJQChart(thisChartObjData);
 </script>
 
-<?php /* Customized container-foot based on Fisma_Format_Section::stopSection */ ?>
 <div class='clear'></div>
 
 </div>
-<?php /* JavaScript is nessesarry for YUI widgets */ ?>
 <script type="text/javascript">
     /* YUI TabView */
     var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';

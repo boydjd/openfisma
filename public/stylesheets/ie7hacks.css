@@ -61,3 +61,8 @@ div.attachArtifactsProgressBar {
 div.yui-ac {
     z-index: 999;
 }
+
+/* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
+.hideFromIE {
+	display: none;
+}

@@ -96,12 +96,12 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Finding.css',
                                       '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
+                                      '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css',
-                                      '/stylesheets/jquery_jqplot.css'
+                                      '/stylesheets/User.css'
                                 )
                             );
 
