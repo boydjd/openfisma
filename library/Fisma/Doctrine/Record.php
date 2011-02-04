@@ -204,4 +204,17 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
         
         return $errorMessage;
     }
+
+    /**
+     * Returns a reference to the default cache
+     * 
+     * @access protected 
+     * @return void
+     */
+    protected function _getCache()
+    {
+        $bootstrap = (Zend_Controller_Front::getInstance()->getParam('bootstrap')) ? Zend_Controller_Front::getInstance()->getParam('bootstrap') : false;
+
+        return ($bootstrap) ? $bootstrap->getResource('cachemanager')->getCache('default') : null;
+    }
 }

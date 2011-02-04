@@ -162,16 +162,6 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
         return parent::__call($method, $args);
     }
 
-<<<<<<< HEAD
-    /**
-     * Create an HTML5-style meta charset tag. Something like <meta charset="utf-8">
-     *
-     * Not valid in a non-HTML5 doctype
-     *
-     * @param string $charset
-     * @return Zend_View_Helper_HeadMeta Provides a fluent interface
-     */
-=======
 	/**
 	 * Create an HTML5-style meta charset tag. Something like <meta charset="utf-8">
 	 *
@@ -180,7 +170,6 @@ class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_S
 	 * @param string $charset
 	 * @return Zend_View_Helper_HeadMeta Provides a fluent interface
 	 */
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
     public function setCharset($charset)
     {
         $item = new stdClass;

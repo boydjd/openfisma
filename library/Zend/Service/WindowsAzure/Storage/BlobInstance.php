@@ -82,11 +82,7 @@ class Zend_Service_WindowsAzure_Storage_BlobInstance
      * @param array   $metadata        Key/value pairs of meta data
      */
     public function __construct($containerName, $name, $snapshotId, $etag, $lastModified, $url = '', $size = 0, $contentType = '', $contentEncoding = '', $contentLanguage = '', $cacheControl = '', $blobType = '', $leaseStatus = '', $isPrefix = false, $metadata = array())
-<<<<<<< HEAD
-    {    
-=======
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
             'container'        => $containerName,
             'name'             => $name,

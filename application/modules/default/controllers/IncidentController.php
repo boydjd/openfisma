@@ -973,6 +973,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $conn->beginTransaction();
 
         try {
+            // Validate that comment is not empty
+            if ('' == trim($comment)) {
+                throw new Fisma_Zend_Exception_User('You must provide a comment');
+            }
+
             if ($this->_request->getParam('reject') == 'reject') {                
 
                 // Handle incident rejection
@@ -996,7 +1001,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     throw new Fisma_Zend_Exception("No subcategory with id ($categoryId) found.");
                 }
             
-                $incident->open($category, $comment);
+                $incident->open($category);
                 $incident->save();
                         
                 // Assign privacy advocates and/or inspector general as actors if requested
@@ -1023,7 +1028,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 // Success message
                 $message = 'This incident has been opened and a workflow has been assigned. ';
 
+                // Get reference to current step before marking it complete
                 $currentStep = $incident->CurrentWorkflowStep;
+                
+                $incident->completeStep($comment);
+                
                 if (isset($currentStep)) {
                     foreach ($this->_getAssociatedUsers($id) as $user) {
                         $mail = new Fisma_Zend_Mail();
@@ -1210,7 +1219,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            $this->getInvokeArg('bootstrap')->getResource('log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
         
         $this->view->response = json_encode($response);

@@ -16,9 +16,12 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
         <?php 
         // Check to see if the threat level/description and countermeasure level/description are 
         // set. If so, allow the user to generate a RAF.
-        if (empty($finding->threat) 
+        $findingThreat = strip_tags($finding->threat);
+        $findingCountermeasures = strip_tags($finding->countermeasures);
+
+        if (empty($findingThreat) 
             || empty($finding->threatLevel) 
-            || empty($finding->countermeasures) 
+            || empty($findingCountermeasures) 
             || empty($finding->countermeasuresEffectiveness)) {
             echo $this->escape(
                 '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>',

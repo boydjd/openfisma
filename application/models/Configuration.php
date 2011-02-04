@@ -37,10 +37,12 @@ class Configuration extends BaseConfiguration
         if (!$this->isModified()) {
             return;
         }
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache = $this->_getCache();
 
-        foreach ($this->getModified() as $k => $v) {
-            $cache->remove('configuration_' . $k);
+        if ($cache) {
+            foreach ($this->getModified() as $k => $v) {
+                $cache->remove('configuration_' . $k);
+            }
         }
     }
 }

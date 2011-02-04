@@ -31,13 +31,8 @@ class Zend_Application_Resource_UserAgent extends Zend_Application_Resource_Reso
     /**
      * @var Zend_Http_UserAgent
      */
-<<<<<<< HEAD
-    protected $_userAgent;
-    
-=======
 	protected $_userAgent;
 	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
     /**
      * Intialize resource
      *
@@ -45,11 +40,7 @@ class Zend_Application_Resource_UserAgent extends Zend_Application_Resource_Reso
      */
     public function init()
     {
-<<<<<<< HEAD
-        $userAgent = $this->getUserAgent();
-=======
 		$userAgent = $this->getUserAgent();
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
         // Optionally seed the UserAgent view helper
         $bootstrap = $this->getBootstrap();
@@ -62,13 +53,8 @@ class Zend_Application_Resource_UserAgent extends Zend_Application_Resource_Reso
         }
 
         return $userAgent;
-<<<<<<< HEAD
-    }
-    
-=======
 	}
 	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
     /**
      * Get UserAgent instance
      *
@@ -76,15 +62,6 @@ class Zend_Application_Resource_UserAgent extends Zend_Application_Resource_Reso
      */
     public function getUserAgent()
     {
-<<<<<<< HEAD
-        if (null === $this->_userAgent) {
-            $options = $this->getOptions();
-            $this->_userAgent = new Zend_Http_UserAgent($options);
-        }
-        
-        return $this->_userAgent;
-    }
-=======
 		if (null === $this->_userAgent) {
 			$options = $this->getOptions();
 			$this->_userAgent = new Zend_Http_UserAgent($options);
@@ -92,5 +69,4 @@ class Zend_Application_Resource_UserAgent extends Zend_Application_Resource_Reso
 		
 		return $this->_userAgent;
 	}
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 }

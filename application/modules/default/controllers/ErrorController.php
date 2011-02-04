@@ -52,8 +52,7 @@ class ErrorController extends Zend_Controller_Action
 
         $this->getResponse()->clearBody();
         $content = (string)$errors->exception;
-        $logger = Fisma::getLogInstance(CurrentUser::getInstance());
-        $logger->log($content, Zend_Log::ERR);
+        $this->getInvokeArg('bootstrap')->getResource('Log')->log($content, Zend_Log::ERR);
         $this->view->content = $content;
 
         if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {

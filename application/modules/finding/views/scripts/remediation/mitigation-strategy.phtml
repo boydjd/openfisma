@@ -128,6 +128,7 @@ $array = array('type'                   => $finding->type,
                'cmeasure'               => $finding->countermeasures);
 $complete = true;
 foreach ($array as $row) {
+    $row = strip_tags($row);
     if ($row == '' || $row == 'NONE' || $row == '0000-00-00') {
         $complete = false;
         continue;

@@ -262,7 +262,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $message = "Organization controller: expected an organization object but got a system object. Referer: "
                      . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a');
 
-            Fisma::getLogInstance(CurrentUser::getInstance())->warn($message);
+            $this->getInvokeArg('bootstrap')->getResource('log')->warn($message);
 
             $this->_redirect('/system/view/oid/' . $organization->id);
         }

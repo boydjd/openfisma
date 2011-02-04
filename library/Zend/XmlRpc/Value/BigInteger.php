@@ -54,15 +54,9 @@ class Zend_XmlRpc_Value_BigInteger extends Zend_XmlRpc_Value_Integer
     }
 
     /**
-<<<<<<< HEAD
-     * Return bigint value object
-     *
-     * @return Zend_Crypt_Math_BigInteger
-=======
      * Return bigint value
      *
      * @return string
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
      */
     public function getValue()
     {

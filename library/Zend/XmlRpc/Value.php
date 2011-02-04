@@ -252,8 +252,6 @@ abstract class Zend_XmlRpc_Value
         }
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Get XML-RPC type for a PHP native variable
      *
@@ -291,7 +289,6 @@ abstract class Zend_XmlRpc_Value
             gettype($value)
         ));
     }
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
     /**
      * Transform a PHP native variable into a XML-RPC native value
@@ -303,14 +300,6 @@ abstract class Zend_XmlRpc_Value
      */
     protected static function _phpVarToNativeXmlRpc($value)
     {
-<<<<<<< HEAD
-        switch (gettype($value)) {
-            case 'object':
-                // Check to see if it's an XmlRpc value
-                if ($value instanceof Zend_XmlRpc_Value) {
-                    return $value;
-                }
-=======
         // @see http://framework.zend.com/issues/browse/ZF-8623
         if (is_object($value)) {
             if ($value instanceof Zend_XmlRpc_Value) {
@@ -331,7 +320,6 @@ abstract class Zend_XmlRpc_Value
             case self::XMLRPC_TYPE_DATETIME:
                 // require_once 'Zend/XmlRpc/Value/DateTime.php';
                 return new Zend_XmlRpc_Value_DateTime($value);
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
                 if ($value instanceof Zend_Crypt_Math_BigInteger) {
                     // require_once 'Zend/XmlRpc/Value/BigInteger.php';

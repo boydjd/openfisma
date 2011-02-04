@@ -343,13 +343,8 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
      * @param $domainName    string    Valid domain name of the domain to create
      * @return                 boolean True if successful, false if not
      */
-<<<<<<< HEAD
-    public function createDomain($domainName)
-    {
-=======
 	public function createDomain($domainName)
 	{
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $params               = array();
         $params['Action']     = 'CreateDomain';
         $params['DomainName'] = $domainName;
@@ -363,19 +358,11 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
      * @param     $domainName string  Valid domain name of the domain to delete
      * @return                 boolean True if successful, false if not
      */
-<<<<<<< HEAD
-    public function deleteDomain($domainName)
-    {
-        $params               = array();
-        $params['Action']     = 'DeleteDomain';
-        $params['DomainName'] = $domainName;
-=======
 	public function deleteDomain($domainName)
 	{
 	    $params               = array();
 	    $params['Action']     = 'DeleteDomain';
 	    $params['DomainName'] = $domainName;
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $response             = $this->_sendRequest($params);
         return $response->getHttpResponse()->isSuccessful();
     }
@@ -387,13 +374,8 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
      * @param  null|string $nextToken
      * @return Zend_Service_Amazon_SimpleDb_Page
      */
-<<<<<<< HEAD
-    public function select($selectExpression, $nextToken = null)
-    {
-=======
 	public function select($selectExpression, $nextToken = null)
 	{
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $params                     = array();
         $params['Action']           = 'Select';
         $params['SelectExpression'] = $selectExpression;
@@ -425,16 +407,6 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
         return new Zend_Service_Amazon_SimpleDb_Page($attributes, $nextToken);
     }
 
-<<<<<<< HEAD
-    /**
-     * Quote SDB value
-     *
-     * Wraps it in ''
-     *
-     * @param string $value
-     * @return string
-     */
-=======
 	/**
 	 * Quote SDB value
 	 *
@@ -443,22 +415,12 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
 	 * @param string $value
 	 * @return string
 	 */
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
     public function quote($value)
     {
         // wrap in single quotes and convert each ' inside to ''
         return "'" . str_replace("'", "''", $value) . "'";
     }
 
-<<<<<<< HEAD
-    /**
-     * Quote SDB column or table name
-     *
-     * Wraps it in ``
-     * @param string $name
-     * @return string
-     */
-=======
 	/**
 	 * Quote SDB column or table name
 	 *
@@ -466,7 +428,6 @@ class Zend_Service_Amazon_SimpleDb extends Zend_Service_Amazon_Abstract
 	 * @param string $name
 	 * @return string
 	 */
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
     public function quoteName($name)
     {
         if (preg_match('/^[a-z_$][a-z0-9_$-]*$/i', $name) == false) {

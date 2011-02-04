@@ -79,7 +79,18 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
-                                      '/javascripts/AC_RunActiveContent.js'
+                                      '/javascripts/AC_RunActiveContent.js',
+                                      '/javascripts/jquery-min.js',
+                                      '/javascripts/jqPlot/core/jquery-ui-181custom_min.js',
+                                      '/javascripts/jqPlot/core/jquery_jqplot.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_canvasAxisTickRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_categoryAxisRenderer.js',
+                                      '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
+                                      '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
+                                      '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',
+                                      '/javascripts/Fisma/jqplotWrapper.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
@@ -96,7 +107,8 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css',
 
-                                      '/stylesheets/nesteddatatable.css'
+                                      '/stylesheets/nesteddatatable.css',
+                                      '/stylesheets/jquery_jqplot.css'
                                 )
                             );
 
@@ -120,7 +132,7 @@ class View_Helper_InjectAsset
      * @param string $type Type of asset
      * @param boolean $combo Whether the asset is a combo package or not
      * @param string $media Media settings for CSS files
-     * @param string $conditional Conditional settings for CSS files
+     * @param string $conditional Conditional settings for CSS/JS files
      * @access public
      * @return void
      */
@@ -157,7 +169,9 @@ class View_Helper_InjectAsset
         switch ($type) {
             case 'js':
                 foreach ($assets as $asset) {
-                    $this->view->headScript()->appendFile($asset);
+                    $this->view->headScript()->appendFile(
+                        $asset, 'text/javascript', array('conditional' => $conditional)
+                    );
                 }
 
                 break;

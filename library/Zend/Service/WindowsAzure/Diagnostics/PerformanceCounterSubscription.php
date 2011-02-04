@@ -46,19 +46,11 @@ class Zend_Service_WindowsAzure_Diagnostics_PerformanceCounterSubscription
     /**
      * Constructor
      *
-<<<<<<< HEAD
-      * @param    string    $counterSpecifier                    Counter specifier
-      * @param    int        $sampleRateInSeconds                Sample rate in seconds
-     */
-    public function __construct($counterSpecifier, $sampleRateInSeconds = 1)
-    {    
-=======
  	 * @param	string	$counterSpecifier					Counter specifier
  	 * @param	int		$sampleRateInSeconds				Sample rate in seconds
 	 */
     public function __construct($counterSpecifier, $sampleRateInSeconds = 1)
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
             'counterspecifier'      => $counterSpecifier,
             'samplerateinseconds'     => $sampleRateInSeconds

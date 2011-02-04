@@ -177,16 +177,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 $this->view->systems = $systems;
             }
             
-            $networks = Doctrine::getTable('Network')->findAll()->toArray();
-            $this->view->networks = array();
-            foreach ($networks as $network) {
-                $this->view->networks[$network['id']] = $network['nickname'];
-            }
-            if (count($this->view->networks) == 0) {
-                throw new Fisma_Zend_Exception("The spreadsheet template can not be
-                     prepared because there are no networks defined.");
-            }
-            
             $sources = Doctrine::getTable('Source')->findAll()->toArray();
             $this->view->sources = array();
             foreach ($sources as $source) {

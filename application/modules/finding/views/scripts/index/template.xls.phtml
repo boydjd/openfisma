@@ -149,10 +149,6 @@ echo $this->escape($xmltag, 'none');
    x:FullRows="1" ss:StyleID="s21">
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="49.5"/>
    <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="60.75"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="92.25" ss:Span="1"/>
-   <Column ss:Index="5" ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="121.5"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="43.5"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="135.75" ss:Span="2"/>
    <Column ss:Index="10" ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="78.75"/>
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="180" ss:Span="1"/>
    <Column ss:Index="13" ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="49.5"/>
@@ -165,10 +161,10 @@ echo $this->escape($xmltag, 'none');
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="126.75"/>
    <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
-    <Cell ss:MergeAcross="20" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
+    <Cell ss:MergeAcross="13" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="129.75" ss:StyleID="s27">
-    <Cell ss:MergeAcross="20" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
+    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="38.25">
     <Cell ss:StyleID="s39"><Data ss:Type="String">System*</Data><Comment
@@ -177,27 +173,6 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s46"><Data ss:Type="String">Date Discovered*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Network</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The network which contains the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Name</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset IP Address</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP address of the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Asset Port</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The IP port of the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Name</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The name of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Vendor</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The vendor of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Product Version</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The version of the product running on the affected asset.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Source*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
@@ -254,31 +229,26 @@ echo $this->escape($xmltag, 'none');
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R4C17:R65536C17,R4C19:R65536C19</Range>
+   <Range>R4C10:R65536C10,R4C12:R65536C12</Range>
    <Type>List</Type>
    <CellRangeList/>
    <Value>&quot;<?php echo $this->escape(implode(',', $this->risk))?>&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R4C10:R65536C10</Range>
+   <Range>R4C3:R65536C3</Range>
    <Type>List</Type>
    <Value>sources</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R4C13:R65536C13</Range>
+   <Range>R4C6:R65536C6</Range>
    <Type>List</Type>
    <CellRangeList/>
    <Value>&quot;AR,CAP,FP&quot;</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R4C16:R65536C16</Range>
+   <Range>R4C9:R65536C9</Range>
    <Type>List</Type>
    <Value>controls</Value>
-  </DataValidation>
-  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
-   <Range>R4C3:R65536C3</Range>
-   <Type>List</Type>
-   <Value>networks</Value>
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C1:R65536C1</Range>
@@ -370,38 +340,6 @@ echo $this->escape($xmltag, 'none');
     <Cell>
      <Data ss:Type="String"><?php echo $this->escape($source) ?></Data>
      <NamedCell ss:Name="sources"/>
-    </Cell>
-   </Row>
-<?php
-    endforeach;
-?>
-  </Table>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <Visible>SheetHidden</Visible>
-   <Print>
-    <ValidPrinterInfo/>
-    <HorizontalResolution>600</HorizontalResolution>
-    <VerticalResolution>0</VerticalResolution>
-   </Print>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-    </Pane>
-   </Panes>
-   <ProtectObjects>True</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet> 
- <Worksheet ss:Name="Networks">
-  <Table ss:ExpandedColumnCount="1" x:FullColumns="1" x:FullRows="1">
-   <Column ss:AutoFitWidth="0" ss:Width="54.75"/>
-<?php
-    foreach ($this->networks as $network) :
-?>
-   <Row>
-    <Cell>
-     <Data ss:Type="String"><?php echo $this->escape($network) ?></Data>
-     <NamedCell ss:Name="networks"/>
     </Cell>
    </Row>
 <?php

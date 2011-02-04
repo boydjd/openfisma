@@ -50,11 +50,7 @@ class Zend_Service_WindowsAzure_Storage_PageRegionInstance
      * @param int  $end     Page range end
      */
     public function __construct($start = 0, $end = 0)
-<<<<<<< HEAD
-    {    
-=======
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
             'start'        => $start,
             'end'             => $end

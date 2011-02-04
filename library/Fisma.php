@@ -93,7 +93,7 @@ class Fisma
      * 
      * @var Zend_Config_Ini
      */
-    public static $_appConf;
+    public static $appConf;
     
     /**
      * The root path of the application.
@@ -134,26 +134,6 @@ class Fisma
         'yui' => 'public/yui'
     );
    
-    /**
-     * A single instance of Zend_Log which the application components share
-     * 
-     * @var Zend_Log
-     */
-    private static $_log;
-
-    /**
-     * A single instance of Zend_Cache which the application components share
-     *
-     * @todo Move into the cache manager 
-     * @var Zend_Cache
-     */
-    private static $_cache;
-
-    /**
-     * A single instance of Zend_Cache_Manager which the application components share 
-     */
-    private static $_cacheManager;
-    
     /**
      * A zend session that OpenFISMA can use without worries about collisions to other frameworks that may
      * be running.
@@ -204,18 +184,6 @@ class Fisma
         // Set the initialized flag
         self::$_initialized = true;
         
-        // Timezone configuration
-        if (isset(self::$_appConf['timezone'])) {
-            ini_set("date.timezone", self::$_appConf['timezone']);
-        } else {
-            ini_set("date.timezone", "America/New_York");
-        }
-
-        // Session configuration
-        $sessionOptions = self::$_appConf['session'];
-        $sessionOptions['save_path'] = self::$_rootPath . '/' . $sessionOptions['save_path'];
-        Zend_Session::setOptions($sessionOptions);
-        
         // Configure the autoloader to suppress warnings in production mode, but enable them in development mode
         $loader->suppressNotFoundWarnings(!Fisma::debug());
     }
@@ -234,44 +202,6 @@ class Fisma
         }
     }
 
-    /**
-     * Configure the front controller and then dispatch it
-     * 
-     * @return void
-     * @todo this is a bit ugly, it's got some unrelated stuff in it
-     */
-    public static function dispatch() 
-    {
-        $frontController = Zend_Controller_Front::getInstance();
-
-        if (self::debug()) {
-            $cache = self::getCacheManager()->getCache('default');
-
-            $zfDebugOptions = array(
-                                'jquery_path' => '/javascripts/jquery-min.js',
-                                'plugins' => array(
-                                    'Variables',
-                                    'Html',
-                                    'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
-                                    'File' => array('base_path' => self::$_rootPath),
-                                    'Memory',
-                                    'Cache' => array('backend' => $cache->getBackend()),
-                                    'Time',
-                                    'Registry',
-                                    'Exception')
-                                );
-
-            $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
-            $debug->registerPlugin(new Fisma_ZfDebug_Plugin_YuiLogging);
-
-            $frontController->registerPlugin($debug);
-        }
-
-        $frontController->setControllerDirectory(Fisma::getPath('controller'));
-        
-        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
-    }
-    
     /**
      * Returns the current execution mode.
      * 
@@ -359,10 +289,10 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
 
-        if (!isset(self::$_appConf['debug'])) {
+        if (!isset(self::$appConf['debug'])) {
             return false;
         } else {
-            return (self::$_appConf['debug'] == 1);
+            return (self::$appConf['debug'] == 1);
         }
     }
    
@@ -383,8 +313,8 @@ class Fisma
             throw new Fisma_Zend_Exception('The Fisma object has not been initialized.');
         }
         
-        if (isset(self::$_appConf['includePaths'][$key])) {
-            return self::$_appConf['includePaths'][$key];
+        if (isset(self::$appConf['includePaths'][$key])) {
+            return self::$appConf['includePaths'][$key];
         } elseif (isset(self::$_applicationPath[$key])) {
             return self::$_rootPath . '/' . self::$_applicationPath[$key];
         } else {
@@ -392,115 +322,6 @@ class Fisma
         }
     }
     
-    /**
-     * Initialize the log instance
-     *
-     * As the log requires the authente information, the log should be only initialized 
-     * after the successfully login.
-     *
-     * @param User $user
-     * @return Zend_Log The instance of Zend_Log
-     */
-    public static function getLogInstance($user = null)
-    {
-        if (null === self::$_log) {
-            $writer = new Zend_Log_Writer_Stream(self::getPath('log') . '/error.log');
-            $ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : '(none)';
-                
-            // Log the current username if we are in an authenticated session
-            if ($user) {
-                $username = $user->username;
-            } else {
-                $username = '(none)';
-            }
-                
-            $format = "%timestamp% level=%priorityName% user=$username ip=$ip\n%message%\n\n";
-            $formatter = new Zend_Log_Formatter_Simple($format);
-
-            $writer->setFormatter($formatter);
-
-            self::$_log = new Zend_Log($writer);
-        }
-        
-        return self::$_log;
-    }
-
-    /**
-     * Initialize the cache instance
-     *
-     * make the directory "/path/to/data/cache" writable
-     * 
-     * @param string $identify The specified file name prefix
-     * @return Zend_Cache The instance of Zend_Cache
-     */
-    public static function getCacheInstance($identify = null)
-    {
-        if (null === self::$_cache) {
-            $frontendOptions = array(
-                'caching'                 => true,
-                // cache life same as system expiring period
-                'lifetime'                => Fisma::configuration()->getConfig('session_inactivity_period'), 
-                'automatic_serialization' => true
-            );
-
-            $backendOptions = array(
-                'cache_dir' => Fisma::getPath('cache'),
-                'file_name_prefix' => $identify
-            );
-            self::$_cache = Zend_Cache::factory(
-                'Core',
-                'File',
-                $frontendOptions,
-                $backendOptions
-            );
-        }
-        return self::$_cache;
-    }
-
-    /**
-     * Initialize the cache manager 
-     * 
-     * If APC is available, create an APC cache, if it's not, use a file cache.
-     *
-     * @return Zend_Cache_Manager 
-     */
-    public static function getCacheManager()
-    {
-        if (null === self::$_cacheManager) {
-            $manager = new Zend_Cache_Manager();
-
-            $frontendOptions = array(
-                'caching' => true,
-                'lifetime' => 0,
-                'automatic_serialization' => true,
-                'cache_id_prefix' => (isset($_SERVER['SERVER_NAME'])) ? substr(md5($_SERVER['SERVER_NAME']), 0, 5) : ''
-            );
-
-            if (function_exists('apc_fetch')) {
-                $cache = Zend_Cache::factory(
-                    'Core',
-                    'Apc',
-                    $frontendOptions
-                );
-            } else {
-                $backendOptions = array(
-                    'cache_dir' => Fisma::getPath('cache'),
-                );
-                $cache = Zend_Cache::factory(
-                    'Core',
-                    'File',
-                    $frontendOptions,
-                    $backendOptions
-                );
-            }
-
-            $manager->setCache('default', $cache);
-            self::$_cacheManager = $manager;
-        }
-
-        return self::$_cacheManager;
-    }
-
     /**
      * Returns the current timestamp in DB friendly format
      * 
@@ -556,6 +377,19 @@ class Fisma
      */
     public static function setAppConfig(array $config)
     {
-        self::$_appConf = $config;
+        self::$appConf = $config;
+    }
+
+    /**
+     * Wrapper for htmlentities to turn off double encoding 
+     * 
+     * @param mixed $value 
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function htmlentities($value)
+    {
+        return htmlentities($value, ENT_COMPAT, 'UTF-8', FALSE);
     }
 }

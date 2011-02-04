@@ -86,11 +86,7 @@ class Zend_Log_Writer_Stream extends Zend_Log_Writer_Abstract
     }
 
     /**
-<<<<<<< HEAD
      * Create a new instance of Zend_Log_Writer_Stream
-=======
-     * Create a new instance of Zend_Log_Writer_Mock
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
      *
      * @param  array|Zend_Config $config
      * @return Zend_Log_Writer_Stream

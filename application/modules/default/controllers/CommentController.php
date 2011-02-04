@@ -91,7 +91,7 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            $this->getInvokeArg('bootstrap')->getResource('Log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         $this->view->response = $response;

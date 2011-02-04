@@ -354,8 +354,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('update', $organization);
         $this->_helper->layout()->disableLayout();
 
-        $system = $organization->System;
-
         $post = $this->_request->getPost();
 
         if ($post) {
@@ -369,6 +367,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     $type = "warning";
                 }
 
+                $system = $organization->System;
                 $system->merge($post);
 
                 if ($system->isValid(true)) {
@@ -541,7 +540,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $response->fail("Internal system error. File not uploaded.");
             }
 
-            Fisma::getLogInstance($this->_me)->err($e->getMessage() . "\n" . $e->getTraceAsString());
+            $this->getInvokeArg('bootstrap')->getResource('log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         $this->view->response = json_encode($response);

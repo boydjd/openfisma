@@ -54,11 +54,7 @@ class Zend_Service_WindowsAzure_Storage_LeaseInstance
      * @param string  $leaseTime       Time remaining in the lease period, in seconds. This header is returned only for a successful request to break the lease. It provides an approximation as to when the lease period will expire.
      */
     public function __construct($containerName, $name, $leaseId, $leaseTime)
-<<<<<<< HEAD
-    {    
-=======
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
             'container'        => $containerName,
             'name'             => $name,

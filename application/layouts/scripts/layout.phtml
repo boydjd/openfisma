@@ -20,6 +20,7 @@
     $yui->load($yuiComponents);
 
     $this->headScript()->appendFile('/javascripts/tiny_mce/tiny_mce.js');
+    $this->injectAsset('/javascripts/excanvas.js', 'js', false, 'screen', 'IE');
     $this->injectAsset('/javascripts/combined.js', 'js', true);
     $this->injectAsset('/stylesheets/combined.css', 'css', true);
     $this->injectAsset('/stylesheets/print.css', 'css', false, 'print');

@@ -52,25 +52,16 @@ class Zend_Service_WindowsAzure_Diagnostics_ConfigurationDiagnosticInfrastructur
     /**
      * Constructor
      *
-<<<<<<< HEAD
-     * @param    int        $bufferQuotaInMB                    Buffer quota in MB
-     * @param    int        $scheduledTransferPeriodInMinutes    Scheduled transfer period in minutes
-     * @param    string    $scheduledTransferLogLevelFilter    Scheduled transfer log level filter
-     */
-    public function __construct($bufferQuotaInMB = 0, $scheduledTransferPeriodInMinutes = 0, $scheduledTransferLogLevelFilter = Zend_Service_WindowsAzure_Diagnostics_LogLevel::UNDEFINED)
-    {    
-=======
 	 * @param	int		$bufferQuotaInMB					Buffer quota in MB
 	 * @param	int		$scheduledTransferPeriodInMinutes	Scheduled transfer period in minutes
 	 * @param	string	$scheduledTransferLogLevelFilter	Scheduled transfer log level filter
 	 */
     public function __construct($bufferQuotaInMB = 0, $scheduledTransferPeriodInMinutes = 0, $scheduledTransferLogLevelFilter = Zend_Service_WindowsAzure_Diagnostics_LogLevel::UNDEFINED)
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_data = array(
-            'bufferquotainmb'                    => $bufferQuotaInMB,
-            'scheduledtransferperiodinminutes'     => $scheduledTransferPeriodInMinutes,
-            'scheduledtransferloglevelfilter'    => $scheduledTransferLogLevelFilter
+            'bufferquotainmb'                  => $bufferQuotaInMB,
+            'scheduledtransferperiodinminutes' => $scheduledTransferPeriodInMinutes,
+            'scheduledtransferloglevelfilter'  => $scheduledTransferLogLevelFilter,
         );
     }
 }

@@ -201,7 +201,6 @@ Fisma.Search = function() {
 
             for (var key in object) {
                 var value = object[key];
-
                 uriComponents.push(key + "=" + encodeURIComponent(value));
             }
 
@@ -280,12 +279,12 @@ Fisma.Search = function() {
             try {
                 if ('simple' == searchType) {
                     postData += "&queryType=simple&keywords=" 
-                              + document.getElementById('keywords').value;
+                              + encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
                     postData += "&queryType=advanced&query=" 
-                              + YAHOO.lang.JSON.stringify(queryData);
+                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
@@ -617,9 +616,11 @@ Fisma.Search = function() {
                         }
                         
                         // Refresh search results
+                        var query = Fisma.Search.getQuery(document.getElementById('searchForm'));
+                        var postData = Fisma.Search.convertQueryToPostData(query);
+
                         dataTable.showTableMessage("Loading...");
-                        var postData = "csrf="
-                           + document.getElementById('searchForm').csrf.value;
+
                         var dataSource = dataTable.getDataSource();
                         dataSource.connMethodPost = true;
                         dataSource.sendRequest(postData, onDataTableRefresh);

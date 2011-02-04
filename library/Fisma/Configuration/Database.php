@@ -37,9 +37,10 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
      */
     public function getConfig($name) 
     {
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
+        $cache = ($bootstrap) ? $bootstrap->getResource('cachemanager')->getCache('default') : null;
 
-        if (!$config = $cache->load('configuration_' . $name)) {
+        if (!$cache || !$config = $cache->load('configuration_' . $name)) {
 
             $config = Doctrine_Query::create()
                 ->select("c.${name}")
@@ -50,7 +51,9 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
 
             $config = $config[0][$name];
 
-            $cache->save($config, 'configuration_' . $name);
+            if ($cache) {
+                $cache->save($config, 'configuration_' . $name);
+            }
         }
 
         return $config;
@@ -79,7 +82,11 @@ class Fisma_Configuration_Database implements Fisma_Configuration_Interface
 
         Notification::notify('CONFIGURATION_UPDATED', null, CurrentUser::getInstance());
 
-        $cache = Fisma::getCacheManager()->getCache('default');
+        $cache = Zend_Controller_Front::getInstance()
+                    ->getParam('bootstrap')
+                    ->getResource('cachemanager')
+                    ->getCache('default');
+
         if ($dirtyConfig = $cache->load('configuration_' . $name)) {
             $cache->remove('configuration_' . $name);
         }

@@ -111,37 +111,6 @@ abstract class Zend_Service_WindowsAzure_Storage_BatchStorageAbstract
     {
         return new Zend_Service_WindowsAzure_Storage_Batch($this, $this->getBaseUrl());
     }
-<<<<<<< HEAD
-    
-    /**
-     * Perform batch using Zend_Http_Client channel, combining all batch operations into one request
-     *
-     * @param array $operations Operations in batch
-     * @param boolean $forTableStorage Is the request for table storage?
-     * @param boolean $isSingleSelect Is the request a single select statement?
-     * @param string $resourceType Resource type
-     * @param string $requiredPermission Required permission
-     * @return Zend_Http_Response
-     */
-    public function performBatch($operations = array(), $forTableStorage = false, $isSingleSelect = false, $resourceType = Zend_Service_WindowsAzure_Storage::RESOURCE_UNKNOWN, $requiredPermission = Zend_Service_WindowsAzure_Credentials_CredentialsAbstract::PERMISSION_READ)
-    {
-        // Generate boundaries
-        $batchBoundary = 'batch_' . md5(time() . microtime());
-        $changesetBoundary = 'changeset_' . md5(time() . microtime());
-    
-        // Set headers
-        $headers = array();
-    
-        // Add version header
-        $headers['x-ms-version'] = $this->_apiVersion;
-        
-        // Add dataservice headers
-        $headers['DataServiceVersion'] = '1.0;NetFx';
-        $headers['MaxDataServiceVersion'] = '1.0;NetFx';
-        
-        // Add content-type header
-        $headers['Content-Type'] = 'multipart/mixed; boundary=' . $batchBoundary;
-=======
 	
 	/**
 	 * Perform batch using Zend_Http_Client channel, combining all batch operations into one request
@@ -171,7 +140,6 @@ abstract class Zend_Service_WindowsAzure_Storage_BatchStorageAbstract
 		
 		// Add content-type header
 		$headers['Content-Type'] = 'multipart/mixed; boundary=' . $batchBoundary;
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
         // Set path and query string
         $path           = '/$batch';
@@ -199,16 +167,6 @@ abstract class Zend_Service_WindowsAzure_Storage_BatchStorageAbstract
                 foreach ($operations as $operation)
                 {
                     $rawData .= '--' . $changesetBoundary . "\n";
-<<<<<<< HEAD
-                    $rawData .= 'Content-Type: application/http' . "\n";
-                    $rawData .= 'Content-Transfer-Encoding: binary' . "\n\n";
-                    $rawData .= $operation;
-                }
-                $rawData .= '--' . $changesetBoundary . '--' . "\n";
-                        
-            $rawData .= '--' . $batchBoundary . '--';
-        }
-=======
                 	$rawData .= 'Content-Type: application/http' . "\n";
                 	$rawData .= 'Content-Transfer-Encoding: binary' . "\n\n";
                 	$rawData .= $operation;
@@ -217,7 +175,6 @@ abstract class Zend_Service_WindowsAzure_Storage_BatchStorageAbstract
     		    		
     		$rawData .= '--' . $batchBoundary . '--';
 		}
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
         // Generate URL and sign request
         $requestUrl     = $this->_credentials->signRequestUrl($this->getBaseUrl() . $path . $queryString, $resourceType, $requiredPermission);

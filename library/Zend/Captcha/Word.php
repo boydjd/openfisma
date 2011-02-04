@@ -217,19 +217,6 @@ abstract class Zend_Captcha_Word extends Zend_Captcha_Base
         return $this->_timeout;
     }
 
-<<<<<<< HEAD
-    /**
-     * Sets if session should be preserved on generate()
-     *
-     * @param $keepSession Should session be kept on generate()?
-     * @return Zend_Captcha_Word
-     */
-    public function setKeepSession($keepSession)
-    {
-        $this->_keepSession = $keepSession;
-        return $this;
-    }
-=======
 	/**
 	 * Sets if session should be preserved on generate()
 	 *
@@ -241,7 +228,6 @@ abstract class Zend_Captcha_Word extends Zend_Captcha_Base
 		$this->_keepSession = $keepSession;
 		return $this;
 	}
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
     /**
      * Numbers should be included in the pattern?
@@ -253,15 +239,9 @@ abstract class Zend_Captcha_Word extends Zend_Captcha_Base
         return $this->_useNumbers;
     }
 
-<<<<<<< HEAD
-    /**
-     * Set if numbers should be included in the pattern
-     *
-=======
 	/**
 	 * Set if numbers should be included in the pattern
 	 *
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
      * @param $_useNumbers numbers should be included in the pattern?
      * @return Zend_Captcha_Word
      */

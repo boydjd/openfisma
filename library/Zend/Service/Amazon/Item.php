@@ -114,11 +114,7 @@ class Zend_Service_Amazon_Item
      *
      * @param  null|DOMElement $dom
      * @return void
-<<<<<<< HEAD
-     * @throws    Zend_Service_Amazon_Exception
-=======
-     * @throws	Zend_Service_Amazon_Exception
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
+     * @throws Zend_Service_Amazon_Exception
      *
      * @group ZF-9547
      */

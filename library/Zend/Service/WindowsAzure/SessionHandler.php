@@ -66,22 +66,6 @@ class Zend_Service_WindowsAzure_SessionHandler
      * @param string $sessionTablePartition Session table partition
      */
     public function __construct(Zend_Service_WindowsAzure_Storage_Table $tableStorage, $sessionTable = 'phpsessions', $sessionTablePartition = 'sessions')
-<<<<<<< HEAD
-    {
-        // Set properties
-        $this->_tableStorage = $tableStorage;
-        $this->_sessionTable = $sessionTable;
-        $this->_sessionTablePartition = $sessionTablePartition;
-    }
-    
-    /**
-     * Registers the current session handler as PHP's session handler
-     *
-     * @return boolean
-     */
-    public function register()
-    {
-=======
 	{
 	    // Set properties
 		$this->_tableStorage = $tableStorage;
@@ -96,7 +80,6 @@ class Zend_Service_WindowsAzure_SessionHandler
 	 */
 	public function register()
 	{
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         return session_set_save_handler(array($this, 'open'),
                                         array($this, 'close'),
                                         array($this, 'read'),

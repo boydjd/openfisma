@@ -72,11 +72,7 @@ class Zend_Service_WindowsAzure_Storage_TableEntity
      * @param string  $rowKey          Row key
      */
     public function __construct($partitionKey = '', $rowKey = '')
-<<<<<<< HEAD
-    {    
-=======
     {	
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
         $this->_partitionKey = $partitionKey;
         $this->_rowKey       = $rowKey;
     }

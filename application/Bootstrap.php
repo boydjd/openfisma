@@ -73,6 +73,21 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
+     * _initRegisterLogger 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initRegisterLogger()
+    {
+        $this->bootstrap('Log');
+
+        $logger = $this->getResource('Log');
+        
+        Zend_Registry::set('Zend_Log', $logger);
+    }
+
+    /**
      * Initialize and connect to the database 
      * 
      * @access protected
@@ -82,9 +97,9 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     {
         // Connect to the database
         if (Fisma::mode() != Fisma::RUN_MODE_TEST) {
-            $db = Fisma::$_appConf['db'];
+            $db = Fisma::$appConf['db'];
         } else {
-            $db = Fisma::$_appConf['testdb'];
+            $db = Fisma::$appConf['testdb'];
         }
         $connectString = $db['adapter'] . '://' . $db['username'] . ':' 
                          . $db['password'] . '@' . $db['host'] 
@@ -125,16 +140,51 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Run Fisma::dispatch()
-     *
-     *
-     * @todo Get everything out of Fisma::dispatch() and into the Bootstrap
+     * _initZfDebug 
+     * 
      * @access protected
      * @return void
      */
-    protected function _initFisma()
+    protected function _initZfDebug()
     {
-        Fisma::dispatch();
+        $this->bootstrap('cachemanager');
+
+        $frontController = Zend_Controller_Front::getInstance();
+
+        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP && Fisma::debug()) {
+            $manager = $this->getResource('cachemanager');
+            $cache = $manager->getCache('default');
+
+            $zfDebugOptions = array(
+                                'jquery_path' => '/javascripts/jquery-min.js',
+                                'plugins' => array(
+                                    'Variables',
+                                    'Html',
+                                    'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
+                                    'File' => array('base_path' => APPLICATION_PATH . "/.."),
+                                    'Memory',
+                                    'Cache' => array('backend' => $cache->getBackend()),
+                                    'Time',
+                                    'Registry',
+                                    'Exception')
+                                );
+
+            $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
+            $debug->registerPlugin(new Fisma_ZfDebug_Plugin_YuiLogging);
+
+            $frontController->registerPlugin($debug);
+        }
+    }
+
+    /**
+     * _initHelperBroker 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initHelperBroker()
+    {
+        Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
     }
 
     /**

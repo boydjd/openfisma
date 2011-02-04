@@ -362,6 +362,11 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             }
         }
         
+        // Implementers can tweak the selection query to filter out undesired records
+        if ($table instanceof Fisma_Search_CustomIndexBuilder_Interface) {
+            $doctrineQuery = $table->getSearchIndexQuery($doctrineQuery, $relationAliases);
+        }
+
         // Add ACL constraints
         $aclTerms = $this->_getAclTerms($table);
         $aclFields = array();
@@ -755,6 +760,11 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                 // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
                 $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
             }
+        }
+        
+        // Implementers can tweak the selection query to filter out undesired records
+        if ($table instanceof Fisma_Search_CustomIndexBuilder_Interface) {
+            $doctrineQuery = $table->getSearchIndexQuery($doctrineQuery, $relationAliases);
         }
         
         // Add ACL constraints

@@ -30,6 +30,19 @@ YAHOO.util.Event.onDOMReady(function () {
                                         }
                                     }, 
                                     null);
+
+    var treeEl = document.getElementById("orgTree");
+
+    var contextMenuItems = ["View"];
+    var oTreeContextMenu = new YAHOO.widget.ContextMenu(
+        "treeContextMenu",
+        { 
+            trigger: treeEl,
+            itemdata: contextMenuItems,
+            lazyload: true
+        }
+    );
+    oTreeContextMenu.subscribe("click", contextMenuHandler);
 });
 
 // Global reference to the tree view
@@ -45,19 +58,6 @@ function showTree(treeNodes) {
     renderTreeNodes(treeNodes, tree.getRoot(), 0);
     
     tree.draw();
-    
-    treeEl = document.getElementById("orgTree");
-
-    var contextMenuItems = ["View"];    
-    var contextMenu = new YAHOO.widget.ContextMenu( 
-        "contextMenu",  
-        { 
-            trigger: treeEl, 
-            itemdata: contextMenuItems, 
-            lazyload: true                                     
-        }  
-    );
-    contextMenu.subscribe("click", contextMenuHandler);
 }
 
 function contextMenuHandler(event, eventArgs) {

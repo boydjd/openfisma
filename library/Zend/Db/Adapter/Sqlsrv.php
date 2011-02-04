@@ -437,15 +437,9 @@ class Zend_Db_Adapter_Sqlsrv extends Zend_Db_Adapter_Abstract
         $sql    = "exec sp_columns @table_name = " . $this->quoteIdentifier($tableName, true);
         $stmt   = $this->query($sql);
         $result = $stmt->fetchAll(Zend_Db::FETCH_NUM);
-<<<<<<< HEAD
-        
-        // ZF-7698
-        $stmt->closeCursor();
-=======
 		
 		// ZF-7698
 		$stmt->closeCursor();
->>>>>>> 12966e4... ZF-10669 Replace CRLF with LF, trim trailing whitespace
 
         if (count($result) == 0) {
             return array();
