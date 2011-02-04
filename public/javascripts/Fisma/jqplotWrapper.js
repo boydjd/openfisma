@@ -1755,7 +1755,7 @@ function showMsgOnEmptyChart(chartParamsObj)
 
     if (chartIsEmpty(chartParamsObj)) {
         var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-        var injectHTML = 'No data to plot.';
+
         var insertBeforeChild = targDiv.childNodes[1];
         var msgOnDom = document.createElement('div');
         msgOnDom.height = '100%';
@@ -1765,8 +1765,9 @@ function showMsgOnEmptyChart(chartParamsObj)
         msgOnDom.style.height = '100%';
         msgOnDom.style.textAlign = 'center';
         msgOnDom.style.verticalAlign = 'middle';
-        var inserted = targDiv.insertBefore(msgOnDom, insertBeforeChild);
-        inserted.innerHTML = injectHTML;
+        var textMsgOnDom = document.createTextNode('No data to plot.');
+        msgOnDom.appendChild(textMsgOnDom);
+        targDiv.appendChild(msgOnDom);
     }
 }
 
@@ -1782,23 +1783,24 @@ function chartIsEmpty(chartParamsObj)
 {
 
     // Is all data 0?
-    var isAll0Data = true;
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
+    var isChartEmpty = true;
+    for (x in chartParamsObj['chartData']) {
     
         if (typeof chartParamsObj['chartData'][x] == 'object') {
             
-            for (var y = 0; y < chartParamsObj['chartData'][x].length; y++) {
-                if (parseInt(chartParamsObj['chartData'][x][y]) > 0) { isAll0Data = false; }
+            for (y in chartParamsObj['chartData'][x]) {
+                if (parseInt(chartParamsObj['chartData'][x][y]) > 0)
+                    isChartEmpty = false;
             }
             
         } else {
             if (parseInt(chartParamsObj['chartData'][x]) > 0)
-                isAll0Data = false;
+                isChartEmpty = false;
         }
     
     }
     
-    return isAll0Data;
+    return isChartEmpty;
 }
 
 function getNextNumberDivisibleBy5(nbr)

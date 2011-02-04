@@ -196,7 +196,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Calculate Organization statistics based on params.
-     * Params expected by $this->_request->getParam(...)
+     * Params expected by $this->getRequest()->getParam(...)
      * Expected params: displayBy
      * Returns exported Fisma_Chart
      *
@@ -204,10 +204,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function chartfindingbyorgdetailAction()
     {
-        $displayBy = urldecode($this->_request->getParam('displayBy'));
+        $displayBy = urldecode($this->getRequest()->getParam('displayBy'));
         $displayBy = strtolower($displayBy);
 
-        $threatLevel = urldecode($this->_request->getParam('threatLevel'));
+        $threatLevel = urldecode($this->getRequest()->getParam('threatLevel'));
         $threatLevel = strtolower($threatLevel);
         
         if ($displayBy === 'everything') {
@@ -238,15 +238,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     )
                 );
 
-            // get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
+            // Get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
             $parents = $this->_getOrganizationsByOrgType($displayBy);
 
-            // for each parent (foreach agency, or bBureau, etc)
+            // For each parent (foreach agency, or bBureau, etc)
             foreach ($parents as $thisParentOrg) {
 
                 $childrenTotaled = $this->_getSumsOfOrgChildren($thisParentOrg['id']);
 
-                // do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
+                // Do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
                 $childrenTotaled = array_values($childrenTotaled);
 
                 $basicLink =
@@ -303,7 +303,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
         }
 
-        // the context switch will turn this array into a json reply (the responce to the external source)
+        // The context switch will turn this array into a json reply (the responce to the external source)
         $this->view->chart = $rtnChart->export('array');
     }
 
@@ -315,17 +315,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     private function _getSumsOfOrgChildren($orgId)
     {
     
-        // get all children of the given organization id
+        // Get all children of the given organization id
         $childList = $this->_getAllChildrenOfOrg($orgId);
     
         $totalHigh = 0;
         $totalMod = 0;
         $totalLow = 0;
     
-        // for each organization (that is a child of $orgId)
+        // For each organization (that is a child of $orgId)
         foreach ($childList as $thisChildOrg) {
             
-            // for each threat level total (of findings) of this organization (high.mod,low)
+            // For each threat level total (of findings) of this organization (high.mod,low)
             foreach ($thisChildOrg['Findings'] as $thisThreatLvl) {
             
                 switch ($thisThreatLvl['threatLevel']) {
@@ -468,20 +468,20 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
     public function chartFindingAction()
     {
-        $displayBy = urldecode($this->_request->getParam('displayBy'));
+        $displayBy = urldecode($this->getRequest()->getParam('displayBy'));
         $rtnChart = $this->_chartfindingstatus();
 
-        // export as array, the context switch will translate it to a JSON responce
+        // Export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $rtnChart->export('array');
     }
 
     public function chartoverdueAction()
     {
-        $dayRanges = str_replace(' ', '', urldecode($this->_request->getParam('dayRanges')));
+        $dayRanges = str_replace(' ', '', urldecode($this->getRequest()->getParam('dayRanges')));
         $dayRanges = explode(',', $dayRanges);
         $dayRanges[] = 365 * 10;    // The last ##+ column
 
-        $findingType = urldecode($this->_request->getParam('pastThreatLvl'));
+        $findingType = urldecode($this->getRequest()->getParam('pastThreatLvl'));
 
         $thisChart = new Fisma_Chart();
         $thisChart
@@ -531,7 +531,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->groupBy('threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
-            //$this->view->q = $q->getSqlQuery();
 
             // We will get three results, each for a count of High Mod, Low
             $thisHigh = 0;
@@ -606,19 +605,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // $thisChart is already in this form
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FFC000'));
@@ -635,7 +634,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _chartfindingorgbasic()
     {
-        $findingType = urldecode($this->_request->getParam('threatLevel'));
+        $findingType = urldecode($this->getRequest()->getParam('threatLevel'));
 
         if ($findingType === 'Totals') {
 
@@ -808,7 +807,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _chartfindingstatus()
     {
-        $findingType = urldecode($this->_request->getParam('findingType'));
+        $findingType = urldecode($this->getRequest()->getParam('findingType'));
 
         $thisChart = new Fisma_Chart();
         $thisChart
@@ -839,7 +838,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
 
-        // sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
+        // Sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
         $sortedRslts = array();
         foreach ($rslts as $thisRslt) {
 
@@ -944,19 +943,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // $thisChart is already in this form
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FFC000'));
@@ -974,11 +973,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function chartfindnomitstratAction()
     {
-        $dayRange = $this->_request->getParam('dayRangesMitChart');
+        $dayRange = $this->getRequest()->getParam('dayRangesMitChart');
         $dayRange = str_replace(' ', '', $dayRange);
         $dayRange = explode(',', $dayRange);
 
-        $threatLvl = $this->_request->getParam('noMitThreatLvl');
+        $threatLvl = $this->getRequest()->getParam('noMitThreatLvl');
 
         $noMitChart = new Fisma_Chart();
         $noMitChart
@@ -1036,7 +1035,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
             
-            // initalize to 0 (query may not return values for 0 counts)
+            // Initalize to 0 (query may not return values for 0 counts)
             $thisHigh = 0;
             $thisMod = 0;
             $thisLow = 0;
@@ -1044,30 +1043,30 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             foreach ($rslts as $thisLevel) {
                 switch ($thisLevel['threatLevel']) {
                     case 'LOW':
-                        $thisHigh = $thisLevel['count'];
+                        $thisLow = $thisLevel['count'];
                         break;
                     case 'MODERATE':
                         $thisMod = $thisLevel['count'];
                         break;
                     case 'HIGH':
-                        $thisLow = $thisLevel['count'];
+                        $thisHigh = $thisLevel['count'];
                         break;
                 }
             }
             
-            // make URL to the search page with date params
+            // Make URL to the search page with date params
             $basicSearchLink = '/finding/remediation/list/queryType/advanced' . 
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                 '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
-            // make this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
+            // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
             $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/CLOSED';
             $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/EN';
             foreach ($this->_getEvaluationNames() as $thisStatus) {
                 $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/' . $thisStatus;
             }
             
-            // remembers links for a non-stacked bar chart in the even the user is querying "totals"
+            // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
             $nonStackedLinks[] = $basicSearchLink;
             
             $noMitChart->addColumn(
@@ -1100,26 +1099,26 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // $noMitChart is already in this form
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
                 $noMitChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FFC000'));
                 break;
         }
 
-        // export as array, the context switch will translate it to a JSON responce
+        // Export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $noMitChart->export('array');
     }
 
@@ -1152,11 +1151,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     public function findingforecastAction()
     {
 
-        $dayRange = $this->_request->getParam('dayRangesStatChart');
+        $dayRange = $this->getRequest()->getParam('dayRangesStatChart');
         $dayRange = str_replace(' ', '', $dayRange);
         $dayRange = explode(',', $dayRange);
         
-        $threatLvl = $this->_request->getParam('forcastThreatLvl');
+        $threatLvl = $this->getRequest()->getParam('forcastThreatLvl');
 
         $highCount = array();
         $modCount = array();
@@ -1279,26 +1278,26 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // $thisChart is already in this form
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FFC000'));
                 break;
         }
 
-        // export as array, the context switch will translate it to a JSON responce
+        // Export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
     }
 

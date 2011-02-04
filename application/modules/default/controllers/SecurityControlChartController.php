@@ -35,7 +35,6 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
         parent::init();
         
         $this->_helper->fismaContextSwitch()
-                      ->setActionContext('control-deficiencies', 'xml')
                       ->setActionContext('control-deficiencies', 'json')
                       ->initContext();
     }
@@ -45,15 +44,14 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
      */
     public function controlDeficienciesAction()
     {
-        $displayBy = urldecode($this->_request->getParam('displaySecurityBy'));
-        $displayBy = strtolower($displayBy);
+        $displayBy = urldecode($this->getRequest()->getParam('displaySecurityBy'));
 
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setColors(array('#3366FF'))
             ->setChartType('bar')
             ->setConcatColumnLabels(false)
-            ->setAxisLabelY('number of findings');
+            ->setAxisLabelY('Number of Findings');
         
         $deficienciesQuery = Doctrine_Query::create()
             ->select('COUNT(*) AS count, sc.code')
@@ -66,15 +64,15 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->orderBy('sc.code')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
-        $defQueryRslt = $deficienciesQuery->execute();
+        $deficiencyQueryResult = $deficienciesQuery->execute();
         
-        if ($displayBy !== 'family') {
+        if ($displayBy !== 'Family') {
 
-            foreach ($defQueryRslt as $thisElement) {
+            foreach ($deficiencyQueryResult as $thisElement) {
                 $rtnChart->addColumn($thisElement['sc_code'], $thisElement['sc_count']);
             }
             
-            // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
+            // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
             $rtnChart
                 ->setLinks(
                     '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
@@ -91,7 +89,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
                 $thisFamily = explode('-', $thisElement['sc_code']);
                 $thisFamily = $thisFamily[0];
                 
-                // initalizes the totalingFamily variable
+                // Initalizes the totalingFamily variable
                 if ($totalingFamily === '') {
                     $totalingFamily = $thisFamily;
                 }
@@ -111,10 +109,10 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
                 $totalCount += $thisElement['sc_count'];
             }
             
-            // add the last found family (not added yet since column additions are done on family-name-change)
+            // Add the last found family (not added yet since column additions are done on family-name-change)
             $rtnChart->addColumn($totalingFamily, $totalCount);
             
-            // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
+            // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
             $rtnChart
                 ->setLinks(
                     '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
@@ -122,7 +120,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
                 );
         }
             
-        // the context switch will convert this array to a JSON resonce
+        // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');
         
     }

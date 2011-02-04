@@ -205,9 +205,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                        ->groupBy('bureau.id')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         
-        $burQueryRslt = $bureauQuery->execute();
+        $bureauQueryResult = $bureauQuery->execute();
         
-        foreach ($burQueryRslt as $thisElement) {
+        foreach ($bureauQueryResult as $thisElement) {
             $rtnChart->addColumn($thisElement['bureau_nickname'], $thisElement['i_count']);
         }
 
