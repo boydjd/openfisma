@@ -801,19 +801,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             }
 
             if (!file_exists(EVIDENCE_PATH)) {
-                mkdir(EVIDENCE_PATH, 0755);
+                mkdir(EVIDENCE_PATH);
             }
             if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
-                mkdir(EVIDENCE_PATH .'/'. $id, 0755);
+                mkdir(EVIDENCE_PATH .'/'. $id);
             }
             $nowStr = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
             $count = 0;
             $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
             $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
             if ($count > 0) {
-                if (move_uploaded_file($file['tmp_name'], $absFile)) {
-                    chmod($absFile, 0755);
-                } else {
+                if (!move_uploaded_file($file['tmp_name'], $absFile)) {
                     $message = 'The file upload failed due to a server configuration error.' 
                              . ' Please contact the administrator.';
                     $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
