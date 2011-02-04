@@ -116,7 +116,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Re
 
         // Try to create directory (and parents) if it does not exist already
         if (!is_dir($path)) {
-            $mkdirResult = mkdir($path, umask(), true);
+            $mkdirResult = mkdir($path, 0777 & ~umask(), true);
             
             if (!$mkdirResult) {
                 throw new Fisma_Zend_Exception("Unable to make artifact path: $path");

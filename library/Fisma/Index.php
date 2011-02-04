@@ -97,15 +97,14 @@ class Fisma_Index
     {        
         try {
             // Set privileges on index files to match the umask, as by default, the class sets everything to 777
-            Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(umask());
+            Zend_Search_Lucene_Storage_Directory_Filesystem::setDefaultFilePermissions(0777 & ~umask());
 
             // Create a new lucene object
             $this->_indexPath = Fisma::getPath('index') . '/' . $class;
             $createIndex = !is_dir($this->_indexPath);
             $this->_lucene = new Zend_Search_Lucene($this->_indexPath, $createIndex);
             if ($createIndex) {
-                // Set permissions to that only owner and group can read or list index files
-                chmod($this->_indexPath, 0770);
+                chmod($this->_indexPath);
             }
 
             // Set optimization parameters. This is tuned for small batch, interactive indexing. It will not be very
