@@ -698,7 +698,7 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
     } else {
     
         // We are not in link-debug mode, navigate if there is a link
-        if (theLink != false && String(theLink) != 'null') {
+        if (theLink != false && theLink != 'false' && String(theLink) != 'null') {
             document.location = theLink;
         }
         
