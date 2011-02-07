@@ -140,7 +140,7 @@ function createJQChart(chartParamsObj)
             case 'stackedbar':
                 chartParamsObj['varyBarColor'] = false;
                             if (typeof chartParamsObj['showlegend'] == 'undefined') { chartParamsObj['showlegend'] = true; }
-                var rtn = createJQChart_StackedBar(chartParamsObj);
+                var rtn = createChartStackedBar(chartParamsObj);
                 break;
             case 'bar':
 
@@ -161,18 +161,18 @@ function createJQChart(chartParamsObj)
                 }
 
                 chartParamsObj['stackSeries'] = false;
-                var rtn = createJQChart_StackedBar(chartParamsObj);
+                var rtn = createChartStackedBar(chartParamsObj);
                 break;
 
             case 'line':
-                var rtn = createChartJQStackedLine(chartParamsObj);
+                var rtn = createChartStackedLine(chartParamsObj);
                 break;
             case 'stackedline':
-                var rtn = createChartJQStackedLine(chartParamsObj);
+                var rtn = createChartStackedLine(chartParamsObj);
                 break;
             case 'pie':
                 chartParamsObj['links'] = [chartParamsObj['links']];
-                var rtn = createChartJQPie(chartParamsObj);
+                var rtn = createChartPie(chartParamsObj);
                 break;
             default:
                 throw 'createJQChart Error - chartType is invalid (' + chartParamsObj['chartType'] + ')';
@@ -186,7 +186,7 @@ function createJQChart(chartParamsObj)
     applyChartWidgets(chartParamsObj);
     createChartThreatLegend(chartParamsObj);
     applyChartBorders(chartParamsObj);
-    globalSettingRefreashUI(chartParamsObj);
+    globalSettingRefreshUi(chartParamsObj);
     showMsgOnEmptyChart(chartParamsObj);
     getTableFromChartData(chartParamsObj);
 
@@ -214,9 +214,8 @@ function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
             chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value)
             
         } else {
-            if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-                document.location = chartParamsObj['lastURLpull'];
-            }
+            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj['lastURLpull'];
+            return CHART_CREATE_FAILURE;
         }
 
         if (typeof chartParamsObj['chartData'] == 'undefined') {
@@ -228,9 +227,8 @@ function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
         return createJQChart(chartParamsObj);
         
     } else {
-        if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-            document.location = chartParamsObj['lastURLpull'];
-        }
+        throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj['lastURLpull'];
+        return CHART_CREATE_FAILURE;
     }
     
     return CHART_CREATE_FAILURE;
@@ -285,7 +283,7 @@ function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
   * @param object
   * @return void
  */
-function createChartJQPie(chartParamsObj)
+function createChartPie(chartParamsObj)
 {
     usedLabelsPie = chartParamsObj['chartDataText'];
 
@@ -296,7 +294,6 @@ function createChartJQPie(chartParamsObj)
         dataSet[dataSet.length] = [chartParamsObj['chartDataText'][x], chartParamsObj['chartData'][x]];
     }
     
-
     var jPlotParamObj = {
         title: chartParamsObj['title'],
         seriesColors: chartParamsObj['colors'],
@@ -367,9 +364,9 @@ function createChartJQPie(chartParamsObj)
   * Expects: A (chart-)object generated from Fisma_Chart->export('array')
   *
   * @param object
-  * @return void
+  * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
  */
-function createJQChart_StackedBar(chartParamsObj)
+function createChartStackedBar(chartParamsObj)
 {
     var dataSet = [];
     var thisSum = 0;
@@ -389,7 +386,6 @@ function createJQChart_StackedBar(chartParamsObj)
         if (chartParamsObj['concatXLabel'] == true) {
             chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
         }
-        
     }
 
     var seriesParam = [];
@@ -412,7 +408,6 @@ function createJQChart_StackedBar(chartParamsObj)
     yAxisTicks[4] = (chartCeilingValue/5) * 4;
     yAxisTicks[5] = (chartCeilingValue/5) * 5;
     
-
     $.jqplot.config.enablePlugins = true
 
     var jPlotParamObj = {
@@ -516,7 +511,16 @@ function createJQChart_StackedBar(chartParamsObj)
     return CHART_CREATE_SUCCESS;
 }
 
-function createChartJQStackedLine(chartParamsObj)
+ /**
+  * Fires the jqPlot library, and creates a stacked
+  * line chart based on input chart object
+  *
+  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+  *
+  * @param object
+  * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
+ */
+function createChartStackedLine(chartParamsObj)
 {
     var dataSet = [];
     var thisSum = 0;
@@ -560,10 +564,11 @@ function createChartJQStackedLine(chartParamsObj)
                 }
     });
 
+    return CHART_CREATE_SUCCESS;
 }
 
 /**
- * Creates the red-orange-yello threat-legend that shows above charts
+ * Creates the red-orange-yellow threat-legend that shows above charts
  * The generated HTML code should go into the div with the id of the
  * chart's uniqueId + "toplegend"
  *
@@ -571,26 +576,92 @@ function createChartJQStackedLine(chartParamsObj)
  */
 function createChartThreatLegend(chartParamsObj)
 {
-    /*
-        Creates a red-orange-yellow legent above the chart
-    */
-
     if (chartParamsObj['showThreatLegend'] && !chartIsEmpty(chartParamsObj)) {
         if (chartParamsObj['showThreatLegend'] == true) {
 
             // Is a width given for the width of the legend? OR should we assume 100%?
-            var tLegWidth = '100%';
+            var threatLegendWidth = '100%';
             if (chartParamsObj['threatLegendWidth']) {
-                tLegWidth = chartParamsObj['threatLegendWidth'];
+                threatLegendWidth = chartParamsObj['threatLegendWidth'];
             }
 
-            var injectHTML = '<table style="font-size: 12px; color: #555555;" width="' + tLegWidth + '">  <tr>    <td style="text-align: center;" width="40%">Threat Level</td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF0000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;High</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF6600" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Moderate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FFC000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Low</td>      </tr>    </table>    </td>  </tr></table>';
+            // Tabel to hold all colored boxes and labels
+            var threatTable = document.createElement("table");
+            threatTable.style.fontSize = '12px';
+            threatTable.style.color = '#555555';
+            threatTable.width = threatLegendWidth;
+            var tblBody = document.createElement("tbody");
+            var row = document.createElement("tr");
+            
+            var cell = document.createElement("td");
+            cell.style.textAlign = 'center';
+            cell.style.fontWeight = 'bold';
+            cell.width = '40%';
+            var textLabel = document.createTextNode('Threat Level');
+            cell.appendChild(textLabel);
+            row.appendChild(cell);
+
+            // Red block and "High"
+            var cell = document.createElement("td");
+            cell.width = '20%';
+            cell.appendChild(createThreatLegendSingleColor('FF0000', 'High'));
+            row.appendChild(cell);
+            
+            // Orange block and "Moderate"
+            var cell = document.createElement("td");
+            cell.width = '20%';
+            cell.appendChild(createThreatLegendSingleColor('FF6600', 'Moderate'));
+            row.appendChild(cell);
+            
+            // Yellow block and "Low"
+            var cell = document.createElement("td");
+            cell.width = '20%';
+            cell.appendChild(createThreatLegendSingleColor('FFC000', 'Low'));
+            row.appendChild(cell);
+            
+            // close and post table on DOM
+            tblBody.appendChild(row);
+            threatTable.appendChild(tblBody);
             var thisChartId = chartParamsObj['uniqueid'];
             var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
-
-            topLegendOnDOM.innerHTML = injectHTML;
+            topLegendOnDOM.appendChild(threatTable);
         }
     }        
+}
+
+/**
+ * Creates a single color (i.e. red/orange/yellow) tabels to be added 
+ * into the threat-legend that shows above charts
+ *
+ * @return table
+ */
+function createThreatLegendSingleColor(blockColor, textLabel) {
+
+    var colorBlockTbl = document.createElement("table");
+    var colorBody = document.createElement("tbody");
+    var colorRow = document.createElement("tr");
+    
+    // Create the colored box
+    var colorCell = document.createElement("td");
+    colorCell.style.backgroundColor= '#' + blockColor;
+    colorCell.width = '15px';
+    colorRow.appendChild(colorCell);
+    
+    // Forced space between colored box and label
+    var colorCell = document.createElement("td");
+    colorCell.width = '3px';
+    colorRow.appendChild(colorCell);
+    
+    // Apply label
+    var colorCell = document.createElement("td");
+    colorCell.style.fontSize = '12px';
+    var textLabel = document.createTextNode('   ' + textLabel);
+    colorCell.appendChild(textLabel);
+    colorRow.appendChild(colorCell);
+    
+    colorBody.appendChild(colorRow);
+    colorBlockTbl.appendChild(colorBody);
+    return colorBlockTbl;    
 }
 
 function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
@@ -683,55 +754,53 @@ function applyChartBorders(chartParamsObj)
     var targDiv = document.getElementById(chartParamsObj['uniqueid']);
     var children = targDiv.childNodes;
     
-    for (var x = children.length - 1; x > 0; x++) {
+    for (var x = children.length - 1; x > 0; x--) {
         // search for a canvs
         if (typeof children[x].nodeName != 'undefined') {
-            if (String(children[x].nodeName).toLowerCase() == 'canvas') {
+            
+            // search for a canvas that is the shadow canvas
+            if (String(children[x].nodeName).toLowerCase() == 'canvas' && children[x].className == 'jqplot-series-shadowCanvas') {
 
-                // search for a canvas that is the shadow canvas
-                if (children[x].className = 'jqplot-series-shadowCanvas') {
+                // this is the canvas we want to draw on
+                var targCanv = children[x];
+                var context = targCanv.getContext('2d');
 
-                    // this is the canvas we want to draw on
-                    var targCanv = children[x];
-                    var context = targCanv.getContext('2d');
+                var h = children[x].height;
+                var w = children[x].width;
 
-                    var h = children[x].height;
-                    var w = children[x].width;
+                context.strokeStyle = '#777777'
+                context.lineWidth = 3;
+                context.beginPath();
 
-                    context.strokeStyle = '#777777'
-                    context.lineWidth = 3;
-                    context.beginPath();
+                // Draw left border?
+                if (chartParamsObj['borders'].indexOf('L') != -1) {
+                    context.moveTo(0,0);
+                    context.lineTo(0, h);
+                    context.stroke();
+                }               
 
-                    // Draw left border?
-                    if (chartParamsObj['borders'].indexOf('L') != -1) {
-                        context.moveTo(0,0);
-                        context.lineTo(0, h);
-                        context.stroke();
-                    }               
-
-                    // Draw bottom border?
-                    if (chartParamsObj['borders'].indexOf('B') != -1) {
-                        context.moveTo(0, h);
-                        context.lineTo(w, h);
-                        context.stroke();
-                    }
-
-                    // Draw right border?
-                    if (chartParamsObj['borders'].indexOf('R') != -1) {
-                        context.moveTo(w, 0);
-                        context.lineTo(w, h);
-                        context.stroke();
-                    }
-
-                    // Draw top border?
-                    if (chartParamsObj['borders'].indexOf('T') != -1) {
-                        context.moveTo(0, 0);
-                        context.lineTo(w, 0);
-                        context.stroke();
-                    }
-
-                        return;
+                // Draw bottom border?
+                if (chartParamsObj['borders'].indexOf('B') != -1) {
+                    context.moveTo(0, h);
+                    context.lineTo(w, h);
+                    context.stroke();
                 }
+
+                // Draw right border?
+                if (chartParamsObj['borders'].indexOf('R') != -1) {
+                    context.moveTo(w, 0);
+                    context.lineTo(w, h);
+                    context.stroke();
+                }
+
+                // Draw top border?
+                if (chartParamsObj['borders'].indexOf('T') != -1) {
+                    context.moveTo(0, 0);
+                    context.lineTo(w, 0);
+                    context.stroke();
+                }
+
+                return;
             }
         }
     }
@@ -749,13 +818,19 @@ function applyChartBackground(chartParamsObj)
     }
     if (chartParamsObj['background']) {
         if (chartParamsObj['background']['nobackground']) {
-            if (chartParamsObj['background']['nobackground'] == true) { return; }
+            if (chartParamsObj['background']['nobackground'] == true) {
+                return;
+            }
         }
     }
     
     // What is the HTML we should inject?
     var backURL = '/images/logoShark.png'; // default location
-    if (chartParamsObj['background']) { if (chartParamsObj['background']['URL']) { backURL = chartParamsObj['background']['URL']; } }
+    if (chartParamsObj['background']) {
+        if (chartParamsObj['background']['URL']) {
+            backURL = chartParamsObj['background']['URL'];
+        }
+    }
     var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
 
     // But wait, is there an override issued for the HTML of the background to inject?
@@ -1602,7 +1677,7 @@ function globalSettingUpdate(chartUniqueId)
  * @param object
  * @return void
  */
-function globalSettingRefreashUI(chartParamsObj)
+function globalSettingRefreshUi(chartParamsObj)
 {
     /*
         Every input-element (setting UI) has an id equal to the cookie name 
@@ -1737,7 +1812,7 @@ function redrawAllCharts()
         createJQChart(thisParamObj);
         
         // refreash Global Settings UI
-        globalSettingRefreashUI(thisParamObj);
+        globalSettingRefreshUi(thisParamObj);
     }
 
 }
