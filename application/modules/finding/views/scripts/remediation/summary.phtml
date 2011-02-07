@@ -143,19 +143,19 @@ function menuHandler(source) {
 <?php
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 
-                                             'imageSrc' => '/images/expand.png',
+                                             'imageSrc' => $this->serverUrl('/images/expand.png'),
                                              'onClickFunction' => 'expandAll'));
 echo $this->escape($expandAll, 'none');
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
                                          array('label' => 'Collapse All', 
-                                             'imageSrc' => '/images/collapse.png',
+                                             'imageSrc' => $this->serverUrl('/images/collapse.png'),
                                              'onClickFunction' => 'collapseAll'));
 echo $this->escape($collapseAll, 'none');
 
 $exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
                                        array('label' => 'Export to PDF', 
-                                             'imageSrc' => '/images/pdf.gif',
+                                             'imageSrc' => $this->serverUrl('/images/pdf.gif'),
                                              'onClickFunction' => 'exportPdf'));
 echo $this->escape($exportPdf, 'none');
 ?>
