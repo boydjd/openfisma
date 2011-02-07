@@ -1230,7 +1230,7 @@ function getTableFromChartData(chartParamsObj)
     if (getGlobalSetting('showDataTable') === 'true') {
     
         if (chartParamsObj['chartType'] === 'pie') {
-            getTableFromCharPieChart(chartParamsObj);
+            getTableFromChartPieChart(chartParamsObj);
         } else {
             getTableFromBarChart(chartParamsObj);
         }
@@ -1249,7 +1249,7 @@ function getTableFromChartData(chartParamsObj)
     }
 }
 
-function getTableFromCharPieChart(chartParamsObj)
+function getTableFromChartPieChart(chartParamsObj)
 {
     var tbl     = document.createElement("table");
     var tblBody = document.createElement("tbody");

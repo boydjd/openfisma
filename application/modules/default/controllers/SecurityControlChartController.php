@@ -54,71 +54,48 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->setAxisLabelY('Number of Findings');
         
         $deficienciesQuery = Doctrine_Query::create()
-            ->select('COUNT(*) AS count, sc.code')
+            ->select('COUNT(*) AS count, sc.code, SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.ResponsibleOrganization o')
             ->andWhere('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', FindingTable::getOrganizationIds())
-            ->groupBy('sc.code')
-            ->orderBy('sc.code')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        
-        $deficiencyQueryResult = $deficienciesQuery->execute();
-        
-        if ($displayBy !== 'Family') {
 
-            foreach ($deficiencyQueryResult as $thisElement) {
-                $rtnChart->addColumn($thisElement['sc_code'], $thisElement['sc_count']);
-            }
-            
-            // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-            $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textExactMatch/#ColumnLabel#'
-                );
-            
+        if ($displayBy === 'Family') {
+            $deficienciesQuery
+                ->groupBy('fam')
+                ->orderBy('fam');
         } else {
-            
-            $totalingFamily = '';
-            $totalCount = '';
-
-            foreach ($defQueryRslt as $thisElement) {
-
-                $thisFamily = explode('-', $thisElement['sc_code']);
-                $thisFamily = $thisFamily[0];
-                
-                // Initalizes the totalingFamily variable
-                if ($totalingFamily === '') {
-                    $totalingFamily = $thisFamily;
-                }
-                
-                // Are we now seeing the results of the next family?
-                if ($totalingFamily !== $thisFamily && $totalCount > 0) {
-                
-                    // if so, add the total of the last family to the chart
-                    $rtnChart->addColumn($totalingFamily, $totalCount);
-                    
-                    // and start counting the total for the next family
-                    $totalCount = 0;
-                    $totalingFamily = $thisFamily;
-                }
-                
-                // Add to the total for this family
-                $totalCount += $thisElement['sc_count'];
-            }
-            
-            // Add the last found family (not added yet since column additions are done on family-name-change)
-            $rtnChart->addColumn($totalingFamily, $totalCount);
-            
-            // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-            $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textContains/#ColumnLabel#'
-                );
+            $deficienciesQuery
+                ->groupBy('sc.code')
+                ->orderBy('sc.code');
         }
+
+        $deficiencyQueryResult = $deficienciesQuery->execute();
+
+        foreach ($deficiencyQueryResult as $thisElement) {
+        
+            if ($displayBy === 'Family') {
+                $columnLabel = $thisElement['sc_fam'];
+            } else {
+                $columnLabel = $thisElement['sc_code'];
+            }
+        
+            $rtnChart->addColumn(
+                $columnLabel,
+                $thisElement['sc_count']
+            );
+            
+        }
+
+        // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
+        $rtnChart
+            ->setLinks(
+                '/finding/remediation/list/queryType/advanced' .
+                '/denormalizedStatus/textDoesNotContain/CLOSED' .
+                '/securityControl/textContains/#ColumnLabel#'
+            );
             
         // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');
