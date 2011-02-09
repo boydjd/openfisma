@@ -537,14 +537,18 @@ span.userInfo:hover {
 span.userInfo:active {
 	color: #416ed7;
 }
+/**
+ * jquery.jqplot.css
+ * This file, slightly altered by Endeavor is copyrighted under the MIT licence
+ * The licence can be found at <this-domain>/javascripts/jqPlot/MIT-LICENSE.txt
+*/
+
 /*rules for the plot target div.  These will be cascaded down to all plot elements according to css rules*/
 .jqplot-target {
     position: relative;
     color: #666666;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     font-size: 1em;
-/*    height: 300px;
-    width: 400px;*/
 }
 
 /*rules applied to all axes*/
@@ -579,7 +583,6 @@ span.userInfo:active {
     top: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
-/*    padding-top: 10px;*/
     vertical-align: top;
 }
 
@@ -587,7 +590,6 @@ span.userInfo:active {
     bottom: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
-/*    padding-bottom: 10px;*/
     vertical-align: bottom;
 }
 
@@ -595,7 +597,6 @@ span.userInfo:active {
     right: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
-/*    padding-right: 10px;*/
     text-align: right;
 }
 
@@ -603,8 +604,6 @@ span.userInfo:active {
     left: 0px;
     /* initial position untill tick is drawn in proper place */
     top: 15px;
-/*    padding-left: 10px;*/
-/*    padding-right: 15px;*/
     text-align: left;
 }
 
@@ -631,13 +630,11 @@ span.userInfo:active {
 
 .jqplot-yaxis-label {
     margin-right: 10px;
-/*    text-align: center;*/
     font-size: 11pt;
     position: absolute;
 }
 
 .jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
-/*    text-align: center;*/
     font-size: 11pt;
     position: absolute;
 }
@@ -740,7 +737,6 @@ height:0.7em;
 
 div.jqplot-bubble-label {
     font-size: 0.8em;
-/*    background: rgba(90%, 90%, 90%, 0.15);*/
     padding-left: 2px;
     padding-right: 2px;
     color: rgb(20%, 20%, 20%);
