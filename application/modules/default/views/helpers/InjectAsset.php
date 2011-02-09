@@ -92,6 +92,7 @@ class View_Helper_InjectAsset
                                 array('/stylesheets/main.css',
                                       '/stylesheets/AutoComplete.css',
                                       '/stylesheets/AttachArtifacts.css',
+                                      '/stylesheets/chart.css',
                                       '/stylesheets/Dashboard.css',
                                       '/stylesheets/Finding.css',
                                       '/stylesheets/FindingSummary.css',

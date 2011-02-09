@@ -1,25 +1,21 @@
-<?php /* Customized header based on Fisma_Format_Section::startSection */ ?>
-
 <div class="sectionHeader">
-    <span $editableText>
-        <table width="100%">
-            <tr>
-                <td align="left">
-                    <?php echo $this->escape($this->chartParamArr['title'], 'none'); ?>
-                </td>
-                <td align=right>
-                    <a 
-                        href="JavaScript: // Click to show chart options" 
-                        style ="text-decoration: none" 
-                        onClick="setChartSettingsVisibility('<?php 
-                            echo $this->escape($this->chartId, 'none'); 
-                        ?>', 'toggle');">
-                        <img src="/images/gear.png" alt="Click to edit chart options" width="20" />
-                    </a>
-                </td>
-            </tr>
-        </table>
-    </span>
+    <table width="100%">
+        <tr>
+            <td align="left">
+                <?php echo $this->escape($this->chartParamArr['title'], 'html'); ?>
+            </td>
+            <td align=right>
+                <img 
+                    src="/images/gear.png" 
+                    alt="Click to edit chart options"
+                    onClick="setChartSettingsVisibility('<?php 
+                        echo $this->escape($this->chartId, 'none'); 
+                        ?>', 'toggle');"
+                    class="chartGear"
+                />
+            </td>
+        </tr>
+    </table>
 </div>
 <div class="section">
 
@@ -41,19 +37,12 @@
             </div>
     </div>
     
-    <div
-        id="<?php echo $this->escape($this->chartId, 'none'); ?>table"
-        style="display: none; width: 100%;"
-        width="100%"
-    >
+    <div class="screenReaderTabel" id="<?php echo $this->escape($this->chartId, 'none'); ?>table">
     </div>   
     
     <br/>
     <div 
-        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" 
-        class="yui-navset" 
-        style="display: none; width: 400px; margin-left: auto; margin-right: auto; text-align: left;"
-    >
+        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="width: 400px;">
         <ul class="yui-nav">
             <li class="selected">
                 <a href="#tab1" onClick="showSetingMode(true);">
@@ -152,13 +141,17 @@
 
 </div>
 <script type="text/javascript">
-    /* YUI TabView */
-    var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
-    var tabView = new YAHOO.widget.TabView(thisName);
-    /* YUI buttons */
-    var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
-    var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
-    var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
-    var thisBtnGlob = new YAHOO.widget.Button(thisChartId + "BtnGlobSet", yuiBtnEventObj1);
-    var thisBtnMain = new YAHOO.widget.Button(thisChartId + "BtnMainSet", yuiBtnEventObj2);
+
+    YAHOO.util.Event.onContentReady('<?php echo $this->escape($this->chartId, 'none');?>', function () {
+        /* YUI TabView */
+        var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
+        var tabView = new YAHOO.widget.TabView(thisName);
+        /* YUI buttons */
+        var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
+        var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
+        var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
+        var thisBtnGlob = new YAHOO.widget.Button(thisChartId + "BtnGlobSet", yuiBtnEventObj1);
+        var thisBtnMain = new YAHOO.widget.Button(thisChartId + "BtnMainSet", yuiBtnEventObj2);
+    });
+    
 </script>

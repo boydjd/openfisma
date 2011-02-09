@@ -1,0 +1,54 @@
+/*******************************************************************************
+ *
+ * chart.css
+ *
+ * Copyright (c) 2008 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Contains styling rules for elements related to charts but are not part of
+ * the jqPlot library.
+ *
+ * Author:    Dale Frey <dale.frey@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+
+/* style for the data-table for screen readers */
+.screenReaderTabel {
+    display: none;
+    width: 100%;
+}
+
+/* the div that holds the chart options */
+.widgetSpaceHolder {
+	display: none;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+/* the gear icon that toggles chart-options visibility */
+.chartGear {
+	chartGear: pointer;
+	width: 20px;
+}

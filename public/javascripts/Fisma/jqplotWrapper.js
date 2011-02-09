@@ -397,7 +397,7 @@ function createChartStackedBar(chartParamsObj)
 
     // Make sure the Y-axis (row labels) are not offset by the formatter string rounding their values...
     // (make the top most row label divisible by 5)
-    chartCeilingValue = getNextNumberDivisibleBy5(maxSumOfAll);
+    chartCeilingValue = Math.ceil(maxSumOfAll / 5) * 5;
     
     // Force Y-axis row labels to be divisible by 5
     yAxisTicks = [];
@@ -959,8 +959,8 @@ function applyChartWidgetSettings(chartParamsObj)
                 thisWigInDOM.value = thisWidget['forcevalue'];
                 thisWigInDOM.text = thisWidget['forcevalue'];
             } else {
-                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != '') {
+                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
+                if (thisWigCookieValue != null) {
                     // the value has been coosen in the past and is stored as a cookie
                     thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
                     thisWigInDOM.value = thisWigCookieValue;
@@ -1007,8 +1007,8 @@ function buildExternalSourceParams(chartParamsObj)
                 thisWidgetValue = thisWidgetOnDOM.value;
             } else {
                 // not on DOM, is there a cookie?
-                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != '') {
+                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
+                if (thisWigCookieValue != null) {
                     // there is a cookie value, us it
                     thisWidgetValue = thisWigCookieValue;
                 } else {
@@ -1043,7 +1043,7 @@ function widgetEvent(chartParamsObj)
         for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
             var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            setCookie(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue,400);
+            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue);
         }
     }
 
@@ -1622,7 +1622,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     var menuObj = document.getElementById(menuHolderId);
     
     if (boolVisible == 'toggle') {
-        if (menuObj.style.display == 'none') {
+        if (menuObj.style.display != 'table') {
             boolVisible = true;
         } else {
             boolVisible = false;
@@ -1630,7 +1630,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     }
     
     if (boolVisible == true) {
-        menuObj.style.display = '';
+        menuObj.style.display = 'table';
     } else {
         menuObj.style.display = 'none';
     }
@@ -1730,9 +1730,9 @@ function showSetingMode(showBasic)
 function getGlobalSetting(settingName)
 {
 
-    var rtnValue = getCookie('chartGlobSetting_' + settingName, '-RETURN-DEFAULT-SETTING-');
+    var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
 
-    if (rtnValue != '-RETURN-DEFAULT-SETTING-') {
+    if (rtnValue != null) {
         return rtnValue;
     } else {
     
@@ -1747,7 +1747,7 @@ function getGlobalSetting(settingName)
 
 function setGlobalSetting(settingName, newValue)
 {
-    setCookie('chartGlobSetting_' + settingName, newValue);
+    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue);
 }
 
 /**
@@ -1878,50 +1878,3 @@ function chartIsEmpty(chartParamsObj)
     return isChartEmpty;
 }
 
-function getNextNumberDivisibleBy5(nbr)
-{
-
-    nbr = Math.round(nbr);
-
-    for (var x = 0; x < 8; x++ ) {
-    
-        var dividedBy5 = (nbr / 5);
-
-        // is this a whole number?
-        if (dividedBy5 == Math.round(dividedBy5)) {
-            return nbr;
-        } else {
-            // currently nbr is not divisible by 5, increment and keep searching
-            nbr++;
-        }
-    }
-
-}
-
-function setCookie(c_name,value,expiredays)
-{
-    var exdate=new Date();
-    exdate.setDate(exdate.getDate()+expiredays);
-    document.cookie = c_name + "=" + escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
-}
-
-function getCookie(c_name, defaultValue)
-{
-    if (document.cookie.length>0) {
-
-        c_start=document.cookie.indexOf(c_name + "=");
-
-        if (c_start!=-1) {
-            c_start = c_start + c_name.length + 1;
-            c_end = document.cookie.indexOf(";",c_start);
-            if (c_end==-1) c_end=document.cookie.length;
-            return unescape(document.cookie.substring(c_start,c_end));
-        }
-    }
-
-    if (typeof defaultValue != 'undefined') {
-        return defaultValue;
-    } else {
-        return '';
-    }
-}
