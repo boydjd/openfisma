@@ -424,7 +424,11 @@ function createChartStackedBar(chartParamsObj)
                 shadowAlpha: 0.15,
                 shadowOffset: 0
             },
-            pointLabels:{show: false, location: 's'}
+            pointLabels:{
+                show: false,
+                location: 's',
+                hideZeros: true
+            }
         },
         axesDefaults: {
             tickRenderer: $.jqplot.CanvasAxisTickRenderer,
@@ -1458,7 +1462,7 @@ function removeDecFromPointLabels(chartParamsObj)
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTM) == 0) {
+                            if (parseInt(thisChld.innerHTM) == 0 || isNaN(thisLabelValue)) {
                                 thisChld.innerHTML = '';
                             }
 
