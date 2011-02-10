@@ -237,6 +237,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         'LOW'
                     )
                 );
+                
+                // Dont query if there are no organizations this user can see
+                $visibleOrgs = FindingTable::getOrganizationIds();
+                if (empty($visibleOrgs)) {
+                    $this->view->chart = $rtnChart->export('array');
+                    return;
+                }
 
             // Get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
             $parents = $this->_getOrganizationsByOrgType($displayBy);
@@ -505,6 +512,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW'
                 )
             );
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $thisChart->export('array');
+            return;
+        }
 
         $nonStackedLinks = array();
 
@@ -828,6 +842,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
             );
 
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            return $thisChart;
+        }
+
         $q = Doctrine_Query::create()
             ->select('count(f.id), threatlevel, denormalizedstatus')
             ->from('Finding f')
@@ -1001,7 +1021,14 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Low'
                 )
             );
-            
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $noMitChart->export('array');
+            return;
+        }
+
         $nonStackedLinks = array();
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
@@ -1186,6 +1213,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
             );
 
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $thisChart->export('array');
+            return;
+        }
+
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
 
             $fromDay = new Zend_Date();
@@ -1213,6 +1247,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy('f.threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            
             $results = $q->execute();
             $this->view->rtn = $results;
 

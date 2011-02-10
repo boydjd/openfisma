@@ -53,6 +53,12 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->setConcatColumnLabels(false)
             ->setAxisLabelY('Number of Findings');
         
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            return $this->view->chart = $rtnChart->export('array');
+        }
+        
         $deficienciesQuery = Doctrine_Query::create()
             ->select('COUNT(*) AS count, sc.code, SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
