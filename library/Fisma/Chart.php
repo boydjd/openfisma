@@ -354,6 +354,11 @@ class Fisma_Chart
             }
         }
         
+        // If this is a pie-chart, do not add (needless) slices of 0
+        if ($this->getChartType() === 'pie' && $addValue == 0) {
+            return;
+        }
+        
         // Add label for this column
         $this->chartParamArr['chartDataText'][] = $columnLabel;
         

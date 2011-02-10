@@ -203,6 +203,19 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function totalTypeAction()
     {
+        $thisChart = new Fisma_Chart();
+        $thisChart
+            ->setTitle('Mitigation Strategy Distribution')
+            ->setChartType('pie')
+            ->setColors(
+                array(
+                    '#FFA347',
+                    '#75FF75',
+                    '#47D147',
+                    '#FF2B2B'
+                )
+            );
+            
         $summary = array(
             'NONE' => 0,
             'CAP' => 0,
@@ -220,32 +233,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $types = array_keys($summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
-                $summary[$result['type']] = $result['typeCount'];
+                $thisChart->addColumn(
+                    $result['type'],
+                    $result['typeCount'],
+                    '/finding/remediation/list/queryType/advanced/type/enumIs/' . $result['type']
+                );
             }
         }
-        
-        $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setTitle('Mitigation Strategy Distribution')
-            ->setChartType('pie')
-            ->setData(array_values($summary))
-            ->setAxisLabelsX(array_keys($summary))
-            ->setColors(
-                array(
-                    '#FFA347',
-                    '#75FF75',
-                    '#47D147',
-                    '#FF2B2B'
-                )
-            )
-            ->setLinks(
-                array(
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/NONE',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/CAP',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/FP',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/AR'
-                    )
-            );
         
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
