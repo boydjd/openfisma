@@ -56,7 +56,8 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();
         if (empty($visibleOrgs)) {
-            return $this->view->chart = $rtnChart->export('array');
+            $this->view->chart = $rtnChart->export('array');
+            return;
         }
         
         $deficienciesQuery = Doctrine_Query::create()
