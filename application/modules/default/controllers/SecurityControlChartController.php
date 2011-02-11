@@ -96,12 +96,27 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
+        /* TODO:    Remove this when issue with search (zend vs Solr and quotes) is fixed 
+                    jira.openfisma.org/browse/OFJ-1167?focusedCommentId=14101#action_14101
+        */
+        // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
+        $backend = Doctrine_Query::create()
+            ->select('search_backend')
+            ->from('Configuration')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+        if ($backend[0]['search_backend'] === 'solr') {
+            $searchVar = "%22#ColumnLabel#%22";
+        } else {
+            $searchVar = '#ColumnLabel#';
+        }
+
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
         $rtnChart
             ->setLinks(
                 '/finding/remediation/list/queryType/advanced' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                '/securityControl/textContains/#ColumnLabel#'
+                '/securityControl/textContains/'. $searchVar
             );
             
         // The context switch will convert this array to a JSON responce
