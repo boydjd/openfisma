@@ -100,12 +100,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
                     jira.openfisma.org/browse/OFJ-1167?focusedCommentId=14101#action_14101
         */
         // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
-        $backend = Doctrine_Query::create()
-            ->select('search_backend')
-            ->from('Configuration')
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-            ->execute();
-        if ($backend[0]['search_backend'] === 'solr') {
+        if (Fisma::configuration()->getConfig('search_backend') === 'solr') {
             $searchVar = "%22#ColumnLabel#%22";
         } else {
             $searchVar = '#ColumnLabel#';
