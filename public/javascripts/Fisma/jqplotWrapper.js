@@ -1309,13 +1309,13 @@ function getTableFromChartData(chartParamsObj)
     if (getGlobalSetting('showDataTable') === 'true') {
     
         if (chartParamsObj['chartType'] === 'pie') {
-            getTableFromChartPieChart(chartParamsObj);
+            getTableFromChartPieChart(chartParamsObj, dataTableObj);
         } else {
-            getTableFromBarChart(chartParamsObj);
+            getTableFromBarChart(chartParamsObj, dataTableObj);
         }
 
         // Show the table generated based on chart data
-        dataTableObj.style.display = '';
+        dataTableObj.style.display = 'table';
         // Hide, erase, and collapse the container of the chart divs
         document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
         document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
@@ -1328,7 +1328,7 @@ function getTableFromChartData(chartParamsObj)
     }
 }
 
-function getTableFromChartPieChart(chartParamsObj)
+function getTableFromChartPieChart(chartParamsObj, dataTableObj)
 {
     var tbl     = document.createElement("table");
     var tblBody = document.createElement("tbody");
@@ -1358,10 +1358,10 @@ function getTableFromChartPieChart(chartParamsObj)
     tbl.setAttribute("border", "1");
     tbl.setAttribute("width", "100%");
     
-    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
+    dataTableObj.appendChild(tbl);
 }
 
-function getTableFromBarChart(chartParamsObj)
+function getTableFromBarChart(chartParamsObj, dataTableObj)
 {
     var tbl     = document.createElement("table");
     var tblBody = document.createElement("tbody");
@@ -1425,7 +1425,7 @@ function getTableFromBarChart(chartParamsObj)
     tbl.setAttribute("border", "1");
     tbl.setAttribute("width", "100%");
     
-    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
+    dataTableObj.appendChild(tbl);
 }
 
 /**

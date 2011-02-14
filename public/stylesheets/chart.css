@@ -49,6 +49,6 @@
 
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
-	chartGear: pointer;
+	cursor: pointer;
 	width: 20px;
 }

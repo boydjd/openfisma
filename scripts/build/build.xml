@@ -19,7 +19,7 @@
     <target name="-css.concat">
         <echo message="Concatenating stylesheets..."/>
         <concat destfile="${location.css}/combined.css" force="no">
-            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,install.css,login.css,print.css,combined.css"/>
+            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,ie8hacks.css,install.css,login.css,print.css,combined.css"/>
         </concat>
         <echo message="Stylesheets concatenated."/>
     </target>
