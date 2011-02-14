@@ -32,6 +32,9 @@ var jsonMenuData = '<?php
 echo $this->escape(Zend_Json_Encoder::encode(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus()), 'none') 
 ?>';
 var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
+for (var i in menuData) {
+    Fisma.Menu.resolveOnClickObjects(menuData[i]);
+}
 var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
 YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
 menuBar.addItems(menuData);
