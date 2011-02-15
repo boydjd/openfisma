@@ -50,6 +50,7 @@ class Fisma_Menu
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
+                $findings->add(self::createGoToItem('Finding', '/finding/remediation'));
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
@@ -186,6 +187,7 @@ class Fisma_Menu
             $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/incident/report'));
       
             $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/incident/list'));
+            $incidentMenu->add(self::createGoToItem('Incident', '/incident'));
 
             $incidentMenu->addSeparator();
 
@@ -298,6 +300,7 @@ class Fisma_Menu
         $menu = new Fisma_Yui_Menu('Vulnerabilities');
 
         $menu->add(new Fisma_Yui_MenuItem('Search', '/vm/vulnerability/list'));
+        $menu->add(self::createGoToItem('Vulnerability', '/vm/vulnerability'));
 
         $menu->addSeparator();
 
@@ -340,5 +343,22 @@ class Fisma_Menu
         }
         
         return $menu;
+    }
+
+    /**
+     * Create a "Go To..." menu item.
+     *
+     * @param string $model Human readable model name
+     * @param string $controller Controller prefix for redirect url
+     *
+     * @return Fisma_Yui_MenuItem
+     */
+    protected static function createGoToItem($model, $controller)
+    {
+        $onClick = new Fisma_Yui_MenuItem_OnClick(
+            'Fisma.Menu.goTo',
+            array('model' => $model, 'controller' => $controller)
+        );
+        return new Fisma_Yui_MenuItem('Go To...', '', $onClick);
     }
 }
