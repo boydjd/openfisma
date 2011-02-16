@@ -1047,7 +1047,7 @@ function widgetEvent(chartParamsObj)
         for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
             var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue);
+            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
         }
     }
 
@@ -1751,7 +1751,7 @@ function getGlobalSetting(settingName)
 
 function setGlobalSetting(settingName, newValue)
 {
-    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue);
+    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
 }
 
 /**
