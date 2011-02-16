@@ -1,5 +1,5 @@
 IrCategory:
-    listeners: [XssListener]
+    listeners: [ReplaceInvalidCharactersListener, XssListener]
     
     columns:
         createdTs: 

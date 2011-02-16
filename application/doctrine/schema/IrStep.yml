@@ -1,5 +1,5 @@
 IrStep:
-    listeners: [XssListener]
+    listeners: [ReplaceInvalidCharactersListener, XssListener]
     
     columns:
         cardinality: 

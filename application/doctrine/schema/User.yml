@@ -1,5 +1,5 @@
 User:
-    listeners: [IndexListener, NotificationListener]
+    listeners: [ReplaceInvalidCharactersListener, IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
