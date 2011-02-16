@@ -40,7 +40,6 @@
 
 /* the div that holds the chart options */
 .widgetSpaceHolder {
-	display: none;
 	width: 400px;
 	margin-left: auto;
 	margin-right: auto;

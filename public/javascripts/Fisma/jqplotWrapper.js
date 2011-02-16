@@ -1626,7 +1626,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     var menuObj = document.getElementById(menuHolderId);
     
     if (boolVisible == 'toggle') {
-        if (menuObj.style.display != 'table') {
+        if (menuObj.style.display == 'none') {
             boolVisible = true;
         } else {
             boolVisible = false;
@@ -1634,7 +1634,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     }
     
     if (boolVisible == true) {
-        menuObj.style.display = 'table';
+        menuObj.style.display = '';
     } else {
         menuObj.style.display = 'none';
     }
