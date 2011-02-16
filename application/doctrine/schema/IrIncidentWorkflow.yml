@@ -1,5 +1,5 @@
 IrIncidentWorkflow:
-    listeners: [XssListener]
+    listeners: [ReplaceInvalidCharactersListener, XssListener]
 
     columns:
         name: 

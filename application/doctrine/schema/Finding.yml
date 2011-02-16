@@ -1,5 +1,5 @@
 Finding:
-    listeners: [XssListener, IndexListener, NotificationListener]
+    listeners: [ReplaceInvalidCharactersListener, XssListener, IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
