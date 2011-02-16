@@ -171,6 +171,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->findingOrgChart = $findingOrgChart->export();
 
         // Bottom-Bottom chart - Current Security Control Deficiencies
+        $securityFamilies = $this->_getSecurityCtlFamilies('Family: ');
+        array_unshift($securityFamilies, 'Family Summary');
         $controlDeficienciesChart = new Fisma_Chart();
         $controlDeficienciesChart
                 ->setTitle('Current Security Control Deficiencies')
@@ -184,14 +186,40 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'displaySecurityBy',
                     'Display By:',
                     'combo',
-                    'Family',
-                    array(
-                        'Family',
-                        'Family and Control Number'
-                    )
+                    'Family Summary',
+                    $securityFamilies
                 );
 
+
         $this->view->controlDeficienciesChart = $controlDeficienciesChart->export();
+    }
+    
+    /**
+     * Gets a list of all Security Controle Families that have
+     * findings associated with them, and can be seen from the
+     * current user (ACL).
+     *
+     * @return array
+     */
+    private function _getSecurityCtlFamilies($prepend = '')
+    {
+        $families = Doctrine_Query::create()
+            ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
+            ->from('SecurityControl sc')
+            ->innerJoin('sc.Findings f')
+            ->innerJoin('f.ResponsibleOrganization o')
+            ->andWhere('f.status <> ?', 'CLOSED')
+            ->whereIn('o.id', FindingTable::getOrganizationIds())
+            ->groupBy('fam')
+            ->orderBy('fam')
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+        
+        $famArray = array();        
+        foreach ($families as $famResult)
+            $famArray[] = $prepend . $famResult['sc_fam'];
+
+        return $famArray;
     }
 
     /**
