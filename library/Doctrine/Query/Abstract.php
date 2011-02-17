@@ -1493,16 +1493,13 @@ abstract class Doctrine_Query_Abstract
      */
     public function andWhereIn($expr, $params = array(), $not = false)
     {
-        // if there's no params, return (else we'll get a WHERE IN (), invalid SQL)
-        if ( ! count($params)) {
-            return $this;
-        }
+        $whereIn = $this->_processWhereIn($expr, $params, $not);
 
         if ($this->_hasDqlQueryPart('where')) {
             $this->_addDqlQueryPart('where', 'AND', true);
         }
 
-        return $this->_addDqlQueryPart('where', $this->_processWhereIn($expr, $params, $not), true);
+        return $this->_addDqlQueryPart('where', $whereIn, true);
     }
 
 
@@ -1521,16 +1518,13 @@ abstract class Doctrine_Query_Abstract
      */
     public function orWhereIn($expr, $params = array(), $not = false)
     {
-        // if there's no params, return (else we'll get a WHERE IN (), invalid SQL)
-        if ( ! count($params)) {
-            return $this;
-        }
+        $whereIn = $this->_processWhereIn($expr, $params, $not);
 
         if ($this->_hasDqlQueryPart('where')) {
             $this->_addDqlQueryPart('where', 'OR', true);
         }
 
-        return $this->_addDqlQueryPart('where', $this->_processWhereIn($expr, $params, $not), true);
+        return $this->_addDqlQueryPart('where', $whereIn, true);
     }
 
 
@@ -1542,7 +1536,7 @@ abstract class Doctrine_Query_Abstract
         $params = (array) $params;
 
         // if there's no params, return (else we'll get a WHERE IN (), invalid SQL)
-        if ( ! (count($params) > 0)) {
+        if (count($params) == 0) {
             throw new Doctrine_Query_Exception('You must pass at least one parameter when using an IN() condition.');
         }
 
