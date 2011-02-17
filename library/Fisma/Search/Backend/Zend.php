@@ -720,7 +720,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
             
             foreach ($terms as $term) {
-                $zslTermQuery->addTerm($term, true);
+                $zslTermQuery->addTerm($term, null);
             }
         }
 

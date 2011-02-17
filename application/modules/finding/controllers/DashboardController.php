@@ -1111,7 +1111,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             
             // Make URL to the search page with date params
             $basicSearchLink = '/finding/remediation/list/queryType/advanced' . 
-                '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                 '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
             // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
