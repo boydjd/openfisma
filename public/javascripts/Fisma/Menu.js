@@ -23,31 +23,33 @@
             var Dom = YAHOO.util.Dom,
                 Event = YAHOO.util.Event,
                 Panel = YAHOO.widget.Panel,
-                container = document.createElement('form'),
+                form = document.createElement('form'),
                 textField = document.createElement('input'),
                 button = document.createElement('input');
             Dom.setAttribute(textField, "type", "text");
-            Dom.setAttribute(button, "type", "button");
+            Dom.setAttribute(button, "type", "submit");
             Dom.setAttribute(button, "value", "Go");
-            container.innerHTML = "ID: ";
-            container.appendChild(textField);
-            container.appendChild(button);
+            form.innerHTML = "ID: ";
+            form.appendChild(textField);
+            form.appendChild(button);
 
             // Add event listener
             var fn = function(ev, obj) {
+                Event.stopEvent(ev);
                 var url = obj.controller + "/view/id/" + obj.textField.value;
                 window.location = url;
             };
             param.textField = textField;
-            Event.addListener(button, "click", fn, param);
+            Event.addListener(form, "submit", fn, param);
 
             // show the panel
             var panel = new Panel(Dom.generateId(), {modal: true});
             panel.setHeader("Go To " + param.model + "...");
-            panel.setBody(container);
+            panel.setBody(form);
             panel.render(document.body);
             panel.center();
             panel.show();
+            textField.focus();
         }
     };
 })();
