@@ -17,10 +17,13 @@ User:
             extra:
                 logicalName: Password
                 notify: true
+                doNotModify: true
         passwordSalt:
             type: string(10)
             fixed: true
             comment: A randomly generated salt, used to discourage rainbow table attacks against the password database
+            extra:
+                doNotModify: true
         passwordTs: timestamp
         passwordHistory: string
         hashType:
