@@ -1114,10 +1114,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
             // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
-            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/CLOSED';
-            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/EN';
+            $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/CLOSED';
+            $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/EN';
             foreach ($this->_getEvaluationNames() as $thisStatus) {
-                $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/' . $thisStatus;
+                $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/' . $thisStatus;
             }
             
             // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
