@@ -16,8 +16,24 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+/**
+ * ReplaceInvalidCharactersListener 
+ * 
+ * @uses Fisma_Doctrine_Record_Listener
+ * @package Listener
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @license http://www.openfisma.org/content/license GPLv3
+ */
 class ReplaceInvalidCharactersListener extends Fisma_Doctrine_Record_Listener
 {
+    /**
+     * Replace invalid characters with good ones 
+     * 
+     * @param Doctrine_Event $event 
+     * @access public
+     * @return void
+     */
     public function preSave(Doctrine_Event $event) 
     {
         if (!self::$_listenerEnabled) {
@@ -30,6 +46,15 @@ class ReplaceInvalidCharactersListener extends Fisma_Doctrine_Record_Listener
         
         foreach ($modified as $field => $value) {
             $fieldDefinition = $table->getDefinitionOf($field);
+
+            // If the field is set to doNotModify, then do not modify it 
+            if (
+                isset($fieldDefinition['extra']) &&
+                isset($fieldDefinition['extra']['doNotModify']) &&
+                $fieldDefinition['extra']['doNotModify']
+            ) {
+                break;
+            }
 
             if ($fieldDefinition['type'] == 'string') {
                $invoker[$field] = Fisma_String::replaceInvalidChars($value); 
