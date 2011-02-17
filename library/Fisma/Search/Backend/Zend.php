@@ -677,6 +677,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     $doctrineQuery->andWhere("$sqlFieldName LIKE ?", $operands[0]);
                     break;
 
+                case 'textNotExactMatch':
+                    $doctrineQuery->andWhere("$sqlFieldName NOT LIKE ?", $operands[0]);
+                    break;
+
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
                     if (isset($searchableFields[$luceneFieldName]['extraCriteria'][$operator])) {

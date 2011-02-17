@@ -508,6 +508,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $searchTerms[] = "{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
                     break;
 
+                case 'textNotExactMatch':
+                    $searchTerms[] = "-{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
+                    break;
+
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
                     if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
