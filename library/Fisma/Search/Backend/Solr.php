@@ -540,6 +540,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $queryString = implode($searchTerms, ' AND ');
 
+        if (empty($queryString)) {
+            $queryString = "id:[* TO *]";
+        }
+
         $query->setQuery($queryString);
 
         $response = $this->_client->query($query)->getResponse();

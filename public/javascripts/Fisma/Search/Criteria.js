@@ -371,7 +371,7 @@ Fisma.Search.Criteria.prototype = {
             var operand = operands[i];
             
             if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
+                throw "BLANK";
             }
         }
 
