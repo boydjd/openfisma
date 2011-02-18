@@ -1,5 +1,5 @@
 SystemDocument:
-    listeners: [ReplaceInvalidCharactersListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
     
     indexes: 
         uniqueTypePerSystem:

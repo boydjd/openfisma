@@ -1,5 +1,4 @@
 Evaluation:
-    listeners: [ReplaceInvalidCharactersListener]
     columns:
         name: 
             type: string(255)

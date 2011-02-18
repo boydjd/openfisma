@@ -1,5 +1,5 @@
 System:
-    listeners: [ReplaceInvalidCharactersListener, XssListener, IndexListener]
+    listeners: [IndexListener]
     
     columns:    
         type:

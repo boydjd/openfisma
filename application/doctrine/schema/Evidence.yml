@@ -1,5 +1,4 @@
 Evidence:
-    listeners: [ReplaceInvalidCharactersListener]
     columns:
         createdTs: timestamp
         filename:

@@ -1,6 +1,4 @@
 IrCategory:
-    listeners: [ReplaceInvalidCharactersListener, XssListener]
-    
     columns:
         createdTs: 
             type: timestamp

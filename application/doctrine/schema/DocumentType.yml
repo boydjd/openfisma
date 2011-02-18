@@ -1,5 +1,5 @@
 DocumentType:
-    listeners: [ReplaceInvalidCharactersListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         name: 

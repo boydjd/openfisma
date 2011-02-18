@@ -1,5 +1,4 @@
 Notification:
-    listeners: [ReplaceInvalidCharactersListener]
     columns:
         createdTs: timestamp
         eventText:

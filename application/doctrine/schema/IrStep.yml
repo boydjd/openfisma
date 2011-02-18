@@ -1,6 +1,4 @@
 IrStep:
-    listeners: [ReplaceInvalidCharactersListener, XssListener]
-    
     columns:
         cardinality: 
             type: integer
