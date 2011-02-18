@@ -205,13 +205,20 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getSecurityCtlFamilies()
     {
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $rtnChart->export('array');
+            return;
+        }
+
         $families = Doctrine_Query::create()
             ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.ResponsibleOrganization o')
             ->andWhere('f.status <> ?', 'CLOSED')
-            ->whereIn('o.id', FindingTable::getOrganizationIds())
+            ->whereIn('o.id', $visibleOrgs)
             ->groupBy('fam')
             ->orderBy('fam')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
