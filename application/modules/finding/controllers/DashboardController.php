@@ -171,7 +171,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->findingOrgChart = $findingOrgChart->export();
 
         // Bottom-Bottom chart - Current Security Control Deficiencies
-        $securityFamilies = $this->_getSecurityCtlFamilies('Family: ');
+        $securityFamilies = $this->_getSecurityCtlFamilies();
+        foreach ($securityFamilies as &$familyName)
+            $familyName = 'Family: ' . $familyName;
         array_unshift($securityFamilies, 'Family Summary');
         $controlDeficienciesChart = new Fisma_Chart();
         $controlDeficienciesChart
@@ -201,7 +203,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      *
      * @return array
      */
-    private function _getSecurityCtlFamilies($prepend = '')
+    private function _getSecurityCtlFamilies()
     {
         $families = Doctrine_Query::create()
             ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
@@ -217,7 +219,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
         $famArray = array();        
         foreach ($families as $famResult)
-            $famArray[] = $prepend . $famResult['sc_fam'];
+            $famArray[] = $famResult['sc_fam'];
 
         return $famArray;
     }
