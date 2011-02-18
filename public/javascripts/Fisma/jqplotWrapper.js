@@ -1462,7 +1462,7 @@ function removeDecFromPointLabels(chartParamsObj)
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTM) == 0 || isNaN(thisLabelValue)) {
+                            if (parseInt(thisChld.innerHTML) == 0 || isNaN(thisLabelValue)) {
                                 thisChld.innerHTML = '';
                             }
 
