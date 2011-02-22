@@ -208,8 +208,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();
         if (empty($visibleOrgs)) {
-            $this->view->chart = $rtnChart->export('array');
-            return;
+            return array();
         }
 
         $families = Doctrine_Query::create()
