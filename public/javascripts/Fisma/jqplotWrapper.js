@@ -1315,7 +1315,7 @@ function getTableFromChartData(chartParamsObj)
         }
 
         // Show the table generated based on chart data
-        dataTableObj.style.display = 'table';
+        dataTableObj.style.display = '';
         // Hide, erase, and collapse the container of the chart divs
         document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
         document.getElementById(chartParamsObj['uniqueid']).style.width = 0;

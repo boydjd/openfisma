@@ -34,7 +34,6 @@
 
 /* style for the data-table for screen readers */
 .screenReaderTabel {
-    display: none;
     width: 100%;
 }
 
