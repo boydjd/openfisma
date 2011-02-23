@@ -327,8 +327,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     break;
                 case 'high':
                     $rtnChart
+                        ->deleteLayer(2)
                         ->deleteLayer(1)
-                        ->deleteLayer(0)
                         ->setColors(array('#FF0000'));
                     break;                        
                 case 'moderate':
@@ -339,8 +339,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     break;
                 case 'low';
                     $rtnChart
-                        ->deleteLayer(2)
                         ->deleteLayer(1)
+                        ->deleteLayer(0)
                         ->setColors(array('#FFC000'));
                     break;
             }
