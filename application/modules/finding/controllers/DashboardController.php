@@ -170,7 +170,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->findingOrgChart = $findingOrgChart->export();
 
         // Bottom-Bottom chart - Current Security Control Deficiencies
-        $securityFamilies = $this->_getSecurityCtlFamilies();
+        $securityFamilies = $this->_getSecurityControleFamilies();
         foreach ($securityFamilies as &$familyName)
             $familyName = 'Family: ' . $familyName;
         array_unshift($securityFamilies, 'Family Summary');
@@ -201,7 +201,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      *
      * @return array
      */
-    private function _getSecurityCtlFamilies()
+    private function _getSecurityControleFamilies()
     {
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();
@@ -221,11 +221,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
             ->execute();
         
-        $famArray = array();        
+        $familyArray = array();        
         foreach ($families as $famResult)
-            $famArray[] = $famResult['sc_fam'];
+            $familyArray[] = $famResult['sc_fam'];
 
-        return $famArray;
+        return $familyArray;
     }
 
     /**
