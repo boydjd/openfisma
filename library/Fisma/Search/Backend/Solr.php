@@ -569,7 +569,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             }
             $subterms[] = "-$fieldName:$intValue";
         }
-        return implode(' AND ', $subterms);
+        return '(' . implode(' AND ', $subterms) . ')';
     }
 
     /**
