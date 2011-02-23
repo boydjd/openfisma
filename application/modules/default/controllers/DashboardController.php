@@ -200,16 +200,14 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     /**
      * Calculate the finding statistics by status
      *
-     * @return Fisma_Chart
+     * @return void
      */    
     public function chartFindingAction()
     {
-
         $findingType = urldecode($this->getRequest()->getParam('findingType'));
 
         $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setChartType('stackedbar')
+        $thisChart->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
             ->setColors(
                 array(
@@ -229,16 +227,16 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();
         if (empty($visibleOrgs)) {
-            return $thisChart;
+            return;
         }
 
         $q = Doctrine_Query::create()
             ->select('count(f.id), threatlevel, denormalizedstatus')
             ->from('Finding f')
-            ->groupBy('f.denormalizedstatus, f.threatlevel')
-            ->orderBy('f.denormalizedstatus, f.threatlevel')
             ->where('f.status <> "CLOSED"')
             ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
+            ->groupBy('f.denormalizedstatus, f.threatlevel')
+            ->orderBy('f.denormalizedstatus, f.threatlevel')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
 
@@ -256,32 +254,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $nonStackedLinks = array();
         
         // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
-        for ($x = 0; $x < 7; $x++) {
-
-            // Which status are we adding this time? (this will be the column label on the chart)
-            switch ($x) {
-            case 0:
-                $thisStatus = 'NEW';
-                break;
-            case 1:
-                $thisStatus = 'DRAFT';
-                break;
-            case 2:
-                $thisStatus = 'MS ISSO';
-                break;
-            case 3:
-                $thisStatus = 'MS IV&V';
-                break;
-            case 4:
-                $thisStatus = 'EN';
-                break;
-            case 5:
-                $thisStatus = 'EV ISSO';
-                break;
-            case 6:
-                $thisStatus = 'EV IV&V';
-                break;
-            }
+        $statusArray = array('NEW', 'DRAFT', 'MS ISSO', 'MS IV&V', 'EN', 'EV ISSO', 'EV IV&V');
+        foreach ($statusArray as $thisStatus) {
 
             // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
             if (!empty($sortedRslts[$thisStatus]['HIGH'])) {
@@ -327,8 +301,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         switch (strtolower($findingType)) {
             case "totals":
                 // Crunch numbers
-                $thisChart
-                    ->convertFromStackedToRegular()
+                $thisChart->convertFromStackedToRegular()
                     ->setLinks($nonStackedLinks)
                     ->setThreatLegendVisibility(false)
                     ->setColors(
