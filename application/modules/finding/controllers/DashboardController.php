@@ -410,6 +410,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getAllChildrenOfOrg($orgId, $includeParent = true)
     {
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            return array();
+        }
+    
         // get the left and right nodes (lft and rgt) of the target system from the system table
         $q = Doctrine_Query::create();
         $q
