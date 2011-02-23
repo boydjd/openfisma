@@ -171,8 +171,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // Bottom-Bottom chart - Current Security Control Deficiencies
         $securityFamilies = $this->_getSecurityControleFamilies();
-        foreach ($securityFamilies as &$familyName)
+        foreach ($securityFamilies as &$familyName) {
             $familyName = 'Family: ' . $familyName;
+        }
         array_unshift($securityFamilies, 'Family Summary');
         $controlDeficienciesChart = new Fisma_Chart();
         $controlDeficienciesChart
