@@ -228,7 +228,6 @@ Fisma.TableFormat = {
         var status = oRecord.getData('Status');
 
         if (status) {
-            status = Fisma.Util.unescapeEntities(status);
             overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
