@@ -42,7 +42,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('total-type', 'json')
                       ->addActionContext('findingforecast', 'json')
                       ->addActionContext('chartfindnomitstrat', 'json')
-                      ->addActionContext('chart-finding', 'json')
                       ->addActionContext('chartfindingbyorgdetail', 'json')
                       ->initContext();
     }
@@ -95,7 +94,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // Mid-left chart - Findings by Worklow Process
         $chartTotalStatus 
-            = new Fisma_Chart(420, 275, 'chartTotalStatus', '/finding/dashboard/chart-finding/format/json');
+            = new Fisma_Chart(420, 275, 'chartTotalStatus', '/dashboard/chart-finding/format/json');
         $chartTotalStatus
                 ->setTitle('Findings by Workflow Process')
                 ->addWidget(
@@ -191,7 +190,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Family Summary',
                     $securityFamilies
                 );
-
 
         $this->view->controlDeficienciesChart = $controlDeficienciesChart->export();
     }
@@ -513,15 +511,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             return $q->execute();
         }
-    }
-
-    public function chartFindingAction()
-    {
-        $displayBy = urldecode($this->getRequest()->getParam('displayBy'));
-        $rtnChart = $this->_chartfindingstatus();
-
-        // Export as array, the context switch will translate it to a JSON responce
-        $this->view->chart = $rtnChart->export('array');
     }
 
     public function chartoverdueAction()
@@ -854,178 +843,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             return $thisChart;
         }
-    }
-
-    /**
-     * Calculate the finding statistics by status
-     *
-     * @return Fisma_Chart
-     */
-    private function _chartfindingstatus()
-    {
-        $findingType = urldecode($this->getRequest()->getParam('findingType'));
-
-        $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setChartType('stackedbar')
-            ->setThreatLegendVisibility(true)
-            ->setColors(
-                array(
-                    "#FF0000",
-                    "#FF6600",
-                    "#FFC000"
-                )
-            )
-            ->setLayerLabels(
-                array(
-                    'High',
-                    'Moderate',
-                    'Low'
-                )
-            );
-
-        // Dont query if there are no organizations this user can see
-        $visibleOrgs = FindingTable::getOrganizationIds();
-        if (empty($visibleOrgs)) {
-            return $thisChart;
-        }
-
-        $q = Doctrine_Query::create()
-            ->select('count(f.id), threatlevel, denormalizedstatus')
-            ->from('Finding f')
-            ->groupBy('f.denormalizedstatus, f.threatlevel')
-            ->orderBy('f.denormalizedstatus, f.threatlevel')
-            ->where('f.status <> "CLOSED"')
-            ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        $rslts = $q->execute();
-
-        // Sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
-        $sortedRslts = array();
-        foreach ($rslts as $thisRslt) {
-
-            if (empty($sortedRslts[$thisRslt['denormalizedStatus']])) {
-                $sortedRslts[$thisRslt['denormalizedStatus']] = array();
-            }
-
-            $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
-        }
-        
-        $nonStackedLinks = array();
-        
-        // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
-        for ($x = 0; $x < 7; $x++) {
-
-            // Which status are we adding this time? (this will be the column label on the chart)
-            switch ($x) {
-            case 0:
-                $thisStatus = 'NEW';
-                break;
-            case 1:
-                $thisStatus = 'DRAFT';
-                break;
-            case 2:
-                $thisStatus = 'MS ISSO';
-                break;
-            case 3:
-                $thisStatus = 'MS IV&V';
-                break;
-            case 4:
-                $thisStatus = 'EN';
-                break;
-            case 5:
-                $thisStatus = 'EV ISSO';
-                break;
-            case 6:
-                $thisStatus = 'EV IV&V';
-                break;
-            }
-
-            // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
-            if (!empty($sortedRslts[$thisStatus]['HIGH'])) {
-                $highCount = $sortedRslts[$thisStatus]['HIGH'];
-            } else {
-                $highCount = 0;
-            }
-            
-            if (!empty($sortedRslts[$thisStatus]['MODERATE'])) {
-                $modCount = $sortedRslts[$thisStatus]['MODERATE'];
-            } else {
-                $modCount = 0;
-            }
-            
-            if (!empty($sortedRslts[$thisStatus]['LOW'])) {
-                $lowCount = $sortedRslts[$thisStatus]['LOW'];
-            } else {
-                $lowCount = 0;
-            }
-
-            // Prepare for a stacked-bar chart (these are the counts on each stack within the column)
-            $addColumnCounts = array($highCount, $modCount, $lowCount);
-
-            // Make each area of the chart link
-            $basicLink = '/finding/remediation/list/queryType/advanced' .
-                '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
-            $nonStackedLinks[] = $basicLink;
-            $stackedLinks = array(
-                $basicLink . '/threatLevel/enumIs/HIGH',
-                $basicLink . '/threatLevel/enumIs/MODERATE',
-                $basicLink . '/threatLevel/enumIs/LOW'
-            );
-            
-            // Create this column as a stacked-bar chart for now (filtration later in function)
-            $thisChart->addColumn(
-                $thisStatus,
-                $addColumnCounts,
-                $stackedLinks
-            );
-        }
-
-        // Show, hide and filter chart data as requested
-        switch (strtolower($findingType)) {
-            case "totals":
-                // Crunch numbers
-                $thisChart
-                    ->convertFromStackedToRegular()
-                    ->setLinks($nonStackedLinks)
-                    ->setThreatLegendVisibility(false)
-                    ->setColors(
-                        array(
-                            '#CECECE',
-                            '#67F967',
-                            '#FFCACA',
-                            '#FF2424',
-                            '#FF9E3D',
-                            '#CACAFF',
-                            '#2424FF'
-                        )
-                    );
-                break;
-            case "high, moderate, and low":
-                // $thisChart is already in this form
-                break;
-            case "high":
-                // Remove the Low and Moderate columns/layers
-                $thisChart->deleteLayer(2);
-                $thisChart->deleteLayer(1);
-                $thisChart->setColors(array('#FF0000'));
-                break;
-            case "moderate":
-                // Remove the Low and High columns/layers
-                $thisChart->deleteLayer(2);
-                $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FF6600'));
-                break;
-            case "low":
-                // Remove the Moderate and High columns/layers
-                $thisChart->deleteLayer(1);
-                $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FFC000'));
-                break;
-        }
-
-        return $thisChart;
-
     }
 
     /**
