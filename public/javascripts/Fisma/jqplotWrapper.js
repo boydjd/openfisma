@@ -23,6 +23,41 @@ var chartsOnDOM = {};
 var isIE = (window.ActiveXObject) ? true : false;
 
 /**
+ * When an external source is needed, this function should handel the returned JSON request
+ * The chartParamsObj object that went into createJQChart(obj) would be the chartParamsObj here, and
+ * the "value" parameter should be the returned JSON request.
+ * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
+ * returns the return value of createJQChart(), or false on external source failure.
+ *
+ * @return integer
+ */
+function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
+{
+    // If anything (json) was returned at all...
+    if (value) {
+        
+        // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
+        if (value.results[0]) {
+        
+            chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value);
+            
+        } else {
+            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+        }
+
+        if (typeof chartParamsObj.chartData === 'undefined') {
+            throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
+        }
+
+        // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
+        return createJQChart(chartParamsObj);
+        
+    } else {
+        throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+    }
+}
+
+/**
  * Creates a chart within a div by the name of chartParamsObj.uniqueid.
  * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
  * This function may return before the actual creation of a chart if there is an external source.
@@ -132,6 +167,7 @@ function createJQChart(chartParamsObj)
     chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
     
     // call the correct function based on chartType, or state there will be no chart created
+    var rtn = CHART_CREATE_FAILURE;
     if (!chartIsEmpty(chartParamsObj)) {
     
         switch(chartParamsObj.chartType)
@@ -139,7 +175,7 @@ function createJQChart(chartParamsObj)
             case 'stackedbar':
                 chartParamsObj.varyBarColor = false;
                             if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
-                var rtn = createChartStackedBar(chartParamsObj);
+                rtn = createChartStackedBar(chartParamsObj);
                 break;
             case 'bar':
 
@@ -160,22 +196,21 @@ function createJQChart(chartParamsObj)
                 }
 
                 chartParamsObj.stackSeries = false;
-                var rtn = createChartStackedBar(chartParamsObj);
+                rtn = createChartStackedBar(chartParamsObj);
                 break;
 
             case 'line':
-                var rtn = createChartStackedLine(chartParamsObj);
+                rtn = createChartStackedLine(chartParamsObj);
                 break;
             case 'stackedline':
-                var rtn = createChartStackedLine(chartParamsObj);
+                rtn = createChartStackedLine(chartParamsObj);
                 break;
             case 'pie':
                 chartParamsObj.links = [chartParamsObj.links];
-                var rtn = createChartPie(chartParamsObj);
+                rtn = createChartPie(chartParamsObj);
                 break;
             default:
                 throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
-                return CHART_CREATE_FAILURE;
         }
     }
 
@@ -190,47 +225,6 @@ function createJQChart(chartParamsObj)
     getTableFromChartData(chartParamsObj);
 
     return rtn;
-}
-
-
-/**
- * When an external source is needed, this function should handel the returned JSON request
- * The chartParamsObj object that went into createJQChart(obj) would be the chartParamsObj here, and
- * the "value" parameter should be the returned JSON request.
- * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
- * returns the return value of createJQChart(), or false on external source failure.
- *
- * @return integer
- */
-function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
-{
-    // If anything (json) was returned at all...
-    if (value) {
-        
-        // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
-        if (value['results'][0]) {
-        
-            chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value)
-            
-        } else {
-            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
-            return CHART_CREATE_FAILURE;
-        }
-
-        if (typeof chartParamsObj.chartData === 'undefined') {
-            throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            return CHART_CREATE_FAILURE;
-        }
-
-        // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
-        return createJQChart(chartParamsObj);
-        
-    } else {
-        throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
-        return CHART_CREATE_FAILURE;
-    }
-    
-    return CHART_CREATE_FAILURE;
 }
 
 /**
@@ -248,26 +242,25 @@ function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
     var joinedParam = {};
 
     // Is there an inheritance mode? 
-    if (ExternResponce['results'][0]['inheritCtl']) {
-        if (ExternResponce['results'][0]['inheritCtl'] === 'minimal') {
+    if (ExternResponce.results[0]['inheritCtl']) {
+        if (ExternResponce.results[0]['inheritCtl'] === 'minimal') {
             // Inheritance mode set to minimal, retain certain attribs and merge
-            var joinedParam = ExternResponce['results'][0];
-            joinedParam['width'] = chartParamsObj.width;
-            joinedParam['height'] = chartParamsObj.height;
-            joinedParam['uniqueid'] = chartParamsObj.uniqueid;
-            joinedParam['externalSource'] = chartParamsObj.externalSource;
-            joinedParam['oldExternalSource'] = chartParamsObj.oldExternalSource;
-            joinedParam['widgets'] = chartParamsObj.widgets;
-        } else if (ExternResponce['results'][0]['inheritCtl'] === 'none') {
+            joinedParam = ExternResponce.results[0];
+            joinedParam.width = chartParamsObj.width;
+            joinedParam.height = chartParamsObj.height;
+            joinedParam.uniqueid = chartParamsObj.uniqueid;
+            joinedParam.externalSource = chartParamsObj.externalSource;
+            joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
+            joinedParam.widgets = chartParamsObj.widgets;
+        } else if (ExternResponce.results[0]['inheritCtl'] === 'none') {
             // Inheritance mode set to none, replace the joinedParam object
-            var joinedParam = ExternResponce['results'][0];
+            joinedParam = ExternResponce.results[0];
         } else {
             throw 'Error - Unknown chart inheritance mode';
-            return;
         }
     } else {
         // No inheritance mode, by default, merge everything
-        var joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce['results'][0],true);
+        joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce.results[0],true);
     }
 
     return joinedParam;
@@ -284,11 +277,11 @@ function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
  */
 function createChartPie(chartParamsObj)
 {
+    var x = 0;
+    var dataSet = [];
     usedLabelsPie = chartParamsObj.chartDataText;
 
-    var dataSet = [];
-
-    for (var x = 0; x < chartParamsObj.chartData.length; x++) {
+    for (x = 0; x < chartParamsObj.chartData.length; x++) {
         chartParamsObj.chartDataText[x] += ' (' + chartParamsObj.chartData[x]  + ')';
         dataSet[dataSet.length] = [chartParamsObj.chartDataText[x], chartParamsObj.chartData[x]];
     }
