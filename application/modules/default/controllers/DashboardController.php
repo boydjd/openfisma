@@ -227,6 +227,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();
         if (empty($visibleOrgs)) {
+            // Export as array, the context switch will translate it to a JSON responce
+            $this->view->chart = $thisChart->export('array');
             return;
         }
 
