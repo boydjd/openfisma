@@ -225,17 +225,11 @@ Fisma.Search.Panel.prototype = {
         var query = new Array();
         
         for (var index in this.criteria) {
-            try {
-                var criterion = this.criteria[index];
-                var queryPart = criterion.getQuery();
-                query.push(queryPart);
-            } catch (e) {
-                if (e !== "BLANK") {
-                    // rethrow the exception
-                    throw e;
-                }
-                // otherwise, quietly ignore blank field.
+            var criterion = this.criteria[index];
+            if (criterion.hasBlankOperands()) {
+                continue;
             }
+            query.push(criterion.getQuery());
         }
         
         return query;
