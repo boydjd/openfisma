@@ -644,7 +644,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function checkAccountAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'User');
-        
+
+        $accountInfo = array();
+
         $data = LdapConfig::getConfig();
         $account = $this->_request->getParam('account');
         $msg = '';
