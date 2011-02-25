@@ -242,8 +242,8 @@ function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
     var joinedParam = {};
 
     // Is there an inheritance mode? 
-    if (ExternResponce.results[0]['inheritCtl']) {
-        if (ExternResponce.results[0]['inheritCtl'] === 'minimal') {
+    if (ExternResponce.results[0].inheritCtl) {
+        if (ExternResponce.results[0].inheritCtl === 'minimal') {
             // Inheritance mode set to minimal, retain certain attribs and merge
             joinedParam = ExternResponce.results[0];
             joinedParam.width = chartParamsObj.width;
@@ -252,7 +252,7 @@ function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
             joinedParam.externalSource = chartParamsObj.externalSource;
             joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
             joinedParam.widgets = chartParamsObj.widgets;
-        } else if (ExternResponce.results[0]['inheritCtl'] === 'none') {
+        } else if (ExternResponce.results[0].inheritCtl === 'none') {
             // Inheritance mode set to none, replace the joinedParam object
             joinedParam = ExternResponce.results[0];
         } else {
@@ -328,7 +328,7 @@ function createChartPie(chartParamsObj)
                 numberRows: 1
             }
         }
-    }
+    };
     
     jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
 
@@ -360,16 +360,16 @@ function createChartPie(chartParamsObj)
  */
 function createChartStackedBar(chartParamsObj)
 {
-    var dataSet = [];
+    var x = 0; var y = 0;
     var thisSum = 0;
     var maxSumOfAll = 0;
     var chartCeilingValue = 0;
 
-    for (var x = 0; x < chartParamsObj.chartDataText.length; x++) {
+    for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
     
         thisSum = 0;
         
-        for (var y = 0; y < chartParamsObj.chartData.length; y++) {
+        for (y = 0; y < chartParamsObj.chartData.length; y++) {
             thisSum += chartParamsObj.chartData[y][x];
         }
         
@@ -394,13 +394,13 @@ function createChartStackedBar(chartParamsObj)
     // Force Y-axis row labels to be divisible by 5
     yAxisTicks = [];
     yAxisTicks[0] = 0;
-    yAxisTicks[1] = (chartCeilingValue/5) * 1;
+    yAxisTicks[1] = (chartCeilingValue/5);
     yAxisTicks[2] = (chartCeilingValue/5) * 2;
     yAxisTicks[3] = (chartCeilingValue/5) * 3;
     yAxisTicks[4] = (chartCeilingValue/5) * 4;
     yAxisTicks[5] = (chartCeilingValue/5) * 5;
     
-    $.jqplot.config.enablePlugins = true
+    $.jqplot.config.enablePlugins = true;
 
     var jPlotParamObj = {
         title: chartParamsObj.title,
@@ -518,14 +518,13 @@ function createChartStackedBar(chartParamsObj)
  */
 function createChartStackedLine(chartParamsObj)
 {
-    var dataSet = [];
+    var x = 0; var y = 0;
     var thisSum = 0;
 
-    for (var x = 0; x < chartParamsObj.chartDataText.length; x++) {
-    
+    for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
         thisSum = 0;
         
-        for (var y = 0; y < ['chartData'].length; y++) {
+        for (y = 0; y < ['chartData'].length; y++) {
             thisSum += ['chartData'][y][x];
         }
         
@@ -580,7 +579,9 @@ function createChartThreatLegend(chartParamsObj)
             if (chartParamsObj.threatLegendWidth) {
                 threatLegendWidth = chartParamsObj.threatLegendWidth;
             }
-
+            
+            var cell;
+            
             // Tabel to hold all colored boxes and labels
             var threatTable = document.createElement("table");
             threatTable.style.fontSize = '12px';
@@ -589,7 +590,7 @@ function createChartThreatLegend(chartParamsObj)
             var tblBody = document.createElement("tbody");
             var row = document.createElement("tr");
             
-            var cell = document.createElement("td");
+            cell = document.createElement("td");
             cell.style.textAlign = 'center';
             cell.style.fontWeight = 'bold';
             cell.width = '40%';
@@ -598,19 +599,19 @@ function createChartThreatLegend(chartParamsObj)
             row.appendChild(cell);
 
             // Red block and "High"
-            var cell = document.createElement("td");
+            cell = document.createElement("td");
             cell.width = '20%';
             cell.appendChild(createThreatLegendSingleColor('FF0000', 'High'));
             row.appendChild(cell);
             
             // Orange block and "Moderate"
-            var cell = document.createElement("td");
+            cell = document.createElement("td");
             cell.width = '20%';
             cell.appendChild(createThreatLegendSingleColor('FF6600', 'Moderate'));
             row.appendChild(cell);
             
             // Yellow block and "Low"
-            var cell = document.createElement("td");
+            cell = document.createElement("td");
             cell.width = '20%';
             cell.appendChild(createThreatLegendSingleColor('FFC000', 'Low'));
             row.appendChild(cell);
@@ -637,22 +638,24 @@ function createThreatLegendSingleColor(blockColor, textLabel) {
     var colorBody = document.createElement("tbody");
     var colorRow = document.createElement("tr");
     
+    var colorCell;
+    
     // Create the colored box
-    var colorCell = document.createElement("td");
+    colorCell = document.createElement("td");
     colorCell.style.backgroundColor= '#' + blockColor;
     colorCell.width = '15px';
     colorRow.appendChild(colorCell);
     
     // Forced space between colored box and label
-    var colorCell = document.createElement("td");
+    colorCell = document.createElement("td");
     colorCell.width = '3px';
     colorRow.appendChild(colorCell);
     
     // Apply label
-    var colorCell = document.createElement("td");
+    colorCell = document.createElement("td");
     colorCell.style.fontSize = '12px';
-    var textLabel = document.createTextNode('   ' + textLabel);
-    colorCell.appendChild(textLabel);
+    var textLabelObj = document.createTextNode('   ' + textLabel);
+    colorCell.appendChild(textLabelObj);
     colorRow.appendChild(colorCell);
     
     colorBody.appendChild(colorRow);
@@ -664,15 +667,15 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
 {
     
     var theLink = false;
-    if (paramObj['links']) {
-        if (typeof paramObj['links'] === 'string') {
-            theLink = paramObj['links'];
+    if (paramObj.links) {
+        if (typeof paramObj.links === 'string') {
+            theLink = paramObj.links;
         } else {
-            if (paramObj['links'][seriesIndex]) {
-                if (typeof paramObj['links'][seriesIndex] === "object") {
-                    theLink = paramObj['links'][seriesIndex][pointIndex];
+            if (paramObj.links[seriesIndex]) {
+                if (typeof paramObj.links[seriesIndex] === "object") {
+                    theLink = paramObj.links[seriesIndex][pointIndex];
                 } else {
-                    theLink = paramObj['links'][seriesIndex];
+                    theLink = paramObj.links[seriesIndex];
                 }
             }
         }
@@ -683,10 +686,10 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
     
     // Does the link contain a variable?
     if (theLink !== false) {
-        theLink = String(theLink).replace('#ColumnLabel#', paramObj['chartDataText'][pointIndex]);
+        theLink = String(theLink).replace('#ColumnLabel#', paramObj.chartDataText[pointIndex]);
     }
     
-    if (paramObj['linksdebug'] === true) {
+    if (paramObj.linksdebug === true) {
         var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
         msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
         if (theLink !== false) { msg += "The link with this element is " + theLink; }
@@ -712,11 +715,12 @@ function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
  */
 function forceIntegerArray(inptArray)
 {
-    for (var x = 0; x < inptArray.length; x++) {
+    var x = 0;
+    for (x = 0; x < inptArray.length; x++) {
         if (typeof inptArray[x] === 'object') {
             inptArray[x] = forceIntegerArray(inptArray[x]);
         } else {
-            inptArray[x] = parseInt(inptArray[x]);    // make sure this is an int, and not a string of a number
+            inptArray[x] = parseInt(inptArray[x], 10);    // make sure this is an int, and not a string of a number
         }
     }
 
@@ -734,7 +738,8 @@ function forceIntegerArray(inptArray)
  */
 function applyChartBorders(chartParamsObj)
 {
-
+    var x = 0;
+    
     // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
     if (typeof chartParamsObj.borders === 'undefined') {
         if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
@@ -750,7 +755,7 @@ function applyChartBorders(chartParamsObj)
     var targDiv = document.getElementById(chartParamsObj.uniqueid);
     var children = targDiv.childNodes;
     
-    for (var x = children.length - 1; x > 0; x--) {
+    for (x = children.length - 1; x > 0; x--) {
         // search for a canvs
         if (typeof children[x].nodeName !== 'undefined') {
             
@@ -764,7 +769,7 @@ function applyChartBorders(chartParamsObj)
                 var h = children[x].height;
                 var w = children[x].width;
 
-                context.strokeStyle = '#777777'
+                context.strokeStyle = '#777777';
                 context.lineWidth = 3;
                 context.beginPath();
 
@@ -813,8 +818,8 @@ function applyChartBackground(chartParamsObj)
         if (chartParamsObj.nobackground === true) { return; }
     }
     if (chartParamsObj.background) {
-        if (chartParamsObj.background['nobackground']) {
-            if (chartParamsObj.background['nobackground'] === true) {
+        if (chartParamsObj.background.nobackground) {
+            if (chartParamsObj.background.nobackground === true) {
                 return;
             }
         }
@@ -823,26 +828,28 @@ function applyChartBackground(chartParamsObj)
     // What is the HTML we should inject?
     var backURL = '/images/logoShark.png'; // default location
     if (chartParamsObj.background) {
-        if (chartParamsObj.background['URL']) {
-            backURL = chartParamsObj.background['URL'];
+        if (chartParamsObj.background.URL) {
+            backURL = chartParamsObj.background.URL;
         }
     }
     var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
 
     // But wait, is there an override issued for the HTML of the background to inject?
     if (chartParamsObj.background) {
-        if (chartParamsObj.background['overrideHTML']) {
-            backURL = chartParamsObj.background['overrideHTML'];
+        if (chartParamsObj.background.overrideHTML) {
+            backURL = chartParamsObj.background.overrideHTML;
         }
     }
 
     // Where do we inject the background in the DOM? (different for differnt chart rederers)
+    var cpy;
+    var insertBeforeChild;
     if (chartParamsObj.chartType === 'pie') {
-        var cpy = targDiv.childNodes[3];
-        var insertBeforeChild = targDiv.childNodes[4];
+        cpy = targDiv.childNodes[3];
+        insertBeforeChild = targDiv.childNodes[4];
     } else {    
-        var cpy = targDiv.childNodes[6];
-        var insertBeforeChild = targDiv.childNodes[5];
+        cpy = targDiv.childNodes[6];
+        insertBeforeChild = targDiv.childNodes[5];
     }
 
     var cpyStyl = cpy.style;
@@ -864,7 +871,9 @@ function applyChartBackground(chartParamsObj)
  */
 function applyChartWidgets(chartParamsObj)
 {
-
+    var x = 0;
+    var y = 0;
+    
     var wigSpace = document.getElementById(chartParamsObj.uniqueid + 'WidgetSpace');
 
     // Are there widgets for this chart?
@@ -880,27 +889,27 @@ function applyChartWidgets(chartParamsObj)
 
         var addHTML = '';
 
-        for (var x = 0; x < chartParamsObj.widgets.length; x++) {
+        for (x = 0; x < chartParamsObj.widgets.length; x++) {
 
             var thisWidget = chartParamsObj.widgets[x];
             
             // create a widget id if one is not explicitly given
-            if (!thisWidget['uniqueid']) {
-                thisWidget['uniqueid'] = chartParamsObj.uniqueid + '_widget' + x;
-                chartParamsObj.widgets[x]['uniqueid'] = thisWidget['uniqueid'];
+            if (!thisWidget.uniqueid) {
+                thisWidget.uniqueid = chartParamsObj.uniqueid + '_widget' + x;
+                chartParamsObj.widgets[x].uniqueid = thisWidget.uniqueid;
             }
 
             // print the label text to be displayed to the left of the widget if one is given
-            addHTML += '<tr><td nowrap align=left>' + thisWidget['label'] + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
+            addHTML += '<tr><td nowrap align=left>' + thisWidget.label + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
 
-            switch(thisWidget['type']) {
+            switch(thisWidget.type) {
                 case 'combo':
 
-                    addHTML += '<select id="' + thisWidget['uniqueid'] + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
+                    addHTML += '<select id="' + thisWidget.uniqueid + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
                                         // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
 
-                    for (var y = 0; y < thisWidget['options'].length; y++) {
-                        addHTML += '<option value="' + thisWidget['options'][y] + '">' + thisWidget['options'][y] + '</option><br/>';
+                    for (y = 0; y < thisWidget.options.length; y++) {
+                        addHTML += '<option value="' + thisWidget.options[y] + '">' + thisWidget.options[y] + '</option><br/>';
                     }
                     
                     addHTML += '</select>';
@@ -909,13 +918,12 @@ function applyChartWidgets(chartParamsObj)
 
                 case 'text':
     
-                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget['uniqueid'] + '" />';
+                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget.uniqueid + '" />';
                                         // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
                     break;
 
                 default:
-                    throw 'Error - Widget ' + x + "'s type (" + thisWidget['type'] + ') is not a known widget type';
-                    return false;
+                    throw 'Error - Widget ' + x + "'s type (" + thisWidget.type + ') is not a known widget type';
             }
 
             
@@ -941,21 +949,22 @@ function applyChartWidgets(chartParamsObj)
  */
 function applyChartWidgetSettings(chartParamsObj)
 {
-
+    var x = 0;
+    
     if (chartParamsObj.widgets) {
 
-        for (var x = 0; x < chartParamsObj.widgets.length; x++) {
+        for (x = 0; x < chartParamsObj.widgets.length; x++) {
 
             var thisWidget = chartParamsObj.widgets[x];
             
             // load the value for widgets
-            var thisWigInDOM = document.getElementById(thisWidget['uniqueid']);
-            if (thisWidget['forcevalue']) {
+            var thisWigInDOM = document.getElementById(thisWidget.uniqueid);
+            if (thisWidget.forcevalue) {
                 // this widget value is forced to a certain value upon every load/reload
-                thisWigInDOM.value = thisWidget['forcevalue'];
-                thisWigInDOM.text = thisWidget['forcevalue'];
+                thisWigInDOM.value = thisWidget.forcevalue;
+                thisWigInDOM.text = thisWidget.forcevalue;
             } else {
-                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget['uniqueid']);
+                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
                 if (thisWigCookieValue !== null) {
                     // the value has been coosen in the past and is stored as a cookie
                     thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
@@ -963,9 +972,9 @@ function applyChartWidgetSettings(chartParamsObj)
                     thisWigInDOM.text = thisWigCookieValue;
                 } else {
                     // no saved value/cookie. Is there a default given in the chartParamsObj object
-                    if (thisWidget['defaultvalue']) {
-                        thisWigInDOM.value = thisWidget['defaultvalue'];
-                        thisWigInDOM.text = thisWidget['defaultvalue'];
+                    if (thisWidget.defaultvalue) {
+                        thisWigInDOM.value = thisWidget.defaultvalue;
+                        thisWigInDOM.text = thisWidget.defaultvalue;
                     }
                 }
             }
@@ -987,14 +996,15 @@ function buildExternalSourceParams(chartParamsObj)
 
     // build arguments to send to the remote data source
 
+    var x = 0;
     var thisWidgetValue = '';
     chartParamsObj.externalSourceParams = '';
 
     if (chartParamsObj.widgets) {
-        for (var x = 0; x < chartParamsObj.widgets.length; x++) {
+        for (x = 0; x < chartParamsObj.widgets.length; x++) {
 
             var thisWidget = chartParamsObj.widgets[x];
-            var thisWidgetName = thisWidget['uniqueid'];
+            var thisWidgetName = thisWidget.uniqueid;
             var thisWidgetOnDOM = document.getElementById(thisWidgetName);
 
             // is this widget actully on the DOM? Or should we load the cookie?         
@@ -1009,13 +1019,13 @@ function buildExternalSourceParams(chartParamsObj)
                     thisWidgetValue = thisWigCookieValue;
                 } else {
                     // there is no cookie, is there a default value?
-                    if (thisWidget['defaultvalue']) {
-                        thisWidgetValue = thisWidget['defaultvalue'];
+                    if (thisWidget.defaultvalue) {
+                        thisWidgetValue = thisWidget.defaultvalue;
                     }
                 }
             }
 
-            chartParamsObj.externalSourceParams += '/' + thisWidgetName + '/' + thisWidgetValue 
+            chartParamsObj.externalSourceParams += '/' + thisWidgetName + '/' + thisWidgetValue;
         }
     }
 
@@ -1033,11 +1043,12 @@ function buildExternalSourceParams(chartParamsObj)
  */
 function widgetEvent(chartParamsObj)
 {
-
+    var x = 0;
+    
     // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
     if (chartParamsObj.widgets) {
-        for (var x = 0; x < chartParamsObj.widgets.length; x++) {
-            var thisWidgetName = chartParamsObj.widgets[x]['uniqueid'];
+        for (x = 0; x < chartParamsObj.widgets.length; x++) {
+            var thisWidgetName = chartParamsObj.widgets[x].uniqueid;
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
             YAHOO.util.Cookie.set(chartParamsObj.uniqueid + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
         }
@@ -1077,8 +1088,9 @@ function fadeIn(eid, TimeToFade)
 {
 
     var element = document.getElementById(eid);
-    if (element === null) return;
-    
+    if (element === null) {
+        return;
+    }
     
     var fadingEnabled = getGlobalSetting('fadingEnabled');
     if (fadingEnabled === 'false') {
@@ -1111,7 +1123,7 @@ function fadeOut(eid, TimeToFade)
 {
 
     var element = document.getElementById(eid);
-    if (element === null) return;
+    if (element === null) { return; }
 
     var fadingEnabled = getGlobalSetting('fadingEnabled');
     if (fadingEnabled === 'false') {
@@ -1144,7 +1156,7 @@ function fade(eid, TimeToFade)
 {
 
     var element = document.getElementById(eid);
-    if (element === null) return;
+    if (element === null) { return; }
 
 //  element.style = '';
 
@@ -1196,7 +1208,9 @@ function animateFade(lastTick, eid, TimeToFade)
 
     element.FadeTimeLeft -= elapsedTicks;
     var newOpVal = element.FadeTimeLeft/TimeToFade;
-    if(element.FadeState === 1) newOpVal = 1 - newOpVal;
+    if(element.FadeState === 1) {
+        newOpVal = 1 - newOpVal;
+    }
 
     element.style.opacity = newOpVal;
     element.style.filter = 'alpha(opacity = "' + (newOpVal*100) + '")';
@@ -1221,6 +1235,7 @@ function setChartWidthAttribs(chartParamsObj)
 {
 
     var makeScrollable = false;
+    var minSpaceRequired;
 
     // Determin if we need to make this chart scrollable...
     // Do we really have the chart data to plot?
@@ -1229,14 +1244,15 @@ function setChartWidthAttribs(chartParamsObj)
         if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
 
             // How many bars does it have?
+            var barCount;
             if (chartParamsObj.chartType === 'stackedbar') {
-                var barCount = chartParamsObj.chartData[0].length;
+                barCount = chartParamsObj.chartData[0].length;
             } else if (chartParamsObj.chartType === 'bar') {
-                var barCount = chartParamsObj.chartData.length;
+                barCount = chartParamsObj.chartData.length;
             }
 
             // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
-            var minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
+            minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
 
             // Do we not have enough space for a non-scrolling chart?
             if (chartParamsObj.width < minSpaceRequired) {
@@ -1324,12 +1340,17 @@ function getTableFromChartPieChart(chartParamsObj, dataTableObj)
 {
     var tbl     = document.createElement("table");
     var tblBody = document.createElement("tbody");
-
+    
+    var x = 0;
+    var cell;
+    var cellText;
+    var row;
+    
     // row of slice-labels
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj.chartDataText.length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+    row = document.createElement("tr");
+    for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+        cell = document.createElement("th");
+        cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
         cell.setAttribute("style", "font-style: bold;");
         cell.appendChild(cellText);
         row.appendChild(cell);
@@ -1337,10 +1358,10 @@ function getTableFromChartPieChart(chartParamsObj, dataTableObj)
     tblBody.appendChild(row);
 
     // row of data
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj.chartData.length; x++) {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(chartParamsObj.chartData[x]);
+    row = document.createElement("tr");
+    for (x = 0; x < chartParamsObj.chartData.length; x++) {
+        cell = document.createElement("td");
+        cellText = document.createTextNode(chartParamsObj.chartData[x]);
         cell.appendChild(cellText);
         row.appendChild(cell);
     }
@@ -1355,37 +1376,41 @@ function getTableFromChartPieChart(chartParamsObj, dataTableObj)
 
 function getTableFromBarChart(chartParamsObj, dataTableObj)
 {
+    var x = 0;
+    var y = 0;
+    var cell;
+    var cellText;
+    
     var tbl     = document.createElement("table");
     var tblBody = document.createElement("tbody");
     var row = document.createElement("tr");
     
     // add a column for layer names if this is a stacked chart
     if (typeof chartParamsObj.chartLayerText !== 'undefined') {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(" ");
+        cell = document.createElement("td");
+        cellText = document.createTextNode(" ");
         cell.appendChild(cellText);
         row.appendChild(cell);
     }
     
-    for (var x = 0; x < chartParamsObj.chartDataText.length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+    for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+        cell = document.createElement("th");
+        cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
         cell.setAttribute("style", "font-style: bold;");
         cell.appendChild(cellText);
         row.appendChild(cell);
     }
     tblBody.appendChild(row);
     
-
-    for (var x = 0; x < chartParamsObj.chartData.length; x++) {
+    for (x = 0; x < chartParamsObj.chartData.length; x++) {
 
         var thisEle = chartParamsObj.chartData[x];
-        var row = document.createElement("tr");
+        row = document.createElement("tr");
         
         // each layer label
         if (typeof chartParamsObj.chartLayerText !== 'undefined') {
-            var cell = document.createElement("th");
-            var cellText = document.createTextNode(chartParamsObj.chartLayerText[x]);
+            cell = document.createElement("th");
+            cellText = document.createTextNode(chartParamsObj.chartLayerText[x]);
             cell.setAttribute("style", "font-style: bold;");
             cell.appendChild(cellText);
             row.appendChild(cell);
@@ -1393,9 +1418,9 @@ function getTableFromBarChart(chartParamsObj, dataTableObj)
         
         if (typeof(thisEle) === 'object') {
 
-            for (var y = 0; y < thisEle.length; y++) {
-                var cell = document.createElement("td");
-                var cellText = document.createTextNode(thisEle[y]);
+            for (y = 0; y < thisEle.length; y++) {
+                cell = document.createElement("td");
+                cellText = document.createTextNode(thisEle[y]);
                 cell.setAttribute("style", "font-style: bold;");
                 cell.appendChild(cellText);
                 row.appendChild(cell);
@@ -1403,8 +1428,8 @@ function getTableFromBarChart(chartParamsObj, dataTableObj)
             
         } else {
 
-            var cell = document.createElement("td");
-            var cellText = document.createTextNode(thisEle);
+            cell = document.createElement("td");
+            cellText = document.createTextNode(thisEle);
             cell.appendChild(cellText);
             row.appendChild(cell);
         }
@@ -1436,7 +1461,8 @@ function removeDecFromPointLabels(chartParamsObj)
         var outlineStyle = '';
         var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
     
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
+        var x = 0;
+        for (x = 0; x < chartOnDOM.childNodes.length; x++) {
                 
                 var thisChld = chartOnDOM.childNodes[x];
                 
@@ -1449,12 +1475,12 @@ function removeDecFromPointLabels(chartParamsObj)
                     if (thisChld.classList[0] === 'jqplot-point-label') {
 
                             // convert this from a string to a number to a string again (removes decimal if its needless)
-                            thisLabelValue = parseInt(thisChld.innerHTML);
+                            thisLabelValue = parseInt(thisChld.innerHTML, 10);
                             thisChld.innerHTML = thisLabelValue;
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTML) === 0 || isNaN(thisLabelValue)) {
+                            if (parseInt(thisChld.innerHTML, 10) === 0 || isNaN(thisLabelValue)) {
                                 thisChld.innerHTML = '';
                             }
 
@@ -1477,8 +1503,8 @@ function removeDecFromPointLabels(chartParamsObj)
                             }
 
                             // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''));       // remove "px" from string, and conver to number
-                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''));       // remove "px" from string, and conver to number
+                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);       // remove "px" from string, and conver to number
                             thisLeftNbrValue += chartParamsObj.pointLabelAdjustX;
                             thisTopNbrValue += chartParamsObj.pointLabelAdjustY;
                             if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
@@ -1509,9 +1535,13 @@ function removeOverlappingPointLabels(chartParamsObj)
         var pointLabels_info = {};
         var pointLabels_indexes = [];
         var thisLabelValue = 0;
+        var thisIndex;
+        
+        var x = 0;
+        var y = 0;
         var d = 0;
 
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
+        for (x = 0; x < chartOnDOM.childNodes.length; x++) {
 
             var thisChld = chartOnDOM.childNodes[x];
             
@@ -1531,11 +1561,12 @@ function removeOverlappingPointLabels(chartParamsObj)
                 if (chldIsRemoved === false) {
                     // index this point labels position
 
-                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', '')); // remove "px" from string, and conver to number
-                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', '')); // remove "px" from string, and conver to number
+                    // remove "px" from string, and conver to number
+                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);
+                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);
                     thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
 
-                    var thisIndex = 'left_' + thisLeftNbrValue;
+                    thisIndex = 'left_' + thisLeftNbrValue;
                     if (typeof pointLabels_info[thisIndex] === 'undefined') {
                         pointLabels_info[thisIndex] = [];
                         pointLabels_indexes.push(thisIndex);
@@ -1554,11 +1585,11 @@ function removeOverlappingPointLabels(chartParamsObj)
         }
         
         // Ensure point labels do not collide with others
-        for (var x = 0; x < pointLabels_indexes.length; x++) {
+        for (x = 0; x < pointLabels_indexes.length; x++) {
             
-            var thisIndex = pointLabels_indexes[x];
+            thisIndex = pointLabels_indexes[x];
             
-            for (var y = 0; y < pointLabels_info[thisIndex].length; y++) {
+            for (y = 0; y < pointLabels_info[thisIndex].length; y++) {
                 
                 /* now determin the distance between this point label, and all
                    point labels within this column. pointLabels_info[thisIndex]
@@ -1566,7 +1597,8 @@ function removeOverlappingPointLabels(chartParamsObj)
                 
                 var thisPointLabel = pointLabels_info[thisIndex][y];
                 
-                for (var c = 0; c < pointLabels_info[thisIndex].length; c++) {
+                var c = 0;
+                for (c = 0; c < pointLabels_info[thisIndex].length; c++) {
                 
                     var checkAgainst = pointLabels_info[thisIndex][c];
                     
@@ -1577,12 +1609,12 @@ function removeOverlappingPointLabels(chartParamsObj)
                         
                         // remove whichever label has the lower number
                         
-                        if (checkAgainst['value'] < thisPointLabel['value']) {
-                            checkAgainst['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
+                        if (checkAgainst.value < thisPointLabel.value) {
+                            checkAgainst.obj.innerHTML = '';
+                            checkAgainst.obj.isRemoved = true;
                         } else {
-                            thisPointLabel['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
+                            thisPointLabel.obj.innerHTML = '';
+                            checkAgainst.obj.isRemoved = true;
                         }
                         
                         // We jave just removed a point label, so this function will need to be run again
@@ -1649,7 +1681,8 @@ function globalSettingUpdate(chartUniqueId)
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
     
-    for (var x = 0; x < settingOpts.length; x++) {
+    var x = 0;
+    for (x = 0; x < settingOpts.length; x++) {
         var thisOpt = settingOpts[x];
         if (thisOpt.nodeName === 'INPUT') {
             if (thisOpt.type === 'checkbox') {
@@ -1687,14 +1720,15 @@ function globalSettingRefreshUi(chartParamsObj)
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
     
-    for (var x = 0; x < settingOpts.length; x++) {
+    var x = 0;
+    for (x = 0; x < settingOpts.length; x++) {
         var thisOpt = settingOpts[x];
         if (thisOpt.nodeName === 'INPUT') {
         
             // By this line (and in this block), we know we have found an input element on this GlobSettings menue
             
             if (thisOpt.type === 'checkbox') {
-                thisOpt.checked = (getGlobalSetting(thisOpt.id)=='true') ? true : false;
+                thisOpt.checked = (getGlobalSetting(thisOpt.id) ==='true') ? true : false;
             } else {
                 thisOpt.value = getGlobalSetting(thisOpt.id);
                 thisOpt.text = thisOpt.value;
@@ -1705,21 +1739,25 @@ function globalSettingRefreshUi(chartParamsObj)
 
 function showSetingMode(showBasic)
 {
+    var x = 0;
+    var hideThese;
+    var showThese;
+    
     if (showBasic === true) {
-        var showThese = document.getElementsByName('chartSettingsBasic')
-        var hideThese = document.getElementsByName('chartSettingsGlobal')
+        showThese = document.getElementsByName('chartSettingsBasic');
+        hideThese = document.getElementsByName('chartSettingsGlobal');
     } else {
-        var hideThese = document.getElementsByName('chartSettingsBasic')
-        var showThese = document.getElementsByName('chartSettingsGlobal')
+        hideThese = document.getElementsByName('chartSettingsBasic');
+        showThese = document.getElementsByName('chartSettingsGlobal');
     }
     
-    for (var x = 0; x < hideThese.length; x++) {
+    for (x = 0; x < hideThese.length; x++) {
         hideThese[x].style.display = 'none';
     }
     
-    for (var x = 0; x < hideThese.length; x++) {
+    for (x = 0; x < hideThese.length; x++) {
             showThese[x].style.display = '';
-        }
+    }
     
 }
 
@@ -1800,7 +1838,8 @@ function alterChartByGlobals(chartParamObj)
 function redrawAllCharts()
 {
 
-    for (var uniqueid in chartsOnDOM) {
+    var uniqueid;
+    for (uniqueid in chartsOnDOM) {
     
         var thisParamObj = chartsOnDOM[uniqueid];
         
@@ -1860,7 +1899,7 @@ function chartIsEmpty(chartParamsObj)
     // Is all data 0?
     var isChartEmpty = true;
     for (x in chartParamsObj.chartData) {
-    
+
         if (typeof chartParamsObj.chartData[x] === 'object') {
             
             for (y in chartParamsObj.chartData[x]) {
