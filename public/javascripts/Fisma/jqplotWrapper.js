@@ -1013,7 +1013,7 @@ function buildExternalSourceParams(chartParamsObj)
                 thisWidgetValue = thisWidgetOnDOM.value;
             } else {
                 // not on DOM, is there a cookie?
-                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget['uniqueid']);
+                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
                 if (thisWigCookieValue !== null) {
                     // there is a cookie value, us it
                     thisWidgetValue = thisWigCookieValue;
@@ -1603,7 +1603,7 @@ function removeOverlappingPointLabels(chartParamsObj)
                     var checkAgainst = pointLabels_info[thisIndex][c];
                     
                     // get the distance from thisPointLabel to checkAgainst point label
-                    d = Math.abs(checkAgainst['top'] - thisPointLabel['top']);
+                    d = Math.abs(checkAgainst.top - thisPointLabel.top);
                     
                     if (d < 12 && d !== 0) {
                         
@@ -1620,7 +1620,7 @@ function removeOverlappingPointLabels(chartParamsObj)
                         // We jave just removed a point label, so this function will need to be run again
                         // as the labels will need to be reindexed.
                         
-                        removeOverlappingPointLabels(chartParamsObj)
+                        removeOverlappingPointLabels(chartParamsObj);
                         return;
                     }
                 }
@@ -1895,21 +1895,23 @@ function showMsgOnEmptyChart(chartParamsObj)
  */
 function chartIsEmpty(chartParamsObj)
 {
-
-    // Is all data 0?
     var isChartEmpty = true;
+    var x = 0; var y = 0;
+    
     for (x in chartParamsObj.chartData) {
 
         if (typeof chartParamsObj.chartData[x] === 'object') {
             
             for (y in chartParamsObj.chartData[x]) {
-                if (parseInt(chartParamsObj.chartData[x][y]) > 0)
+                if (parseInt(chartParamsObj.chartData[x][y], 10) > 0) {
                     isChartEmpty = false;
+                }
             }
             
         } else {
-            if (parseInt(chartParamsObj.chartData[x]) > 0)
+            if (parseInt(chartParamsObj.chartData[x], 10) > 0) {
                 isChartEmpty = false;
+            }
         }
     
     }
