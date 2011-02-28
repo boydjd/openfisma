@@ -229,38 +229,38 @@ function createJQChart(chartParamsObj)
 
 /**
  * Takes a chartParamsObj and merges content of 
- * ExternResponce-object into it based in the inheritance mode
- * set in ExternResponce.
+ * ExternResponse-object into it based in the inheritance mode
+ * set in ExternResponse.
  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
  *
  * @param object
  * @return void
  * 
 */
-function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
+function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponse)
 {
     var joinedParam = {};
 
     // Is there an inheritance mode? 
-    if (ExternResponce.results[0].inheritCtl) {
-        if (ExternResponce.results[0].inheritCtl === 'minimal') {
+    if (ExternResponse.results[0].inheritCtl) {
+        if (ExternResponse.results[0].inheritCtl === 'minimal') {
             // Inheritance mode set to minimal, retain certain attribs and merge
-            joinedParam = ExternResponce.results[0];
+            joinedParam = ExternResponse.results[0];
             joinedParam.width = chartParamsObj.width;
             joinedParam.height = chartParamsObj.height;
             joinedParam.uniqueid = chartParamsObj.uniqueid;
             joinedParam.externalSource = chartParamsObj.externalSource;
             joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
             joinedParam.widgets = chartParamsObj.widgets;
-        } else if (ExternResponce.results[0].inheritCtl === 'none') {
+        } else if (ExternResponse.results[0].inheritCtl === 'none') {
             // Inheritance mode set to none, replace the joinedParam object
-            joinedParam = ExternResponce.results[0];
+            joinedParam = ExternResponse.results[0];
         } else {
             throw 'Error - Unknown chart inheritance mode';
         }
     } else {
         // No inheritance mode, by default, merge everything
-        joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce.results[0],true);
+        joinedParam = jQuery.extend(true, chartParamsObj, ExternResponse.results[0],true);
     }
 
     return joinedParam;
