@@ -98,14 +98,18 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             if (!Doctrine::getTable('RolePrivilege')->findByRoleId($roleId)->delete()) {
                 $errno++;
             }
-            foreach ($functionIds as $fid) {
-                $rolePrivilege = new RolePrivilege();
-                $rolePrivilege->roleId = $roleId;
-                $rolePrivilege->privilegeId = $fid;
-                if (!$rolePrivilege->trySave()) {
-                    $errno++;
+
+            if ($functionIds) {
+                foreach ($functionIds as $fid) {
+                    $rolePrivilege = new RolePrivilege();
+                    $rolePrivilege->roleId = $roleId;
+                    $rolePrivilege->privilegeId = $fid;
+                    if (!$rolePrivilege->trySave()) {
+                        $errno++;
+                    }
                 }
             }
+
             if ($errno > 0) {
                 $msg = "Set right for role failed.";
                 $model = 'warning';

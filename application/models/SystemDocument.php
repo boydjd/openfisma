@@ -61,7 +61,7 @@ class SystemDocument extends BaseSystemDocument
     public function getIconUrl()
     {
         $pi = pathinfo($this->fileName);
-        $extension = strtolower($pi['extension']);
+        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
         $imagePath = Fisma::getPath('image');
         if (file_exists("$imagePath/mimetypes/$extension.png")) {
             return "/images/mimetypes/$extension.png";

@@ -26,6 +26,6 @@
  * @subpackage Fisma_Zend_Exception
  * @version    $Id$
  */
-class Fisma_Zend_Exception_InvalidPrivilege extends Zend_Acl_Exception
+class Fisma_Zend_Exception_InvalidPrivilege extends Fisma_Zend_Exception_User
 {
 }
