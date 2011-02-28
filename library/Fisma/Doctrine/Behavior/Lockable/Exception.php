@@ -26,6 +26,6 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Doctrine_Behavior_Lockable_Exception extends Fisma_Zend_Exception
+class Fisma_Doctrine_Behavior_Lockable_Exception extends Fisma_Zend_Exception_User
 {
 }
