@@ -44,6 +44,11 @@ class Fisma_Yui_MenuItem
      */
     public $url;
 
+    /**
+     * The JavaScript function to be executed when this menu item is clicked.
+     * 
+     * @var string
+     */
     public $onclick;
     
     /**
