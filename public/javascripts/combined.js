@@ -7232,7 +7232,7 @@ Fisma.TableFormat = {
         var status = oRecord.getData('Status');
 
         if (status) {
-            status = Fisma.Util.unescapeEntities(status);
+            status = PHP_JS().html_entity_decode(status);
             overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
@@ -7804,19 +7804,7 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
-    },
-
-    /**
-     * Unescape HTML entities within a string.
-     */
-    unescapeEntities: function (input) {
-        var temp = document.createElement("div");
-        temp.innerHTML = input;
-        var result = temp.childNodes[0].nodeValue;
-        temp.removeChild(temp.firstChild);
-        return result;
     }
-
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -9729,10 +9717,10 @@ function redrawAllCharts()
  */
 function showMsgOnEmptyChart(chartParamsObj)
 {
-
     if (chartIsEmpty(chartParamsObj)) {
         var targDiv = document.getElementById(chartParamsObj['uniqueid']);
 
+        // Place message on DOM
         var insertBeforeChild = targDiv.childNodes[1];
         var msgOnDom = document.createElement('div');
         msgOnDom.height = '100%';
@@ -9745,6 +9733,10 @@ function showMsgOnEmptyChart(chartParamsObj)
         var textMsgOnDom = document.createTextNode('No data to plot.');
         msgOnDom.appendChild(textMsgOnDom);
         targDiv.appendChild(msgOnDom);
+        
+        // Make sure screen-reader-table is not showing
+        var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
+        dataTableObj.style.display = 'none';
     }
 }
 
