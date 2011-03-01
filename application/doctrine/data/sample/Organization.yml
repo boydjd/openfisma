@@ -79,3 +79,8 @@ Organization:
                                 name: Customer Relationship Management System
                                 orgType: system
                                 System: CRMS_SYS
+            HIDDEN_ORG:
+                nickname: HIDDEN
+                name: Hidden Organization
+                orgType: system
+                System: HIDDEN_SYS
