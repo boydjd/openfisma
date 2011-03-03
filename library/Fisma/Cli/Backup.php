@@ -59,7 +59,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         }
         
         // Time changes in seconds, remember the current time
-        $this->_myTimeStamp = $this->timestamp();
+        $this->_myTimeStamp = $this->_timestamp();
         
         // config vars
         $this->_appRoot = realpath(APPLICATION_PATH . '/../');
@@ -80,7 +80,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             $this->_backupRoot = realpath($this->_backupRoot);
         }
 
-        // Declare $_backupDir, based on _backupRoot + timestamp(), and create the directory
+        // Declare $_backupDir, based on _backupRoot + _timestamp(), and create the directory
         $this->_backupDir = $this->_backupRoot . "/" . $this->_myTimeStamp . "/";
         $this->_backupDir = str_replace("//", "/", $this->_backupDir);
         
@@ -91,32 +91,32 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "Backup directory is; $this->_backupDir\n";
         
         // Remove outdated backups
-        if ($this->pruneBackups() === false) {
+        if ($this->_pruneBackups() === false) {
             return false;
         }
         
         // Backup schema
-        $this->copySchema($backupFileSql);
+        $this->_copySchema($backupFileSql);
         
         // copy files from the application root into the backup directory
-        $this->copyApplication();
+        $this->_copyApplication();
         
         // compress backup this directory is the settings say so
-        $this->compressBackup();
+        $this->_compressBackup();
         
         print "Backup completed successfully!\n";
         return true;
     }
     
-    function copyApplication()
+    private function _copyApplication()
     {
         print "Backing up application, please wait...\n";
         print "   Copying $this->_appRoot to $this->_backupDir...\n";
-        $this->recursive_copy($this->_appRoot, $this->_backupDir, "   ");
+        $this->_recursiveCopy($this->_appRoot, $this->_backupDir, "   ");
         print "   done.\n";
     }
     
-    function compressBackup()
+    private function _compressBackup()
     {
         $optCompress = $this->getOption('compress');
         
@@ -136,7 +136,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         
     }
     
-    function recursive_copy($dirsource, $dirdest, $debugIndent = "   ")
+    private function _recursiveCopy($dirsource, $dirdest, $debugIndent = "   ")
     {
         // bug killer - make sure there are no repeating slashes
         $dirsource = str_replace("//", "/", $dirsource);
@@ -160,7 +160,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                     }
                 } else {
                     $dirdest1 = $dirdest . "/" . $dirname;
-                    $this->recursive_copy($dirsource . "/" . $file, $dirdest1);
+                    $this->_recursiveCopy($dirsource . "/" . $file, $dirdest1);
                 }
             }
         }
@@ -168,10 +168,10 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
       return true;
     } 
 
-    function copySchema()
+    private function _copySchema()
     {
         /*
-            void copySchema(string,string)
+            void _copySchema(string,string)
             Dumps a copy of the specified schema into a file inside the backup directory
         */
         
@@ -198,10 +198,10 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done.\n";
     }
     
-    function pruneBackups()
+    private function _pruneBackups()
     {
         /*
-            String[] pruneBackups(string)
+            String[] _pruneBackups(string)
             Removes old backups if they are older than $this->config['backup]['retentionPeriod'] days
             Returns an array file/directories that were removed successfully
         */
@@ -278,11 +278,11 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done\n";
     }
         
-    function timestamp()
+    private function _timestamp()
     {
         /**
-            String timestamp()
-            Produces a YYYYMMDDHHMMSS timestamp to label the backup archive with
+            String _timestamp()
+            Produces a YYYYMMDDHHMMSS _timestamp to label the backup archive with
             @returns string
         */
     
