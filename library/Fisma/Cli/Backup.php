@@ -48,6 +48,9 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         );
     }
 
+    /**
+     * Run the backup routine
+     */
     protected function _run()
     {
     
@@ -108,6 +111,11 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         return true;
     }
     
+    /**
+     * Copies the Openfisma directory (all source code files) to the backup directory
+     * 
+     * @return void
+     */
     private function _copyApplication()
     {
         print "Backing up application, please wait...\n";
@@ -116,6 +124,11 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done.\n";
     }
     
+    /**
+     * Compresses the backup into a .tgz file. Returns true on success and false on failure.
+     * 
+     * @return boolean
+     */
     private function _compressBackup()
     {
         $optCompress = $this->getOption('compress');
@@ -132,10 +145,16 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                 return false;
             }
             print "   done.\n";
+            return true;
         }
         
     }
     
+    /**
+     * Copies dirsource to dirdest. Same funtionality as cp -r dirsource/ dirdest/
+     * 
+     * @return void
+     */
     private function _recursiveCopy($dirsource, $dirdest, $debugIndent = "   ")
     {
         // bug killer - make sure there are no repeating slashes
@@ -164,17 +183,16 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                 }
             }
         }
-      closedir($dirHandle); 
-      return true;
+      closedir($dirHandle);
     } 
 
+    /**
+     * Dumps a copy of the specified schema into a file inside the backup directory
+     * 
+     * @return void
+     */
     private function _copySchema()
     {
-        /*
-            void _copySchema(string,string)
-            Dumps a copy of the specified schema into a file inside the backup directory
-        */
-        
         // Get MySql login info
         $dbConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/database.ini');
         $db = $dbConfig->toArray();
@@ -198,19 +216,19 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done.\n";
     }
     
+    /**
+     * Removes older backups found in backup directory 
+     * Returns an array of files/directories that were removed successfully
+     * 
+     * @return array
+     */
     private function _pruneBackups()
     {
-        /*
-            String[] _pruneBackups(string)
-            Removes old backups if they are older than $this->config['backup]['retentionPeriod'] days
-            Returns an array file/directories that were removed successfully
-        */
-        
         print "Removing outdated backups...\n";
         
         // Verify prude config exists
         if (is_null($this->getOption('age'))) {
-            return true;
+            return array();
         } else {
             $retentionPeriod = $this->getOption('age');
             print '   Backups older than ' . $retentionPeriod . " days will be removed\n";
@@ -218,10 +236,10 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         
         // Dont prune backups?
         if ((integer) $retentionPeriod === 0) {
-            return true;
+            return array();
         }
         
-        $rtn  = Array();
+        $rtn  = array();
         $backLst = scandir($this->_backupRoot);
         
         foreach ($backLst as $oldBackupName) {
@@ -260,7 +278,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                             $rtn[] = realpath("$oldBackupName/");
                         }
                         
-                    } else {
+                    } else {            
                         
                         print "   Removing old backup archive created on " . 
                             $oldYear . "/" . $oldMonth . "/" . $oldDay . "\n";
@@ -279,16 +297,16 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         }
         
         print "   done\n";
+        return $rtn;
     }
-        
+
+    /**
+     * Produces a YYYYMMDDHHMMSS _timestamp to label the backup archive with
+     * 
+     * @return string
+     */
     private function _timestamp()
     {
-        /**
-            String _timestamp()
-            Produces a YYYYMMDDHHMMSS _timestamp to label the backup archive with
-            @returns string
-        */
-        
         $dateNow = new Zend_Date();
         return $dateNow->toString('YYYMMddHHmmss');
     }
