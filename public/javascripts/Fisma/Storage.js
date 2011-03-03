@@ -26,27 +26,27 @@
         this.namespace = namespace;
         this.storageEngine = YAHOO.util.StorageManager.get(
             null, // no preferred engine
-            YAHOO.util.StorageManager.LOCATION_SESSION,
+            YAHOO.util.StorageManager.LOCATION_SESSION
         );
 
     };
     Fisma.Storage.prototype = {
-        onReady: funtion(fn) {
+        onReady: function(fn) {
             this.storageEngine.subscribe(this.storageEngine.CE_READY, fn);
         },
 
         get: function(key) {
-            throw new Fisma.Storage.UnimplementedException("get");
+            return this._get(key);
         },
         set: function(key, value) {
-            throw new Fisma.Storage.UnimplementedException("set");
+            this._set(key, value);
         },
 
         _get: function(key) {
-            this.storageEngine.getItem(namespace + ":" + key);
+            return this.storageEngine.getItem(this.namespace + ":" + key);
         },
         _set: function(key, value) {
-            this.storageEngine.setItem(namespace + ":" + key, value);
+            this.storageEngine.setItem(this.namespace + ":" + key, value);
         }
     };
 })();

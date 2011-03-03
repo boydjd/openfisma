@@ -22,10 +22,10 @@
  */
 
 (function() {
-    Fisma.Storage.Persistent = function(namespace) {
-        Fisma.Storage.Persistent.superclass.constructor.call(this, namespace);
+    Fisma.PersistentStorage = function(namespace) {
+        Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
     };
-    YAHOO.extend(Fisma.Storage.Persistent, Fisma.Storage, {
+    YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
         _modified: {},
 
         get: function(key) {
@@ -37,22 +37,31 @@
             return this._get(key);
         },
         set: function(key, value) {
-            this._modified[key] = true;
+            this._modified[key] = value;
             return this._set(key, value);
         },
 
         init: function(values) {
-            foreach (var key in values) {
+            for (var key in values) {
                 this._set(key, values[key]);
             }
         },
         sync: function() {
-            /*
-             * Not yet implemented.
-             * Step 1: Send modified keys to server.
-             * Step 2: Call init() with response object.
-             * Step 3: Clear modified object
-             */
+            var uri = '/storage/sync/format/json',
+                callback = {
+                    scope: this,
+                    success: function(response) {
+                        this.init(YAHOO.lang.JSON.parse(response.responseText));
+                        this._modified = [];
+                    },
+                    failure: function() {
+                    }
+                },
+                postData = $.param({
+                    namespace: this.namespace,
+                    updates: YAHOO.lang.JSON.stringify(this._modified)
+                });
+            YAHOO.util.Connect.asyncRequest ( 'POST', uri , callback , postData );
         }
-    };
+    });
 })();
