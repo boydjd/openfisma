@@ -250,7 +250,8 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                     
                     if (is_dir($oldBackupName)) {
                         
-                        print "   Removing old backup directory created on " . date("F j, Y", $oldTime) . "\n";
+                        print "   Removing old backup directory created on " . 
+                            $oldYear . "/" . $oldMonth . "/" . $oldDay . "\n";
                         
                         $s = exec("rm -R $oldBackupName/");
                         if (file_exists("$oldBackupName/")) {
@@ -261,7 +262,9 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                         
                     } else {
                         
-                        print "   Removing old backup archive created on " . date("F j, Y", $oldTime) . "\n";
+                        print "   Removing old backup archive created on " . 
+                            $oldYear . "/" . $oldMonth . "/" . $oldDay . "\n";
+                            
                         if (!unlink($oldBackupName)) {
                             print "   archive deletion failed: " . realpath($oldBackupName) . "\n";
                         } else {
@@ -285,7 +288,8 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             Produces a YYYYMMDDHHMMSS _timestamp to label the backup archive with
             @returns string
         */
-    
-        return date("YmdHis");
+        
+        $dateNow = new Zend_Date();
+        return $dateNow->toString('YYYMMddHHmmss');
     }
 }
