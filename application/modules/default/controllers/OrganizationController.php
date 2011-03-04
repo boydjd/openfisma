@@ -200,7 +200,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 
                 $organization->merge($orgValues);
                 
-                if ($orgValues['parent'] != $organization->getNode()->getParent()->id) {
+                if (isset($orgValues['parent']) && $orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
                     $organization->getNode()
                                  ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
