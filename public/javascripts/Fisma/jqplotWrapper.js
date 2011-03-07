@@ -1,3 +1,25 @@
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
+ * {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview Client-side behavior related to the Finding module
+ *
+ * @author    Dale Frey <dale.frey@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ */
 
 // Constants
 var CHART_CREATE_SUCCESS = 1;
@@ -229,38 +251,38 @@ function createJQChart(chartParamsObj)
 
 /**
  * Takes a chartParamsObj and merges content of 
- * ExternResponse-object into it based in the inheritance mode
- * set in ExternResponse.
+ * externResponse-object into it based in the inheritance mode
+ * set in externResponse.
  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
  *
  * @param object
  * @return void
  * 
 */
-function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponse)
+function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, externResponse)
 {
     var joinedParam = {};
 
     // Is there an inheritance mode? 
-    if (ExternResponse.results[0].inheritCtl) {
-        if (ExternResponse.results[0].inheritCtl === 'minimal') {
+    if (externResponse.results[0].inheritCtl) {
+        if (externResponse.results[0].inheritCtl === 'minimal') {
             // Inheritance mode set to minimal, retain certain attribs and merge
-            joinedParam = ExternResponse.results[0];
+            joinedParam = externResponse.results[0];
             joinedParam.width = chartParamsObj.width;
             joinedParam.height = chartParamsObj.height;
             joinedParam.uniqueid = chartParamsObj.uniqueid;
             joinedParam.externalSource = chartParamsObj.externalSource;
             joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
             joinedParam.widgets = chartParamsObj.widgets;
-        } else if (ExternResponse.results[0].inheritCtl === 'none') {
+        } else if (externResponse.results[0].inheritCtl === 'none') {
             // Inheritance mode set to none, replace the joinedParam object
-            joinedParam = ExternResponse.results[0];
+            joinedParam = externResponse.results[0];
         } else {
             throw 'Error - Unknown chart inheritance mode';
         }
     } else {
         // No inheritance mode, by default, merge everything
-        joinedParam = jQuery.extend(true, chartParamsObj, ExternResponse.results[0],true);
+        joinedParam = jQuery.extend(true, chartParamsObj, externResponse.results[0],true);
     }
 
     return joinedParam;
