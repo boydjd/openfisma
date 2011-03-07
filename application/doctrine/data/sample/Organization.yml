@@ -79,8 +79,10 @@ Organization:
                                 name: Customer Relationship Management System
                                 orgType: system
                                 System: CRMS_SYS
+
+            # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
             HIDDEN_ORG:
                 nickname: HIDDEN
-                name: Hidden Organization
+                name: Hidden System
                 orgType: system
                 System: HIDDEN_SYS
