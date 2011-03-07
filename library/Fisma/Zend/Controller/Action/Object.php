@@ -391,8 +391,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                         $msg .= $e->getMessage();
                     $type = 'warning';
                 } catch (Fisma_Zend_Exception_User $e) {
-                    $msg  = "Error while trying to save: ";
-                        $msg .= $e->getMessage();
+                    $msg  = "Error while trying to save: " . $e->getMessage();
                     $type = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $type);
