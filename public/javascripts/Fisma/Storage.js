@@ -32,7 +32,11 @@
     };
     Fisma.Storage.prototype = {
         onReady: function(fn) {
-            this.storageEngine.subscribe(this.storageEngine.CE_READY, fn);
+            if (!this.storageEngine.isReady) {
+                this.storageEngine.subscribe(this.storageEngine.CE_READY, fn, this, true);
+            } else {
+                fn.call(this);
+            }
         },
 
         get: function(key) {
@@ -43,10 +47,10 @@
         },
 
         _get: function(key) {
-            return this.storageEngine.getItem(this.namespace + ":" + key);
+            return YAHOO.lang.JSON.parse(this.storageEngine.getItem(this.namespace + ":" + key));
         },
         _set: function(key, value) {
-            this.storageEngine.setItem(this.namespace + ":" + key, value);
+            this.storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
 })();
