@@ -160,7 +160,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             );
 
             $availableInformationTypesTable->setDataUrl(
-                "/sa/informationType/active-types/systemId/{$id}/format/json"
+                "/sa/information-type/active-types/systemId/{$id}/format/json"
             );
 
             $this->view->availableInformationTypesTable = $availableInformationTypesTable;

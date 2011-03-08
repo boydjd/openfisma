@@ -12,9 +12,7 @@ Fisma_Format_Section::startSection($sectionTitle); ?>
 Fisma_Format_Section::stopSection();
 
 $sectionTitle = 'Security Controls';
-if ($this->subject->status == 'Select') {
-    $sectionTitle .= ' [<a href="/sa/select-controls/index/id/' . $this->id . '">Edit</a>]';
-}
+
 Fisma_Format_Section::startSection($sectionTitle);
 ?>
 <div id="controlTree"></div>
