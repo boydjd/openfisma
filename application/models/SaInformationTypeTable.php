@@ -24,7 +24,71 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SaInformationTypeTable extends Fisma_Doctrine_Table
+class SaInformationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
+    /**
+     * Return an array of fields (and definitions) which are searchable
+     * 
+     * @return array
+     */
+    public function getSearchableFields()
+    {
+        return array (
+            'id' => array(
+                'initiallyVisible' => false,
+                'label' => 'ID',
+                'sortable' => true,
+                'type' => 'integer'
+            ),
+            'name' => array(
+                'initiallyVisible' => true,
+                'label' => 'Name',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'description' => array(
+                'initiallyVisible' => false,
+                'label' => 'Description',
+                'sortable' => true,
+                'type' => 'text'
+            ), 
+            'category' => array(
+                'initiallyVisible' => true,
+                'label' => 'Category',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'confidentiality' => array(
+                'initiallyVisible' => true,
+                'label' => 'Confidentiality',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'integrity' => array(
+                'initiallyVisible' => true,
+                'label' => 'Integrity',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'availability' => array(
+                'initiallyVisible' => true,
+                'label' => 'Availability',
+                'sortable' => true,
+                'type' => 'text'
+            )
+        );
+    }
 
+    /**
+     * Return an array of fields which are used to test access control
+     * 
+     * Each key is the name of a field and each value is a callback function which provides a list of values to match
+     * against that field.
+     * 
+     * @return array
+     */
+    public function getAclFields()
+    {
+        return array();
+    }
 }

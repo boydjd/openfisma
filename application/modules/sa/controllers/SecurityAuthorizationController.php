@@ -309,7 +309,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             'Assessment Plan' => 'assessment-plan',
             'Assessment' => 'assessment-plan',
             'Authorization' => 'authorization',
-            'Active' => 'view'
+            'Active' => 'view',
+            'Retired' => 'view'
         );
         $url = '/sa/security-authorization/' . $map[$sa->status] . '/id/' . $sa->id;
         $this->_redirect($url);

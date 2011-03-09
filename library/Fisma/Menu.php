@@ -187,7 +187,7 @@ class Fisma_Menu
                 $saAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
                 $saAdminSubmenu->add(
-                    new Fisma_Yui_MenuItem('Information Types', '/sa/informationType')
+                    new Fisma_Yui_MenuItem('Information Types', '/sa/information-type')
                 );
 
                 $saMenu->addSeparator();
