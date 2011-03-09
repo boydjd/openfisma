@@ -17,7 +17,7 @@
  */
 
 /**
- * Create XML files for flash charts
+ * Create charts
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
