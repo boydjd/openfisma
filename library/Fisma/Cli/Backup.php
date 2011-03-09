@@ -28,6 +28,7 @@
  
 class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 {
+
     // default values while config has not yet been loaded       
     private $_myTimeStamp;   // the time stamp to name the backup folder with
     private $_appRoot;       // the root openfisma directory that contains the application, public, library, etc dirs
@@ -44,7 +45,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         return array(
             'dir|d=s' => "Target directory to place backups.",
             'compress|c' => 'A flag that states the backup should be compressed.',
-            'age|a=i' => 'The max age to keep other backups found in the backup directory'
+            'age|a=i' => 'The max age (in days) to keep other backups found in the backup directory'
         );
     }
 
@@ -53,50 +54,42 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
-    
-        // Root check (based on permissions, running this script out of root may not work when copying all files)
-        if (trim(strtolower(`whoami`)) !== 'root') {
-            print "\nWARNING - You are running a backup script outside of root, if you receive errors " .
-                "during the backup process, then;\n open a terminal\n cd to openfisma\n ". 
-                "and type: sudo php -f scripts/bin/backup.php\n\n";
-        }
-        
         // Time changes in seconds, remember the current time
-        $this->_myTimeStamp = $this->_timestamp();
+        $this->_myTimeStamp = time();
         
         // config vars
         $this->_appRoot = realpath(APPLICATION_PATH . '/../');
-        print "Application directory is; " . $this->_appRoot . "\n";
+        print "Application directory is " . $this->_appRoot . "\n";
         
         if (is_null($this->getOption('dir'))) {
-            print "Fatal Error - backup_directory is not defined." .
-                "Please define state the target backup directory with the -d option.\n" . 
-                "See -h for more help.\n";
+            throw new Fisma_Zend_Exception_User ("backup_directory is not defined." .
+                    "Please state the target backup directory with the -d option.\n" . 
+                    "See -h for more help.");
             return false;
         } else {
+        
             $this->_backupRoot = $this->getOption('dir');
-            @mkdir($this->_backupRoot);                  // make sure the parent directory to _backupDir really exists
-            if (file_exists($this->_backupRoot) === false) {
-                print "Fatal Error - backup_directory directory pointer ($this->_backupRoot) is invalid!\n";
-                return false;
+            if (!is_dir($this->_backupRoot)) {
+                if (!mkdir($this->_backupRoot)) {
+                    throw new Fisma_Zend_Exception_User("Couldnt create backup directory: " . $this->_backupRoot);
+                    return false;
+                }
             }
+            
             $this->_backupRoot = realpath($this->_backupRoot);
         }
 
         // Declare $_backupDir, based on _backupRoot + _timestamp(), and create the directory
         $this->_backupDir = $this->_backupRoot . "/" . $this->_myTimeStamp . "/";
-        $this->_backupDir = str_replace("//", "/", $this->_backupDir);
         
-        if (!@mkdir($this->_backupDir)) {
-            print "Fatal Error - Could not create backup directory ($this->_backupDir)\n";
+        if (!mkdir($this->_backupDir)) {
+            throw Fisma_Zend_Exception_User("Could not create backup directory ($this->_backupDir)");
             return false;
         }
-        print "Backup directory is; $this->_backupDir\n";
+        print "Backup directory is $this->_backupDir\n";
         
         // Remove outdated backups
-        if ($this->_pruneBackups() === false) {
-            return false;
-        }
+        $this->_pruneBackups();
         
         // Backup schema
         $this->_copySchema($backupFileSql);
@@ -120,6 +113,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
     {
         print "Backing up application, please wait...\n";
         print "   Copying $this->_appRoot to $this->_backupDir...\n";
+        mkdir($this->_backupDir);
         $this->_recursiveCopy($this->_appRoot, $this->_backupDir, "   ");
         print "   done.\n";
     }
@@ -141,7 +135,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             $s = exec("tar -zcpf " . $tgzPath . " " . $this->_myTimeStamp . "/");
             $s = exec("rm -r " . $this->_myTimeStamp . "/");
             if (!file_exists($tgzPath)) {
-                print "   compress failed.\n";
+                print "   compression failed.\n";
                 return false;
             }
             print "   done.\n";
@@ -155,31 +149,31 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
      * 
      * @return void
      */
-    private function _recursiveCopy($dirsource, $dirdest, $debugIndent = "   ")
+    private function _recursiveCopy($dirSource, $dirDest, $debugIndent = "   ")
     {
-        // bug killer - make sure there are no repeating slashes
-        $dirsource = str_replace("//", "/", $dirsource);
-        // bug killer - make sure there are no repeating slashes
-        $dirdest = str_replace("//", "/", $dirdest);
+        $dirSource = realpath($dirSource);
+        $dirDest = realpath($dirDest);
         
-        $dirHandle = @opendir($dirsource);
+        $dirHandle = @opendir($dirSource);
         if ($dirHandle === false) {
-            print $debugIndent . "copy failed for dir;  $dirsource \n";
+            print $debugIndent . "copy failed for directory: $dirSource\n";
             return false;
         }
         
-        $dirname = substr($dirsource, strrpos($dirsource, "/") + 1); 
+        $dirname = basename($dirSource); 
 
-        mkdir($dirdest . "/" . $dirname); 
+        mkdir($dirDest . "/" . $dirname); 
         while ($file = readdir($dirHandle)) {
             if ($file !== "." && $file !== "..") {
-                if (!is_dir($dirsource . "/" . $file)) {
-                    if (!@copy($dirsource . "/" . $file, $dirdest . "/" . $dirname . "/" . $file)) {
-                        print $debugIndent . "copy failed for file; " . $dirsource . "/" . $file . "\n";
+                if (!is_dir($dirSource . "/" . $file)) {
+                    $copyFrom = $dirSource . "/" . $file;
+                    $copyTo = $dirDest . "/" . $dirname . "/" . $file;
+                    if (!copy($copyFrom, $copyTo)) {
+                        print $debugIndent . "copy failed for $copyFrom > $copyTo \n";
                     }
                 } else {
-                    $dirdest1 = $dirdest . "/" . $dirname;
-                    $this->_recursiveCopy($dirsource . "/" . $file, $dirdest1);
+                    $dirDest1 = $dirDest . "/" . $dirname;
+                    $this->_recursiveCopy($dirSource . "/" . $file, $dirDest1);
                 }
             }
         }
@@ -209,9 +203,10 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             "mysqldump --user=" . $dbUser . 
             " --password=" . $dbPass . 
             " --add-drop-database" . 
-            " --compact " . $dbSchema;
-        $schema = shell_exec($mySqlDumpCmd);
-        file_put_contents($backupFileSql, $schema);
+            " --compact " . $dbSchema .
+            " --result-file=" . $backupFileSql;
+            
+        $rtnShell = shell_exec($mySqlDumpCmd);
         
         print "   done.\n";
     }
@@ -224,90 +219,72 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
      */
     private function _pruneBackups()
     {
+        $toReturn  = array();
+        
         print "Removing outdated backups...\n";
         
-        // Verify prude config exists
+        // Are we are given an age in which older backups should be removed?
         if (is_null($this->getOption('age'))) {
             return array();
+        } 
+        
+        $retentionPeriod = $this->getOption('age');
+        print '   Backups older than ' . $retentionPeriod . " days will be removed\n";
+            
+        // Is this age valid?
+        if (!is_numeric($retentionPeriod)) {
+            throw new Fisma_Zend_Exception_User ("Invalid --age given (" . $retentionPeriod . ")");
         } else {
-            $retentionPeriod = $this->getOption('age');
-            print '   Backups older than ' . $retentionPeriod . " days will be removed\n";
+            if ($retentionPeriod < 1) {
+                throw new Fisma_Zend_Exception_User ("The --age argument must be greater than 0");
+            }
         }
         
-        // Dont prune backups?
-        if ((integer) $retentionPeriod === 0) {
-            return array();
-        }
+        // set timeThreshold to the time() that would be oldest acceptable age for a previous created backup
+        $SECONDS_PER_DAY = 86400;
+        $timeThreshold = time() - ($SECONDS_PER_DAY * (integer)$retentionPeriod);
         
-        $rtn  = array();
-        $backLst = scandir($this->_backupRoot);
-        
-        foreach ($backLst as $oldBackupName) {
+        $previousBackups = scandir($this->_backupRoot);
+        foreach ($previousBackups as $oldBackupName) {
             
             // Ignore . and .. directories
             if ($oldBackupName !== '.' && $oldBackupName !== "..") {
                 
-                // Convert the name of the backup which should be formatted as 
-                // date(YmdHis) and convert it to seconds (time());
-                $oldYear = substr($oldBackupName, 0, 4);
-                $oldMonth = substr($oldBackupName, 4, 2);
-                $oldDay = substr($oldBackupName, 6, 2);
-                $oldHour = substr($oldBackupName, 8, 2);
-                $oldMin = substr($oldBackupName, 10, 2);
-                $oldSec = substr($oldBackupName, 12, 2);
-                $oldTime = mktime($oldHour, $oldMin, $oldSec, $oldMonth, $oldDay, $oldYear);
+                // convert to full path
+                $oldBackupName = realpath($this->_backupRoot . '/' . $oldBackupName);
                 
-                // set timeThreshold to the time() that would be oldest acceptable age
-                $secsInDay = 60 * 60 * 24;      // 86,400
-                $timeThreshold = time() - ($secsInDay * (integer)$retentionPeriod);
+                // Get the creation time of this old backup, this should be the file/directory name
+                $oldTime = (integer) str_replace('.tgz', '', basename($oldBackupName));
                 
                 // Is $oldTime less (older) than $timeThreshold? If so, remove this backup
                 if ($oldTime < $timeThreshold) {
                     
-                    $oldBackupName = realpath($this->_backupRoot . '/' . $oldBackupName);
-                    
                     if (is_dir($oldBackupName)) {
                         
-                        print "   Removing old backup directory created on " . 
-                            $oldYear . "/" . $oldMonth . "/" . $oldDay . "\n";
+                        print "   Removing old backup directory: " . basename($oldBackupName) . "\n"; 
                         
-                        $s = exec("rm -R $oldBackupName/");
-                        if (file_exists("$oldBackupName/")) {
-                            print "   directory deletion failed: " . realpath($oldBackupName) . "\n";
+                        $s = exec("rm -R $oldBackupName");
+                        if (file_exists("$oldBackupName")) {
+                            print "   directory deletion failed: " . $oldBackupName . "\n";
                         } else {
-                            $rtn[] = realpath("$oldBackupName/");
+                            $toReturn[] = $oldBackupName;
                         }
                         
                     } else {            
                         
-                        print "   Removing old backup archive created on " . 
-                            $oldYear . "/" . $oldMonth . "/" . $oldDay . "\n";
+                        print "   Removing old backup archive: " . basename($oldBackupName) . "\n";
                             
                         if (!unlink($oldBackupName)) {
-                            print "   archive deletion failed: " . realpath($oldBackupName) . "\n";
+                            print "   archive deletion failed: " . $oldBackupName . "\n";
                         } else {
-                            $rtn[] = realpath($oldBackupName);
+                            $toReturn[] = $oldBackupName;
                         }
-                        
                     }
-                    
                 }
             }
-            
         }
         
         print "   done\n";
-        return $rtn;
-    }
-
-    /**
-     * Produces a YYYYMMDDHHMMSS _timestamp to label the backup archive with
-     * 
-     * @return string
-     */
-    private function _timestamp()
-    {
-        $dateNow = new Zend_Date();
-        return $dateNow->toString('YYYMMddHHmmss');
+        return $toReturn;
     }
 }
