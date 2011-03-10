@@ -1830,7 +1830,7 @@ function redrawAllCharts()
 function showChartLoadingMsg(chartParamsObj)
 {
     // Ensure the threat-level-legend is hidden
-    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.display = 'none';
+    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
     
     // Show spinner
     makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
