@@ -1852,10 +1852,16 @@ Fisma.Chart = {
         return chartParamObj;
     },
 
-    redrawAllCharts : function ()
+    redrawAllCharts : function()
     {
-        var uniqueid;
-        for (uniqueid in chartsOnDOM) {
+        // First, show a loading message showing that the chart is loading
+        for (var uniqueid in chartsOnDOM) {
+            var thisParamObj = chartsOnDOM[uniqueid];    
+            Fisma.Chart.showChartLoadingMsg(thisParamObj);
+        }
+
+        // Now redraw and refreash charts and chart options
+        for (var uniqueid in chartsOnDOM) {
 
             var thisParamObj = chartsOnDOM[uniqueid];
 
@@ -1865,6 +1871,31 @@ Fisma.Chart = {
             // refreash Global Settings UI
             Fisma.Chart.globalSettingRefreshUi(thisParamObj);
         }
+
+    },
+
+    showChartLoadingMsg : function (chartParamsObj)
+    {
+        // Ensure the threat-level-legend is hidden
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+
+        // Show spinner
+        Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+
+        // Create text "Loading" message
+        var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+        var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+        var pTag = document.createElement('p');
+        pTag.align = 'center';
+        pTag.appendChild(loadChartDataMsg);
+
+        // Show text "Loading" message
+        chartContainer.innerHTML = '';      // clear the current chart container div
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(pTag);
     },
 
     /**
