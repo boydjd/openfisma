@@ -128,8 +128,8 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                                ->select('s.id As id')
                                ->addSelect('o.name AS name')
                                ->addSelect(
-                                   "CONCAT(ROUND(SUM(IF(dt.required = true, 1, 0)) / "
-                                   . "($docTypeRequiredCount)*100, 1), '%') AS percentage"
+                                   "ROUND(SUM(IF(dt.required = true, 1, 0)) / "
+                                   . "($docTypeRequiredCount)*100, 1) AS percentage"
                                )
                                ->leftJoin('o.System s')
                                ->leftJoin('s.Documents sd')

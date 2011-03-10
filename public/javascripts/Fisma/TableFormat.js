@@ -292,9 +292,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        elCell.innerHTML = oData + "%";
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        percentage = parseInt(oData);
+
+        console.log(elCell.innerHTML);
 
         if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
