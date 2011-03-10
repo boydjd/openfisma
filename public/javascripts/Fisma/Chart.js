@@ -1852,12 +1852,31 @@ Fisma.Chart = {
         return chartParamObj;
     },
 
-    redrawAllCharts : function()
+
+    /**
+     * Redraws all charts and refreashes all options dialogs associated.
+     *
+     * If using IE, will post a loading message, and re-call this function
+     * again with doRedrawNow=true based on a timer
+     *
+     * The reason for the use of the timer is to ensure the browser repaints
+     * its content area, and the loading message is actully shown 
+     * (and yes, this is nessesary).
+     */
+    redrawAllCharts : function (doRedrawNow)
     {
         // First, show a loading message showing that the chart is loading
         for (var uniqueid in chartsOnDOM) {
             var thisParamObj = chartsOnDOM[uniqueid];    
             Fisma.Chart.showChartLoadingMsg(thisParamObj);
+        }
+
+        // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
+        if (isIE === true) {
+            if (doRedrawNow !== true || doRedrawNow == null) { 
+                setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
+                return;
+            }
         }
 
         // Now redraw and refreash charts and chart options
