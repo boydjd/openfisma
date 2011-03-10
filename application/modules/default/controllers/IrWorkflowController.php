@@ -149,6 +149,10 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
         $roles = $rolesQuery->execute()->toKeyValueArray('id', 'nickname');
 
+        foreach ($roles as &$role) {
+            $role = $this->view->escape($role);
+        }
+
         // Get workflow steps
         $stepsQuery = Doctrine_Query::create()
                       ->from('IrStep')
