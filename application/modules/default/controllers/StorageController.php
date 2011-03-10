@@ -74,7 +74,7 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
         } else {
             $values = $object->data;
         }
-        $this->view->clearVars();
-        $this->view->assign($values);
+        $this->view->data = $values;
+        $this->view->status = 'ok';
     }
 }

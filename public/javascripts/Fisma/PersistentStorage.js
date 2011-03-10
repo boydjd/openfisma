@@ -37,7 +37,7 @@
             return this._get(key);
         },
         set: function(key, value) {
-            if (this._modified == null) {
+            if (this._modified === null) {
                 this._modified = {};
             }
             this._modified[key] = value;
@@ -50,18 +50,40 @@
             }
         },
         sync: function(reply, callback) {
+            var successFn = null,
+                failureFn = null,
+                scope = null;
+            if (callback) {
+                if (typeof(callback) == "function") {
+                    successFn = callback;
+                } else if (callback.success && typeof(callback.success) == "function") {
+                    successFn = callback.success;
+                }
+                if (callback.failure && typeof(callback.failure) == "function") {
+                    failureFn = callback.failure;
+                }
+                if (callback.scope) {
+                    scope = callback.scope;
+                }
+            }
             this.onReady(function() {
                 var uri = '/storage/sync/format/json',
                     callback = {
                         scope: this,
                         success: function(response) {
-                            this.init(YAHOO.lang.JSON.parse(response.responseText));
-                            this._modified = null;
-                            if (typeof(callback) == "function") {
-                                callback.call(this);
+                            var object = YAHOO.lang.JSON.parse(response.responseText);
+                            if (object.status == "ok") {
+                                this.init(object.data);
+                                this._modified = null;
+                            }
+                            if (successFn) {
+                                successFn.call(scope ? scope : this, response, object);
                             }
                         },
                         failure: function() {
+                            if (failureFn) {
+                                failureFn.call(scope ? scope : this);
+                            }
                         }
                     },
                     postData = $.param({
