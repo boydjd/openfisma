@@ -1807,7 +1807,13 @@ function alterChartByGlobals(chartParamObj)
 
 function redrawAllCharts()
 {
+    // First, show a loading message showing that the chart is loading
+    for (var uniqueid in chartsOnDOM) {
+        var thisParamObj = chartsOnDOM[uniqueid];    
+        showChartLoadingMsg(thisParamObj);
+    }
 
+    // Now redraw and refreash charts and chart options
     for (var uniqueid in chartsOnDOM) {
     
         var thisParamObj = chartsOnDOM[uniqueid];
@@ -1819,6 +1825,30 @@ function redrawAllCharts()
         globalSettingRefreshUi(thisParamObj);
     }
 
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    // Ensure the threat-level-legend is hidden
+    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.display = 'none';
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';      // clear the current chart container div
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
