@@ -296,8 +296,6 @@ Fisma.TableFormat = {
 
         percentage = parseInt(oData);
 
-        console.log(elCell.innerHTML);
-
         if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
