@@ -76,3 +76,10 @@
 .highlight {
     background-color: yellow;
 }
+
+div#searchColumnsButtons div {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    float: right;
+}
+
