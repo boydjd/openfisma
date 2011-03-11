@@ -9691,9 +9691,33 @@ function alterChartByGlobals(chartParamObj)
     return chartParamObj;
 }
 
-function redrawAllCharts()
+/**
+ * Redraws all charts and refreashes all options dialogs associated.
+ *
+ * If using IE, will post a loading message, and re-call this function
+ * again with doRedrawNow=true based on a timer
+ *
+ * The reason for the use of the timer is to ensure the browser repaints
+ * its content area, and the loading message is actully shown 
+ * (and yes, this is nessesary).
+ */
+function redrawAllCharts(doRedrawNow)
 {
+    // First, show a loading message showing that the chart is loading
+    for (var uniqueid in chartsOnDOM) {
+        var thisParamObj = chartsOnDOM[uniqueid];    
+        showChartLoadingMsg(thisParamObj);
+    }
 
+    // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
+    if (isIE === true) {
+        if (doRedrawNow !== true || doRedrawNow == null) { 
+            setTimeout("redrawAllCharts(true);", 300);
+            return;
+        }
+    }
+    
+    // Now redraw and refreash charts and chart options
     for (var uniqueid in chartsOnDOM) {
     
         var thisParamObj = chartsOnDOM[uniqueid];
@@ -9705,6 +9729,30 @@ function redrawAllCharts()
         globalSettingRefreshUi(thisParamObj);
     }
 
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    // Ensure the threat-level-legend is hidden
+    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';      // clear the current chart container div
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
