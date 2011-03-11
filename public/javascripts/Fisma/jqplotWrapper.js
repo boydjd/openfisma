@@ -20,7 +20,7 @@ var globalSettingsDefaults = {
 var chartsOnDOM = {};
 
 // Is this client/browser Internet Explorer?
-isIE = (window.ActiveXObject) ? true : false;
+isIE = (YAHOO.env.ua.ie > 0) ? true : false;
 
 /**
  * Creates a chart within a div by the name of chartParamsObj['uniqueid'].
@@ -491,7 +491,7 @@ function createChartStackedBar(chartParamsObj)
     };
     
     // bug killer - The canvas object for IE does not understand what transparency is...
-    if (isIE) {
+    if (YAHOO.env.ua.ie > 0) {
         jPlotParamObj.grid.background = '#FFFFFF';
     }
     
@@ -1824,7 +1824,7 @@ function redrawAllCharts(drawPhase)
         // Phase 1; Show the modal loading panel, and break
     
         // First, are we running in IE? If not, skip to phase 2
-        if (!isIE) {
+        if (YAHOO.env.ua.ie === 0) {
             redrawAllCharts(2);
             return;
         }
@@ -1853,7 +1853,7 @@ function redrawAllCharts(drawPhase)
     } else {
         // Phase 2; Redraw charts, and hide modal panel
     
-        // Now re-draw and refreash charts and chart options
+        // Now re-draw and refresh charts and chart options
         var thisParamObj;
         var uniqueid;
         for (uniqueid in chartsOnDOM) {
@@ -1864,7 +1864,6 @@ function redrawAllCharts(drawPhase)
 
         // Hide the modal loading panel
         redrawAllCharts.panelRef.hide();
-        
     }
 }
 
