@@ -221,7 +221,10 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                    new Fisma_Report_Column(
                        'Percentage',
                        true,
-                       'Fisma.TableFormat.completeDocTypePercentage'
+                       'Fisma.TableFormat.completeDocTypePercentage',
+                       null,
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
