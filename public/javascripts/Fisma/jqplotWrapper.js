@@ -1807,65 +1807,66 @@ function alterChartByGlobals(chartParamObj)
 
 /**
  * Redraws all charts and refreashes all options dialogs associated.
- * Shows a YUI modal "loading" panel if using IE
  *
- * @param integer
+ * If using IE, will post a loading message, and re-call this function
+ * again with doRedrawNow=true based on a timer
+ *
+ * The reason for the use of the timer is to ensure the browser repaints
+ * its content area, and the loading message is actully shown 
+ * (and yes, this is nessesary).
  */
-function redrawAllCharts(drawPhase)
+function redrawAllCharts(doRedrawNow)
 {
-    /*
-        Because IE will not repaint its content area untill this java script ends its proccessing,
-        this function is broken into 2 phases.
-        1) Show the modal loading panel, and break
-        2) Redraw charts, and hide modal panel
-    */
-    
-    if (drawPhase === 1 || drawPhase == null) {
-        // Phase 1; Show the modal loading panel, and break
-    
-        // First, are we running in IE? If not, skip to phase 2
-        if (!isIE) {
-            redrawAllCharts(2);
+    // First, show a loading message showing that the chart is loading
+    for (var uniqueid in chartsOnDOM) {
+        var thisParamObj = chartsOnDOM[uniqueid];    
+        showChartLoadingMsg(thisParamObj);
+    }
+
+    // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
+    if (isIE === true) {
+        if (doRedrawNow !== true || doRedrawNow == null) { 
+            setTimeout("redrawAllCharts(true);", 300);
             return;
         }
-    
-        // Show the a YUI modal "loading" panel 
-        var modalLoadingPanel = 
-                new YAHOO.widget.Panel("wait",  
-                    { width:"240px", 
-                      fixedcenter:true, 
-                      close:false, 
-                      draggable:false, 
-                      zindex:4,
-                      modal:true,
-                      visible:false
-                    } 
-                );
-        modalLoadingPanel.setHeader("Redrawing charts...");
-        modalLoadingPanel.setBody('<img src="http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif" />');
-        modalLoadingPanel.render(document.body);
-        modalLoadingPanel.show();
-        redrawAllCharts.panelRef = modalLoadingPanel;
-        
-        // Break, and trigger phase 2 after a wait to ensure the content area is repainted
-        setTimeout("redrawAllCharts(2)", 1);
-    
-    } else {
-        // Phase 2; Redraw charts, and hide modal panel
-    
-        // Now re-draw and refreash charts and chart options
-        var thisParamObj;
-        var uniqueid;
-        for (uniqueid in chartsOnDOM) {
-            thisParamObj = chartsOnDOM[uniqueid];
-            createJQChart(thisParamObj);            // Redraw chart
-            globalSettingRefreshUi(thisParamObj);   // Refreash Global Settings UI
-        }
-
-        // Hide the modal loading panel
-        redrawAllCharts.panelRef.hide();
-        
     }
+    
+    // Now redraw and refreash charts and chart options
+    for (var uniqueid in chartsOnDOM) {
+    
+        var thisParamObj = chartsOnDOM[uniqueid];
+        
+        // redraw chart
+        createJQChart(thisParamObj);
+        
+        // refreash Global Settings UI
+        globalSettingRefreshUi(thisParamObj);
+    }
+
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    // Ensure the threat-level-legend is hidden
+    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';      // clear the current chart container div
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
