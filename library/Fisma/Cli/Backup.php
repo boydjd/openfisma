@@ -54,6 +54,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
+        
         // Time changes in seconds, remember the current time
         $this->_myTimeStamp = time();
         
@@ -92,7 +93,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $this->_pruneBackups();
         
         // Backup schema
-        $this->_copySchema($backupFileSql);
+        $this->_copySchema();
         
         // copy files from the application root into the backup directory
         $this->_copyApplication();
@@ -128,15 +129,16 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $optCompress = $this->getOption('compress');
         
         if (!is_null($optCompress) && $optCompress === true) {
-            $tgzPath = $this->_backupRoot . '/' . $this->_myTimeStamp . ".tgz";
-            $tgzPath = str_replace('//', '/', $tgzPath);
-            print "Compressing backup into " . $tgzPath . "\n";
+        
+            $zipPath = realpath($this->_backupRoot) . '/' . $this->_myTimeStamp . ".zip";
+            print "Compressing backup into " . $zipPath . "\n";
             chdir($this->_backupRoot);
-            $s = exec("tar -zcpf " . $tgzPath . " " . $this->_myTimeStamp . "/");
-            $s = exec("rm -r " . $this->_myTimeStamp . "/");
-            if (!file_exists($tgzPath)) {
+            
+            if (!$this->_createZip($this->_myTimeStamp . '/', $zipPath)) {
                 print "   compression failed.\n";
                 return false;
+            } else {
+                $this->_removeDirectory($this->_myTimeStamp . '/');
             }
             print "   done.\n";
             return true;
@@ -188,9 +190,8 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
     private function _copySchema()
     {
         // Get MySql login info
-        $dbConfig = new Zend_Config_Ini(Fisma::getPath('application') . '/config/database.ini');
-        $db = $dbConfig->toArray();
-        $db = $db['production']['db'];
+        global $application;
+        $db = $application->getOption('db');
         $dbUser = $db['username'];
         $dbPass = $db['password'];
         $dbSchema = $db['schema'];
@@ -263,7 +264,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                         
                         print "   Removing old backup directory: " . basename($oldBackupName) . "\n"; 
                         
-                        $s = exec("rm -R $oldBackupName");
+                        $s = $this->_removeDirectory($oldBackupName);
                         if (file_exists("$oldBackupName")) {
                             print "   directory deletion failed: " . $oldBackupName . "\n";
                         } else {
@@ -287,4 +288,77 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done\n";
         return $toReturn;
     }
+    
+    private function _scanDirRecursive($targetPath, $includeDirs = true, $includeFiles = true) {
+        $stack = array();
+        
+        $targetPath = realpath($targetPath);
+        $thisDir = scandir($targetPath);
+        foreach ($thisDir as &$thisFile) {
+            if ($thisFile !== '.' && $thisFile !== '..') {
+
+                if (is_dir($targetPath . '/' . $thisFile)) {
+                    if ($includeDirs) {
+                        $stack[] = realpath($targetPath . '/' . $thisFile);
+                    }
+                } else {
+                    if ($includeFiles) {
+                        $stack[] = realpath($targetPath . '/' . $thisFile);
+                    }
+                }
+                
+                if (is_dir($targetPath . '/' . $thisFile)) {
+                    $stack = array_merge($stack, $this->_scanDirRecursive($targetPath . '/' . $thisFile . '/', $includeDirs, $includeFiles));
+                }
+                
+            }
+        }
+        
+        return $stack;
+    }
+    
+    private function _removeDirectory($dirPath) {
+
+        // remove all files in tree
+        $files = $this->_scanDirRecursive($dirPath, false, true);
+        foreach($files as $file) {
+            unlink($file);
+        }
+        
+        // remove all sub-directories in tree
+        $dirs = $this->_scanDirRecursive($dirPath, true, false);
+        $dirs = array_reverse($dirs);
+        foreach($dirs as $thisDir) {
+            rmdir($thisDir);
+        }
+        
+        // remove directory
+        rmdir($dirPath);
+        
+    }
+    
+    private function _createZip($filesFromPath, $destination) {
+
+        //create the archive
+        $zip = new ZipArchive();
+
+        if($zip->open($destination, ZIPARCHIVE::CREATE) !== true) {
+            return false;
+        }
+
+        // get file list
+        $filesFromPath = realpath($filesFromPath);
+        $files = $this->_scanDirRecursive($filesFromPath, false, true);
+
+        //add the files
+        foreach($files as $file) {
+            $pathWithinZip = str_replace($filesFromPath . '/', '', $file);
+            $zip->addFile($file, $pathWithinZip);
+        }
+
+        $zip->close();
+        return file_exists($destination);
+    }
+
+
 }
