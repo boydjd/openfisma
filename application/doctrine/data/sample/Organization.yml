@@ -79,3 +79,9 @@ Organization:
                                 name: Customer Relationship Management System
                                 orgType: system
                                 System: CRMS_SYS
+                    
+                    DISPOSAL_ORG:
+                        nickname: DISPOSAL 
+                        name: Disposal System
+                        orgType: system
+                        System: DISPOSAL_SYS
