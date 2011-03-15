@@ -430,12 +430,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->layout->setLayout('anonymous');
         }
         
-        // Fetch the incident report draft from the session
+        // Fetch the incident report draft from the session. If no incident report draft is in the session,
+        // such as refresh this page, for anonymous user, it goes to incident report page. Otherwise, it goes
+        // to incident list page.
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
             $incident = unserialize($session->irDraft);
         } else {
-            throw new Fisma_Zend_Exception('No incident report found in session');
+            if (!$this->_me) {
+                $this->_redirect('/incident/report');     
+            } else { 
+                $this->_redirect('/incident/list');     
+            }
         }
 
         $incident->save();
