@@ -170,8 +170,15 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
 
                         $fieldName = $table->getFieldName($columnName);
 
-                        // Insert malicous text and add row number as a way of making each value unique
-                        $row->$fieldName = "><&“”<script>alert('$modelName - $fieldName - $currentRow');</script>"; 
+                        /* Insert malicous text and add row number as a way of making each value unique
+                         * It contains:
+                         * 1. Problematic characters when working with HTML encodings, like angle brackets and ampersand
+                         * 2. Weird UTF-8 characters (smart quotes) that do not exist in LATIN-1
+                         * 3. A javascript snippet which tries to run an alert
+                         *
+                         * I tried to make this compact so it would have the highest likelihood of fitting in a field.
+                         */
+                        $row->$fieldName = "><&“”<script>alert('$modelName - $fieldName - $currentRow');</script>" . rand();
                     }
                 }
 
