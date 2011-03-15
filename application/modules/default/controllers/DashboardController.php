@@ -256,7 +256,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $nonStackedLinks = array();
         
         // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
-        $statusArray = array('NEW', 'DRAFT', 'MS ISSO', 'MS IV&V', 'EN', 'EV ISSO', 'EV IV&V');
+        $statusArray = Finding::getAllStatuses();
         foreach ($statusArray as $thisStatus) {
 
             // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
