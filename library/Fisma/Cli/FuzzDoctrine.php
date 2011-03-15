@@ -58,7 +58,6 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
      * @var array
      */
     private $_skipFields = array(
-        'Configuration' => array('name', 'value'), 
         'Event' => array('name'), 
         'Module' => array('name'),
         'Privilege' => array('action', 'resource')
@@ -70,7 +69,7 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
     protected function _run()
     {
         Fisma::setNotificationEnabled(false);
-        Fisma::setListenerEnabled(false);
+        Fisma::setListenerEnabled(true, true);
 
         // Script does not run in production mode, just to be safe
         if (!Fisma::debug()) {
@@ -116,6 +115,11 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
             }
 
             $modelName = substr($modelFileName, 0, -4);
+
+            // Skip the configuration model
+            if ($modelName == 'Configuration') {
+                continue;
+            }
 
             // Check for Fisma_Doctrine_Record subclasses only
             $reflection = new ReflectionClass($modelName);
@@ -167,7 +171,7 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
                         $fieldName = $table->getFieldName($columnName);
 
                         // Insert malicous text and add row number as a way of making each value unique
-                        $row->$fieldName = self::MALICIOUS_TEXT . $currentRow;
+                        $row->$fieldName = "><&“”<script>alert('$modelName - $fieldName - $currentRow');</script>"; 
                     }
                 }
 
