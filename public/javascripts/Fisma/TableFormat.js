@@ -221,6 +221,12 @@ Fisma.TableFormat = {
         var organization = oRecord.getData('System');
 
         if (organization) {
+        
+            // Since organization may be html-encoded, decode the html before (url)-escaping it
+            var dummyRenderer = document.createElement('div');
+            dummyRenderer.innerHTML = organization;
+            organization = dummyRenderer.childNodes[0].nodeValue;
+            
             overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
         }
 
