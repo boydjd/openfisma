@@ -22,23 +22,26 @@
  */
 
 (function() {
-    Fisma.Storage = function(namespace) {
+    var FS = function(namespace) {
         this.namespace = namespace;
-        this.storageEngine = YAHOO.util.StorageManager.get(
-            null, // no preferred engine
-            YAHOO.util.StorageManager.LOCATION_SESSION
-        );
-
     };
-    Fisma.Storage.prototype = {
-        onReady: function(fn) {
-            if (!this.storageEngine.isReady) {
-                this.storageEngine.subscribe(this.storageEngine.CE_READY, fn, this, true);
+
+    FS._storageEngine = YAHOO.util.StorageManager.get(
+        null, // no preferred engine
+        YAHOO.util.StorageManager.LOCATION_SESSION
+    );
+    FS.onReady = function(fn, obj, scope) {
+            if (!FS._storageEngine.isReady) {
+                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
             } else {
-                fn.call(this);
+                var s = scope === true ? obj : scope;
+                if (typeof(s) !== "object") {
+                    s = fn;
+                }
+                fn.call(s, obj);
             }
         },
-
+    FS.prototype = {
         get: function(key) {
             return this._get(key);
         },
@@ -47,10 +50,11 @@
         },
 
         _get: function(key) {
-            return YAHOO.lang.JSON.parse(this.storageEngine.getItem(this.namespace + ":" + key));
+            return YAHOO.lang.JSON.parse(FS._storageEngine.getItem(this.namespace + ":" + key));
         },
         _set: function(key, value) {
-            this.storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
+            FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
+    Fisma.Storage = FS;
 })();

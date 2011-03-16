@@ -66,7 +66,7 @@
                     scope = callback.scope;
                 }
             }
-            this.onReady(function() {
+            Fisma.Storage.onReady(function() {
                 var uri = '/storage/sync/format/json',
                     callback = {
                         scope: this,
@@ -92,7 +92,7 @@
                         reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
                     });
                 YAHOO.util.Connect.asyncRequest ( 'POST', uri , callback , postData );
-            });
+            }, this, true);
         }
     });
 })();
