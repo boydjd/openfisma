@@ -257,6 +257,12 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         
         // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
         $statusArray = Finding::getAllStatuses();
+        
+        // Removed the string element 'CLOSED' from the $statusArray array
+        if ($statusArray[count($statusArray) - 1] === 'CLOSED') {
+            array_pop($statusArray);
+        }
+        
         foreach ($statusArray as $thisStatus) {
 
             // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty

@@ -571,7 +571,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $q
                 ->addSelect('threatlevel threat, COUNT(f.id)')
                 ->from('Finding f')
-                ->where('f.nextduedate BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
+                ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy('threatlevel')
@@ -610,7 +610,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             // The links to associate with entire columns when this is not a stacked bar chart
             $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
+                '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
 
             $thisChart->addColumn(
                 $thisColLabel,
@@ -622,15 +622,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 array(
                     '/finding/remediation/list/queryType/advanced' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/HIGH',
                     '/finding/remediation/list/queryType/advanced' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/MODERATE',
                     '/finding/remediation/list/queryType/advanced' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/LOW'
                 )
             );
