@@ -399,24 +399,44 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             switch ($operator) {
                 case 'dateAfter':
-                    $afterDate = $this->_convertToSolrDate($operands[0]);
-                    $searchTerms[] = "$fieldName:[$afterDate TO *]";
+                    try {
+                        $afterDate = $this->_convertToSolrDate($operands[0]);
+                        $searchTerms[] = "$fieldName:[$afterDate TO *]";
+                    } catch (Exception $e) {
+                        // The input date is invalid, return an empty set.
+                        return new Fisma_Search_Result(0, 0, array());
+                    }
                     break;
 
                 case 'dateBefore':
-                    $beforeDate = $this->_convertToSolrDate($operands[0]);
-                    $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
+                    try  {
+                        $beforeDate = $this->_convertToSolrDate($operands[0]);
+                        $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
+                    } catch (Exception $e) {
+                        // The input date is invalid, return an empty set.
+                        return new Fisma_Search_Result(0, 0, array());
+                    }
                     break;
 
                 case 'dateBetween':
-                    $afterDate = $this->_convertToSolrDate($operands[0]);
-                    $beforeDate = $this->_convertToSolrDate($operands[1]);
-                    $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
+                    try {
+                        $afterDate = $this->_convertToSolrDate($operands[0]);
+                        $beforeDate = $this->_convertToSolrDate($operands[1]);
+                        $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
+                    } catch (Exception $e) {
+                        // The input date is invalid, return an empty set.
+                        return new Fisma_Search_Result(0, 0, array());
+                    }
                     break;
 
                 case 'dateDay':
-                    $date = $this->_convertToSolrDate($operands[0]);
-                    $searchTerms[] = "$fieldName:[$date/DAY TO $date/DAY+1DAY]";
+                    try {
+                        $date = $this->_convertToSolrDate($operands[0]);
+                        $searchTerms[] = "$fieldName:[$date/DAY TO $date/DAY+1DAY]";
+                    } catch (Exception $e) {
+                        // The input date is invalid, return an empty set.
+                        return new Fisma_Search_Result(0, 0, array());
+                    }
                     break;
 
                 case 'dateThisMonth':
@@ -542,8 +562,12 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $query->setQuery($queryString);
 
-        $response = $this->_client->query($query)->getResponse();
-
+        try {
+            $response = $this->_client->query($query)->getResponse();
+        } catch (Exception $e) {
+            return new Fisma_Search_Result(0, 0, array());
+        }
+        
         return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
