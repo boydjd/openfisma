@@ -21,31 +21,32 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-// Constants
-var CHART_CREATE_SUCCESS = 1;
-var CHART_CREATE_FAILURE = 2;
-var CHART_CREATE_EXTERNAL = 3;
-
-// Defaults for global chart settings definition:
-var globalSettingsDefaults = {
-    fadingEnabled:      false,
-    barShadows:         false,
-    barShadowDepth:     3,
-    dropShadows:        false,
-    gridLines:          false,
-    pointLabels:        false,
-    pointLabelsOutline: false,
-    showDataTable: false
-};
-
-// Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
-var chartsOnDOM = {};
-
-// Is this client-browser Internet Explorer?
-var isIE = (window.ActiveXObject) ? true : false;
-
 Fisma.Chart = {
 
+    // Constants
+    CHART_CREATE_SUCCESS: 1,
+    CHART_CREATE_FAILURE: 2,
+    CHART_CREATE_EXTERNAL: 3,
+
+    // Defaults for global chart settings definition:
+    globalSettingsDefaults:{
+        fadingEnabled:      false,
+        barShadows:         false,
+        barShadowDepth:     3,
+        dropShadows:        false,
+        gridLines:          false,
+        pointLabels:        false,
+        pointLabelsOutline: false,
+        showDataTable: false
+    },
+
+    // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
+    chartsOnDOM:{},
+
+    // Is this client-browser Internet Explorer?
+    isIE: (window.ActiveXObject) ? true : false,
+    
+    
     /**
      * When an external source is needed, this function should handel the returned JSON request
      * The chartParamsObj object that went into Fisma.Chart.createJQChart(obj) would be the chartParamsObj here, and
@@ -151,7 +152,7 @@ Fisma.Chart = {
             };
             myDataSource.sendRequest("", callback1);
 
-            return CHART_CREATE_EXTERNAL;
+            return Fisma.Chart.CHART_CREATE_EXTERNAL;
         }
 
         // clear the chart area
@@ -188,10 +189,10 @@ Fisma.Chart = {
 
         // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
         // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
-        chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
+        Fisma.Chart.chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
 
         // call the correct function based on chartType, or state there will be no chart created
-        var rtn = CHART_CREATE_FAILURE;
+        var rtn = Fisma.Chart.CHART_CREATE_FAILURE;
         if (!Fisma.Chart.chartIsEmpty(chartParamsObj)) {
 
             switch(chartParamsObj.chartType)
@@ -370,7 +371,7 @@ Fisma.Chart = {
         // use the created function as the click-event-handeler
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
-        return CHART_CREATE_SUCCESS;
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
      /**
@@ -507,7 +508,7 @@ Fisma.Chart = {
         };
 
         // bug killer - The canvas object for IE does not understand what transparency is...
-        if (isIE) {
+        if (Fisma.Chart.isIE) {
             jPlotParamObj.grid.background = '#FFFFFF';
         }
 
@@ -528,7 +529,7 @@ Fisma.Chart = {
 
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
 
-        return CHART_CREATE_SUCCESS;
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
      /**
@@ -583,7 +584,7 @@ Fisma.Chart = {
                     }
         });
 
-        return CHART_CREATE_SUCCESS;
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
     /**
@@ -1788,10 +1789,10 @@ Fisma.Chart = {
             return rtnValue;
         } else {
 
-            if (typeof globalSettingsDefaults[settingName] === 'undefined') {
+            if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
                 throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
             } else {
-                return String(globalSettingsDefaults[settingName]);
+                return String(Fisma.Chart.globalSettingsDefaults[settingName]);
             }
         }
     },
@@ -1866,13 +1867,13 @@ Fisma.Chart = {
     redrawAllCharts : function (doRedrawNow)
     {
         // First, show a loading message showing that the chart is loading
-        for (var uniqueid in chartsOnDOM) {
-            var thisParamObj = chartsOnDOM[uniqueid];    
+        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
+            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
             Fisma.Chart.showChartLoadingMsg(thisParamObj);
         }
 
         // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
-        if (isIE === true) {
+        if (Fisma.Chart.isIE === true) {
             if (doRedrawNow !== true || doRedrawNow == null) { 
                 setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
                 return;
@@ -1880,9 +1881,9 @@ Fisma.Chart = {
         }
 
         // Now redraw and refreash charts and chart options
-        for (var uniqueid in chartsOnDOM) {
+        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
 
-            var thisParamObj = chartsOnDOM[uniqueid];
+            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
 
             // redraw chart
             Fisma.Chart.createJQChart(thisParamObj);
