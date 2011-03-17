@@ -300,6 +300,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisParentOrg['nickname'],
                     $childrenTotaled,
                     array(
+                        '',
                         $basicLink . '/threatLevel/enumIs/HIGH',
                         $basicLink . '/threatLevel/enumIs/MODERATE',
                         $basicLink . '/threatLevel/enumIs/LOW'
@@ -640,7 +641,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisMod,
                     $thisLow
                 ),
-                array(
+                array('',
                     '/finding/remediation/list/queryType/advanced' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
@@ -1167,7 +1168,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $modCount,
                         $lowCount
                     ),
-                    array('/finding/remediation/list/queryType/advanced' .
+                    array('',
+                        '/finding/remediation/list/queryType/advanced' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .

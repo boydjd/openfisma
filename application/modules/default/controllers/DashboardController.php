@@ -302,6 +302,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
+                '',
                 $basicLink . '/threatLevel/enumIs/HIGH',
                 $basicLink . '/threatLevel/enumIs/MODERATE',
                 $basicLink . '/threatLevel/enumIs/LOW'
