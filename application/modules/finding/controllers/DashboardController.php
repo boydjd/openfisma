@@ -1071,10 +1071,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
         $threatLvl = $this->getRequest()->getParam('forcastThreatLvl');
 
-        $highCount = array();
-        $modCount = array();
-        $lowCount = array();
-        $nullCount = array();
+        $highCount = 0;
+        $modCount = 0;
+        $lowCount = 0;
+        $nullCount = 0;
         $chartDataText = array();
         $totalChartLinks = array();
 
