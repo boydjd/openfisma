@@ -250,6 +250,10 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 $sortedRslts[$thisRslt['denormalizedStatus']] = array();
             }
 
+            if ($thisRslt['threatLevel'] === NULL) {
+                $thisRslt['threatLevel'] = 'NULL';
+            }
+
             $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
         }
         
@@ -283,9 +287,15 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             } else {
                 $lowCount = 0;
             }
+            
+            if (!empty($sortedRslts[$thisStatus]['NULL'])) {
+                $nullCount = $sortedRslts[$thisStatus]['NULL'];
+            } else {
+                $nullCount = 0;
+            }
 
             // Prepare for a stacked-bar chart (these are the counts on each stack within the column)
-            $addColumnCounts = array($highCount, $modCount, $lowCount);
+            $addColumnCounts = array($nullCount, $highCount, $modCount, $lowCount);
 
             // Make each area of the chart link
             $basicLink = '/finding/remediation/list/queryType/advanced' .
@@ -325,21 +335,28 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                     );
                 break;
             case "high, moderate, and low":
-                // $thisChart is already in this form
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
                 break;
             case "high":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
