@@ -249,6 +249,7 @@ Fisma.Incident = {
         var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
+        // To create an element with a NAME attribute and its value for IE.
         if (YAHOO.env.ua.ie) {
             var newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
         } else {
