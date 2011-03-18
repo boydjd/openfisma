@@ -402,7 +402,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     try {
                         $afterDate = $this->_convertToSolrDate($operands[0]);
                         $searchTerms[] = "$fieldName:[$afterDate TO *]";
-                    } catch (Exception $e) {
+                    } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());
                     }
@@ -412,7 +412,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     try  {
                         $beforeDate = $this->_convertToSolrDate($operands[0]);
                         $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
-                    } catch (Exception $e) {
+                    } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());
                     }
@@ -423,7 +423,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                         $afterDate = $this->_convertToSolrDate($operands[0]);
                         $beforeDate = $this->_convertToSolrDate($operands[1]);
                         $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
-                    } catch (Exception $e) {
+                    } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());
                     }
@@ -433,7 +433,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     try {
                         $date = $this->_convertToSolrDate($operands[0]);
                         $searchTerms[] = "$fieldName:[$date/DAY TO $date/DAY+1DAY]";
-                    } catch (Exception $e) {
+                    } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());
                     }
@@ -564,7 +564,7 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         try {
             $response = $this->_client->query($query)->getResponse();
-        } catch (Exception $e) {
+        } catch (SolrClientException $e) {
             return new Fisma_Search_Result(0, 0, array());
         }
         
