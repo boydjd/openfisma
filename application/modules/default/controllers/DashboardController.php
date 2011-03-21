@@ -250,7 +250,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 $sortedRslts[$thisRslt['denormalizedStatus']] = array();
             }
 
-            if ($thisRslt['threatLevel'] === NULL) {
+            if ($thisRslt['threatLevel'] === NULL || $thisRslt['threatLevel'] === '') {
                 $thisRslt['threatLevel'] = 'NULL';
             }
 

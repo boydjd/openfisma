@@ -397,6 +397,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     case NULL:
                         $totalNull += $thisThreatLvl['COUNT'];
                         break;
+                    case '':
+                        $totalNull += $thisThreatLvl['COUNT'];
+                        break;
                 }
                 
             }
@@ -612,7 +615,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $thisHigh = $thisRslt['COUNT'];
                         break;
                     case NULL:
-                        $thisNull = $thisRslt['COUNT'];
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
+                    case '':
+                        $thisNull += $thisRslt['COUNT'];
                         break;
                 }
             }
@@ -1153,7 +1159,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $lowCount = $thisRslt['COUNT'];
                         break;
                     case NULL:
-                        $nullCount = $thisRslt['COUNT'];
+                        $nullCount += $thisRslt['COUNT'];
+                        break;
+                    case '':
+                        $nullCount += $thisRslt['COUNT'];
                         break;
                 }
             }
