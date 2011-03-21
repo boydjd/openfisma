@@ -68,6 +68,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/Storage.js',
                                       '/javascripts/Fisma/PersistentStorage.js',
+                                      '/javascripts/Fisma/Search/TablePreferences.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',

@@ -44,12 +44,14 @@
         YAHOO.util.Event.onContentReady (
             "searchColumns", 
             function () {
-                var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+                Fisma.Storage.onReady(function() {
+                    var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
         
-                Fisma.Search.initializeSearchColumnsPanel(
-                    document.getElementById('searchColumnsButtons'), 
-                    advancedSearchOptions
-                );
+                    Fisma.Search.initializeSearchColumnsPanel(
+                        document.getElementById('searchColumnsButtons'), 
+                        advancedSearchOptions
+                    );
+                });
             }
         );
 

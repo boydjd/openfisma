@@ -566,14 +566,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $searchResultsTable->addColumn($column);
         }
 
-        // Check if the user has a cookie describing his search column preferences
-        $cookieName = $this->_modelName . 'Columns';
-
-        if (isset($_COOKIE[$cookieName])) {
-            $visibleColumns = $_COOKIE[$cookieName];
-        }
-
-        $currentColumn = 0;
+        $visibleColumns = $this->_getColumnVisibility();
 
         // Look up searchable columns and add them to the table
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
@@ -587,14 +580,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $label = $searchParams['label'];
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
-            // Column visibility is determined by cookie (if available) or by metadata otherwise
-            if (isset($visibleColumns)) {
-                $visible = (bool)($visibleColumns & (1 << $currentColumn));
+            if (isset($visibleColumns[$fieldName])) {
+                $visible = (bool)$visibleColumns[$fieldName];
             } else {
                 $visible = $searchParams['initiallyVisible'];
             }
-
-            $currentColumn++;
 
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
@@ -638,6 +628,22 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
 
         $this->renderScript('object/list.phtml');
+    }
+
+    /**
+     * Get table column visibility information
+     *
+     * @return array Key is field name and value is boolean.
+     */
+    protected function _getColumnVisibility()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.TablePreferences';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $visibleColumns = !empty($storage) && !empty($storage->data) ? $storage->data : array();
+        $visibleColumns = !empty($visibleColumns[$this->_modelName]) ? $visibleColumns[$this->_modelName] : array();
+        $visibleColumns = !empty($visibleColumns['columnVisibility']) ? $visibleColumns['columnVisibility'] : array();
+        return $visibleColumns;
     }
 
     /**
@@ -749,13 +755,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             $report = new Fisma_Report;
             
-            $cookieName = $this->_modelName . 'Columns';
-
-            if (isset($_COOKIE[$cookieName])) {
-                $visibleColumns = $_COOKIE[$cookieName];
-            }
-
-            $currentColumn = 0;
+            $visibleColumns = $this->_getColumnVisibility();
 
             // Columns are returned in wrong order and need to be re-arranged
             $rawSearchData = $result->getTableData();
@@ -769,12 +769,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             foreach ($searchableFields as $fieldName => $searchableField) {
                 
                 // Visibility is determined by stored cookie, with fallback to search field definition
-                if (isset($visibleColumns)) {
-                    $visible = (bool)($visibleColumns & (1 << $currentColumn));
+                if (isset($visibleColumns[$fieldName])) {
+                    $visible = (bool)$visibleColumns[$fieldName];
                 } else {
                     $visible = isset($searchableField['initiallyVisible']) && $searchableField['initiallyVisible'];
                 }
-                
+
                 // For visible columns, display the column in the report and add data from the 
                 // raw result for that column
                 if ($visible) {
@@ -790,8 +790,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                         }
                     }
                 }
-                
-                $currentColumn++;                
             }
 
             $report->setTitle('Search Results for ' . $this->getPluralModelName())

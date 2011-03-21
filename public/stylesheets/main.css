@@ -560,3 +560,9 @@ input[type=text].date {
     background-color: white;
     width: 10em;
 }
+
+/* class for dynamically hidden elements */
+.display-none {
+    display: none;
+}
+
