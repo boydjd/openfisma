@@ -128,19 +128,16 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                                ->select('s.id As id')
                                ->addSelect('o.name AS name')
                                ->addSelect(
-                                   "CONCAT(ROUND(SUM(IF(dt.required = true, 1, 0)) / "
-                                   . "($docTypeRequiredCount)*100, 1), '%') AS percentage"
+                                   "ROUND(SUM(IF(dt.required = true, 1, 0)) / "
+                                   . "($docTypeRequiredCount)*100, 1) AS percentage"
                                )
                                ->leftJoin('o.System s')
                                ->leftJoin('s.Documents sd')
                                ->leftJoin('sd.DocumentType dt')
-                               ->leftJoin('Organization bureau')
                                ->andWhere('o.orgType = ?', array('system'))
                                ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                               ->andWhere('bureau.orgType = ?', array('bureau'))
-                               ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
                                ->groupBy('o.name')
-                               ->orderBy('bureau.name, o.name')
+                               ->orderBy('o.name')
                                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         return $systemDocumentQuery;

@@ -54,13 +54,18 @@ class DocumentTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             return null;
         }
 
-        $documentTypes = Doctrine_Query::create()
-                         ->select('IFNULL(GROUP_CONCAT(dt.name), \'N/A\') AS name')
-                         ->from('DocumentType dt')
-                         ->where('dt.required = ?', true)
-                         ->andWhereNotIn('dt.id', $this->_getDocumentTypeIds($systemId))
-                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                         ->fetchOne();
+        $documentTypeIds = $this->_getDocumentTypeIds($systemId);
+
+        $documentTypesQuery = Doctrine_Query::create()
+            ->select('IFNULL(GROUP_CONCAT(dt.name), \'N/A\') AS name')
+            ->from('DocumentType dt')
+            ->where('dt.required = ?', true)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        if (count($documentTypeIds) > 0) {
+             $documentTypesQuery->andWhereNotIn('dt.id', $documentTypeIds);
+        }
+
+        $documentTypes = $documentTypesQuery->fetchOne();
 
         return $documentTypes['name'];
     }

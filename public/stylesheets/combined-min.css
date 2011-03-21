@@ -70,8 +70,8 @@ div.toolbar{font-weight:bold;background-color:#ebebeb;margin:10px auto;border:1p
 span.userInfo{padding-left:17px;padding-right:1px;border-bottom:1px dashed black;background:url(/images/user-info.png) no-repeat 0 1px;}
 span.userInfo:hover{cursor:pointer;}
 span.userInfo:active{color:#416ed7;}
-.screenReaderTabel{display:none;width:100%;}
-.widgetSpaceHolder{display:none;width:400px;margin-left:auto;margin-right:auto;text-align:left;}
+.screenReaderTabel{width:100%;}
+.widgetSpaceHolder{width:400px;margin-left:auto;margin-right:auto;text-align:left;}
 .chartGear{cursor:pointer;width:20px;}
 .jqplot-target{position:relative;color:#666;font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;font-size:1em;}
 .jqplot-axis{font-size:.75em;}
@@ -100,7 +100,7 @@ div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bott
 table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}
 .jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}
 .jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}
-.jqplot-point-label{font-size:.75em;z-index:2;}
+.jqplot-point-label{font-size:.75em;z-index:0;}
 td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}
 div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}
 .jqplot-error{text-align:center;}

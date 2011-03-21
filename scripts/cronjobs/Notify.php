@@ -106,6 +106,7 @@ class Notify
                   'u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
                   INTERVAL u.notifyFrequency HOUR)'
               )
+              ->andWhere('u.locked IS NULL OR (u.locked IS NOT NULL AND u.locktype = "manual")')
               ->orderBy('u.id, n.createdts');
         $notifications = $query->execute();
 

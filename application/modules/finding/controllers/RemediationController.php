@@ -751,7 +751,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         }
-        $this->_forward('view', null, null, array('id' => $id));
+
+        $this->_redirect("/finding/remediation/view/id/$id");
     }
 
     /**
@@ -826,7 +827,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
-        $this->_forward('view', null, null, array('id' => $id));
+
+        $this->_redirect("/finding/remediation/view/id/$id");
     }
     
     /**
@@ -911,7 +913,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         }
-        $this->_forward('view', null, null, array('id' => $id));
+
+        $this->_redirect("/finding/remediation/view/id/$id");
     }
 
     /**

@@ -266,7 +266,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $trimmedKeyword = trim($keyword);
 
         if (!empty($trimmedKeyword)) {
-            $keywordTokens = explode(' ', $trimmedKeyword);
+            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }
@@ -677,6 +677,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
                     $doctrineQuery->andWhere("$sqlFieldName LIKE ?", $operands[0]);
                     break;
 
+                case 'textNotExactMatch':
+                    $doctrineQuery->andWhere("$sqlFieldName NOT LIKE ?", $operands[0]);
+                    break;
+
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
                     if (isset($searchableFields[$luceneFieldName]['extraCriteria'][$operator])) {
@@ -720,7 +724,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $zslTermQuery = new Zend_Search_Lucene_Search_Query_MultiTerm;
             
             foreach ($terms as $term) {
-                $zslTermQuery->addTerm($term, true);
+                $zslTermQuery->addTerm($term, null);
             }
         }
 

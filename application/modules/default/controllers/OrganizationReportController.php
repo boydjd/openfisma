@@ -68,7 +68,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                           ->andWhere('s.sdlcPhase <> ?', 'disposal')
                           ->andWhere('r.nickname LIKE ? OR r.nickname LIKE ?', array('ISO', 'ISSO'))
                           ->andWhere('u.deleted_at IS NULL')
-                          ->andWhere("(u.locktype IS NULL OR u.locktype<>'manual')")
+                          ->andWhere("u.locktype IS NULL OR u.locktype<>'manual'")
                           ->orderBy('o.lft, o.rgt, u.nameLast, u.nameFirst')
                           ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
@@ -221,7 +221,10 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                    new Fisma_Report_Column(
                        'Percentage',
                        true,
-                       'Fisma.TableFormat.completeDocTypePercentage'
+                       'Fisma.TableFormat.completeDocTypePercentage',
+                       null,
+                       false,
+                       'number'
                    )
                )
                ->addColumn(

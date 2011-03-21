@@ -164,6 +164,20 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
             return false;
         }
     }
+
+    /**
+     * Override parent setup 
+     * 
+     * @access public
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->addListener(new ReplaceInvalidCharactersListener(), 'ReplaceInvalidCharactersListener');
+        $this->addListener(new XssListener(), 'XssListener');
+    }
     
     /**
      * Get a customized error validation message that is suitable for displaying to an end user

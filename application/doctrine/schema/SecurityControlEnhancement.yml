@@ -1,6 +1,4 @@
 SecurityControlEnhancement:
-    listeners: [XssListener]
-
     columns:
         level:
             type: enum

@@ -238,8 +238,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $query->addFilterQuery($filterQuery);
 
-            // Tokenize keyword on spaces and escape all tokens
-            $keywordTokens = explode(' ', $trimmedKeyword);
+            // Tokenize keywords and escape all tokens.
+            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }
@@ -506,6 +506,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     $searchTerms[] = "{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
                     break;
 
+                case 'textNotExactMatch':
+                    $searchTerms[] = "-{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
+                    break;
+
                 default:
                     // Fields can define custom criteria (that wouldn't match any of the above cases)
                     if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
@@ -533,6 +537,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         }
 
         $queryString = implode($searchTerms, ' AND ');
+
+        if (empty($queryString)) {
+            $queryString = "id:[* TO *]";
+        }
 
         $query->setQuery($queryString);
 

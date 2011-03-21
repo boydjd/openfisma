@@ -153,12 +153,16 @@ class Fisma_Search_ReverseIndexer
      */
     private function _getReverseIndex()
     {
-        $cache = Zend_Controller_Front::getInstance()
-                    ->getParam('bootstrap')
-                    ->getResource('cachemanager')
-                    ->getCache('default');
-        
-        if (($reverseIndex = $cache->load('searchEngineReverseIndex')) === false ) {
+        $bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
+
+        $cache = false;
+        if ($bootstrap && $bootstrap->hasResource('cachemanager')) {
+            $cache = $bootstrap->getResource('cachemanager')->getCache('default');
+        }
+
+        $reverseIndex = $cache ? $cache->load('searchEngineReverseIndex') : false;
+
+        if (!$reverseIndex) {
         
             $indexEnumerator = new Fisma_Search_IndexEnumerator;
             
@@ -198,7 +202,9 @@ class Fisma_Search_ReverseIndexer
                 }
             }
             
-            $cache->save($reverseIndex, 'searchEngineReverseIndex');
+            if ($cache) {
+                $cache->save($reverseIndex, 'searchEngineReverseIndex');
+            }
         }
         
         return $reverseIndex;

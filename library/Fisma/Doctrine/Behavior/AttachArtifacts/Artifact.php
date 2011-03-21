@@ -38,7 +38,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Re
     public function getIconUrl()
     {
         $pi = pathinfo($this->fileName);
-        $extension = strtolower($pi['extension']);
+        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
         $imagePath = Fisma::getPath('image');
         
         if (file_exists("$imagePath/mimetypes/$extension.png")) {

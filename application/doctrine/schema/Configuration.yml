@@ -1,6 +1,4 @@
 Configuration:
-    listeners: [XssListener]
-        
     columns:
         account_inactivity_period:
            type: integer(1)

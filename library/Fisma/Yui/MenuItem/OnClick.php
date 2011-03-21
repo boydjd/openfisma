@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,15 +17,35 @@
  */
 
 /**
- * Thrown when the application tries to parse or load an invalid privilege.
+ * An object which represents a menuitem onclick object in YUI
  * 
- * @author     Ryan Yang <ryanyang@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Zend_Exception
- * @version    $Id$
+ * @subpackage Fisma_Yui
  */
-class Fisma_Zend_Exception_InvalidPrivilege extends Fisma_Zend_Exception_User
+class Fisma_Yui_MenuItem_OnClick
 {
+    /**
+     * Function name for onclick event
+     */
+    public $fn = null;
+
+    /**
+     * Optional object to pass to the above function.
+     */
+    public $obj = null;
+
+    /**
+     * Constructor
+     *
+     * @param string $fn Function name.
+     * @param mixed $obj (Optional) object parameter.
+     */
+    public function __construct($fn, $obj = null)
+    {
+        $this->fn = $fn;
+        $this->obj = $obj;
+    }
 }

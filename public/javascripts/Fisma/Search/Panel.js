@@ -226,10 +226,10 @@ Fisma.Search.Panel.prototype = {
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
+            if (criterion.hasBlankOperands()) {
+                continue;
+            }
+            query.push(criterion.getQuery());
         }
         
         return query;

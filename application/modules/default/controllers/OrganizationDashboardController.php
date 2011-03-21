@@ -57,75 +57,80 @@ class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Secur
     public function indexAction()
     {
         $userOrganizations = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
-        
-        $metricsQuery = Doctrine_Query::create()
-                       ->from('Organization o')
-                       ->innerJoin('o.System s')
-                       ->addSelect('COUNT(s.id) AS total_systems')
-                       ->addSelect(
-                           'ROUND(AVG(IF(DATE_ADD(s.securityAuthorizationDt, INTERVAL ' 
-                           . System::ATO_PERIOD_MONTHS 
-                           . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_atos'
-                       )
-                       ->addSelect(
-                           'ROUND(AVG(IF(DATE_ADD(s.controlAssessmentDt, INTERVAL ' 
-                           . System::SELF_ASSESSMENT_PERIOD_MONTHS 
-                           . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_self_assessment'
-                       )
-                       ->addSelect(
-                           'ROUND(AVG(IF(DATE_ADD(s.contingencyPlanTestDt, INTERVAL ' 
-                           . System::SELF_CPLAN_PERIOD_MONTHS 
-                           . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS contingency_plan_tests'
-                       )
-                       ->addSelect(
-                           "ROUND(SUM(IF(s.piaRequired = 'YES' AND s.piaUrl IS NOT NULL AND s.piaUrl <> '', 1, 0)) / "
-                           . "SUM(IF(s.piaRequired = 'YES' OR s.piaRequired IS NULL, 1, 0)) * 100, 1) AS current_pias"
-                       )
-                       ->whereIn('o.id', $userOrganizations)
-                       ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        
-        // This query returns one row because it uses aggregate functions and no GROUP BY clause
-        $metrics = $metricsQuery->execute();
-        $metrics = $metrics[0];
-                
-        // Add metadata for each metric which is returned in the previous query
-        $metrics['s_total_systems'] = array(
-            'title' => 'Total Number of Systems', 
-            'value' => $metrics['s_total_systems'],
-            'color' => '',
-            'suffix' => ''
-        );
 
-        $metrics['s_current_atos'] = array(
-            'title' => 'Current ATO', 
-            'value' => $metrics['s_current_atos'],
-            'color' => $this->_getColorForPercentage($metrics['s_current_atos']),
-            'suffix' => '%'
-        );
-        
-        $metrics['s_current_self_assessment'] = array(
-            'title' => 'Current 800-53 Self-Assessment', 
-            'value' => $metrics['s_current_self_assessment'],
-            'color' => $this->_getColorForPercentage($metrics['s_current_self_assessment']),
-            'suffix' => '%'
-        );
+        if (!empty($userOrganizations)) {
+            $metricsQuery = Doctrine_Query::create()
+                           ->from('Organization o')
+                           ->innerJoin('o.System s')
+                           ->addSelect('COUNT(s.id) AS total_systems')
+                           ->addSelect(
+                               'ROUND(AVG(IF(DATE_ADD(s.securityAuthorizationDt, INTERVAL ' 
+                               . System::ATO_PERIOD_MONTHS 
+                               . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_atos'
+                           )
+                           ->addSelect(
+                               'ROUND(AVG(IF(DATE_ADD(s.controlAssessmentDt, INTERVAL ' 
+                               . System::SELF_ASSESSMENT_PERIOD_MONTHS 
+                               . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS current_self_assessment'
+                           )
+                           ->addSelect(
+                               'ROUND(AVG(IF(DATE_ADD(s.contingencyPlanTestDt, INTERVAL ' 
+                               . System::SELF_CPLAN_PERIOD_MONTHS 
+                               . ' MONTH) > NOW(), 1, 0)) * 100, 1) AS contingency_plan_tests'
+                           )
+                           ->addSelect(
+                               "ROUND(SUM(IF(s.piaRequired = 'YES' AND s.piaUrl IS NOT NULL AND s.piaUrl <> '', 1, 0)) "
+                               . "/ SUM(IF(s.piaRequired = 'YES' OR s.piaRequired IS NULL, 1, 0)) * 100, 1) "
+                               . "AS current_pias"
+                           )
+                           ->whereIn('o.id', $userOrganizations)
+                           ->andWhere('s.sdlcPhase <> ?', 'disposal')
+                           ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+            
+            // This query returns one row because it uses aggregate functions and no GROUP BY clause
+            $metrics = $metricsQuery->execute();
+            $metrics = $metrics[0];
+                    
+            // Add metadata for each metric which is returned in the previous query
+            $metrics['s_total_systems'] = array(
+                'title' => 'Total Number of Systems', 
+                'value' => $metrics['s_total_systems'],
+                'color' => '',
+                'suffix' => ''
+            );
 
-        $metrics['s_contingency_plan_tests'] = array(
-            'title' => 'Contingency Plans Tested', 
-            'value' => $metrics['s_contingency_plan_tests'],
-            'color' => $this->_getColorForPercentage($metrics['s_contingency_plan_tests']),
-            'suffix' => '%'
-        );
+            $metrics['s_current_atos'] = array(
+                'title' => 'Current ATO', 
+                'value' => $metrics['s_current_atos'],
+                'color' => $this->_getColorForPercentage($metrics['s_current_atos']),
+                'suffix' => '%'
+            );
+            
+            $metrics['s_current_self_assessment'] = array(
+                'title' => 'Current 800-53 Self-Assessment', 
+                'value' => $metrics['s_current_self_assessment'],
+                'color' => $this->_getColorForPercentage($metrics['s_current_self_assessment']),
+                'suffix' => '%'
+            );
 
-        $metrics['s_current_pias'] = array(
-            'title' => 'Completed PIA', 
-            'value' => $metrics['s_current_pias'],
-            'color' => $this->_getColorForPercentage($metrics['s_current_pias']),
-            'suffix' => '%'
-        );
+            $metrics['s_contingency_plan_tests'] = array(
+                'title' => 'Contingency Plans Tested', 
+                'value' => $metrics['s_contingency_plan_tests'],
+                'color' => $this->_getColorForPercentage($metrics['s_contingency_plan_tests']),
+                'suffix' => '%'
+            );
 
-        $this->view->metrics = $metrics;
+            $metrics['s_current_pias'] = array(
+                'title' => 'Completed PIA', 
+                'value' => $metrics['s_current_pias'],
+                'color' => $this->_getColorForPercentage($metrics['s_current_pias']),
+                'suffix' => '%'
+            );
+
+            $this->view->metrics = $metrics;
+        } else {
+            $this->view->metrics = array();
+        }
         
         // Create dashboard charts
         $fipsCategoryChart = new Fisma_Chart(300, 300, 'fipsCategoryChart');
