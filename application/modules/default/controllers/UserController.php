@@ -410,7 +410,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($user[0]['Roles'] as $role) {
             $tabView->addTab(
-                $role['nickname'], 
+                $this->view->escape($role['nickname']), 
                 "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/1", 
                 $role['id'],
                 'false'
@@ -538,7 +538,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (isset($user[0]['Roles'])) {
             foreach ($user[0]['Roles'] as $role) {
                 $tabView->addTab(
-                    $role['nickname'], 
+                    $this->view->escape($role['nickname']), 
                     "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
                     $role['id'],
                     'true' 

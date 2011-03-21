@@ -25,7 +25,7 @@ div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bott
 table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}
 .jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}
 .jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);padding:1px;}
-.jqplot-point-label{font-size:.75em;z-index:2;}
+.jqplot-point-label{font-size:.75em;z-index:0;}
 td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}
 div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}
 .jqplot-error{text-align:center;}
