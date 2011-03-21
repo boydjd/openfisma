@@ -562,10 +562,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
 
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
-                if (isset(self::$_requiredPrivileges[$key])) {
-                    CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
-                        self::$_requiredPrivileges[$key], $this
-                    );
+                if (Fisma::mode() != Fisma::RUN_MODE_COMMAND_LINE) {
+                    if (isset(self::$_requiredPrivileges[$key])) {
+                        CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
+                            self::$_requiredPrivileges[$key], $this
+                        );
+                    }
                 }
             
                 // Check whether this field generates any notification events
