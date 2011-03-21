@@ -1,5 +1,5 @@
 User:
-    listeners: [ReplaceInvalidCharactersListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
@@ -15,9 +15,9 @@ User:
         password:
             type: string(255)
             extra:
+                doNotModify: true
                 logicalName: Password
                 notify: true
-                doNotModify: true
         passwordSalt:
             type: string(10)
             fixed: true

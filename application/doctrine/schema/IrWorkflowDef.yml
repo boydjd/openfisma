@@ -1,5 +1,5 @@
 IrWorkflowDef:
-    listeners: [ReplaceInvalidCharactersListener, XssListener, IndexListener]
+    listeners: [IndexListener]
     
     columns:
         name: 

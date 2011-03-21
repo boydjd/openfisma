@@ -228,7 +228,7 @@ Fisma.TableFormat = {
         var status = oRecord.getData('Status');
 
         if (status) {
-            status = Fisma.Util.unescapeEntities(status);
+            status = PHP_JS().html_entity_decode(status);
             overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
@@ -292,11 +292,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData != null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {

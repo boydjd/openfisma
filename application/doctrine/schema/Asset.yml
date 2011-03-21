@@ -1,5 +1,5 @@
 Asset:
-    listeners: [ReplaceInvalidCharactersListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
         
     columns:
         createdTs: 

@@ -102,12 +102,9 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
-        /* TODO:    Remove this when issue with search (zend vs Solr and quotes) is fixed 
-                    jira.openfisma.org/browse/OFJ-1167?focusedCommentId=14101#action_14101
-        */
         // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
         if (Fisma::configuration()->getConfig('search_backend') === 'solr') {
-            $searchVar = "%22#ColumnLabel#%22";
+            $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
         } else {
             $searchVar = '#ColumnLabel#';
         }

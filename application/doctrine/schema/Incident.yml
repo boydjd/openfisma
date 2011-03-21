@@ -1,5 +1,5 @@
 Incident:
-    listeners: [ReplaceInvalidCharactersListener, XssListener, IndexListener]
+    listeners: [IndexListener]
     
     columns:
         modifiedTs: timestamp

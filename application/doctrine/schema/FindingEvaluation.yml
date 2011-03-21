@@ -1,5 +1,4 @@
 FindingEvaluation:
-    listeners: [ReplaceInvalidCharactersListener]
     columns:
         createdTs: timestamp
         findingId:

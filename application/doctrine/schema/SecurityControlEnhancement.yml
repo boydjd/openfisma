@@ -1,6 +1,4 @@
 SecurityControlEnhancement:
-    listeners: [ReplaceInvalidCharactersListener, XssListener]
-
     columns:
         level:
             type: enum

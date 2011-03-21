@@ -1,5 +1,5 @@
 SecurityControl:
-    listeners: [ReplaceInvalidCharactersListener, XssListener, IndexListener]
+    listeners: [IndexListener]
 
     columns:
         code: 

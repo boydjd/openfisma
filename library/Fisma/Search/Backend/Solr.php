@@ -238,8 +238,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $query->addFilterQuery($filterQuery);
 
-            // Tokenize keyword on spaces and escape all tokens
-            $keywordTokens = explode(' ', $trimmedKeyword);
+            // Tokenize keywords and escape all tokens.
+            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }

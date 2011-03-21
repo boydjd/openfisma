@@ -55,7 +55,7 @@ class ErrorController extends Zend_Controller_Action
         $this->getInvokeArg('bootstrap')->getResource('Log')->log($content, Zend_Log::ERR);
         $this->view->content = $content;
 
-        if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {
+        if ($errors->exception instanceof Fisma_Zend_Exception_User) {
             $this->view->message = $errors->exception->getMessage();
         } else {         
             $this->view->message = "<p>An unexpected error has occurred. This error has been logged"

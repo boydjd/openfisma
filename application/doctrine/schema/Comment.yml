@@ -1,6 +1,4 @@
 Comment:
-    listeners: [ReplaceInvalidCharactersListener, XssListener]
-        
     columns:
         createdTs: timestamp
         

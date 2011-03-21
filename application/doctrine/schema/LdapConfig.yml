@@ -1,6 +1,4 @@
 LdapConfig:
-    listeners: [ReplaceInvalidCharactersListener, XssListener]
-
     columns:
         host:
             type: string(255)

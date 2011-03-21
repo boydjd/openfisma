@@ -49,11 +49,10 @@ class ReplaceInvalidCharactersListener extends Fisma_Doctrine_Record_Listener
 
             // If the field is set to doNotModify, then do not modify it 
             if (
-                isset($fieldDefinition['extra']) &&
                 isset($fieldDefinition['extra']['doNotModify']) &&
                 $fieldDefinition['extra']['doNotModify']
             ) {
-                break;
+                continue;
             }
 
             if ($fieldDefinition['type'] == 'string') {
