@@ -1,1 +1,0 @@
-Fisma.Chart={handleLink:function(b){var c=b.match(/%s/);if(c.length!=arguments.length-1){throw"Expected "+c.length+" arguments but found "+(arguments.length-1)}var a;for(a=1;a<arguments.length;a++){b=b.replace("%s",escape(arguments[a]))}location.href=b}};

@@ -145,8 +145,9 @@ abstract class Fisma_Cli_Abstract
         try {
             $this->_run();
         } catch (Fisma_Zend_Exception_User $e) {
-            echo $e->getMessage() . "\n\n" . $this->getHelpText();
-            
+            $stderr = fopen('php://stderr', 'w'); 
+            fwrite($stderr, $e->getMessage() . "\n\n" . $this->getHelpText()); 
+            fclose($stderr);
             return;
         }
 

@@ -808,13 +808,6 @@ tinyMCE.init({
  *            Eventually this file needs to be removed 
  */
 
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
-
 var Fisma = {};
 
 $P = new PHP_JS();
@@ -1129,7 +1122,7 @@ function switchYear(step){
     var oYear = document.getElementById('gen_shortcut');
     var year = oYear.getAttribute('year');
     year = Number(year) + Number(step);
-	oYear.setAttribute('year', year);
+    oYear.setAttribute('year', year);
     var url = oYear.getAttribute('url') + year + '/';
     var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
     tmp[0].innerHTML = year;
@@ -1534,298 +1527,6 @@ function elDump(el) {
         props += prop + ' : ' + el[prop] + '\n';
     }
     alert(props);
-}
-//v1.7
-// Flash Player Version Detection
-// Detect Client Browser type
-// Copyright 2005-2007 Adobe Systems Incorporated.  All rights reserved.
-var isIE  = (navigator.appVersion.indexOf("MSIE") != -1) ? true : false;
-var isWin = (navigator.appVersion.toLowerCase().indexOf("win") != -1) ? true : false;
-var isOpera = (navigator.userAgent.indexOf("Opera") != -1) ? true : false;
-
-function ControlVersion()
-{
-	var version;
-	var axo;
-	var e;
-
-	// NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
-
-	try {
-		// version will be set for 7.X or greater players
-		axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
-		version = axo.GetVariable("$version");
-	} catch (e) {
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 6.X players only
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
-			
-			// installed player is some revision of 6.0
-			// GetVariable("$version") crashes for versions 6.0.22 through 6.0.29,
-			// so we have to be careful. 
-			
-			// default to the first public version
-			version = "WIN 6,0,21,0";
-
-			// throws if AllowScripAccess does not exist (introduced in 6.0r47)		
-			axo.AllowScriptAccess = "always";
-
-			// safe to call for 6.0r47 or greater
-			version = axo.GetVariable("$version");
-
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 4.X or 5.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = axo.GetVariable("$version");
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 3.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = "WIN 3,0,18,0";
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 2.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-			version = "WIN 2,0,0,11";
-		} catch (e) {
-			version = -1;
-		}
-	}
-	
-	return version;
-}
-
-// JavaScript helper required to detect Flash Player PlugIn version information
-function GetSwfVer(){
-	// NS/Opera version >= 3 check for Flash plugin in plugin array
-	var flashVer = -1;
-	
-	if (navigator.plugins != null && navigator.plugins.length > 0) {
-		if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
-			var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-			var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
-			var descArray = flashDescription.split(" ");
-			var tempArrayMajor = descArray[2].split(".");			
-			var versionMajor = tempArrayMajor[0];
-			var versionMinor = tempArrayMajor[1];
-			var versionRevision = descArray[3];
-			if (versionRevision == "") {
-				versionRevision = descArray[4];
-			}
-			if (versionRevision[0] == "d") {
-				versionRevision = versionRevision.substring(1);
-			} else if (versionRevision[0] == "r") {
-				versionRevision = versionRevision.substring(1);
-				if (versionRevision.indexOf("d") > 0) {
-					versionRevision = versionRevision.substring(0, versionRevision.indexOf("d"));
-				}
-			}
-			var flashVer = versionMajor + "." + versionMinor + "." + versionRevision;
-		}
-	}
-	// MSN/WebTV 2.6 supports Flash 4
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.6") != -1) flashVer = 4;
-	// WebTV 2.5 supports Flash 3
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.5") != -1) flashVer = 3;
-	// older WebTV supports Flash 2
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv") != -1) flashVer = 2;
-	else if ( isIE && isWin && !isOpera ) {
-		flashVer = ControlVersion();
-	}	
-	return flashVer;
-}
-
-// When called with reqMajorVer, reqMinorVer, reqRevision returns true if that version or greater is available
-function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision)
-{
-	versionStr = GetSwfVer();
-	if (versionStr == -1 ) {
-		return false;
-	} else if (versionStr != 0) {
-		if(isIE && isWin && !isOpera) {
-			// Given "WIN 2,0,0,11"
-			tempArray         = versionStr.split(" "); 	// ["WIN", "2,0,0,11"]
-			tempString        = tempArray[1];			// "2,0,0,11"
-			versionArray      = tempString.split(",");	// ['2', '0', '0', '11']
-		} else {
-			versionArray      = versionStr.split(".");
-		}
-		var versionMajor      = versionArray[0];
-		var versionMinor      = versionArray[1];
-		var versionRevision   = versionArray[2];
-
-        	// is the major.revision >= requested major.revision AND the minor version >= requested minor
-		if (versionMajor > parseFloat(reqMajorVer)) {
-			return true;
-		} else if (versionMajor == parseFloat(reqMajorVer)) {
-			if (versionMinor > parseFloat(reqMinorVer))
-				return true;
-			else if (versionMinor == parseFloat(reqMinorVer)) {
-				if (versionRevision >= parseFloat(reqRevision))
-					return true;
-			}
-		}
-		return false;
-	}
-}
-
-function AC_AddExtension(src, ext)
-{
-  if (src.indexOf('?') != -1)
-    return src.replace(/\?/, ext+'?'); 
-  else
-    return src + ext;
-}
-
-function AC_Generateobj(objAttrs, params, embedAttrs) 
-{ 
-  var str = '';
-  if (isIE && isWin && !isOpera)
-  {
-    str += '<object ';
-    for (var i in objAttrs)
-    {
-      str += i + '="' + objAttrs[i] + '" ';
-    }
-    str += '>';
-    for (var i in params)
-    {
-      str += '<param name="' + i + '" value="' + params[i] + '" /> ';
-    }
-    str += '</object>';
-  }
-  else
-  {
-    str += '<embed ';
-    for (var i in embedAttrs)
-    {
-      str += i + '="' + embedAttrs[i] + '" ';
-    }
-    str += '> </embed>';
-  }
-
-  return str;
-}
-
-function AC_FL_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".swf", "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-     , "application/x-shockwave-flash"
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_SW_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".dcr", "src", "clsid:166B1BCA-3F9C-11CF-8075-444553540000"
-     , null
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
-  var ret = new Object();
-  ret.embedAttrs = new Object();
-  ret.params = new Object();
-  ret.objAttrs = new Object();
-  for (var i=0; i < args.length; i=i+2){
-    var currArg = args[i].toLowerCase();    
-
-    switch (currArg){	
-      case "classid":
-        break;
-      case "pluginspage":
-        ret.embedAttrs[args[i]] = args[i+1];
-        break;
-      case "src":
-      case "movie":	
-        args[i+1] = AC_AddExtension(args[i+1], ext);
-        ret.embedAttrs["src"] = args[i+1];
-        ret.params[srcParamName] = args[i+1];
-        break;
-      case "onafterupdate":
-      case "onbeforeupdate":
-      case "onblur":
-      case "oncellchange":
-      case "onclick":
-      case "ondblclick":
-      case "ondrag":
-      case "ondragend":
-      case "ondragenter":
-      case "ondragleave":
-      case "ondragover":
-      case "ondrop":
-      case "onfinish":
-      case "onfocus":
-      case "onhelp":
-      case "onmousedown":
-      case "onmouseup":
-      case "onmouseover":
-      case "onmousemove":
-      case "onmouseout":
-      case "onkeypress":
-      case "onkeydown":
-      case "onkeyup":
-      case "onload":
-      case "onlosecapture":
-      case "onpropertychange":
-      case "onreadystatechange":
-      case "onrowsdelete":
-      case "onrowenter":
-      case "onrowexit":
-      case "onrowsinserted":
-      case "onstart":
-      case "onscroll":
-      case "onbeforeeditfocus":
-      case "onactivate":
-      case "onbeforedeactivate":
-      case "ondeactivate":
-      case "type":
-      case "codebase":
-      case "id":
-        ret.objAttrs[args[i]] = args[i+1];
-        break;
-      case "width":
-      case "height":
-      case "align":
-      case "vspace": 
-      case "hspace":
-      case "class":
-      case "title":
-      case "accesskey":
-      case "name":
-      case "tabindex":
-        ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i+1];
-        break;
-      default:
-        ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i+1];
-    }
-  }
-  ret.objAttrs["classid"] = classid;
-  if (mimeType) ret.embedAttrs["type"] = mimeType;
-  return ret;
 }
 /*!
  * jQuery JavaScript Library v1.4.2
@@ -2712,64 +2413,6 @@ Fisma.Calendar = function () {
         }
     };
 }();
-/**
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
- * {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Client-side behavior related to the Finding module
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
- */
-
-Fisma.Chart = {
-
-    /**
-     * A generic handler for link events in an XML/SWF chart that will interpolate query parameters into a specified
-     * URL and then redirect the user to that URL.
-     *
-     * This function takes a variable argument list. The first argument is the URL. The URL can contain '%s' tokens
-     * which will be interpolated one-by-one with the remaining arguments.
-     *
-     * Example: handleLink('/param1/%s/param2/%s?q=%s', 'A', 'B', 'C') would redirect the user to the URL
-     * /param1/A/param2/B?q=C
-     *
-     * @param baseUrl A [trusted] URL with a sprintf style '%s' in it that represents the request parameter
-     * @param variable arguments
-     */
-    handleLink : function (baseUrl) {
-
-        // Sanity check: number of argument place holders in URL equals number of arguments to this function
-        var placeHolders = baseUrl.match(/%s/);
-        
-        if (placeHolders.length != arguments.length - 1) {
-            throw "Expected " + placeHolders.length + " arguments but found " + (arguments.length - 1);
-        }
-
-        // Loop over the variable length arguments (skipping the first argument, which is baseUrl)
-        var argumentIndex;
-
-        for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-            baseUrl = baseUrl.replace('%s', escape(arguments[argumentIndex]));
-        }
-        
-        location.href = baseUrl;
-    }
-};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -4492,6 +4135,83 @@ Fisma.Ldap = {
     }  
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    Fisma.Menu = {
+        resolveOnClickObjects: function(obj) {
+            if (obj.onclick && obj.onclick.fn) {
+                obj.onclick.fn = Fisma.Util.getObjectFromName(obj.onclick.fn);
+            }
+
+            if (obj.submenu) {
+                var groups = obj.submenu.itemdata;
+                for (var i in groups) {
+                    var group = groups[i];
+                    for (var j in group) {
+                        var item = group[j];
+                        Fisma.Menu.resolveOnClickObjects(item);
+                    }
+                }
+            }
+        },
+
+        goTo: function(eType, eObject, param) {
+            // create dialog
+            var Dom = YAHOO.util.Dom,
+                Event = YAHOO.util.Event,
+                Panel = YAHOO.widget.Panel,
+                form = document.createElement('form'),
+                textField = document.createElement('input'),
+                button = document.createElement('input');
+            Dom.setAttribute(textField, "type", "text");
+            Dom.setAttribute(button, "type", "submit");
+            Dom.setAttribute(button, "value", "Go");
+            form.innerHTML = "ID: ";
+            form.appendChild(textField);
+            form.appendChild(button);
+
+            // Add event listener
+            var fn = function(ev, obj) {
+                Event.stopEvent(ev);
+                var url = obj.controller + "/view/id/" + obj.textField.value;
+                window.location = url;
+            };
+            param.textField = textField;
+            Event.addListener(form, "submit", fn, param);
+
+            // show the panel
+            var panel = new Panel(Dom.generateId(), {modal: true});
+            panel.setHeader("Go To " + param.model + "...");
+            panel.setBody(form);
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            textField.focus();
+        }
+    };
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5846,31 +5566,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
+        return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : operands
+            operands : this.getOperands()
         }
-
-        return response;
     },
 
     /**
@@ -5931,8 +5631,28 @@ Fisma.Search.Criteria.prototype = {
         }
         
         throw "No field found with this name: " + fieldName;
+    },
+
+    getOperands: function() {
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
+
+        return queryGenerator(this.queryInputContainer);
+    },
+
+    hasBlankOperands: function() {
+        var operands = this.getOperands();
+        for (var i in operands) {
+            if ('' == $P.trim(operands[i])) {
+                return true;
+            }
+        }
+        return false;
     }
-};/**
+
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6557,10 +6277,10 @@ Fisma.Search.Panel.prototype = {
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
+            if (criterion.hasBlankOperands()) {
+                continue;
+            }
+            query.push(criterion.getQuery());
         }
         
         return query;
@@ -6974,7 +6694,7 @@ Fisma.TabView.Roles = function() {
                         if (!found) {
                             for (var i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
