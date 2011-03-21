@@ -43,7 +43,7 @@ Fisma.TabView.Roles = function() {
                         if (!found) {
                             for (var i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
