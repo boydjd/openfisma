@@ -52,3 +52,10 @@ System:
         confidentiality: LOW
         integrity: LOW
         availability: LOW
+
+    # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
+    HIDDEN_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW

@@ -241,9 +241,6 @@ Fisma.Incident = {
         var elP = document.createElement('p');
         elP.innerHTML = 'Description: ';
 
-        var newTextareaEl = document.createElement('textarea');
-        newTextareaEl.setAttribute('id',textareaId);
-
         var descField = YAHOO.util.Dom.getNextSibling(roleField);
         var textareaField = YAHOO.util.Dom.getFirstChild(descField);
 
@@ -252,10 +249,18 @@ Fisma.Incident = {
         var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
+        // To create an element with a NAME attribute and its value for IE.
+        if (YAHOO.env.ua.ie) {
+            var newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
+        } else {
+            var newTextareaEl = document.createElement('textarea');
+        }
+
+        newTextareaEl.setAttribute('id',textareaId);
         newTextareaEl.setAttribute('rows',textareaRows);
         newTextareaEl.setAttribute('cols',textareaCols);
         newTextareaEl.setAttribute('name',textareaName);
- 
+
         elP.appendChild(newTextareaEl);
         newTdElForm.appendChild(elP); 
 

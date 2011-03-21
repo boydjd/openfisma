@@ -238,8 +238,8 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
             $query->addFilterQuery($filterQuery);
 
-            // Tokenize keyword on spaces and escape all tokens
-            $keywordTokens = explode(' ', $trimmedKeyword);
+            // Tokenize keywords and escape all tokens.
+            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }
@@ -491,13 +491,11 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
                     break;
 
                 case 'integerDoesNotEqual':
-                    $intValue = intval($operands[0]);
-                    $searchTerms[] = "-$fieldName:$intValue";
+                    $searchTerms[] = $this->_integerDoesNotEqual($fieldName, $operands[0]);
                     break;
 
                 case 'integerEquals':
-                    $intValue = intval($operands[0]);
-                    $searchTerms[] = "$fieldName:$intValue";
+                    $searchTerms[] = $this->_integerEquals($fieldName, $operands[0]);
                     break;
 
                 case 'integerGreaterThan':
@@ -560,6 +558,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
 
         $queryString = implode($searchTerms, ' AND ');
 
+        if (empty($queryString)) {
+            $queryString = "id:[* TO *]";
+        }
+
         $query->setQuery($queryString);
 
         try {
@@ -569,6 +571,56 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
         }
         
         return $this->_convertSolrResultToStandardResult($type, $response);
+    }
+
+    /**
+     * Convert string into array of integers.
+     *
+     * @param string $operand String to convert
+     * @return array
+     */
+    private function _stringToIntArray($operand)
+    {
+        
+        return preg_split('/[^\d]+/', $operand);
+    }
+
+    /**
+     * Return a solr term for the operand of integerDoesNotEqual op
+     *
+     * @param string $fieldName Name of the solr field.
+     * @param string $operand String representation of the operand.
+     * @return string Term representation.
+     */
+    private function _integerDoesNotEqual($fieldName, $operand)
+    {
+        $subterms = array();
+        foreach ($this->_stringToIntArray($operand) as $intValue) {
+            if (!is_numeric($intValue)) {
+                continue;
+            }
+            $subterms[] = "-$fieldName:$intValue";
+        }
+        return '(' . implode(' AND ', $subterms) . ')';
+    }
+
+    /**
+     * Return a solr term for the operand of integerEquals op
+     *
+     * @param string $fieldName Name of the solr field.
+     * @param string $operand String representation of the operand.
+     * @return string Term representation.
+     */
+    private function _integerEquals($fieldName, $operand)
+    {
+        $subterms = array();
+        foreach ($this->_stringToIntArray($operand) as $intValue) {
+            if (!is_numeric($intValue)) {
+                continue;
+            }
+            $subterms[] = "$fieldName:$intValue";
+        }
+        return '(' . implode(' OR ', $subterms) . ')';
     }
 
     /**

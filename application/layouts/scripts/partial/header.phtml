@@ -27,14 +27,19 @@
 
 <div id="menubar"><!-- YUI renders the menubar into this div --></div>
 <script type="text/javascript">
-//Constructs the YUI menu bar for OpenFISMA
-var jsonMenuData = '<?php 
-echo $this->escape(Zend_Json_Encoder::encode(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus()), 'none') 
-?>';
-var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
-var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
-YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
-menuBar.addItems(menuData);
-menuBar.render('menubar');
+YAHOO.util.Event.onDOMReady(function () {
+    //Constructs the YUI menu bar for OpenFISMA
+    var jsonMenuData = '<?php 
+        echo $this->escape(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus(), 'json') 
+    ?>';
+    var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
+    for (var i in menuData) {
+        Fisma.Menu.resolveOnClickObjects(menuData[i]);
+    }
+    var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
+    YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
+    menuBar.addItems(menuData);
+    menuBar.render('menubar');
+});
 </script>
 <div id="msgbar"></div>
