@@ -5989,7 +5989,8 @@ Fisma.Search.CriteriaDefinition = function () {
         sortableText : {
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
-            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'}
+            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
+            textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
         },
         
         "enum" : {
@@ -6973,7 +6974,7 @@ Fisma.TabView.Roles = function() {
                         if (!found) {
                             for (var i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
@@ -7231,6 +7232,7 @@ Fisma.TableFormat = {
         var status = oRecord.getData('Status');
 
         if (status) {
+            status = PHP_JS().html_entity_decode(status);
             overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
@@ -7294,11 +7296,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData != null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {
@@ -7357,7 +7359,8 @@ Fisma.TableFormat = {
             elCell.appendChild(checkbox);
         }        
     }
-};/**
+};
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8930,7 +8933,7 @@ function widgetEvent(chartParamsObj)
         for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
             var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue);
+            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
         }
     }
 
@@ -9198,7 +9201,7 @@ function getTableFromChartData(chartParamsObj)
         }
 
         // Show the table generated based on chart data
-        dataTableObj.style.display = 'table';
+        dataTableObj.style.display = '';
         // Hide, erase, and collapse the container of the chart divs
         document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
         document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
@@ -9345,7 +9348,7 @@ function removeDecFromPointLabels(chartParamsObj)
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTM) == 0 || isNaN(thisLabelValue)) {
+                            if (parseInt(thisChld.innerHTML) == 0 || isNaN(thisLabelValue)) {
                                 thisChld.innerHTML = '';
                             }
 
@@ -9509,7 +9512,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     var menuObj = document.getElementById(menuHolderId);
     
     if (boolVisible == 'toggle') {
-        if (menuObj.style.display != 'table') {
+        if (menuObj.style.display == 'none') {
             boolVisible = true;
         } else {
             boolVisible = false;
@@ -9517,22 +9520,21 @@ function setChartSettingsVisibility(chartId, boolVisible)
     }
     
     if (boolVisible == true) {
-        menuObj.style.display = 'table';
+        menuObj.style.display = '';
     } else {
         menuObj.style.display = 'none';
     }
 }
 
 /**
+ * Event handeler for the "Apply Settings" button on Global Settings menues.
  * Will take values from checkboxes/textboxes within the Global Settings tab of
  * a chart and save each settings into cookies, and then trigger redrawAllCharts()
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
  *
  * @param object
  * @return void
  */
-function globalSettingUpdate(chartUniqueId)
+function applySettingsClick(eventObj, chartUniqueId)
 {
     // get this chart's GlobSettings menue
     var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
@@ -9540,6 +9542,7 @@ function globalSettingUpdate(chartUniqueId)
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
     
+    // Save each global settings on this menue (to cookies)
     for (var x = 0; x < settingOpts.length; x++) {
         var thisOpt = settingOpts[x];
         if (thisOpt.nodeName == 'INPUT') {
@@ -9551,6 +9554,7 @@ function globalSettingUpdate(chartUniqueId)
         }
     }
     
+    // Redraw charts, and update settings on other chart menues
     redrawAllCharts();
 }
 
@@ -9634,7 +9638,7 @@ function getGlobalSetting(settingName)
 
 function setGlobalSetting(settingName, newValue)
 {
-    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue);
+    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
 }
 
 /**
@@ -9688,20 +9692,77 @@ function alterChartByGlobals(chartParamObj)
     return chartParamObj;
 }
 
-function redrawAllCharts()
+/**
+ * Redraws all charts and refreashes all options dialogs associated.
+ * If using IE, will post a loading message while doing so.
+ */
+function redrawAllCharts(drawPhase)
 {
-
-    for (var uniqueid in chartsOnDOM) {
+    /*
+        Because IE will not repaint its content area untill this java script ends its proccessing,
+        this function is broken into 2 phases.
+        1) Show the spinner and loading message, and break with a timer
+        2) Redraw charts
+    */
     
-        var thisParamObj = chartsOnDOM[uniqueid];
+    if (drawPhase !== 2 || drawPhase == null) {
+        // Phase 1 (pre-timer) Show the spinner and loading message, and break
+    
+        // Show a loading message showing that the chart is loading, and disable all Apply Settings buttons
+        var thisParamObj;
+        var applyButtonClicked;
+        var uniqueid;
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];    
+            showChartLoadingMsg(thisParamObj);
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', true);     // Disable the Apply Settings button while redrawing charts
+        }
         
-        // redraw chart
-        createJQChart(thisParamObj);
-        
-        // refreash Global Settings UI
-        globalSettingRefreshUi(thisParamObj);
-    }
+        // If we are running in IE 7 or 8, continue to redraw charts after a brief pause, if not, no break/timer.
+        if (YAHOO.env.ua.ie === 7 || YAHOO.env.ua.ie === 8) {
+            setTimeout("redrawAllCharts(2);", 1);
+            return;
+        } else {
+            redrawAllCharts(2)
+        }
 
+    } else { 
+        // Phase 2 (post-timer) Redraw charts
+    
+        // Now redraw and refreash charts and chart options
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];
+            createJQChart(thisParamObj);                    // redraw chart
+            globalSettingRefreshUi(thisParamObj);           // refreash Global Settings UI
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', false);   // re-enable the Apply Settings button
+        }
+    }
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var chartLegendContainer = document.getElementById(chartParamsObj['uniqueid'] + 'toplegend');
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var loadChartDataMsg = document.createTextNode("Loading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';          // clear the current chart container div
+    chartLegendContainer.innerHTML = '';    // clear the current chart threat-level container div (seperate div from canvases)
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
@@ -9714,10 +9775,10 @@ function redrawAllCharts()
  */
 function showMsgOnEmptyChart(chartParamsObj)
 {
-
     if (chartIsEmpty(chartParamsObj)) {
         var targDiv = document.getElementById(chartParamsObj['uniqueid']);
 
+        // Place message on DOM
         var insertBeforeChild = targDiv.childNodes[1];
         var msgOnDom = document.createElement('div');
         msgOnDom.height = '100%';
@@ -9730,6 +9791,10 @@ function showMsgOnEmptyChart(chartParamsObj)
         var textMsgOnDom = document.createTextNode('No data to plot.');
         msgOnDom.appendChild(textMsgOnDom);
         targDiv.appendChild(msgOnDom);
+        
+        // Make sure screen-reader-table is not showing
+        var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
+        dataTableObj.style.display = 'none';
     }
 }
 
@@ -19132,8 +19197,22 @@ function chartIsEmpty(chartParamsObj)
         // this._diameter = this.diameter || d;
         this._diameter = this.diameter  || d - this.sliceMargin;
 
+         // damian: required for line labels
+         var total = 0;
+         for (var i=0; i<gd.length; i++) {
+             total += this._plotData[i][1];
+         }  
+
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
+
+        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
+        var percentage = this._plotData[0][1] * 100 / total;
+        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
+        if (percentage === 100) {
+            sa = 0;
+        }
+
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         if (this.shadow) {
@@ -19147,16 +19226,11 @@ function chartIsEmpty(chartParamsObj)
             
         }
         
-         // damian: required for line labels
-         var origin = {
-                 x: parseInt(ctx.canvas.style.left) + cw/2,
-                 y: parseInt(ctx.canvas.style.top) + ch/2
-         };
-
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        // damian: required for line labels
+        var origin = {
+            x: parseInt(ctx.canvas.style.left) + cw/2,
+            y: parseInt(ctx.canvas.style.top) + ch/2
+        };
         
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
@@ -19205,7 +19279,7 @@ function chartIsEmpty(chartParamsObj)
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-            
+
              // damian: line labels
              if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
              
@@ -19214,7 +19288,7 @@ function chartIsEmpty(chartParamsObj)
                  percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
                     
                  var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
+                 mid_ang += 5.49778714; 4.71238898;
                  
                  // line 1
                  var incDiameter = 10;
@@ -19586,7 +19660,8 @@ function chartIsEmpty(chartParamsObj)
     
 })(jQuery);
     
-    /**
+    
+/**
  * Copyright (c) 2009 - 2010 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 

@@ -2,7 +2,7 @@
  *
  * chart.css
  *
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -27,20 +27,17 @@
  * Author:    Dale Frey <dale.frey@endeavorsystems.com>
  * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
  *
  *******************************************************************************
  */
 
 /* style for the data-table for screen readers */
 .screenReaderTabel {
-    display: none;
     width: 100%;
 }
 
 /* the div that holds the chart options */
 .widgetSpaceHolder {
-	display: none;
 	width: 400px;
 	margin-left: auto;
 	margin-right: auto;

@@ -355,8 +355,22 @@
         // this._diameter = this.diameter || d;
         this._diameter = this.diameter  || d - this.sliceMargin;
 
+         // damian: required for line labels
+         var total = 0;
+         for (var i=0; i<gd.length; i++) {
+             total += this._plotData[i][1];
+         }  
+
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
+
+        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
+        var percentage = this._plotData[0][1] * 100 / total;
+        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
+        if (percentage === 100) {
+            sa = 0;
+        }
+
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         if (this.shadow) {
@@ -370,16 +384,11 @@
             
         }
         
-         // damian: required for line labels
-         var origin = {
-                 x: parseInt(ctx.canvas.style.left) + cw/2,
-                 y: parseInt(ctx.canvas.style.top) + ch/2
-         };
-
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        // damian: required for line labels
+        var origin = {
+            x: parseInt(ctx.canvas.style.left) + cw/2,
+            y: parseInt(ctx.canvas.style.top) + ch/2
+        };
         
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
@@ -428,7 +437,7 @@
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-            
+
              // damian: line labels
              if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
              
@@ -437,7 +446,7 @@
                  percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
                     
                  var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
+                 mid_ang += 5.49778714; 4.71238898;
                  
                  // line 1
                  var incDiameter = 10;

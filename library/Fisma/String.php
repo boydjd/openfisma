@@ -223,4 +223,32 @@ class Fisma_String
         $string[0] = strtolower($string[0]);  
         return $string;
     }
+
+    /**
+     * Replace invalid characters with valid ones 
+     * 
+     * @param mixed $string 
+     * @return string 
+     */
+    static public function replaceInvalidChars($string)
+    {
+        $search = array(chr(0xe2) . chr(0x80) . chr(0x98),  // '
+                chr(0xe2) . chr(0x80) . chr(0x99),  // '
+                chr(0xe2) . chr(0x80) . chr(0x9c),  // "
+                chr(0xe2) . chr(0x80) . chr(0x9d),  // "
+                chr(0xe2) . chr(0x80) . chr(0x93),  // em dash
+                chr(0xe2) . chr(0x80) . chr(0x94),  // en dash
+                chr(0xe2) . chr(0x80) . chr(0xa6)); // ...
+
+        $replace = array(
+                '\'',
+                '\'',
+                '"',
+                '"',
+                '-',
+                '-',
+                '...');
+
+        return str_replace($search, $replace, $string);
+    }
 }

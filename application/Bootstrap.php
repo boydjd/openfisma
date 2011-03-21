@@ -73,21 +73,6 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * _initRegisterLogger 
-     * 
-     * @access protected
-     * @return void
-     */
-    protected function _initRegisterLogger()
-    {
-        $this->bootstrap('Log');
-
-        $logger = $this->getResource('Log');
-        
-        Zend_Registry::set('Zend_Log', $logger);
-    }
-
-    /**
      * Initialize and connect to the database 
      * 
      * @access protected
@@ -137,6 +122,21 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
                 )
             )
         );
+    }
+
+    /**
+     * _initRegisterLogger 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initRegisterLogger()
+    {
+        $this->bootstrap('Log');
+
+        $logger = $this->getResource('Log');
+        
+        Zend_Registry::set('Zend_Log', $logger);
     }
 
     /**

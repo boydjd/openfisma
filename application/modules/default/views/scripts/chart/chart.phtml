@@ -42,7 +42,7 @@
     
     <br/>
     <div 
-        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="width: 400px;">
+        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
         <ul class="yui-nav">
             <li class="selected">
                 <a href="#tab1" onClick="showSetingMode(true);">
@@ -76,7 +76,6 @@
                 
                 <div 
                     id="<?php echo $this->escape($this->chartId, 'none');?>GlobSettings" 
-                    onClick="globalSettingUpdate('<?php echo $this->escape($this->chartId, 'none');?>');" 
                     style="text-align: left; ">
                 <input type="checkbox" id="pointLabels" />
                     <label for="pointLabels">
@@ -114,15 +113,24 @@
                     * = This option is not supported in IE
                 </label>
                 </div>
-                
-                <div style="width: 100%; text-align: right;">
-                    <input type="button" value="Hide Settings"
-                        onClick="setChartSettingsVisibility('<?php 
-                            echo $this->escape($this->chartId, 'none'); 
-                            ?>', false);"
-                        id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnGlobSet"
-                    />
-                    
+
+                <div>
+                    <div style="float: right; text-align: right;">
+                        <input type="button" value="Hide Settings"
+                            onClick="setChartSettingsVisibility('<?php 
+                                echo $this->escape($this->chartId, 'none'); 
+                                ?>', false);"
+                            id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnGlobSet"
+                        />
+                    </div>
+                    <div style="float: right; text-align: right;">
+                        <input type="button" value="Apply Settings"
+                            onClick="applySettingsClick('<?php 
+                                echo $this->escape($this->chartId, 'none'); 
+                                ?>');"
+                            id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnApplySet"
+                        />
+                    </div>
                 </div>
                 
             </div>
@@ -143,15 +151,20 @@
 <script type="text/javascript">
 
     YAHOO.util.Event.onContentReady('<?php echo $this->escape($this->chartId, 'none');?>', function () {
+        var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
         /* YUI TabView */
         var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
         var tabView = new YAHOO.widget.TabView(thisName);
-        /* YUI buttons */
-        var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
+        /* YUI button events */
         var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
         var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
+        var yuiBtnEventApplySetts = {onclick: {fn: applySettingsClick, obj:thisChartId } };
+        /* YUI button - apply event listeners */
         var thisBtnGlob = new YAHOO.widget.Button(thisChartId + "BtnGlobSet", yuiBtnEventObj1);
         var thisBtnMain = new YAHOO.widget.Button(thisChartId + "BtnMainSet", yuiBtnEventObj2);
+        var thisBtnApplySettings = new YAHOO.widget.Button(thisChartId + "BtnApplySet", yuiBtnEventApplySetts);
+        /* YUI button - add references from DOM to YUI object */
+        document.getElementById(thisChartId + 'BtnApplySet').yuiObjRef = thisBtnApplySettings;
     });
     
 </script>

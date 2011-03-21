@@ -65,16 +65,22 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.ResponsibleOrganization o')
-            ->andWhere('f.status <> ?', 'CLOSED')
+            ->where('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', FindingTable::getOrganizationIds())
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if ($displayBy === 'Family') {
+        // What is the "Display By" drop-down box set to?
+        if ($displayBy === 'Family Summary') {
+            // It is set to Family Summary (default)
             $deficienciesQuery
                 ->groupBy('fam')
                 ->orderBy('fam');
         } else {
+            // It is set to a specific family, the $displayBy value should be something like "Family: AC"
+            $targetFamily = explode(': ', $displayBy);
+            $targetFamily = $targetFamily[1];
             $deficienciesQuery
+                ->andWhere('SUBSTRING_INDEX(sc.code, "-", 1)=?', $targetFamily)
                 ->groupBy('sc.code')
                 ->orderBy('sc.code');
         }
@@ -83,7 +89,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
 
         foreach ($deficiencyQueryResult as $thisElement) {
         
-            if ($displayBy === 'Family') {
+            if ($displayBy === 'Family Summary') {
                 $columnLabel = $thisElement['sc_fam'];
             } else {
                 $columnLabel = $thisElement['sc_code'];
@@ -96,23 +102,27 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
-        /* TODO:    Remove this when issue with search (zend vs Solr and quotes) is fixed 
-                    jira.openfisma.org/browse/OFJ-1167?focusedCommentId=14101#action_14101
-        */
         // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
         if (Fisma::configuration()->getConfig('search_backend') === 'solr') {
-            $searchVar = "%22#ColumnLabel#%22";
+            $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
         } else {
             $searchVar = '#ColumnLabel#';
         }
 
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-        $rtnChart
-            ->setLinks(
+        if ($displayBy === 'Family Summary') {
+            $rtnChart->setLinks(
                 '/finding/remediation/list/queryType/advanced' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' .
                 '/securityControl/textContains/'. $searchVar
             );
+        } else {
+            $rtnChart->setLinks(
+                '/finding/remediation/list/queryType/advanced' .
+                '/denormalizedStatus/textDoesNotContain/CLOSED' .
+                '/securityControl/textExactMatch/#ColumnLabel#'
+            );
+        }
             
         // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');
