@@ -761,7 +761,7 @@ table.jqplot-cursor-tooltip {
 
 .jqplot-point-label {
     font-size: 0.75em;
-    z-index: 2;
+    z-index: 0;
 }
       
 td.jqplot-cursor-legend-swatch {
