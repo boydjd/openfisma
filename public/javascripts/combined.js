@@ -808,13 +808,6 @@ tinyMCE.init({
  *            Eventually this file needs to be removed 
  */
 
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
-
 var Fisma = {};
 
 $P = new PHP_JS();
@@ -1129,7 +1122,7 @@ function switchYear(step){
     var oYear = document.getElementById('gen_shortcut');
     var year = oYear.getAttribute('year');
     year = Number(year) + Number(step);
-	oYear.setAttribute('year', year);
+    oYear.setAttribute('year', year);
     var url = oYear.getAttribute('url') + year + '/';
     var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
     tmp[0].innerHTML = year;
@@ -1534,298 +1527,6 @@ function elDump(el) {
         props += prop + ' : ' + el[prop] + '\n';
     }
     alert(props);
-}
-//v1.7
-// Flash Player Version Detection
-// Detect Client Browser type
-// Copyright 2005-2007 Adobe Systems Incorporated.  All rights reserved.
-var isIE  = (navigator.appVersion.indexOf("MSIE") != -1) ? true : false;
-var isWin = (navigator.appVersion.toLowerCase().indexOf("win") != -1) ? true : false;
-var isOpera = (navigator.userAgent.indexOf("Opera") != -1) ? true : false;
-
-function ControlVersion()
-{
-	var version;
-	var axo;
-	var e;
-
-	// NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
-
-	try {
-		// version will be set for 7.X or greater players
-		axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
-		version = axo.GetVariable("$version");
-	} catch (e) {
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 6.X players only
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
-			
-			// installed player is some revision of 6.0
-			// GetVariable("$version") crashes for versions 6.0.22 through 6.0.29,
-			// so we have to be careful. 
-			
-			// default to the first public version
-			version = "WIN 6,0,21,0";
-
-			// throws if AllowScripAccess does not exist (introduced in 6.0r47)		
-			axo.AllowScriptAccess = "always";
-
-			// safe to call for 6.0r47 or greater
-			version = axo.GetVariable("$version");
-
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 4.X or 5.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = axo.GetVariable("$version");
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 3.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = "WIN 3,0,18,0";
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 2.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-			version = "WIN 2,0,0,11";
-		} catch (e) {
-			version = -1;
-		}
-	}
-	
-	return version;
-}
-
-// JavaScript helper required to detect Flash Player PlugIn version information
-function GetSwfVer(){
-	// NS/Opera version >= 3 check for Flash plugin in plugin array
-	var flashVer = -1;
-	
-	if (navigator.plugins != null && navigator.plugins.length > 0) {
-		if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
-			var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-			var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
-			var descArray = flashDescription.split(" ");
-			var tempArrayMajor = descArray[2].split(".");			
-			var versionMajor = tempArrayMajor[0];
-			var versionMinor = tempArrayMajor[1];
-			var versionRevision = descArray[3];
-			if (versionRevision == "") {
-				versionRevision = descArray[4];
-			}
-			if (versionRevision[0] == "d") {
-				versionRevision = versionRevision.substring(1);
-			} else if (versionRevision[0] == "r") {
-				versionRevision = versionRevision.substring(1);
-				if (versionRevision.indexOf("d") > 0) {
-					versionRevision = versionRevision.substring(0, versionRevision.indexOf("d"));
-				}
-			}
-			var flashVer = versionMajor + "." + versionMinor + "." + versionRevision;
-		}
-	}
-	// MSN/WebTV 2.6 supports Flash 4
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.6") != -1) flashVer = 4;
-	// WebTV 2.5 supports Flash 3
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.5") != -1) flashVer = 3;
-	// older WebTV supports Flash 2
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv") != -1) flashVer = 2;
-	else if ( isIE && isWin && !isOpera ) {
-		flashVer = ControlVersion();
-	}	
-	return flashVer;
-}
-
-// When called with reqMajorVer, reqMinorVer, reqRevision returns true if that version or greater is available
-function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision)
-{
-	versionStr = GetSwfVer();
-	if (versionStr == -1 ) {
-		return false;
-	} else if (versionStr != 0) {
-		if(isIE && isWin && !isOpera) {
-			// Given "WIN 2,0,0,11"
-			tempArray         = versionStr.split(" "); 	// ["WIN", "2,0,0,11"]
-			tempString        = tempArray[1];			// "2,0,0,11"
-			versionArray      = tempString.split(",");	// ['2', '0', '0', '11']
-		} else {
-			versionArray      = versionStr.split(".");
-		}
-		var versionMajor      = versionArray[0];
-		var versionMinor      = versionArray[1];
-		var versionRevision   = versionArray[2];
-
-        	// is the major.revision >= requested major.revision AND the minor version >= requested minor
-		if (versionMajor > parseFloat(reqMajorVer)) {
-			return true;
-		} else if (versionMajor == parseFloat(reqMajorVer)) {
-			if (versionMinor > parseFloat(reqMinorVer))
-				return true;
-			else if (versionMinor == parseFloat(reqMinorVer)) {
-				if (versionRevision >= parseFloat(reqRevision))
-					return true;
-			}
-		}
-		return false;
-	}
-}
-
-function AC_AddExtension(src, ext)
-{
-  if (src.indexOf('?') != -1)
-    return src.replace(/\?/, ext+'?'); 
-  else
-    return src + ext;
-}
-
-function AC_Generateobj(objAttrs, params, embedAttrs) 
-{ 
-  var str = '';
-  if (isIE && isWin && !isOpera)
-  {
-    str += '<object ';
-    for (var i in objAttrs)
-    {
-      str += i + '="' + objAttrs[i] + '" ';
-    }
-    str += '>';
-    for (var i in params)
-    {
-      str += '<param name="' + i + '" value="' + params[i] + '" /> ';
-    }
-    str += '</object>';
-  }
-  else
-  {
-    str += '<embed ';
-    for (var i in embedAttrs)
-    {
-      str += i + '="' + embedAttrs[i] + '" ';
-    }
-    str += '> </embed>';
-  }
-
-  return str;
-}
-
-function AC_FL_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".swf", "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-     , "application/x-shockwave-flash"
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_SW_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".dcr", "src", "clsid:166B1BCA-3F9C-11CF-8075-444553540000"
-     , null
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
-  var ret = new Object();
-  ret.embedAttrs = new Object();
-  ret.params = new Object();
-  ret.objAttrs = new Object();
-  for (var i=0; i < args.length; i=i+2){
-    var currArg = args[i].toLowerCase();    
-
-    switch (currArg){	
-      case "classid":
-        break;
-      case "pluginspage":
-        ret.embedAttrs[args[i]] = args[i+1];
-        break;
-      case "src":
-      case "movie":	
-        args[i+1] = AC_AddExtension(args[i+1], ext);
-        ret.embedAttrs["src"] = args[i+1];
-        ret.params[srcParamName] = args[i+1];
-        break;
-      case "onafterupdate":
-      case "onbeforeupdate":
-      case "onblur":
-      case "oncellchange":
-      case "onclick":
-      case "ondblclick":
-      case "ondrag":
-      case "ondragend":
-      case "ondragenter":
-      case "ondragleave":
-      case "ondragover":
-      case "ondrop":
-      case "onfinish":
-      case "onfocus":
-      case "onhelp":
-      case "onmousedown":
-      case "onmouseup":
-      case "onmouseover":
-      case "onmousemove":
-      case "onmouseout":
-      case "onkeypress":
-      case "onkeydown":
-      case "onkeyup":
-      case "onload":
-      case "onlosecapture":
-      case "onpropertychange":
-      case "onreadystatechange":
-      case "onrowsdelete":
-      case "onrowenter":
-      case "onrowexit":
-      case "onrowsinserted":
-      case "onstart":
-      case "onscroll":
-      case "onbeforeeditfocus":
-      case "onactivate":
-      case "onbeforedeactivate":
-      case "ondeactivate":
-      case "type":
-      case "codebase":
-      case "id":
-        ret.objAttrs[args[i]] = args[i+1];
-        break;
-      case "width":
-      case "height":
-      case "align":
-      case "vspace": 
-      case "hspace":
-      case "class":
-      case "title":
-      case "accesskey":
-      case "name":
-      case "tabindex":
-        ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i+1];
-        break;
-      default:
-        ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i+1];
-    }
-  }
-  ret.objAttrs["classid"] = classid;
-  if (mimeType) ret.embedAttrs["type"] = mimeType;
-  return ret;
 }
 /*!
  * jQuery JavaScript Library v1.4.2
@@ -2712,64 +2413,6 @@ Fisma.Calendar = function () {
         }
     };
 }();
-/**
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
- * {@link http://www.gnu.org/licenses/}.
- *
- * @fileoverview Client-side behavior related to the Finding module
- *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
- * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
- */
-
-Fisma.Chart = {
-
-    /**
-     * A generic handler for link events in an XML/SWF chart that will interpolate query parameters into a specified
-     * URL and then redirect the user to that URL.
-     *
-     * This function takes a variable argument list. The first argument is the URL. The URL can contain '%s' tokens
-     * which will be interpolated one-by-one with the remaining arguments.
-     *
-     * Example: handleLink('/param1/%s/param2/%s?q=%s', 'A', 'B', 'C') would redirect the user to the URL
-     * /param1/A/param2/B?q=C
-     *
-     * @param baseUrl A [trusted] URL with a sprintf style '%s' in it that represents the request parameter
-     * @param variable arguments
-     */
-    handleLink : function (baseUrl) {
-
-        // Sanity check: number of argument place holders in URL equals number of arguments to this function
-        var placeHolders = baseUrl.match(/%s/);
-        
-        if (placeHolders.length != arguments.length - 1) {
-            throw "Expected " + placeHolders.length + " arguments but found " + (arguments.length - 1);
-        }
-
-        // Loop over the variable length arguments (skipping the first argument, which is baseUrl)
-        var argumentIndex;
-
-        for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-            baseUrl = baseUrl.replace('%s', escape(arguments[argumentIndex]));
-        }
-        
-        location.href = baseUrl;
-    }
-};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -4492,6 +4135,83 @@ Fisma.Ldap = {
     }  
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    Fisma.Menu = {
+        resolveOnClickObjects: function(obj) {
+            if (obj.onclick && obj.onclick.fn) {
+                obj.onclick.fn = Fisma.Util.getObjectFromName(obj.onclick.fn);
+            }
+
+            if (obj.submenu) {
+                var groups = obj.submenu.itemdata;
+                for (var i in groups) {
+                    var group = groups[i];
+                    for (var j in group) {
+                        var item = group[j];
+                        Fisma.Menu.resolveOnClickObjects(item);
+                    }
+                }
+            }
+        },
+
+        goTo: function(eType, eObject, param) {
+            // create dialog
+            var Dom = YAHOO.util.Dom,
+                Event = YAHOO.util.Event,
+                Panel = YAHOO.widget.Panel,
+                form = document.createElement('form'),
+                textField = document.createElement('input'),
+                button = document.createElement('input');
+            Dom.setAttribute(textField, "type", "text");
+            Dom.setAttribute(button, "type", "submit");
+            Dom.setAttribute(button, "value", "Go");
+            form.innerHTML = "ID: ";
+            form.appendChild(textField);
+            form.appendChild(button);
+
+            // Add event listener
+            var fn = function(ev, obj) {
+                Event.stopEvent(ev);
+                var url = obj.controller + "/view/id/" + obj.textField.value;
+                window.location = url;
+            };
+            param.textField = textField;
+            Event.addListener(form, "submit", fn, param);
+
+            // show the panel
+            var panel = new Panel(Dom.generateId(), {modal: true});
+            panel.setHeader("Go To " + param.model + "...");
+            panel.setBody(form);
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            textField.focus();
+        }
+    };
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5846,31 +5566,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
+        return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : operands
+            operands : this.getOperands()
         }
-
-        return response;
     },
 
     /**
@@ -5931,8 +5631,28 @@ Fisma.Search.Criteria.prototype = {
         }
         
         throw "No field found with this name: " + fieldName;
+    },
+
+    getOperands: function() {
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
+
+        return queryGenerator(this.queryInputContainer);
+    },
+
+    hasBlankOperands: function() {
+        var operands = this.getOperands();
+        for (var i in operands) {
+            if ('' == $P.trim(operands[i])) {
+                return true;
+            }
+        }
+        return false;
     }
-};/**
+
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5989,7 +5709,8 @@ Fisma.Search.CriteriaDefinition = function () {
         sortableText : {
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
-            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'}
+            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
+            textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
         },
         
         "enum" : {
@@ -6556,10 +6277,10 @@ Fisma.Search.Panel.prototype = {
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
+            if (criterion.hasBlankOperands()) {
+                continue;
+            }
+            query.push(criterion.getQuery());
         }
         
         return query;
@@ -6973,7 +6694,7 @@ Fisma.TabView.Roles = function() {
                         if (!found) {
                             for (var i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
@@ -7231,6 +6952,7 @@ Fisma.TableFormat = {
         var status = oRecord.getData('Status');
 
         if (status) {
+            status = PHP_JS().html_entity_decode(status);
             overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
         }
 
@@ -7294,11 +7016,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData != null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {
@@ -7357,7 +7079,8 @@ Fisma.TableFormat = {
             elCell.appendChild(checkbox);
         }        
     }
-};/**
+};
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8930,7 +8653,7 @@ function widgetEvent(chartParamsObj)
         for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
             var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
             var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue);
+            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
         }
     }
 
@@ -9198,7 +8921,7 @@ function getTableFromChartData(chartParamsObj)
         }
 
         // Show the table generated based on chart data
-        dataTableObj.style.display = 'table';
+        dataTableObj.style.display = '';
         // Hide, erase, and collapse the container of the chart divs
         document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
         document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
@@ -9345,7 +9068,7 @@ function removeDecFromPointLabels(chartParamsObj)
                             thisChld.value = thisLabelValue;
 
                             // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTM) == 0 || isNaN(thisLabelValue)) {
+                            if (parseInt(thisChld.innerHTML) == 0 || isNaN(thisLabelValue)) {
                                 thisChld.innerHTML = '';
                             }
 
@@ -9509,7 +9232,7 @@ function setChartSettingsVisibility(chartId, boolVisible)
     var menuObj = document.getElementById(menuHolderId);
     
     if (boolVisible == 'toggle') {
-        if (menuObj.style.display != 'table') {
+        if (menuObj.style.display == 'none') {
             boolVisible = true;
         } else {
             boolVisible = false;
@@ -9517,22 +9240,21 @@ function setChartSettingsVisibility(chartId, boolVisible)
     }
     
     if (boolVisible == true) {
-        menuObj.style.display = 'table';
+        menuObj.style.display = '';
     } else {
         menuObj.style.display = 'none';
     }
 }
 
 /**
+ * Event handeler for the "Apply Settings" button on Global Settings menues.
  * Will take values from checkboxes/textboxes within the Global Settings tab of
  * a chart and save each settings into cookies, and then trigger redrawAllCharts()
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
  *
  * @param object
  * @return void
  */
-function globalSettingUpdate(chartUniqueId)
+function applySettingsClick(eventObj, chartUniqueId)
 {
     // get this chart's GlobSettings menue
     var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
@@ -9540,6 +9262,7 @@ function globalSettingUpdate(chartUniqueId)
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
     
+    // Save each global settings on this menue (to cookies)
     for (var x = 0; x < settingOpts.length; x++) {
         var thisOpt = settingOpts[x];
         if (thisOpt.nodeName == 'INPUT') {
@@ -9551,6 +9274,7 @@ function globalSettingUpdate(chartUniqueId)
         }
     }
     
+    // Redraw charts, and update settings on other chart menues
     redrawAllCharts();
 }
 
@@ -9634,7 +9358,7 @@ function getGlobalSetting(settingName)
 
 function setGlobalSetting(settingName, newValue)
 {
-    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue);
+    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
 }
 
 /**
@@ -9688,20 +9412,77 @@ function alterChartByGlobals(chartParamObj)
     return chartParamObj;
 }
 
-function redrawAllCharts()
+/**
+ * Redraws all charts and refreashes all options dialogs associated.
+ * If using IE, will post a loading message while doing so.
+ */
+function redrawAllCharts(drawPhase)
 {
-
-    for (var uniqueid in chartsOnDOM) {
+    /*
+        Because IE will not repaint its content area untill this java script ends its proccessing,
+        this function is broken into 2 phases.
+        1) Show the spinner and loading message, and break with a timer
+        2) Redraw charts
+    */
     
-        var thisParamObj = chartsOnDOM[uniqueid];
+    if (drawPhase !== 2 || drawPhase == null) {
+        // Phase 1 (pre-timer) Show the spinner and loading message, and break
+    
+        // Show a loading message showing that the chart is loading, and disable all Apply Settings buttons
+        var thisParamObj;
+        var applyButtonClicked;
+        var uniqueid;
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];    
+            showChartLoadingMsg(thisParamObj);
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', true);     // Disable the Apply Settings button while redrawing charts
+        }
         
-        // redraw chart
-        createJQChart(thisParamObj);
-        
-        // refreash Global Settings UI
-        globalSettingRefreshUi(thisParamObj);
-    }
+        // If we are running in IE 7 or 8, continue to redraw charts after a brief pause, if not, no break/timer.
+        if (YAHOO.env.ua.ie === 7 || YAHOO.env.ua.ie === 8) {
+            setTimeout("redrawAllCharts(2);", 1);
+            return;
+        } else {
+            redrawAllCharts(2)
+        }
 
+    } else { 
+        // Phase 2 (post-timer) Redraw charts
+    
+        // Now redraw and refreash charts and chart options
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];
+            createJQChart(thisParamObj);                    // redraw chart
+            globalSettingRefreshUi(thisParamObj);           // refreash Global Settings UI
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', false);   // re-enable the Apply Settings button
+        }
+    }
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var chartLegendContainer = document.getElementById(chartParamsObj['uniqueid'] + 'toplegend');
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var loadChartDataMsg = document.createTextNode("Loading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';          // clear the current chart container div
+    chartLegendContainer.innerHTML = '';    // clear the current chart threat-level container div (seperate div from canvases)
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
@@ -9714,10 +9495,10 @@ function redrawAllCharts()
  */
 function showMsgOnEmptyChart(chartParamsObj)
 {
-
     if (chartIsEmpty(chartParamsObj)) {
         var targDiv = document.getElementById(chartParamsObj['uniqueid']);
 
+        // Place message on DOM
         var insertBeforeChild = targDiv.childNodes[1];
         var msgOnDom = document.createElement('div');
         msgOnDom.height = '100%';
@@ -9730,6 +9511,10 @@ function showMsgOnEmptyChart(chartParamsObj)
         var textMsgOnDom = document.createTextNode('No data to plot.');
         msgOnDom.appendChild(textMsgOnDom);
         targDiv.appendChild(msgOnDom);
+        
+        // Make sure screen-reader-table is not showing
+        var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
+        dataTableObj.style.display = 'none';
     }
 }
 
@@ -19132,8 +18917,22 @@ function chartIsEmpty(chartParamsObj)
         // this._diameter = this.diameter || d;
         this._diameter = this.diameter  || d - this.sliceMargin;
 
+         // damian: required for line labels
+         var total = 0;
+         for (var i=0; i<gd.length; i++) {
+             total += this._plotData[i][1];
+         }  
+
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
+
+        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
+        var percentage = this._plotData[0][1] * 100 / total;
+        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
+        if (percentage === 100) {
+            sa = 0;
+        }
+
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
         
         if (this.shadow) {
@@ -19147,16 +18946,11 @@ function chartIsEmpty(chartParamsObj)
             
         }
         
-         // damian: required for line labels
-         var origin = {
-                 x: parseInt(ctx.canvas.style.left) + cw/2,
-                 y: parseInt(ctx.canvas.style.top) + ch/2
-         };
-
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        // damian: required for line labels
+        var origin = {
+            x: parseInt(ctx.canvas.style.left) + cw/2,
+            y: parseInt(ctx.canvas.style.top) + ch/2
+        };
         
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
@@ -19205,7 +18999,7 @@ function chartIsEmpty(chartParamsObj)
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-            
+
              // damian: line labels
              if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
              
@@ -19214,7 +19008,7 @@ function chartIsEmpty(chartParamsObj)
                  percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
                     
                  var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
+                 mid_ang += 5.49778714; 4.71238898;
                  
                  // line 1
                  var incDiameter = 10;
@@ -19586,7 +19380,8 @@ function chartIsEmpty(chartParamsObj)
     
 })(jQuery);
     
-    /**
+    
+/**
  * Copyright (c) 2009 - 2010 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 

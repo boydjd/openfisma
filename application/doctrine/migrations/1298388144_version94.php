@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,15 +17,30 @@
  */
 
 /**
- * Extended exception specific to the lockable behavior
+ * Update app version 
  * 
- * @package Fisma
- * @subpackage FIsma_Behavior_Lockable
- * @version $Id$
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Doctrine_Behavior_Lockable_Exception extends Fisma_Zend_Exception_User
+class Version94 extends Doctrine_Migration_Base
 {
+    /**
+     * Update application version.
+     */
+    public function up()
+    {
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
+        $conn->exec($updateSql);
+    }
+
+    /**
+     * Remove configuration 
+     */
+    public function down()
+    {
+        throw new Doctrine_Migration_IrreversibleMigrationException();
+    }
 }

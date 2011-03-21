@@ -1,5 +1,5 @@
 IrSubCategory:
-    listeners: [IndexListener, XssListener]
+    listeners: [IndexListener]
     
     columns:
         name: 

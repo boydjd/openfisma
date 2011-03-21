@@ -233,4 +233,21 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
     {
         $this->assertGreaterThan(1, strlen(Fisma_String::loremIpsum(1)));
     }
+
+    /**
+     * testReplaceInvalidChars 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testReplaceInvalidChars()
+    {
+        $this->assertEquals("'", Fisma_String::replaceInvalidChars('‘'));
+        $this->assertEquals("'", Fisma_String::replaceInvalidChars('’'));
+        $this->assertEquals('"', Fisma_String::replaceInvalidChars('“'));
+        $this->assertEquals('"', Fisma_String::replaceInvalidChars('”'));
+        $this->assertEquals('-', Fisma_String::replaceInvalidChars('–'));
+        $this->assertEquals('-', Fisma_String::replaceInvalidChars('—'));
+        $this->assertEquals('...', Fisma_String::replaceInvalidChars('…'));
+    }
 }

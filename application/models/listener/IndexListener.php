@@ -127,7 +127,6 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         }
 
         $record   = $event->getInvoker();
-        $index    = new Fisma_Index(get_class($record));
         $modified = $record->getLastModified();
 
         if (!($record->getTable() instanceof Fisma_Search_Searchable)) {

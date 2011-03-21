@@ -60,7 +60,9 @@ ExpiresByType image/vnd.microsoft.icon "access plus 10 years"
 # Sets the maximum upload filesize, this size will determine the 
 # maximum size of files OpenFISMA will accept when uploaded.
 php_value	upload_max_filesize	10M
-php_value	post_max_size		10M
+# Make sure that post_max_size is bigger than upload_max_filesize, otherwise 
+# warnings about files being too large will not be able to be displayed.
+php_value	post_max_size		256M
 
 # Turns off all errors, useful setting in production environments.
 # php_flag	display_errors		Off

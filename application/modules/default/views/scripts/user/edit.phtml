@@ -1,6 +1,4 @@
-<script type="text/javascript" src="/javascripts/account.js"></script>
 <?php 
-
 echo $this->escape(
     $this->searchBox(
         $this->toolbarButtons, 
@@ -11,7 +9,7 @@ echo $this->escape(
     'none'
 );
 
-$operation = "[<a href='{$this->viewLink}'>View</a>]";
+$operation = "[<a href='{$this->links['View']}'>View</a>]";
 
 if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";

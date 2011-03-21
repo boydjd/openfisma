@@ -55,7 +55,8 @@ class Fisma_Search_Criterion
         'organizationSubtree',
         'textContains',
         'textDoesNotContain',
-        'textExactMatch'
+        'textExactMatch',
+        'textNotExactMatch'
     );
     
     /**

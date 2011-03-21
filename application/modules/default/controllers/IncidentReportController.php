@@ -94,7 +94,16 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
             
-            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
+            $report->addColumn(
+                new Fisma_Report_Column(
+                    $startDate->get(Zend_Date::MONTH_NAME_SHORT),
+                    true,
+                    null,
+                    null,
+                    false,
+                    'number'
+                )
+            );
 
             // Get month number without leading zero
             $month = $startDate->get(Zend_Date::MONTH_SHORT);
@@ -206,7 +215,16 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             // Get year number
             $year = $startDate->get(Zend_Date::YEAR);
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
+            $report->addColumn(
+                new Fisma_Report_Column(
+                    $startDate->get(Zend_Date::MONTH_NAME_SHORT),
+                    true,
+                    null,
+                    null,
+                    false,
+                    'number'
+                )
+            );
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
@@ -262,7 +280,16 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             // Get year number
             $year = $startDate->get(Zend_Date::YEAR);
                         
-            $report->addColumn(new Fisma_Report_Column($startDate->get(Zend_Date::MONTH_NAME_SHORT), true));
+            $report->addColumn(
+                new Fisma_Report_Column(
+                    $startDate->get(Zend_Date::MONTH_NAME_SHORT),
+                    true,
+                    null,
+                    null,
+                    false,
+                    'number'
+                )
+            );
 
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
