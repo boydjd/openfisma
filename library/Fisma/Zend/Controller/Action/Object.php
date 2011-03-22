@@ -538,7 +538,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchableFields = $table->getSearchableFields();
 
         // Create the YUI table that will display results
-        $searchResultsTable = new Fisma_Yui_DataTable_Remote();
+        $searchResultsTable = new Fisma_Yui_DataTable_Search();
 
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')

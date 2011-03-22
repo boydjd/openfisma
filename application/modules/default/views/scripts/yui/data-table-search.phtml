@@ -3,15 +3,20 @@
 <script type="text/javascript">
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
 
-        var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
+        var Dom = YAHOO.util.Dom,
+            modelName = Dom.get('modelName').value,
+            tablePrefs = new Fisma.Search.TablePreferences(modelName),
+            columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
 
         /* 
-         * Column definitions are defined in JSON, which cannot embed object references such as formatters. So 
-         * loop over the definitions and convert any names of formatters into references to those actual objects.
+         * Column definitions are defined in JSON, which cannot embed object references such as formatters.
+         * Also, the "hidden" property needs to be updated with respect to what's in storage.
          */
         for (index in columnDefs) {
             var columnDef = columnDefs[index];
             
+            columnDef.hidden = !tablePrefs.getColumnVisibility(columnDef.key, !columnDef.hidden);
+
             if (columnDef['formatter']) {
                 columnDef['formatter'] = Fisma.Util.getObjectFromName(columnDef['formatter']);
             }
@@ -73,6 +78,9 @@
             dataSource, 
             tableConfiguration
         );
+        
+        // Register data table with Fisma.Search -- this allows it to be found after this scope disappears
+        Fisma.Search.setTable(dataTable);
         
         // Update number of returned records
         dataTable.handleDataReturnPayload = function(request, response, payload) { 

@@ -39,21 +39,21 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * @var string
      */
-    private $_dataUrl;
+    protected $_dataUrl;
     
     /**
      * The name of the JSON variable that contains the table data sent in the response
      * 
      * @var string
      */
-    private $_resultVariable;
+    protected $_resultVariable;
 
     /**
      * The maximum number of rows to display at a single time.
      * 
      * @var int
      */
-    private $_rowCount;
+    protected $_rowCount;
 
     /**
      * The column which is initially sorted in this table
@@ -63,42 +63,42 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * @var string
      */
-    private $_initialSortColumn;
+    protected $_initialSortColumn;
     
     /**
      * Set to true if this column is sorted ascending, false if sorted descending, or null if no sort applied
      * 
      * @var bool
      */
-    private $_sortAscending;
+    protected $_sortAscending;
     
     /**
      * This URL is the base URL when the user clicks a row and is redirected to another URL.
      * 
      * @var string
      */
-    private $_clickEventBaseUrl;
+    protected $_clickEventBaseUrl;
 
     /**
      * The value of this variable in the clicked row is appended to the URL which the user is redirected to.
      * 
      * @var string
      */
-    private $_clickEventVariableName;
+    protected $_clickEventVariableName;
 
     /**
      * The name of a Javascript function which can build POST requests for this data table's data source
      * 
      * @var string
      */
-    private $_requestConstructor;
+    protected $_requestConstructor;
     
     /**
      * A function which is called by YUI after the table is rendered (after data updates, for example)
      * 
      * @var string
      */
-    private $_renderEventFunction;
+    protected $_renderEventFunction;
     
     /**
      * If true, the table will not automatically fetch data and data must be fetched programmatically. If false, the
@@ -106,7 +106,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * @var bool
      */
-    private $_deferData = false;    
+    protected $_deferData = false;    
     
     /**
      * Render the datatable with HTML and/or Javascript
@@ -145,7 +145,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * Because this is called in render, it can't throw an exception, so it triggers a user error instead.
      */
-    private function _validate()
+    protected function _validate()
     {
         $requiredFields = array('_dataUrl', '_resultVariable', '_rowCount', '_initialSortColumn', '_sortAscending');
         
