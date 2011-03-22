@@ -8,7 +8,7 @@
                 <img 
                     src="/images/gear.png" 
                     alt="Click to edit chart options"
-                    onClick="setChartSettingsVisibility('<?php 
+                    onClick="Fisma.Chart.setChartSettingsVisibility('<?php 
                         echo $this->escape($this->chartId, 'none'); 
                         ?>', 'toggle');"
                     class="chartGear"
@@ -45,12 +45,12 @@
         id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
         <ul class="yui-nav">
             <li class="selected">
-                <a href="#tab1" onClick="showSetingMode(true);">
+                <a href="#tab1" onClick="Fisma.Chart.showSetingMode(true);">
                     <em>Chart Parameters</em>
                 </a>
             </li>
             <li>
-                <a href="#tab1" onClick="showSetingMode(false);">
+                <a href="#tab1" onClick="Fisma.Chart.showSetingMode(false);">
                     <em>Global Settings</em>
                 </a>
             </li>
@@ -117,7 +117,7 @@
                 <div>
                     <div style="float: right; text-align: right;">
                         <input type="button" value="Hide Settings"
-                            onClick="setChartSettingsVisibility('<?php 
+                            onClick="Fisma.Chart.setChartSettingsVisibility('<?php 
                                 echo $this->escape($this->chartId, 'none'); 
                                 ?>', false);"
                             id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnGlobSet"
@@ -125,7 +125,7 @@
                     </div>
                     <div style="float: right; text-align: right;">
                         <input type="button" value="Apply Settings"
-                            onClick="applySettingsClick('<?php 
+                            onClick="Fisma.Chart.globalSettingUpdate('<?php 
                                 echo $this->escape($this->chartId, 'none'); 
                                 ?>');"
                             id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnApplySet"
@@ -142,7 +142,7 @@
 
 <script>
     var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
-    createJQChart(thisChartObjData);
+    Fisma.Chart.createJQChart(thisChartObjData);
 </script>
 
 <div class='clear'></div>
@@ -155,11 +155,11 @@
         /* YUI TabView */
         var thisName = '<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder';
         var tabView = new YAHOO.widget.TabView(thisName);
-        /* YUI button events */
-        var yuiBtnEventObj1 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
-        var yuiBtnEventObj2 = {onclick: {fn: hideButtonClick, obj:thisChartId } };
-        var yuiBtnEventApplySetts = {onclick: {fn: applySettingsClick, obj:thisChartId } };
-        /* YUI button - apply event listeners */
+        /* YUI buttons */
+        var thisChartId = "<?php echo $this->escape($this->chartId, 'none'); ?>";
+        var yuiBtnEventObj1 = {onclick: {fn: Fisma.Chart.hideButtonClick, obj:thisChartId } };
+        var yuiBtnEventObj2 = {onclick: {fn: Fisma.Chart.hideButtonClick, obj:thisChartId } };
+        var yuiBtnEventApplySetts = {onclick: {fn: Fisma.Chart.globalSettingUpdate, obj:thisChartId } };
         var thisBtnGlob = new YAHOO.widget.Button(thisChartId + "BtnGlobSet", yuiBtnEventObj1);
         var thisBtnMain = new YAHOO.widget.Button(thisChartId + "BtnMainSet", yuiBtnEventObj2);
         var thisBtnApplySettings = new YAHOO.widget.Button(thisChartId + "BtnApplySet", yuiBtnEventApplySetts);
