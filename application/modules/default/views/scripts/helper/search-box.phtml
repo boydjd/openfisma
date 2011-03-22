@@ -49,7 +49,8 @@
         
                     Fisma.Search.initializeSearchColumnsPanel(
                         document.getElementById('searchColumnsButtons'), 
-                        advancedSearchOptions
+                        advancedSearchOptions,
+                        <?php echo $this->escape($this->columnVisibility, 'json'); ?>
                     );
                 });
             }

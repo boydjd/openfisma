@@ -39,11 +39,11 @@
     FSTP.prototype = {
         getColumnVisibility: function (column, def) {
             this._stateReady();
-            if (typeof(this._state.columnVisibility[column]) != 'undefined') {
-                return this._state[column] ? true : false; // always return boolean
+            if (YL.isValue(this._state.columnVisibility[column])) {
+                return this._state.columnVisibility[column] ? true : false; // always return boolean
             }
             // if default not provided, assume false
-            return typeof(def) != "undefined" ? def : false;
+            return YL.isValue(def) && def ? true : false;
         },
 
         setColumnVisibility: function (column, value) {
