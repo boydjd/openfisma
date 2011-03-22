@@ -372,6 +372,36 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
                 );
             }
         }
+
+        // The following date fields need be validated since Solr update index function does not 
+        // accept invalid date format 
+        if (isset($modified['securityAuthorizationDt']) 
+            && !Zend_Validate::is($modified['securityAuthorizationDt'], 'Date')) {
+                 
+            $this->getErrorStack()->add(
+                'securityAuthorizationDt', 
+                'Last Security Authorization Date provided is not a valid date.'
+            );
+        }
+
+        if (isset($modified['contingencyPlanTestDt']) 
+            && !Zend_Validate::is($modified['contingencyPlanTestDt'], 'Date')) {
+                 
+            $this->getErrorStack()->add(
+                'contingencyPlanTestDt', 
+                'Last Contingency Plan Test Date provided is not a valid date.'
+            );
+        }
+
+        if (isset($modified['controlAssessmentDt']) 
+            && !Zend_Validate::is($modified['controlAssessmentDt'], 'Date')) {
+                 
+            $this->getErrorStack()->add(
+                'controlAssessmentDt', 
+                'Last Self-Assessment Date provided is not a valid date.'
+            );
+        }
+
     }
     
     public function preDelete($event)
