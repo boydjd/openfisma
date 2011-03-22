@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -31,7 +31,7 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_View_Helper_FormElement extends Zend_View_Helper_HtmlElement
@@ -54,7 +54,7 @@ abstract class Zend_View_Helper_FormElement extends Zend_View_Helper_HtmlElement
     /**
      * Set translator
      *
-     * @param  $translator|null Zend_Translate
+     * @param  Zend_Translate $translator
      * @return Zend_View_Helper_FormElement
      */
     public function setTranslator($translator = null)
@@ -178,11 +178,9 @@ abstract class Zend_View_Helper_FormElement extends Zend_View_Helper_HtmlElement
      *
      * @access protected
      *
-     * @param $name The element name.
-     *
-     * @param $value The element value.
-     *
-     * @param $attribs Attributes for the element.
+     * @param string $name The element name.
+     * @param string $value The element value.
+     * @param array  $attribs Attributes for the element.
      *
      * @return string A hidden element.
      */

@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -28,7 +28,7 @@
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Provider_Project
@@ -98,6 +98,11 @@ class Zend_Tool_Project_Provider_Project
             'This command created a web project, '
             . 'for more information setting up your VHOST, please see docs/README');
 
+        if (!Zend_Tool_Project_Provider_Test::isPHPUnitAvailable()) {
+            $response->appendContent('Testing Note: ', array('separator' => false, 'color' => 'yellow'));
+            $response->appendContent('PHPUnit was not found in your include_path, therefore no testing actions will be created.');
+        }
+            
         foreach ($newProfile->getIterator() as $resource) {
             $resource->create();
         }
@@ -120,9 +125,16 @@ class Zend_Tool_Project_Provider_Project
 
     protected function _getDefaultProfile()
     {
+        $testAction = '';
+        if (Zend_Tool_Project_Provider_Test::isPHPUnitAvailable()) {
+            $testAction = '                    	<testApplicationActionMethod forActionName="index" />';
+        }
+        
+        $version = Zend_Version::VERSION;
+
         $data = <<<EOS
 <?xml version="1.0" encoding="UTF-8"?>
-<projectProfile type="default" version="1.10">
+<projectProfile type="default" version="$version">
     <projectDirectory>
         <projectProfileFile />
         <applicationDirectory>
@@ -179,12 +191,15 @@ class Zend_Tool_Project_Provider_Project
         <temporaryDirectory enabled="false" />
         <testsDirectory>
             <testPHPUnitConfigFile />
+            <testPHPUnitBootstrapFile />
             <testApplicationDirectory>
-                <testApplicationBootstrapFile />
-            </testApplicationDirectory>
-            <testLibraryDirectory>
-                <testLibraryBootstrapFile />
-            </testLibraryDirectory>
+                <testApplicationControllerDirectory>
+                    <testApplicationControllerFile filesystemName="IndexControllerTest.php" forControllerName="Index">
+$testAction
+                    </testApplicationControllerFile>
+                </testApplicationControllerDirectory>
+      	    </testApplicationDirectory>
+            <testLibraryDirectory />
         </testsDirectory>
     </projectDirectory>
 </projectProfile>

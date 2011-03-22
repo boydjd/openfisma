@@ -1641,15 +1641,14 @@ function setChartSettingsVisibility(chartId, boolVisible)
 }
 
 /**
+ * Event handeler for the "Apply Settings" button on Global Settings menues.
  * Will take values from checkboxes/textboxes within the Global Settings tab of
  * a chart and save each settings into cookies, and then trigger redrawAllCharts()
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
  *
  * @param object
  * @return void
  */
-function globalSettingUpdate(chartUniqueId)
+function applySettingsClick(eventObj, chartUniqueId)
 {
     // get this chart's GlobSettings menue
     var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
@@ -1657,6 +1656,7 @@ function globalSettingUpdate(chartUniqueId)
     // get all elements of this chart's GlobSettings menue
     var settingOpts = settingsMenue.childNodes;
     
+    // Save each global settings on this menue (to cookies)
     for (var x = 0; x < settingOpts.length; x++) {
         var thisOpt = settingOpts[x];
         if (thisOpt.nodeName == 'INPUT') {
@@ -1668,6 +1668,7 @@ function globalSettingUpdate(chartUniqueId)
         }
     }
     
+    // Redraw charts, and update settings on other chart menues
     redrawAllCharts();
 }
 
@@ -1805,20 +1806,77 @@ function alterChartByGlobals(chartParamObj)
     return chartParamObj;
 }
 
-function redrawAllCharts()
+/**
+ * Redraws all charts and refreashes all options dialogs associated.
+ * If using IE, will post a loading message while doing so.
+ */
+function redrawAllCharts(drawPhase)
 {
-
-    for (var uniqueid in chartsOnDOM) {
+    /*
+        Because IE will not repaint its content area untill this java script ends its proccessing,
+        this function is broken into 2 phases.
+        1) Show the spinner and loading message, and break with a timer
+        2) Redraw charts
+    */
     
-        var thisParamObj = chartsOnDOM[uniqueid];
+    if (drawPhase !== 2 || drawPhase == null) {
+        // Phase 1 (pre-timer) Show the spinner and loading message, and break
+    
+        // Show a loading message showing that the chart is loading, and disable all Apply Settings buttons
+        var thisParamObj;
+        var applyButtonClicked;
+        var uniqueid;
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];    
+            showChartLoadingMsg(thisParamObj);
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', true);     // Disable the Apply Settings button while redrawing charts
+        }
         
-        // redraw chart
-        createJQChart(thisParamObj);
-        
-        // refreash Global Settings UI
-        globalSettingRefreshUi(thisParamObj);
-    }
+        // If we are running in IE 7 or 8, continue to redraw charts after a brief pause, if not, no break/timer.
+        if (YAHOO.env.ua.ie === 7 || YAHOO.env.ua.ie === 8) {
+            setTimeout("redrawAllCharts(2);", 1);
+            return;
+        } else {
+            redrawAllCharts(2)
+        }
 
+    } else { 
+        // Phase 2 (post-timer) Redraw charts
+    
+        // Now redraw and refreash charts and chart options
+        for (uniqueid in chartsOnDOM) {
+            thisParamObj = chartsOnDOM[uniqueid];
+            createJQChart(thisParamObj);                    // redraw chart
+            globalSettingRefreshUi(thisParamObj);           // refreash Global Settings UI
+            applyButton = document.getElementById(uniqueid + 'BtnApplySet');
+            applyButton.yuiObjRef.set('disabled', false);   // re-enable the Apply Settings button
+        }
+    }
+}
+
+function showChartLoadingMsg(chartParamsObj)
+{
+    var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+    var chartLegendContainer = document.getElementById(chartParamsObj['uniqueid'] + 'toplegend');
+    
+    // Show spinner
+    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+    
+    // Create text "Loading" message
+    var loadChartDataMsg = document.createTextNode("Loading chart data...");
+    var pTag = document.createElement('p');
+    pTag.align = 'center';
+    pTag.appendChild(loadChartDataMsg);
+    
+    // Show text "Loading" message
+    chartContainer.innerHTML = '';          // clear the current chart container div
+    chartLegendContainer.innerHTML = '';    // clear the current chart threat-level container div (seperate div from canvases)
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(document.createElement('br'));
+    chartContainer.appendChild(pTag);
 }
 
 /**
