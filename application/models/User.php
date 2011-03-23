@@ -595,10 +595,11 @@ class User extends BaseUser
                 ->andWhere('p.action = ?', $action)
                 ->groupBy('o.id')
                 ->orderBy('o.nickname');
-        }
-        if (!$includeDisposal) {
-            $query->leftJoin('o.System s2')
-                  ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL"); 
+
+            if (!$includeDisposal) {
+                $query->leftJoin('o.System s2')
+                      ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL"); 
+            }
         }
 
         return $query;
