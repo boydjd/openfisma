@@ -63,21 +63,25 @@ Fisma.Chart = {
 
             // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
             if (value.results[0]) {
-
                 chartParamsObj = Fisma.Chart.mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value);
-
             } else {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
             }
 
+            // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
+            } else if (chartParamsObj.chartData.length === 0) {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
             }
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
 
         } else {
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
             throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
         }
     },
