@@ -4,6 +4,7 @@
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
 
         var Dom = YAHOO.util.Dom,
+            YL = YAHOO.lang,
             modelName = Dom.get('modelName').value,
             tablePrefs = new Fisma.Search.TablePreferences(modelName),
             columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
@@ -52,11 +53,10 @@
         };
 
         // DataTable configuration
+        var initialPage = tablePrefs.getPage();
+        initialPage = YL.isNumber(initialPage) ? initialPage : 1;
         var tableConfiguration = {
-            initialLoad : <?php echo $this->escape($this->deferData ? 'false' : 'true'); ?>,
-            initialRequest : "/sort/<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>"
-                           + "/dir/<?php echo $this->escape($this->sortDirection, 'javascript'); ?>"
-                           + "/count/<?php echo $this->escape($this->rowCount, 'javascript'); ?>",
+            initialLoad : false,
             dynamicData : true, 
             sortedBy : {
                 key : "<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>", 
@@ -64,6 +64,8 @@
             },
             paginator: new YAHOO.widget.Paginator(
                 {
+                    totalRecords: YAHOO.widget.Paginator.VALUE_UNLIMITED,
+                    initialPage: initialPage,
                     rowsPerPage : <?php echo $this->escape($this->rowCount, 'javascript'); ?>,
                     template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                 }
@@ -193,11 +195,18 @@
             }
         });
         
-        // Make sure that the header checkbox is unchecked on page changes
-        dataTable.get("paginator").subscribe("pageChange", function (event) {
+        dataTable.get("paginator").subscribe("pageChange", function (event, prefs) {
+            // Make sure that the header checkbox is unchecked on page changes
             var checkbox = YAHOO.util.Dom.get('dt-checkbox');
-            
             checkbox.checked = false;
-        });
+
+            // save the new page number
+            prefs.setPage(event.newValue);
+        }, tablePrefs);
+
+        dataTable.get("paginator").fireEvent(
+            "changeRequest",
+            dataTable.get("paginator").getState({"page":initialPage})
+        );
     });
 </script>

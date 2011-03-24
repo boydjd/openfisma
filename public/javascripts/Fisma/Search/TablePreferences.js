@@ -27,6 +27,7 @@
         FSTP = function(model, init) {
             this._model = model;
             this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
+            this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
             this._state = null;
             Fisma.Storage.onReady(function() {
                 var data = this._storage.get(this._model);
@@ -50,6 +51,28 @@
             this._stateReady();
             this._state.columnVisibility[column] = value;
             this._storage.set(this._model, this._state);
+        },
+
+        getSort: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
+        },
+        setSort: function(column, direction) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.sort = {column: column, dir: dir};
+            this._localStorage.set(this._model, data);
+        },
+
+        getPage: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
+        },
+        setPage: function(page) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.page = page;
+            this._localStorage.set(this._model, data);
         },
 
         persist: function (callback) {
