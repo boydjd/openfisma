@@ -489,11 +489,12 @@ class User extends BaseUser
      *
      * @param string $resource
      * @param string $action
+     * @param boolean $includeDisposal Flag to indicate whether to include systems in the disposal phase, default false
      * @return Doctrine_Collection The collection of organizations
      */
-    public function getOrganizationsByPrivilege($resource, $action)
+    public function getOrganizationsByPrivilege($resource, $action, $includeDisposal = false)
     {
-        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action);
+        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action, $includeDisposal);
         return $query->execute();
     }
 
@@ -580,9 +581,10 @@ class User extends BaseUser
      *
      * @param string $resource
      * @param string $action
+     * @param boolean $includeDisposal Flag to indicate whether to include systems in the disposal phase, default false
      * @return Doctrine_Query
      */
-    public function getOrganizationsByPrivilegeQuery($resource, $action)
+    public function getOrganizationsByPrivilegeQuery($resource, $action, $includeDisposal = false)
     {
         $query = $this->getOrganizationsQuery();
 
@@ -593,6 +595,11 @@ class User extends BaseUser
                 ->andWhere('p.action = ?', $action)
                 ->groupBy('o.id')
                 ->orderBy('o.nickname');
+
+            if (!$includeDisposal) {
+                $query->leftJoin('o.System s2')
+                      ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL"); 
+            }
         }
 
         return $query;
@@ -676,6 +683,17 @@ class User extends BaseUser
     {
         if ('root' == $this->username) {
             throw new Fisma_Zend_Exception_User('The root user cannot be deleted.');
+        }
+
+        // Make sure the user can not be deleted when it is already associated with other objects.
+        $relations = $this->getTable()->getRelations();
+        foreach ($relations as $name => $relation) {
+            if (count($this->$name) > 0) {
+                throw new Fisma_Zend_Exception_User(
+                    "This user can not be deleted because it is already associated with one or more "
+                    . strtolower($name)
+                );
+            }
         }
     }
 

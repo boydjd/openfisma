@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage Zend_Auth_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -29,7 +29,7 @@
  * @category   Zend
  * @package    Zend_Auth
  * @subpackage Zend_Auth_Adapter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Auth_Adapter_Ldap implements Zend_Auth_Adapter_Interface
@@ -488,7 +488,9 @@ class Zend_Auth_Adapter_Ldap implements Zend_Auth_Adapter_Interface
 
         $returnObject = new stdClass();
 
-        $omitAttribs = array_map('strtolower', $omitAttribs);
+        $returnAttribs = array_map('strtolower', $returnAttribs);
+        $omitAttribs   = array_map('strtolower', $omitAttribs);
+        $returnAttribs = array_diff($returnAttribs, $omitAttribs);
 
         $entry = $this->getLdap()->getEntry($this->_authenticatedDn, $returnAttribs, true);
         foreach ($entry as $attr => $value) {

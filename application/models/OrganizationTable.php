@@ -100,8 +100,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     static function getOrganizationIds()
     {
         $currentUser = CurrentUser::getInstance();
-        
-        $organizationIds = $currentUser->getOrganizationsByPrivilege('organization', 'read')
+ 
+        // the ID list would contain the systems in the disposal phase 
+        $organizationIds = $currentUser->getOrganizationsByPrivilege('organization', 'read', true)
                                        ->toKeyValueArray('id', 'id');
 
         return $organizationIds;

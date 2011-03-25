@@ -5,9 +5,9 @@
     <p><i>Application is currently in debugging mode:</i></p>
     <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
 <?php    
-    } else {
-        echo $this->escape($this->message, 'none');
     }
+
+    echo $this->escape($this->message, 'none');
 
     $contactEmail = Fisma::configuration()->getConfig('contact_email');
 ?>

@@ -236,5 +236,68 @@ Fisma.User = {
             },
             null
         );
+    },
+
+    /**
+     * Show the comment panel
+     * 
+     * @return void
+     */
+    showCommentPanel : function () {
+        var lockedEl = document.getElementById("locked");
+
+        // Only show panel in locked status
+        if (0 === parseInt(lockedEl.value)) {
+            document.userForm.submit();
+            return false;
+        }
+
+        // Create a panel
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var contentTitle = document.createTextNode('Comments (OPTIONAL):');
+        p.appendChild(contentTitle);
+        content.appendChild(p);
+
+        // Add comment textarea to panel
+        var commentTextarea = document.createElement('textarea');
+        commentTextarea.id = 'commentTextarea';
+        commentTextarea.name = 'commentTextarea';
+        commentTextarea.rows = 5;
+        commentTextarea.cols = 60;
+        content.appendChild(commentTextarea);
+
+        // Add line spacing to panel
+        var lineSpacingDiv = document.createElement('div');
+        lineSpacingDiv.style.height = '10px';
+        content.appendChild(lineSpacingDiv);
+
+        // Add submmit button to panel
+        var continueBtn = document.createElement('input');
+        continueBtn.type = 'button';
+        continueBtn.id = 'continueBtn';
+        continueBtn.value = 'continue';
+        content.appendChild(continueBtn);
+
+        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+
+        document.getElementById('continueBtn').onclick = Fisma.User.submitUserForm;
+    },
+
+    /*
+     * Submit user form after assign comment value to comment element
+     */
+    submitUserForm : function () {
+        
+        // Set the innerHTML property for IE.
+        if  (YAHOO.env.ua.ie) {
+            var commentEl = document.getElementById('commentTextarea').innerHTML;
+        } else {
+            var commentEl = document.getElementById('commentTextarea').value;
+        }
+
+        var form = document.userForm;
+        form.elements['comment'].value = commentEl;
+        form.submit();
     }
 };
