@@ -85,7 +85,9 @@ class Fisma_Inject_Excel
         'discoveredDate' => 'Date Discovered',
         'findingSource' => 'Finding Source',
         'findingDescription' => 'Finding Description',
-        'findingRecommendation' => 'Finding Recommendation'
+        'findingRecommendation' => 'Finding Recommendation',
+        'threatLevel' => 'Threat Level',
+        'threatDescription' => 'Threat Description'
     );
 
     /**
