@@ -45,7 +45,7 @@ Fisma_Format_Section::startSection($sectionName);
     </tr>
     <tr>
         <td>Version Notes:</td>
-        <td><?php echo $this->escape($this->document->description); ?></td>
+        <td><?php echo $this->escape($this->textToHtml($this->escape($this->document->description)), 'none'); ?></td>
     </tr>
 </table>
 
@@ -55,29 +55,54 @@ Fisma_Format_Section::startSection($sectionName);
     Fisma_Format_Section::startSection('Version History'); 
 ?>
 
-<table class="systemDocuments">
-    <tr>
-        <th>File Name</th><th>Version</th><th>Version Notes</th>
-    </tr>
-<?php
-    foreach ($this->versionHistory as $history) {
-        $url = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
-?>
-    <tr><td>
-        <a href="<?php echo $this->escape($url)?>">
-            <?php echo $this->escape($history->fileName); ?>
-        </a>
-    </td>
-    <td>
-        <?php echo $this->escape($history->version); ?>
-    </td>
-    <td>
-        <?php echo $this->escape($history->description); ?>
-    </td></tr>
-<?php
-    }
-?>
-</table>
+<div id='systemDocumentHistory'>
+    <table class="systemDocuments" id='systemDocumentHistoryTable'>
+    <?php
+        foreach ($this->versionHistory as $history) {
+            $url = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
+    ?>
+        <tr>
+            <td>
+                <a href="<?php echo $this->escape($url)?>">
+                <?php echo $this->escape($history->fileName); ?>
+                </a>
+           </td>
+           <td>
+               <?php echo $this->escape($history->version); ?>
+           </td>
+           <td>
+               <?php echo $this->escape($this->textToHtml($this->escape($history->description)), 'none'); ?>
+           </td>
+        </tr>
+    <?php
+        }
+    ?>
+    </table>
+</div>
+
 <?php 
     Fisma_Format_Section::stopSection();
 ?>
+
+<script type="text/javascript">
+YAHOO.util.Event.onContentReady('systemDocumentHistory', function() {
+    var myColumnDefs = [
+        {key:'fileName', label:'File Name', sortable:true},
+        {key:'version', label:'Version', sortable:true},
+        {key:'description', label:'Version Notes', sortable:false}
+    ];
+
+    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("systemDocumentHistoryTable"));
+    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    this.myDataSource.responseSchema = {
+        fields: [
+            {key:'fileName'},
+            {key:'version'},
+            {key:'description'}
+        ]
+    };
+
+    var myDataTable = new YAHOO.widget.DataTable("systemDocumentHistory", myColumnDefs, this.myDataSource, {});
+});
+</script>
+
