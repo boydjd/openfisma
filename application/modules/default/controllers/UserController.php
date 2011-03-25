@@ -114,6 +114,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $subject->lockAccount(User::LOCK_TYPE_MANUAL);
                 unset($values['locked']);
                 unset($values['lockTs']);
+
+                if (isset($values['comment'])) {
+                    $subject->getComments()->addComment(trim($values['comment']));
+                }
             } elseif (!$values['locked'] && $subject->locked) {
                 $subject->unlockAccount();
                 unset($values['locked']);
@@ -435,6 +439,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $links['Audit Log'] = "/user/log/id/{$subject->id}";
         }
         
+        $links['Comments'] = "/user/comments/id/{$subject->id}";
+        
         $links = array_merge($links, parent::getViewLinks($subject));
 
         return $links;
@@ -553,6 +559,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->execute();
 
         $this->view->auditLogLink = "/user/log/id/$id";
+        $this->view->commentLink = "/user/comments/id/$id";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
@@ -691,5 +698,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
         $this->_helper->viewRenderer->setNoRender();
+    }
+
+    /**
+     * Displays the user comment interface
+     *
+     * @return void
+     */
+    function commentsAction() 
+    {
+        $id = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($id);
+        if (!$user) {
+            throw new Fisma_Zend_Exception("Invalid User ID");
+        }
+
+        $comments = $user->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+
+        $this->view->username = $user->username;
+        $this->view->viewLink = "/user/view/id/$id";
+        $this->view->comments = $comments;
     }
 }

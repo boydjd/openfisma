@@ -684,6 +684,17 @@ class User extends BaseUser
         if ('root' == $this->username) {
             throw new Fisma_Zend_Exception_User('The root user cannot be deleted.');
         }
+
+        // Make sure the user can not be deleted when it is already associated with other objects.
+        $relations = $this->getTable()->getRelations();
+        foreach ($relations as $name => $relation) {
+            if (count($this->$name) > 0) {
+                throw new Fisma_Zend_Exception_User(
+                    "This user can not be deleted because it is already associated with one or more "
+                    . strtolower($name)
+                );
+            }
+        }
     }
 
     /**
