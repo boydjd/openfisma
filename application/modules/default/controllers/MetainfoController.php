@@ -85,7 +85,6 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             }
         } elseif (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
             $list = array(
-                ""         => null,
                 "LOW"      => "LOW",
                 "MODERATE" => "MODERATE",
                 "HIGH"     => "HIGH"

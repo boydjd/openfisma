@@ -672,7 +672,19 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 return;
             }
         }
+        
+        if (isset($findingData['threatLevel']) && $findingData['threatLevel'] === '') {
+            $error = 'Threat Level is a required field.';
+            $this->view->priorityMessenger($error, 'warning');
+            return;
+        }
 
+        if (isset($findingData['countermeasuresEffectiveness']) && $findingData['countermeasuresEffectiveness'] === '') {
+            $error = 'Countermeasures Effectiveness is a required field.';
+            $this->view->priorityMessenger($error, 'warning');
+            return;
+        }
+        
         $finding = $this->_getFinding($id);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
