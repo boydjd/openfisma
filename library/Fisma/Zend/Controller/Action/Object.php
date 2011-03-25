@@ -258,7 +258,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $subject = Doctrine::getTable($this->_modelName)->find($id);
 
         if (!$subject) {
-            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
+            throw new Fisma_Zend_Exception_User("Invalid {$this->_modelName} ID");
         }
 
         if ($this->_enforceAcl) {

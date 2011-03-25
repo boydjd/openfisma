@@ -505,7 +505,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = Doctrine::getTable('Incident')->find($id);
         
         if (!$incident) {
-            throw new Fisma_Zend_Exception("Invalid incident ID ($id)");
+            throw new Fisma_Zend_Exception_User("Incident($id) not found. Make sure a valid ID is specified.");
         }
         
         $this->_assertCurrentUserCanViewIncident($id);

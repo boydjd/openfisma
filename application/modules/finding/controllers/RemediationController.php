@@ -1152,7 +1152,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding = $finding->fetchOne();
 
         if (false == $finding) {
-             throw new Fisma_Zend_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
+             throw new Fisma_Zend_Exception_User("Finding($id) not found. Make sure a valid ID is specified.");
         }
         
         return $finding;
