@@ -6178,7 +6178,7 @@ Fisma.Ldap = {
             // Add event listener
             var fn = function(ev, obj) {
                 Event.stopEvent(ev);
-                var url = obj.controller + "/view/id/" + obj.textField.value;
+                var url = obj.controller + "/view/id/" + $P.intval(obj.textField.value);
                 window.location = url;
             };
             param.textField = textField;
@@ -6266,6 +6266,104 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    Fisma.PersistentStorage = function(namespace) {
+        Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
+    };
+    YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
+        _modified: null,
+
+        get: function(key) {
+            /*
+             * @todo: sanity check for key existence.
+             *        if key doesn't exist, perform sync() and then forcefully set the key to null if it still doesn't
+             *        exist.
+             */
+            return this._get(key);
+        },
+        set: function(key, value) {
+            if (this._modified === null) {
+                this._modified = {};
+            }
+            this._modified[key] = value;
+            return this._set(key, value);
+        },
+
+        init: function(values) {
+            for (var key in values) {
+                this._set(key, values[key]);
+            }
+        },
+        sync: function(reply, callback) {
+            var successFn = null,
+                failureFn = null,
+                scope = null;
+            if (callback) {
+                if (typeof(callback) == "function") {
+                    successFn = callback;
+                } else if (callback.success && typeof(callback.success) == "function") {
+                    successFn = callback.success;
+                }
+                if (callback.failure && typeof(callback.failure) == "function") {
+                    failureFn = callback.failure;
+                }
+                if (callback.scope) {
+                    scope = callback.scope;
+                }
+            }
+            Fisma.Storage.onReady(function() {
+                var uri = '/storage/sync/format/json',
+                    callback = {
+                        scope: this,
+                        success: function(response) {
+                            var object = YAHOO.lang.JSON.parse(response.responseText);
+                            if (object.status == "ok") {
+                                this.init(object.data);
+                                this._modified = null;
+                            }
+                            if (successFn) {
+                                successFn.call(scope ? scope : this, response, object);
+                            }
+                        },
+                        failure: function() {
+                            if (failureFn) {
+                                failureFn.call(scope ? scope : this);
+                            }
+                        }
+                    },
+                    postData = $.param({
+                        namespace: this.namespace,
+                        updates: YAHOO.lang.JSON.stringify(this._modified),
+                        reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
+                    });
+                YAHOO.util.Connect.asyncRequest ( 'POST', uri , callback , postData );
+            }, this, true);
+        }
+    });
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -6895,34 +6993,26 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
+         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container, searchOptions) {
+        initializeSearchColumnsPanel : function (container, searchOptions, columnVisibility) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-            var currentColumn = 0;
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName),
+                // Title elements used for accessibility
+                checkedTitle = "Column is visible. Click to hide column.",
+                uncheckedTitle = "Column is hidden. Click to unhide column.";
 
             for (var index in searchOptions) {
-                var searchOption = searchOptions[index];
+                var searchOption = searchOptions[index],
+                    columnName = searchOption.name;
 
                 if (searchOption['hidden'] === true) {
                     continue;
                 }
 
-                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
-                var checked = searchOption.initiallyVisible;
-
-                if (cookie) {
-                    checked = (cookie & 1 << currentColumn) != 0;
-                }
-
-                currentColumn++;
-
-                // Title elements used for accessibility
-                var checkedTitle = "Column is visible. Click to hide column.";
-                var uncheckedTitle = "Column is hidden. Click to unhide column.";
+                var checked = prefs.getColumnVisibility(columnName, columnVisibility[columnName]);
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
@@ -6930,21 +7020,22 @@ Fisma.Search = function() {
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, columnKey) {
-                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
+                        fn : function (event, obj) {
+                            var table = Fisma.Search.yuiDataTable,
+                                column = table.getColumn(obj.name),
+                                checked = this.get("checked");
 
-                            var table = Fisma.Search.yuiDataTable;
-                            var column = table.getColumn(columnKey);
+                            this.set("title", checked ? checkedTitle : uncheckedTitle);
 
-                            if (this.get('checked')) {
+                            if (checked) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            Fisma.Search.saveColumnCookies();
+                            obj.prefs.setColumnVisibility(obj.name, checked);
                         },
-                        obj : searchOption.name
+                        obj : {name: columnName, prefs: prefs}
                     }
                 });
 
@@ -6952,10 +7043,6 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
-            saveDiv.style.marginLeft = '20px';
-            saveDiv.style.marginBottom = '20px';
-            // The following line trips up YUI compressor if object notation (.) is used instead of array []
-            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -6963,7 +7050,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnCookie
+                    fn : Fisma.Search.persistColumnPreferences
                 }
             });
 
@@ -6988,78 +7075,31 @@ Fisma.Search = function() {
         },
 
         /**
-         * Save the currently visible columns into a cookie
-         *
-         * @param table YUI Table
-         */
-        saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTable;
-            var columnKeys = table.getColumnSet().keys;
-
-            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
-            var prefBitmap = 0;
-            var currentColumn = 0;
-
-            for (var column in columnKeys) {
-                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
-                    continue;
-                }
-
-                if (!columnKeys[column].hidden) {
-                    prefBitmap |= 1 << currentColumn;
-                }
-                
-                currentColumn++;
-            }
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-
-            YAHOO.util.Cookie.set(
-                cookieName,
-                prefBitmap,
-                {
-                    path : "/",
-                    secure : location.protocol == 'https'
-                }
-            );
-        },
-
-        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnCookie : function () {
-            Fisma.Search.saveColumnCookies();
+        persistColumnPreferences : function () {
 
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName);
             Fisma.Search.columnPreferencesSpinner.show();
 
-            YAHOO.util.Connect.asyncRequest(
-                'GET',
-                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
-                {
-                    success : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
+            prefs.persist({
+                success : function (response, object) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
 
-                        var response = YAHOO.lang.JSON.parse(o.responseText);
-
-                        if (response.success) {
-                            message("Your column preferences have been saved", "notice", true);
-                        } else {
-                            message(response.message, "warning", true);
-                        }
-                    },
-
-                    failure : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        message('Error: ' + o.statusText, 'warning', true);
+                    if (object.status === "ok") {
+                        message("Your column preferences have been saved", "notice", true);
+                    } else {
+                        message(object.status, "warning", true);
                     }
+                },
+
+                failure : function (response) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
+
+                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            );
+            });
         },
 
         /**
@@ -8325,6 +8365,102 @@ Fisma.Search.Panel.prototype = {
     }
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var YL = YAHOO.lang,
+        FPS = Fisma.PersistentStorage,
+        FSTP = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
+            this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
+            this._state = null;
+            Fisma.Storage.onReady(function() {
+                var data = this._storage.get(this._model);
+                this._state = YL.isObject(init) ? init : {};
+                if (YL.isObject(data)) {
+                    this._state = YL.merge(data, this._state);
+                }
+            }, this, true);
+        };
+    FSTP.prototype = {
+        getColumnVisibility: function (column, def) {
+            this._stateReady();
+            if (YL.isValue(this._state.columnVisibility[column])) {
+                return this._state.columnVisibility[column] ? true : false; // always return boolean
+            }
+            // if default not provided, assume false
+            return YL.isValue(def) && def ? true : false;
+        },
+
+        setColumnVisibility: function (column, value) {
+            this._stateReady();
+            this._state.columnVisibility[column] = value;
+            this._storage.set(this._model, this._state);
+        },
+
+        getSort: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
+        },
+        setSort: function(column, dir) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.sort = {column: column, dir: dir};
+            this._localStorage.set(this._model, data);
+        },
+
+        getPage: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
+        },
+        setPage: function(page) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.page = page;
+            this._localStorage.set(this._model, data);
+        },
+
+        persist: function (callback) {
+            var m = this._model,
+                s = this._storage;
+            // force a "set" to ensure sync will know it's been modified
+            s.set(m, s.get(m));
+            s.sync([m], callback);
+        },
+
+        _stateReady: function() {
+            if (this._state === null) {
+                throw "Attempting to use storage engine before it is ready.";
+            }
+            if (typeof(this._state.columnVisibility) === 'undefined') {
+                this._state.columnVisibility = {};
+            }
+        }
+    };
+    Fisma.Search.TablePreferences = FSTP;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8378,6 +8514,66 @@ Fisma.Spinner.prototype.show = function () {
 Fisma.Spinner.prototype.hide = function () {
     this.spinner.style.visibility = 'hidden';
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var FS = function(namespace) {
+        this.namespace = namespace;
+    };
+
+    FS._storageEngine = YAHOO.util.StorageManager.get(
+        null, // no preferred engine
+        YAHOO.util.StorageManager.LOCATION_SESSION
+    );
+    FS.onReady = function(fn, obj, scope) {
+            if (!FS._storageEngine.isReady) {
+                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+            } else {
+                var s = scope === true ? obj : scope;
+                if (typeof(s) !== "object") {
+                    s = fn;
+                }
+                fn.call(s, obj);
+            }
+        },
+    FS.prototype = {
+        get: function(key) {
+            return this._get(key);
+        },
+        set: function(key, value) {
+            this._set(key, value);
+        },
+
+        _get: function(key) {
+            return YAHOO.lang.JSON.parse(FS._storageEngine.getItem(this.namespace + ":" + key));
+        },
+        _set: function(key, value) {
+            FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
+        }
+    };
+    Fisma.Storage = FS;
+})();
 /**
  * Based on the iToggle example from Engage Interactive Labs.
  * http://labs.engageinteractive.co.uk/itoggle/

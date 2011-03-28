@@ -81,3 +81,4 @@ form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
 form .searchForm{display:inline;}
 input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
+.display-none{display:none;}

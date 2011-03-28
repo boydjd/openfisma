@@ -476,6 +476,13 @@ table.modules td:first-child {
 .highlight {
     background-color: yellow;
 }
+
+div#searchColumnsButtons div {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    float: right;
+}
+
 /* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
 
 /*
@@ -1357,3 +1364,9 @@ input[type=text].date {
     background-color: white;
     width: 10em;
 }
+
+/* class for dynamically hidden elements */
+.display-none {
+    display: none;
+}
+

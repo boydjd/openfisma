@@ -63,6 +63,7 @@ table.modules td:first-child{font-weight:bold;}
 .searchAddCriteriaButton{background:url(/images/add.png) center center no-repeat;overflow:hidden;width:2em;}
 .searchRemoveCriteriaButton{background:url(/images/remove.png) center center no-repeat;overflow:hidden;width:2em;}
 .highlight{background-color:yellow;}
+div#searchColumnsButtons div{margin-left:20px;margin-bottom:20px;float:right;}
 div.switchButton,div.switchButton span.border{display:block;width:93px;height:27px;background:url(../images/switch_button.png) left bottom no-repeat;cursor:pointer;margin-right:20px;}
 div.switchButton span.border{background-position:left top;margin:0;}
 div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}
@@ -190,3 +191,4 @@ form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
 form .searchForm{display:inline;}
 input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
+.display-none{display:none;}
