@@ -561,7 +561,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
 
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
         $this->view->finding = $finding;
         
         $this->_acl->requirePrivilegeForObject('read', $finding);
@@ -610,7 +610,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -685,7 +685,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             return;
         }
         
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.
@@ -723,7 +723,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $do       = $this->_request->getParam('do');
         $decision = $this->_request->getPost('decision');
 
-        $finding  = $this->_getFinding($id);
+        $finding  = $this->_getSubject($id);
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
@@ -775,7 +775,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function uploadevidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
@@ -898,7 +898,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id       = $this->_request->getParam('id');
         $decision = $this->_request->getPost('decision');
 
-        $finding  = $this->_getFinding($id);
+        $finding  = $this->_getSubject($id);
 
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
@@ -939,7 +939,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function rafAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -1136,37 +1136,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     private function _viewFinding()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
         $orgNickname = $finding->ResponsibleOrganization->nickname;
 
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
-    }
-
-    /**
-     * Check and get a specified finding
-     *
-     * @param int $id The specified finding id
-     * @return Finding The found finding
-     * @throws Fisma_Zend_Exception if the specified finding id is not found
-     */
-    private function _getFinding($id)
-    {
-        $finding = Doctrine_Query::create()->from('Finding f')->where('f.id = ?', $id);
-
-        // If user has the delete privilege, then allow viewing of deleted findings
-        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
-            $finding->andWhere('(f.deleted_at = f.deleted_at OR f.deleted_at IS NULL)');
-        }
-
-        $finding = $finding->fetchOne();
-
-        if (false == $finding) {
-             throw new Fisma_Zend_Exception_User("Finding($id) not found. Make sure a valid ID is specified.");
-        }
-        
-        return $finding;
     }
 }
