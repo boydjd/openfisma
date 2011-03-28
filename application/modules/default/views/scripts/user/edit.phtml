@@ -35,7 +35,7 @@ if (!empty($this->requirements)) {
 ?>
 
 <div class="form_box">
-    <form name='userForm' method="post" action="/User/edit/id/<?php echo $this->escape($this->id); ?>">
+    <form method="post" action="/User/edit/id/<?php echo $this->escape($this->id); ?>">
     <?php 
         echo $this->escape($this->form, 'none');
         echo $this->escape($this->tabView, 'none');

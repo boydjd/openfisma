@@ -71,6 +71,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('locked');
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
+        $form->removeElement('comment');
         return $form;
     }
 
@@ -115,8 +116,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($values['locked']);
                 unset($values['lockTs']);
 
-                if (isset($values['comment'])) {
-                    $subject->getComments()->addComment(trim($values['comment']));
+                if (!empty($values['comment'])) {
+                    $subject->getComments()->addComment($values['comment']);
                 }
             } elseif (!$values['locked'] && $subject->locked) {
                 $subject->unlockAccount();

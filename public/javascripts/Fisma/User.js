@@ -244,11 +244,11 @@ Fisma.User = {
      * @return void
      */
     showCommentPanel : function () {
-        var lockedEl = document.getElementById("locked");
+        var lockedElement = YAHOO.util.Dom.get('locked');
 
         // Only show panel in locked status
-        if (0 === parseInt(lockedEl.value)) {
-            document.userForm.submit();
+        if (lockedElement === null || parseInt(lockedElement.value) === 0) {
+            YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
             return false;
         }
 
@@ -260,12 +260,12 @@ Fisma.User = {
         content.appendChild(p);
 
         // Add comment textarea to panel
-        var commentTextarea = document.createElement('textarea');
-        commentTextarea.id = 'commentTextarea';
-        commentTextarea.name = 'commentTextarea';
-        commentTextarea.rows = 5;
-        commentTextarea.cols = 60;
-        content.appendChild(commentTextarea);
+        var commentTextArea = document.createElement('textarea');
+        commentTextArea.id = 'commentTextarea';
+        commentTextArea.name = 'commentTextarea';
+        commentTextArea.rows = 5;
+        commentTextArea.cols = 60;
+        content.appendChild(commentTextArea);
 
         // Add line spacing to panel
         var lineSpacingDiv = document.createElement('div');
@@ -273,15 +273,15 @@ Fisma.User = {
         content.appendChild(lineSpacingDiv);
 
         // Add submmit button to panel
-        var continueBtn = document.createElement('input');
-        continueBtn.type = 'button';
-        continueBtn.id = 'continueBtn';
-        continueBtn.value = 'continue';
-        content.appendChild(continueBtn);
+        var continueButton = document.createElement('input');
+        continueButton.type = 'button';
+        continueButton.id = 'continueButton';
+        continueButton.value = 'continue';
+        content.appendChild(continueButton);
 
         Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
 
-        document.getElementById('continueBtn').onclick = Fisma.User.submitUserForm;
+        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
     },
 
     /*
@@ -291,13 +291,13 @@ Fisma.User = {
         
         // Set the innerHTML property for IE.
         if  (YAHOO.env.ua.ie) {
-            var commentEl = document.getElementById('commentTextarea').innerHTML;
+            var commentElement = YAHOO.util.Dom.get('commentTextarea').innerHTML;
         } else {
-            var commentEl = document.getElementById('commentTextarea').value;
+            var commentElement = YAHOO.util.Dom.get('commentTextarea').value;
         }
 
-        var form = document.userForm;
-        form.elements['comment'].value = commentEl;
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+        YAHOO.util.Dom.get('comment').value = commentElement;
         form.submit();
     }
 };
