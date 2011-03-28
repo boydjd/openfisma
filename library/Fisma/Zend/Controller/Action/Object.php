@@ -255,11 +255,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _viewObject()
     {
         $id = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
-
-        if (!$subject) {
-            throw new Fisma_Zend_Exception_User("Invalid {$this->_modelName} ID");
-        }
+        $subject = $this->_getSubject($id);
 
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('read', $subject);
@@ -356,11 +352,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _editObject()
     {
         $id     = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
-
-        if (!$subject) {
-            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
-        }
+        $subject = $this->_getSubject($id);
 
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('update', $subject);
@@ -415,7 +407,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function deleteAction()
     {
         $id = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
+        $subject = $this->_getSubject($id);
 
         if (!$this->_isDeletable()) {
             throw new Fisma_Zend_Exception("This model is marked as not deletable");
@@ -972,5 +964,32 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _isDeletable()
     {
         return true;
+    }
+
+    /**
+     * Check and get a specified record.
+     *
+     * @param int $id The specified record id
+     * @return Doctrine_Record The found record
+     * @throws Fisma_Zend_Exception_User If the specified record id is not found
+     */
+    protected function _getSubject($id)
+    {
+        $table = Doctrine::getTable($this->_modelName);
+        $query = Doctrine_Query::create()->from($this->_modelName)->where('id = ?', $id);
+
+        // If user has the delete privilege, then allow viewing of deleted record
+        if ($table->hasColumn('deleted_at') && $this->_acl->hasPrivilegeForClass('delete', $this->_modelName)) {
+            $query->andWhere('deleted_at = deleted_at OR deleted_at IS NULL');
+        }
+
+        $record = $query->fetchOne();
+
+        if (false == $record) {
+             $msg = '%s (%d) not found. Make sure a valid ID is specified.';
+             throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
+        }
+        
+        return $record;
     }
 }
