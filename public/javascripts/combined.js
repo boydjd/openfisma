@@ -9663,7 +9663,7 @@ Fisma.Vulnerability = {
         yuiPanel.hide();
         yuiPanel.destroy();
     }
-}
+};
 /**
  * Title: jqPlot Charts
  * 
