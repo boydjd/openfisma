@@ -53,19 +53,22 @@
         };
 
         // DataTable configuration
-        var initialPage = tablePrefs.getPage();
-        initialPage = YL.isNumber(initialPage) ? initialPage : 1;
+        var initialPage = tablePrefs.getPage(),
+            sortedBy = tablePrefs.getSort(),
+            sortedByKey = "<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>", 
+            sortedByDir = "<?php echo $this->escape($this->sortDirection, 'javascript'); ?>";
+        if (YL.isObject(sortedBy)) {
+            sortedByKey = YL.isValue(sortedBy.column) ? sortedBy.column : sortedByKey;
+            sortedByDir = YL.isValue(sortedBy.dir) ? sortedBy.dir : sortedByDir;
+        }
         var tableConfiguration = {
             initialLoad : false,
             dynamicData : true, 
-            sortedBy : {
-                key : "<?php echo $this->escape($this->initialSortColumn, 'javascript'); ?>", 
-                dir : "<?php echo $this->escape($this->sortDirection, 'javascript'); ?>"
-            },
+            sortedBy : { key : sortedByKey, dir : sortedByDir },
             paginator: new YAHOO.widget.Paginator(
                 {
                     totalRecords: YAHOO.widget.Paginator.VALUE_UNLIMITED,
-                    initialPage: initialPage,
+                    initialPage: YL.isNumber(initialPage) ? initialPage : 1,
                     rowsPerPage : <?php echo $this->escape($this->rowCount, 'javascript'); ?>,
                     template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                 }
@@ -202,6 +205,10 @@
 
             // save the new page number
             prefs.setPage(event.newValue);
+        }, tablePrefs);
+
+        dataTable.subscribe("columnSortEvent", function(event, prefs) {
+            prefs.setSort(event.column.key, event.dir);
         }, tablePrefs);
 
         dataTable.get("paginator").fireEvent(

@@ -57,7 +57,7 @@
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
         },
-        setSort: function(column, direction) {
+        setSort: function(column, dir) {
             var data = this._localStorage.get(this._model);
             data = YL.isObject(data) ? data : {};
             data.sort = {column: column, dir: dir};
