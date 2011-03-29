@@ -375,8 +375,9 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
 
         // The following date fields need be validated since Solr update index function does not 
         // accept invalid date format 
+        $validator = new Zend_Validate_Date('yyyy-MM-dd');
         if (isset($modified['securityAuthorizationDt']) 
-            && !Zend_Validate::is($modified['securityAuthorizationDt'], 'Date')) {
+            && !$validator->isValid($modified['securityAuthorizationDt'])) {
                  
             $this->getErrorStack()->add(
                 'securityAuthorizationDt', 
@@ -385,7 +386,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         }
 
         if (isset($modified['contingencyPlanTestDt']) 
-            && !Zend_Validate::is($modified['contingencyPlanTestDt'], 'Date')) {
+            && !$validator->isValid($modified['contingencyPlanTestDt'])) {
                  
             $this->getErrorStack()->add(
                 'contingencyPlanTestDt', 
@@ -394,7 +395,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         }
 
         if (isset($modified['controlAssessmentDt']) 
-            && !Zend_Validate::is($modified['controlAssessmentDt'], 'Date')) {
+            && !$validator->isValid($modified['controlAssessmentDt'])) {
                  
             $this->getErrorStack()->add(
                 'controlAssessmentDt', 
