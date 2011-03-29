@@ -17,7 +17,7 @@
  */
 
 /**
- * Remove SoftDelete behavior and update soft deleted users to locked status.
+ * Add user_comment table
  *
  * @package   Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,42 +27,77 @@
 class Version95 extends Doctrine_Migration_Base
 {
     /**
-     * Update lock type of soft deleted users to locked status,
-     * Remove deleted_at column.
+     * Create user_comment table
      */
     public function up()
     {
-        $users = $this->_getSoftDeletedUser();
-        foreach ($users as $user) {
-            $user->locked = true;
-            $user->lockTs = $user->deleted_at;
-            $user->lockType = 'manual';
-            $user->save();
-        }
+        $this->createTable('user_comment', array(
+            'id' => 
+            array(
+                'primary' => '1',
+                'autoincrement' => '1',
+                'type' => 'integer',
+                'length' => 8,
+            ),
+            'createdts' => 
+            array(
+                'comment' => 'The timestamp when this entry was created',
+                'type' => 'timestamp',
+                'length' => 25,
+            ),
+            'comment' => 
+            array(
+                'comment' => 'The text of the comment',
+                'type' => 'string',
+                'length' => '',
+            ),
+            'objectid' => 
+            array(
+                'comment' => 'The parent object to which this comment belongs',
+                'type' => 'integer',
+                'length' => 8,
+            ),
+            'userid' => 
+            array(
+                'comment' => 'The user who created comment',
+                'type' => 'integer',
+                'length' => 8,
+            ),
+        ), array(
+            'indexes' => 
+            array(
+            ),
+            'primary' => 
+            array(
+                0 => 'id',
+            ),
+        ));
 
-        $this->removeColumn('user', 'deleted_at');
+        // Add foreign keys for user_comment table
+        $this->createForeignKey('user_comment', 'user_comment_objectid_user_id', array(
+            'name' => 'user_comment_objectid_user_id',
+            'local' => 'objectid',
+            'foreign' => 'id',
+            'foreignTable' => 'user',
+        ));
+        $this->createForeignKey('user_comment', 'user_comment_userid_user_id', array(
+            'name' => 'user_comment_userid_user_id',
+            'local' => 'userid',
+            'foreign' => 'id',
+            'foreignTable' => 'user',
+        ));
     }
 
     /**
-     * Irreversible 
+     * Drop user_comment foreign key and table
      * 
      * @return void
      */
     public function down()
     {
-        throw new Doctrine_Migration_IrreversibleMigrationException();
-    }
+        $this->dropForeignKey('user_comment', 'user_comment_objectid_user_id');
+        $this->dropForeignKey('user_comment', 'user_comment_userid_user_id');
 
-    /**
-     * Get the soft deleted user to locked status
-     * 
-     * @return Doctrine_Collection 
-     */
-    private function _getSoftDeletedUser()
-    {
-        return Doctrine_Query::create()
-               ->from('User u')
-               ->where('u.deleted_at IS NOT NULL')
-               ->execute();
+        $this->dropTable('user_comment');
     }
 }
