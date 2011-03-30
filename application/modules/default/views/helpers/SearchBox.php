@@ -38,21 +38,15 @@ class View_Helper_SearchBox extends Zend_View_Helper_Abstract
     public function searchBox($toolbarButtons, 
                               $searchForm = null, 
                               $searchMoreOptionsForm = null, 
-                              $advancedSearchOptions = null,
-                              $datatable = null)
+                              $advancedSearchOptions = null)
     {
         $view = Zend_Layout::getMvcInstance()->getView();
         
-        $columnVisibility = array();
-        foreach ($datatable->getColumns() as $column) {
-            $columnVisibility[$column->getName()] = !$column->getHidden();
-        }
         $viewParameters = array(
             'advancedSearchOptions' => $advancedSearchOptions,
             'searchForm' => $searchForm,
             'searchMoreOptionsForm' => $searchMoreOptionsForm,
-            'toolbarButtons' => $toolbarButtons,
-            'columnVisibility' => $columnVisibility
+            'toolbarButtons' => $toolbarButtons
         );
 
         return $view->partial('helper/search-box.phtml', 'default', $viewParameters);

@@ -360,28 +360,29 @@ Fisma.Search = function() {
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
          * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container, searchOptions, columnVisibility) {
+        initializeSearchColumnsPanel : function (container) {
 
             // Set up the cookie used for tracking which columns are visible
             var modelName = document.getElementById('modelName').value,
                 prefs = new Fisma.Search.TablePreferences(modelName),
+                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
                 // Title elements used for accessibility
                 checkedTitle = "Column is visible. Click to hide column.",
                 uncheckedTitle = "Column is hidden. Click to unhide column.";
 
-            for (var index in searchOptions) {
-                var searchOption = searchOptions[index],
-                    columnName = searchOption.name;
+            for (var index in columns) {
+                var column = columns[index],
+                    columnName = column.key;
 
-                if (searchOption['hidden'] === true) {
+                if (columnName === "deleteCheckbox") {
                     continue;
                 }
 
-                var checked = prefs.getColumnVisibility(columnName, columnVisibility[columnName]);
+                var checked = !column.hidden;
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : searchOption.label,
+                    label : column.label,
                     container : container,
                     checked : checked,
                     onclick : {

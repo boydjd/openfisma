@@ -41,20 +41,18 @@
 
 <?php if (isset($this->advancedSearchOptions)): ?>
     <script>
-        YAHOO.util.Event.onContentReady (
-            "searchColumns", 
-            function () {
-                Fisma.Storage.onReady(function() {
-                    var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
-        
-                    Fisma.Search.initializeSearchColumnsPanel(
-                        document.getElementById('searchColumnsButtons'), 
-                        advancedSearchOptions,
-                        <?php echo $this->escape($this->columnVisibility, 'json'); ?>
-                    );
-                });
+        (function() {
+            var Dom = YAHOO.util.Dom,
+                Lang = YAHOO.lang;
+            function pollDT() {
+                if (Lang.isObject(Fisma.Search.yuiDataTable)) {
+                    Fisma.Search.initializeSearchColumnsPanel(Dom.get("searchColumnsButtons"));
+                } else {
+                    Lang.later(0, pollDT, pollDT);
+                }
             }
-        );
+            pollDT();
+        })();
 
         YAHOO.util.Event.onContentReady (
             "advancedSearch", 
