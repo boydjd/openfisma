@@ -50,5 +50,5 @@ tinyMCE.init({
 	theme_advanced_statusbar_location : "bottom",
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
-	spellchecker_languages : "+English=en",
+	spellchecker_languages : "+English=en"
 });
