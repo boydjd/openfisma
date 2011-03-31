@@ -109,6 +109,7 @@ displayGroups.accountInfo.elements.lockTs = "lockTs"
 
 elements.comment.type = "hidden"
 elements.comment.options.hideLabel = true
+elements.comment.options.filters.stringtrim.filter = "StringTrim"
 displayGroups.accountInfo.elements.comment = "comment"
 
 elements.save.type = "Form_Button"

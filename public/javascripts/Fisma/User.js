@@ -261,8 +261,8 @@ Fisma.User = {
 
         // Add comment textarea to panel
         var commentTextArea = document.createElement('textarea');
-        commentTextArea.id = 'commentTextarea';
-        commentTextArea.name = 'commentTextarea';
+        commentTextArea.id = 'commentTextArea';
+        commentTextArea.name = 'commentTextArea';
         commentTextArea.rows = 5;
         commentTextArea.cols = 60;
         content.appendChild(commentTextArea);
@@ -289,15 +289,10 @@ Fisma.User = {
      */
     submitUserForm : function () {
         
-        // Set the innerHTML property for IE.
-        if  (YAHOO.env.ua.ie) {
-            var commentElement = YAHOO.util.Dom.get('commentTextarea').innerHTML;
-        } else {
-            var commentElement = YAHOO.util.Dom.get('commentTextarea').value;
-        }
-
-        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+        // Get commentTextArea value from panel and assign its value to comment element
+        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
         YAHOO.util.Dom.get('comment').value = commentElement;
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
         form.submit();
     }
 };

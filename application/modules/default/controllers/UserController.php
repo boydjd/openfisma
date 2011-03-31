@@ -718,6 +718,22 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->username = $user->username;
         $this->view->viewLink = "/user/view/id/$id";
-        $this->view->comments = $comments;
+
+        $commentData = array();
+        foreach ($comments as $comment) {
+            $commentData[] = array(
+                $comment['createdTs'], 
+                $this->view->userInfo($comment['User']['username']), 
+                $comment['comment'],
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, 'YAHOO.widget.DataTable.formatText'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, 'Fisma.TableFormat.formatHtml'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false))
+                  ->setData($commentData);
+
+        $this->view->dataTable = $dataTable;
     }
 }
