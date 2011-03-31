@@ -652,5 +652,5 @@ Fisma.Search = function() {
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
         }
-    }
-};
+    };
+}();
