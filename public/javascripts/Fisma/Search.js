@@ -141,7 +141,7 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
@@ -173,7 +173,7 @@ Fisma.Search = function() {
             var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
+                query['keywords'] = form.keywords.value;
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
@@ -278,13 +278,13 @@ Fisma.Search = function() {
 
             try {
                 if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=" 
-                              + encodeURIComponent(document.getElementById('keywords').value);
+                    postData += "&queryType=simple&keywords=";
+                    postData += encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
-                    postData += "&queryType=advanced&query=" 
-                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
+                    postData += "&queryType=advanced&query=";
+                    postData += encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
@@ -310,7 +310,6 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -555,7 +554,7 @@ Fisma.Search = function() {
             }
             
             // Do some sanity checking
-            if (0 == checkedRecords.length) {
+            if (0 === checkedRecords.length) {
                 message("No records selected for deletion.", "warning", true);
                 
                 return;
@@ -597,9 +596,9 @@ Fisma.Search = function() {
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
             var postString = "csrf="
-                           + document.getElementById('searchForm').csrf.value
-                           + "&records="
-                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            postString += document.getElementById('searchForm').csrf.value
+            postString += "&records="
+            postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -627,12 +626,11 @@ Fisma.Search = function() {
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
+                        text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
                 },
-                postString
-            );
+                postString);
         },
         
         /**
@@ -655,4 +653,4 @@ Fisma.Search = function() {
             this.onSetTableCallback = callback;
         }
     }
-}();
+};

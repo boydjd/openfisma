@@ -28,10 +28,10 @@
  * @param pathname The URL path, used to generate default search filters
  */
 Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
-
+    var index;
     var searchableFields = advancedSearchOptions;
 
-    if (0 == searchableFields.length) {
+    if (0 === searchableFields.length) {
         throw "Field array cannot be empty";
     }
     
@@ -51,7 +51,7 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     // Copy all visible (non-hidden) fields into this panel
     this.searchableFields = {};
     
-    for (var index in searchableFields) {
+    for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
@@ -65,12 +65,12 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     if (pathname) {
         var pathTokens = pathname.split('/');
 
-        for (var index in pathTokens) {
+        for (index in pathTokens) {
             var pathToken = pathTokens[index];
 
             // If the 'advanced' token is found (and has more tokens after it), then save the 
             // rest of the tokens into the object
-            var start = parseInt(index);
+            var start = parseInt(index, 10);
 
             if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
                 
@@ -285,5 +285,7 @@ Fisma.Search.Panel.prototype = {
                 throw "Number of operands not defined for query function: " + queryFunction;
                 break;
         }
+        
+        throw "Number of operands not defined for query function: " + queryFunction;
     }
 };

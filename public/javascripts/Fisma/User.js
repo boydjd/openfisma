@@ -120,8 +120,7 @@ Fisma.User = {
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
             }, 
-            null
-        );
+            null);
 
         return panel;
     },
@@ -207,7 +206,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null) {
+                    if (data.accountInfo !== null) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -215,7 +214,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue != null) {
+                            if (columnValue !== null) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -234,8 +233,7 @@ Fisma.User = {
                     alert('Failed to check account password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
     },
 
     /**
@@ -247,7 +245,7 @@ Fisma.User = {
         var lockedElement = YAHOO.util.Dom.get('locked');
 
         // Only show panel in locked status
-        if (lockedElement === null || parseInt(lockedElement.value) === 0) {
+        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
             YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
             return false;
         }
@@ -282,6 +280,7 @@ Fisma.User = {
         Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
 
         YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        return true;
     },
 
     /*
@@ -289,11 +288,13 @@ Fisma.User = {
      */
     submitUserForm : function () {
         
+        var commentElement;
+        
         // Set the innerHTML property for IE.
         if  (YAHOO.env.ua.ie) {
-            var commentElement = YAHOO.util.Dom.get('commentTextarea').innerHTML;
+            commentElement = YAHOO.util.Dom.get('commentTextarea').innerHTML;
         } else {
-            var commentElement = YAHOO.util.Dom.get('commentTextarea').value;
+            commentElement = YAHOO.util.Dom.get('commentTextarea').value;
         }
 
         var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');

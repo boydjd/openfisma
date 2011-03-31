@@ -1867,7 +1867,7 @@ Fisma.Chart = {
      */
     redrawAllCharts : function (doRedrawNow)
     {
-        var var thisParamObj;
+        var thisParamObj;
         var uniqueid;
         
         // First, show a loading message showing that the chart is loading
