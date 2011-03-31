@@ -1867,24 +1867,27 @@ Fisma.Chart = {
      */
     redrawAllCharts : function (doRedrawNow)
     {
+        var var thisParamObj;
+        var uniqueid;
+        
         // First, show a loading message showing that the chart is loading
-        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
-            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
             Fisma.Chart.showChartLoadingMsg(thisParamObj);
         }
 
         // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
         if (Fisma.Chart.isIE === true) {
-            if (doRedrawNow !== true || doRedrawNow == null) { 
+            if (doRedrawNow !== true || doRedrawNow === null) { 
                 setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
                 return;
             }
         }
 
         // Now redraw and refreash charts and chart options
-        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
 
-            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
 
             // redraw chart
             Fisma.Chart.createJQChart(thisParamObj);
@@ -1986,4 +1989,4 @@ Fisma.Chart = {
         return isChartEmpty;
     }
 
-}
+};
