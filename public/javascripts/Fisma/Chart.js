@@ -1272,7 +1272,11 @@ Fisma.Chart = {
                 // How many bars does it have?
                 var barCount;
                 if (chartParamsObj.chartType === 'stackedbar') {
-                    barCount = chartParamsObj.chartData[0].length;
+                    if (typeof chartParamsObj.chartData[0] === 'undefined') {
+                        return;
+                    } else {
+                        barCount = chartParamsObj.chartData[0].length;
+                    }
                 } else if (chartParamsObj.chartType === 'bar') {
                     barCount = chartParamsObj.chartData.length;
                 }
