@@ -679,7 +679,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             return;
         }
 
-        if (isset($findingData['countermeasuresEffectiveness']) && $findingData['countermeasuresEffectiveness'] === '') {
+        if (
+            isset($findingData['countermeasuresEffectiveness']) && 
+            $findingData['countermeasuresEffectiveness'] === ''
+        ) {
             $error = 'Countermeasures Effectiveness is a required field.';
             $this->view->priorityMessenger($error, 'warning');
             return;
