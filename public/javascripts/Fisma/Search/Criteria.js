@@ -361,7 +361,7 @@ Fisma.Search.Criteria.prototype = {
             field : this.currentField.name,
             operator : this.currentQueryType,
             operands : this.getOperands()
-        }
+        };
     },
 
     /**
@@ -435,7 +435,7 @@ Fisma.Search.Criteria.prototype = {
     hasBlankOperands: function() {
         var operands = this.getOperands();
         for (var i in operands) {
-            if ('' == $P.trim(operands[i])) {
+            if ('' === $P.trim(operands[i])) {
                 return true;
             }
         }

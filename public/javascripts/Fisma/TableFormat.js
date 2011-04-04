@@ -248,7 +248,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -257,7 +257,7 @@ Fisma.TableFormat = {
 
         if (parameters.to) {
             toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
             
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
@@ -271,10 +271,10 @@ Fisma.TableFormat = {
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             var yesterdayString = yesterday.getFullYear() 
-                                + '-' 
-                                + (yesterday.getMonth() + 1) 
-                                + '-' 
-                                + yesterday.getDate();
+            yesterdayString += '-' 
+            yesterdayString += (yesterday.getMonth() + 1) 
+            yesterdayString += '-' 
+            yesterdayString += yesterday.getDate();
 
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
@@ -296,9 +296,9 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        percentage = parseInt(oData);
+        percentage = parseInt(oData, 10);
 
-        if (oData != null) {
+        if (oData !== null) {
             elCell.innerHTML = oData + "%";
 
             if (percentage >= 95 && percentage <= 100) {
@@ -323,8 +323,8 @@ Fisma.TableFormat = {
         var docTypeNames = '';
         if (oData.length > 0) {
             docTypeNames += '<ul><li>'
-                          + oData.replace(/,/g, '</li><li>')
-                          + '</li></ul>';
+            docTypeNames += oData.replace(/,/g, '</li><li>')
+            docTypeNames += '</li></ul>';
         }
 
         elCell.innerHTML = docTypeNames;

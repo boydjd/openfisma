@@ -75,7 +75,7 @@ Fisma.AutoComplete = function() {
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
                 
-                if (0 == Fisma.AutoComplete.requestCount) {
+                if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });

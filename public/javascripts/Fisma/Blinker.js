@@ -51,7 +51,7 @@ Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
  */
 Fisma.Blinker.prototype.start = function () {
     this.cycle();
-}
+};
 
 /**
  * The state transition method
@@ -75,7 +75,6 @@ Fisma.Blinker.prototype.cycle = function () {
             function () {
                 that.cycle.call(that);
             },
-            this.interval
-        );
+            this.interval);
     }
-}
+};

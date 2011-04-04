@@ -44,11 +44,7 @@ Fisma.Highlighter = function() {
 
             var escapedDelimiter = Fisma.Util.escapeRegexValue(delimiter);
 
-            var regex = new RegExp("^(.*?)" 
-                                   + escapedDelimiter
-                                   + "(.*?)"
-                                   + escapedDelimiter
-                                   + "(.*?)$");
+            var regex = new RegExp("^(.*?)" + escapedDelimiter + "(.*?)" + escapedDelimiter + "(.*?)$");
 
             for (var i in elements) {
                 var element = elements[i];
@@ -150,7 +146,7 @@ Fisma.Highlighter = function() {
 
                     var newTextNode = document.createTextNode(match);
 
-                    if (j % 2 == 0) {
+                    if (j % 2 === 0) {
                         // This is a plaintext node
                         parentNode.appendChild(newTextNode);
                     } else {
@@ -165,4 +161,4 @@ Fisma.Highlighter = function() {
             }
         }
     }
-}();
+};
