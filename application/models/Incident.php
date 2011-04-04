@@ -177,7 +177,7 @@ class Incident extends BaseIncident
                     . ($completedStep->cardinality + 1)
                     . ': '
                     . $completedStep->name;
-        $this->getAuditLog()->write($logMessage);
+        $this->getAuditLog()->write(htmlspecialchars($logMessage));
         
         /*
          * The next step can be identified by its cardinality, which is always one more than the cardinality of the 

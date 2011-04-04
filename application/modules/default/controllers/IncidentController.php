@@ -655,7 +655,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         
         // Convert log messages from plain text to HTML
         foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
+            $log['o_message'] = $this->view->textToHtml($log['o_message']);
         }
 
         $this->view->logs = $logs;
