@@ -1808,8 +1808,7 @@ Fisma.AttachArtifacts = {
                 
                 argument: newPanel
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -1822,7 +1821,7 @@ Fisma.AttachArtifacts = {
         // Verify that a file is selected
         var fileUploadEl = document.getElementById('fileUpload');
 
-        if ("" == fileUploadEl.value) {
+        if ("" === fileUploadEl.value) {
             alert("Please select a file.");
             
             return false;
@@ -1847,8 +1846,8 @@ Fisma.AttachArtifacts = {
             // Remove the inderminate progress bar
             var progressBarContainer = document.getElementById('progressBarContainer');
 
-            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
-            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'), 10);
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'), 10);
 
             YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
 
@@ -1865,7 +1864,7 @@ Fisma.AttachArtifacts = {
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
 
             yuiProgressBar.set('anim', true);
-            var animation = yuiProgressBar.get('anim')
+            var animation = yuiProgressBar.get('anim');
             animation.duration = 2;
             animation.method = YAHOO.util.Easing.easeNone;
             
@@ -1883,8 +1882,7 @@ Fisma.AttachArtifacts = {
                 function () {
                     that.getProgress.call(that);
                 },
-                this.sampleInterval
-            );
+                this.sampleInterval);
         }
 
         // Display the progress bar
@@ -1899,8 +1897,7 @@ Fisma.AttachArtifacts = {
             function () {
                 that.postForm.call(that);
             },
-            0
-        );
+            0);
         
         return false;
     },
@@ -1917,13 +1914,13 @@ Fisma.AttachArtifacts = {
 
         var that = this;
         
-        var postUrl = "/"
-                    + encodeURIComponent(this.config.server.controller)
-                    + "/"
-                    + encodeURIComponent(this.config.server.action)
-                    + "/id/"
-                    + encodeURIComponent(this.config.id)
-                    + "/format/json";
+        var postUrl = "/";
+        postUrl += encodeURIComponent(this.config.server.controller);
+        postUrl += "/";
+        postUrl += encodeURIComponent(this.config.server.action);
+        postUrl += "/id/";
+        postUrl += encodeURIComponent(this.config.id);
+        postUrl += "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
         YAHOO.util.Connect.asyncRequest(
@@ -1938,8 +1935,7 @@ Fisma.AttachArtifacts = {
                     alert('Document upload failed.');
                 }
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -2007,12 +2003,10 @@ Fisma.AttachArtifacts = {
                             function () {
                                 that.getProgress.call(that);
                             }, 
-                            that.sampleInterval
-                        );
+                            that.sampleInterval);
                     }
                 }, 
-                null
-            );
+                null);
         }
     },
     
@@ -2031,7 +2025,7 @@ Fisma.AttachArtifacts = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -2044,7 +2038,7 @@ Fisma.AttachArtifacts = {
         
         // Update progress to 100%
         if (this.yuiProgressBar) {
-            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.get('anim').duration = 0.5;
             this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
@@ -2180,7 +2174,7 @@ Fisma.AutoComplete = function() {
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
                 
-                if (0 == Fisma.AutoComplete.requestCount) {
+                if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });
@@ -2312,7 +2306,7 @@ Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
  */
 Fisma.Blinker.prototype.start = function () {
     this.cycle();
-}
+};
 
 /**
  * The state transition method
@@ -2336,10 +2330,9 @@ Fisma.Blinker.prototype.cycle = function () {
             function () {
                 that.cycle.call(that);
             },
-            this.interval
-        );
+            this.interval);
     }
-}
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -2390,7 +2383,7 @@ Fisma.Calendar = function () {
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
-            textEl.onfocus = function () {calendar.show()};
+            textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
@@ -2407,7 +2400,7 @@ Fisma.Calendar = function () {
                 textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
-            }
+            };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);            
         }
@@ -4286,24 +4279,27 @@ Fisma.Chart = {
      */
     redrawAllCharts : function (doRedrawNow)
     {
+        var thisParamObj;
+        var uniqueid;
+        
         // First, show a loading message showing that the chart is loading
-        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
-            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
             Fisma.Chart.showChartLoadingMsg(thisParamObj);
         }
 
         // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
         if (Fisma.Chart.isIE === true) {
-            if (doRedrawNow !== true || doRedrawNow == null) { 
+            if (doRedrawNow !== true || doRedrawNow === null) { 
                 setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
                 return;
             }
         }
 
         // Now redraw and refreash charts and chart options
-        for (var uniqueid in Fisma.Chart.chartsOnDOM) {
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
 
-            var thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
 
             // redraw chart
             Fisma.Chart.createJQChart(thisParamObj);
@@ -4405,7 +4401,8 @@ Fisma.Chart = {
         return isChartEmpty;
     }
 
-}/**
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4581,8 +4578,7 @@ Fisma.Commentable = {
 
                  argument: newPanel
              }, 
-             null
-         );
+             null);
          
          // Prevent form submission
          return false;
@@ -4598,11 +4594,7 @@ Fisma.Commentable = {
       */
      postComment : function() {
          
-         var postUrl = "/comment/add/id/"
-                     + encodeURIComponent(Fisma.Commentable.config.id)
-                     + "/type/"
-                     + encodeURIComponent(Fisma.Commentable.config.type)
-                     + "/format/json";
+         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -4617,8 +4609,7 @@ Fisma.Commentable = {
                      alert('Document upload failed.');
                  }
              }, 
-             null
-         );
+             null);
                   
          // Prevent form submission
          return false;
@@ -4642,7 +4633,7 @@ Fisma.Commentable = {
                  // Handle a JSON syntax error by constructing a fake response object
                  responseStatus = new Object();
                  responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server."
+                 responseStatus.message = "Invalid response from server.";
              } else {
                  throw e;
              }
@@ -4728,7 +4719,7 @@ Fisma.Email = function() {
         showRecipientDialog : function() {
 
             // Remove used old panel if necessary
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
@@ -4772,7 +4763,7 @@ Fisma.Email = function() {
          */
         sendTestEmail : function() {
             
-            if (document.getElementById('testEmailRecipient').value == '') {
+            if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
                 alert("Recipient is required.");
                 document.getElementById('testEmailRecipient').focus();
@@ -4805,11 +4796,13 @@ Fisma.Email = function() {
             }, null);
     
             // Remove used panel
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
+            
+            return true;
         }
     };
 }();
@@ -4957,7 +4950,7 @@ Fisma.Finding = {
             }
         );
     }
-}
+};
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -5030,6 +5023,7 @@ Fisma.FindingSummary = function() {
 
             // Render each node at this level
             for (var nodeId in tree) {
+                var c;
                 var node = tree[nodeId];
 
                 // Append two rows ('ontime' and 'overdue') to the table for this node
@@ -5050,7 +5044,7 @@ Fisma.FindingSummary = function() {
 
                 var expandControlImage = document.createElement('img');
                 expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img"
+                expandControlImage.id = node.nickname + "Img";
 
                 var expandControl = document.createElement('a');
                 expandControl.appendChild(expandControlImage);
@@ -5089,9 +5083,10 @@ Fisma.FindingSummary = function() {
                 
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
-                for (var c in ontime) {
+                for (c in ontime) {
                     count = ontime[c];
-                    cell = firstRow.insertCell(i++);
+                    i++;
+                    cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
                         cell.className = "noDueDate";
@@ -5103,7 +5098,7 @@ Fisma.FindingSummary = function() {
                 }
 
                 // Now add cells to the second row
-                for (var c in overdue) {
+                for (c in overdue) {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -5175,7 +5170,7 @@ Fisma.FindingSummary = function() {
             var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (treeNode.hasOverdue) {
                 // Do not hide the overdue row. Instead, update the counts
-                var i = 0;
+                i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
@@ -5235,7 +5230,7 @@ Fisma.FindingSummary = function() {
                 ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
                 overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
 
-                var i = 0;
+                i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
@@ -5339,7 +5334,7 @@ Fisma.FindingSummary = function() {
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
                 node = tree[nodeId];
-                if (node.nickname == nodeName) {
+                if (node.nickname === nodeName) {
                     return node;
                 } else if (node.children.length > 0) {
                     var foundNode = this.findNode(nodeName, node.children);
@@ -5380,10 +5375,11 @@ Fisma.FindingSummary = function() {
          * @param expanded Used to generate link
          */
         updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+            var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
-                    var link = document.createElement('a');
+                    link = document.createElement('a');
                     link.href = this.makeLink(orgName, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
@@ -5408,7 +5404,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
-                        var link = document.createElement('a');
+                        link = document.createElement('a');
                         link.href = this.makeLink(orgName, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
@@ -5448,27 +5444,23 @@ Fisma.FindingSummary = function() {
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
+            if (status !== '' && status !=='TOTAL') {
                 statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
+            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
                 filterType = '/type/enumIs/' + this.filterType;
             }
 
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
+            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
                 filterSource = '/source/textExactMatch/' + this.filterSource;
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
-                    + onTimeString
-                    + statusString
-                    + filterType
-                    + filterSource;
+            var uri = '/finding/remediation/list/queryType/advanced' + onTimeString + statusString + filterType + filterSource;
 
             if (expanded) {
                 uri += '/organization/textExactMatch/' + orgName;
@@ -5485,9 +5477,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/'
-                    + format
-                    + this.listExpandedNodes(this.treeRoot, '');
+            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 
@@ -5562,11 +5552,7 @@ Fisma.Highlighter = function() {
 
             var escapedDelimiter = Fisma.Util.escapeRegexValue(delimiter);
 
-            var regex = new RegExp("^(.*?)" 
-                                   + escapedDelimiter
-                                   + "(.*?)"
-                                   + escapedDelimiter
-                                   + "(.*?)$");
+            var regex = new RegExp("^(.*?)" + escapedDelimiter + "(.*?)" + escapedDelimiter + "(.*?)$");
 
             for (var i in elements) {
                 var element = elements[i];
@@ -5668,7 +5654,7 @@ Fisma.Highlighter = function() {
 
                     var newTextNode = document.createTextNode(match);
 
-                    if (j % 2 == 0) {
+                    if (j % 2 === 0) {
                         // This is a plaintext node
                         parentNode.appendChild(newTextNode);
                     } else {
@@ -5683,7 +5669,7 @@ Fisma.Highlighter = function() {
             }
         }
     }
-}();
+};
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -5723,12 +5709,12 @@ Fisma.HtmlPanel = function() {
          */
         showPanel : function(title, html, element, userConfig) {
             // Initialize element or its id representing the panel with default value conditionally
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element == null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig == null)
             {
                 userConfig = {
                     width : "540px",
@@ -5746,7 +5732,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (html != '') {
+            if (html !== '') {
                 panel.setBody(html);
                 panel.center();
             }
@@ -5985,11 +5971,11 @@ Fisma.Incident = {
 
         //The first child of <td> block should be Name field.
         var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
-        var nameElClone = nameField.cloneNode(true) 
+        var nameElClone = nameField.cloneNode(true);
 
         //The next sibling should be role field  
         var roleField = YAHOO.util.Dom.getNextSibling(nameField);
-        var roleElClone = roleField.cloneNode(true) 
+        var roleElClone = roleField.cloneNode(true);
 
         newTdElForm.appendChild(nameElClone); 
         newTdElForm.appendChild(roleElClone); 
@@ -6007,10 +5993,11 @@ Fisma.Incident = {
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
         // To create an element with a NAME attribute and its value for IE.
+        var newTextareaEl;
         if (YAHOO.env.ua.ie) {
-            var newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
+            newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
         } else {
-            var newTextareaEl = document.createElement('textarea');
+            newTextareaEl = document.createElement('textarea');
         }
 
         newTextareaEl.setAttribute('id',textareaId);
@@ -6093,7 +6080,7 @@ Fisma.Ldap = {
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
-                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+                ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }
@@ -6239,11 +6226,7 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' 
-                       + switchButton.payload.id 
-                       + '/enabled/' 
-                       + enabled
-                       + '/format/json/';
+        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
@@ -6253,8 +6236,7 @@ Fisma.Module = {
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -6269,7 +6251,7 @@ Fisma.Module = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -6324,8 +6306,7 @@ Fisma.Remediation = {
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
             '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init
-        );
+            Fisma.Remediation.upload_evidence_form_init);
 
         return false;
     },
@@ -6373,10 +6354,11 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
+            var comment;
             if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
+                comment = document.getElementById('dialog_comment').innerHTML;
             } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
+                comment = document.getElementById('dialog_comment').value;
             }
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
@@ -6386,7 +6368,9 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
+        
+        return true;
     },
 
     /**
@@ -6422,10 +6406,11 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
+            var comment;
             if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
+                comment = document.getElementById('dialog_comment').innerHTML;
             } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
+                comment = document.getElementById('dialog_comment').value;
             }
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to deny.');
@@ -6439,7 +6424,8 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
     },
 
     /**
@@ -6476,10 +6462,11 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
+            var comment;
             if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
+                comment = document.getElementById('dialog_comment').innerHTML;
             } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
+                comment = document.getElementById('dialog_comment').value;
             }
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
@@ -6489,7 +6476,7 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
     },
 
     /**
@@ -6526,10 +6513,11 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
+            var comment;
             if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
+                comment = document.getElementById('dialog_comment').innerHTML;
             } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
+                comment = document.getElementById('dialog_comment').value;
             }
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to submit.');
@@ -6543,9 +6531,10 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
     }
-}
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -6689,7 +6678,7 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
@@ -6721,7 +6710,7 @@ Fisma.Search = function() {
             var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
+                query['keywords'] = form.keywords.value;
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
@@ -6826,13 +6815,13 @@ Fisma.Search = function() {
 
             try {
                 if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=" 
-                              + encodeURIComponent(document.getElementById('keywords').value);
+                    postData += "&queryType=simple&keywords=";
+                    postData += encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
-                    postData += "&queryType=advanced&query=" 
-                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
+                    postData += "&queryType=advanced&query=";
+                    postData += encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
                 } else {
                     throw "Invalid value for search type: " + searchType;
                 }
@@ -6858,7 +6847,6 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -7103,7 +7091,7 @@ Fisma.Search = function() {
             }
             
             // Do some sanity checking
-            if (0 == checkedRecords.length) {
+            if (0 === checkedRecords.length) {
                 message("No records selected for deletion.", "warning", true);
                 
                 return;
@@ -7145,9 +7133,9 @@ Fisma.Search = function() {
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
             var postString = "csrf="
-                           + document.getElementById('searchForm').csrf.value
-                           + "&records="
-                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            postString += document.getElementById('searchForm').csrf.value
+            postString += "&records="
+            postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -7175,12 +7163,11 @@ Fisma.Search = function() {
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
+                        text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
                 },
-                postString
-            );
+                postString);
         },
         
         /**
@@ -7202,7 +7189,7 @@ Fisma.Search = function() {
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -7567,7 +7554,7 @@ Fisma.Search.Criteria.prototype = {
             field : this.currentField.name,
             operator : this.currentQueryType,
             operands : this.getOperands()
-        }
+        };
     },
 
     /**
@@ -7641,7 +7628,7 @@ Fisma.Search.Criteria.prototype = {
     hasBlankOperands: function() {
         var operands = this.getOperands();
         for (var i in operands) {
-            if ('' == $P.trim(operands[i])) {
+            if ('' === $P.trim(operands[i])) {
                 return true;
             }
         }
@@ -8076,10 +8063,10 @@ Fisma.Search.CriteriaRenderer = function () {
  * @param pathname The URL path, used to generate default search filters
  */
 Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
-
+    var index;
     var searchableFields = advancedSearchOptions;
 
-    if (0 == searchableFields.length) {
+    if (0 === searchableFields.length) {
         throw "Field array cannot be empty";
     }
     
@@ -8099,7 +8086,7 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     // Copy all visible (non-hidden) fields into this panel
     this.searchableFields = {};
     
-    for (var index in searchableFields) {
+    for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
@@ -8113,12 +8100,12 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     if (pathname) {
         var pathTokens = pathname.split('/');
 
-        for (var index in pathTokens) {
+        for (index in pathTokens) {
             var pathToken = pathTokens[index];
 
             // If the 'advanced' token is found (and has more tokens after it), then save the 
             // rest of the tokens into the object
-            var start = parseInt(index);
+            var start = parseInt(index, 10);
 
             if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
                 
@@ -8333,6 +8320,8 @@ Fisma.Search.Panel.prototype = {
                 throw "Number of operands not defined for query function: " + queryFunction;
                 break;
         }
+        
+        throw "Number of operands not defined for query function: " + queryFunction;
     }
 };
 /**
@@ -8380,7 +8369,7 @@ Fisma.Spinner = function (container) {
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
-}
+};
 
 Fisma.Spinner.prototype.show = function () {
     this.spinner.style.visibility = 'visible';
@@ -8458,13 +8447,13 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set click handler
     this.element.onclick = function () {
         that.toggleSwitch.call(that);
-    }
+    };
     
     /* 
      * Callback will be a string like 'Fisma.Module.handleSwitchButtonStateChange', which needs to be converted into a 
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
-    if ('' != callback) {
+    if ('' !== callback) {
         callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
@@ -8474,7 +8463,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
             throw "Specified callback is not a function: " + callback;
         }
     }
-}
+};
 
 Fisma.SwitchButton.prototype = {
     
@@ -8531,7 +8520,7 @@ Fisma.SwitchButton.prototype = {
                     to : -54,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = false;
         } else {
@@ -8543,14 +8532,14 @@ Fisma.SwitchButton.prototype = {
                     to : 0,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = true;
         }        
         
         var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
                                                   animationAttributes, 
-                                                  .1, 
+                                                  0.1, 
                                                   YAHOO.util.Easing.easeOut);
 
         toggleAnimation.onTween.subscribe(
@@ -8561,7 +8550,7 @@ Fisma.SwitchButton.prototype = {
                  */
                 that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
             }
-        )
+        );
 
         toggleAnimation.animate();
 
@@ -8675,13 +8664,14 @@ Fisma.TabView.Roles = function() {
         init : function(roles, userid, readOnly) {
             YAHOO.util.Event.addListener('role', 'change', function(e) {
                 YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
+                    var i;
                     var tabView = Fisma.tabView;
                     var tabs = tabView.get('tabs');
 
                     if (el.selected) {
                         var found = 0;
                         
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -8689,7 +8679,7 @@ Fisma.TabView.Roles = function() {
                         }
 
                         if (!found) {
-                            for (var i in roles) {
+                            for (i in roles) {
                                 if (roles[i]['id'] == el.value) {
                                     var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
@@ -8699,8 +8689,7 @@ Fisma.TabView.Roles = function() {
                             var newTab = new YAHOO.widget.Tab({
                                 id: el.value,
                                 label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' 
-                                    + el.value + '/readOnly/' + readOnly,
+                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' + el.value + '/readOnly/' + readOnly,
                                 cacheData: true,
                                 active: true
                             });
@@ -8708,7 +8697,7 @@ Fisma.TabView.Roles = function() {
                             tabView.addTab(newTab);
                         }
                     } else {
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
@@ -8718,7 +8707,7 @@ Fisma.TabView.Roles = function() {
             });
         }
     }
-}();
+};
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -8969,7 +8958,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -8978,7 +8967,7 @@ Fisma.TableFormat = {
 
         if (parameters.to) {
             toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
             
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
@@ -8992,10 +8981,10 @@ Fisma.TableFormat = {
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             var yesterdayString = yesterday.getFullYear() 
-                                + '-' 
-                                + (yesterday.getMonth() + 1) 
-                                + '-' 
-                                + yesterday.getDate();
+            yesterdayString += '-' 
+            yesterdayString += (yesterday.getMonth() + 1) 
+            yesterdayString += '-' 
+            yesterdayString += yesterday.getDate();
 
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
@@ -9017,9 +9006,9 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        percentage = parseInt(oData);
+        percentage = parseInt(oData, 10);
 
-        if (oData != null) {
+        if (oData !== null) {
             elCell.innerHTML = oData + "%";
 
             if (percentage >= 95 && percentage <= 100) {
@@ -9044,8 +9033,8 @@ Fisma.TableFormat = {
         var docTypeNames = '';
         if (oData.length > 0) {
             docTypeNames += '<ul><li>'
-                          + oData.replace(/,/g, '</li><li>')
-                          + '</li></ul>';
+            docTypeNames += oData.replace(/,/g, '</li><li>')
+            docTypeNames += '</li></ul>';
         }
 
         elCell.innerHTML = docTypeNames;
@@ -9122,12 +9111,12 @@ Fisma.UrlPanel = function() {
          */
         showPanel : function(title, url, callback, element, userConfig) {
             // Initialize element or its id representing the panel with default value if necessary
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -9145,7 +9134,7 @@ Fisma.UrlPanel = function() {
             panel.show();
             
             // Load panel content from url
-            if (url != '') {
+            if (url !== '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
                         o.argument.setBody(o.responseText);
@@ -9289,8 +9278,7 @@ Fisma.User = {
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
             }, 
-            null
-        );
+            null);
 
         return panel;
     },
@@ -9376,7 +9364,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null) {
+                    if (data.accountInfo !== null) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -9384,7 +9372,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue != null) {
+                            if (columnValue !== null) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -9403,8 +9391,7 @@ Fisma.User = {
                     alert('Failed to check account password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
     },
 
     /**
@@ -9416,7 +9403,7 @@ Fisma.User = {
         var lockedElement = YAHOO.util.Dom.get('locked');
 
         // Only show panel in locked status
-        if (lockedElement === null || parseInt(lockedElement.value) === 0) {
+        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
             YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
             return false;
         }
@@ -9451,6 +9438,7 @@ Fisma.User = {
         Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
 
         YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        return true;
     },
 
     /*
@@ -9458,8 +9446,17 @@ Fisma.User = {
      */
     submitUserForm : function () {
         
-        // Get commentTextArea value from panel and assign its value to comment element
-        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
+        var commentElement;
+        
+        // Set the innerHTML property for IE.
+        if  (YAHOO.env.ua.ie) {
+            commentElement = YAHOO.util.Dom.get('commentTextarea').innerHTML;
+        } else {
+            commentElement = YAHOO.util.Dom.get('commentTextarea').value;
+        }
+
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+
         YAHOO.util.Dom.get('comment').value = commentElement;
         var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
         form.submit();
@@ -9554,8 +9551,7 @@ Fisma.Util = {
                 YAHOO.widget.Overlay.BOTTOM_LEFT,
                 null,
                 [0, VERTICAL_OFFSET]
-            ]
-        );        
+            ]);        
     },
     
     /**
