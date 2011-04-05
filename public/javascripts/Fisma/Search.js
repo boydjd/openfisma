@@ -358,50 +358,56 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
-         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container) {
+        initializeSearchColumnsPanel : function (container, searchOptions) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value,
-                prefs = new Fisma.Search.TablePreferences(modelName),
-                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
-                // Title elements used for accessibility
-                checkedTitle = "Column is visible. Click to hide column.",
-                uncheckedTitle = "Column is hidden. Click to unhide column.";
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+            var currentColumn = 0;
 
-            for (var index in columns) {
-                var column = columns[index],
-                    columnName = column.key;
+            for (var index in searchOptions) {
+                var searchOption = searchOptions[index];
 
-                if (columnName === "deleteCheckbox") {
+                if (searchOption['hidden'] === true) {
                     continue;
                 }
 
-                var checked = !column.hidden;
+                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
+                var checked = searchOption.initiallyVisible;
+
+                if (cookie) {
+                    checked = (cookie & 1 << currentColumn) !== 0;
+                }
+
+                currentColumn++;
+
+                // Title elements used for accessibility
+                var checkedTitle = "Column is visible. Click to hide column.";
+                var uncheckedTitle = "Column is hidden. Click to unhide column.";
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : column.label,
+                    label : searchOption.label,
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, obj) {
-                            var table = Fisma.Search.yuiDataTable,
-                                column = table.getColumn(obj.name),
-                                checked = this.get("checked");
+                        fn : function (event, columnKey) {
+                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
 
-                            this.set("title", checked ? checkedTitle : uncheckedTitle);
+                            var table = Fisma.Search.yuiDataTable;
+                            var column = table.getColumn(columnKey);
 
-                            if (checked) {
+                            if (this.get('checked')) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            obj.prefs.setColumnVisibility(obj.name, checked);
+                            Fisma.Search.saveColumnCookies();
                         },
-                        obj : {name: columnName, prefs: prefs}
+                        obj : searchOption.name
                     }
                 });
 
@@ -409,6 +415,10 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
+            saveDiv.style.marginLeft = '20px';
+            saveDiv.style.marginBottom = '20px';
+            // The following line trips up YUI compressor if object notation (.) is used instead of array []
+            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -416,7 +426,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnPreferences
+                    fn : Fisma.Search.persistColumnCookie
                 }
             });
 
@@ -441,31 +451,78 @@ Fisma.Search = function() {
         },
 
         /**
+         * Save the currently visible columns into a cookie
+         *
+         * @param table YUI Table
+         */
+        saveColumnCookies : function () {
+            var table = Fisma.Search.yuiDataTable;
+            var columnKeys = table.getColumnSet().keys;
+
+            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
+            var prefBitmap = 0;
+            var currentColumn = 0;
+
+            for (var column in columnKeys) {
+                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
+                    continue;
+                }
+
+                if (!columnKeys[column].hidden) {
+                    prefBitmap |= 1 << currentColumn;
+                }
+                
+                currentColumn++;
+            }
+
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+
+            YAHOO.util.Cookie.set(
+                cookieName,
+                prefBitmap,
+                {
+                    path : "/",
+                    secure : location.protocol == 'https'
+                }
+            );
+        },
+
+        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnPreferences : function () {
+        persistColumnCookie : function () {
+            Fisma.Search.saveColumnCookies();
 
-            var modelName = document.getElementById('modelName').value,
-                prefs = new Fisma.Search.TablePreferences(modelName);
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+
             Fisma.Search.columnPreferencesSpinner.show();
 
-            prefs.persist({
-                success : function (response, object) {
-                    Fisma.Search.columnPreferencesSpinner.hide();
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
+                {
+                    success : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
 
-                    if (object.status === "ok") {
-                        message("Your column preferences have been saved", "notice", true);
-                    } else {
-                        message(object.status, "warning", true);
+                        var response = YAHOO.lang.JSON.parse(o.responseText);
+
+                        if (response.success) {
+                            message("Your column preferences have been saved", "notice", true);
+                        } else {
+                            message(response.message, "warning", true);
+                        }
+                    },
+
+                    failure : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
+
+                        message('Error: ' + o.statusText, 'warning', true);
                     }
-                },
-
-                failure : function (response) {
-                    Fisma.Search.columnPreferencesSpinner.hide();
-
-                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            });
+            );
         },
 
         /**

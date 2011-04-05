@@ -160,5 +160,5 @@ Fisma.Highlighter = function() {
                 }
             }
         }
-    }
+    };
 };

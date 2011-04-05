@@ -270,20 +270,20 @@ Fisma.TableFormat = {
             // This is the TOTAL column
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear() 
-            yesterdayString += '-' 
-            yesterdayString += (yesterday.getMonth() + 1) 
-            yesterdayString += '-' 
+            var yesterdayString = yesterday.getFullYear();
+            yesterdayString += '-';
+            yesterdayString += (yesterday.getMonth() + 1);
+            yesterdayString += '-';
             yesterdayString += yesterday.getDate();
 
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
 
-        elCell.innerHTML = "<a href="
-                         + overdueFindingSearchUrl
-                         + ">"
-                         + oData
-                         + "</a>";
+        elCell.innerHTML = "<a href=";
+        elCell.innerHTML += overdueFindingSearchUrl;
+        elCell.innerHTML += ">";
+        elCell.innerHTML += oData;
+        elCell.innerHTML += "</a>";
     },
 
     /**
@@ -322,8 +322,8 @@ Fisma.TableFormat = {
     incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
         var docTypeNames = '';
         if (oData.length > 0) {
-            docTypeNames += '<ul><li>'
-            docTypeNames += oData.replace(/,/g, '</li><li>')
+            docTypeNames += '<ul><li>';
+            docTypeNames += oData.replace(/,/g, '</li><li>');
             docTypeNames += '</li></ul>';
         }
 

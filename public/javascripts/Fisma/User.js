@@ -128,7 +128,7 @@ Fisma.User = {
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
-            return;
+            return true;
         }
 
         Fisma.User.generatePasswordBusy = true;
@@ -158,8 +158,7 @@ Fisma.User = {
                     alert('Failed to generate password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
 
         return false;
     },
@@ -259,8 +258,8 @@ Fisma.User = {
 
         // Add comment textarea to panel
         var commentTextArea = document.createElement('textarea');
-        commentTextArea.id = 'commentTextArea';
-        commentTextArea.name = 'commentTextArea';
+        commentTextArea.id = 'commentTextarea';
+        commentTextArea.name = 'commentTextarea';
         commentTextArea.rows = 5;
         commentTextArea.cols = 60;
         content.appendChild(commentTextArea);
@@ -298,9 +297,7 @@ Fisma.User = {
         }
 
         var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
-
         YAHOO.util.Dom.get('comment').value = commentElement;
-        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
         form.submit();
     }
 };

@@ -158,6 +158,8 @@ Fisma.Remediation = {
             form2.submit();
             return;
         };
+        
+        return true;
     },
 
     /**
@@ -209,6 +211,8 @@ Fisma.Remediation = {
             form2.appendChild(submitMsa);
             form2.submit();
         };
+        
+        return true;
     },
 
     /**
@@ -265,5 +269,7 @@ Fisma.Remediation = {
             form2.submit();
             return;
         };
+        
+        return true;
     }
 };
