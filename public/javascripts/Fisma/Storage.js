@@ -28,19 +28,18 @@
 
     FS._storageEngine = YAHOO.util.StorageManager.get(
         null, // no preferred engine
-        YAHOO.util.StorageManager.LOCATION_SESSION
-    );
+        YAHOO.util.StorageManager.LOCATION_SESSION);
     FS.onReady = function(fn, obj, scope) {
-            if (!FS._storageEngine.isReady) {
-                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
-            } else {
-                var s = scope === true ? obj : scope;
-                if (typeof(s) !== "object") {
-                    s = fn;
-                }
-                fn.call(s, obj);
+        if (!FS._storageEngine.isReady) {
+            FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+        } else {
+            var s = scope === true ? obj : scope;
+            if (typeof(s) !== "object") {
+                s = fn;
             }
-        },
+            fn.call(s, obj);
+        }
+    };
     FS.prototype = {
         get: function(key) {
             return this._get(key);

@@ -535,12 +535,12 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
-            var postString = "csrf="
-            postString += document.getElementById('searchForm').csrf.value
-            postString += "&records="
+            var postString = "csrf=";
+            postString += document.getElementById('searchForm').csrf.value;
+            postString += "&records=";
             postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
@@ -568,7 +568,7 @@ Fisma.Search = function() {
                         dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
+                        var text = 'An error occurred while trying to delete the records.';
                         text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }

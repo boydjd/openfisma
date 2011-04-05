@@ -7170,12 +7170,12 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
-            var postString = "csrf="
-            postString += document.getElementById('searchForm').csrf.value
-            postString += "&records="
+            var postString = "csrf=";
+            postString += document.getElementById('searchForm').csrf.value;
+            postString += "&records=";
             postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
@@ -7203,7 +7203,7 @@ Fisma.Search = function() {
                         dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
+                        var text = 'An error occurred while trying to delete the records.';
                         text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
@@ -8545,19 +8545,18 @@ Fisma.Spinner.prototype.hide = function () {
 
     FS._storageEngine = YAHOO.util.StorageManager.get(
         null, // no preferred engine
-        YAHOO.util.StorageManager.LOCATION_SESSION
-    );
+        YAHOO.util.StorageManager.LOCATION_SESSION);
     FS.onReady = function(fn, obj, scope) {
-            if (!FS._storageEngine.isReady) {
-                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
-            } else {
-                var s = scope === true ? obj : scope;
-                if (typeof(s) !== "object") {
-                    s = fn;
-                }
-                fn.call(s, obj);
+        if (!FS._storageEngine.isReady) {
+            FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+        } else {
+            var s = scope === true ? obj : scope;
+            if (typeof(s) !== "object") {
+                s = fn;
             }
-        },
+            fn.call(s, obj);
+        }
+    };
     FS.prototype = {
         get: function(key) {
             return this._get(key);
