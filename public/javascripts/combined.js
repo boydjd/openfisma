@@ -5397,7 +5397,7 @@ Fisma.FindingSummary = function() {
                     return node;
                 } else if (node.children.length > 0) {
                     var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode != false) {
+                    if (foundNode !== false) {
                         return foundNode;
                     }
                 }
@@ -5727,7 +5727,7 @@ Fisma.Highlighter = function() {
                 }
             }
         }
-    }
+    };
 };
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -5768,12 +5768,12 @@ Fisma.HtmlPanel = function() {
          */
         showPanel : function(title, html, element, userConfig) {
             // Initialize element or its id representing the panel with default value conditionally
-            if (typeof(element) === 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) === 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -6583,6 +6583,8 @@ Fisma.Remediation = {
             form2.submit();
             return;
         };
+        
+        return true;
     },
 
     /**
@@ -6634,6 +6636,8 @@ Fisma.Remediation = {
             form2.appendChild(submitMsa);
             form2.submit();
         };
+        
+        return true;
     },
 
     /**
@@ -6690,6 +6694,8 @@ Fisma.Remediation = {
             form2.submit();
             return;
         };
+        
+        return true;
     }
 };
 /**
@@ -7052,50 +7058,56 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
-         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container) {
+        initializeSearchColumnsPanel : function (container, searchOptions) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value,
-                prefs = new Fisma.Search.TablePreferences(modelName),
-                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
-                // Title elements used for accessibility
-                checkedTitle = "Column is visible. Click to hide column.",
-                uncheckedTitle = "Column is hidden. Click to unhide column.";
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+            var currentColumn = 0;
 
-            for (var index in columns) {
-                var column = columns[index],
-                    columnName = column.key;
+            for (var index in searchOptions) {
+                var searchOption = searchOptions[index];
 
-                if (columnName === "deleteCheckbox") {
+                if (searchOption['hidden'] === true) {
                     continue;
                 }
 
-                var checked = !column.hidden;
+                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
+                var checked = searchOption.initiallyVisible;
+
+                if (cookie) {
+                    checked = (cookie & 1 << currentColumn) !== 0;
+                }
+
+                currentColumn++;
+
+                // Title elements used for accessibility
+                var checkedTitle = "Column is visible. Click to hide column.";
+                var uncheckedTitle = "Column is hidden. Click to unhide column.";
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : column.label,
+                    label : searchOption.label,
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, obj) {
-                            var table = Fisma.Search.yuiDataTable,
-                                column = table.getColumn(obj.name),
-                                checked = this.get("checked");
+                        fn : function (event, columnKey) {
+                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
 
-                            this.set("title", checked ? checkedTitle : uncheckedTitle);
+                            var table = Fisma.Search.yuiDataTable;
+                            var column = table.getColumn(columnKey);
 
-                            if (checked) {
+                            if (this.get('checked')) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            obj.prefs.setColumnVisibility(obj.name, checked);
+                            Fisma.Search.saveColumnCookies();
                         },
-                        obj : {name: columnName, prefs: prefs}
+                        obj : searchOption.name
                     }
                 });
 
@@ -7103,6 +7115,10 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
+            saveDiv.style.marginLeft = '20px';
+            saveDiv.style.marginBottom = '20px';
+            // The following line trips up YUI compressor if object notation (.) is used instead of array []
+            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -7110,7 +7126,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnPreferences
+                    fn : Fisma.Search.persistColumnCookie
                 }
             });
 
@@ -7135,31 +7151,78 @@ Fisma.Search = function() {
         },
 
         /**
+         * Save the currently visible columns into a cookie
+         *
+         * @param table YUI Table
+         */
+        saveColumnCookies : function () {
+            var table = Fisma.Search.yuiDataTable;
+            var columnKeys = table.getColumnSet().keys;
+
+            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
+            var prefBitmap = 0;
+            var currentColumn = 0;
+
+            for (var column in columnKeys) {
+                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
+                    continue;
+                }
+
+                if (!columnKeys[column].hidden) {
+                    prefBitmap |= 1 << currentColumn;
+                }
+                
+                currentColumn++;
+            }
+
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+
+            YAHOO.util.Cookie.set(
+                cookieName,
+                prefBitmap,
+                {
+                    path : "/",
+                    secure : location.protocol == 'https'
+                }
+            );
+        },
+
+        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnPreferences : function () {
+        persistColumnCookie : function () {
+            Fisma.Search.saveColumnCookies();
 
-            var modelName = document.getElementById('modelName').value,
-                prefs = new Fisma.Search.TablePreferences(modelName);
+            var modelName = document.getElementById('modelName').value;
+            var cookieName = modelName + "Columns";
+            var cookie = YAHOO.util.Cookie.get(cookieName);
+
             Fisma.Search.columnPreferencesSpinner.show();
 
-            prefs.persist({
-                success : function (response, object) {
-                    Fisma.Search.columnPreferencesSpinner.hide();
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
+                {
+                    success : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
 
-                    if (object.status === "ok") {
-                        message("Your column preferences have been saved", "notice", true);
-                    } else {
-                        message(object.status, "warning", true);
+                        var response = YAHOO.lang.JSON.parse(o.responseText);
+
+                        if (response.success) {
+                            message("Your column preferences have been saved", "notice", true);
+                        } else {
+                            message(response.message, "warning", true);
+                        }
+                    },
+
+                    failure : function (o) {
+                        Fisma.Search.columnPreferencesSpinner.hide();
+
+                        message('Error: ' + o.statusText, 'warning', true);
                     }
-                },
-
-                failure : function (response) {
-                    Fisma.Search.columnPreferencesSpinner.hide();
-
-                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            });
+            );
         },
 
         /**
@@ -8902,7 +8965,7 @@ Fisma.TabView.Roles = function() {
                 });
             });
         }
-    }
+    };
 };
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -9176,20 +9239,20 @@ Fisma.TableFormat = {
             // This is the TOTAL column
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear() 
-            yesterdayString += '-' 
-            yesterdayString += (yesterday.getMonth() + 1) 
-            yesterdayString += '-' 
+            var yesterdayString = yesterday.getFullYear();
+            yesterdayString += '-';
+            yesterdayString += (yesterday.getMonth() + 1);
+            yesterdayString += '-';
             yesterdayString += yesterday.getDate();
 
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
         }
 
-        elCell.innerHTML = "<a href="
-                         + overdueFindingSearchUrl
-                         + ">"
-                         + oData
-                         + "</a>";
+        elCell.innerHTML = "<a href=";
+        elCell.innerHTML += overdueFindingSearchUrl;
+        elCell.innerHTML += ">";
+        elCell.innerHTML += oData;
+        elCell.innerHTML += "</a>";
     },
 
     /**
@@ -9228,8 +9291,8 @@ Fisma.TableFormat = {
     incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
         var docTypeNames = '';
         if (oData.length > 0) {
-            docTypeNames += '<ul><li>'
-            docTypeNames += oData.replace(/,/g, '</li><li>')
+            docTypeNames += '<ul><li>';
+            docTypeNames += oData.replace(/,/g, '</li><li>');
             docTypeNames += '</li></ul>';
         }
 
@@ -9482,7 +9545,7 @@ Fisma.User = {
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
-            return;
+            return true;
         }
 
         Fisma.User.generatePasswordBusy = true;
@@ -9512,8 +9575,7 @@ Fisma.User = {
                     alert('Failed to generate password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
 
         return false;
     },
@@ -9613,8 +9675,8 @@ Fisma.User = {
 
         // Add comment textarea to panel
         var commentTextArea = document.createElement('textarea');
-        commentTextArea.id = 'commentTextArea';
-        commentTextArea.name = 'commentTextArea';
+        commentTextArea.id = 'commentTextarea';
+        commentTextArea.name = 'commentTextarea';
         commentTextArea.rows = 5;
         commentTextArea.cols = 60;
         content.appendChild(commentTextArea);
@@ -9652,9 +9714,7 @@ Fisma.User = {
         }
 
         var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
-
         YAHOO.util.Dom.get('comment').value = commentElement;
-        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
         form.submit();
     }
 };
