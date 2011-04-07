@@ -218,6 +218,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->setLayerLabels(
                 array(
+                    'Null',
                     'High',
                     'Moderate',
                     'Low'

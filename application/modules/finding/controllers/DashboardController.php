@@ -267,6 +267,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
                 ->setLayerLabels(
                     array(
+                        'Null',
                         'HIGH',
                         'MODERATE',
                         'LOW'
@@ -559,6 +560,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->setLayerLabels(
                 array(
+                    'Null',
                     'HIGH',
                     'MODERATE',
                     'LOW'
@@ -768,6 +770,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
                 ->setLayerLabels(
                     array(
+                        'Null',
                         'HIGH',
                         'MODERATE',
                         'LOW'
@@ -911,6 +914,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setConcatColumnLabels(false)
             ->setLayerLabels(
                 array(
+                    'Null',
                     'High',
                     'Moderate',
                     'Low'
@@ -1095,6 +1099,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setAxisLabelY('Number of Findings')
             ->setLayerLabels(
                 array(
+                    'Null',
                     'High',
                     'Moderate',
                     'Low'
