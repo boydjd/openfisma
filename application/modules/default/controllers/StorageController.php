@@ -42,39 +42,45 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
      */
     public function syncAction()
     {
-        $userId = CurrentUser::getInstance()->id;
-        $namespace = $this->getRequest()->getPost('namespace');
-        $updates = Zend_Json::decode($this->getRequest()->getPost('updates'));
-        $set = Zend_Json::decode($this->getRequest()->getPost('set'));
-        $reply = Zend_Json::decode($this->getRequest()->getPost('reply'));
+        try {
+            $userId = CurrentUser::getInstance()->id;
+            $namespace = $this->getRequest()->getPost('namespace');
+            $updates = Zend_Json::decode($this->getRequest()->getPost('updates'));
+            $set = Zend_Json::decode($this->getRequest()->getPost('set'));
+            $reply = Zend_Json::decode($this->getRequest()->getPost('reply'));
 
-        $table = Doctrine::getTable('Storage');
-        $object = $table->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
-        if (empty($object)) {
-            $object = $table->create(array('userId' => $userId, 'namespace' => $namespace, 'data' => array()));
-        }
-        if (!empty($set)) {
-            $object->data = array();
-            $updates = $set;
-        }
-        if (!empty($updates)) {
-            $object->data = array_merge($object->data, $updates);
-        }
-        $object->save();
-
-        $values = array();
-        if (is_array($reply)) {
-            foreach ($reply as $key) {
-                if (isset($object->data[$key])) {
-                    $values[$key] = $object->data[$key];
-                } else {
-                    $values[$key] = null;
-                }
+            $table = Doctrine::getTable('Storage');
+            $object = $table->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+            if (empty($object)) {
+                $object = $table->create(array('userId' => $userId, 'namespace' => $namespace, 'data' => array()));
             }
-        } else {
-            $values = $object->data;
+            if (!empty($set)) {
+                $object->data = array();
+                $updates = $set;
+            }
+            if (!empty($updates)) {
+                $object->data = array_merge($object->data, $updates);
+            }
+            $object->save();
+
+            $values = array();
+            if (is_array($reply)) {
+                foreach ($reply as $key) {
+                    if (isset($object->data[$key])) {
+                        $values[$key] = $object->data[$key];
+                    } else {
+                        $values[$key] = null;
+                    }
+                }
+            } else {
+                $values = $object->data;
+            }
+            $this->view->data = $values;
+            $this->view->status = 'ok';
+        } catch (Fisma_Zend_Exception_User $e) {
+            $this->view->status = $e->getMessage();
+        } catch (Exception $e) {
+            $this->view->status = 'An error occurred while saving user data.';
         }
-        $this->view->data = $values;
-        $this->view->status = 'ok';
     }
 }

@@ -68,6 +68,7 @@
             }
             Fisma.Storage.onReady(function() {
                 var uri = '/storage/sync/format/json',
+                    csrfInputs = YAHOO.util.Selector.query('input[name^=csrf]'),
                     callback = {
                         scope: this,
                         success: function(response) {
@@ -87,6 +88,7 @@
                         }
                     },
                     postData = $.param({
+                        csrf: YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0 ? csrfInputs[0].value : '',
                         namespace: this.namespace,
                         updates: YAHOO.lang.JSON.stringify(this._modified),
                         reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
