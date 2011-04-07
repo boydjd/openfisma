@@ -1706,13 +1706,38 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
  */
 
 (function() {
+    /**
+     * Provides basic session-level storage of data.
+     * @namespace Fisma
+     * @class Storage
+     * @constructor
+     * @param namespace {String} The data namespace.
+     */
     var FS = function(namespace) {
         this.namespace = namespace;
     };
 
+    /**
+     * Underlying storage engine.
+     *
+     * @property Storage._storageEngine
+     * @type Object
+     * @private
+     * @static
+     */
     FS._storageEngine = YAHOO.util.StorageManager.get(
         null, // no preferred engine
         YAHOO.util.StorageManager.LOCATION_SESSION);
+
+    /**
+     * Register a callback for when the storage engine is ready.
+     *
+     * @method Storage.onReady
+     * @param fn {Function} Callback function.
+     * @param obj {Object} Object passed to callback.
+     * @param scope {Object|Boolean} Object to use for callback scope, true to use obj as scope.
+     * @static
+     */
     FS.onReady = function(fn, obj, scope) {
         if (!FS._storageEngine.isReady) {
             FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
@@ -1725,16 +1750,46 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
         }
     };
     FS.prototype = {
+        /**
+         * Get value for key
+         *
+         * @method Storage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
         get: function(key) {
             return this._get(key);
         },
+        /**
+         * Set value for key
+         *
+         * @method Storage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
         set: function(key, value) {
             this._set(key, value);
         },
 
+        /**
+         * Internal convenience method for decoding values.
+         *
+         * @method Storage._get
+         * @param key {String}
+         * @return {String|Array|Object}
+         * @protected
+         */
         _get: function(key) {
             return YAHOO.lang.JSON.parse(FS._storageEngine.getItem(this.namespace + ":" + key));
         },
+        /**
+         * Internal convenience method for encoding values.
+         *
+         * @method Storage._set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         * @protected
+         */
         _set: function(key, value) {
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
@@ -6349,12 +6404,33 @@ Fisma.Module = {
  */
 
 (function() {
+    /**
+     * Class to store local data and persist to the server.
+     *
+     * @namespace Fisma
+     * @class PeristentStorage
+     * @extends Fisma.Storage
+     * @constructor
+     * @param namespace {String} Namespace of stored data.
+     */
     Fisma.PersistentStorage = function(namespace) {
         Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
     };
     YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
+        /**
+         * @property _modified
+         * @type Array
+         * @protected
+         */
         _modified: null,
 
+        /**
+         * Get value for key
+         *
+         * @method PeristentStorage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
         get: function(key) {
             /*
              * @todo: sanity check for key existence.
@@ -6363,6 +6439,13 @@ Fisma.Module = {
              */
             return this._get(key);
         },
+        /**
+         * Set value for key
+         *
+         * @method PersistentStorage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
         set: function(key, value) {
             if (this._modified === null) {
                 this._modified = {};
@@ -6371,11 +6454,24 @@ Fisma.Module = {
             return this._set(key, value);
         },
 
+        /**
+         * Initialize the local storage with default values.
+         *
+         * @method Storage.init
+         * @param values {Object} Object literal of key-value pairs to set
+         */
         init: function(values) {
             for (var key in values) {
                 this._set(key, values[key]);
             }
         },
+        /**
+         * Synchronize the server with the local state.
+         *
+         * @method PersistentStorage.sync
+         * @param reply {Array} Array of keys to reply with, null implies all keys.
+         * @param callback {Function|Object} Callback function/object.
+         */
         sync: function(reply, callback) {
             var successFn = null,
                 failureFn = null,
@@ -8458,6 +8554,15 @@ Fisma.Search.Panel.prototype = {
 (function() {
     var YL = YAHOO.lang,
         FPS = Fisma.PersistentStorage,
+    /**
+     * Enable getting and setting of datatable-related preferences.
+     *
+     * @namespace Fisma.Search
+     * @class TablePreferences
+     * @constructor
+     * @param model {String} Model for which this table is representing.
+     * @param init {Object} Object literal of default state.
+     */
         FSTP = function(model, init) {
             this._model = model;
             this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
@@ -8472,6 +8577,14 @@ Fisma.Search.Panel.prototype = {
             }, this, true);
         };
     FSTP.prototype = {
+        /**
+         * Get specified columns visibility.
+         *
+         * @method TablePreferences.getColumnVisibility
+         * @param column {String} Column key.
+         * @param def {Boolean} Default state
+         * @return {Boolean}
+         */
         getColumnVisibility: function (column, def) {
             this._stateReady();
             if (YL.isValue(this._state.columnVisibility[column])) {
@@ -8481,16 +8594,36 @@ Fisma.Search.Panel.prototype = {
             return YL.isValue(def) && def ? true : false;
         },
 
+        /**
+         * Set the specified columns visibility.
+         *
+         * @method TablePreferences.setColumnVisibility
+         * @param column {String} Column key.
+         * @param value {Boolean} Is visible?
+         */
         setColumnVisibility: function (column, value) {
             this._stateReady();
             this._state.columnVisibility[column] = value;
             this._storage.set(this._model, this._state);
         },
 
+        /**
+         * Get sort column and direction
+         *
+         * @method TablePreferences.getSort
+         * @return {Object}
+         */
         getSort: function() {
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
         },
+        /**
+         * Set the sort column and direction
+         *
+         * @method TablePreferences.setSort
+         * @param column {String} Column key.
+         * @param dir {String} Sort direction
+         */
         setSort: function(column, dir) {
             var data = this._localStorage.get(this._model);
             data = YL.isObject(data) ? data : {};
@@ -8498,10 +8631,22 @@ Fisma.Search.Panel.prototype = {
             this._localStorage.set(this._model, data);
         },
 
+        /**
+         * Get current page number
+         *
+         * @method TablePreferences.getpage
+         * @return {Integer}
+         */
         getPage: function() {
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
         },
+        /**
+         * Set the current page number
+         *
+         * @method TablePreferences.setPage
+         * @param page {Integer} Page number.
+         */
         setPage: function(page) {
             var data = this._localStorage.get(this._model);
             data = YL.isObject(data) ? data : {};
@@ -8509,6 +8654,12 @@ Fisma.Search.Panel.prototype = {
             this._localStorage.set(this._model, data);
         },
 
+        /**
+         * Save table preferences
+         *
+         * @method TablePreferences.persist
+         * @param callback {Function|Object} Callback on completion.
+         */
         persist: function (callback) {
             var m = this._model,
                 s = this._storage;
@@ -8517,6 +8668,12 @@ Fisma.Search.Panel.prototype = {
             s.sync([m], callback);
         },
 
+        /**
+         * Internal method to assert the object is ready.
+         *
+         * @method TablePreferences._stateReady
+         * @protected
+         */
         _stateReady: function() {
             if (this._state === null) {
                 throw "Attempting to use storage engine before it is ready.";

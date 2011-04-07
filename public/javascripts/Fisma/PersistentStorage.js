@@ -22,12 +22,33 @@
  */
 
 (function() {
+    /**
+     * Class to store local data and persist to the server.
+     *
+     * @namespace Fisma
+     * @class PeristentStorage
+     * @extends Fisma.Storage
+     * @constructor
+     * @param namespace {String} Namespace of stored data.
+     */
     Fisma.PersistentStorage = function(namespace) {
         Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
     };
     YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
+        /**
+         * @property _modified
+         * @type Array
+         * @protected
+         */
         _modified: null,
 
+        /**
+         * Get value for key
+         *
+         * @method PeristentStorage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
         get: function(key) {
             /*
              * @todo: sanity check for key existence.
@@ -36,6 +57,13 @@
              */
             return this._get(key);
         },
+        /**
+         * Set value for key
+         *
+         * @method PersistentStorage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
         set: function(key, value) {
             if (this._modified === null) {
                 this._modified = {};
@@ -44,11 +72,24 @@
             return this._set(key, value);
         },
 
+        /**
+         * Initialize the local storage with default values.
+         *
+         * @method Storage.init
+         * @param values {Object} Object literal of key-value pairs to set
+         */
         init: function(values) {
             for (var key in values) {
                 this._set(key, values[key]);
             }
         },
+        /**
+         * Synchronize the server with the local state.
+         *
+         * @method PersistentStorage.sync
+         * @param reply {Array} Array of keys to reply with, null implies all keys.
+         * @param callback {Function|Object} Callback function/object.
+         */
         sync: function(reply, callback) {
             var successFn = null,
                 failureFn = null,

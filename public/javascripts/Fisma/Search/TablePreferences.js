@@ -24,6 +24,15 @@
 (function() {
     var YL = YAHOO.lang,
         FPS = Fisma.PersistentStorage,
+    /**
+     * Enable getting and setting of datatable-related preferences.
+     *
+     * @namespace Fisma.Search
+     * @class TablePreferences
+     * @constructor
+     * @param model {String} Model for which this table is representing.
+     * @param init {Object} Object literal of default state.
+     */
         FSTP = function(model, init) {
             this._model = model;
             this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
@@ -38,6 +47,14 @@
             }, this, true);
         };
     FSTP.prototype = {
+        /**
+         * Get specified columns visibility.
+         *
+         * @method TablePreferences.getColumnVisibility
+         * @param column {String} Column key.
+         * @param def {Boolean} Default state
+         * @return {Boolean}
+         */
         getColumnVisibility: function (column, def) {
             this._stateReady();
             if (YL.isValue(this._state.columnVisibility[column])) {
@@ -47,16 +64,36 @@
             return YL.isValue(def) && def ? true : false;
         },
 
+        /**
+         * Set the specified columns visibility.
+         *
+         * @method TablePreferences.setColumnVisibility
+         * @param column {String} Column key.
+         * @param value {Boolean} Is visible?
+         */
         setColumnVisibility: function (column, value) {
             this._stateReady();
             this._state.columnVisibility[column] = value;
             this._storage.set(this._model, this._state);
         },
 
+        /**
+         * Get sort column and direction
+         *
+         * @method TablePreferences.getSort
+         * @return {Object}
+         */
         getSort: function() {
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
         },
+        /**
+         * Set the sort column and direction
+         *
+         * @method TablePreferences.setSort
+         * @param column {String} Column key.
+         * @param dir {String} Sort direction
+         */
         setSort: function(column, dir) {
             var data = this._localStorage.get(this._model);
             data = YL.isObject(data) ? data : {};
@@ -64,10 +101,22 @@
             this._localStorage.set(this._model, data);
         },
 
+        /**
+         * Get current page number
+         *
+         * @method TablePreferences.getpage
+         * @return {Integer}
+         */
         getPage: function() {
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
         },
+        /**
+         * Set the current page number
+         *
+         * @method TablePreferences.setPage
+         * @param page {Integer} Page number.
+         */
         setPage: function(page) {
             var data = this._localStorage.get(this._model);
             data = YL.isObject(data) ? data : {};
@@ -75,6 +124,12 @@
             this._localStorage.set(this._model, data);
         },
 
+        /**
+         * Save table preferences
+         *
+         * @method TablePreferences.persist
+         * @param callback {Function|Object} Callback on completion.
+         */
         persist: function (callback) {
             var m = this._model,
                 s = this._storage;
@@ -83,6 +138,12 @@
             s.sync([m], callback);
         },
 
+        /**
+         * Internal method to assert the object is ready.
+         *
+         * @method TablePreferences._stateReady
+         * @protected
+         */
         _stateReady: function() {
             if (this._state === null) {
                 throw "Attempting to use storage engine before it is ready.";

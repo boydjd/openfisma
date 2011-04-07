@@ -22,13 +22,38 @@
  */
 
 (function() {
+    /**
+     * Provides basic session-level storage of data.
+     * @namespace Fisma
+     * @class Storage
+     * @constructor
+     * @param namespace {String} The data namespace.
+     */
     var FS = function(namespace) {
         this.namespace = namespace;
     };
 
+    /**
+     * Underlying storage engine.
+     *
+     * @property Storage._storageEngine
+     * @type Object
+     * @private
+     * @static
+     */
     FS._storageEngine = YAHOO.util.StorageManager.get(
         null, // no preferred engine
         YAHOO.util.StorageManager.LOCATION_SESSION);
+
+    /**
+     * Register a callback for when the storage engine is ready.
+     *
+     * @method Storage.onReady
+     * @param fn {Function} Callback function.
+     * @param obj {Object} Object passed to callback.
+     * @param scope {Object|Boolean} Object to use for callback scope, true to use obj as scope.
+     * @static
+     */
     FS.onReady = function(fn, obj, scope) {
         if (!FS._storageEngine.isReady) {
             FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
@@ -41,16 +66,46 @@
         }
     };
     FS.prototype = {
+        /**
+         * Get value for key
+         *
+         * @method Storage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
         get: function(key) {
             return this._get(key);
         },
+        /**
+         * Set value for key
+         *
+         * @method Storage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
         set: function(key, value) {
             this._set(key, value);
         },
 
+        /**
+         * Internal convenience method for decoding values.
+         *
+         * @method Storage._get
+         * @param key {String}
+         * @return {String|Array|Object}
+         * @protected
+         */
         _get: function(key) {
             return YAHOO.lang.JSON.parse(FS._storageEngine.getItem(this.namespace + ":" + key));
         },
+        /**
+         * Internal convenience method for encoding values.
+         *
+         * @method Storage._set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         * @protected
+         */
         _set: function(key, value) {
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
