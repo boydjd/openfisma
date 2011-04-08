@@ -4083,8 +4083,7 @@ Fisma.Chart = {
 
             var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
 
-            var pointLabels_info = {};
-            var pointLabels_indexes = [];
+            var pointLabels_info = [];
             var thisLabelValue = 0;
             var thisIndex;
 
@@ -4117,12 +4116,6 @@ Fisma.Chart = {
                         var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);
                         thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
 
-                        thisIndex = 'left_' + thisLeftNbrValue;
-                        if (typeof pointLabels_info[thisIndex] === 'undefined') {
-                            pointLabels_info[thisIndex] = [];
-                            pointLabels_indexes.push(thisIndex);
-                        }
-
                         var thispLabelInfo = {
                             left: thisLeftNbrValue, 
                             top: thisTopNbrValue, 
@@ -4130,33 +4123,33 @@ Fisma.Chart = {
                             obj: thisChld
                         };
 
-                        pointLabels_info[thisIndex].push(thispLabelInfo);
+                        pointLabels_info.push(thispLabelInfo);
                     }
                 }
             }
 
             // Ensure point labels do not collide with others
-            for (x = 0; x < pointLabels_indexes.length; x++) {
-
-                thisIndex = pointLabels_indexes[x];
-
-                for (y = 0; y < pointLabels_info[thisIndex].length; y++) {
+                for (y = 0; y < pointLabels_info.length; y++) {
 
                     /* now determin the distance between this point label, and all
                        point labels within this column. pointLabels_info[thisIndex]
                        holds all point labels within this column. */
 
-                    var thisPointLabel = pointLabels_info[thisIndex][y];
+                    var thisPointLabel = pointLabels_info[y];
 
                     var c = 0;
-                    for (c = 0; c < pointLabels_info[thisIndex].length; c++) {
+                    for (c = 0; c < pointLabels_info.length; c++) {
 
-                        var checkAgainst = pointLabels_info[thisIndex][c];
+                        var checkAgainst = pointLabels_info[c];
 
                         // get the distance from thisPointLabel to checkAgainst point label
-                        d = Math.abs(checkAgainst.top - thisPointLabel.top);
-
-                        if (d < 12 && d !== 0) {
+                        var deltaX = (thisPointLabel.left - checkAgainst.left);
+                        deltaX = deltaX * deltaX;
+                        var deltaY = (thisPointLabel.top - checkAgainst.top);
+                        deltaY = deltaY * deltaY;
+                        var d = Math.sqrt(deltaX + deltaY);
+                        
+                        if (d < 15 && d !== 0) {
 
                             // remove whichever label has the lower number
 
@@ -4165,7 +4158,7 @@ Fisma.Chart = {
                                 checkAgainst.obj.isRemoved = true;
                             } else {
                                 thisPointLabel.obj.innerHTML = '';
-                                checkAgainst.obj.isRemoved = true;
+                                thisPointLabel.obj.isRemoved = true;
                             }
 
                             // We jave just removed a point label, so this function will need to be run again
@@ -4176,8 +4169,6 @@ Fisma.Chart = {
                         }
                     }
                 }
-
-            }
     },
 
     hideButtonClick : function (scope, chartParamsObj, obj)
@@ -5199,7 +5190,6 @@ Fisma.FindingSummary = function() {
                 var i = 1; // start at 1 because the system label is in the first cell
                 for (c in ontime) {
                     count = ontime[c];
-                    i++;
                     cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
@@ -5209,6 +5199,7 @@ Fisma.FindingSummary = function() {
                         cell.className = 'onTime';                
                     }
                     this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    i += 1;
                 }
 
                 // Now add cells to the second row

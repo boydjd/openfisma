@@ -132,7 +132,6 @@ Fisma.FindingSummary = function() {
                 var i = 1; // start at 1 because the system label is in the first cell
                 for (c in ontime) {
                     count = ontime[c];
-                    i++;
                     cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
@@ -142,6 +141,7 @@ Fisma.FindingSummary = function() {
                         cell.className = 'onTime';                
                     }
                     this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    i += 1;
                 }
 
                 // Now add cells to the second row
