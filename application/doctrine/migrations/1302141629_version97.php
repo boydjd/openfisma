@@ -40,7 +40,9 @@ class Version97 extends Doctrine_Migration_Base
                        . " OR message like '%p>%'"
                        . " OR message like '%<br>%'"
                        . " OR message like '%&lt;%'"
-                       . " OR message like '%&gt;%'";
+                       . " OR message like '%&gt;%'"
+                       . " OR message like '%&quot;%'"
+                       . " OR message like '%&amp;%'";
 
             $conn->exec($updateSql);
         }
@@ -65,7 +67,7 @@ class Version97 extends Doctrine_Migration_Base
     {
         // Replace <em>No value</em> with **No Value**.
         // Replace </p><p> with '\n\n' and <br> with '\n'.
-        // Replace &lt; and &gt; with < and >
+        // Convert special HTML entities back to characters
         $replaceArray = array(
             array('<em>', '**'),
             array('</em>', '**'),
@@ -74,7 +76,9 @@ class Version97 extends Doctrine_Migration_Base
             array('</p>', ''),
             array('<br>', '\n'),
             array('&lt;', '<'),
-            array('&gt;', '>')
+            array('&gt;', '>'),
+            array('&quot;', '"'),
+            array('&amp;', '&')
         );
 
         // Nested replace statement
