@@ -49,6 +49,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             'path' => $path
         );
 
+        if (!class_exists('SolrClient')) {
+            throw new Fisma_Search_Exception("The Solr extension is not installed.");
+        }
+
         $this->_client = new SolrClient($clientConfig);
     }
 
