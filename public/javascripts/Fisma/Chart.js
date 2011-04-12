@@ -710,6 +710,11 @@ Fisma.Chart = {
             }
         }
 
+        // bail on blank link
+        if (theLink === '') {
+            return;
+        }
+
         // unescape
         theLink = unescape(theLink);
 
