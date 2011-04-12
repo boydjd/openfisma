@@ -161,4 +161,4 @@ Fisma.Highlighter = function() {
             }
         }
     };
-};
+}();

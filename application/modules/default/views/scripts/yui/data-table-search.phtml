@@ -151,7 +151,7 @@
                 var renderEventFunctionName = "<?php echo $this->escape($this->renderEventFunction); ?>";
                 var renderEventFunction = Fisma.Util.getObjectFromName(renderEventFunctionName);
     
-                dataTable.subscribe("renderEvent", renderEventFunction);
+                dataTable.subscribe("renderEvent", function () {renderEventFunction(dataTable)});
             <?php endif; ?>
             
             // Set up thead click events for columns which contain checkboxes

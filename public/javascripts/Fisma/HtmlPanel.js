@@ -23,7 +23,6 @@
  * @license   http://www.openfisma.org/content/license
  * @version   $Id$
  */
-
 Fisma.HtmlPanel = function() {
     return {
         /**
