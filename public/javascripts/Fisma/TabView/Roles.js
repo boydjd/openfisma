@@ -70,4 +70,4 @@ Fisma.TabView.Roles = function() {
             });
         }
     };
-};
+}();
