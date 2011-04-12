@@ -715,7 +715,7 @@ Fisma.Chart = {
 
         // Does the link contain a variable?
         if (theLink !== false) {
-            theLink = String(theLink).replace('#ColumnLabel#', paramObj.chartDataText[pointIndex]);
+            theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
         }
 
         if (paramObj.linksdebug === true) {
