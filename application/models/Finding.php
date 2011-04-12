@@ -429,9 +429,20 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 throw new Fisma_Zend_Exception('Cannot update the next due date because the finding has an'
                                         . " invalid status: '$this->status'");
         }
+        
+        if (
+            !empty($this->CurrentEvaluation->daysUntilOverdue) &&
+            is_numeric($this->CurrentEvaluation->daysUntilOverdue)) {
+            
+            $daysUntilOverdue = (integer) $this->CurrentEvaluation->daysUntilOverdue;
 
+        } else {
+            $daysUntilOverdue = $this->_overdue[$this->status];
+        }
+        
         $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
-        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
+        $nextDueDate->add($daysUntilOverdue, Zend_Date::DAY);
+        
         $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
     }
 
