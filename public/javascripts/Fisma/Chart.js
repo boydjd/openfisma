@@ -1627,7 +1627,7 @@ Fisma.Chart = {
                         deltaY = deltaY * deltaY;
                         var d = Math.sqrt(deltaX + deltaY);
                         
-                        if (d < 15 && d !== 0) {
+                        if (d < 17 && d !== 0 && !isNaN(checkAgainst.value) && !isNaN(thisPointLabel.value)) {
 
                             // remove whichever label has the lower number
 
