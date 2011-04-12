@@ -25,9 +25,8 @@
  * Constructor
  * 
  * @param advancedSearchOptions Contains searchable fields and pre-defined filters
- * @param pathname The URL path, used to generate default search filters
  */
-Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
+Fisma.Search.Panel = function (advancedSearchOptions) {
     var index;
     var searchableFields = advancedSearchOptions;
 
@@ -59,27 +58,27 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
         }
     }
 
-    // A pathname can contain default query criteria if it contains the keyword 'advanced'
+    // If default search criteria is included as a URL parameter, parse that out here.
     this.defaultQueryTokens = null;
-    
-    if (pathname) {
-        var pathTokens = pathname.split('/');
 
-        for (index in pathTokens) {
-            var pathToken = pathTokens[index];
+    var urlParamString = document.location.search.substring(1); // strip the leading "?" character
+    var urlParams = urlParamString.split('&');
 
-            // If the 'advanced' token is found (and has more tokens after it), then save the 
-            // rest of the tokens into the object
-            var start = parseInt(index, 10);
+    for (var i in urlParams) {
+        var urlParam = urlParams[i];
+        var keyValuePair = urlParam.split("=");
 
-            if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
-                
-                pathTokens.splice(0, start + 1);
-                
-                this.defaultQueryTokens = pathTokens;
-                
-                break;
+        // Looking for a parameter called "q"
+        if ("q" == keyValuePair[0]) {
+            var criteriaString = keyValuePair[1];
+            this.defaultQueryTokens = criteriaString.split("/");
+
+            // Remove first element if it's empty
+            if (this.defaultQueryTokens[0] == '') {
+                this.defaultQueryTokens.splice(0, 1);
             }
+
+            break;
         }
     }
 };

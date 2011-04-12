@@ -132,7 +132,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->alert = $alert;
 
         // URLs for "Alerts" panel
-        $baseUrl = '/finding/remediation/list/queryType/advanced';
+        $baseUrl = '/finding/remediation/list?q=';
 
         $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/NEW';
         $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/DRAFT';
@@ -299,7 +299,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $addColumnCounts = array($nullCount, $highCount, $modCount, $lowCount);
 
             // Make each area of the chart link
-            $basicLink = '/finding/remediation/list/queryType/advanced' .
+            $basicLink = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
@@ -409,7 +409,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $result['type'],
                     $result['typeCount'],
-                    '/finding/remediation/list/queryType/advanced/type/enumIs/' . $result['type']
+                    '/finding/remediation/list?q=/type/enumIs/' . $result['type']
                 );
             }
         }

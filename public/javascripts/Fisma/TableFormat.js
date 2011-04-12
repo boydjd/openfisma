@@ -215,7 +215,7 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list?q=';
 
         // Handle organization field
         var organization = oRecord.getData('System');
@@ -225,7 +225,7 @@ Fisma.TableFormat = {
             // Since organization may be html-encoded, decode the html before (url)-escaping it
             organization = $P.html_entity_decode(organization);
             
-            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
+            overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
         // Handle status field
@@ -233,14 +233,14 @@ Fisma.TableFormat = {
 
         if (status) {
             status = PHP_JS().html_entity_decode(status);
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
+            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
         var parameters = oColumn.formatterParameters;
 
         if (parameters.source) {
-            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
+            overdueFindingSearchUrl += "/source/textExactMatch/" + encodeURIComponent(parameters.source);
         }
 
         // Handle date fields
@@ -263,9 +263,12 @@ Fisma.TableFormat = {
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" 
+                                     + encodeURIComponent(to) 
+                                     + "/" 
+                                     + encodeURIComponent(from);
         } else if (from) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
             // This is the TOTAL column
             var yesterday = new Date();
@@ -276,14 +279,10 @@ Fisma.TableFormat = {
             yesterdayString += '-';
             yesterdayString += yesterday.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
         }
 
-        elCell.innerHTML = "<a href=";
-        elCell.innerHTML += overdueFindingSearchUrl;
-        elCell.innerHTML += ">";
-        elCell.innerHTML += oData;
-        elCell.innerHTML += "</a>";
+        elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
     },
 
     /**

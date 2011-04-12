@@ -293,7 +293,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $childrenTotaled = array_values($childrenTotaled);
 
                 $basicLink =
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/organizationSubtree/' . $thisParentOrg['nickname'];
 
@@ -324,7 +324,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->setColors(array('#3366FF'))
                     ->setThreatLegendVisibility(false)
                     ->setLinks(
-                        '/finding/remediation/list/queryType/advanced' . 
+                        '/finding/remediation/list?q=' . 
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/organization/organizationSubtree/#ColumnLabel#'
                     );
@@ -637,7 +637,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             
             // The links to associate with entire columns when this is not a stacked bar chart
-            $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced' .
+            $nonStackedLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                 '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
 
@@ -650,15 +650,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisLow
                 ),
                 array('',
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/HIGH',
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/MODERATE',
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' .
                     '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/LOW'
@@ -743,7 +743,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisOrg['nickname'],
                     $thisOrg['count'],
-                    '/finding/remediation/list/queryType/advanced' .
+                    '/finding/remediation/list?q=' .
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/textExactMatch/' . $thisOrg['nickname']
                 );
@@ -817,15 +817,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $thisHigh
                     ),
                     array(
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/LOW'
@@ -873,7 +873,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisThreatCount['nickname'],
                     $thisThreatCount['count'],
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/textExactMatch/' . $thisThreatCount['nickname'] .
                     '/threatLevel/enumIs/' . strtoupper($findingType)
@@ -981,7 +981,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             
             // Make URL to the search page with date params
-            $basicSearchLink = '/finding/remediation/list/queryType/advanced' . 
+            $basicSearchLink = '/finding/remediation/list?q=' . 
                 '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
             // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
@@ -1183,17 +1183,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $lowCount
                     ),
                     array('',
-                        '/finding/remediation/list/queryType/advanced' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list/queryType/advanced' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced' . 
+                        '/finding/remediation/list?q=' . 
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
@@ -1202,7 +1202,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 );
                 
             // Note the links to set in the even this is a totals (basic-bar) chart
-            $totalChartLinks[] = '/finding/remediation/list/queryType/advanced' .
+            $totalChartLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                 '/currentEcd/dateBetween/' . $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
         }

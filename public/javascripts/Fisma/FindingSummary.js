@@ -483,36 +483,36 @@ Fisma.FindingSummary = function() {
                 var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 
                 if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
+                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
                 } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
+                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
                 }
             }
 
             // Include any status
             var statusString = '';
             if (status !== '' && status !=='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
             }
 
             // Include any filters
             var filterType = '';
             if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
-                filterType = '/type/enumIs/' + this.filterType;
+                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
             }
 
             var filterSource = '';
             if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced' + onTimeString + statusString + filterType + filterSource;
+            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
+                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
             } else {
-                uri += '/organization/organizationSubtree/' + orgName;
+                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
             }
 
             return uri;            

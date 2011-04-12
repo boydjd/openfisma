@@ -74,7 +74,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
 
-        $findingSearchUrl = '/finding/remediation/list/queryType/advanced/organization/textExactMatch/'
+        $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
                           . $this->view->escape($organization->nickname, 'url');
 
         $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(

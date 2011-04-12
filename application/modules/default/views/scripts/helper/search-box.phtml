@@ -59,7 +59,7 @@
             function () {
                 var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
-                var searchPanel = new Fisma.Search.Panel(advancedSearchOptions, document.location.pathname);
+                var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
             
                 Fisma.Search.advancedSearchPanel = searchPanel;
 
