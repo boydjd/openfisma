@@ -68,6 +68,9 @@
                     }
                 ?>
         </div>
+        <!--Placeholder for SWF, will be replaced with embedded SWF if proper Flash Player is installed-->
+        <div id="swfstoreContainer" style="width:0px;height:0px;"></div>
+
     </body>
     <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
 </html>

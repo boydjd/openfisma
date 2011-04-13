@@ -1,14 +1,14 @@
 <div id="<?php echo $this->escape($this->containerId, 'javascript'); ?>"></div>
 
 <script type="text/javascript">
-    Fisma.Storage.onReady(function() {
-        YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
+    YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
+        var Dom = YAHOO.util.Dom,
+            YL = YAHOO.lang,
+            modelName = Dom.get('modelName').value,
+            tablePrefs = new Fisma.Search.TablePreferences(modelName),
+            columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
     
-            var Dom = YAHOO.util.Dom,
-                YL = YAHOO.lang,
-                modelName = Dom.get('modelName').value,
-                tablePrefs = new Fisma.Search.TablePreferences(modelName),
-                columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
+        Fisma.Storage.onReady(function() {
     
             /* 
              * Column definitions are defined in JSON, which cannot embed object references such as formatters.

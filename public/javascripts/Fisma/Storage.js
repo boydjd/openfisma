@@ -31,6 +31,24 @@
      */
     var FS = function(namespace) {
         this.namespace = namespace;
+        FS._initStorageEngine();
+    };
+
+    /**
+     * Helper to ensure the storage engine is initialized
+     *
+     * @method _initStorageEngine
+     * @protected
+     * @static
+     */
+    FS._initStorageEngine = function() {
+        if (YAHOO.lang.isNull(FS._storageEngine)) {
+            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            FS._storageEngine = YAHOO.util.StorageManager.get(
+                null, // no preferred engine
+                YAHOO.util.StorageManager.LOCATION_SESSION,
+                {engine: engineConf});
+        }
     };
 
     /**
@@ -41,9 +59,7 @@
      * @private
      * @static
      */
-    FS._storageEngine = YAHOO.util.StorageManager.get(
-        null, // no preferred engine
-        YAHOO.util.StorageManager.LOCATION_SESSION);
+    FS._storageEngine = null;
 
     /**
      * Register a callback for when the storage engine is ready.
@@ -55,15 +71,18 @@
      * @static
      */
     FS.onReady = function(fn, obj, scope) {
-        if (!FS._storageEngine.isReady) {
-            FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
-        } else {
-            var s = scope === true ? obj : scope;
-            if (typeof(s) !== "object") {
-                s = fn;
+        YAHOO.util.Event.onContentReady('swfstoreContainer', function() {
+            FS._initStorageEngine();
+            if (!(FS._storageEngine.isReady || (FS._storageEngine._swf && YAHOO.util.StorageManager.LOCATION_SESSION === FS_storageEngine._location))) {
+                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+            } else {
+                var s = scope === true ? obj : scope;
+                if (typeof(s) !== "object") {
+                    s = fn;
+                }
+                fn.call(s, obj);
             }
-            fn.call(s, obj);
-        }
+        });
     };
     FS.prototype = {
         /**
@@ -96,7 +115,9 @@
          * @protected
          */
         _get: function(key) {
-            return YAHOO.lang.JSON.parse(FS._storageEngine.getItem(this.namespace + ":" + key));
+            var value = FS._storageEngine.getItem(this.namespace + ":" + key);
+
+            return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
         /**
          * Internal convenience method for encoding values.
