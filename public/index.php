@@ -105,6 +105,10 @@ try {
         // Then the exception message says nothing about parse_ini_file nor 'syntax error'
         echo 'Please check all configuration files, and ensure all settings are valid.';
     }
+    
+    echo '<br/>For more information and help on installing OpenFISMA, please refer to the ' . 
+        '<a target="_blank" href="http://manual.openfisma.org/display/ADMIN/Installation">' . 
+        'Installation Guide</a>';
 
 } catch (Doctrine_Manager_Exception $dme) {
 

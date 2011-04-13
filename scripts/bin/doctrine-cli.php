@@ -224,7 +224,9 @@ try {
         echo 'Please check all configuration files, and ensure all settings are valid.';
     }
     
-    echo PHP_EOL;
+    echo PHP_EOL . 
+        'For more information and help on installing OpenFISMA, please refer Endeavor Systems\'s Installation Guide ' .
+        'located at http://manual.openfisma.org/display/ADMIN/Installation' . PHP_EOL;
 
 } catch (Exception $e) {
     print get_class($e) 
