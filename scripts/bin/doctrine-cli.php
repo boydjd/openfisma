@@ -165,8 +165,67 @@ try {
     
     $stopTime = time();
     print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");
+
 } catch (Zend_Config_Exception $zce) {
-    print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+    // A zend config exception indicates that the application may not be installed properly
+    echo 'The application is not installed correctly.' . PHP_EOL;
+    
+    $zceMsg = $zce->getMessage();
+    
+    if (substr($zceMsg, 0, 14) === 'parse_ini_file') {
+    
+        if (strpos($zceMsg, 'application.ini') !== false) {
+            
+            if (strpos($zceMsg, 'No such file or directory') !== false) {
+                echo 'The ' . APPLICATION_PATH . '/config/application.ini file is missing.';
+            } elseif (strpos($zceMsg, 'Permission denied') !== false) {
+                echo 'The ' . APPLICATION_PATH . '/config/application.ini file does not have the ' . 
+                    'appropriate permissions set for the application to read it.';
+            } else {
+                echo 'An ini-parsing error has occured in ' . APPLICATION_PATH . '/config/application.ini ' . PHP_EOL .
+                    'Please check this file and make sure everything is setup correctly.';
+            }
+            
+        } else if (strpos($zceMsg, 'database.ini') !== false) {
+        
+            if (strpos($zceMsg, 'No such file or directory') !== false) {
+                echo 'The ' . APPLICATION_PATH . '/config/database.ini file is missing.' . PHP_EOL;
+                echo 'If you find a database.ini.template file in the config directory, edit this file ' . 
+                    'appropriately and rename it to database.ini';
+            } elseif (strpos($zceMsg, 'Permission denied') !== false) {
+                echo 'The ' . APPLICATION_PATH . '/config/database.ini file does not have the appropriate ' . 
+                    'permissions set for the application to read it.';
+            } else {
+                echo 'An ini-parsing error has occured in ' . APPLICATION_PATH . '/config/database.ini ' . PHP_EOL . 
+                    'Please check this file and make sure everything is setup correctly.';
+            }
+        
+        } else {
+            echo 'An ini-parsing error has occured.' . PHP_EOL . 'Please check all configuration files ' . 
+                'and make sure everything is setup correctly';
+        }
+    
+    } elseif (substr($zceMsg, 0, 12) === 'syntax error') {
+    
+        if (strpos($zceMsg, 'application.ini') !== false) {
+            echo 'There is a syntax error in ' . APPLICATION_PATH . '/config/application.ini ' . PHP_EOL .
+                'Please check this file and make sure everything is setup correctly.';
+        } elseif (strpos($zceMsg, 'database.ini') !== false) {
+            echo 'There is a syntax error in ' . APPLICATION_PATH . '/config/database.ini ' . PHP_EOL .
+                'Please check this file and make sure everything is setup correctly.';
+        } else {
+            echo 'A syntax error has been reached.' . PHP_EOL . 'Please check all configuration files ' . 
+                'and make sure everything is setup correctly.';
+        }
+    
+    } else {
+        
+        // Then the exception message says nothing about parse_ini_file nor 'syntax error'
+        echo 'Please check all configuration files, and ensure all settings are valid.';
+    }
+    
+    echo PHP_EOL;
+
 } catch (Exception $e) {
     print get_class($e) 
         . "\n" 
