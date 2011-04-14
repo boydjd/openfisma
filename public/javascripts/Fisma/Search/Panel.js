@@ -74,7 +74,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             this.defaultQueryTokens = criteriaString.split("/");
 
             // Remove first element if it's empty
-            if (this.defaultQueryTokens[0] == '') {
+            if (this.defaultQueryTokens[0] === '') {
                 this.defaultQueryTokens.splice(0, 1);
             }
 
