@@ -54,13 +54,13 @@ try {
     
     $zceMsg = $zce->getMessage();
     
-    if (substr($zceMsg, 0, 14) === 'parse_ini_file') {
+    if (stristr($zceMsg, 'parse_ini_file') !== false) {
     
-        if (strpos($zceMsg, 'application.ini') !== false) {
+        if (stristr($zceMsg, 'application.ini') !== false) {
             
-            if (strpos($zceMsg, 'No such file or directory') !== false) {
+            if (stristr($zceMsg, 'No such file or directory') !== false) {
                 echo 'The ' . APPLICATION_PATH . '/config/application.ini file is missing.';
-            } elseif (strpos($zceMsg, 'Permission denied') !== false) {
+            } elseif (stristr($zceMsg, 'Permission denied') !== false) {
                 echo 'The ' . APPLICATION_PATH . '/config/application.ini file does not have the ' . 
                     'appropriate permissions set for the application to read it.';
             } else {
@@ -68,13 +68,13 @@ try {
                     '<br/>Please check this file and make sure everything is setup correctly.';
             }
             
-        } else if (strpos($zceMsg, 'database.ini') !== false) {
+        } else if (stristr($zceMsg, 'database.ini') !== false) {
         
-            if (strpos($zceMsg, 'No such file or directory') !== false) {
+            if (stristr($zceMsg, 'No such file or directory') !== false) {
                 echo 'The ' . APPLICATION_PATH . '/config/database.ini file is missing.<br/>';
                 echo 'If you find a database.ini.template file in the config directory, edit this file ' . 
                     'appropriately and rename it to database.ini';
-            } elseif (strpos($zceMsg, 'Permission denied') !== false) {
+            } elseif (stristr($zceMsg, 'Permission denied') !== false) {
                 echo 'The ' . APPLICATION_PATH . '/config/database.ini file does not have the appropriate ' . 
                     'permissions set for the application to read it.';
             } else {
@@ -87,12 +87,12 @@ try {
                 'everything is setup correctly';
         }
     
-    } elseif (substr($zceMsg, 0, 12) === 'syntax error') {
+    } elseif (stristr($zceMsg, 'syntax error') !== false) {
     
-        if (strpos($zceMsg, 'application.ini') !== false) {
+        if (stristr($zceMsg, 'application.ini') !== false) {
             echo 'There is a syntax error in ' . APPLICATION_PATH . '/config/application.ini ' . 
                 '<br/>Please check this file and make sure everything is setup correctly.';
-        } elseif (strpos($zceMsg, 'database.ini') !== false) {
+        } elseif (stristr($zceMsg, 'database.ini') !== false) {
             echo 'There is a syntax error in ' . APPLICATION_PATH . '/config/database.ini ' . 
                 '<br/>Please check this file and make sure everything is setup correctly.';
         } else {
