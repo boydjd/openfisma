@@ -24,7 +24,6 @@
  * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-
 class Version99 extends Doctrine_Migration_Base
 {
     public function up()
@@ -41,13 +40,6 @@ class Version99 extends Doctrine_Migration_Base
 
     public function down()
     {
-        $this->removeIndex('privilege', 'resourceAction', array(
-            'fields' => 
-                array(
-                    0 => 'resource',
-                    1 => 'action',
-                ),
-             'type' => 'unique',
-        ));
+        $this->removeIndex('privilege', 'resourceAction');
     }
 }
