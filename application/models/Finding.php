@@ -76,7 +76,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      * 
      * @var array
      */
-    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
+     private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'EN'=>0);
 
     /**
      * Override the Doctrine hook to initialize new finding objects
@@ -166,15 +166,13 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             throw new Fisma_Zend_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
-        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
+
         $this->CurrentEvaluation = $evaluation[0];
-
         $this->updateDenormalizedStatus();
-
+        $this->_updateNextDueDate();
         $this->save();
-
         $this->getAuditLog()->write('Submitted Mitigation Strategy');
     }
 
@@ -192,8 +190,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             throw new Fisma_Zend_Exception("The mitigation strategy can only be revised in EN status");
         }
         $this->status = 'DRAFT';
-        $this->_updateNextDueDate();
         $this->CurrentEvaluation = null;
+        $this->_updateNextDueDate();
         $this->getAuditLog()->write('Revise mitigation strategy');
 
         $this->save();
@@ -351,7 +349,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 break;
             case 'EA':
                 $this->status = 'EN';
-                $this->CurrentEvaluation = null;
                 break;
         }
         $this->_updateNextDueDate();
@@ -377,10 +374,10 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         }
         $this->status = 'EA';
         $this->ecdLocked = true;
-        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
+        $this->_updateNextDueDate();
         $evidence = new Evidence();
         $evidence->filename = $fileName;
         $evidence->Finding  = $this;
@@ -429,19 +426,21 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 throw new Fisma_Zend_Exception('Cannot update the next due date because the finding has an'
                                         . " invalid status: '$this->status'");
         }
-        
-        if (
-            !empty($this->CurrentEvaluation->daysUntilOverdue) &&
-            is_numeric($this->CurrentEvaluation->daysUntilOverdue)) {
-            
-            $daysUntilOverdue = (integer) $this->CurrentEvaluation->daysUntilOverdue;
 
+        if (array_key_exists($this->status, $this->_overdue)) {
+            // This is a New, Draft, or EN status
+            $daysUntilDue = $this->_overdue[$this->status];
+        } elseif (!is_null($this->CurrentEvaluation->daysUntilDue)) {
+            // Get the daysUntilDue value for this workflow status on the Evaluation table
+            $daysUntilDue = $this->CurrentEvaluation->daysUntilDue;
         } else {
-            $daysUntilOverdue = $this->_overdue[$this->status];
+            // The this->CurrentEvaluation object has not been set yet, this occures when Record.php(1349) calls this
+            // function, return for now, as this function will be called again when the CurrentEvaluation is set
+            return;
         }
         
         $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
-        $nextDueDate->add($daysUntilOverdue, Zend_Date::DAY);
+        $nextDueDate->add($daysUntilDue, Zend_Date::DAY);
         
         $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
     }
