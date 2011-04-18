@@ -1757,14 +1757,13 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
     FS.onReady = function(fn, obj, scope) {
         YAHOO.util.Event.onContentReady('swfstoreContainer', function() {
             FS._initStorageEngine();
-            if (!(FS._storageEngine.isReady || (FS._storageEngine._swf && YAHOO.util.StorageManager.LOCATION_SESSION === FS_storageEngine._location))) {
-                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+            var engine = FS._storageEngine;
+            var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            if (!(engine.isReady || (engine._swf && locationSession))) {
+                engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {
-                var s = scope === true ? obj : scope;
-                if (typeof(s) !== "object") {
-                    s = fn;
-                }
-                fn.call(s, obj);
+                var s = new YAHOO.util.Subscriber(fn, obj, scope);
+                s.fn.call(s.getScope(window), s.obj);
             }
         });
     };
@@ -6448,21 +6447,6 @@ Fisma.Module = {
         _modified: null,
 
         /**
-         * Get value for key
-         *
-         * @method PeristentStorage.get
-         * @param key {String}
-         * @return {String|Array|Object}
-         */
-        get: function(key) {
-            /*
-             * @todo: sanity check for key existence.
-             *        if key doesn't exist, perform sync() and then forcefully set the key to null if it still doesn't
-             *        exist.
-             */
-            return this._get(key);
-        },
-        /**
          * Set value for key
          *
          * @method PersistentStorage.set
@@ -6534,7 +6518,7 @@ Fisma.Module = {
                         }
                     },
                     postData = $.param({
-                        csrf: YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0 ? csrfInputs[0].value : '',
+                        csrf: (YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0) ? csrfInputs[0].value : '',
                         namespace: this.namespace,
                         updates: YAHOO.lang.JSON.stringify(this._modified),
                         reply: reply ? YAHOO.lang.JSON.stringify(reply) : null

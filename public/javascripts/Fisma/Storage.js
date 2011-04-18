@@ -73,14 +73,13 @@
     FS.onReady = function(fn, obj, scope) {
         YAHOO.util.Event.onContentReady('swfstoreContainer', function() {
             FS._initStorageEngine();
-            if (!(FS._storageEngine.isReady || (FS._storageEngine._swf && YAHOO.util.StorageManager.LOCATION_SESSION === FS_storageEngine._location))) {
-                FS._storageEngine.subscribe(FS._storageEngine.CE_READY, fn, obj, scope);
+            var engine = FS._storageEngine;
+            var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            if (!(engine.isReady || (engine._swf && locationSession))) {
+                engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {
-                var s = scope === true ? obj : scope;
-                if (typeof(s) !== "object") {
-                    s = fn;
-                }
-                fn.call(s, obj);
+                var s = new YAHOO.util.Subscriber(fn, obj, scope);
+                s.fn.call(s.getScope(window), s.obj);
             }
         });
     };

@@ -640,9 +640,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $userId = CurrentUser::getInstance()->id;
         $namespace = 'Fisma.Search.TablePreferences';
         $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
-        $visibleColumns = !empty($storage) && !empty($storage->data) ? $storage->data : array();
-        $visibleColumns = !empty($visibleColumns[$this->_modelName]) ? $visibleColumns[$this->_modelName] : array();
-        $visibleColumns = !empty($visibleColumns['columnVisibility']) ? $visibleColumns['columnVisibility'] : array();
+        $visibleColumns = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+        $visibleColumns = (!empty($visibleColumns[$this->_modelName])) ? $visibleColumns[$this->_modelName] : array();
+        $visibleColumns = (!empty($visibleColumns['columnVisibility'])) ? $visibleColumns['columnVisibility'] : array();
         return $visibleColumns;
     }
 
