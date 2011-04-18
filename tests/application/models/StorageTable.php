@@ -39,4 +39,21 @@ class Test_Application_Models_StorageTable extends Test_FismaUnitTest
     {
         $this->assertTrue(class_exists('StorageTable'));
     }
+
+    /**
+     * testGetUserIdAndNamespaceQuery
+     *
+     * @access public
+     * @return void
+     */
+     public function testGetUserIdAndNamespaceQuery()
+     {
+         $table = Doctrine::getTable('storage');
+         $userId = 42;
+         $namespace = 'Sample.Namespace';
+         $q = $table->getUserIdAndNamespaceQuery($userId, $namespace);
+         $this->assertTrue($q instanceof Doctrine_Query);
+         $this->assertEquals(' FROM storage WHERE userId = ? AND namespace = ?', $q->getDql());
+         $this->assertEquals(array($userId, $namespace), $q->getFlattenedParams());
+     }
 }

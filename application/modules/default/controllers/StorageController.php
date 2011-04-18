@@ -34,6 +34,7 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
         parent::init();
         $this->_helper->contextSwitch
                       ->setActionContext('sync', 'json')
+                      ->setActionContext('whitelist', 'xml')
                       ->initContext();
     }
        
@@ -82,5 +83,14 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
         } catch (Exception $e) {
             $this->view->status = 'An error occurred while saving user data.';
         }
+    }
+
+    /**
+     * Action to return a whitelist file for clients using SWF storage.
+     *
+     * @return void
+     */
+    public function whitelistAction()
+    {
     }
 }
