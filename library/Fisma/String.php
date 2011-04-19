@@ -251,4 +251,27 @@ class Fisma_String
 
         return str_replace($search, $replace, $string);
     }
+
+    /**
+     * A helper for converting plaintext to text suitable for use in the PDF and excel generator.
+     * 
+     * @param string $text plain text input
+     * @return string PDF and excel text output
+     */
+    static function plainTextToReportText($text)
+    {
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $text = str_replace(chr(10), ' ', $text);
+        $text = str_replace(chr(13), ' ', $text);
+
+        // Remove excess whitespace
+        $text = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $text);
+        $text = preg_replace('/^\s+/', '', $text);
+        $text = preg_replace('/\s+$/', '', $text);
+        $text = preg_replace('/ +/', ' ', $text);
+
+        return $text;
+    }
+
 }

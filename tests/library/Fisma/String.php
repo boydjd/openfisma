@@ -250,4 +250,17 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         $this->assertEquals('-', Fisma_String::replaceInvalidChars('—'));
         $this->assertEquals('...', Fisma_String::replaceInvalidChars('…'));
     }
+
+    /**
+     * Test plaintextToReportText converts paragraphs and line breaks to a white space
+     * and remove excess white spaces.
+     */
+    public function testPlainTextToReportText()
+    {
+        $text = "  First line breaker.\r\n  Second line  ";
+        $reporttext = "First line breaker. Second line";
+        
+        $this->assertEquals($reporttext, Fisma_String::plainTextToReportText($text));
+    }
+    
 }
