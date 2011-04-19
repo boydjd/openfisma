@@ -36,7 +36,13 @@ class Product extends BaseProduct
      */
     public function preDelete($event)
     {
-        if (count($this->Assets) > 0) {
+        // only check active object, ignore soft deleted record
+        $assets = Doctrine_Query::create()
+                  ->from('Asset a')
+                  ->where('a.productId = ?', $this->id)
+                  ->execute();
+
+        if (count($assets) > 0) {
             throw new Fisma_Zend_Exception_User(
                 'This product can not be deleted because it is already associated with one or more assets'
             );
