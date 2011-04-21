@@ -355,10 +355,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $doctrineQuery->addSelect('a.deleted_at');
 
             if ($deleted) {
-                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at = FALSE)');
             } else {
                 // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
-                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+                $doctrineQuery->andWhere('(a.deleted_at = FALSE)');
             }
         }
         
@@ -759,10 +759,10 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
             $doctrineQuery->addSelect('a.deleted_at');
 
             if ($deleted) {
-                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at IS NULL)');
+                $doctrineQuery->andWhere('(a.deleted_at = a.deleted_at OR a.deleted_at = FALSE)');
             } else {
                 // The DQL listener gets confused when you join multiple models with soft-delete, so be explicit:
-                $doctrineQuery->andWhere('(a.deleted_at IS NULL)');
+                $doctrineQuery->andWhere('(a.deleted_at = FALSE)');
             }
         }
         

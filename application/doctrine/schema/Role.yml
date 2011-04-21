@@ -12,11 +12,9 @@ Role:
                 notify: true
         nickname: 
             type: string(255)
-            unique: true
             extra:
                 logicalName: Role Nickname
                 notify: true      
-            unique: true;
         description: 
             type: string
             extra:
@@ -24,7 +22,8 @@ Role:
                 purify: html
                 notify: true
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
-
+    indexes:
+        unique_nickname: { fields: [nickname, deleted_at], type: unique }
     relations:
         # Users is a many-to-many relation
         Users:
@@ -49,4 +48,5 @@ Role:
                 name: modifiedTs
                 type: timestamp
 
-        SoftDelete: true
+        SoftDelete:
+            type: boolean
