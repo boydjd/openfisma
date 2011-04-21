@@ -4,12 +4,19 @@
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
         var Dom = YAHOO.util.Dom,
             YL = YAHOO.lang,
+            QueryState = Fisma.Search.QueryState,
             modelName = Dom.get('modelName').value,
             tablePrefs = new Fisma.Search.TablePreferences(modelName),
             columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
     
         Fisma.Storage.onReady(function() {
     
+            // Load saved keyword search
+            var queryState = new QueryState(modelName);
+            if (queryState.getSearchType() === QueryState.TYPE_SIMPLE) {
+                Dom.get("keywords").value = queryState.getKeywords();
+            }
+               
             /* 
              * Column definitions are defined in JSON, which cannot embed object references such as formatters.
              * Also, the "hidden" property needs to be updated with respect to what's in storage.
