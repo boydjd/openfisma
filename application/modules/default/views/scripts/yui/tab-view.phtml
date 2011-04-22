@@ -3,6 +3,9 @@
 </div>
 
 <script type="text/javascript">
+    
+    var tabViewStorage = new Fisma.Storage("yui.tabview");
+
     YAHOO.util.Event.onDOMReady(function () {
         var tabView = new YAHOO.widget.TabView();
         var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
@@ -36,7 +39,7 @@
         // When the active tab changes, store the active tab in a cookie so that it can be restored
         // in between page refreshes.
         var handleTabChange = function(args) {
-            YAHOO.util.Cookie.set(selectedTabCookie, args.newValue, { path: '/' });
+            tabViewStorage.set(selectedTabCookie, args.newValue);
         }
         
         // Render tabs
@@ -65,11 +68,11 @@
         var tab = location.hash.substring(1); // Strip the "#" off of the hash
 
         if (!tab || tab < 0 || tab >= <?php echo $this->escape(count($this->tabs), 'none') ?>) {
-            if (YAHOO.util.Cookie.get(objectIdCookie) == objectId) {
-                tab = YAHOO.util.Cookie.get(selectedTabCookie);
+            if (tabViewStorage.get(objectIdCookie) == objectId) {
+                tab = tabViewStorage.get(selectedTabCookie);
             } else {
-                YAHOO.util.Cookie.set(objectIdCookie, objectId, {path: '/'});
-                YAHOO.util.Cookie.set(selectedTabCookie, 0, {path: '/'}); 
+                tabViewStorage.set(objectIdCookie, objectId);
+                tabViewStorage.set(selectedTabCookie, 0); 
                 tab = 0;
             }
         }
