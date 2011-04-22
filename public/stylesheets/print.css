@@ -67,6 +67,19 @@ img#logoImg {
     height: 30px;
 }
 
+.chartCanvasContainer {
+    display: none
+}
+
+.screenReaderTabelShown {
+    width: 100%;
+    display: inline;
+}
+
+.screenReaderTabelHidden {
+    display: inline;
+}
+
 .chartGear {
     display: none
 }

@@ -3891,16 +3891,16 @@ Fisma.Chart = {
         var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
         dataTableObj.innerHTML = '';
 
+        if (chartParamsObj.chartType === 'pie') {
+            Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
+        } else {
+            Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
+        }
+
         if (Fisma.Chart.getGlobalSetting('showDataTable') === 'true') {
 
-            if (chartParamsObj.chartType === 'pie') {
-                Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
-            } else {
-                Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
-            }
-
             // Show the table generated based on chart data
-            dataTableObj.style.display = '';
+            dataTableObj.className = 'screenReaderTabelShown';
             // Hide, erase, and collapse the container of the chart divs
             document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
             document.getElementById(chartParamsObj.uniqueid).style.width = 0;
@@ -3909,7 +3909,7 @@ Fisma.Chart = {
             document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.display = 'none';
 
         } else {
-            dataTableObj.style.display = 'none';
+            dataTableObj.className = 'screenReaderTabelHidden';
         }
     },
 
