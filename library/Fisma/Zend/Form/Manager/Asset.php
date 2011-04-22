@@ -42,8 +42,8 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
         
         $networks = Doctrine_Query::create()
                     ->from('Network t')
-                    ->execute()
-                    ->toArray();
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                    ->execute();
 
         $networkList = array();
         foreach ($networks as $network) {
