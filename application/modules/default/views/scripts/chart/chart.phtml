@@ -26,7 +26,7 @@
         </div>
     </div>
     
-    <div class="chartCanvasContainer" id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
+    <div id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
                     echo $this->escape($this->divContainerArgs, 'none'); ?> >
     
             <div id="<?php echo $this->escape($this->chartId, 'none'); ?>toplegend">
@@ -37,14 +37,12 @@
             </div>
     </div>
     
-    <div class="screenReaderTabelShown" id="<?php echo $this->escape($this->chartId, 'none'); ?>table">
+    <div class="screenReaderTabel" id="<?php echo $this->escape($this->chartId, 'none'); ?>table">
     </div>   
     
     <br/>
     <div 
-        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" 
-            class="widgetSpaceHolder yui-navset" style="display: none;">
-            
+        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
         <ul class="yui-nav">
             <li class="selected">
                 <a href="#tab1" onClick="Fisma.Chart.showSetingMode(true);">

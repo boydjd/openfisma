@@ -1,4 +1,3 @@
-.screenReaderTabelShown{width:100%;}
-.screenReaderTabelHidden{display:none;}
+.screenReaderTabel{width:100%;}
 .widgetSpaceHolder{width:400px;margin-left:auto;margin-right:auto;text-align:left;}
 .chartGear{cursor:pointer;width:20px;}
