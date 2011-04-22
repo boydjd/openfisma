@@ -26,6 +26,11 @@
  */
 class Version99 extends Doctrine_Migration_Base
 {
+    /** 
+    * Add a unique index to privilege table to avoid records with the same resource and action
+    * @access public
+    * @return void 
+    */
     public function up()
     {
         $this->addIndex('privilege', 'resourceAction', array(
@@ -38,6 +43,11 @@ class Version99 extends Doctrine_Migration_Base
         ));
     }
 
+     /**
+     * remove resourceAction index
+     * @access public
+     * @return void
+     */
     public function down()
     {
         $this->removeIndex('privilege', 'resourceAction');
