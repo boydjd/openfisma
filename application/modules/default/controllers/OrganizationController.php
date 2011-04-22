@@ -370,7 +370,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function getOrganizationTree($includeDisposal = false)
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
-        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
+        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type, s.sdlcPhase')
                      ->leftJoin('o.System s')
                      ->orderBy('o.lft');
         $orgTree = Doctrine::getTable('Organization')->getTree();
