@@ -26,6 +26,11 @@
  */
 class Version98 extends Doctrine_Migration_Base
 {
+    /**
+     * Add Storage model's table to the database.
+     *
+     * @return void
+     */
     public function up()
     {
         $this->createTable(
@@ -40,6 +45,11 @@ class Version98 extends Doctrine_Migration_Base
         );
     }
 
+    /**
+     * Remove Storage model's table from the database.
+     *
+     * @return void
+     */
     public function down()
     {
         $this->dropTable('storage');
