@@ -267,9 +267,6 @@ Fisma.Search = function() {
                 searchType = 'simple';
             }
 
-            // The error message of advance search should be hidden before handles YUI data
-            document.getElementById('msgbar').style.display = 'none';
-
             var postData = "sort=" + tableState.sortedBy.key +
                            "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
                            "&start=" + tableState.pagination.recordOffset +
@@ -281,6 +278,9 @@ Fisma.Search = function() {
                     postData += "&queryType=simple&keywords=";
                     postData += encodeURIComponent(document.getElementById('keywords').value);
                 } else if ('advanced' == searchType) {
+                    // The error message of advance search should be hidden before handles YUI data
+                    document.getElementById('msgbar').style.display = 'none';
+
                     var queryData = Fisma.Search.advancedSearchPanel.getQuery();
 
                     postData += "&queryType=advanced&query=";
