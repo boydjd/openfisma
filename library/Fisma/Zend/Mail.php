@@ -42,6 +42,7 @@ class Fisma_Zend_Mail extends Zend_Mail
      */
     public function __construct()
     {
+        $this->_charset = 'UTF-8';
         $view = new Fisma_Zend_View();
         $this->_contentTpl = $view->setScriptPath(
             Fisma::getPath('application') . '/modules/default/views/scripts/mail'

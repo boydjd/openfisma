@@ -245,9 +245,6 @@ abstract class Fisma_Search_Backend_Abstract
         $html = preg_replace('/\s+$/', '', $html);
         $html = preg_replace('/ +/', ' ', $html);
 
-        // Character set encoding -- input charset is a guess
-        $html = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html);
-
         return $html;
     }
     
