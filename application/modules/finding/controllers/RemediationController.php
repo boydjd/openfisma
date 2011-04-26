@@ -316,7 +316,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 /** @todo pad left string */
                 $indentAmount = $organization['level'] * 3;
                 $orgName = str_pad(
-                    $organization['label'], $indentAmount + strlen($organization['label']), '-', STR_PAD_LEFT
+                    $organization['label'], $indentAmount + strlen($organization['label']), ' ', STR_PAD_LEFT
                 );
 
                 // Decide whether to show rolled up counts or single row counts
