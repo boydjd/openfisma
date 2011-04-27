@@ -26,7 +26,7 @@
  * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version100 extends Doctrine_Migration_Base
+class Version99 extends Doctrine_Migration_Base
 {
 
     /**
@@ -64,12 +64,12 @@ class Version100 extends Doctrine_Migration_Base
         $columns = $dbh->query($colInfoSql)->fetchAll();
 
         for ($i = 0; $i < count($columns); $i++) {
-            $convertsqls = $this->_constructConvertSql( $columns[$i]['column_name'], 
+            $convertSqls = $this->_constructConvertSql( $columns[$i]['column_name'], 
                                                         $columns[$i]['column_type'], 
                                                         $columns[$i]['table_name']);
 
-            for ($n =0; $n < count($convertsqls); $n++) {
-                $dbh->query($convertsqls[$n]);
+            for ($n =0; $n < count($convertSqls); $n++) {
+                $dbh->query($convertSqls[$n]);
             }
         } 
     }
@@ -85,15 +85,15 @@ class Version100 extends Doctrine_Migration_Base
     }
 
     /**
-     * .construct sql 
+     * construct sqls for converting columns to utf8 
      * 
-     * @return array contains sql 
+     * @return array contains sqls 
      */
     private function _constructConvertSql($columnName, 
                                           $colunmType, 
                                           $tableName) {
 
-       // Audit log uses Fisma_String::htmlToPlainText in which it uses 
+        // Audit log uses Fisma_String::htmlToPlainText in which it uses 
         // iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html) before save data to DB. So, the stored data in 
         // audit log table are already UTF-8 encoded. To convert UTF-8 encoded data, it needs to use 
         // following two sqls in sequence. 
