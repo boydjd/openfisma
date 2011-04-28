@@ -572,3 +572,7 @@ div#swfstoreContainer {
     height: 0px;
 }
 
+/* VM View Page */
+form#transitionsForm {
+    display: inline;
+}

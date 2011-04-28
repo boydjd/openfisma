@@ -101,12 +101,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getToolbarButtons()
     {
         $buttons = array();
+        $isList = $this->getRequest()->getActionName() === 'list';
+        $resourceName = $this->getAclResourceName();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
+        if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
-                    'value' => 'List All ' . $this->getPluralModelName(),
+                    'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list'
                 )
             );

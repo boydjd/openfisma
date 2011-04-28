@@ -83,3 +83,4 @@ form .searchForm{display:inline;}
 input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
 .display-none{display:none;}
 div#swfstoreContainer{width:0;height:0;}
+form#transitionsForm{display:inline;}
