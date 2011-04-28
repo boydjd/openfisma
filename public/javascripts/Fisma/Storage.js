@@ -75,6 +75,7 @@
             FS._initStorageEngine();
             var engine = FS._storageEngine;
             var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
             if (!(engine.isReady || (engine._swf && locationSession))) {
                 engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {
