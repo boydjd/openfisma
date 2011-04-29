@@ -97,13 +97,13 @@ class Version99 extends Doctrine_Migration_Base
         // iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html) before save data to DB. So, the stored data in 
         // audit log table are already UTF-8 encoded. To convert UTF-8 encoded data, it needs to use 
         // following two sqls in sequence. 
-
+        $queries = array();
         if (strtolower(substr($tableName,-4)) == '_log') {
-            $querys[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET BINARY"; 
-            $querys[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
+            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET BINARY"; 
+            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
         } else {
-            $querys[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
+            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
         }
-        return $querys;
+        return $queries;
     }
 }
