@@ -252,7 +252,9 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-
+        
+        $('body').FixCanvasDivs(chartParamsObj);
+        
         return rtn;
     },
 
@@ -527,12 +529,11 @@ Fisma.Chart = {
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
-
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
-
+        
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
@@ -1985,5 +1986,53 @@ Fisma.Chart = {
 
         return isChartEmpty;
     }
-
+    
 };
+
+
+(function($) {
+       $.fn.FixCanvasDivs = function(chartParamsObj) {
+
+               var canvases = $(document.getElementById(chartParamsObj.uniqueid)).find('canvas').filter(function() {
+                       return $(this).css('position') == 'absolute';
+               });
+
+               canvases.wrap(function() {
+                       var canvas = $(this);
+
+                       if (canvas.context.className == 'jqplot-yaxis-tick') {
+                               var div = $('<div />').css({
+                                       position: 'absolute',
+                                       top: canvas.css('top'),
+                                       right: canvas.css('right')
+                               });
+                               canvas.css({
+                                       top: 0,
+                                       right: 0
+                               });
+
+                       } else if (canvas.context.className == 'jqplot-xaxis-label') {
+
+                               var div = $('<div />').css({
+                                       position: 'absolute',
+                                       bottom: '0px'
+                               });
+
+                       } else {
+                               var div = $('<div />').css({
+                                       position: 'absolute',
+                                       top: canvas.css('top'),
+                                       left: canvas.css('left')
+                               });
+                               canvas.css({
+                                       top: 0,
+                                       left: 0
+                               });
+                       }
+
+                       return div;
+               });
+
+               return this;
+       };
+})(jQuery);
