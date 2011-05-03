@@ -540,7 +540,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchableFields = $table->getSearchableFields();
 
         // Create the YUI table that will display results
-        $searchResultsTable = new Fisma_Yui_DataTable_Search();
+        $searchResultsTable = new Fisma_Yui_DataTable_Remote();
 
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
@@ -618,6 +618,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->searchResultsTable = $searchResultsTable;
+        $this->view->assign($searchResultsTable->getProperties());
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
         // the name as an array element instead
@@ -628,6 +629,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
+        $this->view->searchPreferences = $this->_getSearchPreferences();
 
         $this->renderScript('object/list.phtml');
     }
@@ -648,6 +650,27 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         return $visibleColumns;
     }
 
+    /**
+     * Get the search preferences
+     *
+     * @return array
+     */
+    protected function _getSearchPreferences()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.QueryState';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $result = array('type' => 'simple');
+        if (!empty($storage)) {
+            $data = $storage->data;
+            $data = empty($data[$this->_modelName]) ? array() : $data[$this->_modelName];
+            if (!empty($data['type']) && $data['type'] === 'advanced') {
+                $result['type'] = 'advanced';
+                $result['fields'] = empty($data['fields']) ? array() : $data['fields'];
+            }
+        }
+        return $result;
+    }
     /**
      * Apply a user query to the search engine and return the results in JSON format
      *
@@ -745,6 +768,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $rows,
                 $showDeletedRecords
             );
+        }
+
+        // store query options
+        $queryOptions = $this->getRequest()->getParam('queryOptions');
+        if (!empty($queryOptions)) {
+            $userId = $this->_me->id;
+            $namespace = 'Fisma.Search.QueryState';
+            $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+            if (empty($storage)) {
+                $storage = new Storage();
+                $storage->userId = $userId;
+                $storage->namespace = $namespace;
+                $storage->data = array();
+            }
+            $data = $storage->data;
+            $queryOptions = Zend_Json::decode($queryOptions);
+            $data[$this->_modelName] = $queryOptions;
+            $storage->data = $data;
+            $storage->save();
         }
         
         // Create the appropriate output for the requested format
