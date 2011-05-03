@@ -123,6 +123,18 @@ class AuthController extends Zend_Controller_Action
 
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+
+                // Check if the user's mustResetPassword flag is set 
+                if ($user->mustResetPassword) {
+                    $message = ' You will need to change your password.';
+                    $this->view->priorityMessenger($message, 'warning');
+
+                    // reset default layout and forward to password change action
+                    $this->_helper->layout->setLayout('layout');
+                    $this->_redirect('/user/password');
+                    return;
+                }
+
                 $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
                 $passWarningPeriod = Fisma::configuration()->getConfig('pass_warning');
                 $passWarningTs = new Zend_Date($user->passwordTs, Fisma_Date::FORMAT_DATE);
@@ -151,6 +163,7 @@ class AuthController extends Zend_Controller_Action
                     $this->_redirect('/user/password');
                     return;
                 }
+
             }
                         
             // Check to see if the user needs to review the rules of behavior.

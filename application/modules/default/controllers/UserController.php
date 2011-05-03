@@ -271,6 +271,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             if ($form->isValid($post)) {
                 $user = CurrentUser::getInstance();
                 try {
+                    $user->mustResetPassword = false; 
                     $user->merge($post);
                     $user->save();
                     $message = "Password updated successfully."; 
