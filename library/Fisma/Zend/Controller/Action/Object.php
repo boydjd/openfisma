@@ -315,6 +315,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
+                    $msg   = "{$this->_modelName} created successfully";
+                    $type = 'notice';
+                    $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
@@ -378,6 +381,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
+                    $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
