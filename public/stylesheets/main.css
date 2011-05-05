@@ -561,6 +561,37 @@ input[type=text].date {
     width: 10em;
 }
 
+div#copyUserAccess > div.section > label {
+    float: left;
+}
+
+div#copyUserAccess > div.section > div {
+    float: left;
+}
+
+span#rolesAndUserscheckboxMatrixTooltip.tooltip {
+    display: none;
+}
+
+span#copyUserAccessTreecheckboxMatrixTooltip.tooltip {
+    display: none;
+}
+
+div#addUserAccess > div.section > div#addUserAccessLeft {
+    float: left;
+    min-width: 5em;
+    text-align: right;
+    margin-right: 1em;
+}
+
+div#addUserAccess > div.section > div#addUserAccessRight {
+    float:left;
+}
+
+#addUserAccessRight > dt#roles-label {
+    display: none;
+}
+
 /* class for dynamically hidden elements */
 .display-none {
     display: none;

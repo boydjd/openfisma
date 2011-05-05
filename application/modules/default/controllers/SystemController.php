@@ -73,6 +73,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
+        $tabView->addTab("Users", "/system/user/id/$id");
 
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
                           . $this->view->escape($organization->nickname, 'url');
@@ -309,6 +310,29 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             CurrentUser::getInstance()->invalidateAcl();
         }
 
+        // Copy users and roles from another organization
+        if (!empty($systemData['cloneOrganizationId'])) {
+            $usersAndRoles = Doctrine::getTable('Organization')
+                             ->getUsersAndRolesQuery($systemData['cloneOrganizationId'])
+                             ->execute();
+
+            Doctrine_Manager::connection()->beginTransaction();
+
+            foreach ($usersAndRoles as $userAndRole) {
+
+                $userRole = Doctrine_Query::create()
+                            ->from('UserRole ur')
+                            ->where('ur.userid = ?', $userAndRole['u_id'])
+                            ->andWhere('ur.roleid = ?', $userAndRole['r_id'])
+                            ->fetchOne();
+
+                $userRole->Organizations[] = $system->Organization;
+                $userRole->save();
+            }
+
+            Doctrine_Manager::connection()->commit();
+        }
+
         return $system->id;
     }
 
@@ -408,5 +432,256 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         if ($response->success) {
             $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
         }
+    }
+
+    /**
+     * userAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function userAction()
+    {
+        $this->_helper->layout->disableLayout();
+
+        $id             = $this->getRequest()->getParam('id');
+        $organization   = Doctrine::getTable('Organization')->findOneBySystemId($id);
+
+        $currentUserAccessForm = new Fisma_Zend_Form();
+
+        $rolesAndUsers = Doctrine::getTable('UserRole')
+                         ->getRolesAndUsersQueryByOrganizationQuery($organization->id)
+                         ->orderBy('r.nickname, u.username')
+                         ->execute();
+
+        $tree = new Fisma_Zend_Form_Element_CheckboxTree('rolesAndUsers');
+        $tree->clearDecorators();
+
+        // Add roles and their users to the checkbox tree
+        foreach ($rolesAndUsers as $role) {
+            $tree->addCheckbox(NULL, $role->nickname, 0);
+
+            foreach ($role->UserRole as $userRole) {
+                $tree->addCheckbox($userRole->userRoleId, $userRole->User->username, 1);
+            }
+        }
+
+        $removeUsersButton = new Fisma_Yui_Form_Button(
+            'removeUsers',
+            array(
+                'label' => 'Remove Selected Users',
+                'onClickFunction' => 'removeSelectedUsers',
+                'onClickArgument' => array(
+                    'organizationId' => $organization->id
+                )
+            )
+        );
+
+        $currentUserAccessForm->addElement($removeUsersButton);
+        $currentUserAccessForm->addElement($tree);
+        $currentUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
+
+        $addUserAccessForm = new Fisma_Zend_Form();
+
+        $roles = Doctrine_Query::create()
+                 ->select('r.id, r.nickname')
+                 ->from('Role r')
+                 ->orderBy('r.nickname')
+                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                 ->execute();
+        
+        $select = new Zend_Form_Element_Select('roles');
+        $select->setLabel('Role');
+
+        foreach ($roles as $role) {
+            $select->addMultiOption($role['id'], $role['nickname']);
+        }
+
+        $userAutoComplete = new Fisma_Yui_Form_AutoComplete(
+            'userAutoComplete',
+            array(
+                'resultsList' => 'users',
+                'fields' => 'username',
+                'xhr' => '/user/get-users',
+                'hiddenField' => 'addUserId',
+                'queryPrepend' => '/query/',
+                'containerId' => 'userAutocompleteContainer',
+            )
+        );
+
+        $userAutoComplete->setLabel('Username');
+
+        $addButton = new Fisma_Yui_Form_Button(
+            'addUser',
+            array(
+                'label' => 'Add',
+                'onClickFunction' => 'addUser',
+                'onClickArgument' => array(
+                    'organizationId' => $organization->id
+                )
+            )
+        );
+
+        $addUserAccessForm->addElement($userAutoComplete);
+        $addUserAccessForm->addElement($select);
+        $addUserAccessForm->addElement($addButton);
+        $addUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
+
+        $copyUserAccessForm = new Fisma_Zend_Form();
+
+        $systemAutoComplete = new Fisma_Yui_Form_AutoComplete(
+            'systemAutoComplete',
+            array(
+                'resultsList' => 'systems',
+                'fields' => 'name',
+                'xhr' => '/system/get-systems',
+                'hiddenField' => 'copySystemId',
+                'queryPrepend' => '/query/',
+                'containerId' => 'systemAutocompleteContainer'
+            )
+        );
+
+        $systemAutoComplete->setLabel('Copy From');
+
+        $addSelectedButton = new Fisma_Yui_Form_Button(
+            'addSelectedUsers',
+            array(
+                'label' => 'Add Selected Users',
+                'onClickFunction' => 'addSelectedUsers',
+                'onClickArgument' => array(
+                    'organizationId' => $organization->id
+                )
+            )
+        );
+
+        $selectAllButton = new Fisma_Yui_Form_Button(
+            'selectAll',
+            array(
+                'label' => 'Select All',
+                'onClickFunction' => 'selectAllByName',
+                'onClickArgument' => array(
+                    'name' => 'copyUserAccessTree[][]'
+                )
+            )
+        );
+
+        $copyUserAccessForm->addElement($systemAutoComplete);
+        $copyUserAccessForm->addElement($selectAllButton);
+        $copyUserAccessForm->addElement($addSelectedButton);
+        $copyUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
+
+        $this->view->currentUserAccessForm = $currentUserAccessForm;
+        $this->view->addUserAccessForm = $addUserAccessForm;
+        $this->view->copyUserAccessForm = $copyUserAccessForm;
+        $this->view->organization = $organization;
+    }
+
+    /**
+     * addUserAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function addUserAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userId = $this->getRequest()->getParam('userId');
+        $roleId = $this->getRequest()->getParam('roleId');
+
+        /**
+         * Get the existing user role ID, or create a new user role if one doesn't exist 
+         */
+        $userRoleId = Doctrine_Query::create()
+                      ->select('ur.userroleid')
+                      ->from('UserRole ur')
+                      ->where('ur.userId = ?', $userId)
+                      ->andWhere('ur.roleId = ?', $roleId)
+                      ->setHydrationMode(Doctrine::HYDRATE_NONE)
+                      ->fetchOne();
+
+        if ($userRoleId) {
+            $userRoleId = $userRoleId[0];
+        } else {
+            $userRole = new UserRole();
+
+            $userRole->userId = (int) $userId;
+            $userRole->roleId = (int) $roleId;
+
+            $userRole->save();
+
+            $userRoleId = $userRole->userRoleId;
+        }
+
+        /**
+         * Create or replace the user role organization, so that we don't have to do a search to see if the URO
+         * exists or not.
+         */
+        $userRoleOrganization = new UserRoleOrganization();
+        $userRoleOrganization->organizationId = (int) $organizationId;
+        $userRoleOrganization->userRoleId = $userRoleId;
+        $userRoleOrganization->replace();
+    }
+
+    /**
+     * getUserAccessTreeAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function getUserAccessTreeAction()
+    {
+        $this->_helper->layout->disableLayout();
+
+        $organizationId = $this->getRequest()->getParam('id');
+        $treeName       = $this->getRequest()->getParam('name', 'copyUserAccessTree');
+
+        $rolesAndUsers = Doctrine::getTable('UserRole')
+                         ->getRolesAndUsersQueryByOrganizationQuery($organizationId)
+                         ->orderBy('r.nickname, u.username')
+                         ->execute();
+
+        if (count($rolesAndUsers)) {
+            $tree = new Fisma_Zend_Form_Element_CheckboxTree($treeName);
+            $tree->clearDecorators();
+
+            // Add roles and their users to the checkbox tree
+            foreach ($rolesAndUsers as $role) {
+                $tree->addCheckbox(NULL, $role->nickname, 0);
+
+                foreach ($role->UserRole as $userRole) {
+                    $tree->addCheckbox($userRole->userRoleId, $userRole->User->username, 1);
+                }
+            }
+        } else {
+            $tree = "No users. Please select another system.";
+        }
+
+        $this->view->tree = $tree;
+    }
+
+    /**
+     * getSystemsAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function getSystemsAction()
+    {
+        $query = $this->getRequest()->getParam('query');
+
+        $systems = Doctrine_Query::create()
+                   ->select('o.id, o.name')
+                   ->from('Organization o')
+                   ->leftJoin('o.System s')
+                   ->where('o.name LIKE ?', $query . '%')
+                   ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                   ->execute();
+
+        $list = array('systems' => $systems);
+        
+        return $this->_helper->json($list);
     }
 }

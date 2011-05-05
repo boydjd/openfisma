@@ -736,4 +736,69 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->dataTable = $dataTable;
     }
+
+    /**
+     * getUsersAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function getUsersAction()
+    {
+        $query = $this->getRequest()->getParam('query');
+
+        $users = Doctrine_Query::create()
+                 ->select('u.id, u.username')
+                 ->from('User u')
+                 ->where('u.username LIKE ?', $query . '%')
+                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                 ->execute();
+
+        $list = array('users' => $users);
+        
+        return $this->_helper->json($list);
+    }
+
+    /**
+     * removeUserRolesAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function removeUserRolesAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        $deleteUserRoles = Doctrine_Query::create()
+                           ->delete('UserRoleOrganization uro')
+                           ->where('uro.organizationid = ?', $organizationId)
+                           ->andWhereIn('uro.userroleid', $userRoles)
+                           ->execute();
+    }
+
+    /**
+     * addUserRolesToOrganizationAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function addUserRolesToOrganizationAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        foreach ($userRoles as $userRole) { 
+            $userRoleOrganization = new UserRoleOrganization();
+            $userRoleOrganization->organizationId = (int) $organizationId;
+            $userRoleOrganization->userRoleId = (int) $userRole;
+            $userRoleOrganization->replace();
+        }
+    }
 }

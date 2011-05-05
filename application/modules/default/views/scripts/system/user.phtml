@@ -1,0 +1,31 @@
+<div id="leftPane" style="float:left; min-width: 25em; margin-right: 2em">
+<?php
+    Fisma_Format_Section::startSection('Current User Access');
+
+    if ($this->acl()->hasPrivilegeForObject('update_user', $this->organization)) :
+        echo $this->escape($this->currentUserAccessForm, 'none');
+    endif;
+    Fisma_Format_Section::stopSection();
+?>
+</div>
+<?php if ($this->acl()->hasPrivilegeForObject('update_user', $this->organization)) : ?>
+<div id="rightPane" style="float:left; min-width: 40em">
+    <div id="addUserAccess">
+    <?php Fisma_Format_Section::startSection('Add User Access');
+        echo $this->escape($this->addUserAccessForm, 'none');
+     Fisma_Format_Section::stopSection(); ?>
+    </div>
+    <div id="copyUserAccess">
+    <?php Fisma_Format_Section::startSection('Copy User Access'); ?>
+    <?php echo $this->escape($this->copyUserAccessForm, 'none'); ?>
+    <span id="copyUserAccessTree">
+    </span>
+    <?php Fisma_Format_Section::stopSection(); ?>
+    </div>
+</div>
+<?php endif; ?>
+<script type="text/javascript">
+$('input[name="copySystemId"]').change(function() {
+    $("#copyUserAccessTree").load('/system/get-user-access-tree/id/' + $('input[name="copySystemId"]').val());
+})
+</script>

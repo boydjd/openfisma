@@ -27,5 +27,19 @@
  */
 class UserRoleTable extends Fisma_Doctrine_Table
 {
-
+    /**
+     * getRolesAndUsersQueryByOrganizationQuery 
+     * 
+     * @param mixed $organizationId 
+     * @access public
+     * @return void
+     */
+    public function getRolesAndUsersQueryByOrganizationQuery($organizationId)
+    {
+        return Doctrine_Query::create()
+            ->from('Role r')
+            ->innerJoin('r.UserRole ur')
+            ->innerJoin('ur.Organizations o WITH o.id = ?', $organizationId)
+            ->innerJoin('ur.User u');
+    }
 }

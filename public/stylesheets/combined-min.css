@@ -191,6 +191,13 @@ form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
 form .searchForm{display:inline;}
 input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
+div#copyUserAccess>div.section>label{float:left;}
+div#copyUserAccess>div.section>div{float:left;}
+span#rolesAndUserscheckboxMatrixTooltip.tooltip{display:none;}
+span#copyUserAccessTreecheckboxMatrixTooltip.tooltip{display:none;}
+div#addUserAccess>div.section>div#addUserAccessLeft{float:left;min-width:5em;text-align:right;margin-right:1em;}
+div#addUserAccess>div.section>div#addUserAccessRight{float:left;}
+#addUserAccessRight>dt#roles-label{display:none;}
 .display-none{display:none;}
 div#swfstoreContainer{width:0;height:0;}
 form#transitionsForm{display:inline;}
