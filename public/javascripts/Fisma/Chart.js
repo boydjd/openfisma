@@ -253,7 +253,7 @@ Fisma.Chart = {
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
         
-        $('body').FixCanvasDivs(chartParamsObj);
+        Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
         
         return rtn;
     },
@@ -1985,54 +1985,84 @@ Fisma.Chart = {
         }
 
         return isChartEmpty;
+    },
+    
+    /**
+     * Place canvases in divs with the appropriate style declairations. 
+     * This is nessesary to force styles when printing.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    placeCanvasesInDivs : function(chartParamsObj) {
+
+        // Get the div that holds all canvases of this chart
+        var chartCanvasContainer = document.getElementById(chartParamsObj.uniqueid);
+        
+        // Get a list (obj-array) of all canvases for this chart that are absolute positioned
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this).css('position') == 'absolute';
+            }
+        );
+
+        // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
+        canvases.wrap(
+            function() {
+                var canvas = $(this);
+
+                if (canvas.context.className == 'jqplot-yaxis-tick') {
+
+                    // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            right: canvas.css('right')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            right: 0
+                        }
+                    );
+
+                } else if (canvas.context.className == 'jqplot-xaxis-label') {
+                    
+                    // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            bottom: '0px'
+                        }
+                    );
+
+                } else {
+
+                    // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            left: canvas.css('left')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            left: 0
+                        }
+                    );
+
+                }
+
+                return div;
+            }
+        );
+
+        return this;
     }
     
 };
-
-
-(function($) {
-       $.fn.FixCanvasDivs = function(chartParamsObj) {
-
-               var canvases = $(document.getElementById(chartParamsObj.uniqueid)).find('canvas').filter(function() {
-                       return $(this).css('position') == 'absolute';
-               });
-
-               canvases.wrap(function() {
-                       var canvas = $(this);
-
-                       if (canvas.context.className == 'jqplot-yaxis-tick') {
-                               var div = $('<div />').css({
-                                       position: 'absolute',
-                                       top: canvas.css('top'),
-                                       right: canvas.css('right')
-                               });
-                               canvas.css({
-                                       top: 0,
-                                       right: 0
-                               });
-
-                       } else if (canvas.context.className == 'jqplot-xaxis-label') {
-
-                               var div = $('<div />').css({
-                                       position: 'absolute',
-                                       bottom: '0px'
-                               });
-
-                       } else {
-                               var div = $('<div />').css({
-                                       position: 'absolute',
-                                       top: canvas.css('top'),
-                                       left: canvas.css('left')
-                               });
-                               canvas.css({
-                                       top: 0,
-                                       left: 0
-                               });
-                       }
-
-                       return div;
-               });
-
-               return this;
-       };
-})(jQuery);
