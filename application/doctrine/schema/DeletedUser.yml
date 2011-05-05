@@ -1,0 +1,84 @@
+DeletedUser:
+
+    columns:
+        oldId: integer
+        createdTs: timestamp
+        modifiedTs: timestamp
+
+        username:
+            type: string(255)
+            extra:
+                logicalName: User Name
+            comment: This users unique authentication credential
+        password:
+            type: string(255)
+            extra:
+                logicalName: Password
+        passwordSalt:
+            type: string(10)
+            comment: A randomly generated salt, used to discourage rainbow table attacks against the password database
+        passwordTs: timestamp
+        passwordHistory: string
+        hashType:
+            type: enum
+            values: [md5, sha1, sha224, sha256, sha384, sha512]
+        lastRob:
+            type: timestamp
+            comment: The last time this user digitally accepted the Rules of Behavior
+
+        locked:
+            type: boolean
+            default: false
+            extra:
+        lockTs: timestamp
+        lockType:
+            type: enum
+            values: [manual, password, inactive, expired]
+            comment: Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.
+        failureCount:
+            type: integer
+            default: 0
+            comment: How many times the user entered the wrong password before successfully logging in
+
+        lastLoginIp:
+            type: string(15)
+        lastLoginTs: timestamp
+
+        title:
+            type: string(255)
+            extra:
+                logicalName: Title
+            comment: The users position or title within the agency
+        nameFirst:
+            type: string(255)
+            extra:
+                logicalName: First Name
+            comment: The users first name
+        nameLast:
+            type: string(255)
+            extra:
+                logicalName: Last Name
+            comment: The users last name
+        email:
+            type: string(255)
+            extra:
+                logicalName: E-mail Address
+            comment: The users primary e-mail address
+        phoneOffice:
+            type: string(15)
+            extra:
+                logicalName: Office Phone
+            comment: U.S. 10 digit phone number; stored without punctuation
+        phoneMobile:
+            type: string(15)
+            fixed: true
+            extra:
+                logicalName: Mobile Phone
+            comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
+        searchColumnsPref:
+            type: integer
+            comment: A bitmask corresponding to visible columns on the search page
+
+        notifyFrequency: integer
+        mostRecentNotifyTs: timestamp
+        deleted_at: timestamp

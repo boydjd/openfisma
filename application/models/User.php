@@ -695,6 +695,37 @@ class User extends BaseUser
                 );
             }
         }
+        
+        // Save this record in the deleted table (soft deletion by relocation)
+        $DeletedRecord = new DeletedUser();
+        $DeletedRecord->oldId = $this->id;
+        $DeletedRecord->createdTs = $this->createdTs;
+        $DeletedRecord->modifiedTs = $this->modifiedTs;
+        $DeletedRecord->username = $this->username;
+        $DeletedRecord->password = $this->password;
+        $DeletedRecord->passwordSalt = $this->passwordSalt;
+        $DeletedRecord->passwordTs = $this->passwordTs;
+        $DeletedRecord->passwordHistory = $this->passwordHistory;
+        $DeletedRecord->hashType = $this->hashType;
+        $DeletedRecord->lastRob = $this->lastRob;
+        $DeletedRecord->locked = $this->locked;
+        $DeletedRecord->lockTs = $this->lockTs;
+        $DeletedRecord->lockType = $this->lockType;
+        $DeletedRecord->failureCount = $this->failureCount;
+        $DeletedRecord->lastLoginIp = $this->lastLoginIp;
+        $DeletedRecord->lastLoginTs = $this->lastLoginTs;
+        $DeletedRecord->title = $this->title;
+        $DeletedRecord->nameFirst = $this->nameFirst;
+        $DeletedRecord->nameLast = $this->nameLast;
+        $DeletedRecord->email = $this->email;
+        $DeletedRecord->phoneOffice = $this->phoneOffice;
+        $DeletedRecord->phoneMobile = $this->phoneMobile;
+        $DeletedRecord->searchColumnsPref = $this->searchColumnsPref;
+        $DeletedRecord->notifyFrequency = $this->notifyFrequency;
+        $DeletedRecord->mostRecentNotifyTs = $this->mostRecentNotifyTs;
+        $DeletedRecord->deleted_at = Fisma::now();
+        $DeletedRecord->save();
+        
     }
 
     /**

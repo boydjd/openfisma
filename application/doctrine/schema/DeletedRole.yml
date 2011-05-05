@@ -1,0 +1,22 @@
+DeletedRole:
+    
+    columns:
+        oldId:
+            type: integer
+            comment: The id of this entery before it was deleted.
+        createdTs:
+            type: timestamp
+            comment: When this entery was created on the role table. This is NOT when this entery was created on the deleted table
+        modifiedTs:
+            type: timestamp
+        name: 
+            type: string(255)
+        nickname: 
+            type: string(255)
+        description: 
+            type: string
+            extra:
+                purify: html
+            comment: Any extra information about this role, such as security clearances required to hold it, etc.
+        deleted_at:
+            type: timestamp
