@@ -102,14 +102,14 @@ Fisma.Search = function() {
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
+        executeSearch: function (form) {
 
             // Ensure the search type is simple when advance search is hidden
             if (document.getElementById('advancedSearch').style.display == 'none') {
@@ -145,9 +145,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -160,6 +158,32 @@ Fisma.Search = function() {
                     alert(error);
                 }
             }
+        },
+
+        /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            var Dom = YAHOO.util.Dom;
+            var queryState = new Fisma.Search.QueryState(form.modelName.value);
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                var criteria = Fisma.Search.advancedSearchPanel.criteria;
+                var fieldPrefs = {};
+                for (var i in criteria) {
+                    var criterion = criteria[i];
+                    fieldPrefs[criterion.currentField.name] = criterion.currentQueryType;
+                }
+                var lastQuery = Fisma.Search.advancedSearchPanel.getQuery();
+                queryState.setAdvancedFields(fieldPrefs);
+                queryState.setAdvancedQuery(lastQuery);
+            }
+            Fisma.Search.executeSearch(form);
         },
 
         /**
@@ -258,7 +282,7 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
+        generateRequest: function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -270,35 +294,52 @@ Fisma.Search = function() {
             // The error message of advance search should be hidden before handles YUI data
             document.getElementById('msgbar').style.display = 'none';
 
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=";
-                    postData += encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=";
-                    postData += encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
+
+                postData.query = YAHOO.lang.JSON.stringify(queryData);
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -324,21 +365,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 

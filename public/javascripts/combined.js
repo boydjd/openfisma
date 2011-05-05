@@ -1759,6 +1759,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
             FS._initStorageEngine();
             var engine = FS._storageEngine;
             var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
             if (!(engine.isReady || (engine._swf && locationSession))) {
                 engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {
@@ -6887,14 +6888,14 @@ Fisma.Search = function() {
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
+        executeSearch: function (form) {
 
             // Ensure the search type is simple when advance search is hidden
             if (document.getElementById('advancedSearch').style.display == 'none') {
@@ -6930,9 +6931,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -6945,6 +6944,32 @@ Fisma.Search = function() {
                     alert(error);
                 }
             }
+        },
+
+        /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            var Dom = YAHOO.util.Dom;
+            var queryState = new Fisma.Search.QueryState(form.modelName.value);
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                var criteria = Fisma.Search.advancedSearchPanel.criteria;
+                var fieldPrefs = {};
+                for (var i in criteria) {
+                    var criterion = criteria[i];
+                    fieldPrefs[criterion.currentField.name] = criterion.currentQueryType;
+                }
+                var lastQuery = Fisma.Search.advancedSearchPanel.getQuery();
+                queryState.setAdvancedFields(fieldPrefs);
+                queryState.setAdvancedQuery(lastQuery);
+            }
+            Fisma.Search.executeSearch(form);
         },
 
         /**
@@ -7043,7 +7068,7 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
+        generateRequest: function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -7055,35 +7080,52 @@ Fisma.Search = function() {
             // The error message of advance search should be hidden before handles YUI data
             document.getElementById('msgbar').style.display = 'none';
 
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=";
-                    postData += encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=";
-                    postData += encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
+
+                postData.query = YAHOO.lang.JSON.stringify(queryData);
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -7109,21 +7151,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 
@@ -8274,13 +8318,13 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
     for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
@@ -8328,6 +8372,9 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
 
         if (this.defaultQueryTokens) {
             var index = 0;
@@ -8379,7 +8426,33 @@ Fisma.Search.Panel.prototype = {
                 // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
                 // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
                 // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
+                setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+            });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+
+            var advancedFields = queryState.getAdvancedFields();
+            var advancedQuery = queryState.getAdvancedQuery();
+            var operandsMap = {};
+            for (var i in advancedQuery) {
+                operandsMap[advancedQuery[i].field] = advancedQuery[i].operands;
+            }
+
+            for (var advancedField in advancedFields) {
+                var advancedOperator = advancedFields[advancedField];
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(advancedField, advancedOperator, operandsMap[advancedField]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+            Fisma.Search.onSetTable(function () {
+                var searchForm = document.getElementById('searchForm');
+            
+                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
+                // event in the dispatch queue)
+                setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
             });
         } else {
             // If not default query is specified, then just show 1 default criterion
@@ -8514,6 +8587,206 @@ Fisma.Search.Panel.prototype = {
         throw "Number of operands not defined for query function: " + queryFunction;
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var Lang = YAHOO.lang;
+    /**
+     * Enable getting and setting of query state information
+     *
+     * @namespace Fisma.Search
+     * @class QueryState
+     * @constructor
+     * @param model {String} Model for which this state information applies.
+     * @param init {Object} Object literal of default state.
+     */
+    var QueryState = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.Storage('Fisma.Search.QueryState');
+        };
+    QueryState.TYPE_SIMPLE = "simple";
+    QueryState.TYPE_ADVANCED = "advanced";
+    QueryState.prototype = {
+        /**
+         * Basic getter for all state information.
+         *
+         * @method getState
+         * @return {Object}
+         */
+        getState: function () {
+            return this._storage.get(this._model);
+        },
+
+        /**
+         * Basic setter for state information
+         *
+         * @method setState
+         * @param value {Object} State information.
+         */
+        setState: function (value) {
+            this._storage.set(this._model, value);
+        },
+
+        /**
+         * Get search type
+         *
+         * @method getSearchType
+         * @return {String} TYPE_SIMPLE or TYPE_ADVANCED, default TYPE_SIMPLE
+         */
+        getSearchType: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.searchType)) {
+                return QueryState.TYPE_SIMPLE;
+            } 
+            switch (state.searchType) {
+                case QueryState.TYPE_SIMPLE:
+                case QueryState.TYPE_ADVANCED:
+                    return state.searchType;
+                default:
+                    throw "Invalid search type encountered.";
+            }
+        },
+
+        /**
+         * Basic setter for search type
+         *
+         * @method setSearchType
+         * @param type {String} Search type, "simple" or "advanced"
+         */
+        setSearchType: function(type) {
+            var oldData = this.getState() || {},
+                newData = {};
+            newData.searchType = type;
+            if (type === "simple") {
+                newData.keywords = oldData.keywords || "";
+            } else if (type === "advanced") {
+                newData.advancedFields = oldData.advancedFields || {};
+                newData.advancedQuery = oldData.advancedQuery || {};
+            } else {
+                throw "Invalid search type specified.";
+            }
+            this.setState(newData);
+        },
+
+        /**
+         * Get search keywords
+         *
+         * @method getKeywords
+         * @return {String} Keywords
+         */
+        getKeywords: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.keywords)) {
+                return "";
+            } 
+            return state.keywords;
+        },
+
+        /**
+         * Basic setter for search keywords
+         *
+         * @method setKeywords
+         * @param type {String} Search keywords
+         */
+        setKeywords: function(keywords) {
+            if (!Lang.isString(keywords)) {
+                throw "Can not set non-string as keywords.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_SIMPLE) {
+                throw "Attempting to save keywords for non-simple search.";
+            }
+            var data = this.getState() || {};
+            data.keywords = keywords;
+            this.setState(data);
+        },
+
+        /**
+         * Get advanced search fields
+         *
+         * @method getAdvancedFields
+         * @return {Object} Fields
+         */
+        getAdvancedFields: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isObject(state.advancedFields)) {
+                return {};
+            } 
+            return state.advancedFields;
+        },
+
+        /**
+         * Basic setter for advanced search fields.
+         *
+         * @method setAdvancedFields
+         * @param fields {Object} Advanced search fields (keys are name, values are current query type)
+         */
+        setAdvancedFields: function(fields) {
+            if (!Lang.isObject(fields)) {
+                throw "Can not set non-object as advanced search fields.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+                throw "Attempting to save advanced search fields for non-advanced search.";
+            }
+            var data = this.getState() || {};
+            data.advancedFields = fields;
+            this.setState(data);
+        },
+
+        /**
+         * Get advanced search query
+         *
+         * @method getAdvancedQuery
+         * @return {Object} Query
+         */
+        getAdvancedQuery: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isObject(state.advancedQuery)) {
+                return {};
+            } 
+            return state.advancedQuery;
+        },
+
+        /**
+         * Basic setter for advanced search query.
+         *
+         * @method setAdvancedQuery
+         * @param query {Object} Advanced search query
+         */
+        setAdvancedQuery: function(query) {
+            if (!Lang.isObject(query)) {
+                throw "Can not set non-object as advanced search query.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+                throw "Attempting to save advanced search query for non-advanced search.";
+            }
+            var data = this.getState() || {};
+            data.advancedQuery = query;
+            this.setState(data);
+        }
+    };
+    Fisma.Search.QueryState = QueryState;
+})();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *

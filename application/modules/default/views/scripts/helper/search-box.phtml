@@ -57,13 +57,15 @@
         YAHOO.util.Event.onContentReady (
             "advancedSearch", 
             function () {
-                var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+                Fisma.Storage.onReady(function() {
+                    var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
-                var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
+                    var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
             
-                Fisma.Search.advancedSearchPanel = searchPanel;
+                    Fisma.Search.advancedSearchPanel = searchPanel;
 
-                searchPanel.render(document.getElementById('advancedSearchCriteria'));
+                    searchPanel.render(document.getElementById('advancedSearchCriteria'));
+                });
             }
         );
     </script>

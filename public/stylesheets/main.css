@@ -566,3 +566,13 @@ input[type=text].date {
     display: none;
 }
 
+/* Container for SWF-based storage should be hidden */
+div#swfstoreContainer {
+    width: 0px;
+    height: 0px;
+}
+
+/* VM View Page */
+form#transitionsForm {
+    display: inline;
+}

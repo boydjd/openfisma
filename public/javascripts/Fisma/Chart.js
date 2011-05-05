@@ -717,6 +717,7 @@ Fisma.Chart = {
 
         // unescape
         theLink = unescape(theLink);
+        theLink = theLink.replace('&', '%26');
 
         // Does the link contain a variable?
         if (theLink !== false) {

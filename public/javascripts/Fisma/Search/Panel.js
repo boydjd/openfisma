@@ -48,13 +48,13 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
     for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
@@ -102,6 +102,9 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
 
         if (this.defaultQueryTokens) {
             var index = 0;
@@ -153,7 +156,33 @@ Fisma.Search.Panel.prototype = {
                 // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
                 // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
                 // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
+                setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+            });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+
+            var advancedFields = queryState.getAdvancedFields();
+            var advancedQuery = queryState.getAdvancedQuery();
+            var operandsMap = {};
+            for (var i in advancedQuery) {
+                operandsMap[advancedQuery[i].field] = advancedQuery[i].operands;
+            }
+
+            for (var advancedField in advancedFields) {
+                var advancedOperator = advancedFields[advancedField];
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(advancedField, advancedOperator, operandsMap[advancedField]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+            Fisma.Search.onSetTable(function () {
+                var searchForm = document.getElementById('searchForm');
+            
+                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
+                // event in the dispatch queue)
+                setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
             });
         } else {
             // If not default query is specified, then just show 1 default criterion
