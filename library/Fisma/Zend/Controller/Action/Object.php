@@ -978,7 +978,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // If user has the delete privilege, then allow viewing of deleted record
         if ($table->hasColumn('deleted_at') && $this->_acl->hasPrivilegeForClass('delete', $this->_modelName)) {
-            $query->andWhere('deleted_at = deleted_at OR deleted_at = FALSE');
+            $query->andWhere('deleted_at = deleted_at OR deleted_at IS NULL');
         }
 
         $record = $query->fetchOne();
