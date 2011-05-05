@@ -75,7 +75,7 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            var pannelConfig = {
+            var panelConfig = {
                     width : "260px",
                     modal : false
                 };
@@ -83,7 +83,7 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                pannelConfig
+                panelConfig
             );
 
             // Set onclick handler to handle dialog_recipient
