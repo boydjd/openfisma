@@ -2,13 +2,13 @@
 <?php
     Fisma_Format_Section::startSection('Current User Access');
 
-    if ($this->acl()->hasPrivilegeForObject('update_user', $this->organization)) :
+    if ($this->acl()->hasPrivilegeForClass('update', 'User')) :
         echo $this->escape($this->currentUserAccessForm, 'none');
     endif;
     Fisma_Format_Section::stopSection();
 ?>
 </div>
-<?php if ($this->acl()->hasPrivilegeForObject('update_user', $this->organization)) : ?>
+<?php if ($this->acl()->hasPrivilegeForClass('update', 'User')) : ?>
 <div id="rightPane" style="float:left; min-width: 40em">
     <div id="addUserAccess">
     <?php Fisma_Format_Section::startSection('Add User Access');
