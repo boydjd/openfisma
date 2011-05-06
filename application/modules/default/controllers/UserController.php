@@ -806,12 +806,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $userRoles = $this->getRequest()->getParam('userRoles');
 
         Doctrine_Manager::connection()->beginTransaction();
+        
+        Doctrine::getTable('UserRoleOrganization')
+        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+        ->delete();
 
         foreach ($userRoles as $userRole) { 
             $userRoleOrganization = new UserRoleOrganization();
             $userRoleOrganization->organizationId = (int) $organizationId;
             $userRoleOrganization->userRoleId = (int) $userRole;
-            $userRoleOrganization->replace();
+            $userRoleOrganization->save();
         }
 
         Doctrine_Manager::connection()->commit();
