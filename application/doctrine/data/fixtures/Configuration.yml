@@ -54,7 +54,7 @@ Configuration:
 
         host_url: "https://openfisma.agency.gov:443"
 
-        app_version: 2.12.0
+        app_version: 2.13.0
 
         yui_version: 2.8.2
 
