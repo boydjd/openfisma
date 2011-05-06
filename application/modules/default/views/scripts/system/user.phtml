@@ -1,4 +1,4 @@
-<div id="leftPane" style="float:left; min-width: 25em; margin-right: 2em">
+<div id="leftPane">
 <?php
     Fisma_Format_Section::startSection('Current User Access');
 
@@ -11,7 +11,7 @@
 ?>
 </div>
 <?php if ($this->acl()->hasPrivilegeForClass('update', 'User')) : ?>
-<div id="rightPane" style="float:left; min-width: 40em">
+<div id="rightPane">
     <div id="addUserAccess">
     <?php Fisma_Format_Section::startSection('Add User Access');
         echo $this->escape($this->addUserAccessForm, 'none');
