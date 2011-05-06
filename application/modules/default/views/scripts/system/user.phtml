@@ -4,6 +4,8 @@
 
     if ($this->acl()->hasPrivilegeForClass('update', 'User')) :
         echo $this->escape($this->currentUserAccessForm, 'none');
+    else :
+        echo $this->escape($this->tree, 'none');
     endif;
     Fisma_Format_Section::stopSection();
 ?>

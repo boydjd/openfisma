@@ -745,12 +745,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function getUsersAction()
     {
+        $this->_acl->requirePrivilegeForClass('read', 'User');
+
         $query = $this->getRequest()->getParam('query');
 
-        $users = Doctrine_Query::create()
+        $users = Doctrine::getTable('User')->getUsersLikeUsernameQuery($query)
                  ->select('u.id, u.username')
-                 ->from('User u')
-                 ->where('u.username LIKE ?', $query . '%')
                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                  ->execute();
 
@@ -770,14 +770,23 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
         $organizationId = $this->getRequest()->getParam('organizationId');
         $userRoles = $this->getRequest()->getParam('userRoles');
 
-        $deleteUserRoles = Doctrine_Query::create()
-                           ->delete('UserRoleOrganization uro')
-                           ->where('uro.organizationid = ?', $organizationId)
-                           ->andWhereIn('uro.userroleid', $userRoles)
-                           ->execute();
+        Doctrine_Manager::connection()->beginTransaction();
+
+        $urosToDelete = Doctrine::getTable('UserRoleOrganization')
+                        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+                        ->execute();
+
+        foreach ($urosToDelete as $uro) {
+            $uro->delete();
+            $uro->free();
+        }
+
+        Doctrine_Manager::connection()->commit();
     }
 
     /**
@@ -791,8 +800,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
         $organizationId = $this->getRequest()->getParam('organizationId');
         $userRoles = $this->getRequest()->getParam('userRoles');
+
+        Doctrine_Manager::connection()->beginTransaction();
 
         foreach ($userRoles as $userRole) { 
             $userRoleOrganization = new UserRoleOrganization();
@@ -800,5 +813,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $userRoleOrganization->userRoleId = (int) $userRole;
             $userRoleOrganization->replace();
         }
+
+        Doctrine_Manager::connection()->commit();
     }
 }

@@ -447,10 +447,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $id             = $this->getRequest()->getParam('id');
         $organization   = Doctrine::getTable('Organization')->findOneBySystemId($id);
 
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+
         $currentUserAccessForm = new Zend_Form_SubForm();
 
         $rolesAndUsers = Doctrine::getTable('UserRole')
-                         ->getRolesAndUsersQueryByOrganizationQuery($organization->id)
+                         ->getRolesAndUsersByOrganizationIdQuery($organization->id)
                          ->orderBy('r.nickname, u.username')
                          ->execute();
 
@@ -574,6 +576,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->addUserAccessForm = $addUserAccessForm;
         $this->view->copyUserAccessForm = $copyUserAccessForm;
         $this->view->organization = $organization;
+        $this->view->tree = $tree;
     }
 
     /**
@@ -587,6 +590,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
 
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
         $organizationId = $this->getRequest()->getParam('organizationId');
         $userId = $this->getRequest()->getParam('userId');
         $roleId = $this->getRequest()->getParam('roleId');
@@ -594,11 +599,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         /**
          * Get the existing user role ID, or create a new user role if one doesn't exist 
          */
-        $userRoleId = Doctrine_Query::create()
+        $userRoleId = Doctrine::getTable('UserRole')->getByUserIdAndRoleIdQuery($userId, $roleId)
                       ->select('ur.userroleid')
-                      ->from('UserRole ur')
-                      ->where('ur.userId = ?', $userId)
-                      ->andWhere('ur.roleId = ?', $roleId)
                       ->setHydrationMode(Doctrine::HYDRATE_NONE)
                       ->fetchOne();
 
@@ -615,14 +617,15 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoleId = $userRole->userRoleId;
         }
 
-        /**
-         * Create or replace the user role organization, so that we don't have to do a search to see if the URO
-         * exists or not.
-         */
+        $deleteUro = Doctrine_Query::create()
+                     ->delete('UserRoleOrganization uro')
+                     ->where('uro.organizationId = ?', $organizationId)
+                     ->andWhere('uro.userRoleId = ?', $userRoleId);
+
         $userRoleOrganization = new UserRoleOrganization();
         $userRoleOrganization->organizationId = (int) $organizationId;
         $userRoleOrganization->userRoleId = $userRoleId;
-        $userRoleOrganization->replace();
+        $userRoleOrganization->save();
     }
 
     /**
@@ -639,7 +642,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $treeName       = $this->getRequest()->getParam('name', 'copyUserAccessTree');
 
         $rolesAndUsers = Doctrine::getTable('UserRole')
-                         ->getRolesAndUsersQueryByOrganizationQuery($organizationId)
+                         ->getRolesAndUsersByOrganizationIdQuery($organizationId)
                          ->orderBy('r.nickname, u.username')
                          ->execute();
 
@@ -670,13 +673,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     public function getSystemsAction()
     {
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+
         $query = $this->getRequest()->getParam('query');
 
-        $systems = Doctrine_Query::create()
+        $systems = Doctrine::getTable('Organization')->getSystemsLikeNameQuery($query)
                    ->select('o.id, o.name')
-                   ->from('Organization o')
-                   ->leftJoin('o.System s')
-                   ->where('o.name LIKE ?', $query . '%')
                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                    ->execute();
 
