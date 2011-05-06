@@ -447,7 +447,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $id             = $this->getRequest()->getParam('id');
         $organization   = Doctrine::getTable('Organization')->findOneBySystemId($id);
 
-        $currentUserAccessForm = new Fisma_Zend_Form();
+        $currentUserAccessForm = new Zend_Form_SubForm();
 
         $rolesAndUsers = Doctrine::getTable('UserRole')
                          ->getRolesAndUsersQueryByOrganizationQuery($organization->id)
@@ -481,7 +481,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $currentUserAccessForm->addElement($tree);
         $currentUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
-        $addUserAccessForm = new Fisma_Zend_Form();
+        $addUserAccessForm = new Zend_Form_SubForm();
 
         $roles = Doctrine_Query::create()
                  ->select('r.id, r.nickname')
@@ -527,7 +527,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $addUserAccessForm->addElement($addButton);
         $addUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
-        $copyUserAccessForm = new Fisma_Zend_Form();
+        $copyUserAccessForm = new Zend_Form_SubForm();
 
         $systemAutoComplete = new Fisma_Yui_Form_AutoComplete(
             'systemAutoComplete',
