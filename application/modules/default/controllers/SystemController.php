@@ -472,7 +472,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             'removeUsers',
             array(
                 'label' => 'Remove Selected Users',
-                'onClickFunction' => 'removeSelectedUsers',
+                'onClickFunction' => 'Fisma.System.removeSelectedUsers',
                 'onClickArgument' => array(
                     'organizationId' => $organization->id
                 )
@@ -517,7 +517,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             'addUser',
             array(
                 'label' => 'Add',
-                'onClickFunction' => 'addUser',
+                'onClickFunction' => 'Fisma.System.addUser',
                 'onClickArgument' => array(
                     'organizationId' => $organization->id
                 )
@@ -549,7 +549,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             'addSelectedUsers',
             array(
                 'label' => 'Add Selected Users',
-                'onClickFunction' => 'addSelectedUsers',
+                'onClickFunction' => 'Fisma.System.addSelectedUsers',
                 'onClickArgument' => array(
                     'organizationId' => $organization->id
                 )

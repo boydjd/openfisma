@@ -1320,102 +1320,6 @@ function updateTimeField(id) {
     var time = hour + ':' + minute + ':00';
     hiddenEl.value = time;
 }
-
-/**
- * removeSelectedUsers 
- * 
- * @param event $event 
- * @param config $config 
- * @access public
- * @return void
- */
-function removeSelectedUsers(event, config) {
-    var userRoles = [];
-    var data = new Object();
-
-    $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
-        function() {
-            if ($(this).val() !== "") {
-                userRoles.push($(this).val());
-            }
-        }
-    );
-
-    data.organizationId = config.organizationId;
-    data.userRoles = userRoles;
-    data.csrf = $('[name="csrf"]').val();
-
-    $.ajax({
-        type: "POST",
-        url: '/user/remove-user-roles/',
-        data: data,
-        dataType: "json",
-        success: function() {
-            $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
-    }});
-};
-
-/**
- * addUser 
- * 
- * @param event $event 
- * @param config $config 
- * @access public
- * @return void
- */
-function addUser(event, config) {
-    var data = new Object();
-
-    data.userId = $('#addUserId').val();
-    data.roleId = $('#roles').val();
-    data.organizationId = config.organizationId;
-    data.csrf = $('[name="csrf"]').val();
-
-    $.ajax({
-        type: "POST",
-        url: '/system/add-user/',
-        data: data,
-        dataType: "json",
-        success: function() {
-            $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
-        }
-    });
-}
-
-/**
- * addSelectedUsers 
- * 
- * @param event $event 
- * @param config $config 
- * @access public
- * @return void
- */
-function addSelectedUsers(event, config) {
-    var userRoles = [];
-    var data = new Object();
-
-    $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
-        function() {
-            if ($(this).val() !== "") {
-                userRoles.push($(this).val());
-            }
-        }
-    );
-
-    data.userRoles = userRoles;
-    data.organizationId = config.organizationId;
-    data.csrf = $('[name="csrf"]').val();
-
-    $.ajax({
-        type: "POST",
-        url: '/user/add-user-roles-to-organization/',
-        data: data,
-        dataType: "json",
-        success: function() {
-            $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
-        }
-    });
-}
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -9339,6 +9243,102 @@ Fisma.System = {
      */
     uploadDocumentCallback : function (yuiPanel) {
         window.location.href = window.location.href;
+    },
+
+    /**
+     * removeSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    removeSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.organizationId = config.organizationId;
+        data.userRoles = userRoles;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/remove-user-roles/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+        }});
+    },
+
+    /**
+     * addUser 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addUser : function (event, config) {
+        var data = new Object();
+
+        data.userId = $('#addUserId').val();
+        data.roleId = $('#roles').val();
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/system/add-user/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
+    },
+
+    /**
+     * addSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.userRoles = userRoles;
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/add-user-roles-to-organization/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     }
 };
 /**
