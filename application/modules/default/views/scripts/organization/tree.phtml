@@ -1,49 +1,49 @@
 <?php
 
-echo $this->escape(
-    $this->searchBox(
-        $this->toolbarButtons, 
-        $this->searchForm, 
-        $this->searchMoreOptionsForm,
-        $this->advancedSearchOptions
-    ), 
-    'none'
-);
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
 Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); 
 
 ?>
+<div id='showDisposalSystem'><input type='checkbox' id='disposalSystem' >Display Disposed Systems</div>
 
 <div id="orgTree">Loading...</div>
 
 <script type="text/javascript">
-YAHOO.util.Event.onDOMReady(function () {
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/organization/tree-data/format/json', 
-                                    {
-                                        success: function(o) {
-                                            var json = YAHOO.lang.JSON.parse(o.responseText);
-                                            showTree(json.treeData);
-                                        },
-                                        failure: function(o) {
-                                            alert('Unable to load the organization tree: ' + o.statusText);
-                                        }
-                                    }, 
-                                    null);
+YAHOO.util.Event.onDOMReady(
+    function () {
+        buildTree();
+        buildContextMenu();
+    }
+);
 
-    var treeEl = document.getElementById("orgTree");
+YAHOO.util.Event.addListener("disposalSystem", "click", buildTree);
 
-    var contextMenuItems = ["View"];
-    var oTreeContextMenu = new YAHOO.widget.ContextMenu(
-        "treeContextMenu",
-        { 
-            trigger: treeEl,
-            itemdata: contextMenuItems,
-            lazyload: true
-        }
-    );
-    oTreeContextMenu.subscribe("click", contextMenuHandler);
-});
+/**
+ * Display an organization tree
+ */
+function buildTree() {
+    var url = '/organization/tree-data/format/json';
+
+    // Include disposal systems if user check checkbox
+    if (YAHOO.util.Dom.get('disposalSystem').checked === true) {
+        url += '/displayDisposalSystem/true';
+    }
+
+    YAHOO.util.Connect.asyncRequest(
+        'GET', 
+        url, 
+        {
+            success: function(o) {
+                var json = YAHOO.lang.JSON.parse(o.responseText);
+                showTree(json.treeData);
+            },
+            failure: function(o) {
+                alert('Unable to load the organization tree: ' + o.statusText);
+            }
+        }, 
+        null);
+}
 
 // Global reference to the tree view
 var tree;
@@ -58,6 +58,24 @@ function showTree(treeNodes) {
     renderTreeNodes(treeNodes, tree.getRoot(), 0);
     
     tree.draw();
+}
+
+/**
+ * Display context menu
+ */
+function buildContextMenu() {
+    var treeEl = document.getElementById("orgTree");
+
+    var contextMenuItems = ["View"];
+    var oTreeContextMenu = new YAHOO.widget.ContextMenu(
+        "treeContextMenu",
+        { 
+            trigger: treeEl,
+            itemdata: contextMenuItems,
+            lazyload: true
+        }
+    );
+    oTreeContextMenu.subscribe("click", contextMenuHandler);
 }
 
 function contextMenuHandler(event, eventArgs) {
@@ -103,8 +121,15 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         nodeText = "<b>" + PHP_JS().htmlspecialchars(treeNode.label) + "</b> - <i>"
                          + PHP_JS().htmlspecialchars(treeNode.orgTypeLabel) + "</i>";
         var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
-        yuiNode.labelStyle = treeNode.orgType;
-        
+
+        // Set the background color of disposal system as pink 
+        var sdlcPhase = (treeNode.System) ? treeNode.System.sdlcPhase : false;
+        if (sdlcPhase === 'disposal') {
+            yuiNode.labelStyle = treeNode.orgType + ' disposal';
+        } else {
+            yuiNode.labelStyle = treeNode.orgType;
+        }
+
         // Set up drag and drop
         var yuiNodeDrag = new DDTree(yuiNode.contentElId, dragDropGroup, null);        
         
@@ -214,7 +239,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
         var srcEl = this.getEl();
         var src = treeMap[srcEl.id];
         var dest = treeMap[id];
-        
+
         // Set up the query string for this operation
         var dragLocation = getDragLocation(id, event);
         var query = '/organization/move-node/src/' 
@@ -223,6 +248,11 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                   + dest.id 
                   + '/dragLocation/' 
                   + dragLocation;
+
+        // Include disposal systems if user check checkbox
+        if (YAHOO.util.Dom.get('disposalSystem').checked === true) {
+            query += '/displayDisposalSystem/true';
+        }
 
         // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
         // but it prevents the user from modifying the tree while an update is already pending.

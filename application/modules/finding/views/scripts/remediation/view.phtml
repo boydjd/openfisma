@@ -5,38 +5,8 @@
       name="finding_detail">
     <div class="buttonBar">
         <?php
-            // Only display controls if the finding has not been deleted
-            if (!$this->finding->isDeleted()) {
-                // Display the delete finding button if the user has the delete finding privilege
-                if ($this->acl()->hasPrivilegeForObject('delete', $this->finding)) {
-                    $deleteFindingButtonConfig = array(
-                        'value' => 'Delete Finding',
-                        'href' => '/finding/remediation/delete/id/' . $this->finding->id
-                    );
-
-                    $deleteFindingButton = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
-                    echo $this->escape($deleteFindingButton, 'none');
-                }
-                
-                // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
-                if ($this->acl()->hasPrivilegeForObject('update_*', $this->finding)) {
-                    $discardChangesButtonConfig = array(
-                        'value' => 'Discard Changes',
-                        'href' => '/finding/remediation/view/id/' . $this->finding->id
-                    );
-                    
-                    $discardChangesButton = new Fisma_Yui_Form_Button_Link(
-                        'discardChanges', 
-                        $discardChangesButtonConfig
-                    );
-                    echo $this->escape($discardChangesButton, 'none');
-                
-                    $saveChangesButton = new Fisma_Yui_Form_Button_Submit(
-                        'saveChanges', 
-                        array('label' => 'Save Changes')
-                    );
-                    echo $this->escape($saveChangesButton, 'none');
-                }
+            foreach ($this->toolbarButtons as $button) {
+                echo $this->escape($button, 'none');
             }
         ?>
     </div>

@@ -52,6 +52,7 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
 
             $table = Doctrine::getTable('Storage');
             $object = $table->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+
             if (empty($object)) {
                 $object = $table->create(array('userId' => $userId, 'namespace' => $namespace, 'data' => array()));
             }
