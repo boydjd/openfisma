@@ -37,6 +37,49 @@ Role:
             - vulnerability_update
             - vulnerability_comment
             - notification_vulnerability
+            - system_inventory_area
+            - incident_area
+
+    alt_isso_role:
+        name: Alternate Information System Security Officer
+        nickname: ALT-ISSO
+        description: <p>The Alternate ISSO has similar privileges to the ISSO and acts as a stand-in when the ISSO is unavailable.</p>
+        Privileges: 
+            - areas_dashboard
+            - finding_area
+            - finding_report_area
+            - findings_read
+            - findings_update_type
+            - findings_update_description
+            - findings_update_course_of_action
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_finding_resources
+            - findings_update_ecd
+            - findings_update_legacy_finding_key
+            - findings_update_finding_source
+            - findings_upload_evidence
+            - findings_comment
+            - findings_mitigation_strategy_submit
+            - findings_mitigation_strategy_revise
+            - finding_mitigation_isso
+            - finding_evidence_isso
+            - notification_asset
+            - notification_finding
+            - organization_read
+            - organization_update
+            - asset_read
+            - asset_update
+            - vulnerability_area
+            - vulnerability_report_area
+            - vulnerability_comment
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_update
+            - vulnerability_comment
+            - notification_vulnerability
+            - system_inventory_area
+            - incident_area
 
     reviewer_role:
         name: Reviewer
@@ -54,6 +97,7 @@ Role:
             - vulnerability_report_area
             - vulnerability_read
             - notification_vulnerability
+            - system_inventory_area
         
     ivv_role:
         name: Independent Verification and Validation
@@ -104,10 +148,10 @@ Role:
             - vulnerability_resolution_read
             - notification_vulnerability         
 
-    saiso_role:
-        name: Senior Agency Information Security Officer
+    ciso_role:
+        name: Cheif Information Security Officer
         nickname: SAISO
-        description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The senior agency information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The SAISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
+        description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The chief information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The CISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
         Privileges: 
             - areas_dashboard
             - finding_report_area
