@@ -17,41 +17,32 @@
  */
 
 /**
- * Add Storage model table.
- *
- * @package   Migration
+ * Update app version 
+ * 
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license   http://www.openfisma.org/content/license GPLv3
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version98 extends Doctrine_Migration_Base
+class Version99 extends Doctrine_Migration_Base
 {
     /**
-     * Add Storage model's table to the database.
-     *
-     * @return void
+     * Update application version.
      */
     public function up()
     {
-        $this->createTable(
-            'storage',
-            array(
-                'id' => array('type' => 'integer', 'length' => '8', 'autoincrement' => '1', 'primary' => '1'),
-                'userid' => array('type' => 'integer', 'length' => '8'),
-                'namespace' => array('type' => 'string', 'length' => '255'),
-                'data' => array( 'type' => 'object', 'length' => '')
-            ),
-            array('primary' => array(0 => 'id'))
-        );
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.13.0'";
+        $conn->exec($updateSql);
     }
 
     /**
-     * Remove Storage model's table from the database.
-     *
-     * @return void
+     * Remove configuration 
      */
     public function down()
     {
-        $this->dropTable('storage');
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
+        $conn->exec($updateSql);
     }
 }

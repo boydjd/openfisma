@@ -119,6 +119,16 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         
         $view = Zend_Layout::getMvcInstance()->getView();
 
+        return $view->partial('yui/data-table-remote.phtml', 'default', $this->getProperties());
+    }
+
+    /**
+     * Retrieve an array of table properties used in rendering.
+     *
+     * @return array Rendering properties
+     */
+    public function getProperties()
+    {
         $uniqueId = uniqid();
                
         $data = array(
@@ -137,7 +147,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'sortDirection' => ($this->_sortAscending ? 'asc' : 'desc')
         );
 
-        return $view->partial('yui/data-table-remote.phtml', 'default', $data);
+        return $data;
     }
 
     /**

@@ -48,13 +48,13 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
     for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
@@ -102,6 +102,10 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var Lang = YAHOO.lang;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
 
         if (this.defaultQueryTokens) {
             var index = 0;
@@ -147,14 +151,31 @@ Fisma.Search.Panel.prototype = {
 
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
-            Fisma.Search.onSetTable(function () {
-                var searchForm = document.getElementById('searchForm');
-            
-                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
-                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
-                // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
-            });
+            Lang.later(null, null, function() { Fisma.Search.updateQueryState(queryState, Dom.get('searchForm')); });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+            var advancedQuery = queryState.getAdvancedQuery();
+
+            for (var i in advancedQuery) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(
+                        advancedQuery[i].field,
+                        advancedQuery[i].operator,
+                        advancedQuery[i].operands));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+        } else if (Fisma.Search.searchPreferences.type === 'advanced') {
+            var fields = Fisma.Search.searchPreferences.fields;
+            for (var i in fields) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(i, fields[i]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
             var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
@@ -165,6 +186,13 @@ Fisma.Search.Panel.prototype = {
             initialCriteria.setRemoveButtonEnabled(false);
             this.container.appendChild(criteriaElement);
         }
+
+        Fisma.Search.onSetTable(function () {
+            var searchForm = document.getElementById('searchForm');
+        
+            // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+            setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+        });
     },
   
     /**
@@ -232,6 +260,20 @@ Fisma.Search.Panel.prototype = {
         }
         
         return query;
+    },
+
+    /**
+     * Get the search panel's state
+     */
+    getPanelState: function () {
+        var state = new Array();
+        
+        for (var index in this.criteria) {
+            var criterion = this.criteria[index];
+            state.push(criterion.getQuery());
+        }
+        
+        return state;
     },
     
     /**
