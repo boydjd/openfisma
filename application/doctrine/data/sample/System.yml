@@ -1,6 +1,6 @@
 System:
     OF_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -15,7 +15,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
 
     OSC_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -30,7 +30,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
 
     IAD_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -125,7 +125,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
         
     GREEN_NRG_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -172,7 +172,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
         
     LINUX_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -187,7 +187,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
         
     MAINFRAME_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -202,7 +202,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
         
     ORACLE_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -263,7 +263,7 @@ System:
         uniqueProjectId: 123-45-67-89-01-2345-67"
 
     H20_RIGHTS_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -309,7 +309,7 @@ System:
 
     # This system is by default "NO"t assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -329,7 +329,7 @@ System:
     # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
     # The sample user should have access to this system record.
     DISPOSAL_SYS:
-        type: mi"NO"r
+        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
