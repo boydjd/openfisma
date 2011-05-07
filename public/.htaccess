@@ -42,6 +42,7 @@ ExpiresActive On
 
 ExpiresByType application/javascript "access plus 10 years"
 ExpiresByType text/css "access plus 10 years"
+ExpiresByType text/javascript "access plus 10 years"
 ExpiresByType image/gif "access plus 10 years"
 ExpiresByType image/png "access plus 10 years"
 ExpiresByType image/vnd.microsoft.icon "access plus 10 years"
@@ -75,3 +76,32 @@ php_flag	magic_quotes_gpc	Off
 # Turns off register globals
 php_flag	register_globals	Off
 </IfModule>
+
+<IfModule mod_deflate.c>
+   SetOutputFilter DEFLATE
+
+   # Don't compress binaries 
+   SetEnvIfNoCase Request_URI .(?:exe|t?gz|zip|iso|tar|bz2|sit|rar)$ no-gzip dont-vary
+
+   # Don't compress images 
+   SetEnvIfNoCase Request_URI .(?:gif|jpe?g|jpg|ico|png)$ no-gzip dont-vary
+
+   # Don't compress PDFs 
+   SetEnvIfNoCase Request_URI .pdf$ no-gzip dont-vary
+
+   # Don't compress flash files (only relevant if you host your own videos) 
+   SetEnvIfNoCase Request_URI .flv$ no-gzip dont-vary
+
+   # Netscape 4.X has some problems 
+   BrowserMatch ^Mozilla/4 gzip-only-text/html
+
+   # Netscape 4.06-4.08 have some more problems 
+   BrowserMatch ^Mozilla/4.0[678] no-gzip
+
+   # MSIE masquerades as Netscape, but it is fine 
+   BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+   # Make sure proxies don't deliver the wrong content 
+   Header append Vary User-Agent env=!dont-vary
+
+</IfModule> 

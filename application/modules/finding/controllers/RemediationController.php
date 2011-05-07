@@ -580,6 +580,47 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
+
+        $buttons = array();
+        $buttons['list'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'Return to Search Results',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+        // Only display controls if the finding has not been deleted
+        if (!$finding->isDeleted()) {
+            // Display the delete finding button if the user has the delete finding privilege
+            if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
+                $deleteFindingButtonConfig = array(
+                    'value' => 'Delete Finding',
+                    'href' => '/finding/remediation/delete/id/' . $finding->id
+                );
+
+                $buttons['delete'] = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
+            }
+            
+            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
+            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
+                $discardChangesButtonConfig = array(
+                    'value' => 'Discard Changes',
+                    'href' => '/finding/remediation/view/id/' . $finding->id
+                );
+                
+                $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges', 
+                    $discardChangesButtonConfig
+                );
+            
+                $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+                    'saveChanges', 
+                    array('label' => 'Save Changes')
+                );
+            }
+        }
+
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**
@@ -1066,7 +1107,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         
         // Convert log messages from plain text to HTML
         foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($log['o_message']);
+            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
         }
 
         $this->view->columns = array('Timestamp', 'User', 'Message');

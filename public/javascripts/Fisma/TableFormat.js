@@ -263,10 +263,10 @@ Fisma.TableFormat = {
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" 
-                                     + encodeURIComponent(to) 
-                                     + "/" 
-                                     + encodeURIComponent(from);
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+                                        encodeURIComponent(to) +
+                                        "/" +
+                                        encodeURIComponent(from);
         } else if (from) {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {

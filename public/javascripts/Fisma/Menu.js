@@ -45,6 +45,8 @@
             var Dom = YAHOO.util.Dom,
                 Event = YAHOO.util.Event,
                 Panel = YAHOO.widget.Panel,
+                contentDiv = document.createElement("div"),
+                errorDiv = document.createElement("div"),
                 form = document.createElement('form'),
                 textField = document.createElement('input'),
                 button = document.createElement('input');
@@ -54,20 +56,28 @@
             form.innerHTML = "ID: ";
             form.appendChild(textField);
             form.appendChild(button);
+            contentDiv.appendChild(errorDiv);
+            contentDiv.appendChild(form);
 
             // Add event listener
             var fn = function(ev, obj) {
                 Event.stopEvent(ev);
-                var url = obj.controller + "/view/id/" + $P.intval(obj.textField.value);
-                window.location = url;
+                var input = Number(obj.textField.value.trim());
+                if (isFinite(input)) {
+                    obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
+                    window.location = obj.controller + "/view/id/" + input;
+                } else { // input NaN
+                    obj.errorDiv.innerHTML = "Please enter a single ID number.";
+                }
             };
             param.textField = textField;
+            param.errorDiv = errorDiv;
             Event.addListener(form, "submit", fn, param);
 
             // show the panel
             var panel = new Panel(Dom.generateId(), {modal: true});
             panel.setHeader("Go To " + param.model + "...");
-            panel.setBody(form);
+            panel.setBody(contentDiv);
             panel.render(document.body);
             panel.center();
             panel.show();
