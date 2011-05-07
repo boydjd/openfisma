@@ -118,4 +118,33 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     {
         return array();
     }
+
+    /**
+     * getUserByUserRoleIdQuery 
+     * 
+     * @param mixed $userRoleId 
+     * @access public
+     * @return void
+     */
+    public function getUserByUserRoleIdQuery($userRoleId)
+    {
+        return Doctrine_Query::create()
+               ->from('User u')
+               ->innerJoin('u.UserRole ur')
+               ->where('ur.userroleid = ?', $userRoleId);
+    }
+
+    /**
+     * getUsersLikeUsernameQuery 
+     * 
+     * @param mixed $query 
+     * @access public
+     * @return void
+     */
+    public function getUsersLikeUsernameQuery($query)
+    {
+        return Doctrine_query::create()
+               ->from('User u')
+               ->where('u.username LIKE ?', $query . '%');
+    }
 }
