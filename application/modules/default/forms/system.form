@@ -72,6 +72,14 @@ elements.availability.options.required = true
 elements.availability.options.tooltip = "<p><b>Availability</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was unavailable, see examples below.</p><p><b>Choose Low if:</b> The disruption of access to or use of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The disruption of access to or use of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The disruption of access to or use of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
 displayGroups.system.elements.availability = "availability"
 
+elements.cloneOrganizationId.type = "select"
+elements.cloneOrganizationId.options.label = "Copy user access from"
+elements.cloneOrganizationId.options.validators.strlen.validator = "StringLength"
+elements.cloneOrganizationId.options.validators.strlen.options.min = "1"
+elements.cloneOrganizationId.options.validators.strlen.options.max = "10"
+elements.cloneOrganizationId.options.required = false 
+displayGroups.system.elements.cloneOrganizationId = "cloneOrganizationId"
+
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save Changes"
 displayGroups.system.elements.save = "save"

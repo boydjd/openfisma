@@ -55,6 +55,16 @@ Fisma.Search = function() {
         showDeletedRecords : false,
 
         /**
+         * User search preferences for when a search hasn't been executed on this model this session.
+         */
+        searchPreferences: null,
+
+        /**
+         * Boolean flag as to whether the search preferences have been updated.
+         */
+        updateSearchPreferences: false,
+
+        /**
          * Test the current system configuration
          */
         testConfiguration : function () {
@@ -166,24 +176,37 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent: function(form) {
-            var Dom = YAHOO.util.Dom;
             var queryState = new Fisma.Search.QueryState(form.modelName.value);
+            var searchPrefs = {type: form.searchType.value};
+            if (searchPrefs.type === 'advanced') {
+                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                var fields = {};
+                for (var i in panelState) {
+                    fields[panelState[i].field] = panelState[i].operator;
+                }
+                searchPrefs['fields'] = fields;
+            }
+            Fisma.Search.updateSearchPreferences = true;
+            Fisma.Search.searchPreferences = searchPrefs;
+            Fisma.Search.updateQueryState(queryState, form);
+            Fisma.Search.executeSearch(form);
+        },
+
+        /**
+         * Update Query State
+         *
+         * @param queryState {Fisma.Search.QueryState}
+         * @param form Reference to the search form
+         */
+        updateQueryState: function(queryState, form) {
+            var Dom = YAHOO.util.Dom;
             var searchType = form.searchType.value;
             queryState.setSearchType(searchType);
             if (searchType === "simple") {
                 queryState.setKeywords(form.keywords.value);
             } else if (searchType === "advanced") {
-                var criteria = Fisma.Search.advancedSearchPanel.criteria;
-                var fieldPrefs = {};
-                for (var i in criteria) {
-                    var criterion = criteria[i];
-                    fieldPrefs[criterion.currentField.name] = criterion.currentQueryType;
-                }
-                var lastQuery = Fisma.Search.advancedSearchPanel.getQuery();
-                queryState.setAdvancedFields(fieldPrefs);
-                queryState.setAdvancedQuery(lastQuery);
+                queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
             }
-            Fisma.Search.executeSearch(form);
         },
 
         /**
@@ -329,12 +352,15 @@ Fisma.Search = function() {
             if ('simple' == searchType) {
                 postData.keywords = document.getElementById('keywords').value;
             } else if ('advanced' == searchType) {
-                var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                postData.query = YAHOO.lang.JSON.stringify(queryData);
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
+
+            if (Fisma.Search.updateSearchPreferences) {
+                postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+            }
+
             var postDataArray = [];
             for (var key in postData) {
                 postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
@@ -637,6 +663,10 @@ Fisma.Search = function() {
          */
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
+            if (YAHOO.lang.isObject(this.yuiDataTable)) {
+                // if already set, go ahead and run the callback
+                this.onSetTableCallback();
+            }
         }
     };
 }();

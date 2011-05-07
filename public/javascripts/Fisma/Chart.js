@@ -715,8 +715,10 @@ Fisma.Chart = {
             return;
         }
 
-        // unescape
-        theLink = unescape(theLink);
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
 
         // Does the link contain a variable?
         if (theLink !== false) {

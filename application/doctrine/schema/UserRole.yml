@@ -17,6 +17,7 @@ UserRole:
         Role:
             local: roleId
             foreign: id
+            foreignAlias: UserRoles
         Organizations:
             class: Organization
             refClass: UserRoleOrganization
