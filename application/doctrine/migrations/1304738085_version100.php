@@ -24,7 +24,7 @@
  * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version99 extends Doctrine_Migration_Base
+class Version100 extends Doctrine_Migration_Base
 {
     /** 
     * Add a unique index to privilege table to avoid records with the same resource and action
