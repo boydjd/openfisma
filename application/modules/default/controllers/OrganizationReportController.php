@@ -67,7 +67,6 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                           ->andWhere('o.orgType = ?', array('system'))
                           ->andWhere('s.sdlcPhase <> ?', 'disposal')
                           ->andWhere('r.nickname LIKE ? OR r.nickname LIKE ?', array('ISO', 'ISSO'))
-                          ->andWhere('u.deleted_at IS NULL')
                           ->andWhere("u.locktype IS NULL OR u.locktype<>'manual'")
                           ->orderBy('o.lft, o.rgt, u.nameLast, u.nameFirst')
                           ->setHydrationMode(Doctrine::HYDRATE_SCALAR);

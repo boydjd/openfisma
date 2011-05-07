@@ -91,11 +91,14 @@ function menuHandler(source) {
     
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
     findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
-    
-    var url = '/finding/remediation/summary-data'
-            + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value)
-            + '/format/json';
+
+    var typeParam = (selectedType.value == 'ALL') ? '' : 'type=' + encodeURIComponent(selectedType.value) + "&";
+    var sourceParam = ((selectedSource.value == 'ALL_SOURCES') 
+                    ? '' 
+                    : 'sourceNickname=' + encodeURIComponent(selectedSource.value)) + "&";
+
+    var url = '/finding/remediation/summary-data/format/json?' + typeParam + sourceParam;
+
     reloadTable(url);
 
     <?php 
@@ -104,9 +107,9 @@ function menuHandler(source) {
                   . $this->escape($status, 'url');
 
         if ('TOTAL' == $status):
-            $url = '/finding/remediation/list/queryType/advanced';
+            $url = '/finding/remediation/list?q=';
         else:
-            $url = '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/'
+            $url = '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/'
                  . $this->escape($status, 'url');
         endif;
     ?>
@@ -229,7 +232,7 @@ echo $this->escape($exportPdf, 'none');
             $url = Fisma_Url::customUrl('/finding/remediation/list');
         else:
             $url = Fisma_Url::customUrl(
-                '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/' 
+                '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/' 
                 . rawurlencode($status)
             );
         endif;

@@ -41,6 +41,8 @@ class Version94 extends Doctrine_Migration_Base
      */
     public function down()
     {
-        throw new Doctrine_Migration_IrreversibleMigrationException();
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.11.0'";
+        $conn->exec($updateSql);
     }
 }

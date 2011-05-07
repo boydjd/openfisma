@@ -44,6 +44,10 @@ Fisma.CheckboxTree = {
 
         var topListItem = clickedBox.parentNode;
 
+        if (topListItem.nextSibling === null) {
+            return;
+        }
+
         // If there are no nested checkboxes, then there is nothing to do
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
         if (nextCheckbox.getAttribute('nestedLevel') > clickedBox.getAttribute('nestedLevel')) {

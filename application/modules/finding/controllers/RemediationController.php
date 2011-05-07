@@ -565,7 +565,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
 
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
         $this->view->finding = $finding;
         
         $this->_acl->requirePrivilegeForObject('read', $finding);
@@ -584,6 +584,47 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
+
+        $buttons = array();
+        $buttons['list'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'Return to Search Results',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+        // Only display controls if the finding has not been deleted
+        if (!$finding->isDeleted()) {
+            // Display the delete finding button if the user has the delete finding privilege
+            if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
+                $deleteFindingButtonConfig = array(
+                    'value' => 'Delete Finding',
+                    'href' => '/finding/remediation/delete/id/' . $finding->id
+                );
+
+                $buttons['delete'] = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
+            }
+            
+            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
+            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
+                $discardChangesButtonConfig = array(
+                    'value' => 'Discard Changes',
+                    'href' => '/finding/remediation/view/id/' . $finding->id
+                );
+                
+                $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges', 
+                    $discardChangesButtonConfig
+                );
+            
+                $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+                    'saveChanges', 
+                    array('label' => 'Save Changes')
+                );
+            }
+        }
+
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**
@@ -614,7 +655,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -676,8 +717,23 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 return;
             }
         }
+        
+        if (isset($findingData['threatLevel']) && $findingData['threatLevel'] === '') {
+            $error = 'Threat Level is a required field.';
+            $this->view->priorityMessenger($error, 'warning');
+            return;
+        }
 
-        $finding = $this->_getFinding($id);
+        if (
+            isset($findingData['countermeasuresEffectiveness']) && 
+            $findingData['countermeasuresEffectiveness'] === ''
+        ) {
+            $error = 'Countermeasures Effectiveness is a required field.';
+            $this->view->priorityMessenger($error, 'warning');
+            return;
+        }
+        
+        $finding = $this->_getSubject($id);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.
@@ -715,7 +771,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $do       = $this->_request->getParam('do');
         $decision = $this->_request->getPost('decision');
 
-        $finding  = $this->_getFinding($id);
+        $finding  = $this->_getSubject($id);
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
@@ -767,7 +823,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function uploadevidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
@@ -890,7 +946,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id       = $this->_request->getParam('id');
         $decision = $this->_request->getPost('decision');
 
-        $finding  = $this->_getFinding($id);
+        $finding  = $this->_getSubject($id);
 
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
@@ -931,7 +987,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function rafAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
@@ -1055,7 +1111,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         
         // Convert log messages from plain text to HTML
         foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($log['o_message']);
+            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
         }
 
         $this->view->columns = array('Timestamp', 'User', 'Message');
@@ -1128,37 +1184,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     private function _viewFinding()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getFinding($id);
+        $finding = $this->_getSubject($id);
         $orgNickname = $finding->ResponsibleOrganization->nickname;
 
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
-    }
-
-    /**
-     * Check and get a specified finding
-     *
-     * @param int $id The specified finding id
-     * @return Finding The found finding
-     * @throws Fisma_Zend_Exception if the specified finding id is not found
-     */
-    private function _getFinding($id)
-    {
-        $finding = Doctrine_Query::create()->from('Finding f')->where('f.id = ?', $id);
-
-        // If user has the delete privilege, then allow viewing of deleted findings
-        if ($this->_acl->hasPrivilegeForClass('delete', 'Finding')) {
-            $finding->andWhere('(f.deleted_at = f.deleted_at OR f.deleted_at IS NULL)');
-        }
-
-        $finding = $finding->fetchOne();
-
-        if (false == $finding) {
-             throw new Fisma_Zend_Exception("FINDING($findingId) is not found. Make sure a valid ID is specified.");
-        }
-        
-        return $finding;
     }
 }
