@@ -42,7 +42,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     mike_green_user_role:
-        User: mike_green:
+        User: mike_green
         Role: ao_role
         Organizations:
             - ARP_ORG
@@ -84,7 +84,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     alexander_ovechkin_user_role:
-        User: alexander_ovechkin:
+        User: alexander_ovechkin
         Role: oig_role
         Organizations:
             - ARP_ORG
@@ -126,7 +126,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     alexander_semin_user_role:
-        User: alexander_semin:
+        User: alexander_semin
         Role: ciso_role
         Organizations:
             - ARP_ORG
@@ -168,7 +168,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     mike_knuble_user_role:
-        User: mike_knuble:
+        User: mike_knuble
         Role: oig_role
         Organizations:
             - ARP_ORG
@@ -210,7 +210,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     nicklas_backstrom_user_role:
-        User: nicklas_backstrom:
+        User: nicklas_backstrom
         Role: oig_role
         Organizations:
             - ARP_ORG
@@ -252,27 +252,27 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     michael_neuvirth_user_role:
-        User: michael_neuvirth:
+        User: michael_neuvirth
         Role: isso_role
         Organizations:
             - HAZMAT_ORG
     bruce_boudreau_user_role:
-        User: bruce_boudreau:
+        User: bruce_boudreau
         Role: isso_role
         Organizations:
             - RCD_ORG
     george_mcphee_user_role:
-        User: george_mcphee:
+        User: george_mcphee
         Role: isso_role
         Organizations:
             - GREEN_NRG_ORG
     semyon_varlamov_user_role:
-        User: semyon_varlamov:
+        User: semyon_varlamov
         Role: isso_role
         Organizations:
             - WIND_ORG
     braden_holtby_user_role:
-        User: braden_holtby:
+        User: braden_holtby
         Role: isso_role
         Organizations:
             - LINUX_ORG
@@ -280,43 +280,43 @@ UserRole:
             - ORACLE_ORG
             - RESTON_ORG
     john_erskine_user_role:
-        User: john_erskine:
+        User: john_erskine
         Role: isso_role
         Organizations:
             - HERNDON_ORG
     matt_hendricks_user_role:
-        User: matt_hendricks:
+        User: matt_hendricks
         Role: isso_role
         Organizations:
             - RMTRP_ORG
             - ROCP_ORG
     matt_bradley_user_role:
-        User: matt_bradley:
+        User: matt_bradley
         Role: isso_role
         Organizations:
             - H20_RIGHTS_ORG
             - WILDLIFE_ORG
     john_carlson_user_role:
-        User: john_carlson:
+        User: john_carlson
         Role: isso_role
         Organizations:
             - IAD_ORG
             - OF_ORG
             - SCMS_ORG
     jeff_schultz_user_role:
-        User: jeff_schultz:
+        User: jeff_schultz
         Role: isso_role
         Organizations:
             - CIT_ORG
             - CRMS_ORG
             - OSC_ORG
     karl_alzner_user_role:
-        User: karl_alzner:
+        User: karl_alzner
         Role: isso_role
         Organizations:
             - TPP_ORG
     jason_chimera_user_role:
-        User: jason_chimera:
+        User: jason_chimera
         Role: iso_role
         Organizations:
             - OCIO_ORG
@@ -324,21 +324,21 @@ UserRole:
             - OSC_ORG
             - TPP_ORG
     boyd_gordon_user_role:
-        User: boyd_gordon:
+        User: boyd_gordon
         Role: iso_role
         Organizations:
             - CRMS_ORG
             - OCOO_ORG
             - SCMS_ORG
     marcus_johansson_user_role:
-        User: marcus_johansson:
+        User: marcus_johansson
         Role: iso_role
         Organizations:
             - CIT_ORG
             - IAD_ORG
             - OIG_ORG
     mathieu_perreault_user_role:
-        User: mathieu_perreault:
+        User: mathieu_perreault
         Role: ivv_role
         Organizations:
             - ARP_ORG
@@ -380,7 +380,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     brooks_laich_user_role:
-        User: brooks_laich:
+        User: brooks_laich
         Role: ivv_role
         Organizations:
             - ARP_ORG
@@ -422,7 +422,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     marco_sturm_user_role:
-        User: marco_sturm:
+        User: marco_sturm
         Role: alt_isso_role
         Organizations:
             - CIT_ORG
@@ -433,7 +433,7 @@ UserRole:
             - SCMS_ORG
             - TPP_ORG
     jason_chimera_user_role:
-        User: jason_chimera:
+        User: jason_chimera
         Role: irc_role
         Organizations:
             - ARP_ORG
@@ -475,7 +475,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     dennis_wideman_user_role:
-        User: dennis_wideman:
+        User: dennis_wideman
         Role: alt_isso_role
         Organizations:
             - H20_RIGHTS_ORG
@@ -487,7 +487,7 @@ UserRole:
             - ROCP_ORG
             - WILDLIFE_ORG
     tom_poti_user_role:
-        User: tom_poti:
+        User: tom_poti
         Role: alt_isso_role
         Organizations:
             - GREEN_NRG_ORG
@@ -495,7 +495,7 @@ UserRole:
             - RCD_ORG
             - WIND_ORG
     sean_collins_user_role:
-        User: sean_collins:
+        User: sean_collins
         Role: pa_role
         Organizations:
             - ARP_ORG

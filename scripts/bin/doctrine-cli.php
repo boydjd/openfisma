@@ -129,7 +129,8 @@ try {
                             } elseif ('-' == $matches[1]) {
                                 $today->subDay($matches[2]);
                             }
-                            $buffer = preg_replace('/##\s*CURDATE.*##/', $today->toString('YYYY-MM-dd'), $buffer);
+                            $dateString = "'" . $today->toString('YYYY-MM-dd HH:mm:ss') . "'";
+                            $buffer = preg_replace('/##\s*CURDATE.*##/', $dateString, $buffer);
                         }
                     }
 
