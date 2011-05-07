@@ -14,7 +14,7 @@ library/ZFDebug:
   url: http://zfdebug.googlecode.com/svn/trunk/library/ZFDebug
 library/Zend: 
   remote: braid/library/Zend
-  revision: 23589
+  revision: 23790
   squashed: true
   type: svn
-  url: http://framework.zend.com/svn/framework/standard/tags/release-1.11.2/library/Zend
+  url: http://framework.zend.com/svn/framework/standard/tags/release-1.11.4/library/Zend

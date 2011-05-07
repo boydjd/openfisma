@@ -49,7 +49,7 @@ Fisma.Ldap = {
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
-                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+                ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }

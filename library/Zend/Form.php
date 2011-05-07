@@ -14,7 +14,7 @@
  *
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -26,7 +26,7 @@
  *
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -1786,7 +1786,11 @@ class Zend_Form implements Iterator, Countable, Zend_Validate_Interface
         $group = array();
         foreach ($elements as $element) {
             if($element instanceof Zend_Form_Element) {
-                $element = $element->getId();
+                $elementName = $element->getName();
+                if (!isset($this->_elements[$elementName])) {
+                    $this->addElement($element);
+                }
+                $element = $elementName;
             }
 
             if (isset($this->_elements[$element])) {

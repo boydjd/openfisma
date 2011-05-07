@@ -430,12 +430,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->layout->setLayout('anonymous');
         }
         
-        // Fetch the incident report draft from the session
+        // Fetch the incident report draft from the session. If no incident report draft is in the session,
+        // such as refresh this page, for anonymous user, it goes to incident report page. Otherwise, it goes
+        // to incident list page.
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
             $incident = unserialize($session->irDraft);
         } else {
-            throw new Fisma_Zend_Exception('No incident report found in session');
+            if (!$this->_me) {
+                $this->_redirect('/incident/report');     
+            } else { 
+                $this->_redirect('/incident/list');     
+            }
         }
 
         $incident->save();
@@ -496,12 +502,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function viewAction() 
     {
         $id = $this->_request->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($id);
-        
-        if (!$incident) {
-            throw new Fisma_Zend_Exception("Invalid incident ID ($id)");
-        }
-        
+        $incident = $this->_getSubject($id);
+
         $this->_assertCurrentUserCanViewIncident($id);
                 
         $this->view->id = $id;
@@ -653,7 +655,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         
         // Convert log messages from plain text to HTML
         foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($log['o_message']);
+            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
         }
 
         $this->view->logs = $logs;

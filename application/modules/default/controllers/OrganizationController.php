@@ -199,11 +199,20 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $organization = $subject;
                 
                 $organization->merge($orgValues);
-                
                 if (isset($orgValues['parent']) && $orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
-                    $organization->getNode()
-                                 ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                    // Check whether $parentOrg is in the subtree under $organization. If it is, show warning message   
+                    // because it might break organization tree structure
+                    $parentOrg = Doctrine::getTable('Organization')->find($orgValues['parent']);
+                    if ($parentOrg->getNode()->isDescendantOf($organization)) {
+                        $msg = "Unable to save: " . $parentOrg->nickname . " can't be parent organization";
+                        $this->view->priorityMessenger($msg, 'warning');
+
+                        return $objectId;
+                    } else {
+                        $organization->getNode()
+                                     ->moveAsLastChildOf($parentOrg);
+                    }    
                 }
                 $organization->save();
             }

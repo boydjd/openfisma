@@ -11,3 +11,4 @@
 .searchAddCriteriaButton{background:url(/images/add.png) center center no-repeat;overflow:hidden;width:2em;}
 .searchRemoveCriteriaButton{background:url(/images/remove.png) center center no-repeat;overflow:hidden;width:2em;}
 .highlight{background-color:yellow;}
+div#searchColumnsButtons div{margin-left:20px;margin-bottom:20px;float:right;}

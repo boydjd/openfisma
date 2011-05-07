@@ -228,11 +228,11 @@ Fisma.Incident = {
 
         //The first child of <td> block should be Name field.
         var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
-        var nameElClone = nameField.cloneNode(true) 
+        var nameElClone = nameField.cloneNode(true);
 
         //The next sibling should be role field  
         var roleField = YAHOO.util.Dom.getNextSibling(nameField);
-        var roleElClone = roleField.cloneNode(true) 
+        var roleElClone = roleField.cloneNode(true);
 
         newTdElForm.appendChild(nameElClone); 
         newTdElForm.appendChild(roleElClone); 
@@ -240,9 +240,6 @@ Fisma.Incident = {
         //create p node for Desription and textarea
         var elP = document.createElement('p');
         elP.innerHTML = 'Description: ';
-
-        var newTextareaEl = document.createElement('textarea');
-        newTextareaEl.setAttribute('id',textareaId);
 
         var descField = YAHOO.util.Dom.getNextSibling(roleField);
         var textareaField = YAHOO.util.Dom.getFirstChild(descField);
@@ -252,10 +249,19 @@ Fisma.Incident = {
         var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
+        // To create an element with a NAME attribute and its value for IE.
+        var newTextareaEl;
+        if (YAHOO.env.ua.ie) {
+            newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
+        } else {
+            newTextareaEl = document.createElement('textarea');
+        }
+
+        newTextareaEl.setAttribute('id',textareaId);
         newTextareaEl.setAttribute('rows',textareaRows);
         newTextareaEl.setAttribute('cols',textareaCols);
         newTextareaEl.setAttribute('name',textareaName);
- 
+
         elP.appendChild(newTextareaEl);
         newTdElForm.appendChild(elP); 
 

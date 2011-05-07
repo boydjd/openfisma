@@ -38,8 +38,7 @@ Fisma.Remediation = {
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
             '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init
-        );
+            Fisma.Remediation.upload_evidence_form_init);
 
         return false;
     },
@@ -87,11 +86,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -100,7 +95,9 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
+        
+        return true;
     },
 
     /**
@@ -136,11 +133,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to deny.');
                 return;
@@ -153,7 +146,10 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
+        
+        return true;
     },
 
     /**
@@ -190,11 +186,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -203,7 +195,9 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
+        
+        return true;
     },
 
     /**
@@ -240,11 +234,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to submit.');
                 return;
@@ -257,6 +247,9 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
+        
+        return true;
     }
-}
+};

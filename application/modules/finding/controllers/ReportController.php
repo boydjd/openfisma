@@ -266,7 +266,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        '1-29 Days',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('from' => 1, 'to' => 29, 'source' => (isset($source) ? $source->nickname : null))
+                       array('from' => 1, 'to' => 29, 'source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
@@ -274,7 +276,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        '30-59 Days',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('from' => 30, 'to' => 59, 'source' => (isset($source) ? $source->nickname : null))
+                       array('from' => 30, 'to' => 59, 'source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
@@ -282,7 +286,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        '60-89 Days',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('from' => 60, 'to' => 89, 'source' => (isset($source) ? $source->nickname : null))
+                       array('from' => 60, 'to' => 89, 'source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
@@ -290,7 +296,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        '90-119 Days',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('from' => 90, 'to' => 119, 'source' => (isset($source) ? $source->nickname : null))
+                       array('from' => 90, 'to' => 119, 'source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
@@ -298,7 +306,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        '120+ Days',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('from' => 120, 'source' => (isset($source) ? $source->nickname : null))
+                       array('from' => 120, 'source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
                ->addColumn(
@@ -306,11 +316,13 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                        'Total Overdue',
                        true,
                        'Fisma.TableFormat.overdueFinding',
-                       array('source' => (isset($source) ? $source->nickname : null))
+                       array('source' => (isset($source) ? $source->nickname : null)),
+                       false,
+                       'number'
                    )
                )
-               ->addColumn(new Fisma_Report_Column('Average (Days)', true))
-               ->addColumn(new Fisma_Report_Column('Maximum (Days)', true))
+               ->addColumn(new Fisma_Report_Column('Average (Days)', true, null, null, false, 'number'))
+               ->addColumn(new Fisma_Report_Column('Maximum (Days)', true, null, null, false, 'number'))
                ->setData($reportData);
 
         $this->_helper->reportContextSwitch()
