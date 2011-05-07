@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Wildfire
  * @subpackage Plugin
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -41,7 +41,7 @@
  * @category   Zend
  * @package    Zend_Wildfire
  * @subpackage Plugin
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
@@ -214,7 +214,7 @@ class Zend_Wildfire_Plugin_FirePhp implements Zend_Wildfire_Plugin_Interface
     /**
      * Get or create singleton instance
      *
-     * @param $skipCreate boolean True if an instance should not be created
+     * @param bool $skipCreate True if an instance should not be created
      * @return Zend_Wildfire_Plugin_FirePhp
      */
     public static function getInstance($skipCreate=false)

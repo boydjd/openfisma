@@ -591,13 +591,17 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         
         // Merge system configuration into form configuration and then validate the merged configuration
         $searchConfiguration = array_merge($storedConfig, $formConfig);
+
+        try {
+            $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
         
-        $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
-        
-        $result = $searchBackend->validateConfiguration();
+            $result = $searchBackend->validateConfiguration();
     
-        if ($result !== true) {
-            $response->fail($result);
+            if ($result !== true) {
+                $response->fail($result);
+            }
+        } catch (Fisma_Search_Exception $fse) {
+            $response->fail($fse->getMessage());
         }
 
         $this->view->response = $response;        

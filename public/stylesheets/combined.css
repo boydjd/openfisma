@@ -476,6 +476,13 @@ table.modules td:first-child {
 .highlight {
     background-color: yellow;
 }
+
+div#searchColumnsButtons div {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    float: right;
+}
+
 /* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
 
 /*
@@ -761,7 +768,7 @@ table.jqplot-cursor-tooltip {
 
 .jqplot-point-label {
     font-size: 0.75em;
-    z-index: 2;
+    z-index: 1;
 }
       
 td.jqplot-cursor-legend-swatch {
@@ -1249,6 +1256,23 @@ div#msgbar {
 	background: url(/images/minor-small.png) no-repeat;
 }
 
+/* Style for displaying background color of disposal systems are pink */
+.disposal {
+    background-color: pink;
+}
+
+/* Style for displaying showDisposalSystem div including checkbox and text*/
+div#showDisposalSystem {
+    margin: 0px 0px 5px 3px;
+    font-weight: bold;
+}
+
+/* Style for displaying checkbox in organization tree */
+div#showDisposalSystem input {
+    vertical-align: middle;
+    margin: 0px 5px 3px 0px;
+}
+
 /* 
 Styles for displaying system documentation
 */
@@ -1320,6 +1344,10 @@ ul.treelist li {
     list-style: none;
 }
 
+ul.treelist {
+    margin-top: 1em;
+}
+
 div#TabView_UserView_TabViewContainer {
     float: left;
     margin-top: 14px;
@@ -1356,4 +1384,100 @@ input[type=text].date {
     background: url(/images/calendar.png) no-repeat 98%;
     background-color: white;
     width: 10em;
+}
+
+/* Begin user access css */
+
+div#leftPane {
+    float: left;
+    width: 0;
+    min-width: 25em;
+    margin-right: 2em;
+}
+
+div#rightPane {
+    float: left;
+    width: 0;
+    min-width: 40em;
+}
+
+div#copyUserAccess > div.section > label {
+    float: left;
+}
+
+div#copyUserAccess > div.section > div {
+    float: left;
+}
+
+span#rolesAndUserscheckboxMatrixTooltip.tooltip {
+    display: none;
+}
+
+span#copyUserAccessTreecheckboxMatrixTooltip.tooltip {
+    display: none;
+}
+
+div#addUserAccess > div.section > div#addUserAccessLeft {
+    float: left;
+    min-width: 5em;
+    text-align: right;
+    margin-right: 1em;
+}
+
+div#addUserAccess > div.section > div#addUserAccessRight {
+    float:left;
+}
+
+dt#-label {
+    display: none;
+}
+
+div#addUserAccess > div.section > dd#-element > fieldset > dl > select#roles {
+    clear: both;
+    display: block;
+}
+
+div#addUserAccess > div.section > dd#-element > fieldset > dl > label {
+    display: block;
+    margin-top: 1em;
+}
+
+div#addUserAccess > div.section > dd#-element {
+    margin-top: -1em;
+}
+
+div#addUserAccess > div.section > dd#-element > fieldset > dl > span#addUser.yui-button.yui-push-button {
+    margin-top: .75em;
+    margin-left: 0em;
+}
+
+div#copyUserAccess > div.section > dd#-element > fieldset > dl > div.yui-ac {
+    margin-top: .25em;
+    margin-bottom: .75em;
+}
+
+span#selectAll {
+    margin-left: 0em;
+}
+
+span#removeUsers {
+    margin-left: 0em;
+}
+
+/* End user access CSS */
+
+/* class for dynamically hidden elements */
+.display-none {
+    display: none;
+}
+
+/* Container for SWF-based storage should be hidden */
+div#swfstoreContainer {
+    width: 0px;
+    height: 0px;
+}
+
+/* VM View Page */
+form#transitionsForm {
+    display: inline;
 }

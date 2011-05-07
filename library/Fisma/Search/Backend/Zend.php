@@ -266,7 +266,7 @@ class Fisma_Search_Backend_Zend extends Fisma_Search_Backend_Abstract
         $trimmedKeyword = trim($keyword);
 
         if (!empty($trimmedKeyword)) {
-            $keywordTokens = explode(' ', $trimmedKeyword);
+            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
             $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
         }

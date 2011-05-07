@@ -70,6 +70,7 @@ Fisma.FindingSummary = function() {
 
             // Render each node at this level
             for (var nodeId in tree) {
+                var c;
                 var node = tree[nodeId];
 
                 // Append two rows ('ontime' and 'overdue') to the table for this node
@@ -90,7 +91,7 @@ Fisma.FindingSummary = function() {
 
                 var expandControlImage = document.createElement('img');
                 expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img"
+                expandControlImage.id = node.nickname + "Img";
 
                 var expandControl = document.createElement('a');
                 expandControl.appendChild(expandControlImage);
@@ -129,9 +130,9 @@ Fisma.FindingSummary = function() {
                 
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
-                for (var c in ontime) {
+                for (c in ontime) {
                     count = ontime[c];
-                    cell = firstRow.insertCell(i++);
+                    cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
                         cell.className = "noDueDate";
@@ -140,10 +141,11 @@ Fisma.FindingSummary = function() {
                         cell.className = 'onTime';                
                     }
                     this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    i += 1;
                 }
 
                 // Now add cells to the second row
-                for (var c in overdue) {
+                for (c in overdue) {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -215,7 +217,7 @@ Fisma.FindingSummary = function() {
             var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (treeNode.hasOverdue) {
                 // Do not hide the overdue row. Instead, update the counts
-                var i = 0;
+                i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
@@ -275,7 +277,7 @@ Fisma.FindingSummary = function() {
                 ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
                 overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
 
-                var i = 0;
+                i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
@@ -379,11 +381,11 @@ Fisma.FindingSummary = function() {
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
                 node = tree[nodeId];
-                if (node.nickname == nodeName) {
+                if (node.nickname === nodeName) {
                     return node;
                 } else if (node.children.length > 0) {
                     var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode != false) {
+                    if (foundNode !== false) {
                         return foundNode;
                     }
                 }
@@ -420,10 +422,11 @@ Fisma.FindingSummary = function() {
          * @param expanded Used to generate link
          */
         updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+            var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
-                    var link = document.createElement('a');
+                    link = document.createElement('a');
                     link.href = this.makeLink(orgName, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
@@ -448,7 +451,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
-                        var link = document.createElement('a');
+                        link = document.createElement('a');
                         link.href = this.makeLink(orgName, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
@@ -480,40 +483,36 @@ Fisma.FindingSummary = function() {
                 var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 
                 if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
+                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
                 } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
+                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
                 }
             }
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+            if (status !== '' && status !=='TOTAL') {
+                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/enumIs/' + this.filterType;
+            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
+                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
             }
 
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
+                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
-                    + onTimeString
-                    + statusString
-                    + filterType
-                    + filterSource;
+            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
+                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
             } else {
-                uri += '/organization/organizationSubtree/' + orgName;
+                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
             }
 
             return uri;            
@@ -525,9 +524,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/'
-                    + format
-                    + this.listExpandedNodes(this.treeRoot, '');
+            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 

@@ -101,12 +101,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getToolbarButtons()
     {
         $buttons = array();
+        $isList = $this->getRequest()->getActionName() === 'list';
+        $resourceName = $this->getAclResourceName();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
+        if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
-                    'value' => 'List All ' . $this->getPluralModelName(),
+                    'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list'
                 )
             );
@@ -255,11 +257,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _viewObject()
     {
         $id = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
-
-        if (!$subject) {
-            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
-        }
+        $subject = $this->_getSubject($id);
 
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('read', $subject);
@@ -356,11 +354,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _editObject()
     {
         $id     = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
-
-        if (!$subject) {
-            throw new Fisma_Zend_Exception("Invalid {$this->_modelName} ID");
-        }
+        $subject = $this->_getSubject($id);
 
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForObject('update', $subject);
@@ -390,6 +384,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $msg  = "Error while trying to save: ";
                         $msg .= $e->getMessage();
                     $type = 'warning';
+                } catch (Fisma_Zend_Exception_User $e) {
+                    $msg  = "Error while trying to save: " . $e->getMessage();
+                    $type = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $type);
             } else {
@@ -415,7 +412,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function deleteAction()
     {
         $id = $this->_request->getParam('id');
-        $subject = Doctrine::getTable($this->_modelName)->find($id);
+        $subject = $this->_getSubject($id);
 
         if (!$this->_isDeletable()) {
             throw new Fisma_Zend_Exception("This model is marked as not deletable");
@@ -552,7 +549,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                            ->setDataUrl($this->getBaseUrl() . '/search')
                            ->setSortAscending(true)
                            ->setRenderEventFunction('Fisma.Search.highlightSearchResultsTable')
-                           ->setRequestConstructor('Fisma.Search.handleYuiDataTableEvent')
+                           ->setRequestConstructor('Fisma.Search.generateRequest')
                            ->setRowCount($this->_paging['count'])
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
@@ -574,14 +571,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $searchResultsTable->addColumn($column);
         }
 
-        // Check if the user has a cookie describing his search column preferences
-        $cookieName = $this->_modelName . 'Columns';
-
-        if (isset($_COOKIE[$cookieName])) {
-            $visibleColumns = $_COOKIE[$cookieName];
-        }
-
-        $currentColumn = 0;
+        $visibleColumns = $this->_getColumnVisibility();
 
         // Look up searchable columns and add them to the table
         $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
@@ -595,14 +585,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $label = $searchParams['label'];
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
-            // Column visibility is determined by cookie (if available) or by metadata otherwise
-            if (isset($visibleColumns)) {
-                $visible = (bool)($visibleColumns & (1 << $currentColumn));
+            if (isset($visibleColumns[$fieldName])) {
+                $visible = (bool)$visibleColumns[$fieldName];
             } else {
                 $visible = $searchParams['initiallyVisible'];
             }
-
-            $currentColumn++;
 
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
@@ -634,6 +621,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->searchResultsTable = $searchResultsTable;
+        $this->view->assign($searchResultsTable->getProperties());
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
         // the name as an array element instead
@@ -644,10 +632,48 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
+        $this->view->searchPreferences = $this->_getSearchPreferences();
 
         $this->renderScript('object/list.phtml');
     }
 
+    /**
+     * Get table column visibility information
+     *
+     * @return array Key is field name and value is boolean.
+     */
+    protected function _getColumnVisibility()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.TablePreferences';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $visibleColumns = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+        $visibleColumns = (!empty($visibleColumns[$this->_modelName])) ? $visibleColumns[$this->_modelName] : array();
+        $visibleColumns = (!empty($visibleColumns['columnVisibility'])) ? $visibleColumns['columnVisibility'] : array();
+        return $visibleColumns;
+    }
+
+    /**
+     * Get the search preferences
+     *
+     * @return array
+     */
+    protected function _getSearchPreferences()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.QueryState';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $result = array('type' => 'simple');
+        if (!empty($storage)) {
+            $data = $storage->data;
+            $data = empty($data[$this->_modelName]) ? array() : $data[$this->_modelName];
+            if (!empty($data['type']) && $data['type'] === 'advanced') {
+                $result['type'] = 'advanced';
+                $result['fields'] = empty($data['fields']) ? array() : $data['fields'];
+            }
+        }
+        return $result;
+    }
     /**
      * Apply a user query to the search engine and return the results in JSON format
      *
@@ -746,6 +772,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $showDeletedRecords
             );
         }
+
+        // store query options
+        $queryOptions = $this->getRequest()->getParam('queryOptions');
+        if (!empty($queryOptions)) {
+            $userId = $this->_me->id;
+            $namespace = 'Fisma.Search.QueryState';
+            $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+            if (empty($storage)) {
+                $storage = new Storage();
+                $storage->userId = $userId;
+                $storage->namespace = $namespace;
+                $storage->data = array();
+            }
+            $data = $storage->data;
+            $queryOptions = Zend_Json::decode($queryOptions);
+            $data[$this->_modelName] = $queryOptions;
+            $storage->data = $data;
+            $storage->save();
+        }
         
         // Create the appropriate output for the requested format
         if (empty($format)) {
@@ -757,13 +802,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             $report = new Fisma_Report;
             
-            $cookieName = $this->_modelName . 'Columns';
-
-            if (isset($_COOKIE[$cookieName])) {
-                $visibleColumns = $_COOKIE[$cookieName];
-            }
-
-            $currentColumn = 0;
+            $visibleColumns = $this->_getColumnVisibility();
 
             // Columns are returned in wrong order and need to be re-arranged
             $rawSearchData = $result->getTableData();
@@ -777,12 +816,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             foreach ($searchableFields as $fieldName => $searchableField) {
                 
                 // Visibility is determined by stored cookie, with fallback to search field definition
-                if (isset($visibleColumns)) {
-                    $visible = (bool)($visibleColumns & (1 << $currentColumn));
+                if (isset($visibleColumns[$fieldName])) {
+                    $visible = (bool)$visibleColumns[$fieldName];
                 } else {
                     $visible = isset($searchableField['initiallyVisible']) && $searchableField['initiallyVisible'];
                 }
-                
+
                 // For visible columns, display the column in the report and add data from the 
                 // raw result for that column
                 if ($visible) {
@@ -798,8 +837,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                         }
                     }
                 }
-                
-                $currentColumn++;                
             }
 
             $report->setTitle('Search Results for ' . $this->getPluralModelName())
@@ -972,5 +1009,32 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected function _isDeletable()
     {
         return true;
+    }
+
+    /**
+     * Check and get a specified record.
+     *
+     * @param int $id The specified record id
+     * @return Doctrine_Record The found record
+     * @throws Fisma_Zend_Exception_User If the specified record id is not found
+     */
+    protected function _getSubject($id)
+    {
+        $table = Doctrine::getTable($this->_modelName);
+        $query = Doctrine_Query::create()->from($this->_modelName)->where('id = ?', $id);
+
+        // If user has the delete privilege, then allow viewing of deleted record
+        if ($table->hasColumn('deleted_at') && $this->_acl->hasPrivilegeForClass('delete', $this->_modelName)) {
+            $query->andWhere('deleted_at = deleted_at OR deleted_at IS NULL');
+        }
+
+        $record = $query->fetchOne();
+
+        if (false == $record) {
+             $msg = '%s (%d) not found. Make sure a valid ID is specified.';
+             throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
+        }
+        
+        return $record;
     }
 }

@@ -39,7 +39,7 @@ Fisma.Email = function() {
         showRecipientDialog : function() {
 
             // Remove used old panel if necessary
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
@@ -83,7 +83,7 @@ Fisma.Email = function() {
          */
         sendTestEmail : function() {
             
-            if (document.getElementById('testEmailRecipient').value == '') {
+            if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
                 alert("Recipient is required.");
                 document.getElementById('testEmailRecipient').focus();
@@ -116,11 +116,13 @@ Fisma.Email = function() {
             }, null);
     
             // Remove used panel
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
+            
+            return true;
         }
     };
 }();

@@ -103,11 +103,12 @@ class Notify
               ->addComponent('u', 'n.User u')
               ->from('user u INNER JOIN notification n on u.id = n.userid')
               ->where(
-                  'u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
-                  INTERVAL u.notifyFrequency HOUR)'
+                  '(u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
+                  INTERVAL u.notifyFrequency HOUR))'
               )
-              ->andWhere('u.locked IS NULL OR (u.locked IS NOT NULL AND u.locktype = "manual")')
+              ->andWhere('(u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))')
               ->orderBy('u.id, n.createdts');
+
         $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages

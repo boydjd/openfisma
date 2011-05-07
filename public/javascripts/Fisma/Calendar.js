@@ -48,7 +48,7 @@ Fisma.Calendar = function () {
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
-            textEl.onfocus = function () {calendar.show()};
+            textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
@@ -65,7 +65,7 @@ Fisma.Calendar = function () {
                 textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
-            }
+            };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);            
         }

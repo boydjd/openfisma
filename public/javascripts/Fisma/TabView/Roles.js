@@ -27,13 +27,14 @@ Fisma.TabView.Roles = function() {
         init : function(roles, userid, readOnly) {
             YAHOO.util.Event.addListener('role', 'change', function(e) {
                 YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
+                    var i;
                     var tabView = Fisma.tabView;
                     var tabs = tabView.get('tabs');
 
                     if (el.selected) {
                         var found = 0;
                         
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -41,9 +42,9 @@ Fisma.TabView.Roles = function() {
                         }
 
                         if (!found) {
-                            for (var i in roles) {
+                            for (i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
@@ -51,8 +52,7 @@ Fisma.TabView.Roles = function() {
                             var newTab = new YAHOO.widget.Tab({
                                 id: el.value,
                                 label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' 
-                                    + el.value + '/readOnly/' + readOnly,
+                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' + el.value + '/readOnly/' + readOnly,
                                 cacheData: true,
                                 active: true
                             });
@@ -60,7 +60,7 @@ Fisma.TabView.Roles = function() {
                             tabView.addTab(newTab);
                         }
                     } else {
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
@@ -69,5 +69,5 @@ Fisma.TabView.Roles = function() {
                 });
             });
         }
-    }
+    };
 }();

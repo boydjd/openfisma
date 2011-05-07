@@ -757,7 +757,7 @@ tinyMCE.init({
 	mode : "textareas",
 	cleanup : false,
 	element_format : "html",
-	plugins : "spellchecker, searchreplace, insertdatetime, print, fullscreen",
+	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
@@ -807,13 +807,6 @@ tinyMCE.init({
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
  */
-
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
 
 var Fisma = {};
 
@@ -1129,7 +1122,7 @@ function switchYear(step){
     var oYear = document.getElementById('gen_shortcut');
     var year = oYear.getAttribute('year');
     year = Number(year) + Number(step);
-	oYear.setAttribute('year', year);
+    oYear.setAttribute('year', year);
     var url = oYear.getAttribute('url') + year + '/';
     var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
     tmp[0].innerHTML = year;
@@ -1509,6 +1502,14 @@ function selectAllUnsafe() {
     }
 }
 
+function selectAllByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","checked");
+}
+
+function selectNoneByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","unchecked");
+}
+
 function selectAll() {
     alert("Not implemented");
 }
@@ -1534,298 +1535,6 @@ function elDump(el) {
         props += prop + ' : ' + el[prop] + '\n';
     }
     alert(props);
-}
-//v1.7
-// Flash Player Version Detection
-// Detect Client Browser type
-// Copyright 2005-2007 Adobe Systems Incorporated.  All rights reserved.
-var isIE  = (navigator.appVersion.indexOf("MSIE") != -1) ? true : false;
-var isWin = (navigator.appVersion.toLowerCase().indexOf("win") != -1) ? true : false;
-var isOpera = (navigator.userAgent.indexOf("Opera") != -1) ? true : false;
-
-function ControlVersion()
-{
-	var version;
-	var axo;
-	var e;
-
-	// NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
-
-	try {
-		// version will be set for 7.X or greater players
-		axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
-		version = axo.GetVariable("$version");
-	} catch (e) {
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 6.X players only
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
-			
-			// installed player is some revision of 6.0
-			// GetVariable("$version") crashes for versions 6.0.22 through 6.0.29,
-			// so we have to be careful. 
-			
-			// default to the first public version
-			version = "WIN 6,0,21,0";
-
-			// throws if AllowScripAccess does not exist (introduced in 6.0r47)		
-			axo.AllowScriptAccess = "always";
-
-			// safe to call for 6.0r47 or greater
-			version = axo.GetVariable("$version");
-
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 4.X or 5.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = axo.GetVariable("$version");
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 3.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = "WIN 3,0,18,0";
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 2.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-			version = "WIN 2,0,0,11";
-		} catch (e) {
-			version = -1;
-		}
-	}
-	
-	return version;
-}
-
-// JavaScript helper required to detect Flash Player PlugIn version information
-function GetSwfVer(){
-	// NS/Opera version >= 3 check for Flash plugin in plugin array
-	var flashVer = -1;
-	
-	if (navigator.plugins != null && navigator.plugins.length > 0) {
-		if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
-			var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-			var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
-			var descArray = flashDescription.split(" ");
-			var tempArrayMajor = descArray[2].split(".");			
-			var versionMajor = tempArrayMajor[0];
-			var versionMinor = tempArrayMajor[1];
-			var versionRevision = descArray[3];
-			if (versionRevision == "") {
-				versionRevision = descArray[4];
-			}
-			if (versionRevision[0] == "d") {
-				versionRevision = versionRevision.substring(1);
-			} else if (versionRevision[0] == "r") {
-				versionRevision = versionRevision.substring(1);
-				if (versionRevision.indexOf("d") > 0) {
-					versionRevision = versionRevision.substring(0, versionRevision.indexOf("d"));
-				}
-			}
-			var flashVer = versionMajor + "." + versionMinor + "." + versionRevision;
-		}
-	}
-	// MSN/WebTV 2.6 supports Flash 4
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.6") != -1) flashVer = 4;
-	// WebTV 2.5 supports Flash 3
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.5") != -1) flashVer = 3;
-	// older WebTV supports Flash 2
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv") != -1) flashVer = 2;
-	else if ( isIE && isWin && !isOpera ) {
-		flashVer = ControlVersion();
-	}	
-	return flashVer;
-}
-
-// When called with reqMajorVer, reqMinorVer, reqRevision returns true if that version or greater is available
-function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision)
-{
-	versionStr = GetSwfVer();
-	if (versionStr == -1 ) {
-		return false;
-	} else if (versionStr != 0) {
-		if(isIE && isWin && !isOpera) {
-			// Given "WIN 2,0,0,11"
-			tempArray         = versionStr.split(" "); 	// ["WIN", "2,0,0,11"]
-			tempString        = tempArray[1];			// "2,0,0,11"
-			versionArray      = tempString.split(",");	// ['2', '0', '0', '11']
-		} else {
-			versionArray      = versionStr.split(".");
-		}
-		var versionMajor      = versionArray[0];
-		var versionMinor      = versionArray[1];
-		var versionRevision   = versionArray[2];
-
-        	// is the major.revision >= requested major.revision AND the minor version >= requested minor
-		if (versionMajor > parseFloat(reqMajorVer)) {
-			return true;
-		} else if (versionMajor == parseFloat(reqMajorVer)) {
-			if (versionMinor > parseFloat(reqMinorVer))
-				return true;
-			else if (versionMinor == parseFloat(reqMinorVer)) {
-				if (versionRevision >= parseFloat(reqRevision))
-					return true;
-			}
-		}
-		return false;
-	}
-}
-
-function AC_AddExtension(src, ext)
-{
-  if (src.indexOf('?') != -1)
-    return src.replace(/\?/, ext+'?'); 
-  else
-    return src + ext;
-}
-
-function AC_Generateobj(objAttrs, params, embedAttrs) 
-{ 
-  var str = '';
-  if (isIE && isWin && !isOpera)
-  {
-    str += '<object ';
-    for (var i in objAttrs)
-    {
-      str += i + '="' + objAttrs[i] + '" ';
-    }
-    str += '>';
-    for (var i in params)
-    {
-      str += '<param name="' + i + '" value="' + params[i] + '" /> ';
-    }
-    str += '</object>';
-  }
-  else
-  {
-    str += '<embed ';
-    for (var i in embedAttrs)
-    {
-      str += i + '="' + embedAttrs[i] + '" ';
-    }
-    str += '> </embed>';
-  }
-
-  return str;
-}
-
-function AC_FL_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".swf", "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-     , "application/x-shockwave-flash"
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_SW_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".dcr", "src", "clsid:166B1BCA-3F9C-11CF-8075-444553540000"
-     , null
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
-  var ret = new Object();
-  ret.embedAttrs = new Object();
-  ret.params = new Object();
-  ret.objAttrs = new Object();
-  for (var i=0; i < args.length; i=i+2){
-    var currArg = args[i].toLowerCase();    
-
-    switch (currArg){	
-      case "classid":
-        break;
-      case "pluginspage":
-        ret.embedAttrs[args[i]] = args[i+1];
-        break;
-      case "src":
-      case "movie":	
-        args[i+1] = AC_AddExtension(args[i+1], ext);
-        ret.embedAttrs["src"] = args[i+1];
-        ret.params[srcParamName] = args[i+1];
-        break;
-      case "onafterupdate":
-      case "onbeforeupdate":
-      case "onblur":
-      case "oncellchange":
-      case "onclick":
-      case "ondblclick":
-      case "ondrag":
-      case "ondragend":
-      case "ondragenter":
-      case "ondragleave":
-      case "ondragover":
-      case "ondrop":
-      case "onfinish":
-      case "onfocus":
-      case "onhelp":
-      case "onmousedown":
-      case "onmouseup":
-      case "onmouseover":
-      case "onmousemove":
-      case "onmouseout":
-      case "onkeypress":
-      case "onkeydown":
-      case "onkeyup":
-      case "onload":
-      case "onlosecapture":
-      case "onpropertychange":
-      case "onreadystatechange":
-      case "onrowsdelete":
-      case "onrowenter":
-      case "onrowexit":
-      case "onrowsinserted":
-      case "onstart":
-      case "onscroll":
-      case "onbeforeeditfocus":
-      case "onactivate":
-      case "onbeforedeactivate":
-      case "ondeactivate":
-      case "type":
-      case "codebase":
-      case "id":
-        ret.objAttrs[args[i]] = args[i+1];
-        break;
-      case "width":
-      case "height":
-      case "align":
-      case "vspace": 
-      case "hspace":
-      case "class":
-      case "title":
-      case "accesskey":
-      case "name":
-      case "tabindex":
-        ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i+1];
-        break;
-      default:
-        ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i+1];
-    }
-  }
-  ret.objAttrs["classid"] = classid;
-  if (mimeType) ret.embedAttrs["type"] = mimeType;
-  return ret;
 }
 /*!
  * jQuery JavaScript Library v1.4.2
@@ -1982,6 +1691,153 @@ f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){fo
 "pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
 e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides basic session-level storage of data.
+     * @namespace Fisma
+     * @class Storage
+     * @constructor
+     * @param namespace {String} The data namespace.
+     */
+    var FS = function(namespace) {
+        this.namespace = namespace;
+        FS._initStorageEngine();
+    };
+
+    /**
+     * Helper to ensure the storage engine is initialized
+     *
+     * @method _initStorageEngine
+     * @protected
+     * @static
+     */
+    FS._initStorageEngine = function() {
+        if (YAHOO.lang.isNull(FS._storageEngine)) {
+            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            FS._storageEngine = YAHOO.util.StorageManager.get(
+                //null, // no preferred engine
+                YAHOO.util.StorageEngineSWF.ENGINE_NAME,
+                YAHOO.util.StorageManager.LOCATION_SESSION,
+                {engine: engineConf});
+        }
+    };
+
+    /**
+     * Underlying storage engine.
+     *
+     * @property Storage._storageEngine
+     * @type Object
+     * @private
+     * @static
+     */
+    FS._storageEngine = null;
+
+    /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
+
+    /**
+     * Register a callback for when the storage engine is ready.
+     *
+     * @method Storage.onReady
+     * @param fn {Function} Callback function.
+     * @param obj {Object} Object passed to callback.
+     * @param scope {Object|Boolean} Object to use for callback scope, true to use obj as scope.
+     * @static
+     */
+    FS.onReady = function(fn, obj, scope) {
+        YAHOO.util.Event.onContentReady('swfstoreContainer', function() {
+            FS._initStorageEngine();
+            var engine = FS._storageEngine;
+            var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
+            if (!(engine.isReady || (engine._swf && locationSession))) {
+                engine.subscribe(engine.CE_READY, fn, obj, scope);
+            } else {
+                var s = new YAHOO.util.Subscriber(fn, obj, scope);
+                s.fn.call(s.getScope(window), s.obj);
+            }
+        });
+    };
+    FS.prototype = {
+        /**
+         * Get value for key
+         *
+         * @method Storage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
+        get: function(key) {
+            return this._get(key);
+        },
+        /**
+         * Set value for key
+         *
+         * @method Storage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
+        set: function(key, value) {
+            this._set(key, value);
+        },
+
+        /**
+         * Internal convenience method for decoding values.
+         *
+         * @method Storage._get
+         * @param key {String}
+         * @return {String|Array|Object}
+         * @protected
+         */
+        _get: function(key) {
+            var value = FS._storageEngine.getItem(this.namespace + ":" + key);
+
+            return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
+        },
+        /**
+         * Internal convenience method for encoding values.
+         *
+         * @method Storage._set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         * @protected
+         */
+        _set: function(key, value) {
+            FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
+        }
+    };
+    Fisma.Storage = FS;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2107,8 +1963,7 @@ Fisma.AttachArtifacts = {
                 
                 argument: newPanel
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -2121,7 +1976,7 @@ Fisma.AttachArtifacts = {
         // Verify that a file is selected
         var fileUploadEl = document.getElementById('fileUpload');
 
-        if ("" == fileUploadEl.value) {
+        if ("" === fileUploadEl.value) {
             alert("Please select a file.");
             
             return false;
@@ -2146,8 +2001,8 @@ Fisma.AttachArtifacts = {
             // Remove the inderminate progress bar
             var progressBarContainer = document.getElementById('progressBarContainer');
 
-            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
-            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'), 10);
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'), 10);
 
             YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
 
@@ -2164,7 +2019,7 @@ Fisma.AttachArtifacts = {
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
 
             yuiProgressBar.set('anim', true);
-            var animation = yuiProgressBar.get('anim')
+            var animation = yuiProgressBar.get('anim');
             animation.duration = 2;
             animation.method = YAHOO.util.Easing.easeNone;
             
@@ -2182,8 +2037,7 @@ Fisma.AttachArtifacts = {
                 function () {
                     that.getProgress.call(that);
                 },
-                this.sampleInterval
-            );
+                this.sampleInterval);
         }
 
         // Display the progress bar
@@ -2198,8 +2052,7 @@ Fisma.AttachArtifacts = {
             function () {
                 that.postForm.call(that);
             },
-            0
-        );
+            0);
         
         return false;
     },
@@ -2216,13 +2069,13 @@ Fisma.AttachArtifacts = {
 
         var that = this;
         
-        var postUrl = "/"
-                    + encodeURIComponent(this.config.server.controller)
-                    + "/"
-                    + encodeURIComponent(this.config.server.action)
-                    + "/id/"
-                    + encodeURIComponent(this.config.id)
-                    + "/format/json";
+        var postUrl = "/";
+        postUrl += encodeURIComponent(this.config.server.controller);
+        postUrl += "/";
+        postUrl += encodeURIComponent(this.config.server.action);
+        postUrl += "/id/";
+        postUrl += encodeURIComponent(this.config.id);
+        postUrl += "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
         YAHOO.util.Connect.asyncRequest(
@@ -2237,8 +2090,7 @@ Fisma.AttachArtifacts = {
                     alert('Document upload failed.');
                 }
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -2306,12 +2158,10 @@ Fisma.AttachArtifacts = {
                             function () {
                                 that.getProgress.call(that);
                             }, 
-                            that.sampleInterval
-                        );
+                            that.sampleInterval);
                     }
                 }, 
-                null
-            );
+                null);
         }
     },
     
@@ -2330,7 +2180,7 @@ Fisma.AttachArtifacts = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -2343,7 +2193,7 @@ Fisma.AttachArtifacts = {
         
         // Update progress to 100%
         if (this.yuiProgressBar) {
-            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.get('anim').duration = 0.5;
             this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
@@ -2479,7 +2329,7 @@ Fisma.AutoComplete = function() {
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
                 
-                if (0 == Fisma.AutoComplete.requestCount) {
+                if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });
@@ -2544,7 +2394,7 @@ Fisma.AutoComplete = function() {
          */
         subscribe : function(sType, aArgs, params) {
             document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-
+            $('#' + params.hiddenFieldId).trigger('change');
             // If a valid callback is specified, then call it
             try {
                 var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
@@ -2611,7 +2461,7 @@ Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
  */
 Fisma.Blinker.prototype.start = function () {
     this.cycle();
-}
+};
 
 /**
  * The state transition method
@@ -2635,10 +2485,9 @@ Fisma.Blinker.prototype.cycle = function () {
             function () {
                 that.cycle.call(that);
             },
-            this.interval
-        );
+            this.interval);
     }
-}
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -2689,7 +2538,7 @@ Fisma.Calendar = function () {
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
-            textEl.onfocus = function () {calendar.show()};
+            textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
@@ -2706,14 +2555,14 @@ Fisma.Calendar = function () {
                 textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
-            }
+            };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);            
         }
     };
 }();
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -2730,45 +2579,1978 @@ Fisma.Calendar = function () {
  *
  * @fileoverview Client-side behavior related to the Finding module
  *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @author    Dale Frey <dale.frey@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 Fisma.Chart = {
 
+    // Constants
+    CHART_CREATE_SUCCESS: 1,
+    CHART_CREATE_FAILURE: 2,
+    CHART_CREATE_EXTERNAL: 3,
+
+    // Defaults for global chart settings definition:
+    globalSettingsDefaults:{
+        fadingEnabled:      false,
+        barShadows:         false,
+        barShadowDepth:     3,
+        dropShadows:        false,
+        gridLines:          false,
+        pointLabels:        false,
+        pointLabelsOutline: false,
+        showDataTable: false
+    },
+
+    // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
+    chartsOnDOM:{},
+
+    // Is this client-browser Internet Explorer?
+    isIE: (window.ActiveXObject) ? true : false,
+    
+    
     /**
-     * A generic handler for link events in an XML/SWF chart that will interpolate query parameters into a specified
-     * URL and then redirect the user to that URL.
+     * When an external source is needed, this function should handel the returned JSON request
+     * The chartParamsObj object that went into Fisma.Chart.createJQChart(obj) would be the chartParamsObj here, and
+     * the "value" parameter should be the returned JSON request.
+     * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
+     * returns the return value of Fisma.Chart.createJQChart(), or false on external source failure.
      *
-     * This function takes a variable argument list. The first argument is the URL. The URL can contain '%s' tokens
-     * which will be interpolated one-by-one with the remaining arguments.
-     *
-     * Example: handleLink('/param1/%s/param2/%s?q=%s', 'A', 'B', 'C') would redirect the user to the URL
-     * /param1/A/param2/B?q=C
-     *
-     * @param baseUrl A [trusted] URL with a sprintf style '%s' in it that represents the request parameter
-     * @param variable arguments
+     * @return integer
      */
-    handleLink : function (baseUrl) {
+    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj)
+    {
+        // If anything (json) was returned at all...
+        if (value) {
 
-        // Sanity check: number of argument place holders in URL equals number of arguments to this function
-        var placeHolders = baseUrl.match(/%s/);
-        
-        if (placeHolders.length != arguments.length - 1) {
-            throw "Expected " + placeHolders.length + " arguments but found " + (arguments.length - 1);
+            // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
+            if (value.results[0]) {
+                chartParamsObj = Fisma.Chart.mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value);
+            } else {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+                throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+            }
+
+            // validate that chart plotting data (numeric information) was returned
+            if (typeof chartParamsObj.chartData === 'undefined') {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+                throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
+            } else if (chartParamsObj.chartData.length === 0) {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            }
+
+            // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
+            return Fisma.Chart.createJQChart(chartParamsObj);
+
+        } else {
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+        }
+    },
+
+    /**
+     * Creates a chart within a div by the name of chartParamsObj.uniqueid.
+     * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
+     * This function may return before the actual creation of a chart if there is an external source.
+     *
+     * @return boolean
+     */
+    createJQChart : function (chartParamsObj)
+    {
+
+        // load in default values for paramiters, and replace it with any given params
+        var defaultParams = {
+            concatXLabel: false,
+            nobackground: true,
+            drawGridLines: false,
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+            pointLabelAdjustX: -3,
+            pointLabelAdjustY: -7,
+            AxisLabelX: '',
+            AxisLabelY: '',
+            DataTextAngle: -30
+        };
+        chartParamsObj = jQuery.extend(true, defaultParams, chartParamsObj);
+
+        // param validation
+        if (document.getElementById(chartParamsObj.uniqueid) === false) {
+            throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj.uniqueid;
         }
 
-        // Loop over the variable length arguments (skipping the first argument, which is baseUrl)
-        var argumentIndex;
+        // set chart width to chartParamsObj.width
+        Fisma.Chart.setChartWidthAttribs(chartParamsObj);
 
-        for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-            baseUrl = baseUrl.replace('%s', escape(arguments[argumentIndex]));
+        // Ensure the load spinner is visible
+        Fisma.Chart.makeElementVisible(chartParamsObj.uniqueid + 'loader');
+
+        // is the data being loaded from an external source? (Or is it all in the chartParamsObj obj?)
+        if (chartParamsObj.externalSource) {
+
+            /*
+             * If it is being loaded from an external source
+             *   setup a json request
+             *   have the json request return to createJQChart_asynchReturn
+             *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj.externalSource taken out
+            */
+
+            document.getElementById(chartParamsObj.uniqueid).innerHTML = 'Loading chart data...';
+
+            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
+            var externalSource = chartParamsObj.externalSource;
+            if (!chartParamsObj.oldExternalSource) {
+                chartParamsObj.oldExternalSource = chartParamsObj.externalSource;
+            }
+            chartParamsObj.externalSource = undefined;
+
+            // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
+            chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
+            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g,'%20');
+            chartParamsObj.lastURLpull = externalSource;
+
+            var myDataSource = new YAHOO.util.DataSource(externalSource);
+            myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+            myDataSource.responseSchema = {resultsList: "chart"};
+
+            var callback1 = {
+                success : Fisma.Chart.createJQChart_asynchReturn,
+                failure : Fisma.Chart.createJQChart_asynchReturn,
+                argument: chartParamsObj
+            };
+            myDataSource.sendRequest("", callback1);
+
+            return Fisma.Chart.CHART_CREATE_EXTERNAL;
         }
+
+        // clear the chart area
+        document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
+        document.getElementById(chartParamsObj.uniqueid).className = '';
+        document.getElementById(chartParamsObj.uniqueid + 'toplegend').innerHTML = '';
+
+        // handel aliases and short-cut vars
+        if (typeof chartParamsObj.barMargin !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj.barMargin}}});
+            chartParamsObj.barMargin = undefined;
+        }
+        if (typeof chartParamsObj.legendLocation !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj.legendLocation }});
+            chartParamsObj.legendLocation = undefined;
+        }
+        if (typeof chartParamsObj.legendRowCount !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj.legendRowCount}}});
+            chartParamsObj.legendRowCount = undefined;
+        }
+
+        // make sure the numbers to be plotted in chartParamsObj.chartData are infact numbers and not an array of strings of numbers
+        chartParamsObj.chartData = Fisma.Chart.forceIntegerArray(chartParamsObj.chartData);
+
+        // hide the loading spinner and show the canvas target
+        document.getElementById(chartParamsObj.uniqueid + 'holder').style.display = '';
+        Fisma.Chart.makeElementInvisible(chartParamsObj.uniqueid + 'holder');
+        document.getElementById(chartParamsObj.uniqueid + 'loader').style.position = 'absolute';
+        document.getElementById(chartParamsObj.uniqueid + 'loader').finnishFadeCallback = new Function ("Fisma.Chart.fadeIn('" + chartParamsObj.uniqueid + "holder', 500);");
+        Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'loader', 500);
+
+        // now that we have the chartParamsObj.chartData, do we need to make the chart larger and scrollable?
+        Fisma.Chart.setChartWidthAttribs(chartParamsObj);
+
+        // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
+        // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
+        Fisma.Chart.chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
+
+        // call the correct function based on chartType, or state there will be no chart created
+        var rtn = Fisma.Chart.CHART_CREATE_FAILURE;
+        if (!Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+
+            switch(chartParamsObj.chartType)
+            {
+                case 'stackedbar':
+                    chartParamsObj.varyBarColor = false;
+                                if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
+                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                    break;
+                case 'bar':
+
+                    // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                    if (typeof chartParamsObj.chartData[0] === 'object') {
+
+                        // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                        // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+
+                        chartParamsObj.varyBarColor = false;
+                        chartParamsObj.showlegend = true;
+
+                    } else {
+                        chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
+                        chartParamsObj.links = [chartParamsObj.links];
+                        chartParamsObj.varyBarColor = true;
+                        chartParamsObj.showlegend = false;
+                    }
+
+                    chartParamsObj.stackSeries = false;
+                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                    break;
+
+                case 'line':
+                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                    break;
+                case 'stackedline':
+                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                    break;
+                case 'pie':
+                    chartParamsObj.links = [chartParamsObj.links];
+                    rtn = Fisma.Chart.createChartPie(chartParamsObj);
+                    break;
+                default:
+                    throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
+            }
+        }
+
+        // chart tweeking external to the jqPlot library
+        Fisma.Chart.removeOverlappingPointLabels(chartParamsObj);
+        Fisma.Chart.applyChartBackground(chartParamsObj);
+        Fisma.Chart.applyChartWidgets(chartParamsObj);
+        Fisma.Chart.createChartThreatLegend(chartParamsObj);
+        Fisma.Chart.applyChartBorders(chartParamsObj);
+        Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
+        Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+        Fisma.Chart.getTableFromChartData(chartParamsObj);
+
+        return rtn;
+    },
+
+    /**
+     * Takes a chartParamsObj and merges content of 
+     * externResponse-object into it based in the inheritance mode
+     * set in externResponse.
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     * 
+    */
+    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse)
+    {
+        var joinedParam = {};
+
+        // Is there an inheritance mode? 
+        if (externResponse.results[0].inheritCtl) {
+            if (externResponse.results[0].inheritCtl === 'minimal') {
+                // Inheritance mode set to minimal, retain certain attribs and merge
+                joinedParam = externResponse.results[0];
+                joinedParam.width = chartParamsObj.width;
+                joinedParam.height = chartParamsObj.height;
+                joinedParam.uniqueid = chartParamsObj.uniqueid;
+                joinedParam.externalSource = chartParamsObj.externalSource;
+                joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
+                joinedParam.widgets = chartParamsObj.widgets;
+            } else if (externResponse.results[0].inheritCtl === 'none') {
+                // Inheritance mode set to none, replace the joinedParam object
+                joinedParam = externResponse.results[0];
+            } else {
+                throw 'Error - Unknown chart inheritance mode';
+            }
+        } else {
+            // No inheritance mode, by default, merge everything
+            joinedParam = jQuery.extend(true, chartParamsObj, externResponse.results[0],true);
+        }
+
+        return joinedParam;
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a pie chart
+      * based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return void
+     */
+    createChartPie : function (chartParamsObj)
+    {
+        var x = 0;
+        var dataSet = [];
+        usedLabelsPie = chartParamsObj.chartDataText;
+
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+            chartParamsObj.chartDataText[x] += ' (' + chartParamsObj.chartData[x]  + ')';
+            dataSet[dataSet.length] = [chartParamsObj.chartDataText[x], chartParamsObj.chartData[x]];
+        }
+
+        var jPlotParamObj = {
+            title: chartParamsObj.title,
+            seriesColors: chartParamsObj.colors,
+            grid: {
+                drawBorder: false,
+                drawGridlines: false,
+                shadow: false
+            },
+            axes: {
+                xaxis:{
+                    tickOptions: {
+                        angle: chartParamsObj.DataTextAngle,
+                        fontSize: '10pt',
+                        formatString: '%.0f'
+                    }
+                },
+                yaxis:{
+                    tickOptions: {
+                        formatString: '%.0f'
+                    }
+                }
+
+            },
+            seriesDefaults:{
+                renderer:$.jqplot.PieRenderer,
+                rendererOptions: {
+                    sliceMargin: 0,
+                    showDataLabels: true,
+                    shadowAlpha: 0.15,
+                    shadowOffset: 0,
+                    lineLabels: true,
+                    lineLabelsLineColor: '#777',
+                    diameter: chartParamsObj.height * 0.55
+                }
+            },
+            legend: {
+                location: 's',
+                show: false,
+                rendererOptions: {
+                    numberRows: 1
+                }
+            }
+        };
+
+        jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
+
+        // bug killer (for IE7) - state the height for the container div for emulated excanvas
+        $("[id="+chartParamsObj.uniqueid+"]").css('height', chartParamsObj.height);
+
+        // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+        jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
+
+        plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
+
+        // create an event handeling function that calls chartClickEvent while preserving the parm object
+        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+
+        // use the created function as the click-event-handeler
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
+
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a stacked
+      * bar chart based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
+     */
+    createChartStackedBar : function (chartParamsObj)
+    {
+        var x = 0; var y = 0;
+        var thisSum = 0;
+        var maxSumOfAll = 0;
+        var chartCeilingValue = 0;
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+
+            thisSum = 0;
+
+            for (y = 0; y < chartParamsObj.chartData.length; y++) {
+                thisSum += chartParamsObj.chartData[y][x];
+            }
+
+            if (thisSum > maxSumOfAll) { maxSumOfAll = thisSum; }
+
+            if (chartParamsObj.concatXLabel === true) {
+                chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
+            }
+        }
+
+        var seriesParam = [];
+        if (chartParamsObj.chartLayerText) {
+            for (x = 0; x < chartParamsObj.chartLayerText.length; x++) {
+                seriesParam[x] = {label: chartParamsObj.chartLayerText[x]};
+            }
+        }
+
+        // Make sure the Y-axis (row labels) are not offset by the formatter string rounding their values...
+        // (make the top most row label divisible by 5)
+        chartCeilingValue = Math.ceil(maxSumOfAll / 5) * 5;
+
+        // Force Y-axis row labels to be divisible by 5
+        yAxisTicks = [];
+        yAxisTicks[0] = 0;
+        yAxisTicks[1] = (chartCeilingValue/5);
+        yAxisTicks[2] = (chartCeilingValue/5) * 2;
+        yAxisTicks[3] = (chartCeilingValue/5) * 3;
+        yAxisTicks[4] = (chartCeilingValue/5) * 4;
+        yAxisTicks[5] = (chartCeilingValue/5) * 5;
+
+        $.jqplot.config.enablePlugins = true;
+
+        var jPlotParamObj = {
+            title: chartParamsObj.title,
+            seriesColors: chartParamsObj.colors,
+            stackSeries: true,
+            series: seriesParam,
+            seriesDefaults:{
+                renderer: $.jqplot.BarRenderer,
+                rendererOptions:{
+                    barWidth: 35,
+                    showDataLabels: true,
+                    varyBarColor: chartParamsObj.varyBarColor,
+                    shadowAlpha: 0.15,
+                    shadowOffset: 0
+                },
+                pointLabels:{
+                    show: false,
+                    location: 's',
+                    hideZeros: true
+                }
+            },
+            axesDefaults: {
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                borderWidth: 0,
+                labelOptions: {
+                    enableFontSupport: true,
+                    fontFamily: 'arial, helvetica, clean, sans-serif',
+                    fontSize: '12pt',
+                    textColor: '#555555'
+                }
+            },
+            axes: {
+                xaxis:{
+                    label: chartParamsObj.AxisLabelX,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    renderer: $.jqplot.CategoryAxisRenderer,
+                    ticks: chartParamsObj.chartDataText,
+                    tickOptions: {
+                        angle: chartParamsObj.DataTextAngle,
+                        fontFamily: 'arial, helvetica, clean, sans-serif',
+                        fontSize: '10pt',
+                        textColor: '#555555'
+                    }
+                },
+                yaxis:{
+                    label: chartParamsObj.AxisLabelY,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    min: 0,
+                    max: chartCeilingValue,
+                    autoscale: true,
+                    ticks: yAxisTicks,
+                    tickOptions: {
+                        formatString: '%.0f',
+                        fontFamily: 'arial, helvetica, clean, sans-serif',
+                        fontSize: '10pt',
+                        textColor: '#555555'
+                    }
+                }
+
+            },
+            highlighter: { 
+                show: false 
+                },
+            grid: {
+                gridLineWidth: 0,
+                shadow: false,
+                borderWidth: 1,
+                gridLineColor: '#FFFFFF',
+                background: 'transparent',
+                drawGridLines: chartParamsObj.drawGridLines,
+                show: chartParamsObj.drawGridLines
+                },
+            legend: {
+                        show: chartParamsObj.showlegend,
+                        rendererOptions: {
+                            numberRows: 1
+                        },
+                        location: 'nw'
+                    }
+        };
+
+        // bug killer - The canvas object for IE does not understand what transparency is...
+        if (Fisma.Chart.isIE) {
+            jPlotParamObj.grid.background = '#FFFFFF';
+        }
+
+        // bug killer (for IE7) - state the height for the container div for emulated excanvas
+        $("[id="+chartParamsObj.uniqueid+"]").css('height', chartParamsObj.height);
+
+        // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+        jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
+
+        // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
+        jPlotParamObj = Fisma.Chart.alterChartByGlobals(jPlotParamObj);
+
+        plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
+
+
+        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
+
+        Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
+
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a stacked
+      * line chart based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
+     */
+    createChartStackedLine : function (chartParamsObj)
+    {
+        var x = 0; var y = 0;
+        var thisSum = 0;
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            thisSum = 0;
+
+            for (y = 0; y < ['chartData'].length; y++) {
+                thisSum += ['chartData'][y][x];
+            }
+
+            chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
+        }
+
+        plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
+            title: chartParamsObj.title,
+            seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
+            series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
+            seriesDefaults:{
+                fill:false,
+                showMarker: true,
+                showLine: true
+            },
+            axes: {
+                xaxis:{
+                    renderer:$.jqplot.CategoryAxisRenderer,
+                    ticks:chartParamsObj.chartDataText
+                },
+                yaxis:{
+                    min: 0
+                }
+            },
+            highlighter: { show: false },
+            legend: {
+                        show: true,
+                        rendererOptions: {
+                            numberRows: 1
+                        },
+                        location: 'nw'
+                    }
+        });
+
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    /**
+     * Creates the red-orange-yellow threat-legend that shows above charts
+     * The generated HTML code should go into the div with the id of the
+     * chart's uniqueId + "toplegend"
+     *
+     * @return boolean/integer
+     */
+    createChartThreatLegend : function (chartParamsObj)
+    {
+        if (chartParamsObj.showThreatLegend && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            if (chartParamsObj.showThreatLegend === true) {
+
+                // Is a width given for the width of the legend? OR should we assume 100%?
+                var threatLegendWidth = '100%';
+                if (chartParamsObj.threatLegendWidth) {
+                    threatLegendWidth = chartParamsObj.threatLegendWidth;
+                }
+
+                var cell;
+
+                // Tabel to hold all colored boxes and labels
+                var threatTable = document.createElement("table");
+                threatTable.style.fontSize = '12px';
+                threatTable.style.color = '#555555';
+                threatTable.width = threatLegendWidth;
+                var tblBody = document.createElement("tbody");
+                var row = document.createElement("tr");
+
+                cell = document.createElement("td");
+                cell.style.textAlign = 'center';
+                cell.style.fontWeight = 'bold';
+                cell.width = '40%';
+                var textLabel = document.createTextNode('Threat Level');
+                cell.appendChild(textLabel);
+                row.appendChild(cell);
+
+                // Red block and "High"
+                cell = document.createElement("td");
+                cell.width = '20%';
+                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF0000', 'High'));
+                row.appendChild(cell);
+
+                // Orange block and "Moderate"
+                cell = document.createElement("td");
+                cell.width = '20%';
+                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF6600', 'Moderate'));
+                row.appendChild(cell);
+
+                // Yellow block and "Low"
+                cell = document.createElement("td");
+                cell.width = '20%';
+                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FFC000', 'Low'));
+                row.appendChild(cell);
+
+                // close and post table on DOM
+                tblBody.appendChild(row);
+                threatTable.appendChild(tblBody);
+                var thisChartId = chartParamsObj.uniqueid;
+                var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
+                topLegendOnDOM.appendChild(threatTable);
+            }
+        }        
+    },
+
+    /**
+     * Creates a single color (i.e. red/orange/yellow) tabels to be added 
+     * into the threat-legend that shows above charts
+     *
+     * @return table
+     */
+    createThreatLegendSingleColor : function (blockColor, textLabel) {
+
+        var colorBlockTbl = document.createElement("table");
+        var colorBody = document.createElement("tbody");
+        var colorRow = document.createElement("tr");
+
+        var colorCell;
+
+        // Create the colored box
+        colorCell = document.createElement("td");
+        colorCell.style.backgroundColor= '#' + blockColor;
+        colorCell.width = '15px';
+        colorRow.appendChild(colorCell);
+
+        // Forced space between colored box and label
+        colorCell = document.createElement("td");
+        colorCell.width = '3px';
+        colorRow.appendChild(colorCell);
+
+        // Apply label
+        colorCell = document.createElement("td");
+        colorCell.style.fontSize = '12px';
+        var textLabelObj = document.createTextNode('   ' + textLabel);
+        colorCell.appendChild(textLabelObj);
+        colorRow.appendChild(colorCell);
+
+        colorBody.appendChild(colorRow);
+        colorBlockTbl.appendChild(colorBody);
+        return colorBlockTbl;    
+    },
+
+    chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
+    {
+
+        var theLink = false;
+        if (paramObj.links) {
+            if (typeof paramObj.links === 'string') {
+                theLink = paramObj.links;
+            } else {
+                if (paramObj.links[seriesIndex]) {
+                    if (typeof paramObj.links[seriesIndex] === "object") {
+                        theLink = paramObj.links[seriesIndex][pointIndex];
+                    } else {
+                        theLink = paramObj.links[seriesIndex];
+                    }
+                }
+            }
+        }
+
+        // bail on blank link
+        if (theLink === '') {
+            return;
+        }
+
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
+
+        // Does the link contain a variable?
+        if (theLink !== false) {
+            theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
+        }
+
+        if (paramObj.linksdebug === true) {
+            var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
+            msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
+            if (theLink !== false) { msg += "The link with this element is " + theLink; }
+            alert(msg);
+        } else {
+
+            // We are not in link-debug mode, navigate if there is a link
+            if (theLink !== false && theLink !== 'false' && String(theLink) !== 'null') {
+                document.location = theLink;
+            }
+
+        }
+    },
+
+    /**
+     * Converts an array from strings to integers, for example;
+     * ["1", 2, "3", 4] would become [1, 2, 3, 4]
+     * This is a bug killer for external source plotting data as
+     * the jqPlot lib expects integers, and JSON may not always 
+     * be encoded that way
+     *
+     * @return array
+     */
+    forceIntegerArray : function (inptArray)
+    {
+        var x = 0;
+        for (x = 0; x < inptArray.length; x++) {
+            if (typeof inptArray[x] === 'object') {
+                inptArray[x] = Fisma.Chart.forceIntegerArray(inptArray[x]);
+            } else {
+                inptArray[x] = parseInt(inptArray[x], 10);    // make sure this is an int, and not a string of a number
+            }
+        }
+
+        return inptArray;
+    },
+
+    /**
+     * Manually draws borders onto the shadow canvas
+     * This function is nessesary as jqPlot's API does not allow 
+     * you to choose which borders are drawn and which are not.
+     * If "L" exists within chartParamsObj.borders, the left border is
+     * drawn, if "R" does (too), then the right is drawn and so on.
+     *
+     * @return void
+     */
+    applyChartBorders : function (chartParamsObj)
+    {
+        var x = 0;
+
+        // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
+        if (typeof chartParamsObj.borders === 'undefined') {
+            if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
+                // default for bar and stacked bar charts are bottom-left (BL)
+                chartParamsObj.borders = 'BL';
+            } else {
+                // assume no default for other chart types
+                return;
+            }
+        }
+
+        // Get the area of our containing divs
+        var targDiv = document.getElementById(chartParamsObj.uniqueid);
+        var children = targDiv.childNodes;
+
+        for (x = children.length - 1; x > 0; x--) {
+            // search for a canvs
+            if (typeof children[x].nodeName !== 'undefined') {
+
+                // search for a canvas that is the shadow canvas
+                if (String(children[x].nodeName).toLowerCase() === 'canvas' && children[x].className === 'jqplot-series-shadowCanvas') {
+
+                    // this is the canvas we want to draw on
+                    var targCanv = children[x];
+                    var context = targCanv.getContext('2d');
+
+                    var h = children[x].height;
+                    var w = children[x].width;
+
+                    context.strokeStyle = '#777777';
+                    context.lineWidth = 3;
+                    context.beginPath();
+
+                    // Draw left border?
+                    if (chartParamsObj.borders.indexOf('L') !== -1) {
+                        context.moveTo(0,0);
+                        context.lineTo(0, h);
+                        context.stroke();
+                    }               
+
+                    // Draw bottom border?
+                    if (chartParamsObj.borders.indexOf('B') !== -1) {
+                        context.moveTo(0, h);
+                        context.lineTo(w, h);
+                        context.stroke();
+                    }
+
+                    // Draw right border?
+                    if (chartParamsObj.borders.indexOf('R') !== -1) {
+                        context.moveTo(w, 0);
+                        context.lineTo(w, h);
+                        context.stroke();
+                    }
+
+                    // Draw top border?
+                    if (chartParamsObj.borders.indexOf('T') !== -1) {
+                        context.moveTo(0, 0);
+                        context.lineTo(w, 0);
+                        context.stroke();
+                    }
+
+                    return;
+                }
+            }
+        }
+    },
+
+    applyChartBackground : function (chartParamsObj)
+    {
+
+        var targDiv = document.getElementById(chartParamsObj.uniqueid);
+
+        // Dont display a background? Defined in either nobackground or background.nobackground
+        if (chartParamsObj.nobackground) {
+            if (chartParamsObj.nobackground === true) { return; }
+        }
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.nobackground) {
+                if (chartParamsObj.background.nobackground === true) {
+                    return;
+                }
+            }
+        }
+
+        // What is the HTML we should inject?
+        var backURL = '/images/logoShark.png'; // default location
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.URL) {
+                backURL = chartParamsObj.background.URL;
+            }
+        }
+        var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
+
+        // But wait, is there an override issued for the HTML of the background to inject?
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.overrideHTML) {
+                backURL = chartParamsObj.background.overrideHTML;
+            }
+        }
+
+        // Where do we inject the background in the DOM? (different for differnt chart rederers)
+        var cpy;
+        var insertBeforeChild;
+        if (chartParamsObj.chartType === 'pie') {
+            cpy = targDiv.childNodes[3];
+            insertBeforeChild = targDiv.childNodes[4];
+        } else {    
+            cpy = targDiv.childNodes[6];
+            insertBeforeChild = targDiv.childNodes[5];
+        }
+
+        var cpyStyl = cpy.style;
+
+        injectedBackgroundImg = document.createElement('span');
+        injectedBackgroundImg.setAttribute('align', 'center');
+        injectedBackgroundImg.setAttribute('style' , 'position: absolute; left: ' + cpyStyl.left + '; top: ' + cpyStyl.top + '; width: ' + cpy.width + 'px; height: ' + cpy.height + 'px;');
+
+        var inserted = targDiv.insertBefore(injectedBackgroundImg, insertBeforeChild);
+        inserted.innerHTML = injectHTML;
+    },
+
+    /**
+     * Creates the chart widgets/options (regular options, not global-settings).
+     * The generated HTML for these "widgets" as placed in a div by the id of the
+     * chart's uniqueId + "WidgetSpace"
+     *
+     * @return void
+     */
+    applyChartWidgets : function (chartParamsObj)
+    {
+        var x = 0;
+        var y = 0;
+
+        var wigSpace = document.getElementById(chartParamsObj.uniqueid + 'WidgetSpace');
+
+        // Are there widgets for this chart?
+        if (typeof chartParamsObj.widgets === 'undefined') {
+            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            return;
+        } else if (chartParamsObj.widgets.length === 0) {
+            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            return;
+        }
+
+        if (chartParamsObj.widgets) {
+
+            var addHTML = '';
+
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+
+                // create a widget id if one is not explicitly given
+                if (!thisWidget.uniqueid) {
+                    thisWidget.uniqueid = chartParamsObj.uniqueid + '_widget' + x;
+                    chartParamsObj.widgets[x].uniqueid = thisWidget.uniqueid;
+                }
+
+                // print the label text to be displayed to the left of the widget if one is given
+                addHTML += '<tr><td nowrap align=left>' + thisWidget.label + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
+
+                switch(thisWidget.type) {
+                    case 'combo':
+
+                        addHTML += '<select id="' + thisWidget.uniqueid + '" onChange="Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
+                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+
+                        for (y = 0; y < thisWidget.options.length; y++) {
+                            addHTML += '<option value="' + thisWidget.options[y] + '">' + thisWidget.options[y] + '</option><br/>';
+                        }
+
+                        addHTML += '</select>';
+
+                        break;
+
+                    case 'text':
+
+                        addHTML += '<input onKeyDown="if(event.keyCode==13){Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget.uniqueid + '" />';
+                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+                        break;
+
+                    default:
+                        throw 'Error - Widget ' + x + "'s type (" + thisWidget.type + ') is not a known widget type';
+                }
+
+
+                addHTML += '</td></tr>';
+
+            }
+
+            // add this widget HTML to the DOM
+            wigSpace.innerHTML = '<table>' + addHTML + '</table>';
+
+        }
+
+        Fisma.Chart.applyChartWidgetSettings(chartParamsObj);
+    },
+
+    /**
+     * Looks at chartParamsObj["widget"], or for every chart-options/widget, loads the
+     * values for this opt/widget into the user-interface object for this option.
+     * This value may be loaded froma saved cookie, fallback to a default, or
+     * be foreced to a certain value every time if the PHP wrapper demands it.
+     *
+     * @return void
+     */
+    applyChartWidgetSettings : function (chartParamsObj)
+    {
+        var x = 0;
+
+        if (chartParamsObj.widgets) {
+
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+
+                // load the value for widgets
+                var thisWigInDOM = document.getElementById(thisWidget.uniqueid);
+                if (thisWidget.forcevalue) {
+                    // this widget value is forced to a certain value upon every load/reload
+                    thisWigInDOM.value = thisWidget.forcevalue;
+                    thisWigInDOM.text = thisWidget.forcevalue;
+                } else {
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    if (thisWigCookieValue !== null) {
+                        // the value has been coosen in the past and is stored as a cookie
+                        thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
+                        thisWigInDOM.value = thisWigCookieValue;
+                        thisWigInDOM.text = thisWigCookieValue;
+                    } else {
+                        // no saved value/cookie. Is there a default given in the chartParamsObj object
+                        if (thisWidget.defaultvalue) {
+                            thisWigInDOM.value = thisWidget.defaultvalue;
+                            thisWigInDOM.text = thisWidget.defaultvalue;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * When an external source is queried (JSON query), all chart parameters/options/widgets
+     * are placed into the query URL. This function builds the trailing query to be appended
+     * to the static external source URL.
+     * Returns the chartParamsObj object given to this function with chartParamsObj.externalSourceParams altered.
+     *
+     * @return Array
+     */
+    buildExternalSourceParams : function (chartParamsObj)
+    {
+
+        // build arguments to send to the remote data source
+
+        var x = 0;
+        var thisWidgetValue = '';
+        chartParamsObj.externalSourceParams = '';
+
+        if (chartParamsObj.widgets) {
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+                var thisWidgetName = thisWidget.uniqueid;
+                var thisWidgetOnDOM = document.getElementById(thisWidgetName);
+
+                // is this widget actully on the DOM? Or should we load the cookie?         
+                if (thisWidgetOnDOM) {
+                    // widget is on the DOM
+                    thisWidgetValue = thisWidgetOnDOM.value;
+                } else {
+                    // not on DOM, is there a cookie?
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    if (thisWigCookieValue !== null) {
+                        // there is a cookie value, us it
+                        thisWidgetValue = thisWigCookieValue;
+                    } else {
+                        // there is no cookie, is there a default value?
+                        if (thisWidget.defaultvalue) {
+                            thisWidgetValue = thisWidget.defaultvalue;
+                        }
+                    }
+                }
+
+                chartParamsObj.externalSourceParams += '/' + thisWidgetName + '/' + thisWidgetValue;
+            }
+        }
+
+        return chartParamsObj;
+    },
+
+     /**
+      * Event handeler for when a user changes combo-boxes or textboxes 
+      * of chart settings.
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return void
+     */
+    widgetEvent : function (chartParamsObj)
+    {
+        var x = 0;
+
+        // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
+        if (chartParamsObj.widgets) {
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+                var thisWidgetName = chartParamsObj.widgets[x].uniqueid;
+                var thisWidgetValue = document.getElementById(thisWidgetName).value;
+                YAHOO.util.Cookie.set(chartParamsObj.uniqueid + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
+            }
+        }
+
+        // build arguments to send to the remote data source
+        chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
+
+        // restore externalSource so a json request is fired when calling createJQPChart
+        chartParamsObj.externalSource = chartParamsObj.oldExternalSource;
+        chartParamsObj.oldExternalSource = undefined;
+
+        chartParamsObj.chartData = undefined;
+        chartParamsObj.chartDataText = undefined;
+
+        // re-create chart entirly
+        document.getElementById(chartParamsObj.uniqueid + 'holder').finnishFadeCallback = new Function ("Fisma.Chart.makeElementVisible('" + chartParamsObj.uniqueid + "loader'); Fisma.Chart.createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); Fisma.Chart.finnishFadeCallback = '';");
+        Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'holder', 300);
+    },
+
+    makeElementVisible : function (eleId)
+    {
+        var ele = document.getElementById(eleId);
+        ele.style.opacity = '1';
+        ele.style.filter = "alpha(opacity = '100')";
+    },
+
+    makeElementInvisible : function (eleId)
+    {
+        var ele = document.getElementById(eleId);
+        ele.style.opacity = '0';
+        ele.style.filter = "alpha(opacity = '0')";
+    },
+
+    fadeIn : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) {
+            return;
+        }
+
+        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        if (fadingEnabled === 'false') {
+            Fisma.Chart.makeElementVisible(eid);
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = undefined;
+            }
+            return;
+        }
+
+        if (typeof element.isFadingNow !== 'undefined') {
+            if (element.isFadingNow === true) {
+                return;
+            }
+        }
+        element.isFadingNow = true;
+
+        element.FadeState = null;
+        element.FadeTimeLeft = undefined;
+
+        Fisma.Chart.makeElementInvisible(eid);
+        element.style.opacity = '0';
+        element.style.filter = "alpha(opacity = '0')";
+
+        Fisma.Chart.fade(eid, TimeToFade);
+    },
+
+    fadeOut : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) { return; }
+
+        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        if (fadingEnabled === 'false') {
+            Fisma.Chart.makeElementInvisible(eid);
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = undefined;
+            }
+            return;
+        }
+
+        if (typeof element.isFadingNow !== 'undefined') {
+            if (element.isFadingNow === true) {
+                return;
+            }
+        }
+        element.isFadingNow = true;
+
+        element.FadeState = null;
+        element.FadeTimeLeft = undefined;
+
+        Fisma.Chart.makeElementVisible(eid);
+        element.style.opacity = '1';
+        element.style.filter = "alpha(opacity = '100')";
+
+        Fisma.Chart.fade(eid, TimeToFade);
+    },
+
+    fade : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) { return; }
+
+        //  element.style = '';
+
+        if(element.FadeState === null)
+        {
+            if(element.style.opacity === null || element.style.opacity === '' || element.style.opacity === '1')
+            {
+                element.FadeState = 2;
+            } else {
+                element.FadeState = -2;
+            }
+        }
+
+        if (element.FadeState === 1 || element.FadeState === -1) {
+            element.FadeState = element.FadeState === 1 ? -1 : 1;
+            element.FadeTimeLeft = TimeToFade - element.FadeTimeLeft;
+        } else {
+            element.FadeState = element.FadeState === 2 ? -1 : 1;
+            element.FadeTimeLeft = TimeToFade;
+            setTimeout("Fisma.Chart.animateFade(" + new Date().getTime() + ",'" + eid + "'," + TimeToFade + ")", 33);
+        }  
+    },
+
+    animateFade : function (lastTick, eid, TimeToFade)
+    {  
+        var curTick = new Date().getTime();
+        var elapsedTicks = curTick - lastTick;
+
+        var element = document.getElementById(eid);
+
+        if(element.FadeTimeLeft <= elapsedTicks)
+        {
+            if (element.FadeState === 1) {
+                element.style.filter = 'alpha(opacity = 100)';
+                element.style.opacity = '1';
+            } else {
+                element.style.filter = 'alpha(opacity = 0)';
+                element.style.opacity = '0';
+            }
+            element.isFadingNow = false;
+            element.FadeState = element.FadeState === 1 ? 2 : -2;
+
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = '';
+            }
+            return;
+        }
+
+        element.FadeTimeLeft -= elapsedTicks;
+        var newOpVal = element.FadeTimeLeft/TimeToFade;
+        if(element.FadeState === 1) {
+            newOpVal = 1 - newOpVal;
+        }
+
+        element.style.opacity = newOpVal;
+        element.style.filter = 'alpha(opacity = "' + (newOpVal*100) + '")';
+
+        setTimeout("Fisma.Chart.animateFade(" + curTick + ",'" + eid + "'," + TimeToFade + ")", 33);
+    },
+
+    /**
+     * This function controles how width and scrolling is handeled with the chart's canvase's
+     * parent div. If autoWidth (or in PHP Fisma_Chart->widthAuto(true);) is set, the parent
+     * div will always be scrollable. If not, it may still be automatically set scrollable if
+     * the with in chartParamsObj.width is less than the minimum with required by the chart (calculated
+     * in this function).
+     *
+     * NOTE: This function does not actully look at the DOM. It assumes the author to used
+     *       Fisma_Chart->setWidth() knew what he was doing and set it correctly.
+     *       The static width given to charts is considered a minimum width.
+     *
+     * @return void
+     */
+    setChartWidthAttribs : function (chartParamsObj)
+    {
+
+        var makeScrollable = false;
+        var minSpaceRequired;
+
+        // Determin if we need to make this chart scrollable...
+        // Do we really have the chart data to plot?
+        if (chartParamsObj.chartData) {
+            // Is this a bar chart?
+            if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
+
+                // How many bars does it have?
+                var barCount;
+                if (chartParamsObj.chartType === 'stackedbar') {
+                    if (typeof chartParamsObj.chartData[0] === 'undefined') {
+                        return;
+                    } else {
+                        barCount = chartParamsObj.chartData[0].length;
+                    }
+                } else if (chartParamsObj.chartType === 'bar') {
+                    barCount = chartParamsObj.chartData.length;
+                }
+
+                // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
+                minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
+
+                // Do we not have enough space for a non-scrolling chart?
+                if (chartParamsObj.width < minSpaceRequired) {
+
+                    // We need to make this chart scrollable
+                    makeScrollable = true;
+                }
+            }
+        }
+
+        // Is auto-width enabeled? (set width to 100% and make scrollable)
+        if (typeof chartParamsObj.autoWidth !== 'undefined') {
+            if (chartParamsObj.autoWidth === true) {
+                makeScrollable = true;
+            }
+        }
+
+        if (makeScrollable === true) {
+
+            document.getElementById(chartParamsObj.uniqueid + 'loader').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = 'auto';
+            document.getElementById(chartParamsObj.uniqueid).style.width = minSpaceRequired + 'px';
+            document.getElementById(chartParamsObj.uniqueid  + 'toplegend').style.width = minSpaceRequired + 'px';
+
+            // handel alignment
+            if (chartParamsObj.align === 'center') {
+                document.getElementById(chartParamsObj.uniqueid).style.marginLeft = 'auto';
+                document.getElementById(chartParamsObj.uniqueid).style.marginRight = 'auto';
+                document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.marginLeft = 'auto';
+                document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.marginRight = 'auto';
+            }
+
+        } else {
+
+            document.getElementById(chartParamsObj.uniqueid + 'loader').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = chartParamsObj.width + 'px';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = '';
+            document.getElementById(chartParamsObj.uniqueid).style.width = chartParamsObj.width + 'px';
+            document.getElementById(chartParamsObj.uniqueid + 'toplegend').width = chartParamsObj.width + 'px';
+        }
+
+    },
+
+    /**
+     * Builds a table based on the data to plot on the chart for screen readers.
+     * The generated HTML should generally be placed in a div by the Id of the
+     * chart's uniqueId + "table"
+     *
+     * @param object
+     * @return String
+     */
+    getTableFromChartData : function (chartParamsObj)
+    {
+        if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            return;
+        }
+
+        var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
+        dataTableObj.innerHTML = '';
+
+        if (Fisma.Chart.getGlobalSetting('showDataTable') === 'true') {
+
+            if (chartParamsObj.chartType === 'pie') {
+                Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
+            } else {
+                Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
+            }
+
+            // Show the table generated based on chart data
+            dataTableObj.style.display = '';
+            // Hide, erase, and collapse the container of the chart divs
+            document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
+            document.getElementById(chartParamsObj.uniqueid).style.width = 0;
+            document.getElementById(chartParamsObj.uniqueid).style.height = 0;
+            // Ensure the threat-level-legend is hidden
+            document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.display = 'none';
+
+        } else {
+            dataTableObj.style.display = 'none';
+        }
+    },
+
+    getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
+    {
+        var tbl     = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+
+        var x = 0;
+        var cell;
+        var cellText;
+        var row;
+
+        // row of slice-labels
+        row = document.createElement("tr");
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            cell = document.createElement("th");
+            cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        // row of data
+        row = document.createElement("tr");
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+            cell = document.createElement("td");
+            cellText = document.createTextNode(chartParamsObj.chartData[x]);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        tbl.appendChild(tblBody);
+        tbl.setAttribute("border", "1");
+        tbl.setAttribute("width", "100%");
+
+        dataTableObj.appendChild(tbl);
+    },
+
+    getTableFromBarChart : function (chartParamsObj, dataTableObj)
+    {
+        var x = 0;
+        var y = 0;
+        var cell;
+        var cellText;
+
+        var tbl     = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+        var row = document.createElement("tr");
+
+        // add a column for layer names if this is a stacked chart
+        if (typeof chartParamsObj.chartLayerText !== 'undefined') {
+            cell = document.createElement("td");
+            cellText = document.createTextNode(" ");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            cell = document.createElement("th");
+            cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+
+            var thisEle = chartParamsObj.chartData[x];
+            row = document.createElement("tr");
+
+            // each layer label
+            if (typeof chartParamsObj.chartLayerText !== 'undefined') {
+                cell = document.createElement("th");
+                cellText = document.createTextNode(chartParamsObj.chartLayerText[x]);
+                cell.setAttribute("style", "font-style: bold;");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            if (typeof(thisEle) === 'object') {
+
+                for (y = 0; y < thisEle.length; y++) {
+                    cell = document.createElement("td");
+                    cellText = document.createTextNode(thisEle[y]);
+                    cell.setAttribute("style", "font-style: bold;");
+                    cell.appendChild(cellText);
+                    row.appendChild(cell);
+                }
+
+            } else {
+
+                cell = document.createElement("td");
+                cellText = document.createTextNode(thisEle);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            tblBody.appendChild(row);
+
+        }
+
+        tbl.appendChild(tblBody);
+        tbl.setAttribute("border", "1");
+        tbl.setAttribute("width", "100%");
+
+        dataTableObj.appendChild(tbl);
+    },
+
+    /**
+     * Removes decimals from point labels, along with some other minor maintenance
+     * - removes data/point-labels that are 0s
+     * - Applies outlines if the globalSettings is set so
+     * - forces color to black, and bolds the font
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    removeDecFromPointLabels : function (chartParamsObj)
+    {
+            var outlineStyle = '';
+            var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
+
+            var x = 0;
+            for (x = 0; x < chartOnDOM.childNodes.length; x++) {
+
+                    var thisChld = chartOnDOM.childNodes[x];
+
+                    // IE Support - IE does not support .classList, manually make this
+                    if (typeof thisChld.classList === 'undefined') {
+                        thisChld.classList = String(thisChld.className).split(' ');
+                    }
+
+                    if (thisChld.classList) {
+                        if (thisChld.classList[0] === 'jqplot-point-label') {
+
+                                // convert this from a string to a number to a string again (removes decimal if its needless)
+                                thisLabelValue = parseInt(thisChld.innerHTML, 10);
+                                thisChld.innerHTML = thisLabelValue;
+                                thisChld.value = thisLabelValue;
+
+                                // if this number is 0, hide it (0s overlap with other numbers on bar charts)
+                                if (parseInt(thisChld.innerHTML, 10) === 0 || isNaN(thisLabelValue)) {
+                                    thisChld.innerHTML = '';
+                                }
+
+                                // add outline to this point label so it is easily visible on dark color backgrounds (outlines are done through white-shadows)
+                                if (Fisma.Chart.getGlobalSetting('pointLabelsOutline') === 'true') {
+
+                                    outlineStyle = 'text-shadow: ';
+                                    outlineStyle += '#FFFFFF 0px -1px 0px, ';
+                                    outlineStyle += '#FFFFFF 0px 1px 0px, ';
+                                    outlineStyle += '#FFFFFF 1px 0px 0px, ';
+                                    outlineStyle += '#FFFFFF -1px 1px 0px, ';
+                                    outlineStyle += '#FFFFFF -1px -1px 0px, ';
+                                    outlineStyle += '#FFFFFF 1px 1px 0px; ';
+
+                                    thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
+                                    thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
+
+                                } else {
+                                    thisChld.innerHTML = '<span style="' + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
+                                }
+
+                                // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
+                                var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                                var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                                thisLeftNbrValue += chartParamsObj.pointLabelAdjustX;
+                                thisTopNbrValue += chartParamsObj.pointLabelAdjustY;
+                                if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
+                                if (thisLabelValue >= 1000) { thisLeftNbrValue -= 3; }
+                                thisChld.style.left = thisLeftNbrValue + 'px';
+                                thisChld.style.top = thisTopNbrValue + 'px';
+
+                                // force color to black
+                                thisChld.style.color = 'black';
+
+                        }
+                    }
+            }
+    },
+
+    removeOverlappingPointLabels : function (chartParamsObj)
+    {
+
+            // This function will deal with removing point labels that collie with eachother
+            // There is no need for this unless this is a stacked-bar or stacked-line chart
+            if (chartParamsObj.chartType !== 'stackedbar' && chartParamsObj.chartType !== 'stackedline') {
+                return;
+            }
+
+            var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
+
+            var pointLabels_info = [];  //array of objects {left, top, value, obj}, one for each data label
+                            
+            var pointLabelLeft;     // the x-offset of the data label
+            var pointLabelTop;      // the y=offset of the data label
+            var pointLabelValue;    // the numerical value the data label displays (casted as an integer)
+
+            var x = 0;
+            var y = 0;
+            var d = 0;
+
+            for (x = 0; x < chartOnDOM.childNodes.length; x++) {
+
+                var thisChld = chartOnDOM.childNodes[x];
+
+                // IE support - IE dosnt supply .classList array, just a className string. Manually build Fisma.Chart....
+                if (typeof thisChld.classList === 'undefined') {
+                    thisChld.classList = String(thisChld.className).split(' ');
+                }
+
+                if (thisChld.classList[0] === 'jqplot-point-label') {
+
+                    var chldIsRemoved = false;
+
+                    if (typeof thisChld.isRemoved !== 'undefined') {
+                        chldIsRemoved = thisChld.isRemoved;
+                    }
+
+                    if (chldIsRemoved === false) {
+                        // index this point labels position
+
+                        // remove "px" from string, and conver to number
+                        pointLabelLeft = parseInt(String(thisChld.style.left).replace('px', ''), 10);
+                        pointLabelTop = parseInt(String(thisChld.style.top).replace('px', ''), 10);
+                        pointLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
+
+                        var thispLabelInfo = {
+                            left: pointLabelLeft, 
+                            top: pointLabelTop, 
+                            value: pointLabelValue, 
+                            obj: thisChld
+                        };
+
+                        pointLabels_info.push(thispLabelInfo);
+                    }
+                }
+            }
+
+            // Ensure point labels do not collide with others
+                $.each(pointLabels_info, function(index, thisPointLabel) {
+
+                    /* now determin the distance between this point label, and all
+                       point labels within this column. pointLabels_info[]
+                       holds all point labels within this column. */
+
+                    $.each(pointLabels_info, function(index, checkAgainst) {
+
+                        // get the distance from thisPointLabel to checkAgainst point label
+                        var deltaX = (thisPointLabel.left - checkAgainst.left);
+                        deltaX = deltaX * deltaX;
+                        var deltaY = (thisPointLabel.top - checkAgainst.top);
+                        deltaY = deltaY * deltaY;
+                        var d = Math.sqrt(deltaX + deltaY);
+                        
+                        if (d < 17 && d !== 0 && !isNaN(checkAgainst.value) && !isNaN(thisPointLabel.value)) {
+
+                            // remove whichever label has the lower number
+
+                            if (checkAgainst.value < thisPointLabel.value) {
+                                checkAgainst.obj.innerHTML = '';
+                                checkAgainst.obj.isRemoved = true;
+                            } else {
+                                thisPointLabel.obj.innerHTML = '';
+                                thisPointLabel.obj.isRemoved = true;
+                            }
+
+                            // We jave just removed a point label, so this function will need to be run again
+                            // as the labels will need to be reindexed.
+
+                            Fisma.Chart.removeOverlappingPointLabels(chartParamsObj);
+                            return;
+                        }
+                    });
+                });
+    },
+
+    hideButtonClick : function (scope, chartParamsObj, obj)
+    {
+        Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
+    },
+
+    /**
+     * Controles if the YUI-tab-view of the settings for a given drawn chart on the DOM
+     * is visible or not.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    setChartSettingsVisibility : function (chartId, boolVisible)
+    {
+        var menuHolderId = chartId + 'WidgetSpaceHolder';
+        var menuObj = document.getElementById(menuHolderId);
+
+        if (boolVisible === 'toggle') {
+            if (menuObj.style.display === 'none') {
+                boolVisible = true;
+            } else {
+                boolVisible = false;
+            }
+        }
+
+        if (boolVisible === true) {
+            menuObj.style.display = '';
+        } else {
+            menuObj.style.display = 'none';
+        }
+    },
+
+    /**
+     * Will take values from checkboxes/textboxes within the Global Settings tab of
+     * a chart and save each settings into cookies, and then trigger Fisma.Chart.redrawAllCharts()
+     *
+     * @return void
+     */
+    globalSettingUpdate : function (mouseEvent, chartUniqueId)
+    {
+        // get this chart's GlobSettings menue
+        var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
+
+        // get all elements of this chart's GlobSettings menue
+        var settingOpts = settingsMenue.childNodes;
+
+        var x = 0;
+        for (x = 0; x < settingOpts.length; x++) {
+            var thisOpt = settingOpts[x];
+            if (thisOpt.nodeName === 'INPUT') {
+                if (thisOpt.type === 'checkbox') {
+                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.checked);
+                } else {
+                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.value);
+                }
+            }
+        }
+
+        Fisma.Chart.redrawAllCharts();
+    },
+
+    /**
+     * Will update checkboxes/textboxes within the Global Settings tab of
+     * the chart to be equal to the current cookie state for each setting 
+     * or the default stored in globalSettingsDefaults.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    globalSettingRefreshUi : function (chartParamsObj)
+    {
+        /*
+            Every input-element (setting UI) has an id equal to the cookie name 
+            to which its value is stored. So wee we have to do is look for a
+            cookie based on the id for each input element
+        */
+
+        // get this chart's GlobSettings menue
+        var settingsMenue = document.getElementById(chartParamsObj.uniqueid + 'GlobSettings');
+
+        // get all elements of this chart's GlobSettings menue
+        var settingOpts = settingsMenue.childNodes;
+
+        var x = 0;
+        for (x = 0; x < settingOpts.length; x++) {
+            var thisOpt = settingOpts[x];
+            if (thisOpt.nodeName === 'INPUT') {
+
+                // By this line (and in this block), we know we have found an input element on this GlobSettings menue
+
+                if (thisOpt.type === 'checkbox') {
+                    thisOpt.checked = (Fisma.Chart.getGlobalSetting(thisOpt.id) ==='true') ? true : false;
+                } else {
+                    thisOpt.value = Fisma.Chart.getGlobalSetting(thisOpt.id);
+                    thisOpt.text = thisOpt.value;
+                }
+            }
+        }
+    },
+
+    showSetingMode : function (showBasic)
+    {
+        var x = 0;
+        var hideThese;
+        var showThese;
+
+        if (showBasic === true) {
+            showThese = document.getElementsByName('chartSettingsBasic');
+            hideThese = document.getElementsByName('chartSettingsGlobal');
+        } else {
+            hideThese = document.getElementsByName('chartSettingsBasic');
+            showThese = document.getElementsByName('chartSettingsGlobal');
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+            hideThese[x].style.display = 'none';
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+                showThese[x].style.display = '';
+        }
+    },
+
+    getGlobalSetting : function (settingName)
+    {
+
+        var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
+
+        if (rtnValue !== null) {
+            return rtnValue;
+        } else {
+
+            if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
+            } else {
+                return String(Fisma.Chart.globalSettingsDefaults[settingName]);
+            }
+        }
+    },
+
+    setGlobalSetting : function (settingName, newValue)
+    {
+        YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
+    },
+
+    /**
+     * Will alter the input chart object based on 
+     * settings(cookies) or defaults stored in globalSettingsDefaults.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * Returns: The given object, which may or may not have alterations
+     *
+     * @param object
+     * @return object
+     */
+    alterChartByGlobals : function (chartParamObj)
+    {
+
+        // Show bar shadows?
+        if (Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
+            chartParamObj.seriesDefaults.rendererOptions.shadowDepth = 3;
+            chartParamObj.seriesDefaults.rendererOptions.shadowOffset = 3;
+        }
+
+        // Depth of bar shadows?
+        if (Fisma.Chart.getGlobalSetting('barShadowDepth') !== 'no-setting' && Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
+            chartParamObj.seriesDefaults.rendererOptions.shadowDepth = Fisma.Chart.getGlobalSetting('barShadowDepth');
+            chartParamObj.seriesDefaults.rendererOptions.shadowOffset = Fisma.Chart.getGlobalSetting('barShadowDepth');
+        }
+
+        // grid-lines?
+        if (Fisma.Chart.getGlobalSetting('gridLines') === 'true') {
+            chartParamObj.grid.gridLineWidth = 1;
+            chartParamObj.grid.borderWidth = 0;
+            chartParamObj.grid.gridLineColor = undefined;
+            chartParamObj.grid.drawGridLines = true;
+            chartParamObj.grid.show = true;
+        }
+
+        // grid-lines?
+        if (Fisma.Chart.getGlobalSetting('dropShadows') !== 'false') {
+            chartParamObj.grid.shadow = true;
+        }   
+
+        // point labels?
+        if (Fisma.Chart.getGlobalSetting('pointLabels') === 'true') {
+            chartParamObj.seriesDefaults.pointLabels.show = true;
+        }
+
+        // point labels outline?
+            /* no alterations to the chartParamObject needs to be done here, this is handeled by Fisma.Chart.removeDecFromPointLabels() */  
+
+
+        return chartParamObj;
+    },
+
+
+    /**
+     * Redraws all charts and refreashes all options dialogs associated.
+     *
+     * If using IE, will post a loading message, and re-call this function
+     * again with doRedrawNow=true based on a timer
+     *
+     * The reason for the use of the timer is to ensure the browser repaints
+     * its content area, and the loading message is actully shown 
+     * (and yes, this is nessesary).
+     */
+    redrawAllCharts : function (doRedrawNow)
+    {
+        var thisParamObj;
+        var uniqueid;
         
-        location.href = baseUrl;
+        // First, show a loading message showing that the chart is loading
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
+            Fisma.Chart.showChartLoadingMsg(thisParamObj);
+        }
+
+        // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
+        if (Fisma.Chart.isIE === true) {
+            if (doRedrawNow !== true || doRedrawNow === null) { 
+                setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
+                return;
+            }
+        }
+
+        // Now redraw and refreash charts and chart options
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
+
+            // redraw chart
+            Fisma.Chart.createJQChart(thisParamObj);
+
+            // refreash Global Settings UI
+            Fisma.Chart.globalSettingRefreshUi(thisParamObj);
+        }
+
+    },
+
+    showChartLoadingMsg : function (chartParamsObj)
+    {
+        // Ensure the threat-level-legend is hidden
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+
+        // Show spinner
+        Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+
+        // Create text "Loading" message
+        var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+        var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+        var pTag = document.createElement('p');
+        pTag.align = 'center';
+        pTag.appendChild(loadChartDataMsg);
+
+        // Show text "Loading" message
+        chartContainer.innerHTML = '';      // clear the current chart container div
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(pTag);
+    },
+
+    /**
+     * Will insert a "No data to plot" message when there is no 
+     * data to plot, or all plot data are 0s
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    showMsgOnEmptyChart : function (chartParamsObj)
+    {
+        if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var targDiv = document.getElementById(chartParamsObj.uniqueid);
+
+            // Place message on DOM
+            var insertBeforeChild = targDiv.childNodes[1];
+            var msgOnDom = document.createElement('div');
+            msgOnDom.height = '100%';
+            msgOnDom.style.align = 'center';
+            msgOnDom.style.position = 'absolute';
+            msgOnDom.style.width = chartParamsObj.width + 'px';
+            msgOnDom.style.height = '100%';
+            msgOnDom.style.textAlign = 'center';
+            msgOnDom.style.verticalAlign = 'middle';
+            var textMsgOnDom = document.createTextNode('No data to plot.');
+            msgOnDom.appendChild(textMsgOnDom);
+            targDiv.appendChild(msgOnDom);
+
+            // Make sure screen-reader-table is not showing
+            var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
+            dataTableObj.style.display = 'none';
+        }
+    },
+
+    /**
+     * Returns true if there is no data to 
+     * plot, or if all plot data are 0s
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return boolean
+     */
+    chartIsEmpty : function (chartParamsObj)
+    {
+        var isChartEmpty = true;
+        var x = 0; var y = 0;
+
+        for (x in chartParamsObj.chartData) {
+
+            if (typeof chartParamsObj.chartData[x] === 'object') {
+
+                for (y in chartParamsObj.chartData[x]) {
+                    if (parseInt(chartParamsObj.chartData[x][y], 10) > 0) {
+                        isChartEmpty = false;
+                    }
+                }
+
+            } else {
+                if (parseInt(chartParamsObj.chartData[x], 10) > 0) {
+                    isChartEmpty = false;
+                }
+            }
+
+        }
+
+        return isChartEmpty;
     }
+
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -2815,6 +4597,10 @@ Fisma.CheckboxTree = {
         }
 
         var topListItem = clickedBox.parentNode;
+
+        if (topListItem.nextSibling === null) {
+            return;
+        }
 
         // If there are no nested checkboxes, then there is nothing to do
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
@@ -2946,8 +4732,7 @@ Fisma.Commentable = {
 
                  argument: newPanel
              }, 
-             null
-         );
+             null);
          
          // Prevent form submission
          return false;
@@ -2963,11 +4748,7 @@ Fisma.Commentable = {
       */
      postComment : function() {
          
-         var postUrl = "/comment/add/id/"
-                     + encodeURIComponent(Fisma.Commentable.config.id)
-                     + "/type/"
-                     + encodeURIComponent(Fisma.Commentable.config.type)
-                     + "/format/json";
+         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -2982,8 +4763,7 @@ Fisma.Commentable = {
                      alert('Document upload failed.');
                  }
              }, 
-             null
-         );
+             null);
                   
          // Prevent form submission
          return false;
@@ -3007,7 +4787,7 @@ Fisma.Commentable = {
                  // Handle a JSON syntax error by constructing a fake response object
                  responseStatus = new Object();
                  responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server."
+                 responseStatus.message = "Invalid response from server.";
              } else {
                  throw e;
              }
@@ -3093,7 +4873,7 @@ Fisma.Email = function() {
         showRecipientDialog : function() {
 
             // Remove used old panel if necessary
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
@@ -3137,7 +4917,7 @@ Fisma.Email = function() {
          */
         sendTestEmail : function() {
             
-            if (document.getElementById('testEmailRecipient').value == '') {
+            if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
                 alert("Recipient is required.");
                 document.getElementById('testEmailRecipient').focus();
@@ -3170,11 +4950,13 @@ Fisma.Email = function() {
             }, null);
     
             // Remove used panel
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
+            
+            return true;
         }
     };
 }();
@@ -3322,7 +5104,7 @@ Fisma.Finding = {
             }
         );
     }
-}
+};
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -3395,6 +5177,7 @@ Fisma.FindingSummary = function() {
 
             // Render each node at this level
             for (var nodeId in tree) {
+                var c;
                 var node = tree[nodeId];
 
                 // Append two rows ('ontime' and 'overdue') to the table for this node
@@ -3415,7 +5198,7 @@ Fisma.FindingSummary = function() {
 
                 var expandControlImage = document.createElement('img');
                 expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img"
+                expandControlImage.id = node.nickname + "Img";
 
                 var expandControl = document.createElement('a');
                 expandControl.appendChild(expandControlImage);
@@ -3454,9 +5237,9 @@ Fisma.FindingSummary = function() {
                 
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
-                for (var c in ontime) {
+                for (c in ontime) {
                     count = ontime[c];
-                    cell = firstRow.insertCell(i++);
+                    cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
                         cell.className = "noDueDate";
@@ -3465,10 +5248,11 @@ Fisma.FindingSummary = function() {
                         cell.className = 'onTime';                
                     }
                     this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    i += 1;
                 }
 
                 // Now add cells to the second row
-                for (var c in overdue) {
+                for (c in overdue) {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -3540,7 +5324,7 @@ Fisma.FindingSummary = function() {
             var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (treeNode.hasOverdue) {
                 // Do not hide the overdue row. Instead, update the counts
-                var i = 0;
+                i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
@@ -3600,7 +5384,7 @@ Fisma.FindingSummary = function() {
                 ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
                 overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
 
-                var i = 0;
+                i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
@@ -3704,11 +5488,11 @@ Fisma.FindingSummary = function() {
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
                 node = tree[nodeId];
-                if (node.nickname == nodeName) {
+                if (node.nickname === nodeName) {
                     return node;
                 } else if (node.children.length > 0) {
                     var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode != false) {
+                    if (foundNode !== false) {
                         return foundNode;
                     }
                 }
@@ -3745,10 +5529,11 @@ Fisma.FindingSummary = function() {
          * @param expanded Used to generate link
          */
         updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+            var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
-                    var link = document.createElement('a');
+                    link = document.createElement('a');
                     link.href = this.makeLink(orgName, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
@@ -3773,7 +5558,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
-                        var link = document.createElement('a');
+                        link = document.createElement('a');
                         link.href = this.makeLink(orgName, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
@@ -3805,40 +5590,36 @@ Fisma.FindingSummary = function() {
                 var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 
                 if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
+                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
                 } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
+                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
                 }
             }
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+            if (status !== '' && status !=='TOTAL') {
+                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/enumIs/' + this.filterType;
+            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
+                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
             }
 
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
+                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
-                    + onTimeString
-                    + statusString
-                    + filterType
-                    + filterSource;
+            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
+                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
             } else {
-                uri += '/organization/organizationSubtree/' + orgName;
+                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
             }
 
             return uri;            
@@ -3850,9 +5631,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/'
-                    + format
-                    + this.listExpandedNodes(this.treeRoot, '');
+            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 
@@ -3927,11 +5706,7 @@ Fisma.Highlighter = function() {
 
             var escapedDelimiter = Fisma.Util.escapeRegexValue(delimiter);
 
-            var regex = new RegExp("^(.*?)" 
-                                   + escapedDelimiter
-                                   + "(.*?)"
-                                   + escapedDelimiter
-                                   + "(.*?)$");
+            var regex = new RegExp("^(.*?)" + escapedDelimiter + "(.*?)" + escapedDelimiter + "(.*?)$");
 
             for (var i in elements) {
                 var element = elements[i];
@@ -4033,7 +5808,7 @@ Fisma.Highlighter = function() {
 
                     var newTextNode = document.createTextNode(match);
 
-                    if (j % 2 == 0) {
+                    if (j % 2 === 0) {
                         // This is a plaintext node
                         parentNode.appendChild(newTextNode);
                     } else {
@@ -4047,7 +5822,7 @@ Fisma.Highlighter = function() {
                 }
             }
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -4074,7 +5849,6 @@ Fisma.Highlighter = function() {
  * @license   http://www.openfisma.org/content/license
  * @version   $Id$
  */
-
 Fisma.HtmlPanel = function() {
     return {
         /**
@@ -4088,12 +5862,12 @@ Fisma.HtmlPanel = function() {
          */
         showPanel : function(title, html, element, userConfig) {
             // Initialize element or its id representing the panel with default value conditionally
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -4111,7 +5885,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (html != '') {
+            if (html !== '') {
                 panel.setBody(html);
                 panel.center();
             }
@@ -4350,11 +6124,11 @@ Fisma.Incident = {
 
         //The first child of <td> block should be Name field.
         var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
-        var nameElClone = nameField.cloneNode(true) 
+        var nameElClone = nameField.cloneNode(true);
 
         //The next sibling should be role field  
         var roleField = YAHOO.util.Dom.getNextSibling(nameField);
-        var roleElClone = roleField.cloneNode(true) 
+        var roleElClone = roleField.cloneNode(true);
 
         newTdElForm.appendChild(nameElClone); 
         newTdElForm.appendChild(roleElClone); 
@@ -4362,9 +6136,6 @@ Fisma.Incident = {
         //create p node for Desription and textarea
         var elP = document.createElement('p');
         elP.innerHTML = 'Description: ';
-
-        var newTextareaEl = document.createElement('textarea');
-        newTextareaEl.setAttribute('id',textareaId);
 
         var descField = YAHOO.util.Dom.getNextSibling(roleField);
         var textareaField = YAHOO.util.Dom.getFirstChild(descField);
@@ -4374,10 +6145,19 @@ Fisma.Incident = {
         var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
+        // To create an element with a NAME attribute and its value for IE.
+        var newTextareaEl;
+        if (YAHOO.env.ua.ie) {
+            newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
+        } else {
+            newTextareaEl = document.createElement('textarea');
+        }
+
+        newTextareaEl.setAttribute('id',textareaId);
         newTextareaEl.setAttribute('rows',textareaRows);
         newTextareaEl.setAttribute('cols',textareaCols);
         newTextareaEl.setAttribute('name',textareaName);
- 
+
         elP.appendChild(newTextareaEl);
         newTdElForm.appendChild(elP); 
 
@@ -4453,7 +6233,7 @@ Fisma.Ldap = {
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
-                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+                ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }
@@ -4492,6 +6272,93 @@ Fisma.Ldap = {
     }  
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    Fisma.Menu = {
+        resolveOnClickObjects: function(obj) {
+            if (obj.onclick && obj.onclick.fn) {
+                obj.onclick.fn = Fisma.Util.getObjectFromName(obj.onclick.fn);
+            }
+
+            if (obj.submenu) {
+                var groups = obj.submenu.itemdata;
+                for (var i in groups) {
+                    var group = groups[i];
+                    for (var j in group) {
+                        var item = group[j];
+                        Fisma.Menu.resolveOnClickObjects(item);
+                    }
+                }
+            }
+        },
+
+        goTo: function(eType, eObject, param) {
+            // create dialog
+            var Dom = YAHOO.util.Dom,
+                Event = YAHOO.util.Event,
+                Panel = YAHOO.widget.Panel,
+                contentDiv = document.createElement("div"),
+                errorDiv = document.createElement("div"),
+                form = document.createElement('form'),
+                textField = document.createElement('input'),
+                button = document.createElement('input');
+            Dom.setAttribute(textField, "type", "text");
+            Dom.setAttribute(button, "type", "submit");
+            Dom.setAttribute(button, "value", "Go");
+            form.innerHTML = "ID: ";
+            form.appendChild(textField);
+            form.appendChild(button);
+            contentDiv.appendChild(errorDiv);
+            contentDiv.appendChild(form);
+
+            // Add event listener
+            var fn = function(ev, obj) {
+                Event.stopEvent(ev);
+                var input = Number(obj.textField.value.trim());
+                if (isFinite(input)) {
+                    obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
+                    window.location = obj.controller + "/view/id/" + input;
+                } else { // input NaN
+                    obj.errorDiv.innerHTML = "Please enter a single ID number.";
+                }
+            };
+            param.textField = textField;
+            param.errorDiv = errorDiv;
+            Event.addListener(form, "submit", fn, param);
+
+            // show the panel
+            var panel = new Panel(Dom.generateId(), {modal: true});
+            panel.setHeader("Go To " + param.model + "...");
+            panel.setBody(contentDiv);
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            textField.focus();
+        }
+    };
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -4522,11 +6389,7 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' 
-                       + switchButton.payload.id 
-                       + '/enabled/' 
-                       + enabled
-                       + '/format/json/';
+        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
@@ -4536,8 +6399,7 @@ Fisma.Module = {
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -4552,7 +6414,7 @@ Fisma.Module = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -4567,6 +6429,132 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Class to store local data and persist to the server.
+     *
+     * @namespace Fisma
+     * @class PeristentStorage
+     * @extends Fisma.Storage
+     * @constructor
+     * @param namespace {String} Namespace of stored data.
+     */
+    Fisma.PersistentStorage = function(namespace) {
+        Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
+    };
+    YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
+        /**
+         * @property _modified
+         * @type Array
+         * @protected
+         */
+        _modified: null,
+
+        /**
+         * Set value for key
+         *
+         * @method PersistentStorage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
+        set: function(key, value) {
+            if (this._modified === null) {
+                this._modified = {};
+            }
+            this._modified[key] = value;
+            return this._set(key, value);
+        },
+
+        /**
+         * Initialize the local storage with default values.
+         *
+         * @method Storage.init
+         * @param values {Object} Object literal of key-value pairs to set
+         */
+        init: function(values) {
+            for (var key in values) {
+                this._set(key, values[key]);
+            }
+        },
+        /**
+         * Synchronize the server with the local state.
+         *
+         * @method PersistentStorage.sync
+         * @param reply {Array} Array of keys to reply with, null implies all keys.
+         * @param callback {Function|Object} Callback function/object.
+         */
+        sync: function(reply, callback) {
+            var successFn = null,
+                failureFn = null,
+                scope = null;
+            if (callback) {
+                if (typeof(callback) == "function") {
+                    successFn = callback;
+                } else if (callback.success && typeof(callback.success) == "function") {
+                    successFn = callback.success;
+                }
+                if (callback.failure && typeof(callback.failure) == "function") {
+                    failureFn = callback.failure;
+                }
+                if (callback.scope) {
+                    scope = callback.scope;
+                }
+            }
+            Fisma.Storage.onReady(function() {
+                var uri = '/storage/sync/format/json',
+                    csrfInputs = YAHOO.util.Selector.query('input[name^=csrf]'),
+                    callback = {
+                        scope: this,
+                        success: function(response) {
+                            var object = YAHOO.lang.JSON.parse(response.responseText);
+                            if (object.status == "ok") {
+                                this.init(object.data);
+                                this._modified = null;
+                            }
+                            if (successFn) {
+                                successFn.call(scope ? scope : this, response, object);
+                            }
+                        },
+                        failure: function() {
+                            if (failureFn) {
+                                failureFn.call(scope ? scope : this);
+                            }
+                        }
+                    },
+                    postData = $.param({
+                        csrf: (YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0) ? csrfInputs[0].value : '',
+                        namespace: this.namespace,
+                        updates: YAHOO.lang.JSON.stringify(this._modified),
+                        reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
+                    });
+                YAHOO.util.Connect.asyncRequest ( 'POST', uri , callback , postData );
+            }, this, true);
+        }
+    });
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -4607,8 +6595,7 @@ Fisma.Remediation = {
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
             '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init
-        );
+            Fisma.Remediation.upload_evidence_form_init);
 
         return false;
     },
@@ -4656,11 +6643,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -4669,7 +6652,9 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
+        
+        return true;
     },
 
     /**
@@ -4705,11 +6690,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to deny.');
                 return;
@@ -4722,7 +6703,10 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
+        
+        return true;
     },
 
     /**
@@ -4759,11 +6743,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -4772,7 +6752,9 @@ Fisma.Remediation = {
             submitMsa.value = 'APPROVED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+        };
+        
+        return true;
     },
 
     /**
@@ -4809,11 +6791,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to submit.');
                 return;
@@ -4826,9 +6804,12 @@ Fisma.Remediation = {
             submitMsa.value = 'DENIED';
             form2.appendChild(submitMsa);
             form2.submit();
-        }
+            return;
+        };
+        
+        return true;
     }
-}
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -4886,6 +6867,16 @@ Fisma.Search = function() {
         showDeletedRecords : false,
 
         /**
+         * User search preferences for when a search hasn't been executed on this model this session.
+         */
+        searchPreferences: null,
+
+        /**
+         * Boolean flag as to whether the search preferences have been updated.
+         */
+        updateSearchPreferences: false,
+
+        /**
          * Test the current system configuration
          */
         testConfiguration : function () {
@@ -4933,14 +6924,14 @@ Fisma.Search = function() {
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
+        executeSearch: function (form) {
 
             // Ensure the search type is simple when advance search is hidden
             if (document.getElementById('advancedSearch').style.display == 'none') {
@@ -4972,13 +6963,11 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -4994,6 +6983,45 @@ Fisma.Search = function() {
         },
 
         /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            var queryState = new Fisma.Search.QueryState(form.modelName.value);
+            var searchPrefs = {type: form.searchType.value};
+            if (searchPrefs.type === 'advanced') {
+                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                var fields = {};
+                for (var i in panelState) {
+                    fields[panelState[i].field] = panelState[i].operator;
+                }
+                searchPrefs['fields'] = fields;
+            }
+            Fisma.Search.updateSearchPreferences = true;
+            Fisma.Search.searchPreferences = searchPrefs;
+            Fisma.Search.updateQueryState(queryState, form);
+            Fisma.Search.executeSearch(form);
+        },
+
+        /**
+         * Update Query State
+         *
+         * @param queryState {Fisma.Search.QueryState}
+         * @param form Reference to the search form
+         */
+        updateQueryState: function(queryState, form) {
+            var Dom = YAHOO.util.Dom;
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
+            }
+        },
+
+        /**
          * Returns a POST request suitable for submitting a search query
          *
          * @var form A reference to the form
@@ -5004,7 +7032,7 @@ Fisma.Search = function() {
             var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
+                query['keywords'] = form.keywords.value;
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
@@ -5089,7 +7117,7 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
+        generateRequest: function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -5101,35 +7129,55 @@ Fisma.Search = function() {
             // The error message of advance search should be hidden before handles YUI data
             document.getElementById('msgbar').style.display = 'none';
 
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=" 
-                              + encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=" 
-                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+
+            if (Fisma.Search.updateSearchPreferences) {
+                postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+            }
+
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -5141,7 +7189,6 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -5156,21 +7203,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 
@@ -5190,56 +7239,50 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
+         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container, searchOptions) {
+        initializeSearchColumnsPanel : function (container) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-            var currentColumn = 0;
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName),
+                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
+                // Title elements used for accessibility
+                checkedTitle = "Column is visible. Click to hide column.",
+                uncheckedTitle = "Column is hidden. Click to unhide column.";
 
-            for (var index in searchOptions) {
-                var searchOption = searchOptions[index];
+            for (var index in columns) {
+                var column = columns[index],
+                    columnName = column.key;
 
-                if (searchOption['hidden'] === true) {
+                if (columnName === "deleteCheckbox") {
                     continue;
                 }
 
-                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
-                var checked = searchOption.initiallyVisible;
-
-                if (cookie) {
-                    checked = (cookie & 1 << currentColumn) != 0;
-                }
-
-                currentColumn++;
-
-                // Title elements used for accessibility
-                var checkedTitle = "Column is visible. Click to hide column.";
-                var uncheckedTitle = "Column is hidden. Click to unhide column.";
+                var checked = !column.hidden;
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : searchOption.label,
+                    label : column.label,
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, columnKey) {
-                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
+                        fn : function (event, obj) {
+                            var table = Fisma.Search.yuiDataTable,
+                                column = table.getColumn(obj.name),
+                                checked = this.get("checked");
 
-                            var table = Fisma.Search.yuiDataTable;
-                            var column = table.getColumn(columnKey);
+                            this.set("title", checked ? checkedTitle : uncheckedTitle);
 
-                            if (this.get('checked')) {
+                            if (checked) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            Fisma.Search.saveColumnCookies();
+                            obj.prefs.setColumnVisibility(obj.name, checked);
                         },
-                        obj : searchOption.name
+                        obj : {name: columnName, prefs: prefs}
                     }
                 });
 
@@ -5247,10 +7290,6 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
-            saveDiv.style.marginLeft = '20px';
-            saveDiv.style.marginBottom = '20px';
-            // The following line trips up YUI compressor if object notation (.) is used instead of array []
-            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -5258,7 +7297,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnCookie
+                    fn : Fisma.Search.persistColumnPreferences
                 }
             });
 
@@ -5283,78 +7322,31 @@ Fisma.Search = function() {
         },
 
         /**
-         * Save the currently visible columns into a cookie
-         *
-         * @param table YUI Table
-         */
-        saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTable;
-            var columnKeys = table.getColumnSet().keys;
-
-            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
-            var prefBitmap = 0;
-            var currentColumn = 0;
-
-            for (var column in columnKeys) {
-                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
-                    continue;
-                }
-
-                if (!columnKeys[column].hidden) {
-                    prefBitmap |= 1 << currentColumn;
-                }
-                
-                currentColumn++;
-            }
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-
-            YAHOO.util.Cookie.set(
-                cookieName,
-                prefBitmap,
-                {
-                    path : "/",
-                    secure : location.protocol == 'https'
-                }
-            );
-        },
-
-        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnCookie : function () {
-            Fisma.Search.saveColumnCookies();
+        persistColumnPreferences : function () {
 
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName);
             Fisma.Search.columnPreferencesSpinner.show();
 
-            YAHOO.util.Connect.asyncRequest(
-                'GET',
-                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
-                {
-                    success : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
+            prefs.persist({
+                success : function (response, object) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
 
-                        var response = YAHOO.lang.JSON.parse(o.responseText);
-
-                        if (response.success) {
-                            message("Your column preferences have been saved", "notice", true);
-                        } else {
-                            message(response.message, "warning", true);
-                        }
-                    },
-
-                    failure : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        message('Error: ' + o.statusText, 'warning', true);
+                    if (object.status === "ok") {
+                        message("Your column preferences have been saved", "notice", true);
+                    } else {
+                        message(object.status, "warning", true);
                     }
+                },
+
+                failure : function (response) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
+
+                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            );
+            });
         },
 
         /**
@@ -5386,7 +7378,7 @@ Fisma.Search = function() {
             }
             
             // Do some sanity checking
-            if (0 == checkedRecords.length) {
+            if (0 === checkedRecords.length) {
                 message("No records selected for deletion.", "warning", true);
                 
                 return;
@@ -5424,13 +7416,13 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
-            var postString = "csrf="
-                           + document.getElementById('searchForm').csrf.value
-                           + "&records="
-                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            var postString = "csrf=";
+            postString += document.getElementById('searchForm').csrf.value;
+            postString += "&records=";
+            postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -5457,13 +7449,12 @@ Fisma.Search = function() {
                         dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
+                        var text = 'An error occurred while trying to delete the records.';
+                        text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
                 },
-                postString
-            );
+                postString);
         },
         
         /**
@@ -5484,8 +7475,12 @@ Fisma.Search = function() {
          */
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
+            if (YAHOO.lang.isObject(this.yuiDataTable)) {
+                // if already set, go ahead and run the callback
+                this.onSetTableCallback();
+            }
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -5596,33 +7591,44 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-
+        
         this.container = document.createElement('div');
-
+        
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(this);";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
+        this.containerForm.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
+        this.containerForm.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
 
         var clearDiv = document.createElement('div');
-
         clearDiv.className = "clear";
+        this.containerForm.appendChild(clearDiv);
 
-        this.container.appendChild(clearDiv);
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -5846,31 +7852,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
+        return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : operands
-        }
-
-        return response;
+            operands : this.getOperands()
+        };
     },
 
     /**
@@ -5931,8 +7917,28 @@ Fisma.Search.Criteria.prototype = {
         }
         
         throw "No field found with this name: " + fieldName;
+    },
+
+    getOperands: function() {
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
+
+        return queryGenerator(this.queryInputContainer);
+    },
+
+    hasBlankOperands: function() {
+        var operands = this.getOperands();
+        for (var i in operands) {
+            if ('' === $P.trim(operands[i])) {
+                return true;
+            }
+        }
+        return false;
     }
-};/**
+
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6356,13 +8362,12 @@ Fisma.Search.CriteriaRenderer = function () {
  * Constructor
  * 
  * @param advancedSearchOptions Contains searchable fields and pre-defined filters
- * @param pathname The URL path, used to generate default search filters
  */
-Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
-
+Fisma.Search.Panel = function (advancedSearchOptions) {
+    var index;
     var searchableFields = advancedSearchOptions;
 
-    if (0 == searchableFields.length) {
+    if (0 === searchableFields.length) {
         throw "Field array cannot be empty";
     }
     
@@ -6380,37 +8385,37 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
-    for (var index in searchableFields) {
+    for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
-    // A pathname can contain default query criteria if it contains the keyword 'advanced'
+    // If default search criteria is included as a URL parameter, parse that out here.
     this.defaultQueryTokens = null;
-    
-    if (pathname) {
-        var pathTokens = pathname.split('/');
 
-        for (var index in pathTokens) {
-            var pathToken = pathTokens[index];
+    var urlParamString = document.location.search.substring(1); // strip the leading "?" character
+    var urlParams = urlParamString.split('&');
 
-            // If the 'advanced' token is found (and has more tokens after it), then save the 
-            // rest of the tokens into the object
-            var start = parseInt(index);
+    for (var i in urlParams) {
+        var urlParam = urlParams[i];
+        var keyValuePair = urlParam.split("=");
 
-            if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
-                
-                pathTokens.splice(0, start + 1);
-                
-                this.defaultQueryTokens = pathTokens;
-                
-                break;
+        // Looking for a parameter called "q"
+        if ("q" == keyValuePair[0]) {
+            var criteriaString = keyValuePair[1];
+            this.defaultQueryTokens = criteriaString.split("/");
+
+            // Remove first element if it's empty
+            if (this.defaultQueryTokens[0] === '') {
+                this.defaultQueryTokens.splice(0, 1);
             }
+
+            break;
         }
     }
 };
@@ -6434,6 +8439,10 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var Lang = YAHOO.lang;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
 
         if (this.defaultQueryTokens) {
             var index = 0;
@@ -6479,14 +8488,31 @@ Fisma.Search.Panel.prototype = {
 
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
-            Fisma.Search.onSetTable(function () {
-                var searchForm = document.getElementById('searchForm');
-            
-                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
-                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
-                // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
-            });
+            Lang.later(null, null, function() { Fisma.Search.updateQueryState(queryState, Dom.get('searchForm')); });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+            var advancedQuery = queryState.getAdvancedQuery();
+
+            for (var i in advancedQuery) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(
+                        advancedQuery[i].field,
+                        advancedQuery[i].operator,
+                        advancedQuery[i].operands));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+        } else if (Fisma.Search.searchPreferences.type === 'advanced') {
+            var fields = Fisma.Search.searchPreferences.fields;
+            for (var i in fields) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(i, fields[i]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
             var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
@@ -6497,6 +8523,13 @@ Fisma.Search.Panel.prototype = {
             initialCriteria.setRemoveButtonEnabled(false);
             this.container.appendChild(criteriaElement);
         }
+
+        Fisma.Search.onSetTable(function () {
+            var searchForm = document.getElementById('searchForm');
+        
+            // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+            setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+        });
     },
   
     /**
@@ -6557,13 +8590,27 @@ Fisma.Search.Panel.prototype = {
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
+            if (criterion.hasBlankOperands()) {
+                continue;
+            }
+            query.push(criterion.getQuery());
         }
         
         return query;
+    },
+
+    /**
+     * Get the search panel's state
+     */
+    getPanelState: function () {
+        var state = new Array();
+        
+        for (var index in this.criteria) {
+            var criterion = this.criteria[index];
+            state.push(criterion.getQuery());
+        }
+        
+        return state;
     },
     
     /**
@@ -6616,8 +8663,334 @@ Fisma.Search.Panel.prototype = {
                 throw "Number of operands not defined for query function: " + queryFunction;
                 break;
         }
+        
+        throw "Number of operands not defined for query function: " + queryFunction;
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var Lang = YAHOO.lang;
+    /**
+     * Enable getting and setting of query state information
+     *
+     * @namespace Fisma.Search
+     * @class QueryState
+     * @constructor
+     * @param model {String} Model for which this state information applies.
+     * @param init {Object} Object literal of default state.
+     */
+    var QueryState = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.Storage('Fisma.Search.QueryState');
+        };
+    QueryState.TYPE_SIMPLE = "simple";
+    QueryState.TYPE_ADVANCED = "advanced";
+    QueryState.prototype = {
+        /**
+         * Basic getter for all state information.
+         *
+         * @method getState
+         * @return {Object}
+         */
+        getState: function () {
+            return this._storage.get(this._model);
+        },
+
+        /**
+         * Basic setter for state information
+         *
+         * @method setState
+         * @param value {Object} State information.
+         */
+        setState: function (value) {
+            this._storage.set(this._model, value);
+        },
+
+        /**
+         * Get search type
+         *
+         * @method getSearchType
+         * @return {String} TYPE_SIMPLE or TYPE_ADVANCED, default TYPE_SIMPLE
+         */
+        getSearchType: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.searchType)) {
+                return QueryState.TYPE_SIMPLE;
+            } 
+            switch (state.searchType) {
+                case QueryState.TYPE_SIMPLE:
+                case QueryState.TYPE_ADVANCED:
+                    return state.searchType;
+                default:
+                    throw "Invalid search type encountered.";
+            }
+        },
+
+        /**
+         * Basic setter for search type
+         *
+         * @method setSearchType
+         * @param type {String} Search type, "simple" or "advanced"
+         */
+        setSearchType: function(type) {
+            var oldData = this.getState() || {},
+                newData = {};
+            newData.searchType = type;
+            if (type === "simple") {
+                newData.keywords = oldData.keywords || "";
+            } else if (type === "advanced") {
+                newData.advancedQuery = oldData.advancedQuery || [];
+            } else {
+                throw "Invalid search type specified.";
+            }
+            this.setState(newData);
+        },
+
+        /**
+         * Get search keywords
+         *
+         * @method getKeywords
+         * @return {String} Keywords
+         */
+        getKeywords: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.keywords)) {
+                return "";
+            } 
+            return state.keywords;
+        },
+
+        /**
+         * Basic setter for search keywords
+         *
+         * @method setKeywords
+         * @param type {String} Search keywords
+         */
+        setKeywords: function(keywords) {
+            if (!Lang.isString(keywords)) {
+                throw "Can not set non-string as keywords.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_SIMPLE) {
+                throw "Attempting to save keywords for non-simple search.";
+            }
+            var data = this.getState() || {};
+            data.keywords = keywords;
+            this.setState(data);
+        },
+
+        /**
+         * Get advanced search query
+         *
+         * @method getAdvancedQuery
+         * @return {Object} Query
+         */
+        getAdvancedQuery: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isObject(state.advancedQuery)) {
+                return {};
+            } 
+            return state.advancedQuery;
+        },
+
+        /**
+         * Basic setter for advanced search query.
+         *
+         * @method setAdvancedQuery
+         * @param query {Object} Advanced search query
+         */
+        setAdvancedQuery: function(query) {
+            if (!Lang.isObject(query)) {
+                throw "Can not set non-object as advanced search query.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+                throw "Attempting to save advanced search query for non-advanced search.";
+            }
+            var data = this.getState() || {};
+            data.advancedQuery = query;
+            this.setState(data);
+        }
+    };
+    Fisma.Search.QueryState = QueryState;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var YL = YAHOO.lang,
+        FPS = Fisma.PersistentStorage,
+    /**
+     * Enable getting and setting of datatable-related preferences.
+     *
+     * @namespace Fisma.Search
+     * @class TablePreferences
+     * @constructor
+     * @param model {String} Model for which this table is representing.
+     * @param init {Object} Object literal of default state.
+     */
+        FSTP = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
+            this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
+            this._state = null;
+            Fisma.Storage.onReady(function() {
+                var data = this._storage.get(this._model);
+                this._state = YL.isObject(init) ? init : {};
+                if (YL.isObject(data)) {
+                    this._state = YL.merge(data, this._state);
+                }
+            }, this, true);
+        };
+    FSTP.prototype = {
+        /**
+         * Get specified columns visibility.
+         *
+         * @method TablePreferences.getColumnVisibility
+         * @param column {String} Column key.
+         * @param def {Boolean} Default state
+         * @return {Boolean}
+         */
+        getColumnVisibility: function (column, def) {
+            this._stateReady();
+            if (YL.isValue(this._state.columnVisibility[column])) {
+                return this._state.columnVisibility[column] ? true : false; // always return boolean
+            }
+            // if default not provided, assume false
+            return YL.isValue(def) && def ? true : false;
+        },
+
+        /**
+         * Set the specified columns visibility.
+         *
+         * @method TablePreferences.setColumnVisibility
+         * @param column {String} Column key.
+         * @param value {Boolean} Is visible?
+         */
+        setColumnVisibility: function (column, value) {
+            this._stateReady();
+            this._state.columnVisibility[column] = value;
+            this._storage.set(this._model, this._state);
+        },
+
+        /**
+         * Get sort column and direction
+         *
+         * @method TablePreferences.getSort
+         * @return {Object}
+         */
+        getSort: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
+        },
+        /**
+         * Set the sort column and direction
+         *
+         * @method TablePreferences.setSort
+         * @param column {String} Column key.
+         * @param dir {String} Sort direction
+         */
+        setSort: function(column, dir) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.sort = {column: column, dir: dir};
+            this._localStorage.set(this._model, data);
+        },
+
+        /**
+         * Get current page number
+         *
+         * @method TablePreferences.getpage
+         * @return {Integer}
+         */
+        getPage: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
+        },
+        /**
+         * Set the current page number
+         *
+         * @method TablePreferences.setPage
+         * @param page {Integer} Page number.
+         */
+        setPage: function(page) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.page = page;
+            this._localStorage.set(this._model, data);
+        },
+
+        /**
+         * Save table preferences
+         *
+         * @method TablePreferences.persist
+         * @param callback {Function|Object} Callback on completion.
+         */
+        persist: function (callback) {
+            var m = this._model,
+                s = this._storage;
+            // force a "set" to ensure sync will know it's been modified
+            s.set(m, s.get(m));
+            s.sync([m], callback);
+        },
+
+        /**
+         * Internal method to assert the object is ready.
+         *
+         * @method TablePreferences._stateReady
+         * @protected
+         */
+        _stateReady: function() {
+            if (this._state === null) {
+                throw "Attempting to use storage engine before it is ready.";
+            }
+            if (typeof(this._state.columnVisibility) === 'undefined') {
+                this._state.columnVisibility = {};
+            }
+        }
+    };
+    Fisma.Search.TablePreferences = FSTP;
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -6663,7 +9036,7 @@ Fisma.Spinner = function (container) {
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
-}
+};
 
 Fisma.Spinner.prototype.show = function () {
     this.spinner.style.visibility = 'visible';
@@ -6741,13 +9114,13 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set click handler
     this.element.onclick = function () {
         that.toggleSwitch.call(that);
-    }
+    };
     
     /* 
      * Callback will be a string like 'Fisma.Module.handleSwitchButtonStateChange', which needs to be converted into a 
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
-    if ('' != callback) {
+    if ('' !== callback) {
         callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
@@ -6757,7 +9130,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
             throw "Specified callback is not a function: " + callback;
         }
     }
-}
+};
 
 Fisma.SwitchButton.prototype = {
     
@@ -6814,7 +9187,7 @@ Fisma.SwitchButton.prototype = {
                     to : -54,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = false;
         } else {
@@ -6826,14 +9199,14 @@ Fisma.SwitchButton.prototype = {
                     to : 0,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = true;
         }        
         
         var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
                                                   animationAttributes, 
-                                                  .1, 
+                                                  0.1, 
                                                   YAHOO.util.Easing.easeOut);
 
         toggleAnimation.onTween.subscribe(
@@ -6844,7 +9217,7 @@ Fisma.SwitchButton.prototype = {
                  */
                 that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
             }
-        )
+        );
 
         toggleAnimation.animate();
 
@@ -6904,6 +9277,102 @@ Fisma.System = {
      */
     uploadDocumentCallback : function (yuiPanel) {
         window.location.href = window.location.href;
+    },
+
+    /**
+     * removeSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    removeSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.organizationId = config.organizationId;
+        data.userRoles = userRoles;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/remove-user-roles/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+        }});
+    },
+
+    /**
+     * addUser 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addUser : function (event, config) {
+        var data = new Object();
+
+        data.userId = $('#addUserId').val();
+        data.roleId = $('#roles').val();
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/system/add-user/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
+    },
+
+    /**
+     * addSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.userRoles = userRoles;
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/add-user-roles-to-organization/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     }
 };
 /**
@@ -6958,13 +9427,14 @@ Fisma.TabView.Roles = function() {
         init : function(roles, userid, readOnly) {
             YAHOO.util.Event.addListener('role', 'change', function(e) {
                 YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
+                    var i;
                     var tabView = Fisma.tabView;
                     var tabs = tabView.get('tabs');
 
                     if (el.selected) {
                         var found = 0;
                         
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -6972,9 +9442,9 @@ Fisma.TabView.Roles = function() {
                         }
 
                         if (!found) {
-                            for (var i in roles) {
+                            for (i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
@@ -6982,8 +9452,7 @@ Fisma.TabView.Roles = function() {
                             var newTab = new YAHOO.widget.Tab({
                                 id: el.value,
                                 label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' 
-                                    + el.value + '/readOnly/' + readOnly,
+                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' + el.value + '/readOnly/' + readOnly,
                                 cacheData: true,
                                 active: true
                             });
@@ -6991,7 +9460,7 @@ Fisma.TabView.Roles = function() {
                             tabView.addTab(newTab);
                         }
                     } else {
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
@@ -7000,7 +9469,7 @@ Fisma.TabView.Roles = function() {
                 });
             });
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -7219,13 +9688,17 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list?q=';
 
         // Handle organization field
         var organization = oRecord.getData('System');
 
         if (organization) {
-            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
+        
+            // Since organization may be html-encoded, decode the html before (url)-escaping it
+            organization = $P.html_entity_decode(organization);
+            
+            overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
         // Handle status field
@@ -7233,14 +9706,14 @@ Fisma.TableFormat = {
 
         if (status) {
             status = PHP_JS().html_entity_decode(status);
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
+            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
         var parameters = oColumn.formatterParameters;
 
         if (parameters.source) {
-            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
+            overdueFindingSearchUrl += "/source/textExactMatch/" + encodeURIComponent(parameters.source);
         }
 
         // Handle date fields
@@ -7248,7 +9721,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -7257,33 +9730,32 @@ Fisma.TableFormat = {
 
         if (parameters.to) {
             toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
             
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+                                        encodeURIComponent(to) +
+                                        "/" +
+                                        encodeURIComponent(from);
         } else if (from) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
             // This is the TOTAL column
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear() 
-                                + '-' 
-                                + (yesterday.getMonth() + 1) 
-                                + '-' 
-                                + yesterday.getDate();
+            var yesterdayString = yesterday.getFullYear();
+            yesterdayString += '-';
+            yesterdayString += (yesterday.getMonth() + 1);
+            yesterdayString += '-';
+            yesterdayString += yesterday.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
         }
 
-        elCell.innerHTML = "<a href="
-                         + overdueFindingSearchUrl
-                         + ">"
-                         + oData
-                         + "</a>";
+        elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
     },
 
     /**
@@ -7296,11 +9768,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData, 10);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData !== null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {
@@ -7322,9 +9794,9 @@ Fisma.TableFormat = {
     incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
         var docTypeNames = '';
         if (oData.length > 0) {
-            docTypeNames += '<ul><li>'
-                          + oData.replace(/,/g, '</li><li>')
-                          + '</li></ul>';
+            docTypeNames += '<ul><li>';
+            docTypeNames += oData.replace(/,/g, '</li><li>');
+            docTypeNames += '</li></ul>';
         }
 
         elCell.innerHTML = docTypeNames;
@@ -7401,12 +9873,12 @@ Fisma.UrlPanel = function() {
          */
         showPanel : function(title, url, callback, element, userConfig) {
             // Initialize element or its id representing the panel with default value if necessary
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -7424,7 +9896,7 @@ Fisma.UrlPanel = function() {
             panel.show();
             
             // Load panel content from url
-            if (url != '') {
+            if (url !== '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
                         o.argument.setBody(o.responseText);
@@ -7568,8 +10040,7 @@ Fisma.User = {
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
             }, 
-            null
-        );
+            null);
 
         return panel;
     },
@@ -7577,7 +10048,7 @@ Fisma.User = {
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
-            return;
+            return true;
         }
 
         Fisma.User.generatePasswordBusy = true;
@@ -7607,8 +10078,7 @@ Fisma.User = {
                     alert('Failed to generate password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
 
         return false;
     },
@@ -7655,7 +10125,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null) {
+                    if (data.accountInfo !== null) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -7663,7 +10133,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue != null) {
+                            if (columnValue !== null) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -7682,8 +10152,66 @@ Fisma.User = {
                     alert('Failed to check account password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
+    },
+
+    /**
+     * Show the comment panel
+     * 
+     * @return void
+     */
+    showCommentPanel : function () {
+        var lockedElement = YAHOO.util.Dom.get('locked');
+
+        // Only show panel in locked status
+        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
+            YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
+            return false;
+        }
+
+        // Create a panel
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var contentTitle = document.createTextNode('Comments (OPTIONAL):');
+        p.appendChild(contentTitle);
+        content.appendChild(p);
+
+        // Add comment textarea to panel
+        var commentTextArea = document.createElement('textarea');
+        commentTextArea.id = 'commentTextArea';
+        commentTextArea.name = 'commentTextArea';
+        commentTextArea.rows = 5;
+        commentTextArea.cols = 60;
+        content.appendChild(commentTextArea);
+
+        // Add line spacing to panel
+        var lineSpacingDiv = document.createElement('div');
+        lineSpacingDiv.style.height = '10px';
+        content.appendChild(lineSpacingDiv);
+
+        // Add submmit button to panel
+        var continueButton = document.createElement('input');
+        continueButton.type = 'button';
+        continueButton.id = 'continueButton';
+        continueButton.value = 'continue';
+        content.appendChild(continueButton);
+
+        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+
+        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        return true;
+    },
+
+    /*
+     * Submit user form after assign comment value to comment element
+     */
+    submitUserForm : function () {
+
+        // Get commentTextArea value from panel and assign its value to comment element
+        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
+        YAHOO.util.Dom.get('comment').value = commentElement;
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+        form.submit();
     }
 };
 /**
@@ -7775,8 +10303,7 @@ Fisma.Util = {
                 YAHOO.widget.Overlay.BOTTOM_LEFT,
                 null,
                 [0, VERTICAL_OFFSET]
-            ]
-        );        
+            ]);        
     },
     
     /**
@@ -7883,1895 +10410,7 @@ Fisma.Vulnerability = {
         yuiPanel.hide();
         yuiPanel.destroy();
     }
-}
-
-// Constants
-    var CHART_CREATE_SUCCESS = 1;
-    var CHART_CREATE_FAILURE = 2;
-    var CHART_CREATE_EXTERNAL = 3;
-
-// Defaults for global chart settings definition:
-var globalSettingsDefaults = {
-    fadingEnabled:      false,
-    barShadows:         false,
-    barShadowDepth:     3,
-    dropShadows:        false,
-    gridLines:          false,
-    pointLabels:        false,
-    pointLabelsOutline: false,
-    showDataTable: false
-}
-
-// Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
-var chartsOnDOM = {};
-
-// Is this client/browser Internet Explorer?
-isIE = (window.ActiveXObject) ? true : false;
-
-/**
- * Creates a chart within a div by the name of chartParamsObj['uniqueid'].
- * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
- * This function may return before the actual creation of a chart if there is an external source.
- *
- * @return boolean
- */
-function createJQChart(chartParamsObj)
-{
-
-    // load in default values for paramiters, and replace it with any given params
-    var defaultParams = {
-        concatXLabel: false,
-        nobackground: true,
-        drawGridLines: false,
-        pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
-        pointLabelAdjustX: -3,
-        pointLabelAdjustY: -7,
-        AxisLabelX: '',
-        AxisLabelY: '',
-        DataTextAngle: -30
-    };
-    chartParamsObj = jQuery.extend(true, defaultParams, chartParamsObj);
-
-    // param validation
-    if (document.getElementById(chartParamsObj['uniqueid']) == false) {
-        throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj['uniqueid'];
-        return CHART_CREATE_FAILURE;
-    }
-
-    // set chart width to chartParamsObj['width']
-    setChartWidthAttribs(chartParamsObj);
-
-    // Ensure the load spinner is visible
-    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
-
-    // is the data being loaded from an external source? (Or is it all in the chartParamsObj obj?)
-    if (chartParamsObj['externalSource']) {
-        
-        /*
-         * If it is being loaded from an external source
-         *   setup a json request
-         *   have the json request return to createJQChart_asynchReturn
-         *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj['externalSource'] taken out
-        */
-
-        document.getElementById(chartParamsObj['uniqueid']).innerHTML = 'Loading chart data...';
-
-        // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
-        var externalSource = chartParamsObj['externalSource'];
-        if (!chartParamsObj['oldExternalSource']) {
-            chartParamsObj['oldExternalSource'] = chartParamsObj['externalSource'];
-        }
-        chartParamsObj['externalSource'] = undefined;
-        
-        // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
-        chartParamsObj = buildExternalSourceParams(chartParamsObj);
-        externalSource += String(chartParamsObj['externalSourceParams']).replace(/ /g,'%20');
-        chartParamsObj['lastURLpull'] = externalSource;
-
-        var myDataSource = new YAHOO.util.DataSource(externalSource);
-        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-        myDataSource.responseSchema = {resultsList: "chart"};
-
-        var callback1 = {
-            success : createJQChart_asynchReturn,
-            failure : createJQChart_asynchReturn,
-            argument: chartParamsObj
-        };
-        myDataSource.sendRequest("", callback1);
-
-        return CHART_CREATE_EXTERNAL;
-    }
-
-    // clear the chart area
-    document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
-    document.getElementById(chartParamsObj['uniqueid']).className = '';
-    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
-
-    // handel aliases and short-cut vars
-    if (typeof chartParamsObj['barMargin'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj['barMargin']}}});
-        chartParamsObj['barMargin'] = undefined;
-    }
-    if (typeof chartParamsObj['legendLocation'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj['legendLocation'] }});
-        chartParamsObj['legendLocation'] = undefined;
-    }
-    if (typeof chartParamsObj['legendRowCount'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj['legendRowCount']}}});
-        chartParamsObj['legendRowCount'] = undefined;
-    }
-        
-    // make sure the numbers to be plotted in chartParamsObj['chartData'] are infact numbers and not an array of strings of numbers
-    chartParamsObj['chartData'] = forceIntegerArray(chartParamsObj['chartData']);
-
-    // hide the loading spinner and show the canvas target
-    document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.display = '';
-    makeElementInvisible(chartParamsObj['uniqueid'] + 'holder');
-    document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.position = 'absolute';
-    document.getElementById(chartParamsObj['uniqueid'] + 'loader').finnishFadeCallback = new Function ("fadeIn('" + chartParamsObj['uniqueid'] + "holder', 500);");
-    fadeOut(chartParamsObj['uniqueid'] + 'loader', 500);
-
-    // now that we have the chartParamsObj['chartData'], do we need to make the chart larger and scrollable?
-    setChartWidthAttribs(chartParamsObj);
-
-    // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
-    // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
-    chartsOnDOM[chartParamsObj['uniqueid']] = jQuery.extend(true, {}, chartParamsObj);
-    
-    // call the correct function based on chartType, or state there will be no chart created
-    if (!chartIsEmpty(chartParamsObj)) {
-    
-        switch(chartParamsObj['chartType'])
-        {
-            case 'stackedbar':
-                chartParamsObj['varyBarColor'] = false;
-                            if (typeof chartParamsObj['showlegend'] == 'undefined') { chartParamsObj['showlegend'] = true; }
-                var rtn = createChartStackedBar(chartParamsObj);
-                break;
-            case 'bar':
-
-                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-                if (typeof chartParamsObj['chartData'][0] =='object') {
-
-                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
-
-                    chartParamsObj['varyBarColor'] = false;
-                    chartParamsObj['showlegend'] = true;
-
-                } else {
-                    chartParamsObj['chartData'] = [chartParamsObj['chartData']];  // force to 2 dimensional array
-                    chartParamsObj['links'] = [chartParamsObj['links']];
-                    chartParamsObj['varyBarColor'] = true;
-                    chartParamsObj['showlegend'] = false;
-                }
-
-                chartParamsObj['stackSeries'] = false;
-                var rtn = createChartStackedBar(chartParamsObj);
-                break;
-
-            case 'line':
-                var rtn = createChartStackedLine(chartParamsObj);
-                break;
-            case 'stackedline':
-                var rtn = createChartStackedLine(chartParamsObj);
-                break;
-            case 'pie':
-                chartParamsObj['links'] = [chartParamsObj['links']];
-                var rtn = createChartPie(chartParamsObj);
-                break;
-            default:
-                throw 'createJQChart Error - chartType is invalid (' + chartParamsObj['chartType'] + ')';
-                return CHART_CREATE_FAILURE;
-        }
-    }
-
-    // chart tweeking external to the jqPlot library
-    removeOverlappingPointLabels(chartParamsObj);
-    applyChartBackground(chartParamsObj);
-    applyChartWidgets(chartParamsObj);
-    createChartThreatLegend(chartParamsObj);
-    applyChartBorders(chartParamsObj);
-    globalSettingRefreshUi(chartParamsObj);
-    showMsgOnEmptyChart(chartParamsObj);
-    getTableFromChartData(chartParamsObj);
-
-    return rtn;
-}
-
-
-/**
- * When an external source is needed, this function should handel the returned JSON request
- * The chartParamsObj object that went into createJQChart(obj) would be the chartParamsObj here, and
- * the "value" parameter should be the returned JSON request.
- * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
- * returns the return value of createJQChart(), or false on external source failure.
- *
- * @return integer
- */
-function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
-{
-    // If anything (json) was returned at all...
-    if (value) {
-        
-        // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
-        if (value['results'][0]) {
-        
-            chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value)
-            
-        } else {
-            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj['lastURLpull'];
-            return CHART_CREATE_FAILURE;
-        }
-
-        if (typeof chartParamsObj['chartData'] == 'undefined') {
-            throw 'Chart Error - The remote data source for chart "' + chartParamsObj['uniqueid'] + '" located at ' + chartParamsObj['lastURLpull'] + ' did not return data to plot on a chart';
-            return CHART_CREATE_FAILURE;
-        }
-
-        // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
-        return createJQChart(chartParamsObj);
-        
-    } else {
-        throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj['lastURLpull'];
-        return CHART_CREATE_FAILURE;
-    }
-    
-    return CHART_CREATE_FAILURE;
-}
-
-/**
- * Takes a chartParamsObj and merges content of 
- * ExternResponce-object into it based in the inheritance mode
- * set in ExternResponce.
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- * 
-*/
-function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
-{
-    var joinedParam = {};
-
-    // Is there an inheritance mode? 
-    if (ExternResponce['results'][0]['inheritCtl']) {
-        if (ExternResponce['results'][0]['inheritCtl'] == 'minimal') {
-            // Inheritance mode set to minimal, retain certain attribs and merge
-            var joinedParam = ExternResponce['results'][0];
-            joinedParam['width'] = chartParamsObj['width'];
-            joinedParam['height'] = chartParamsObj['height'];
-            joinedParam['uniqueid'] = chartParamsObj['uniqueid'];
-            joinedParam['externalSource'] = chartParamsObj['externalSource'];
-            joinedParam['oldExternalSource'] = chartParamsObj['oldExternalSource'];
-            joinedParam['widgets'] = chartParamsObj['widgets'];
-        } else if (ExternResponce['results'][0]['inheritCtl'] == 'none') {
-            // Inheritance mode set to none, replace the joinedParam object
-            var joinedParam = ExternResponce['results'][0];
-        } else {
-            throw 'Error - Unknown chart inheritance mode';
-            return;
-        }
-    } else {
-        // No inheritance mode, by default, merge everything
-        var joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce['results'][0],true);
-    }
-
-    return joinedParam;
-}
-
- /**
-  * Fires the jqPlot library, and creates a pie chart
-  * based on input chart object
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return void
- */
-function createChartPie(chartParamsObj)
-{
-    usedLabelsPie = chartParamsObj['chartDataText'];
-
-    var dataSet = [];
-
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-        chartParamsObj['chartDataText'][x] += ' (' + chartParamsObj['chartData'][x]  + ')';
-        dataSet[dataSet.length] = [chartParamsObj['chartDataText'][x], chartParamsObj['chartData'][x]];
-    }
-    
-    var jPlotParamObj = {
-        title: chartParamsObj['title'],
-        seriesColors: chartParamsObj['colors'],
-        grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            shadow: false
-        },
-        axes: {
-            xaxis:{
-                tickOptions: {
-                    angle: chartParamsObj['DataTextAngle'],
-                    fontSize: '10pt',
-                    formatString: '%.0f'
-                }
-            },
-            yaxis:{
-                tickOptions: {
-                    formatString: '%.0f'
-                }
-            }
-
-        },
-        seriesDefaults:{
-            renderer:$.jqplot.PieRenderer,
-            rendererOptions: {
-                sliceMargin: 0,
-                showDataLabels: true,
-                shadowAlpha: 0.15,
-                shadowOffset: 0,
-                lineLabels: true,
-                lineLabelsLineColor: '#777',
-                diameter: chartParamsObj['height'] * 0.55
-            }
-        },
-        legend: {
-            location: 's',
-            show: false,
-            rendererOptions: {
-                numberRows: 1
-            }
-        }
-    }
-    
-    jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
-
-    // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
-
-    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
-
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], [dataSet], jPlotParamObj);
-
-    // create an event handeling function that calls chartClickEvent while preserving the parm object
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
-    
-    // use the created function as the click-event-handeler
-    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
-
-    return CHART_CREATE_SUCCESS;
-}
-
- /**
-  * Fires the jqPlot library, and creates a stacked
-  * bar chart based on input chart object
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
- */
-function createChartStackedBar(chartParamsObj)
-{
-    var dataSet = [];
-    var thisSum = 0;
-    var maxSumOfAll = 0;
-    var chartCeilingValue = 0;
-
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-    
-        thisSum = 0;
-        
-        for (var y = 0; y < chartParamsObj['chartData'].length; y++) {
-            thisSum += chartParamsObj['chartData'][y][x];
-        }
-        
-        if (thisSum > maxSumOfAll) { maxSumOfAll = thisSum; }
-
-        if (chartParamsObj['concatXLabel'] == true) {
-            chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
-        }
-    }
-
-    var seriesParam = [];
-    if (chartParamsObj['chartLayerText']) {
-        for (x = 0; x < chartParamsObj['chartLayerText'].length; x++) {
-            seriesParam[x] = {label: chartParamsObj['chartLayerText'][x]};
-        }
-    }
-
-    // Make sure the Y-axis (row labels) are not offset by the formatter string rounding their values...
-    // (make the top most row label divisible by 5)
-    chartCeilingValue = Math.ceil(maxSumOfAll / 5) * 5;
-    
-    // Force Y-axis row labels to be divisible by 5
-    yAxisTicks = [];
-    yAxisTicks[0] = 0;
-    yAxisTicks[1] = (chartCeilingValue/5) * 1;
-    yAxisTicks[2] = (chartCeilingValue/5) * 2;
-    yAxisTicks[3] = (chartCeilingValue/5) * 3;
-    yAxisTicks[4] = (chartCeilingValue/5) * 4;
-    yAxisTicks[5] = (chartCeilingValue/5) * 5;
-    
-    $.jqplot.config.enablePlugins = true
-
-    var jPlotParamObj = {
-        title: chartParamsObj['title'],
-        seriesColors: chartParamsObj['colors'],
-        stackSeries: true,
-        series: seriesParam,
-        seriesDefaults:{
-            renderer: $.jqplot.BarRenderer,
-            rendererOptions:{
-                barWidth: 35,
-                showDataLabels: true,
-                varyBarColor: chartParamsObj['varyBarColor'],
-                shadowAlpha: 0.15,
-                shadowOffset: 0
-            },
-            pointLabels:{
-                show: false,
-                location: 's',
-                hideZeros: true
-            }
-        },
-        axesDefaults: {
-            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-            borderWidth: 0,
-            labelOptions: {
-                enableFontSupport: true,
-                fontFamily: 'arial, helvetica, clean, sans-serif',
-                fontSize: '12pt',
-                textColor: '#555555'
-            }
-        },
-        axes: {
-            xaxis:{
-                label: chartParamsObj['AxisLabelX'],
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                renderer: $.jqplot.CategoryAxisRenderer,
-                ticks: chartParamsObj['chartDataText'],
-                tickOptions: {
-                    angle: chartParamsObj['DataTextAngle'],
-                    fontFamily: 'arial, helvetica, clean, sans-serif',
-                    fontSize: '10pt',
-                    textColor: '#555555'
-                }
-            },
-            yaxis:{
-                label: chartParamsObj['AxisLabelY'],
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                min: 0,
-                max: chartCeilingValue,
-                autoscale: true,
-                ticks: yAxisTicks,
-                tickOptions: {
-                    formatString: '%.0f',
-                    fontFamily: 'arial, helvetica, clean, sans-serif',
-                    fontSize: '10pt',
-                    textColor: '#555555'
-                }
-            }
-
-        },
-        highlighter: { 
-            show: false 
-            },
-        grid: {
-            gridLineWidth: 0,
-            shadow: false,
-            borderWidth: 1,
-            gridLineColor: '#FFFFFF',
-            background: 'transparent',
-            drawGridLines: chartParamsObj['drawGridLines'],
-            show: chartParamsObj['drawGridLines']
-            },
-        legend: {
-                    show: chartParamsObj['showlegend'],
-                    rendererOptions: {
-                        numberRows: 1
-                    },
-                    location: 'nw'
-                }
-    };
-    
-    // bug killer - The canvas object for IE does not understand what transparency is...
-    if (isIE) {
-        jPlotParamObj.grid.background = '#FFFFFF';
-    }
-    
-    // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
-    
-    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
-    
-    // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
-    jPlotParamObj = alterChartByGlobals(jPlotParamObj);
-
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], jPlotParamObj);
-
-    
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
-    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
-
-    removeDecFromPointLabels(chartParamsObj);
-
-    return CHART_CREATE_SUCCESS;
-}
-
- /**
-  * Fires the jqPlot library, and creates a stacked
-  * line chart based on input chart object
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
- */
-function createChartStackedLine(chartParamsObj)
-{
-    var dataSet = [];
-    var thisSum = 0;
-
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-    
-        thisSum = 0;
-        
-        for (var y = 0; y < ['chartData'].length; y++) {
-            thisSum += ['chartData'][y][x];
-        }
-        
-        chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
-    }
-        
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], {
-        title: chartParamsObj['title'],
-        seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-        series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
-        seriesDefaults:{
-            fill:false,
-            showMarker: true,
-            showLine: true
-        },
-        axes: {
-            xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer,
-                ticks:chartParamsObj['chartDataText']
-            },
-            yaxis:{
-                min: 0
-            }
-        },
-        highlighter: { show: false },
-        legend: {
-                    show: true,
-                    rendererOptions: {
-                        numberRows: 1
-                    },
-                    location: 'nw'
-                }
-    });
-
-    return CHART_CREATE_SUCCESS;
-}
-
-/**
- * Creates the red-orange-yellow threat-legend that shows above charts
- * The generated HTML code should go into the div with the id of the
- * chart's uniqueId + "toplegend"
- *
- * @return boolean/integer
- */
-function createChartThreatLegend(chartParamsObj)
-{
-    if (chartParamsObj['showThreatLegend'] && !chartIsEmpty(chartParamsObj)) {
-        if (chartParamsObj['showThreatLegend'] == true) {
-
-            // Is a width given for the width of the legend? OR should we assume 100%?
-            var threatLegendWidth = '100%';
-            if (chartParamsObj['threatLegendWidth']) {
-                threatLegendWidth = chartParamsObj['threatLegendWidth'];
-            }
-
-            // Tabel to hold all colored boxes and labels
-            var threatTable = document.createElement("table");
-            threatTable.style.fontSize = '12px';
-            threatTable.style.color = '#555555';
-            threatTable.width = threatLegendWidth;
-            var tblBody = document.createElement("tbody");
-            var row = document.createElement("tr");
-            
-            var cell = document.createElement("td");
-            cell.style.textAlign = 'center';
-            cell.style.fontWeight = 'bold';
-            cell.width = '40%';
-            var textLabel = document.createTextNode('Threat Level');
-            cell.appendChild(textLabel);
-            row.appendChild(cell);
-
-            // Red block and "High"
-            var cell = document.createElement("td");
-            cell.width = '20%';
-            cell.appendChild(createThreatLegendSingleColor('FF0000', 'High'));
-            row.appendChild(cell);
-            
-            // Orange block and "Moderate"
-            var cell = document.createElement("td");
-            cell.width = '20%';
-            cell.appendChild(createThreatLegendSingleColor('FF6600', 'Moderate'));
-            row.appendChild(cell);
-            
-            // Yellow block and "Low"
-            var cell = document.createElement("td");
-            cell.width = '20%';
-            cell.appendChild(createThreatLegendSingleColor('FFC000', 'Low'));
-            row.appendChild(cell);
-            
-            // close and post table on DOM
-            tblBody.appendChild(row);
-            threatTable.appendChild(tblBody);
-            var thisChartId = chartParamsObj['uniqueid'];
-            var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
-            topLegendOnDOM.appendChild(threatTable);
-        }
-    }        
-}
-
-/**
- * Creates a single color (i.e. red/orange/yellow) tabels to be added 
- * into the threat-legend that shows above charts
- *
- * @return table
- */
-function createThreatLegendSingleColor(blockColor, textLabel) {
-
-    var colorBlockTbl = document.createElement("table");
-    var colorBody = document.createElement("tbody");
-    var colorRow = document.createElement("tr");
-    
-    // Create the colored box
-    var colorCell = document.createElement("td");
-    colorCell.style.backgroundColor= '#' + blockColor;
-    colorCell.width = '15px';
-    colorRow.appendChild(colorCell);
-    
-    // Forced space between colored box and label
-    var colorCell = document.createElement("td");
-    colorCell.width = '3px';
-    colorRow.appendChild(colorCell);
-    
-    // Apply label
-    var colorCell = document.createElement("td");
-    colorCell.style.fontSize = '12px';
-    var textLabel = document.createTextNode('   ' + textLabel);
-    colorCell.appendChild(textLabel);
-    colorRow.appendChild(colorCell);
-    
-    colorBody.appendChild(colorRow);
-    colorBlockTbl.appendChild(colorBody);
-    return colorBlockTbl;    
-}
-
-function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
-{
-    
-    var theLink = false;
-    if (paramObj['links']) {
-        if (typeof paramObj['links'] == 'string') {
-            theLink = paramObj['links'];
-        } else {
-            if (paramObj['links'][seriesIndex]) {
-                if (typeof paramObj['links'][seriesIndex] == "object") {
-                    theLink = paramObj['links'][seriesIndex][pointIndex];
-                } else {
-                    theLink = paramObj['links'][seriesIndex];
-                }
-            }
-        }
-    }
-    
-    // unescape
-    theLink = unescape(theLink);
-    
-    // Does the link contain a variable?
-    if (theLink != false) {
-        theLink = String(theLink).replace('#ColumnLabel#', paramObj['chartDataText'][pointIndex]);
-    }
-    
-    if (paramObj['linksdebug'] == true) {
-        var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
-        msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
-        if (theLink != false) { msg += "The link with this element is " + theLink; }
-        alert(msg);
-    } else {
-    
-        // We are not in link-debug mode, navigate if there is a link
-        if (theLink != false && theLink != 'false' && String(theLink) != 'null') {
-            document.location = theLink;
-        }
-        
-    }
-}
-
-/**
- * Converts an array from strings to integers, for example;
- * ["1", 2, "3", 4] would become [1, 2, 3, 4]
- * This is a bug killer for external source plotting data as
- * the jqPlot lib expects integers, and JSON may not always 
- * be encoded that way
- *
- * @return array
- */
-function forceIntegerArray(inptArray)
-{
-    for (var x = 0; x < inptArray.length; x++) {
-        if (typeof inptArray[x] == 'object') {
-            inptArray[x] = forceIntegerArray(inptArray[x]);
-        } else {
-            inptArray[x] = parseInt(inptArray[x]);    // make sure this is an int, and not a string of a number
-        }
-    }
-
-    return inptArray;
-}
-
-/**
- * Manually draws borders onto the shadow canvas
- * This function is nessesary as jqPlot's API does not allow 
- * you to choose which borders are drawn and which are not.
- * If "L" exists within chartParamsObj['borders'], the left border is
- * drawn, if "R" does (too), then the right is drawn and so on.
- *
- * @return void
- */
-function applyChartBorders(chartParamsObj)
-{
-
-    // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
-    if (typeof chartParamsObj['borders'] == 'undefined') {
-        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
-            // default for bar and stacked bar charts are bottom-left (BL)
-            chartParamsObj['borders'] = 'BL';
-        } else {
-            // assume no default for other chart types
-            return;
-        }
-    }
-
-    // Get the area of our containing divs
-    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-    var children = targDiv.childNodes;
-    
-    for (var x = children.length - 1; x > 0; x--) {
-        // search for a canvs
-        if (typeof children[x].nodeName != 'undefined') {
-            
-            // search for a canvas that is the shadow canvas
-            if (String(children[x].nodeName).toLowerCase() == 'canvas' && children[x].className == 'jqplot-series-shadowCanvas') {
-
-                // this is the canvas we want to draw on
-                var targCanv = children[x];
-                var context = targCanv.getContext('2d');
-
-                var h = children[x].height;
-                var w = children[x].width;
-
-                context.strokeStyle = '#777777'
-                context.lineWidth = 3;
-                context.beginPath();
-
-                // Draw left border?
-                if (chartParamsObj['borders'].indexOf('L') != -1) {
-                    context.moveTo(0,0);
-                    context.lineTo(0, h);
-                    context.stroke();
-                }               
-
-                // Draw bottom border?
-                if (chartParamsObj['borders'].indexOf('B') != -1) {
-                    context.moveTo(0, h);
-                    context.lineTo(w, h);
-                    context.stroke();
-                }
-
-                // Draw right border?
-                if (chartParamsObj['borders'].indexOf('R') != -1) {
-                    context.moveTo(w, 0);
-                    context.lineTo(w, h);
-                    context.stroke();
-                }
-
-                // Draw top border?
-                if (chartParamsObj['borders'].indexOf('T') != -1) {
-                    context.moveTo(0, 0);
-                    context.lineTo(w, 0);
-                    context.stroke();
-                }
-
-                return;
-            }
-        }
-    }
-    
-}
-
-function applyChartBackground(chartParamsObj)
-{
-
-    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-
-    // Dont display a background? Defined in either nobackground or background.nobackground
-    if (chartParamsObj['nobackground']) {
-        if (chartParamsObj['nobackground'] == true) { return; }
-    }
-    if (chartParamsObj['background']) {
-        if (chartParamsObj['background']['nobackground']) {
-            if (chartParamsObj['background']['nobackground'] == true) {
-                return;
-            }
-        }
-    }
-    
-    // What is the HTML we should inject?
-    var backURL = '/images/logoShark.png'; // default location
-    if (chartParamsObj['background']) {
-        if (chartParamsObj['background']['URL']) {
-            backURL = chartParamsObj['background']['URL'];
-        }
-    }
-    var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
-
-    // But wait, is there an override issued for the HTML of the background to inject?
-    if (chartParamsObj['background']) {
-        if (chartParamsObj['background']['overrideHTML']) {
-            backURL = chartParamsObj['background']['overrideHTML'];
-        }
-    }
-
-    // Where do we inject the background in the DOM? (different for differnt chart rederers)
-    if (chartParamsObj['chartType'] == 'pie') {
-        var cpy = targDiv.childNodes[3];
-        var insertBeforeChild = targDiv.childNodes[4];
-    } else {    
-        var cpy = targDiv.childNodes[6];
-        var insertBeforeChild = targDiv.childNodes[5];
-    }
-
-    var cpyStyl = cpy.style;
-
-    injectedBackgroundImg = document.createElement('span');
-    injectedBackgroundImg.setAttribute('align', 'center');
-    injectedBackgroundImg.setAttribute('style' , 'position: absolute; left: ' + cpyStyl.left + '; top: ' + cpyStyl.top + '; width: ' + cpy.width + 'px; height: ' + cpy.height + 'px;');
-
-    var inserted = targDiv.insertBefore(injectedBackgroundImg, insertBeforeChild);
-    inserted.innerHTML = injectHTML;
-}
-
-/**
- * Creates the chart widgets/options (regular options, not global-settings).
- * The generated HTML for these "widgets" as placed in a div by the id of the
- * chart's uniqueId + "WidgetSpace"
- *
- * @return void
- */
-function applyChartWidgets(chartParamsObj)
-{
-
-    var wigSpace = document.getElementById(chartParamsObj['uniqueid'] + 'WidgetSpace');
-
-    // Are there widgets for this chart?
-    if (typeof chartParamsObj['widgets'] == 'undefined') {
-        wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
-        return;
-    } else if (chartParamsObj['widgets'].length == 0) {
-        wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
-        return;
-    }
-
-    if (chartParamsObj['widgets']) {
-
-        var addHTML = '';
-
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            
-            // create a widget id if one is not explicitly given
-            if (!thisWidget['uniqueid']) {
-                thisWidget['uniqueid'] = chartParamsObj['uniqueid'] + '_widget' + x;
-                chartParamsObj['widgets'][x]['uniqueid'] = thisWidget['uniqueid'];
-            }
-
-            // print the label text to be displayed to the left of the widget if one is given
-            addHTML += '<tr><td nowrap align=left>' + thisWidget['label'] + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
-
-            switch(thisWidget['type']) {
-                case 'combo':
-
-                    addHTML += '<select id="' + thisWidget['uniqueid'] + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
-                                        // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-
-                    for (var y = 0; y < thisWidget['options'].length; y++) {
-                        addHTML += '<option value="' + thisWidget['options'][y] + '">' + thisWidget['options'][y] + '</option><br/>';
-                    }
-                    
-                    addHTML += '</select>';
-
-                    break;
-
-                case 'text':
-    
-                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget['uniqueid'] + '" />';
-                                        // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-                    break;
-
-                default:
-                    throw 'Error - Widget ' + x + "'s type (" + thisWidget['type'] + ') is not a known widget type';
-                    return false;
-            }
-
-            
-            addHTML += '</td></tr>';
-            
-        }
-
-        // add this widget HTML to the DOM
-        wigSpace.innerHTML = '<table>' + addHTML + '</table>';
-        
-    }
-
-    applyChartWidgetSettings(chartParamsObj);
-}
-
-/**
- * Looks at chartParamsObj["widget"], or for every chart-options/widget, loads the
- * values for this opt/widget into the user-interface object for this option.
- * This value may be loaded froma saved cookie, fallback to a default, or
- * be foreced to a certain value every time if the PHP wrapper demands it.
- *
- * @return void
- */
-function applyChartWidgetSettings(chartParamsObj)
-{
-
-    if (chartParamsObj['widgets']) {
-
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            
-            // load the value for widgets
-            var thisWigInDOM = document.getElementById(thisWidget['uniqueid']);
-            if (thisWidget['forcevalue']) {
-                // this widget value is forced to a certain value upon every load/reload
-                thisWigInDOM.value = thisWidget['forcevalue'];
-                thisWigInDOM.text = thisWidget['forcevalue'];
-            } else {
-                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != null) {
-                    // the value has been coosen in the past and is stored as a cookie
-                    thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
-                    thisWigInDOM.value = thisWigCookieValue;
-                    thisWigInDOM.text = thisWigCookieValue;
-                } else {
-                    // no saved value/cookie. Is there a default given in the chartParamsObj object
-                    if (thisWidget['defaultvalue']) {
-                        thisWigInDOM.value = thisWidget['defaultvalue'];
-                        thisWigInDOM.text = thisWidget['defaultvalue'];
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-/**
- * When an external source is queried (JSON query), all chart parameters/options/widgets
- * are placed into the query URL. This function builds the trailing query to be appended
- * to the static external source URL.
- * Returns the chartParamsObj object given to this function with chartParamsObj['externalSourceParams'] altered.
- *
- * @return Array
- */
-function buildExternalSourceParams(chartParamsObj)
-{
-
-    // build arguments to send to the remote data source
-
-    var thisWidgetValue = '';
-    chartParamsObj['externalSourceParams'] = '';
-
-    if (chartParamsObj['widgets']) {
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            var thisWidgetName = thisWidget['uniqueid'];
-            var thisWidgetOnDOM = document.getElementById(thisWidgetName);
-
-            // is this widget actully on the DOM? Or should we load the cookie?         
-            if (thisWidgetOnDOM) {
-                // widget is on the DOM
-                thisWidgetValue = thisWidgetOnDOM.value;
-            } else {
-                // not on DOM, is there a cookie?
-                var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != null) {
-                    // there is a cookie value, us it
-                    thisWidgetValue = thisWigCookieValue;
-                } else {
-                    // there is no cookie, is there a default value?
-                    if (thisWidget['defaultvalue']) {
-                        thisWidgetValue = thisWidget['defaultvalue'];
-                    }
-                }
-            }
-
-            chartParamsObj['externalSourceParams'] += '/' + thisWidgetName + '/' + thisWidgetValue 
-        }
-    }
-
-    return chartParamsObj;
-}
-
- /**
-  * Event handeler for when a user changes combo-boxes or textboxes 
-  * of chart settings.
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return void
- */
-function widgetEvent(chartParamsObj)
-{
-
-    // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
-    if (chartParamsObj['widgets']) {
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-            var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
-            var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            YAHOO.util.Cookie.set(chartParamsObj['uniqueid'] + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
-        }
-    }
-
-    // build arguments to send to the remote data source
-    chartParamsObj = buildExternalSourceParams(chartParamsObj);
-
-    // restore externalSource so a json request is fired when calling createJQPChart
-    chartParamsObj['externalSource'] = chartParamsObj['oldExternalSource'];
-    chartParamsObj['oldExternalSource'] = undefined;
-
-    chartParamsObj['chartData'] = undefined;
-    chartParamsObj['chartDataText'] = undefined;
-
-    // re-create chart entirly
-    document.getElementById(chartParamsObj['uniqueid'] + 'holder').finnishFadeCallback = new Function ("makeElementVisible('" + chartParamsObj['uniqueid'] + "loader'); createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); this.finnishFadeCallback = '';");
-    fadeOut(chartParamsObj['uniqueid'] + 'holder', 300);
-
-}
-
-function makeElementVisible(eleId)
-{
-    var ele = document.getElementById(eleId);
-    ele.style.opacity = '1';
-    ele.style.filter = "alpha(opacity = '100')";
-}
-
-function makeElementInvisible(eleId)
-{
-    var ele = document.getElementById(eleId);
-    ele.style.opacity = '0';
-    ele.style.filter = "alpha(opacity = '0')";
-}
-
-function fadeIn(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-    
-    
-    var fadingEnabled = getGlobalSetting('fadingEnabled');
-    if (fadingEnabled == 'false') {
-        makeElementVisible(eid);
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = undefined;
-        }
-        return;
-    }
-    
-    if (typeof element.isFadingNow != 'undefined') {
-        if (element.isFadingNow == true) {
-            return;
-        }
-    }
-    element.isFadingNow = true;
-
-    element.FadeState = null;
-    element.FadeTimeLeft = undefined;
-
-    makeElementInvisible(eid);
-    element.style.opacity = '0';
-    element.style.filter = "alpha(opacity = '0')";
-
-    fade(eid, TimeToFade);
-}
-
-function fadeOut(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-
-    var fadingEnabled = getGlobalSetting('fadingEnabled');
-    if (fadingEnabled == 'false') {
-        makeElementInvisible(eid);
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = undefined;
-        }
-        return;
-    }
-
-    if (typeof element.isFadingNow != 'undefined') {
-        if (element.isFadingNow == true) {
-            return;
-        }
-    }
-    element.isFadingNow = true;
-
-    element.FadeState = null;
-    element.FadeTimeLeft = undefined;
-
-    makeElementVisible(eid);
-    element.style.opacity = '1';
-    element.style.filter = "alpha(opacity = '100')";
-
-    fade(eid, TimeToFade);
-}
-
-function fade(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-
-//  element.style = '';
-
-    if(element.FadeState == null)
-    {
-        if(element.style.opacity == null || element.style.opacity == '' || element.style.opacity == '1')
-        {
-            element.FadeState = 2;
-        } else {
-            element.FadeState = -2;
-        }
-    }
-
-    if (element.FadeState == 1 || element.FadeState == -1) {
-        element.FadeState = element.FadeState == 1 ? -1 : 1;
-        element.FadeTimeLeft = TimeToFade - element.FadeTimeLeft;
-    } else {
-        element.FadeState = element.FadeState == 2 ? -1 : 1;
-        element.FadeTimeLeft = TimeToFade;
-        setTimeout("animateFade(" + new Date().getTime() + ",'" + eid + "'," + TimeToFade + ")", 33);
-    }  
-}
-
-function animateFade(lastTick, eid, TimeToFade)
-{  
-    var curTick = new Date().getTime();
-    var elapsedTicks = curTick - lastTick;
-
-    var element = document.getElementById(eid);
-
-    if(element.FadeTimeLeft <= elapsedTicks)
-    {
-        if (element.FadeState == 1) {
-            element.style.filter = 'alpha(opacity = 100)';
-            element.style.opacity = '1';
-        } else {
-            element.style.filter = 'alpha(opacity = 0)';
-            element.style.opacity = '0';
-        }
-        element.isFadingNow = false;
-        element.FadeState = element.FadeState == 1 ? 2 : -2;
-        
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = '';
-        }
-        return;
-    }
-
-    element.FadeTimeLeft -= elapsedTicks;
-    var newOpVal = element.FadeTimeLeft/TimeToFade;
-    if(element.FadeState == 1) newOpVal = 1 - newOpVal;
-
-    element.style.opacity = newOpVal;
-    element.style.filter = 'alpha(opacity = "' + (newOpVal*100) + '")';
-
-    setTimeout("animateFade(" + curTick + ",'" + eid + "'," + TimeToFade + ")", 33);
-}
-
-/**
- * This function controles how width and scrolling is handeled with the chart's canvase's
- * parent div. If autoWidth (or in PHP Fisma_Chart->widthAuto(true);) is set, the parent
- * div will always be scrollable. If not, it may still be automatically set scrollable if
- * the with in chartParamsObj['width'] is less than the minimum with required by the chart (calculated
- * in this function).
- *
- * NOTE: This function does not actully look at the DOM. It assumes the author to used
- *       Fisma_Chart->setWidth() knew what he was doing and set it correctly.
- *       The static width given to charts is considered a minimum width.
- *
- * @return void
- */
-function setChartWidthAttribs(chartParamsObj)
-{
-
-    var makeScrollable = false;
-
-    // Determin if we need to make this chart scrollable...
-    // Do we really have the chart data to plot?
-    if (chartParamsObj['chartData']) {
-        // Is this a bar chart?
-        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
-
-            // How many bars does it have?
-            if (chartParamsObj['chartType'] == 'stackedbar') {
-                var barCount = chartParamsObj['chartData'][0].length;
-            } else if (chartParamsObj['chartType'] == 'bar') {
-                var barCount = chartParamsObj['chartData'].length;
-            }
-
-            // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
-            var minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
-
-            // Do we not have enough space for a non-scrolling chart?
-            if (chartParamsObj['width'] < minSpaceRequired) {
-                
-                // We need to make this chart scrollable
-                makeScrollable = true;
-            }
-        }
-    }
-
-    // Is auto-width enabeled? (set width to 100% and make scrollable)
-    if (typeof chartParamsObj['autoWidth'] != 'undefined') {
-        if (chartParamsObj['autoWidth'] == true) {
-            makeScrollable = true;
-        }
-    }
-
-    if (makeScrollable == true) {
-
-        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = 'auto';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = minSpaceRequired + 'px';
-        document.getElementById(chartParamsObj['uniqueid']  + 'toplegend').style.width = minSpaceRequired + 'px';
-
-        // handel alignment
-        if (chartParamsObj['align'] == 'center') {
-            document.getElementById(chartParamsObj['uniqueid']).style.marginLeft = 'auto';
-            document.getElementById(chartParamsObj['uniqueid']).style.marginRight = 'auto';
-            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginLeft = 'auto';
-            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginRight = 'auto';
-        }
-        
-    } else {
-
-        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = chartParamsObj['width'] + 'px';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = '';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = chartParamsObj['width'] + 'px';
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').width = chartParamsObj['width'] + 'px';
-    }
-    
-}
-
-/**
- * Builds a table based on the data to plot on the chart for screen readers.
- * The generated HTML should generally be placed in a div by the Id of the
- * chart's uniqueId + "table"
- *
- * @param object
- * @return String
- */
-function getTableFromChartData(chartParamsObj)
-{
-    if (chartIsEmpty(chartParamsObj)) {
-        return;
-    }
-
-    var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
-    dataTableObj.innerHTML = '';
-    
-    if (getGlobalSetting('showDataTable') === 'true') {
-    
-        if (chartParamsObj['chartType'] === 'pie') {
-            getTableFromChartPieChart(chartParamsObj, dataTableObj);
-        } else {
-            getTableFromBarChart(chartParamsObj, dataTableObj);
-        }
-
-        // Show the table generated based on chart data
-        dataTableObj.style.display = '';
-        // Hide, erase, and collapse the container of the chart divs
-        document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
-        document.getElementById(chartParamsObj['uniqueid']).style.height = 0;
-        // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.display = 'none';
-
-    } else {
-        dataTableObj.style.display = 'none';
-    }
-}
-
-function getTableFromChartPieChart(chartParamsObj, dataTableObj)
-{
-    var tbl     = document.createElement("table");
-    var tblBody = document.createElement("tbody");
-
-    // row of slice-labels
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
-        cell.setAttribute("style", "font-style: bold;");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-
-    // row of data
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(chartParamsObj['chartData'][x]);
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-
-    tbl.appendChild(tblBody);
-    tbl.setAttribute("border", "1");
-    tbl.setAttribute("width", "100%");
-    
-    dataTableObj.appendChild(tbl);
-}
-
-function getTableFromBarChart(chartParamsObj, dataTableObj)
-{
-    var tbl     = document.createElement("table");
-    var tblBody = document.createElement("tbody");
-    var row = document.createElement("tr");
-    
-    // add a column for layer names if this is a stacked chart
-    if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(" ");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
-        cell.setAttribute("style", "font-style: bold;");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-    
-
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-
-        var thisEle = chartParamsObj['chartData'][x];
-        var row = document.createElement("tr");
-        
-        // each layer label
-        if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
-            var cell = document.createElement("th");
-            var cellText = document.createTextNode(chartParamsObj['chartLayerText'][x]);
-            cell.setAttribute("style", "font-style: bold;");
-            cell.appendChild(cellText);
-            row.appendChild(cell);
-        }
-        
-        if (typeof(thisEle) == 'object') {
-
-            for (var y = 0; y < thisEle.length; y++) {
-                var cell = document.createElement("td");
-                var cellText = document.createTextNode(thisEle[y]);
-                cell.setAttribute("style", "font-style: bold;");
-                cell.appendChild(cellText);
-                row.appendChild(cell);
-            }
-            
-        } else {
-
-            var cell = document.createElement("td");
-            var cellText = document.createTextNode(thisEle);
-            cell.appendChild(cellText);
-            row.appendChild(cell);
-        }
-
-        tblBody.appendChild(row);
-
-    }
-
-    tbl.appendChild(tblBody);
-    tbl.setAttribute("border", "1");
-    tbl.setAttribute("width", "100%");
-    
-    dataTableObj.appendChild(tbl);
-}
-
-/**
- * Removes decimals from point labels, along with some other minor maintenance
- * - removes data/point-labels that are 0s
- * - Applies outlines if the globalSettings is set so
- * - forces color to black, and bolds the font
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function removeDecFromPointLabels(chartParamsObj)
-{
-        var outlineStyle = '';
-        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
-    
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
-                
-                var thisChld = chartOnDOM.childNodes[x];
-                
-                // IE Support - IE does not support .classList, manually make this
-                if (typeof thisChld.classList == 'undefined') {
-                    thisChld.classList = String(thisChld.className).split(' ');
-                }
-                
-                if (thisChld.classList) {
-                    if (thisChld.classList[0] == 'jqplot-point-label') {
-
-                            // convert this from a string to a number to a string again (removes decimal if its needless)
-                            thisLabelValue = parseInt(thisChld.innerHTML);
-                            thisChld.innerHTML = thisLabelValue;
-                            thisChld.value = thisLabelValue;
-
-                            // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTML) == 0 || isNaN(thisLabelValue)) {
-                                thisChld.innerHTML = '';
-                            }
-
-                            // add outline to this point label so it is easily visible on dark color backgrounds (outlines are done through white-shadows)
-                            if (getGlobalSetting('pointLabelsOutline') == 'true') {
-
-                                outlineStyle = 'text-shadow: ';
-                                outlineStyle += '#FFFFFF 0px -1px 0px, ';
-                                outlineStyle += '#FFFFFF 0px 1px 0px, ';
-                                outlineStyle += '#FFFFFF 1px 0px 0px, ';
-                                outlineStyle += '#FFFFFF -1px 1px 0px, ';
-                                outlineStyle += '#FFFFFF -1px -1px 0px, ';
-                                outlineStyle += '#FFFFFF 1px 1px 0px; ';
-                                
-                                thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
-                                thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
-                                
-                            } else {
-                                thisChld.innerHTML = '<span style="' + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
-                            }
-
-                            // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''));       // remove "px" from string, and conver to number
-                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''));       // remove "px" from string, and conver to number
-                            thisLeftNbrValue += chartParamsObj['pointLabelAdjustX'];
-                            thisTopNbrValue += chartParamsObj['pointLabelAdjustY'];
-                            if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
-                            if (thisLabelValue >= 1000) { thisLeftNbrValue -= 3; }
-                            thisChld.style.left = thisLeftNbrValue + 'px';
-                            thisChld.style.top = thisTopNbrValue + 'px';
-
-                            // force color to black
-                            thisChld.style.color = 'black';
-
-                    }
-                }
-        }
-        
-}
-
-function removeOverlappingPointLabels(chartParamsObj)
-{
-
-        // This function will deal with removing point labels that collie with eachother
-        // There is no need for this unless this is a stacked-bar or stacked-line chart
-        if (chartParamsObj['chartType'] != 'stackedbar' && chartParamsObj['chartType'] != 'stackedline') {
-            return;
-        }
-
-        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
-
-        var pointLabels_info = {};
-        var pointLabels_indexes = [];
-        var thisLabelValue = 0;
-        var d = 0;
-
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
-
-            var thisChld = chartOnDOM.childNodes[x];
-            
-            // IE support - IE dosnt supply .classList array, just a className string. Manually build this....
-            if (typeof thisChld.classList == 'undefined') {
-                thisChld.classList = String(thisChld.className).split(' ');
-            }
-            
-            if (thisChld.classList[0] == 'jqplot-point-label') {
-
-                var chldIsRemoved = false;
-
-                if (typeof thisChld.isRemoved != 'undefined') {
-                    chldIsRemoved = thisChld.isRemoved;
-                }
-
-                if (chldIsRemoved == false) {
-                    // index this point labels position
-
-                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', '')); // remove "px" from string, and conver to number
-                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', '')); // remove "px" from string, and conver to number
-                    thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
-
-                    var thisIndex = 'left_' + thisLeftNbrValue;
-                    if (typeof pointLabels_info[thisIndex] == 'undefined') {
-                        pointLabels_info[thisIndex] = [];
-                        pointLabels_indexes.push(thisIndex);
-                    }
-
-                    var thispLabelInfo = {
-                        left: thisLeftNbrValue, 
-                        top: thisTopNbrValue, 
-                        value: thisLabelValue, 
-                        obj: thisChld
-                    };
-
-                    pointLabels_info[thisIndex].push(thispLabelInfo);
-                }
-            }
-        }
-        
-        // Ensure point labels do not collide with others
-        for (var x = 0; x < pointLabels_indexes.length; x++) {
-            
-            var thisIndex = pointLabels_indexes[x];
-            
-            for (var y = 0; y < pointLabels_info[thisIndex].length; y++) {
-                
-                /* now determin the distance between this point label, and all
-                   point labels within this column. pointLabels_info[thisIndex]
-                   holds all point labels within this column. */
-                
-                var thisPointLabel = pointLabels_info[thisIndex][y];
-                
-                for (var c = 0; c < pointLabels_info[thisIndex].length; c++) {
-                
-                    var checkAgainst = pointLabels_info[thisIndex][c];
-                    
-                    // get the distance from thisPointLabel to checkAgainst point label
-                    d = Math.abs(checkAgainst['top'] - thisPointLabel['top']);
-                    
-                    if (d < 12 && d != 0) {
-                        
-                        // remove whichever label has the lower number
-                        
-                        if (checkAgainst['value'] < thisPointLabel['value']) {
-                            checkAgainst['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
-                        } else {
-                            thisPointLabel['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
-                        }
-                        
-                        // We jave just removed a point label, so this function will need to be run again
-                        // as the labels will need to be reindexed.
-                        
-                        removeOverlappingPointLabels(chartParamsObj)
-                        return;
-                    }
-                }
-            }
-            
-        }
-        
-}
-
-function hideButtonClick(scope, chartParamsObj, obj)
-{
-    setChartSettingsVisibility(chartParamsObj , false);
-}
-
-/**
- * Controles if the YUI-tab-view of the settings for a given drawn chart on the DOM
- * is visible or not.
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function setChartSettingsVisibility(chartId, boolVisible)
-{
-    var menuHolderId = chartId + 'WidgetSpaceHolder';
-    var menuObj = document.getElementById(menuHolderId);
-    
-    if (boolVisible == 'toggle') {
-        if (menuObj.style.display == 'none') {
-            boolVisible = true;
-        } else {
-            boolVisible = false;
-        }
-    }
-    
-    if (boolVisible == true) {
-        menuObj.style.display = '';
-    } else {
-        menuObj.style.display = 'none';
-    }
-}
-
-/**
- * Will take values from checkboxes/textboxes within the Global Settings tab of
- * a chart and save each settings into cookies, and then trigger redrawAllCharts()
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function globalSettingUpdate(chartUniqueId)
-{
-    // get this chart's GlobSettings menue
-    var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
-    
-    // get all elements of this chart's GlobSettings menue
-    var settingOpts = settingsMenue.childNodes;
-    
-    for (var x = 0; x < settingOpts.length; x++) {
-        var thisOpt = settingOpts[x];
-        if (thisOpt.nodeName == 'INPUT') {
-            if (thisOpt.type == 'checkbox') {
-                setGlobalSetting(thisOpt.id, thisOpt.checked);
-            } else {
-                setGlobalSetting(thisOpt.id, thisOpt.value);
-            }
-        }
-    }
-    
-    redrawAllCharts();
-}
-
-/**
- * Will update checkboxes/textboxes within the Global Settings tab of
- * the chart to be equal to the current cookie state for each setting 
- * or the default stored in globalSettingsDefaults.
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function globalSettingRefreshUi(chartParamsObj)
-{
-    /*
-        Every input-element (setting UI) has an id equal to the cookie name 
-        to which its value is stored. So wee we have to do is look for a
-        cookie based on the id for each input element
-    */
-    
-    // get this chart's GlobSettings menue
-    var settingsMenue = document.getElementById(chartParamsObj['uniqueid'] + 'GlobSettings');
-    
-    // get all elements of this chart's GlobSettings menue
-    var settingOpts = settingsMenue.childNodes;
-    
-    for (var x = 0; x < settingOpts.length; x++) {
-        var thisOpt = settingOpts[x];
-        if (thisOpt.nodeName == 'INPUT') {
-        
-            // By this line (and in this block), we know we have found an input element on this GlobSettings menue
-            
-            if (thisOpt.type == 'checkbox') {
-                thisOpt.checked = (getGlobalSetting(thisOpt.id)=='true') ? true : false;
-            } else {
-                thisOpt.value = getGlobalSetting(thisOpt.id);
-                thisOpt.text = thisOpt.value;
-            }
-        }
-    }
-}
-
-function showSetingMode(showBasic)
-{
-    if (showBasic == true) {
-        var showThese = document.getElementsByName('chartSettingsBasic')
-        var hideThese = document.getElementsByName('chartSettingsGlobal')
-    } else {
-        var hideThese = document.getElementsByName('chartSettingsBasic')
-        var showThese = document.getElementsByName('chartSettingsGlobal')
-    }
-    
-    for (var x = 0; x < hideThese.length; x++) {
-        hideThese[x].style.display = 'none';
-    }
-    
-    for (var x = 0; x < hideThese.length; x++) {
-            showThese[x].style.display = '';
-        }
-    
-}
-
-function getGlobalSetting(settingName)
-{
-
-    var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
-
-    if (rtnValue != null) {
-        return rtnValue;
-    } else {
-    
-        if (typeof globalSettingsDefaults[settingName] == 'undefined') {
-            throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
-        } else {
-            return String(globalSettingsDefaults[settingName]);
-        }
-    }
-
-}
-
-function setGlobalSetting(settingName, newValue)
-{
-    YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
-}
-
-/**
- * Will alter the input chart object based on 
- * settings(cookies) or defaults stored in globalSettingsDefaults.
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * Returns: The given object, which may or may not have alterations
- *
- * @param object
- * @return object
- */
-function alterChartByGlobals(chartParamObj)
-{
-    
-    // Show bar shadows?
-    if (getGlobalSetting('barShadows') == 'true') {
-        chartParamObj.seriesDefaults.rendererOptions.shadowDepth = 3;
-        chartParamObj.seriesDefaults.rendererOptions.shadowOffset = 3;
-    }
-    
-    // Depth of bar shadows?
-    if (getGlobalSetting('barShadowDepth') != 'no-setting' && getGlobalSetting('barShadows') == 'true') {
-        chartParamObj.seriesDefaults.rendererOptions.shadowDepth = getGlobalSetting('barShadowDepth');
-        chartParamObj.seriesDefaults.rendererOptions.shadowOffset = getGlobalSetting('barShadowDepth');
-    }
-    
-    // grid-lines?
-    if (getGlobalSetting('gridLines') == 'true') {
-        chartParamObj.grid.gridLineWidth = 1;
-        chartParamObj.grid.borderWidth = 0;
-        chartParamObj.grid.gridLineColor = undefined;
-        chartParamObj.grid.drawGridLines = true;
-        chartParamObj.grid.show = true;
-    }
-    
-    // grid-lines?
-    if (getGlobalSetting('dropShadows') != 'false') {
-        chartParamObj.grid.shadow = true;
-    }   
-
-    // point labels?
-    if (getGlobalSetting('pointLabels') == 'true') {
-        chartParamObj.seriesDefaults.pointLabels.show = true;
-    }
-    
-    // point labels outline?
-        /* no alterations to the chartParamObject needs to be done here, this is handeled by removeDecFromPointLabels() */  
-    
-    
-    return chartParamObj;
-}
-
-function redrawAllCharts()
-{
-
-    for (var uniqueid in chartsOnDOM) {
-    
-        var thisParamObj = chartsOnDOM[uniqueid];
-        
-        // redraw chart
-        createJQChart(thisParamObj);
-        
-        // refreash Global Settings UI
-        globalSettingRefreshUi(thisParamObj);
-    }
-
-}
-
-/**
- * Will insert a "No data to plot" message when there is no 
- * data to plot, or all plot data are 0s
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * @param object
- * @return void
- */
-function showMsgOnEmptyChart(chartParamsObj)
-{
-    if (chartIsEmpty(chartParamsObj)) {
-        var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-
-        // Place message on DOM
-        var insertBeforeChild = targDiv.childNodes[1];
-        var msgOnDom = document.createElement('div');
-        msgOnDom.height = '100%';
-        msgOnDom.style.align = 'center';
-        msgOnDom.style.position = 'absolute';
-        msgOnDom.style.width = chartParamsObj['width'] + 'px';
-        msgOnDom.style.height = '100%';
-        msgOnDom.style.textAlign = 'center';
-        msgOnDom.style.verticalAlign = 'middle';
-        var textMsgOnDom = document.createTextNode('No data to plot.');
-        msgOnDom.appendChild(textMsgOnDom);
-        targDiv.appendChild(msgOnDom);
-        
-        // Make sure screen-reader-table is not showing
-        var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
-        dataTableObj.style.display = 'none';
-    }
-}
-
-/**
- * Returns true if there is no data to 
- * plot, or if all plot data are 0s
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * @param object
- * @return boolean
- */
-function chartIsEmpty(chartParamsObj)
-{
-
-    // Is all data 0?
-    var isChartEmpty = true;
-    for (x in chartParamsObj['chartData']) {
-    
-        if (typeof chartParamsObj['chartData'][x] == 'object') {
-            
-            for (y in chartParamsObj['chartData'][x]) {
-                if (parseInt(chartParamsObj['chartData'][x][y]) > 0)
-                    isChartEmpty = false;
-            }
-            
-        } else {
-            if (parseInt(chartParamsObj['chartData'][x]) > 0)
-                isChartEmpty = false;
-        }
-    
-    }
-    
-    return isChartEmpty;
-}
-
+};
 /**
  * Title: jqPlot Charts
  * 

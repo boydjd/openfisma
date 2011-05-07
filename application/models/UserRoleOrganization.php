@@ -28,5 +28,51 @@
  */
 class UserRoleOrganization extends BaseUserRoleOrganization
 {
+    /**
+     * postDelete
+     * 
+     * @param mixed $event 
+     * @access public
+     * @return void
+     */
+    public function postDelete($event)
+    {
+        $this->_invalidateUserAcl($this->userRoleId);
+    }
 
+    /**
+     * postSave 
+     * 
+     * @param mixed $event 
+     * @access public
+     * @return void
+     */
+    public function postSave($event)
+    {
+        $this->_invalidateUserAcl($this->userRoleId);
+    }
+
+    /**
+     * postUpdate 
+     * 
+     * @param mixed $event 
+     * @access public
+     * @return void
+     */
+    public function postUpdate($event)
+    {
+        $this->_invalidateUserAcl($this->userRoleId);
+    }
+
+    /**
+     * _invalidateUserAcl 
+     * 
+     * @param mixed $userRoleId 
+     * @access private
+     * @return void
+     */
+    private function _invalidateUserAcl($userRoleId)
+    {
+        Doctrine::getTable('User')->getUserByUserRoleIdQuery($userRoleId)->fetchOne()->invalidateAcl();
+    }
 }
