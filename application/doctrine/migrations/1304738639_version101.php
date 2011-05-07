@@ -24,7 +24,7 @@
  * @author    mark ma <mark.ma@reyosoft.com>
  * @license   http://www.openfisma.org/content/license GPLv3
  */
-class Version99 extends Doctrine_Migration_Base
+class Version101 extends Doctrine_Migration_Base
 {
     /**
      * Add deleted_at column for soft delete behavior
