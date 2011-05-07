@@ -16,44 +16,33 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
-
 /**
- * Test_Application_Models_StorageTable
+ * Update app version 
  * 
- * @uses Test_FismaUnitTest
- * @package Test 
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_StorageTable extends Test_FismaUnitTest
+class Version99 extends Doctrine_Migration_Base
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
+     * Update application version.
      */
-    public function testClassExists()
+    public function up()
     {
-        $this->assertTrue(class_exists('StorageTable'));
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.13.0'";
+        $conn->exec($updateSql);
     }
 
     /**
-     * testGetUserIdAndNamespaceQuery
-     *
-     * @access public
-     * @return void
+     * Remove configuration 
      */
-     public function testGetUserIdAndNamespaceQuery()
-     {
-         $table = Doctrine::getTable('storage');
-         $userId = 42;
-         $namespace = 'Sample.Namespace';
-         $q = $table->getUserIdAndNamespaceQuery($userId, $namespace);
-         $this->assertTrue($q instanceof Doctrine_Query);
-         $this->assertEquals(' FROM storage WHERE userId = ? AND namespace = ?', $q->getDql());
-         $this->assertEquals(array($userId, $namespace), $q->getFlattenedParams());
-     }
+    public function down()
+    {
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
+        $conn->exec($updateSql);
+    }
 }

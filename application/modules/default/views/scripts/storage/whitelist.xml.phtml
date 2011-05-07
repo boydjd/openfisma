@@ -1,0 +1,4 @@
+<?php echo $this->escape('<?xml version="1.0" encoding="utf-8"?>', 'none'); ?>
+<domain-policy>
+    <allow-access-from domain="<?php echo $this->escape($this->getHelper('ServerUrl')->getHost()); ?>" />
+</domain-policy>

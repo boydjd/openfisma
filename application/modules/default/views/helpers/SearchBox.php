@@ -31,21 +31,14 @@ class View_Helper_SearchBox extends Zend_View_Helper_Abstract
      * 
      * @param array $toolbarButtons Array of Fisma_Yui_Form_Button, these get displayed in the toolbar
      * @param Zend_Form $searchForm The form used for submitting a search query
-     * @param Zend_Form $searchMoreOptionsForm This form displays additional search options
-     * @param array $advancedSearchOptions An array specifying the fields and data types in the advanced search UI
      * @return string
      */
-    public function searchBox($toolbarButtons, 
-                              $searchForm = null, 
-                              $searchMoreOptionsForm = null, 
-                              $advancedSearchOptions = null)
+    public function searchBox($toolbarButtons, $searchForm = null)
     {
         $view = Zend_Layout::getMvcInstance()->getView();
         
         $viewParameters = array(
-            'advancedSearchOptions' => $advancedSearchOptions,
             'searchForm' => $searchForm,
-            'searchMoreOptionsForm' => $searchMoreOptionsForm,
             'toolbarButtons' => $toolbarButtons
         );
 

@@ -715,8 +715,10 @@ Fisma.Chart = {
             return;
         }
 
-        // unescape
-        theLink = unescape(theLink);
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
 
         // Does the link contain a variable?
         if (theLink !== false) {
@@ -1566,9 +1568,11 @@ Fisma.Chart = {
 
             var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
 
-            var pointLabels_info = [];
-            var thisLabelValue = 0;
-            var thisIndex;
+            var pointLabels_info = [];  //array of objects {left, top, value, obj}, one for each data label
+                            
+            var pointLabelLeft;     // the x-offset of the data label
+            var pointLabelTop;      // the y=offset of the data label
+            var pointLabelValue;    // the numerical value the data label displays (casted as an integer)
 
             var x = 0;
             var y = 0;
@@ -1595,14 +1599,14 @@ Fisma.Chart = {
                         // index this point labels position
 
                         // remove "px" from string, and conver to number
-                        var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);
-                        var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);
-                        thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
+                        pointLabelLeft = parseInt(String(thisChld.style.left).replace('px', ''), 10);
+                        pointLabelTop = parseInt(String(thisChld.style.top).replace('px', ''), 10);
+                        pointLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
 
                         var thispLabelInfo = {
-                            left: thisLeftNbrValue, 
-                            top: thisTopNbrValue, 
-                            value: thisLabelValue, 
+                            left: pointLabelLeft, 
+                            top: pointLabelTop, 
+                            value: pointLabelValue, 
                             obj: thisChld
                         };
 
@@ -1612,18 +1616,13 @@ Fisma.Chart = {
             }
 
             // Ensure point labels do not collide with others
-                for (y = 0; y < pointLabels_info.length; y++) {
+                $.each(pointLabels_info, function(index, thisPointLabel) {
 
                     /* now determin the distance between this point label, and all
-                       point labels within this column. pointLabels_info[thisIndex]
+                       point labels within this column. pointLabels_info[]
                        holds all point labels within this column. */
 
-                    var thisPointLabel = pointLabels_info[y];
-
-                    var c = 0;
-                    for (c = 0; c < pointLabels_info.length; c++) {
-
-                        var checkAgainst = pointLabels_info[c];
+                    $.each(pointLabels_info, function(index, checkAgainst) {
 
                         // get the distance from thisPointLabel to checkAgainst point label
                         var deltaX = (thisPointLabel.left - checkAgainst.left);
@@ -1650,8 +1649,8 @@ Fisma.Chart = {
                             Fisma.Chart.removeOverlappingPointLabels(chartParamsObj);
                             return;
                         }
-                    }
-                }
+                    });
+                });
     },
 
     hideButtonClick : function (scope, chartParamsObj, obj)

@@ -6,3 +6,7 @@ UserRoleOrganization:
         organizationId:
             type: integer
             primary: true
+    relations:
+        Organization:
+            local: organizationId
+            foreign: id

@@ -1,14 +1,6 @@
 <?php
 
-echo $this->escape(
-    $this->searchBox(
-        $this->toolbarButtons, 
-        $this->searchForm, 
-        $this->searchMoreOptionsForm,
-        $this->advancedSearchOptions
-    ), 
-    'none'
-);
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
 $actions = '';
 

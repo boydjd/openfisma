@@ -43,21 +43,6 @@
         _modified: null,
 
         /**
-         * Get value for key
-         *
-         * @method PeristentStorage.get
-         * @param key {String}
-         * @return {String|Array|Object}
-         */
-        get: function(key) {
-            /*
-             * @todo: sanity check for key existence.
-             *        if key doesn't exist, perform sync() and then forcefully set the key to null if it still doesn't
-             *        exist.
-             */
-            return this._get(key);
-        },
-        /**
          * Set value for key
          *
          * @method PersistentStorage.set
@@ -129,7 +114,7 @@
                         }
                     },
                     postData = $.param({
-                        csrf: YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0 ? csrfInputs[0].value : '',
+                        csrf: (YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0) ? csrfInputs[0].value : '',
                         namespace: this.namespace,
                         updates: YAHOO.lang.JSON.stringify(this._modified),
                         reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
