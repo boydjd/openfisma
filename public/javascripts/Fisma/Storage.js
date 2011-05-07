@@ -45,8 +45,7 @@
         if (YAHOO.lang.isNull(FS._storageEngine)) {
             var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
-                //null, // no preferred engine
-                YAHOO.util.StorageEngineSWF.ENGINE_NAME,
+                null, // no preferred engine
                 YAHOO.util.StorageManager.LOCATION_SESSION,
                 {engine: engineConf});
         }

@@ -1737,8 +1737,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
         if (YAHOO.lang.isNull(FS._storageEngine)) {
             var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
-                //null, // no preferred engine
-                YAHOO.util.StorageEngineSWF.ENGINE_NAME,
+                null, // no preferred engine
                 YAHOO.util.StorageManager.LOCATION_SESSION,
                 {engine: engineConf});
         }
@@ -6968,9 +6967,6 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
