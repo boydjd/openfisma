@@ -87,8 +87,7 @@ Fisma.Util = {
                 YAHOO.widget.Overlay.BOTTOM_LEFT,
                 null,
                 [0, VERTICAL_OFFSET]
-            ]
-        );        
+            ]);        
     },
     
     /**

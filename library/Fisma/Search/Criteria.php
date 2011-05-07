@@ -42,8 +42,8 @@ class Fisma_Search_Criteria implements Iterator
      * 
      * @var array
      */
-    private $_criteria;
-    
+    private $_criteria = array();
+
     /**
      * Add search criteria for a specific field
      * 

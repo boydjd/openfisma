@@ -1,7 +1,9 @@
 <?php 
 $operation = "[<a href='{$this->viewLink}'>Back To User View</a>]";
 
-Fisma_Format_Section::startSection("User Audit Log ($this->username)&nbsp;&nbsp;$operation"); 
+Fisma_Format_Section::startSection(
+    sprintf('User Audit Log (%s)&nbsp;&nbsp;%s', $this->escape($this->username), $operation)
+);
 ?>
 
 <div id="container">

@@ -61,6 +61,9 @@ div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align
 .gss{display:block;padding-left:20px;background:url(/images/gss-small.png) no-repeat;}
 .major{display:block;padding-left:20px;background:url(/images/major-small.png) no-repeat;}
 .minor{display:block;padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
+.disposal{background-color:pink;}
+div#showDisposalSystem{margin:0 0 5px 3px;font-weight:bold;}
+div#showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}
 table.systemDocuments td{padding:10px;margin-top:10px;}
@@ -74,6 +77,7 @@ div.yui-ac-content[style]{height:auto!important;width:auto!important;margin-top:
 div.yui-ac-bd{overflow:auto;overflow-x:hidden;height:auto!important;max-height:200px;}
 .yui-ac-content ul{margin-right:20px!important;}
 ul.treelist li{list-style:none;}
+ul.treelist{margin-top:1em;}
 div#TabView_UserView_TabViewContainer{float:left;margin-top:14px;max-width:60%;}
 div.section>div>div.clear{display:none;}
 div.section>div.form_box>form>div.clear{display:none;}
@@ -81,3 +85,22 @@ form dl.zend_form{margin-left:auto;margin-right:auto;}
 form dl.zend_form dt,form dl.zend_form dd{font-weight:bold;margin:5px;}
 form .searchForm{display:inline;}
 input[type=text].date{background:url(/images/calendar.png) no-repeat 98%;background-color:white;width:10em;}
+div#leftPane{float:left;width:0;min-width:25em;margin-right:2em;}
+div#rightPane{float:left;width:0;min-width:40em;}
+div#copyUserAccess>div.section>label{float:left;}
+div#copyUserAccess>div.section>div{float:left;}
+span#rolesAndUserscheckboxMatrixTooltip.tooltip{display:none;}
+span#copyUserAccessTreecheckboxMatrixTooltip.tooltip{display:none;}
+div#addUserAccess>div.section>div#addUserAccessLeft{float:left;min-width:5em;text-align:right;margin-right:1em;}
+div#addUserAccess>div.section>div#addUserAccessRight{float:left;}
+dt#-label{display:none;}
+div#addUserAccess>div.section>dd#-element>fieldset>dl>select#roles{clear:both;display:block;}
+div#addUserAccess>div.section>dd#-element>fieldset>dl>label{display:block;margin-top:1em;}
+div#addUserAccess>div.section>dd#-element{margin-top:-1em;}
+div#addUserAccess>div.section>dd#-element>fieldset>dl>span#addUser.yui-button.yui-push-button{margin-top:.75em;margin-left:0;}
+div#copyUserAccess>div.section>dd#-element>fieldset>dl>div.yui-ac{margin-top:.25em;margin-bottom:.75em;}
+span#selectAll{margin-left:0;}
+span#removeUsers{margin-left:0;}
+.display-none{display:none;}
+div#swfstoreContainer{width:0;height:0;}
+form#transitionsForm{display:inline;}

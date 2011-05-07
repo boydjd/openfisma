@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Storage
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -41,7 +41,7 @@
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Storage
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Mail_Storage_Folder_Maildir extends Zend_Mail_Storage_Maildir implements Zend_Mail_Storage_Folder_Interface
@@ -77,7 +77,7 @@ class Zend_Mail_Storage_Folder_Maildir extends Zend_Mail_Storage_Maildir impleme
      *   - delim   delim char for folder structur, default is '.'
      *   - folder intial selected folder, default is 'INBOX'
      *
-     * @param  $params array mail reader specific parameters
+     * @param array $params mail reader specific parameters
      * @throws Zend_Mail_Storage_Exception
      */
     public function __construct($params)

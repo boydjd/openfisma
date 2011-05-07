@@ -199,11 +199,20 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $organization = $subject;
                 
                 $organization->merge($orgValues);
-                
                 if (isset($orgValues['parent']) && $orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
-                    $organization->getNode()
-                                 ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                    // Check whether $parentOrg is in the subtree under $organization. If it is, show warning message   
+                    // because it might break organization tree structure
+                    $parentOrg = Doctrine::getTable('Organization')->find($orgValues['parent']);
+                    if ($parentOrg->getNode()->isDescendantOf($organization)) {
+                        $msg = "Unable to save: " . $parentOrg->nickname . " can't be parent organization";
+                        $this->view->priorityMessenger($msg, 'warning');
+
+                        return $objectId;
+                    } else {
+                        $organization->getNode()
+                                     ->moveAsLastChildOf($parentOrg);
+                    }    
                 }
                 $organization->save();
             }
@@ -354,14 +363,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Gets the organization tree for the current user.
      *
-     * This should be refactored into the user class, but I'm in a hurry.
+     * @param boolean $includeDisposal Whether display disposal system or not
      *
      * @return array The array representation of organization tree
      */
-    public function getOrganizationTree()
+    public function getOrganizationTree($includeDisposal = false)
     {
-        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
-        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
+        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type, s.sdlcPhase')
                      ->leftJoin('o.System s')
                      ->orderBy('o.lft');
         $orgTree = Doctrine::getTable('Organization')->getTree();
@@ -381,7 +390,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->treeData = $this->getOrganizationTree();
+        $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
+        $this->view->treeData = $this->getOrganizationTree($includeDisposalSystem);
     }
 
     /**
@@ -493,7 +503,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 // Get refreshed organization tree data
-                $return['treeData'] = $this->getOrganizationTree();
+                $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
+                $return['treeData'] = $this->getOrganizationTree($includeDisposalSystem);
             } else {
                 $return['success'] = false;
                 $return['message'] = 'Cannot move an organization into itself.';

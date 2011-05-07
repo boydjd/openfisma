@@ -68,7 +68,8 @@ class Fisma_Zend_Form_Element_IncidentWorkflowStep extends Zend_Form_Element
                     . $stepName
                     . '</p><p>'
                     . 'Role:&nbsp;'
-                    . (isset($this->_roles[$this->_defaultRole]) ? $this->_roles[$this->_defaultRole] : '')
+                    . (isset($this->_roles[$this->_defaultRole]) ?
+                        $this->getView()->escape($this->_roles[$this->_defaultRole]) : '')
                     . '</p><p>Description:</p><p>'
                     . $step->description
                     . '</td></tr>';
@@ -78,6 +79,7 @@ class Fisma_Zend_Form_Element_IncidentWorkflowStep extends Zend_Form_Element
             $roleSelect = '<select name="stepRole[]"><option value=""></option>';
             
             foreach ($this->_roles as $id => $nickname) {
+                $nickname = $this->getView()->escape($nickname);
                 $selected = ($id == $this->_defaultRole) ? 'selected="selected"' : '';
 
                 $roleSelect .= "<option value='$id' $selected>$nickname</option>";

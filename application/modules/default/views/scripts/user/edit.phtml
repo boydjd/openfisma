@@ -1,21 +1,13 @@
-<script type="text/javascript" src="/javascripts/account.js"></script>
 <?php 
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-echo $this->escape(
-    $this->searchBox(
-        $this->toolbarButtons, 
-        $this->searchForm, 
-        $this->searchMoreOptionsForm,
-        $this->advancedSearchOptions
-    ), 
-    'none'
-);
-
-$operation = "[<a href='{$this->viewLink}'>View</a>]";
+$operation = "[<a href='{$this->links['View']}'>View</a>]";
 
 if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
     $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
 }
+
+$operation .= "&nbsp;&nbsp;[<a href='{$this->escape($this->commentLink)}'>Comments</a>]";
 
 Fisma_Format_Section::startSection("User Account Information $operation"); ?>
 
