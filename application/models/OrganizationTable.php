@@ -158,4 +158,40 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         
         return $ids;
     }
+
+    /**
+     * getUsersAndRolesByOrganizationIdQuery 
+     * 
+     * @param mixed $organizationId 
+     * @access public
+     * @return void
+     */
+    public function getUsersAndRolesByOrganizationIdQuery($organizationId)
+    {
+        return Doctrine_Query::create()
+            ->select('u.id, u.username, r.id, r.nickname')
+            ->from('User u')
+            ->leftJoin('u.UserRole ur')
+            ->leftJoin('ur.UserRoleOrganization uro')
+            ->leftJoin('ur.Role r')
+            ->leftJoin('uro.Organization o')
+            ->where('o.id = ?', $organizationId)
+            ->orderBy('r.id, u.username')
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+    }
+
+    /**
+     * getSystemsLikeNameQuery 
+     * 
+     * @param mixed $query 
+     * @access public
+     * @return void
+     */
+    public function getSystemsLikeNameQuery($query)
+    {
+        return Doctrine_Query::create()
+            ->from('Organization o')
+            ->leftJoin('o.System s')
+            ->where('o.name LIKE ?', $query . '%');
+    }
 }
