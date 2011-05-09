@@ -34,6 +34,14 @@
  *******************************************************************************
  */
 
+body {
+    margin: 5px 5px 5px 5px;
+}
+
+.chart-yaxis-tick-InIE {
+    right: 30px;
+}
+
 span#logoutButton {
     visibility: hidden;
 }
@@ -42,23 +50,23 @@ div#menubar {
     display: none;
 }
 
+div#skip{
+    display: none;
+}
+
+div#logo {
+    float: left;
+}
+
+div#logout {
+    float: right;
+}
+
 .searchBox {
     display: none
 }
 
-.yui-dt-paginator {
-    display: none
-}
-
 .yui-pg-container {
-    display: none
-}
-
-div#yui-dt0-paginator0{
-    display: none
-}
-
-div#yui-dt0-paginator1{
     display: none
 }
 
@@ -67,12 +75,14 @@ img#logoImg {
     height: 30px;
 }
 
-.chartGear {
-    display: none
+.chartContainer {
+    margin-top:5px;
+    margin-bottom:5px;
+    page-break-before: always;
 }
 
-.chartContainer {
-    page-break-before: always;
+.chartGear {
+    display: none
 }
 
 /* Enable external media marking when making a print out.

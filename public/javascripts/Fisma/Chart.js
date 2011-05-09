@@ -2028,6 +2028,12 @@ Fisma.Chart = {
                             right: 0
                         }
                     );
+                    
+                    if (Fisma.Chart.isIE === false) {
+                        div.className = 'chart-yaxis-tick';
+                    } else {
+                        div.className = 'chart-yaxis-tick-InIE';
+                    }
 
                 } else if (canvas.context.className == 'jqplot-xaxis-label') {
                     
