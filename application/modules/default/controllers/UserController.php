@@ -736,4 +736,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->dataTable = $dataTable;
     }
+    
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }
