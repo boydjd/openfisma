@@ -78,7 +78,7 @@ img#logoImg {
 .chartContainer {
     margin-top:5px;
     margin-bottom:5px;
-    page-break-before: always;
+    page-break-inside: avoid;
 }
 
 .chartGear {
