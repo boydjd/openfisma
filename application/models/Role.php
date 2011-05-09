@@ -51,17 +51,6 @@ class Role extends BaseRole
                 'This role cannot be deleted because it is in use by one or more users'
             );
         }
-        
-        // Save this record in the deleted table (soft deletion by relocation) 
-        $deletedRecord = new DeletedRole();
-        $deletedRecord->oldId = $this->id;
-        $deletedRecord->modifiedTs = $this->modifiedTs;
-        $deletedRecord->createdTs = $this->createdTs;
-        $deletedRecord->name = $this->name;
-        $deletedRecord->nickname = $this->nickname;
-        $deletedRecord->description = $this->description;
-        $deletedRecord->deleted_at = Fisma::now();
-        $deletedRecord->save();
 
         Doctrine::getTable('RolePrivilege')
             ->findByRoleId($this->id)
