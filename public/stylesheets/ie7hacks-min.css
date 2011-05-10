@@ -4,3 +4,6 @@ select{font-family:Verdana;}
 div.attachArtifactsProgressBar{margin:10px 0 0 10px;}
 div.yui-ac{z-index:999;}
 .hideFromIE{display:none;}
+form#searchForm input#keywords{position:relative;top:0;}
+div.searchCriteria input[type='text']{position:relative;top:-1px;}
+span.searchQueryButtons button{height:24px;}
