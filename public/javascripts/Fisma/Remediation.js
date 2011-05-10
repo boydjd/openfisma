@@ -86,12 +86,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            var comment;
-            if  (document.all) { // IE
-                comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -138,12 +133,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            var comment;
-            if  (document.all) { // IE
-                comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to deny.');
                 return;
@@ -196,12 +186,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            var comment;
-            if  (document.all) { // IE
-                comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = 'APPROVED';
             var submitMsa = document.createElement('input');
@@ -249,12 +234,7 @@ Fisma.Remediation = {
         Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
             var form2 = formname;
-            var comment;
-            if  (document.all) { // IE
-                comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                comment = document.getElementById('dialog_comment').value;
-            }
+            var comment = document.getElementById('dialog_comment').value;
             if (comment.match(/^\s*$/)) {
                 alert('Comments are required in order to submit.');
                 return;

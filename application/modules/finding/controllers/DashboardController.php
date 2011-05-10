@@ -281,13 +281,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
         if ($displayBy === 'system') {
             
-            /* Because of the number of systems this query involvs, and the fact
+            /* Because of the number of systems this query involves, and the fact
                 that Systems shouldnt have children (unlike Bureaus for example) 
                 a different query will be used here */
                 
-                $q = Doctrine_Query::create();
-                $q
-                    ->addSelect('COUNT(f.id), o.nickname, f.threatLevel')
+                $systemCountsQuery = Doctrine_Query::create();
+                $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, f.threatLevel')
                     ->from('Finding f')
                     ->leftJoin('f.ResponsibleOrganization o')
                     ->where('o.orgtype = "system"')
@@ -295,14 +294,14 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->groupBy('o.nickname, f.threatLevel')
                     ->orderBy('o.nickname')
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-                $results = $q->execute();
+                $systemCounts = $systemCountsQuery->execute();
                 
                 $findingCounts = array('NULL' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
-                foreach ($results as $result) {
+                foreach ($systemCounts as $systemCountInfo) {
                     
-                    $orgName = $result['o_nickname'];
+                    $orgName = $systemCountInfo['o_nickname'];
                     
-                    if (!empty($lastResultOrg) && $result['o_nickname'] !== $lastResultOrg) {
+                    if (!empty($lastResultOrg) && $systemCountInfo['o_nickname'] !== $lastResultOrg) {
                         // then all high/mod/low counts for the lastResultOrg organization have been scanned through
                         
                         $rtnChart->addColumn(
@@ -320,18 +319,18 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $lastOrgChartted = $orgName;
                     }
                     
-                    if (in_array($result['f_threatLevel'], $findingCounts)) {
+                    if (in_array($systemCountInfo['f_threatLevel'], $findingCounts)) {
                         // findingCounts [ of this threatLevel ] = number of findings of this threatLevel
-                        $findingCounts[$result['f_threatLevel']] = $result['f_COUNT'];
+                        $findingCounts[$systemCountInfo['f_threatLevel']] = $systemCountInfo['f_COUNT'];
                     } else {
-                        $findingCounts['NULL'] = $result['f_COUNT'];
+                        $findingCounts['NULL'] = $systemCountInfo['f_COUNT'];
                     }
                     
                     $lastResultOrg = $orgName;
                     
                 }
 
-                // Was the last organization in the results array added to the chart?
+                // Was the last organization in the systemCounts array added to the chart?
                 if ($orgName !== $lastOrgChartted) {
                     $rtnChart->addColumn(
                         $orgName,
