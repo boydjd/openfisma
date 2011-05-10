@@ -26,7 +26,7 @@
  * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version99 extends Doctrine_Migration_Base
+class Version102 extends Doctrine_Migration_Base
 {
 
     /**
