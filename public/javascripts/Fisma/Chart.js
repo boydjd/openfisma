@@ -1998,7 +1998,7 @@ Fisma.Chart = {
     placeCanvasesInDivs : function(chartParamsObj) {
 
         // Get the div that holds all canvases of this chart
-        var chartCanvasContainer = document.getElementById(chartParamsObj.uniqueid);
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
         
         // Get a list (obj-array) of all canvases for this chart that are absolute positioned
         var canvases = $(chartCanvasContainer).find('canvas').filter(
