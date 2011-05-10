@@ -174,10 +174,17 @@ class AuthController extends Zend_Controller_Action
                 $this->_helper->layout->setLayout('layout');
                 $this->_redirect('/index/index');
             }
-        } catch(Zend_Auth_Exception $e) {
+        } catch (Zend_Auth_Exception $zae) {
             // If any Auth exceptions are caught during login, 
             // then return to the login screen and display the message
-            $this->view->assign('error', $e->getMessage());
+            $this->view->assign('error', $zae->getMessage());
+        } catch (Fisma_Zend_Exception $fze) {
+            $userMessage = 'Authentication is not configured correctly. Contact your server administrator.';
+            $this->view->assign('error', $userMessage);
+
+            // No stack trace is logged because zend ldap will include the stack trace in its log message
+            $logMessage = $fze->getMessage();
+            $this->getInvokeArg('bootstrap')->getResource('log')->err($logMessage);
         }
     }
 
