@@ -165,8 +165,13 @@ try {
     
     $stopTime = time();
     print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");
+
 } catch (Zend_Config_Exception $zce) {
-    print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+    // A zend config exception indicates that the application may not be installed properly
+    echo 'The application is not installed correctly.' . PHP_EOL;
+    
+    echo 'Exception ' . get_class($zce) . ' occured: ' . $zce->getMessage() . PHP_EOL;    
+
 } catch (Exception $e) {
     print get_class($e) 
         . "\n" 

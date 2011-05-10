@@ -315,6 +315,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
+                    $msg   = "{$this->_modelName} created successfully";
+                    $type = 'notice';
+                    $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
@@ -378,11 +381,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
+                    $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
                         $msg .= $e->getMessage();
+                    $type = 'warning';
+                } catch (Fisma_Zend_Exception_User $e) {
+                    $msg  = "Error while trying to save: " . $e->getMessage();
                     $type = 'warning';
                 }
                 $this->view->priorityMessenger($msg, $type);
@@ -540,7 +547,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchableFields = $table->getSearchableFields();
 
         // Create the YUI table that will display results
-        $searchResultsTable = new Fisma_Yui_DataTable_Search();
+        $searchResultsTable = new Fisma_Yui_DataTable_Remote();
 
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
@@ -618,6 +625,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->searchResultsTable = $searchResultsTable;
+        $this->view->assign($searchResultsTable->getProperties());
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
         // the name as an array element instead
@@ -628,6 +636,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
+        $this->view->searchPreferences = $this->_getSearchPreferences();
 
         $this->renderScript('object/list.phtml');
     }
@@ -648,6 +657,27 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         return $visibleColumns;
     }
 
+    /**
+     * Get the search preferences
+     *
+     * @return array
+     */
+    protected function _getSearchPreferences()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.QueryState';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $result = array('type' => 'simple');
+        if (!empty($storage)) {
+            $data = $storage->data;
+            $data = empty($data[$this->_modelName]) ? array() : $data[$this->_modelName];
+            if (!empty($data['type']) && $data['type'] === 'advanced') {
+                $result['type'] = 'advanced';
+                $result['fields'] = empty($data['fields']) ? array() : $data['fields'];
+            }
+        }
+        return $result;
+    }
     /**
      * Apply a user query to the search engine and return the results in JSON format
      *
@@ -745,6 +775,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $rows,
                 $showDeletedRecords
             );
+        }
+
+        // store query options
+        $queryOptions = $this->getRequest()->getParam('queryOptions');
+        if (!empty($queryOptions)) {
+            $userId = $this->_me->id;
+            $namespace = 'Fisma.Search.QueryState';
+            $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+            if (empty($storage)) {
+                $storage = new Storage();
+                $storage->userId = $userId;
+                $storage->namespace = $namespace;
+                $storage->data = array();
+            }
+            $data = $storage->data;
+            $queryOptions = Zend_Json::decode($queryOptions);
+            $data[$this->_modelName] = $queryOptions;
+            $storage->data = $data;
+            $storage->save();
         }
         
         // Create the appropriate output for the requested format

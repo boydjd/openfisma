@@ -16,24 +16,33 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
-
 /**
- * Tests for YUI data table with search data source
+ * Update app version 
  * 
- * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Test
- * @subpackage Test_Library
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Library_Fisma_Yui_DataTable_Search extends Test_FismaUnitTest
+class Version99 extends Doctrine_Migration_Base
 {
     /**
-     * Test construction of Search data table
+     * Update application version.
      */
-    public function testConstruct()
+    public function up()
     {
-        $table = new Fisma_Yui_DataTable_Search();
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.13.0'";
+        $conn->exec($updateSql);
+    }
+
+    /**
+     * Remove configuration 
+     */
+    public function down()
+    {
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
+        $conn->exec($updateSql);
     }
 }

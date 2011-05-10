@@ -1,18 +1,9 @@
 <?php
 
-echo $this->escape(
-    $this->searchBox(
-        $this->toolbarButtons, 
-        $this->searchForm, 
-        $this->searchMoreOptionsForm,
-        $this->advancedSearchOptions
-    ), 
-    'none'
-);
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-Fisma_Format_Section::startSection('User Account Information'); ?>
+Fisma_Format_Section::startSection('User Account Information');
 
-<?php 
 if (!empty($this->requirements)) {
 ?>
     <p>The password must meet the following complexity criteria:</p>
