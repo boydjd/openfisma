@@ -35,6 +35,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
      */
     protected function _initShutdown()
     {
+        $this->bootstrap('Session');
         register_shutdown_function(array("Zend_Session", "writeClose"), true);
     }
 

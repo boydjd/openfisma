@@ -17,41 +17,30 @@
  */
 
 /**
- * Add Storage model table.
+ * Add soft delete behavior to network and product
  *
  * @package   Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @author    mark ma <mark.ma@reyosoft.com>
  * @license   http://www.openfisma.org/content/license GPLv3
  */
-class Version98 extends Doctrine_Migration_Base
+class Version101 extends Doctrine_Migration_Base
 {
     /**
-     * Add Storage model's table to the database.
-     *
-     * @return void
+     * Add deleted_at column for soft delete behavior
      */
     public function up()
     {
-        $this->createTable(
-            'storage',
-            array(
-                'id' => array('type' => 'integer', 'length' => '8', 'autoincrement' => '1', 'primary' => '1'),
-                'userid' => array('type' => 'integer', 'length' => '8'),
-                'namespace' => array('type' => 'string', 'length' => '255'),
-                'data' => array( 'type' => 'object', 'length' => '')
-            ),
-            array('primary' => array(0 => 'id'))
-        );
+        $this->addColumn('network', 'deleted_at', 'timestamp', '25', array('default' => '', 'notnull' => ''));
+        $this->addColumn('product', 'deleted_at', 'timestamp', '25', array('default' => '', 'notnull' => ''));
     }
 
     /**
-     * Remove Storage model's table from the database.
-     *
-     * @return void
+     * Remove column
      */
     public function down()
     {
-        $this->dropTable('storage');
+        $this->removeColumn('network', 'deleted_at');
+        $this->removeColumn('product', 'deleted_at');
     }
 }

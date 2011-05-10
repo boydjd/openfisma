@@ -40,7 +40,11 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
         $selectArray = $this->_view->systemSelect($systems);
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
         
-        $networks = Doctrine::getTable('Network')->findAll()->toArray();
+        $networks = Doctrine_Query::create()
+                    ->from('Network t')
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                    ->execute();
+
         $networkList = array();
         foreach ($networks as $network) {
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
