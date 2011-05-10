@@ -42,7 +42,9 @@
     
     <br/>
     <div 
-        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
+        id="<?php 
+            echo $this->escape($this->chartId, 'none');
+        ?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
         <ul class="yui-nav">
             <li class="selected">
                 <a href="#tab1" onClick="Fisma.Chart.showSetingMode(true);">
@@ -79,11 +81,11 @@
                     style="text-align: left; ">
                 <input type="checkbox" id="pointLabels" />
                     <label for="pointLabels">
-                        Draw data labels (numbers on top of bars)
+                        Show data labels
                     </label><br/>
                 <input type="checkbox" id="pointLabelsOutline" class="hideFromIE" />
                     <label for="pointLabelsOutline" class="hideFromIE">
-                        Outline data labels* 
+                        Outline data labels 
                     </label class="hideFromIE"><br class="hideFromIE" />
                 <input type="checkbox" id="barShadows" />
                     <label for="barShadows">
@@ -103,15 +105,12 @@
                     </label><br/>
                 <input type="checkbox" id="fadingEnabled" class="hideFromIE"/>
                     <label for="fadingEnabled" class="hideFromIE">
-                        Enable fading effects* 
+                        Enable fading effects 
                     </label><br class="hideFromIE" />
                 <input type="checkbox" id="showDataTable"/>
                     <label for="showDataTable">
-                        Show table of raw numbers instead of chart 
+                        Show data table 
                     </label><br/>
-                <label class="hideFromIE">
-                    * = This option is not supported in IE
-                </label>
                 </div>
 
                 <div>

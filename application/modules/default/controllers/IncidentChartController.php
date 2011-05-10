@@ -74,9 +74,16 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $rtnChart
             ->setLayerLabels(
                 array(
-                    'Reported Incidents',
-                    'Resolved Incidents',
-                    'Rejected Incidents'
+                    'Incidents reported',
+                    'Incidents resolved',
+                    'Incidents rejected'
+                )
+            )
+            ->setColors(
+                array(
+                    '#FF3333',
+                    '#FF9933',
+                    '#EAED1E'
                 )
             )
             ->setChartType('stackedbar')
@@ -161,6 +168,17 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('pie')
+            ->setColors(
+                array(
+                    '#b3b3b3',
+                    '#ff3333',
+                    '#ff9933',
+                    '#eaed1e',
+                    '#66ff66',
+                    '#7197e1',
+                    '#c385f1'
+                )
+            )
             ->setTitle('Breakdown of all open incidents by category');
     
         $categoryQuery = Doctrine_Query::create()
@@ -189,6 +207,7 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('bar')
+            ->setColors(array('#416ed7'))
             ->setTitle('Incidents per bureau reported in the last 90 days');
     
         $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);

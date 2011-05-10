@@ -101,7 +101,7 @@ Fisma.Chart = {
             concatXLabel: false,
             nobackground: true,
             drawGridLines: false,
-            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: regular',
             pointLabelAdjustX: -3,
             pointLabelAdjustY: -7,
             AxisLabelX: '',
