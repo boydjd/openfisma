@@ -51,7 +51,7 @@ select {
   font-family: Verdana;
 }
 
-/* Fix the attach artifacts rendering. IE7 renders this to  */
+/* Fix the attach artifacts rendering. */
 
 div.attachArtifactsProgressBar {
     margin: 10px 0px 0px 10px;
@@ -65,4 +65,20 @@ div.yui-ac {
 /* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
 .hideFromIE {
 	display: none;
+}
+
+/* Fix basic search rendering */
+form#searchForm input#keywords {
+    position: relative;
+    top: 0px;
+}
+
+/* Fix advanced search rendering */
+div.searchCriteria input[type='text'] {
+    position: relative;
+    top: -1px;
+}
+
+span.searchQueryButtons button {
+    height: 24px;
 }

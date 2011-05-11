@@ -92,7 +92,6 @@ class XssListener extends Fisma_Doctrine_Record_Listener
             // Whenever the configuration is modified, the definition rev needs to be incremented.
             // This prevents HTML Purifier from using a stale cach definition
             $config->set('Cache.DefinitionImpl', null); // remove this later
-            $config->set('Core.Encoding', 'ASCII'); /** @todo utf8 */
             $config->set('HTML.Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
 
             // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
