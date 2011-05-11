@@ -26,7 +26,7 @@
  * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version100 extends Doctrine_Migration_Base
+class Version103 extends Doctrine_Migration_Base
 {
     /**
     * add mustresetpassword to user table
