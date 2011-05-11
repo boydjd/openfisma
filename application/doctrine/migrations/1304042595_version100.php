@@ -35,7 +35,7 @@ class Version100 extends Doctrine_Migration_Base
     */
     public function up()
     {
-        $this->addColumn('user', 'mustresetpassword', 'boolean', '25', array('default' => 0));
+        $this->addColumn('user', 'mustresetpassword', 'boolean', '1', array('default' => 0));
     }
 
     /**
