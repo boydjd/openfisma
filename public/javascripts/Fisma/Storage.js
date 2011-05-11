@@ -62,6 +62,17 @@
     FS._storageEngine = null;
 
     /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
+
+    /**
      * Register a callback for when the storage engine is ready.
      *
      * @method Storage.onReady
@@ -75,6 +86,7 @@
             FS._initStorageEngine();
             var engine = FS._storageEngine;
             var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
             if (!(engine.isReady || (engine._swf && locationSession))) {
                 engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {

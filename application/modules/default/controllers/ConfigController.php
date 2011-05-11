@@ -495,67 +495,75 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function testEmailConfigAction()
-    {        
-        // Load the form from notification_config.form file
-        $form = $this->_getConfigForm('email_config');
-        if ($this->_request->isPost()) {
-            $postEmailConfigValues = $this->_request->getPost();
-            if ($form->isValid($postEmailConfigValues)) {
-                try{
-                    $postEmailConfigValues = $form->getValues();
-                    // Because user may not specified password for test on UI page,
-                    // so have retrieve the saved one before if possible. 
-                    if (empty($postEmailConfigValues['smtp_password'])) {
-                        $password = Fisma::configuration()->getConfig('smtp_password');
+    {
+        // Get system email configuration
+        $configuration = Fisma::configuration();
+        $storedConfig = array(
+            'sender' => $configuration->getConfig('sender'),
+            'subject' => $configuration->getConfig('subject'),
+            'smtp_host' => $configuration->getConfig('smtp_host'),
+            'smtp_username' => $configuration->getConfig('smtp_username'),
+            'smtp_password' => $configuration->getConfig('smtp_password'),
+            'send_type' => $configuration->getConfig('send_type'),
+            'smtp_port' => $configuration->getConfig('smtp_port'),
+            'smtp_tls' => $configuration->getConfig('smtp_tls')
+        );
 
-                        if (!empty($password[0])) {
-                            $postEmailConfigValues['smtp_password'] = $password[0]->value;
-                        }
-                    }
-                    // The test e-mail template content
-                    $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the" 
-                                 . " administrator to determine if the e-mail configuration is" 
-                                 . " working correctly. There is no need to reply to this e-mail.";
+        // Get posted form configuration and strip out empty fields
+        $request = $this->getRequest();
 
-                    // Define Zend_Mail() for sending test email
-                    $mail = new Zend_Mail();
-                    $mail->addTo($postEmailConfigValues['recipient']);
-                    $mail->setFrom($postEmailConfigValues['sender']);
-                    $mail->setSubject($postEmailConfigValues['subject']);
-                    $mail->setBodyText($mailContent);
+        $formConfig = array(
+            'recipient' => $request->getParam('recipient'),
+            'sender' => $request->getParam('sender'),
+            'subject' => $request->getParam('subject'),
+            'smtp_host' => $request->getParam('smtp_host'),
+            'smtp_username' => $request->getParam('smtp_username'),
+            'smtp_password' => $request->getParam('smtp_password'),
+            'send_type' => $request->getParam('send_type'),
+            'smtp_port' => $request->getParam('smtp_port'),
+            'smtp_tls' => $request->getParam('smtp_tls')
+        );
 
-                    // Sendmail transport
-                    if ($postEmailConfigValues['send_type'] == 'sendmail') {
-                        $mail->send();
-                    } elseif ($postEmailConfigValues['send_type'] == 'smtp') {
-                        // SMTP transport
-                        $emailConfig = array('auth'     => 'login',
-                                             'username' => $postEmailConfigValues['smtp_username'],
-                                             'password' => $postEmailConfigValues['smtp_password'],
-                                             'port'     => $postEmailConfigValues['smtp_port']);
-                        if (1 == $postEmailConfigValues['smtp_tls']) {
-                            $emailConfig['ssl'] = 'tls';
-                        }
-                        $transport = new Zend_Mail_Transport_Smtp($postEmailConfigValues['smtp_host'], $emailConfig);
-                        $mail->send($transport);
-                    }
-                    $type = 'message';
-                    /** @todo english */
-                    $msg  = 'Sent test email to ' . $postEmailConfigValues['recipient'] . ' successfully !';
-                } catch (Zend_Mail_Exception $e) {
-                    $type = 'warning';
-                    $msg  = $e->getMessage();
+        $formConfig = array_filter($formConfig);
+
+        // Merge system email configuration into form configuration
+        $emailConfiguration = array_merge($storedConfig, $formConfig);
+
+        try{
+            // The test e-mail template content
+            $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the" 
+                         . " administrator to determine if the e-mail configuration is" 
+                         . " working correctly. There is no need to reply to this e-mail.";
+
+            // Define Zend_Mail() for sending test email
+            $mail = new Zend_Mail();
+            $mail->addTo($emailConfiguration['recipient']);
+            $mail->setFrom($emailConfiguration['sender']);
+            $mail->setSubject($emailConfiguration['subject']);
+            $mail->setBodyText($mailContent);
+
+            // Sendmail transport
+            if ($emailConfiguration['send_type'] == 'sendmail') {
+                $mail->send();
+            } elseif ($emailConfiguration['send_type'] == 'smtp') {
+                // SMTP transport
+                $emailConfig = array('auth'     => 'login',
+                                     'username' => $emailConfiguration['smtp_username'],
+                                     'password' => $emailConfiguration['smtp_password'],
+                                     'port'     => $emailConfiguration['smtp_port']);
+                if (1 == $emailConfiguration['smtp_tls']) {
+                    $emailConfig['ssl'] = 'tls';
                 }
-            } else {
-                $type = 'warning';
-                $msg  = Fisma_Zend_Form_Manager::getErrors($form);
+                $transport = new Zend_Mail_Transport_Smtp($emailConfiguration['smtp_host'], $emailConfig);
+                $mail->send($transport);
             }
-        } else {
+            $type = 'message';
+            $msg  = 'Sent test email to ' . $emailConfiguration['recipient'] . ' successfully !';
+        } catch (Zend_Mail_Exception $e) {
             $type = 'warning';
-            /** @todo english */
-            $msg  = "Invalid Parameters";
+            $msg  = $e->getMessage();
         }
-        
+
         $this->view->msg = $msg;
         $this->view->type = $type;
     }

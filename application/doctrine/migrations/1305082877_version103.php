@@ -17,41 +17,34 @@
  */
 
 /**
- * Add Storage model table.
+ * Add mustresetpassword column to user table.
  *
- * @package   Migration
+ * @codingStandardsIgnoreFile
+ *
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license   http://www.openfisma.org/content/license GPLv3
+ * @author Mark Ma <mark.ma@reyosoft.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version98 extends Doctrine_Migration_Base
+class Version103 extends Doctrine_Migration_Base
 {
     /**
-     * Add Storage model's table to the database.
-     *
-     * @return void
-     */
+    * add mustresetpassword to user table
+    * 
+    * @return void
+    */
     public function up()
     {
-        $this->createTable(
-            'storage',
-            array(
-                'id' => array('type' => 'integer', 'length' => '8', 'autoincrement' => '1', 'primary' => '1'),
-                'userid' => array('type' => 'integer', 'length' => '8'),
-                'namespace' => array('type' => 'string', 'length' => '255'),
-                'data' => array( 'type' => 'object', 'length' => '')
-            ),
-            array('primary' => array(0 => 'id'))
-        );
+        $this->addColumn('user', 'mustresetpassword', 'boolean', '1', array('default' => 0));
     }
 
     /**
-     * Remove Storage model's table from the database.
-     *
-     * @return void
-     */
+    * remove mustresetpassword to user table
+    * 
+    * @return void
+    */
     public function down()
     {
-        $this->dropTable('storage');
+        $this->removeColumn('user', 'mustresetpassword');
     }
 }
