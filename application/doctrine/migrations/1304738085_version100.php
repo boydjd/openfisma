@@ -17,41 +17,39 @@
  */
 
 /**
- * Add Storage model table.
+ * Add unique key on privilege table (resource, action)
  *
- * @package   Migration
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license   http://www.openfisma.org/content/license GPLv3
+ * @author Mark Ma <mark.ma@reyosoft.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version98 extends Doctrine_Migration_Base
+class Version100 extends Doctrine_Migration_Base
 {
-    /**
-     * Add Storage model's table to the database.
-     *
-     * @return void
-     */
+    /** 
+    * Add a unique index to privilege table to avoid records with the same resource and action
+    * @access public
+    * @return void 
+    */
     public function up()
     {
-        $this->createTable(
-            'storage',
-            array(
-                'id' => array('type' => 'integer', 'length' => '8', 'autoincrement' => '1', 'primary' => '1'),
-                'userid' => array('type' => 'integer', 'length' => '8'),
-                'namespace' => array('type' => 'string', 'length' => '255'),
-                'data' => array( 'type' => 'object', 'length' => '')
-            ),
-            array('primary' => array(0 => 'id'))
-        );
+        $this->addIndex('privilege', 'resourceAction', array(
+            'fields' => 
+                array(
+                    0 => 'resource',
+                    1 => 'action',
+                ),
+            'type' => 'unique',
+        ));
     }
 
-    /**
-     * Remove Storage model's table from the database.
-     *
+     /**
+     * remove resourceAction index
+     * @access public
      * @return void
      */
     public function down()
     {
-        $this->dropTable('storage');
+        $this->removeIndex('privilege', 'resourceAction');
     }
 }

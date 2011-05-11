@@ -42,11 +42,14 @@ class Fisma_Zend_Form_Manager_System extends Fisma_Zend_Form_Manager_Abstract
         $q->orderBy($q->getRootAlias() . '.lft');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
+        $form->getElement('cloneOrganizationId')->addMultiOptions(array(null => null));
+
         if (!empty($organizationTree)) {
             foreach ($organizationTree as $organization) {
                 $value = $organization['id'];
                 $text = str_repeat('--', $organization['level']) . $organization['name'];
                 $form->getElement('parentOrganizationId')->addMultiOptions(array($value => $text));
+                $form->getElement('cloneOrganizationId')->addMultiOptions(array($value => $text));
             }
         }
         
