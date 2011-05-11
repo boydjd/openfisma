@@ -52,26 +52,5 @@ class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
             );
         }
 
-        // Loop through each relation to ensure the asset should not be able to be soft deleted
-        // which associated with active model
-        $relations = $this->getTable()->getRelations();
-        foreach ($relations as $name => $relation) {
-            // Skip to check the relation of vulnerabilities
-            if ('Vulnerabilities' === $name) continue;
-
-            $count = Doctrine_Query::create()
-                     ->from($name)
-                     ->where($relation->getForeignFieldName() . ' = ?', $this->{$relation->getLocalFieldName()})
-                     ->count();
-
-            if ($count > 0) {
-                $name = ('Organization' === $name) ? 'system' : $name;
-                throw new Fisma_Zend_Exception_User(
-                    /** @todo english */
-                    "This asset can not be deleted because it is already associated with one or more "
-                    . strtolower($name) . "s"
-                );
-            }
-        }
     }
 }

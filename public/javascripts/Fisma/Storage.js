@@ -62,6 +62,17 @@
     FS._storageEngine = null;
 
     /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
+
+    /**
      * Register a callback for when the storage engine is ready.
      *
      * @method Storage.onReady

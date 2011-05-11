@@ -24,3 +24,5 @@ Product:
                 logicalName: CPE ID
                 notify: true
             comment: The common platform enumeration (CPE) for this product, if known
+    actAs:
+        SoftDelete: true

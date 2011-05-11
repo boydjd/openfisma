@@ -92,8 +92,7 @@
             if (type === "simple") {
                 newData.keywords = oldData.keywords || "";
             } else if (type === "advanced") {
-                newData.advancedFields = oldData.advancedFields || {};
-                newData.advancedQuery = oldData.advancedQuery || {};
+                newData.advancedQuery = oldData.advancedQuery || [];
             } else {
                 throw "Invalid search type specified.";
             }
@@ -129,38 +128,6 @@
             }
             var data = this.getState() || {};
             data.keywords = keywords;
-            this.setState(data);
-        },
-
-        /**
-         * Get advanced search fields
-         *
-         * @method getAdvancedFields
-         * @return {Object} Fields
-         */
-        getAdvancedFields: function() {
-            var state = this.getState();
-            if (!Lang.isObject(state) || !Lang.isObject(state.advancedFields)) {
-                return {};
-            } 
-            return state.advancedFields;
-        },
-
-        /**
-         * Basic setter for advanced search fields.
-         *
-         * @method setAdvancedFields
-         * @param fields {Object} Advanced search fields (keys are name, values are current query type)
-         */
-        setAdvancedFields: function(fields) {
-            if (!Lang.isObject(fields)) {
-                throw "Can not set non-object as advanced search fields.";
-            }
-            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
-                throw "Attempting to save advanced search fields for non-advanced search.";
-            }
-            var data = this.getState() || {};
-            data.advancedFields = fields;
             this.setState(data);
         },
 

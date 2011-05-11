@@ -737,4 +737,88 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->dataTable = $dataTable;
     }
+
+    /**
+     * getUsersAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function getUsersAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'User');
+
+        $query = $this->getRequest()->getParam('query');
+
+        $users = Doctrine::getTable('User')->getUsersLikeUsernameQuery($query)
+                 ->select('u.id, u.username')
+                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                 ->execute();
+
+        $list = array('users' => $users);
+        
+        return $this->_helper->json($list);
+    }
+
+    /**
+     * removeUserRolesAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function removeUserRolesAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        Doctrine_Manager::connection()->beginTransaction();
+
+        $urosToDelete = Doctrine::getTable('UserRoleOrganization')
+                        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+                        ->execute();
+
+        foreach ($urosToDelete as $uro) {
+            $uro->delete();
+            $uro->free();
+        }
+
+        Doctrine_Manager::connection()->commit();
+    }
+
+    /**
+     * addUserRolesToOrganizationAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function addUserRolesToOrganizationAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        Doctrine_Manager::connection()->beginTransaction();
+        
+        Doctrine::getTable('UserRoleOrganization')
+        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+        ->delete();
+
+        foreach ($userRoles as $userRole) { 
+            $userRoleOrganization = new UserRoleOrganization();
+            $userRoleOrganization->organizationId = (int) $organizationId;
+            $userRoleOrganization->userRoleId = (int) $userRole;
+            $userRoleOrganization->save();
+        }
+
+        Doctrine_Manager::connection()->commit();
+    }
 }
