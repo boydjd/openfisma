@@ -149,7 +149,7 @@ Role:
             - notification_vulnerability         
 
     ciso_role:
-        name: Cheif Information Security Officer
+        name: Chief Information Security Officer
         nickname: SAISO
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The chief information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The CISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
         Privileges: 

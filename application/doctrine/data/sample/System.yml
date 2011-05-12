@@ -12,7 +12,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     OSC_SYS:
         type: minor
@@ -27,7 +27,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     IAD_SYS:
         type: minor
@@ -44,7 +44,7 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     CIT_SYS:
         type: major
@@ -61,7 +61,7 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     SCMS_SYS:
         type: major
@@ -76,7 +76,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     CRMS_SYS:
         type: major
@@ -92,7 +92,7 @@ System:
         piaRequired: "YES"
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     HAZMAT_SYS:
         type: major
@@ -107,7 +107,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     RCD_SYS:
         type: major
@@ -122,7 +122,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     GREEN_NRG_SYS:
         type: minor
@@ -137,7 +137,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     WIND_SYS:
         type: gss
@@ -152,7 +152,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     RESTON_SYS:
         type: gss
@@ -169,7 +169,7 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     LINUX_SYS:
         type: minor
@@ -184,7 +184,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     MAINFRAME_SYS:
         type: minor
@@ -199,7 +199,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     ORACLE_SYS:
         type: minor
@@ -214,7 +214,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     HERNDON_SYS:
         type: gss
@@ -230,7 +230,7 @@ System:
         piaRequired: "YES"
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     RMTRP_SYS:
         type: major
@@ -245,7 +245,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
         
     ROCP_SYS:
         type: major
@@ -260,7 +260,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     H20_RIGHTS_SYS:
         type: minor
@@ -275,7 +275,7 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     WILDLIFE_SYS:
         type: major
@@ -290,9 +290,9 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
-    # This one intentionally does "NO"t have a C&A date
+    # This one intentionally does not have a C&A date
     TPP_SYS:
         type: major
         confidentiality: LOW
@@ -305,9 +305,9 @@ System:
         hasPii: "NO"
         piaRequired: "NO"
         sornRequired: "NO"
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
-    # This system is by default "NO"t assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
+    # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
         type: minor
         confidentiality: LOW
@@ -323,7 +323,7 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     # The system is used to test when and how disposed systems are displayed in the UI. With this system, a tester
     # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
@@ -344,4 +344,4 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
-        uniqueProjectId: 123-45-67-89-01-2345-67"
+        uniqueProjectId: 123-45-67-89-01-2345-67

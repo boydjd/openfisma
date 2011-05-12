@@ -100,7 +100,11 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                               ->where('u.username NOT LIKE ?', 'root')
                               ->limit(50)
                               ->execute();
-        
+
+        if (0 == count($this->_sampleUsers)) {
+            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+        }
+
         // Get the evaluation ID for MSA
         $msaQuery = Doctrine_Query::create()
                     ->select('id')
