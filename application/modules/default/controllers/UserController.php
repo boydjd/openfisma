@@ -267,14 +267,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $post   = $this->_request->getPost();
 
         if (isset($post['oldPassword'])) {
-
             if ($form->isValid($post)) {
                 $user = CurrentUser::getInstance();
                 try {
+                    $user->mustResetPassword = false; 
                     $user->merge($post);
                     $user->save();
                     $message = "Password updated successfully."; 
                     $model   = 'notice';
+                    if ($this->_helper->AccessControl->hasAccessControl($user->id, 'mustResetPassword')) {
+                        $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'mustResetPassword');
+                    }
                 } catch (Doctrine_Exception $e) {
                     $message = $e->getMessage();
                     $model   = 'warning';
@@ -388,11 +391,23 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function acceptRobAction()
     {
-        $user = CurrentUser::getInstance();
-        $user->lastRob = Fisma::now();
-        $user->save();
-        
-        $this->_redirect('/Index/index');
+        $this->_helper->layout->setLayout('notice');
+
+        $post   = $this->_request->getPost();
+        if (isset($post['accept'])) {
+            $user = CurrentUser::getInstance();
+            $user->lastRob = Fisma::now();
+            $user->save();
+       
+            if ($this->_helper->AccessControl->hasAccessControl($user->id, 'rulesOfBehavior')) {
+                $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'rulesOfBehavior');
+            }
+
+            $this->_helper->layout->setLayout('layout');
+            $this->_redirect('/Index/index');
+        }
+
+        $this->view->behaviorRule = Fisma::configuration()->getConfig('behavior_rule');
     }
 
     /**

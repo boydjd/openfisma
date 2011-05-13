@@ -1,3 +1,5 @@
+<div class="chartContainer">
+
 <div class="sectionHeader">
     <table width="100%">
         <tr>
@@ -17,8 +19,7 @@
         </tr>
     </table>
 </div>
-<div class="section">
-
+<div class="section chartSection">
 <div class="yui-navset">
 
     <div id="<?php echo $this->escape($this->chartId, 'none'); ?>loader" class="loading">
@@ -42,7 +43,10 @@
     
     <br/>
     <div 
-        id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
+        id="<?php
+            echo $this->escape($this->chartId, 'none');
+        ?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
+        
         <ul class="yui-nav">
             <li class="selected">
                 <a href="#tab1" onClick="Fisma.Chart.showSetingMode(true);">
@@ -168,3 +172,5 @@
     });
     
 </script>
+
+</div>

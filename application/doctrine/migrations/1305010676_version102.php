@@ -91,14 +91,15 @@ class Version102 extends Doctrine_Migration_Base
      */
     private function _constructConvertSql($columnName, 
                                           $colunmType, 
-                                          $tableName) {
+                                          $tableName)
+    {
 
         // Audit log uses Fisma_String::htmlToPlainText in which it uses 
         // iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $html) before save data to DB. So, the stored data in 
         // audit log table are already UTF-8 encoded. To convert UTF-8 encoded data, it needs to use 
         // following two sqls in sequence. 
         $queries = array();
-        if (strtolower(substr($tableName,-4)) == '_log') {
+        if (strtolower(substr($tableName, -4)) == '_log') {
             $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET BINARY"; 
             $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
         } else {
