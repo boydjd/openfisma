@@ -17,32 +17,30 @@
  */
 
 /**
- * Update app version 
- * 
- * @package Migration
+ * Add soft delete behavior to network and product
+ *
+ * @package   Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license http://www.openfisma.org/content/license GPLv3
+ * @author    mark ma <mark.ma@reyosoft.com>
+ * @license   http://www.openfisma.org/content/license GPLv3
  */
-class Version99 extends Doctrine_Migration_Base
+class Version101 extends Doctrine_Migration_Base
 {
     /**
-     * Update application version.
+     * Add deleted_at column for soft delete behavior
      */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.13.1'";
-        $conn->exec($updateSql);
+        $this->addColumn('network', 'deleted_at', 'timestamp', '25', array('default' => '', 'notnull' => ''));
+        $this->addColumn('product', 'deleted_at', 'timestamp', '25', array('default' => '', 'notnull' => ''));
     }
 
     /**
-     * Remove configuration 
+     * Remove column
      */
     public function down()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
-        $conn->exec($updateSql);
+        $this->removeColumn('network', 'deleted_at');
+        $this->removeColumn('product', 'deleted_at');
     }
 }

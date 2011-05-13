@@ -45,10 +45,18 @@
         if (YAHOO.lang.isNull(FS._storageEngine)) {
             var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
-                //null, // no preferred engine
-                YAHOO.util.StorageEngineSWF.ENGINE_NAME,
+                YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
-                {engine: engineConf});
+                {
+                    engine: engineConf,
+                    force: false,
+                    order: [
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineSWF
+                    ]
+                }
+            );
         }
     };
 

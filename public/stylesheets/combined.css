@@ -445,7 +445,7 @@ table.modules td:first-child {
 
 .searchCriteria {    
     border-top: 1px dotted #bfbfbf;
-    max-width: 50em;
+    max-width: 60em;
     padding-top: 5px;
     padding-bottom: 3px;
     -margin-left: auto;
@@ -577,6 +577,10 @@ span.userInfo:active {
  *******************************************************************************
  */
 
+.chartSection {
+    page-break-inside: avoid;
+}
+
 /* style for the data-table for screen readers */
 .screenReaderTabel {
     width: 100%;
@@ -584,16 +588,16 @@ span.userInfo:active {
 
 /* the div that holds the chart options */
 .widgetSpaceHolder {
-	width: 400px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: left;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
 }
 
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
-	cursor: pointer;
-	width: 20px;
+    cursor: pointer;
+    width: 20px;
 }
 /**
  * jquery.jqplot.css
@@ -1254,6 +1258,23 @@ div#msgbar {
 	display:block;
 	padding-left: 20px; 
 	background: url(/images/minor-small.png) no-repeat;
+}
+
+/* Style for displaying background color of disposal systems are pink */
+.disposal {
+    background-color: pink;
+}
+
+/* Style for displaying showDisposalSystem div including checkbox and text*/
+div#showDisposalSystem {
+    margin: 0px 0px 5px 3px;
+    font-weight: bold;
+}
+
+/* Style for displaying checkbox in organization tree */
+div#showDisposalSystem input {
+    vertical-align: middle;
+    margin: 0px 5px 3px 0px;
 }
 
 /* 

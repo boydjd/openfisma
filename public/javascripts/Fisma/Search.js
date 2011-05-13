@@ -120,15 +120,6 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         executeSearch: function (form) {
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                document.getElementById('searchType').value = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles a new search
-            document.getElementById('msgbar').style.display = 'none';
-
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -144,9 +135,6 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -306,17 +294,6 @@ Fisma.Search = function() {
          * @return string URL encoded post data
          */
         generateRequest: function (tableState, table) {
-
-            var searchType = document.getElementById('searchType').value;
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                searchType = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles YUI data
-            document.getElementById('msgbar').style.display = 'none';
-
             var postData = "";
 
             try {

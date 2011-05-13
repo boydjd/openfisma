@@ -36,9 +36,15 @@ class Network extends BaseNetwork
      */
     public function preDelete($event)
     {
-        if (count($this->Assets) > 0) {
+        // only check active object, ignore soft deleted record
+        $activeAssets = Doctrine_Query::create()
+                  ->from('Asset a')
+                  ->where('a.networkId = ?', $this->id)
+                  ->count();
+
+        if ($activeAssets > 0) {
             throw new Fisma_Zend_Exception_User(
-                'This network can not be deleted because it is already associated with one or more assets'
+                'This network can not be deleted because it is already associated with one or more assets.'
             );
         }
     }
