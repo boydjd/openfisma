@@ -17,32 +17,34 @@
  */
 
 /**
- * Update app version 
- * 
+ * Add mustresetpassword column to user table.
+ *
+ * @codingStandardsIgnoreFile
+ *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version99 extends Doctrine_Migration_Base
+class Version103 extends Doctrine_Migration_Base
 {
     /**
-     * Update application version.
-     */
+    * add mustresetpassword to user table
+    * 
+    * @return void
+    */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.13.1'";
-        $conn->exec($updateSql);
+        $this->addColumn('user', 'mustresetpassword', 'boolean', '1', array('default' => 0));
     }
 
     /**
-     * Remove configuration 
-     */
+    * remove mustresetpassword to user table
+    * 
+    * @return void
+    */
     public function down()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.12.0'";
-        $conn->exec($updateSql);
+        $this->removeColumn('user', 'mustresetpassword');
     }
 }

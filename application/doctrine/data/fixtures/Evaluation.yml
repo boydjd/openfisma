@@ -8,6 +8,7 @@ Evaluation:
         approvalGroup: action
         Privilege: finding_mitigation_isso
         Event: MITIGATION_ISSO
+        daysUntilDue: 7
 
     MITIGATION IVV:
         id: 2
@@ -17,6 +18,7 @@ Evaluation:
         approvalGroup: action
         Privilege: finding_mitigation_ivv
         Event: MITIGATION_IVV
+        daysUntilDue: 7
 
     EVIDENCE ISSO:
         id: 3
@@ -27,6 +29,7 @@ Evaluation:
         approvalGroup: evidence
         Privilege: finding_evidence_isso
         Event: EVIDENCE_ISSO
+        daysUntilDue: 7
 
     EVIDENCE IVV:
         id: 4
@@ -36,3 +39,4 @@ Evaluation:
         approvalGroup: evidence
         Privilege: finding_evidence_ivv
         Event: EVIDENCE_IVV
+        daysUntilDue: 7
