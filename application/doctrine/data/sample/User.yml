@@ -141,7 +141,7 @@ User:
         nameLast: Johansson
         phoneOffice: (571) 555-8403
     mathieu_perreault:
-        username: mathieu_perreault
+        username: mathieu.perreault
         password: Sample1
         email: openfisma-default-install@googlegroups.com
         nameFirst: Mathieu
