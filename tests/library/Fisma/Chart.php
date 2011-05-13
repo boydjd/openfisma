@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Tests for the Fisma_Chart class
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Test_Library_Fisma_Chart extends Test_FismaUnitTest
+class Test_Library_Fisma_Chart extends Test_Case_Unit
 {
 
     public function testConvertFromStackedToRegular()

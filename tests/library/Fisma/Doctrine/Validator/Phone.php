@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
  * Tests for the Fisma_Doctrine_Validator_Phone class
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Fisma_Doctrine_Validator
  * @version    $Id$
  */
-class Test_Library_Fisma_Doctrine_Validator_Phone extends Test_FismaUnitTest
+class Test_Library_Fisma_Doctrine_Validator_Phone extends Test_Case_Unit
 {
     /**
      * Test that the validate() method correctly matches only valid phone numbers.

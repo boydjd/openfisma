@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
  * Tests for cross site scripting (XSS) listener
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
  * @subpackage Test_Model
  * @version    $Id$
  */
-class Test_Application_Models_Listener_XssListener extends Test_FismaUnitTest
+class Test_Application_Models_Listener_XssListener extends Test_Case_Unit
 {
     /**
      * Test purification of html fields to prevent XSS injection

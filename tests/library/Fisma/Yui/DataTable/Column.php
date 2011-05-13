@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
  * Tests for YUI data table columns
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @subpackage Test_Library
  * @version    $Id$
  */
-class Test_Library_Fisma_Yui_DataTable_Column extends Test_FismaUnitTest
+class Test_Library_Fisma_Yui_DataTable_Column extends Test_Case_Unit
 {
     /**
      * Test the constructor and accessors for the table column class

@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
  * Test the generic report column class
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../FismaUnitTest.php'));
  * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Test_Library_Fisma_Report_Column extends Test_FismaUnitTest
+class Test_Library_Fisma_Report_Column extends Test_Case_Unit
 {
     /**
      * This class is very basic

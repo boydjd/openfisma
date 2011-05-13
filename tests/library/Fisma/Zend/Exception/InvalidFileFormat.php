@@ -16,19 +16,19 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
  * Test_Library_Fisma_Zend_Exception_InvalidFileFormat
  * 
- * @uses Test_FismaUnitTest
+ * @uses Test_Case_Unit
  * @package Test_Library_Fisma_Zend_Exception 
  * @version $id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Library_Fisma_Zend_Exception_InvalidFileFormat extends Test_FismaUnitTest
+class Test_Library_Fisma_Zend_Exception_InvalidFileFormat extends Test_Case_Unit
 {
     /**
      * testInvalidFileFormat

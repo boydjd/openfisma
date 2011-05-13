@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Tests for Fisma_String
@@ -28,7 +28,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @subpackage Test_Fisma
  * @version    $Id$
  */
-class Test_Library_Fisma_String extends Test_FismaUnitTest
+class Test_Library_Fisma_String extends Test_Case_Unit
 {
     /**
      * Test randomness of string generation

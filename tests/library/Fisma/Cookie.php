@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Test_Fisma_Cookie_Test 
@@ -28,9 +28,9 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @subpackage Fisma_Zend_Form
  * @version    $Id$
  * 
- * @uses       Test_FismaUnitTest
+ * @uses       Test_Case_Unit
  */
-class Test_Library_Fisma_Cookie extends Test_FismaUnitTest
+class Test_Library_Fisma_Cookie extends Test_Case_Unit
 {
     /**
      * To test the method PrapareCookie
