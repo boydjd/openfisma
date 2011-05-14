@@ -33,11 +33,6 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Database.php'));
  */
 class Test_Library_Doctrine_Query extends Test_Case_Database
 {
-    public function setUp()
-    {
-        # code...
-    }
-
     /**
      * Try using a semicolon to execute two statements at once in orderBy(). 
      * 
@@ -48,9 +43,11 @@ class Test_Library_Doctrine_Query extends Test_Case_Database
      */
     public function testOrderByExecuteTwoStatements()
     {
+        $userControlledVariable = "u.username ; drop table foo";
+        
         $q = Doctrine_Query::create()
              ->from('User u')
-             ->orderBy('u.username ; drop table foo')
+             ->orderBy($userControlledVariable)
              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $q->execute();
@@ -64,15 +61,15 @@ class Test_Library_Doctrine_Query extends Test_Case_Database
      *
      * @expectedException Doctrine_Query_Exception
      */
-    public function testOrderByHashComment()
-    {
-        $q = Doctrine_Query::create()
-             ->from('User')
-             ->orderBy('#')
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        $q->execute();
-    }
+    // public function testOrderByHashComment()
+    // {
+    //     $q = Doctrine_Query::create()
+    //          ->from('User')
+    //          ->orderBy('#')
+    //          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+    // 
+    //     $q->execute();
+    // }
 
     /**
      * Try using a comment to prematurely end a query.
@@ -82,13 +79,13 @@ class Test_Library_Doctrine_Query extends Test_Case_Database
      *
      * @expectedException Doctrine_Query_Exception
      */
-    public function testOrderByCStyleComment()
-    {
-        $q = Doctrine_Query::create()
-             ->from('User u')
-             ->orderBy('/* foo */ ')
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        $q->execute();
-    }
+    // public function testOrderByCStyleComment()
+    // {
+    //     $q = Doctrine_Query::create()
+    //          ->from('User u')
+    //          ->orderBy('/* foo */ ')
+    //          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+    // 
+    //     $q->execute();
+    // }
 }
