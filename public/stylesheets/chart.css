@@ -35,6 +35,12 @@
     page-break-inside: avoid;
 }
 
+/* style for _text_ on jqPlot tool tips. For the rest of the 
+   tooltip, see jquery_jqplot.css/.jqplot-highlighter-tooltip */
+.chartToolTipText {
+    font-size: 20px;
+}
+
 /* style for the data-table for screen readers */
 .screenReaderTabel {
     width: 100%;

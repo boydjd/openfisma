@@ -492,9 +492,15 @@ Fisma.Chart = {
                 }
 
             },
-            highlighter: { 
-                show: false 
-                },
+            highlighter: {
+                show: true,
+                showMarker:false,
+                showTooltip: true,
+                tooltipAxes: 'xy',
+                yvalues: 1,
+                tooltipLocation: 's',
+                formatString: "-"
+            },
             grid: {
                 gridLineWidth: 0,
                 shadow: false,
@@ -505,12 +511,12 @@ Fisma.Chart = {
                 show: chartParamsObj.drawGridLines
                 },
             legend: {
-                        show: chartParamsObj.showlegend,
-                        rendererOptions: {
-                            numberRows: 1
-                        },
-                        location: 'nw'
-                    }
+                show: chartParamsObj.showlegend,
+                rendererOptions: {
+                    numberRows: 1
+                },
+                location: 'nw'
+            }
         };
 
         // bug killer - The canvas object for IE does not understand what transparency is...
@@ -531,10 +537,27 @@ Fisma.Chart = {
 
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
-
+        
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );    
+        
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
         
         return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    getElementByClassName : function (cl) {
+        var retnode = [];
+        var myclass = new RegExp('\\b' + cl + '\\b');
+        var elem = document.getElementsByTagName('*');
+        for (var i = 0; i < elem.length; i++) {
+            var classes = elem[i].className;
+            if (myclass.test(classes)) retnode.push(elem[i]);
+        }
+        return retnode;
     },
 
      /**
@@ -693,6 +716,18 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, paramObj)
+    {
+        var toolTips = Fisma.Chart.getElementByClassName('jqplot-highlighter-tooltip');
+        
+        for(var t in toolTips)
+        {
+            toolTips[t].innerHTML = '<span class="chartToolTipText">' + 
+                chartParamsObj.chartData[seriesIndex][pointIndex] + 
+                '</span>';
+        }
+    },
+    
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
