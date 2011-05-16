@@ -354,9 +354,9 @@ Fisma.Chart = {
             },
             legend: {
                 location: 's',
-                show: false,
+                show: true,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2
                 }
             }
         };

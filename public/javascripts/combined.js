@@ -2672,7 +2672,7 @@ Fisma.Chart = {
             concatXLabel: false,
             nobackground: true,
             drawGridLines: false,
-            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: regular',
             pointLabelAdjustX: -3,
             pointLabelAdjustY: -7,
             AxisLabelX: '',
@@ -2925,9 +2925,9 @@ Fisma.Chart = {
             },
             legend: {
                 location: 's',
-                show: false,
+                show: true,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2
                 }
             }
         };
@@ -3063,9 +3063,15 @@ Fisma.Chart = {
                 }
 
             },
-            highlighter: { 
-                show: false 
-                },
+            highlighter: {
+                show: true,
+                showMarker:false,
+                showTooltip: true,
+                tooltipAxes: 'xy',
+                yvalues: 1,
+                tooltipLocation: 's',
+                formatString: "-"
+            },
             grid: {
                 gridLineWidth: 0,
                 shadow: false,
@@ -3076,12 +3082,12 @@ Fisma.Chart = {
                 show: chartParamsObj.drawGridLines
                 },
             legend: {
-                        show: chartParamsObj.showlegend,
-                        rendererOptions: {
-                            numberRows: 1
-                        },
-                        location: 'nw'
-                    }
+                show: chartParamsObj.showlegend,
+                rendererOptions: {
+                    numberRows: 1
+                },
+                location: 'nw'
+            }
         };
 
         // bug killer - The canvas object for IE does not understand what transparency is...
@@ -3102,10 +3108,27 @@ Fisma.Chart = {
 
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
-
+        
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );    
+        
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
         
         return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    getElementByClassName : function (cl) {
+        var retnode = [];
+        var myclass = new RegExp('\\b' + cl + '\\b');
+        var elem = document.getElementsByTagName('*');
+        for (var i = 0; i < elem.length; i++) {
+            var classes = elem[i].className;
+            if (myclass.test(classes)) retnode.push(elem[i]);
+        }
+        return retnode;
     },
 
      /**
@@ -3264,6 +3287,18 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, paramObj)
+    {
+        var toolTips = Fisma.Chart.getElementByClassName('jqplot-highlighter-tooltip');
+        
+        for(var t in toolTips)
+        {
+            toolTips[t].innerHTML = '<span class="chartToolTipText">' + 
+                chartParamsObj.chartData[seriesIndex][pointIndex] + 
+                '</span>';
+        }
+    },
+    
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
@@ -18881,20 +18916,447 @@ Fisma.Vulnerability = {
     
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
+ * 
+ */
+(function($) {
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    
+    /**
+     * Class: $.jqplot.Highlighter
+     * Plugin which will highlight data points when they are moused over.
+     * 
+     * To use this plugin, include the js
+     * file in your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
+     * 
+     * A tooltip providing information about the data point is enabled by default.
+     * To disable the tooltip, set "showTooltip" to false.
+     * 
+     * You can control what data is displayed in the tooltip with various
+     * options.  The "tooltipAxes" option controls wether the x, y or both
+     * data values are displayed.
+     * 
+     * Some chart types (e.g. hi-low-close) have more than one y value per
+     * data point. To display the additional values in the tooltip, set the
+     * "yvalues" option to the desired number of y values present (3 for a hlc chart).
+     * 
+     * By default, data values will be formatted with the same formatting
+     * specifiers as used to format the axis ticks.  A custom format code
+     * can be supplied with the tooltipFormatString option.  This will apply 
+     * to all values in the tooltip.  
+     * 
+     * For more complete control, the "formatString" option can be set.  This
+     * Allows conplete control over tooltip formatting.  Values are passed to
+     * the format string in an order determined by the "tooltipAxes" and "yvalues"
+     * options.  So, if you have a hi-low-close chart and you just want to display 
+     * the hi-low-close values in the tooltip, you could set a formatString like:
+     * 
+     * > highlighter: {
+     * >     tooltipAxes: 'y',
+     * >     yvalues: 3,
+     * >     formatString:'<table class="jqplot-highlighter">
+     * >         <tr><td>hi:</td><td>%s</td></tr>
+     * >         <tr><td>low:</td><td>%s</td></tr>
+     * >         <tr><td>close:</td><td>%s</td></tr></table>'
+     * > }
+     * 
+     */
+    $.jqplot.Highlighter = function(options) {
+        // Group: Properties
+        //
+        //prop: show
+        // true to show the highlight.
+        this.show = $.jqplot.config.enablePlugins;
+        // prop: markerRenderer
+        // Renderer used to draw the marker of the highlighted point.
+        // Renderer will assimilate attributes from the data point being highlighted,
+        // so no attributes need set on the renderer directly.
+        // Default is to turn off shadow drawing on the highlighted point.
+        this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+        // prop: showMarker
+        // true to show the marker
+        this.showMarker  = true;
+        // prop: lineWidthAdjust
+        // Pixels to add to the lineWidth of the highlight.
+        this.lineWidthAdjust = 2.5;
+        // prop: sizeAdjust
+        // Pixels to add to the overall size of the highlight.
+        this.sizeAdjust = 5;
+        // prop: showTooltip
+        // Show a tooltip with data point values.
+        this.showTooltip = true;
+        // prop: tooltipLocation
+        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        this.tooltipLocation = 'nw';
+        // prop: fadeTooltip
+        // true = fade in/out tooltip, flase = show/hide tooltip
+        this.fadeTooltip = true;
+        // prop: tooltipFadeSpeed
+        // 'slow', 'def', 'fast', or number of milliseconds.
+        this.tooltipFadeSpeed = "fast";
+        // prop: tooltipOffset
+        // Pixel offset of tooltip from the highlight.
+        this.tooltipOffset = 2;
+        // prop: tooltipAxes
+        // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
+        // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
+        this.tooltipAxes = 'both';
+        // prop; tooltipSeparator
+        // String to use to separate x and y axes in tooltip.
+        this.tooltipSeparator = ', ';
+        // prop; tooltipContentEditor
+        // Function used to edit/augment/replace the formatted tooltip contents.
+        // Called as str = tooltipContentEditor(str, seriesIndex, pointIndex)
+        // where str is the generated tooltip html and seriesIndex and pointIndex identify
+        // the data point being highlighted. Should return the html for the tooltip contents.
+        this.tooltipContentEditor = null;
+        // prop: useAxesFormatters
+        // Use the x and y axes formatters to format the text in the tooltip.
+        this.useAxesFormatters = true;
+        // prop: tooltipFormatString
+        // sprintf format string for the tooltip.
+        // Uses Ash Searle's javascript sprintf implementation
+        // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+        // See http://perldoc.perl.org/functions/sprintf.html for reference.
+        // Additional "p" and "P" format specifiers added by Chris Leonello.
+        this.tooltipFormatString = '%.5P';
+        // prop: formatString
+        // alternative to tooltipFormatString
+        // will format the whole tooltip text, populating with x, y values as
+        // indicated by tooltipAxes option.  So, you could have a tooltip like:
+        // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
+        // If useAxesFormatters is true, values will be formatted according to
+        // Axes formatters and you can populate your tooltip string with 
+        // %s placeholders.
+        this.formatString = null;
+        // prop: yvalues
+        // Number of y values to expect in the data point array.
+        // Typically this is 1.  Certain plots, like OHLC, will
+        // have more y values in each data point array.
+        this.yvalues = 1;
+        // prop: bringSeriesToFront
+        // This option requires jQuery 1.4+
+        // True to bring the series of the highlighted point to the front
+        // of other series.
+        this.bringSeriesToFront = false;
+        this._tooltipElem;
+        this.isHighlighting = false;
+
+        $.extend(true, this, options);
+    };
+    
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
+    
+    // axis.renderer.tickrenderer.formatter
+    
+    // called with scope of plot
+    $.jqplot.Highlighter.init = function (target, data, opts){
+        var options = opts || {};
+        // add a highlighter attribute to the plot
+        this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
+    };
+    
+    // called within scope of series
+    $.jqplot.Highlighter.parseOptions = function (defaults, options) {
+        // Add a showHighlight option to the series 
+        // and set it to true by default.
+        this.showHighlight = true;
+    };
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    $.jqplot.Highlighter.postPlotDraw = function() {
+        this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
+        this.plugins.highlighter.highlightCanvas.setContext();
+        
+        var p = this.plugins.highlighter;
+        p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
+        this.eventCanvas._elem.before(p._tooltipElem);
+    };
+    
+    $.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
+    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
+    $.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
+    
+    function draw(plot, neighbor) {
+        var hl = plot.plugins.highlighter;
+        var s = plot.series[neighbor.seriesIndex];
+        var smr = s.markerRenderer;
+        var mr = hl.markerRenderer;
+        mr.style = smr.style;
+        mr.lineWidth = smr.lineWidth + hl.lineWidthAdjust;
+        mr.size = smr.size + hl.sizeAdjust;
+        var rgba = $.jqplot.getColorComponents(smr.color);
+        var newrgb = [rgba[0], rgba[1], rgba[2]];
+        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
+        mr.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
+        mr.init();
+        mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
+    }
+    
+    function showTooltip(plot, series, neighbor) {
+        // neighbor looks like: {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]}
+        // gridData should be x,y pixel coords on the grid.
+        // add the plot._gridPadding to that to get x,y in the target.
+        var hl = plot.plugins.highlighter;
+        var elem = hl._tooltipElem;
+        if (hl.useAxesFormatters) {
+            var xf = series._xaxis._ticks[0].formatter;
+            var yf = series._yaxis._ticks[0].formatter;
+            var xfstr = series._xaxis._ticks[0].formatString;
+            var yfstr = series._yaxis._ticks[0].formatString;
+            var str;
+            var xstr = xf(xfstr, neighbor.data[0]);
+            var ystrs = [];
+            for (var i=1; i<hl.yvalues+1; i++) {
+                ystrs.push(yf(yfstr, neighbor.data[i]));
+            }
+            if (hl.formatString) {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'yx':
+                        ystrs.push(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'x':
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, [hl.formatString, xstr]);
+                        break;
+                    case 'y':
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    default: // same as xy
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                } 
+            }
+            else {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    case 'yx':
+                        str = '';
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += ystrs[i] + hl.tooltipSeparator;
+                        }
+                        str += xstr;
+                        break;
+                    case 'x':
+                        str = xstr;
+                        break;
+                    case 'y':
+                        str = ystrs.join(hl.tooltipSeparator);
+                        break;
+                    default: // same as 'xy'
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    
+                }                
+            }
+        }
+        else {
+            var str;
+            if (hl.tooltipAxes == 'both' || hl.tooltipAxes == 'xy') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'yx') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'x') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'y') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            } 
+        }
+        if ($.isFunction(hl.tooltipContentEditor)) {
+            // args str, seriesIndex, pointIndex are essential so the hook can look up
+            // extra data for the point.
+            str = hl.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
+        }
+        elem.html(str);
+        
+        if(neighbor.gridData){
+            var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]}; //@line 305  
+        } else {
+            var gridpos = {
+                x: (neighbor.points[1][0] + (neighbor.points[2][0]-neighbor.points[1][0]) ),
+                y: neighbor.points[1][1]
+            };
+        }
+        //var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
+        
+        var ms = 0;
+        var fact = 0.707;
+        if (series.markerRenderer.show == true) { 
+            ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
+        }
+        
+        var loc = locations;
+        if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+            loc = oppositeLocations;
+        }
+        
+        switch (loc[locationIndicies[hl.tooltipLocation]]) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+        }
+        elem.css('left', x);
+        elem.css('top', y);
+        if (hl.fadeTooltip) {
+            // Fix for stacked up animations.  Thnanks Trevor!
+            elem.stop(true,true).fadeIn(hl.tooltipFadeSpeed);
+        }
+        else {
+            elem.show();
+        }
+        elem = null;
+        
+    }
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var hl = plot.plugins.highlighter;
+        var c = plot.plugins.cursor;
+        if (hl.show) {
+            if (neighbor == null && hl.isHighlighting) {
+               var ctx = hl.highlightCanvas._ctx;
+               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                if (hl.fadeTooltip) {
+                    hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
+                }
+                else {
+                    hl._tooltipElem.hide();
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.restorePreviousSeriesOrder();
+                }
+               hl.isHighlighting = false;
+              ctx = null;
+            
+            }
+            else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
+                hl.isHighlighting = true;
+                if (hl.showMarker) {
+                    draw(plot, neighbor);
+                }
+                if (hl.showTooltip && (!c || !c._zoom.started)) {
+                    showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.moveSeriesToFront(neighbor.seriesIndex);
+                }
+            }
+        }
+    }
+})(jQuery);/**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -18944,7 +19406,12 @@ Fisma.Vulnerability = {
         // group bars into this many groups
         this.groups = 1;
         // prop: varyBarColor
-        // true to color each bar separately.
+        // true to color each bar of a series separately rather than
+        // have every bar of a given series the same color.
+        // If used for non-stacked multiple series bar plots, user should
+        // specify a separate 'seriesColors' array for each series.
+        // Otherwise, each series will set their bars to the same color array.
+        // This option has no Effect for stacked bar charts and is disabled.
         this.varyBarColor = false;
         // prop: highlightMouseOver
         // True to highlight slice when moused over.
@@ -18957,6 +19424,7 @@ Fisma.Vulnerability = {
         // prop: highlightColors
         // an array of colors to use when highlighting a bar.
         this.highlightColors = [];
+        this._type = 'bar';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -19123,7 +19591,8 @@ Fisma.Vulnerability = {
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        // Ughhh, have to make a copy of options b/c it may be modified later.
+        var opts = $.extend({}, options);
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
@@ -19131,7 +19600,7 @@ Fisma.Vulnerability = {
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, pointy;
         // clear out data colors.
         this._dataColors = [];
         this._barPoints = [];
@@ -19141,9 +19610,10 @@ Fisma.Vulnerability = {
         }
         
         var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        pos = temp[2];
+        var nvals = temp[0];
+        var nseries = temp[1];
+        var pos = temp[2];
+		var points = [];
         
         if (this._stack) {
             this._barNudge = 0;
@@ -19159,6 +19629,9 @@ Fisma.Vulnerability = {
                 negativeColor = opts.fillStyle;
             }
             var positiveColor = opts.fillStyle;
+			var base;
+			var xstart; 
+			var ystart;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -19166,8 +19639,8 @@ Fisma.Vulnerability = {
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][0] + this._barNudge;
-                    var ystart;
+                    base = gridData[i][0] + this._barNudge;
+                    ystart;
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
@@ -19181,12 +19654,34 @@ Fisma.Vulnerability = {
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             ystart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
                         else {
                             ystart = ctx.canvas.height;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -19199,18 +19694,27 @@ Fisma.Vulnerability = {
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
                             opts.fillStyle = positiveColor;
                         }
                     }
-                    
-                    points.push([base-this.barWidth/2, ystart]);
-                    points.push([base-this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, ystart]);
+					
+					if (!this.fillToZero || this._plotData[i][1] >= 0) { 
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, ystart]);
+					}
+					// for negative bars make sure points are always ordered clockwise
+					else {              
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+					}
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
@@ -19232,8 +19736,8 @@ Fisma.Vulnerability = {
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][1] - this._barNudge;
-                    var xstart;
+                    base = gridData[i][1] - this._barNudge;
+                    xstart;
                     
                     if (this._stack && this._prevGridData.length) {
                         xstart = this._prevGridData[i][0];
@@ -19246,12 +19750,34 @@ Fisma.Vulnerability = {
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             xstart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
                         else {
                             xstart = 0;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -19261,7 +19787,7 @@ Fisma.Vulnerability = {
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
@@ -19314,7 +19840,7 @@ Fisma.Vulnerability = {
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, points, pointy, nvals, nseries, pos;
         
         if (this._stack && this.shadow) {
             if (this.barWidth == null) {
@@ -19392,7 +19918,7 @@ Fisma.Vulnerability = {
     };
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -19411,7 +19937,7 @@ Fisma.Vulnerability = {
         this.plugins.barRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
+        this.plugins.barRenderer.highlightCanvas.setContext();
     }   
     
     function highlight (plot, sidx, pidx, points) {
@@ -19422,6 +19948,7 @@ Fisma.Vulnerability = {
         plot.plugins.barRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColors[pidx]};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
     }
     
     function unhighlight (plot) {
@@ -19432,6 +19959,7 @@ Fisma.Vulnerability = {
         }
         plot.plugins.barRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
+        canvas =  null;
     }
     
     
@@ -19504,20 +20032,32 @@ Fisma.Vulnerability = {
     
     
 })(jQuery);    /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -19636,10 +20176,11 @@ Fisma.Vulnerability = {
         // -90 = on the positive y axis.
         // 90 = on the negaive y axis.
         // 180 or - 180 = on the negative x axis.
-        this.startAngle = -90;
+        this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
         // Used as check for conditions where pie shouldn't be drawn.
         this._drawData = true;
+        this._type = 'pie';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -19647,9 +20188,6 @@ Fisma.Vulnerability = {
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
         this._diameter = null;
         this._radius = null;
         // array of [start,end] angles arrays, one for each slice.  In radians.
@@ -19743,27 +20281,43 @@ Fisma.Vulnerability = {
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
-            var r = this._diameter / 2;
+            var r = this._diameter / 2.0;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
+            var sm = this.sliceMargin;
+            if (this.fill == false) {
+                sm += this.lineWidth;
+            }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-    
+            var rprime = 0;
+            if (Math.abs(ang2-ang1) > 0) {
+                rprime = parseFloat(sm) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            }
+            var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
+            var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
+            if ((ang2 - ang1) <= Math.PI) {
+                r -= rprime;  
+            }
+            else {
+                r += rprime;
+            }
+            ctx.translate(transx, transy);
+            
             if (isShadow) {
                 for (var i=0; i<this.shadowDepth; i++) {
                     ctx.save();
                     ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
-                    doDraw();
+                    doDraw(r);
                 }
             }
     
             else {
-                doDraw();
+                doDraw(r);
             }
         }
     
-        function doDraw () {
+        function doDraw (rad) {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
              if (ang2 > 6.282 + this.startAngle) {
@@ -19782,7 +20336,7 @@ Fisma.Vulnerability = {
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.arc(0, 0, rad, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
         
@@ -19858,47 +20412,30 @@ Fisma.Vulnerability = {
         var mindim = Math.min(w,h);
         var d = mindim;
         // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d - this.sliceMargin;
-
-         // damian: required for line labels
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        this._diameter = this.diameter  || d; // - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
-
-        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
-        var percentage = this._plotData[0][1] * 100 / total;
-        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-        if (percentage === 100) {
-            sa = 0;
-        }
-
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
+        
+        // Fixes issue #272.  Thanks hugwijst!
+        // reset slice angles array.
+        this._sliceAngles = [];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
                 var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
                 // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
+                // ang1 += this.sliceMargin/180*Math.PI;
                 this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
             }
             
         }
-        
-        // damian: required for line labels
-        var origin = {
-            x: parseInt(ctx.canvas.style.left) + cw/2,
-            y: parseInt(ctx.canvas.style.top) + ch/2
-        };
-        
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
+            // ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
                       
@@ -19942,40 +20479,6 @@ Fisma.Vulnerability = {
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-
-             // damian: line labels
-             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
-             
-                 // percentage
-                 var percentage = this._plotData[i][1] * 100 / total;
-                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-                    
-                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898;
-                 
-                 // line 1
-                 var incDiameter = 10;
-                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 
-                 // line 2
-                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
-                 var line2_end_x = line1_end_x + line2_end_x_offset;
-                 var line2_end_y = line1_end_y;    
-                 
-                 // label
-                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
-                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
-                 var l_y_offset = -1 * l.height() / 2;
-                 var l_x = line2_end_x + origin.x + l_x_offset;
-                 var l_y = line2_end_y + origin.y + l_y_offset;
-                 l_x -= 30;
-                 //l_y += 10;
-                 l.css({left: l_x+"px", top: l_y+"px"});
-            }    
-            
         }
                
     };
@@ -20057,7 +20560,8 @@ Fisma.Vulnerability = {
             
             var pad = false, 
                 reverse = false,
-                nr, nc;
+                nr, 
+                nc;
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             
@@ -20187,7 +20691,7 @@ Fisma.Vulnerability = {
     }
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -20323,8 +20827,7 @@ Fisma.Vulnerability = {
     
 })(jQuery);
     
-    
-/**
+    /**
  * Copyright (c) 2009 - 2010 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
