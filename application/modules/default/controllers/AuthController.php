@@ -116,6 +116,13 @@ class AuthController extends Zend_Controller_Action
             Notification::notify('LOGIN_SUCCESS', $user, $user);
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
             
+            // Register rulesOfBehavior forced action so that user can't view other pages 
+            // until Rob is accepted
+            if ($this->_checkUserRulesOfBehavior($user)) {
+                $forward = array("module" => 'default', "controller" => 'User', "action" => 'accept-rob');
+                $this->_helper->ForcedAction->registerForcedAction($user->id, 'rulesOfBehavior', $forward);
+            }            
+
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
 
@@ -127,17 +134,10 @@ class AuthController extends Zend_Controller_Action
                     // reset default layout and forward to password change action
                     $this->_helper->layout->setLayout('layout');
 
-                    // Register rulesOfBehavior access control so that user can't view other pages 
-                    // until Rob is accepted
-                    if ($this->_hasRulesOfBehavior($user)) {
-                        $forward = array("module" => 'default', "controller" => 'User', "action" => 'accept-rob');
-                        $this->_helper->AccessControl->registerAccessControl($user->id, 'rulesOfBehavior', $forward);
-                    }            
-
-                    // Register mustResetPassword access control so that user can't view other pages 
+                    // Register mustResetPassword forced action so that user can't view other pages 
                     // until password is changed
                     $forward = array("module" => 'default', "controller" => "user", "action" => 'password');
-                    $this->_helper->AccessControl->registerAccessControl($user->id, 'mustResetPassword', $forward);
+                    $this->_helper->ForcedAction->registerForcedAction($user->id, 'mustResetPassword', $forward);
 
                     $this->_redirect('/user/password');
                     return;
@@ -173,16 +173,7 @@ class AuthController extends Zend_Controller_Action
                 }
 
             }
-                        
-            // Check to see if the user needs to review the rules of behavior.
-            // If he/she does, register rulesOfBehavior access control, then send them to that page. 
-            // The user can't view the other pages until he/she accepts the rules of behavior.  
-            if ( $this->_hasRulesOfBehavior($user)) {
-                $forward = array("module" => 'default', "controller" => 'User', "action" => 'accept-rob');
-                $this->_helper->AccessControl->registerAccessControl($user->id, 'rulesOfBehavior', $forward);
-                $this->_redirect('/user/accept-rob');
-            }
-            
+           
             // Finally, if the user has passed through all of this, 
             // send them to their original requested page or dashboard otherwise
             $session = Fisma::getSession();
@@ -284,7 +275,7 @@ class AuthController extends Zend_Controller_Action
      * @param user object
      * @return true if user does, otherwise, false 
      */
-    private function _hasRulesOfBehavior($user)
+    private function _checkUserRulesOfBehavior($user)
     {
         $nextRobReview = new Zend_Date($user->lastRob, Zend_Date::ISO_8601);
         $nextRobReview->add(Fisma::configuration()->getConfig('rob_duration'), Zend_Date::DAY);
