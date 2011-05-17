@@ -349,7 +349,8 @@ Fisma.Chart = {
                     shadowOffset: 0,
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
-                    diameter: chartParamsObj.height * 0.55
+                    diameter: chartParamsObj.height * 0.55,
+                    dataLabelFormatString: "%d%"
                 }
             },
             legend: {
@@ -473,7 +474,7 @@ Fisma.Chart = {
                         angle: chartParamsObj.DataTextAngle,
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 },
                 yaxis:{
@@ -487,7 +488,7 @@ Fisma.Chart = {
                         formatString: '%.0f',
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 }
 
