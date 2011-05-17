@@ -51,7 +51,7 @@ class Version106 extends Doctrine_Migration_Base
 
         // Add reject incident privilege and assign it to admin and iso role
         $rejectIncidentPrivilege = array('incident', 'reject', 'Reject Incident');
-        $rejectIncidentRoles = array('ADMIN', 'ISO');
+        $rejectIncidentRoles = array('ADMIN', 'IRC');
         $this->_addPrivilege($rejectIncidentPrivilege, $rejectIncidentRoles);
     }
 
