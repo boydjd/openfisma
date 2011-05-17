@@ -74,18 +74,19 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $rtnChart
             ->setLayerLabels(
                 array(
-                    'Incidents reported',
-                    'Incidents resolved',
-                    'Incidents rejected'
+                    'Reported',
+                    'Resolved',
+                    'Rejected'
                 )
             )
             ->setColors(
                 array(
-                    '#FF3333',
-                    '#FF9933',
-                    '#EAED1E'
+                    '#FF0000',
+                    '#FF6600',
+                    '#FFC000'
                 )
             )
+            ->setThreatLegendVisibility(true)
             ->setChartType('stackedbar')
             ->setTitle('Incidents reported, resolved, and rejected (past ' . $period . ' months)');
         

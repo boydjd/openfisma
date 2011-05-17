@@ -68,14 +68,13 @@ Fisma.Chart = {
                 Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
             }
-
+            
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            
             // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            } else if (chartParamsObj.chartData.length === 0) {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
-            }
+            } 
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
@@ -252,7 +251,7 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-        
+        Fisma.Chart.setTitle(chartParamsObj);
         Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
         
         return rtn;
@@ -318,7 +317,6 @@ Fisma.Chart = {
         }
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             grid: {
                 drawBorder: false,
@@ -369,6 +367,9 @@ Fisma.Chart = {
 
         // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
         jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
+
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
 
@@ -435,7 +436,6 @@ Fisma.Chart = {
         $.jqplot.config.enablePlugins = true;
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             stackSeries: true,
             series: seriesParam,
@@ -534,6 +534,9 @@ Fisma.Chart = {
         // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
         jPlotParamObj = Fisma.Chart.alterChartByGlobals(jPlotParamObj);
 
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+        
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
@@ -586,7 +589,6 @@ Fisma.Chart = {
         }
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
-            title: chartParamsObj.title,
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
             series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
             seriesDefaults:{
@@ -651,24 +653,20 @@ Fisma.Chart = {
                 var textLabel = document.createTextNode('Threat Level');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
-
-                // Red block and "High"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF0000', 'High'));
-                row.appendChild(cell);
-
-                // Orange block and "Moderate"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF6600', 'Moderate'));
-                row.appendChild(cell);
-
-                // Yellow block and "Low"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FFC000', 'Low'));
-                row.appendChild(cell);
+                
+                for(var layerIndex in chartParamsObj.chartLayerText)
+                {
+                    cell = document.createElement("td");
+                    cell.width = '20%';
+                    
+                    var colorToUse = chartParamsObj.colors[layerIndex];
+                    colorToUse = colorToUse.replace('#', '');
+                    var thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    
+                    cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
+                    
+                    row.appendChild(cell);
+                }
 
                 // close and post table on DOM
                 tblBody.appendChild(row);
@@ -1957,7 +1955,18 @@ Fisma.Chart = {
         chartContainer.appendChild(document.createElement('br'));
         chartContainer.appendChild(pTag);
     },
-
+    
+    setTitle : function (chartParamsObj)
+    {
+        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
+            var titleNode = document.createTextNode(chartParamsObj.title);
+            titleArea.innerHTML = '';
+            titleArea.appendChild(titleNode);
+            titleArea.appendChild(document.createElement('br'));
+        }
+    },
+    
     /**
      * Will insert a "No data to plot" message when there is no 
      * data to plot, or all plot data are 0s
