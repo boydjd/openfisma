@@ -274,8 +274,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $user->save();
                     $message = "Password updated successfully."; 
                     $model   = 'notice';
-                    if ($this->_helper->AccessControl->hasAccessControl($user->id, 'mustResetPassword')) {
-                        $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'mustResetPassword');
+                    if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'mustResetPassword')) {
+
+                        // Remove the forced action of mustResetPassword from session, and send users to 
+                        // their original requested page or dashboard otherwise.
+                        $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'mustResetPassword');
+
+                        $session = Fisma::getSession();
+                        if (isset($session->redirectPage) && !empty($session->redirectPage)) {
+                            $path = $session->redirectPage;
+                            unset($session->redirectPage);
+                            $this->_response->setRedirect($path);
+                        } else {
+                            $this->_redirect('/index/index');
+                        }
                     }
                 } catch (Doctrine_Exception $e) {
                     $message = $e->getMessage();
@@ -348,8 +360,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $user->lastRob = Fisma::now();
             $user->save();
        
-            if ($this->_helper->AccessControl->hasAccessControl($user->id, 'rulesOfBehavior')) {
-                $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'rulesOfBehavior');
+            if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'rulesOfBehavior')) {
+                $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'rulesOfBehavior');
             }
 
             $this->_helper->layout->setLayout('layout');
