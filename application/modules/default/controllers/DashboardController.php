@@ -382,10 +382,10 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setChartType('pie')
             ->setColors(
                 array(
-                    '#FFA347',
                     '#75FF75',
-                    '#47D147',
-                    '#FF2B2B'
+                    '#FFA347',
+                    '#FF2B2B',
+                    '#47D147'
                 )
             );
             
