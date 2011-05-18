@@ -34,33 +34,76 @@
  *******************************************************************************
  */
 
+body {
+    margin: 5px 5px 5px 5px;
+}
+
+.chart-yaxis-tick-InIE {
+    right: 30px;
+}
+
 span#logoutButton {
     visibility: hidden;
 }
 
 div#menubar {
-	display: none;
+    display: none;
+}
+
+div#skip{
+    display: none;
+}
+
+div#logo {
+    float: left;
+}
+
+div#logout {
+    float: right;
+}
+
+.searchBox {
+    display: none
+}
+
+.yui-pg-container {
+    display: none
+}
+
+img#logoImg {
+    width: 145px;
+    height: 30px;
+}
+
+.chartContainer {
+    margin-top:5px;
+    margin-bottom:5px;
+    page-break-inside: avoid;
+}
+
+.chartGear {
+    display: none
 }
 
 /* Enable external media marking when making a print out.
  * See NIST SP 800-53 AC-15 Automatic Marking */
 div.externalMediaMarking {
-	clear: both;
-	display: block;
-	border: 1px solid black;
-	padding: 1em;
+    clear: both;
+    display: block;
+    border: 1px solid black;
+    padding: 1em;
 }
 
 div.toolbar {
-  	display: none;
+    display: none;
 }
 
 ul.yui-nav {
-	display: none;
+    display: none;
 }
 
 div.yui-content {
-	clear: both;
+    clear: both;
 }
 
 .yui-skin-sam .yui-navset .yui-content {

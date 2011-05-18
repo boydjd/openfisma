@@ -48,7 +48,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->contextSwitch()
                       ->setAutoJsonSerialization(false)
                       ->addActionContext('check-account', 'json')
-                      ->addActionContext('set-cookie', 'json')
                       ->initContext();
     }
     
@@ -267,14 +266,29 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $post   = $this->_request->getPost();
 
         if (isset($post['oldPassword'])) {
-
             if ($form->isValid($post)) {
                 $user = CurrentUser::getInstance();
                 try {
+                    $user->mustResetPassword = false; 
                     $user->merge($post);
                     $user->save();
                     $message = "Password updated successfully."; 
                     $model   = 'notice';
+                    if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'mustResetPassword')) {
+
+                        // Remove the forced action of mustResetPassword from session, and send users to 
+                        // their original requested page or dashboard otherwise.
+                        $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'mustResetPassword');
+
+                        $session = Fisma::getSession();
+                        if (isset($session->redirectPage) && !empty($session->redirectPage)) {
+                            $path = $session->redirectPage;
+                            unset($session->redirectPage);
+                            $this->_response->setRedirect($path);
+                        } else {
+                            $this->_redirect('/index/index');
+                        }
+                    }
                 } catch (Doctrine_Exception $e) {
                     $message = $e->getMessage();
                     $model   = 'warning';
@@ -332,67 +346,29 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Set a cookie that will be reloaded whenever this user logs in
-     * 
-     * @return void
-     */
-    public function setCookieAction()
-    {
-        $response = new Fisma_AsyncResponse();
-        
-        $cookieName = $this->getRequest()->getParam('name');
-        $cookieValue = $this->getRequest()->getParam('value');
-
-        if (empty($cookieName) || is_null($cookieValue)) {
-            throw new Fisma_Zend_Exception("Cookie name and/or cookie value cannot be null");
-        }
-
-        // See if a cookie exists already
-        $query = Doctrine_Query::create()
-                 ->from('Cookie c')
-                 ->where('c.userId = ? AND c.name = ?', array($this->_me->id, $cookieName))
-                 ->limit(1);
-
-        $result = $query->execute();
-
-        if (0 == count($result)) {
-            // Insert new cookie
-            $cookie = new Cookie;
-
-            $cookie->name = $cookieName;
-            $cookie->value = $cookieValue;
-            $cookie->userId = $this->_me->id;
-        } else {
-            // Update existing cookie
-            $cookie = $result[0];
-
-            $cookie->value = $cookieValue;
-        }
-        
-        try {
-            $cookie->save();
-        } catch (Doctrine_Validator_Exception $e) {
-            $response->fail($e->getMessage());
-        }
-
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
-
-        echo Zend_Json::encode($response);
-    }
-    
-    /**
      * Store user last accept rob and create a audit event
      * 
      * @return void
      */
     public function acceptRobAction()
     {
-        $user = CurrentUser::getInstance();
-        $user->lastRob = Fisma::now();
-        $user->save();
-        
-        $this->_redirect('/Index/index');
+        $this->_helper->layout->setLayout('notice');
+
+        $post   = $this->_request->getPost();
+        if (isset($post['accept'])) {
+            $user = CurrentUser::getInstance();
+            $user->lastRob = Fisma::now();
+            $user->save();
+       
+            if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'rulesOfBehavior')) {
+                $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'rulesOfBehavior');
+            }
+
+            $this->_helper->layout->setLayout('layout');
+            $this->_redirect('/Index/index');
+        }
+
+        $this->view->behaviorRule = Fisma::configuration()->getConfig('behavior_rule');
     }
 
     /**

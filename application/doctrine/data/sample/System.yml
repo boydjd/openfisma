@@ -1,57 +1,311 @@
 System:
-    WDC_SYS:
-        type: gss
-        confidentiality: MODERATE
-        integrity: HIGH
-        availability: HIGH
-        
     OF_SYS:
-        type: major
+        type: minor
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-90 ##
+        contingencyPlanTestDt: ## CURDATE-30 ##
+        controlAssessmentDt: ## CURDATE-30 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     OSC_SYS:
         type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
-
-    FMS_SYS:
-        type: major
-        confidentiality: LOW
-        integrity: HIGH
-        availability: LOW
-
-    TETS_SYS:
-        type: major
-        confidentiality: LOW
-        integrity: LOW
-        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-180 ##
+        contingencyPlanTestDt: ## CURDATE-90 ##
+        controlAssessmentDt: ## CURDATE-90 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     IAD_SYS:
         type: minor
-        confidentiality: LOW
-        integrity: LOW
+        confidentiality: MODERATE
+        integrity: MODERATE
         availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-45 ##
+        contingencyPlanTestDt: ## CURDATE-45 ##
+        controlAssessmentDt: ## CURDATE-71 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     CIT_SYS:
         type: major
-        confidentiality: LOW
-        integrity: LOW
-        availability: LOW
+        confidentiality: HIGH
+        integrity: HIGH
+        availability: MODERATE
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-67 ##
+        contingencyPlanTestDt: ## CURDATE-51 ##
+        controlAssessmentDt: ## CURDATE-12 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     SCMS_SYS:
         type: major
         confidentiality: LOW
-        integrity: LOW
-        availability: LOW
+        integrity: MODERATE
+        availability: MODERATE
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-1055 ##
+        contingencyPlanTestDt: ## CURDATE-33 ##
+        controlAssessmentDt: ## CURDATE-93 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     CRMS_SYS:
+        type: major
+        confidentiality: MODERATE
+        integrity: LOW
+        availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-1055 ##
+        contingencyPlanTestDt: ## CURDATE-33 ##
+        controlAssessmentDt: ## CURDATE-93 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
+
+    HAZMAT_SYS:
+        type: major
+        confidentiality: MODERATE
+        integrity: MODERATE
+        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-101 ##
+        contingencyPlanTestDt: ## CURDATE-15 ##
+        controlAssessmentDt: ## CURDATE-150 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+
+    RCD_SYS:
         type: major
         confidentiality: LOW
         integrity: LOW
         availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-22 ##
+        contingencyPlanTestDt: ## CURDATE-380 ##
+        controlAssessmentDt: ## CURDATE-44 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    GREEN_NRG_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-198 ##
+        contingencyPlanTestDt: ## CURDATE-72 ##
+        controlAssessmentDt: ## CURDATE-370 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    WIND_SYS:
+        type: gss
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-221 ##
+        contingencyPlanTestDt: ## CURDATE-211 ##
+        controlAssessmentDt: ## CURDATE-332 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    RESTON_SYS:
+        type: gss
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: MODERATE
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-52 ##
+        contingencyPlanTestDt: ## CURDATE-11 ##
+        controlAssessmentDt: ## CURDATE-76 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    LINUX_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-99 ##
+        contingencyPlanTestDt: ## CURDATE-43 ##
+        controlAssessmentDt: ## CURDATE-87 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    MAINFRAME_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-96 ##
+        contingencyPlanTestDt: ## CURDATE-62 ##
+        controlAssessmentDt: ## CURDATE-27 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    ORACLE_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-412 ##
+        contingencyPlanTestDt: ## CURDATE-350 ##
+        controlAssessmentDt: ## CURDATE-220 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    HERNDON_SYS:
+        type: gss
+        confidentiality: MODERATE
+        integrity: HIGH
+        availability: HIGH
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-232 ##
+        contingencyPlanTestDt: ## CURDATE-123 ##
+        controlAssessmentDt: ## CURDATE-110 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    RMTRP_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-111 ##
+        contingencyPlanTestDt: ## CURDATE-32 ##
+        controlAssessmentDt: ## CURDATE-56 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+        
+    ROCP_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: LOW
+        controlledBy: CONTRACTOR
+        securityAuthorizationDt: ## CURDATE-341 ##
+        contingencyPlanTestDt: ## CURDATE-27 ##
+        controlAssessmentDt: ## CURDATE-87 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+
+    H20_RIGHTS_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-212 ##
+        contingencyPlanTestDt: ## CURDATE-54 ##
+        controlAssessmentDt: ## CURDATE-87 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+
+    WILDLIFE_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: LOW
+        availability: MODERATE
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-1125 ##
+        contingencyPlanTestDt: ## CURDATE-21 ##
+        controlAssessmentDt: ## CURDATE-332 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
+
+    # This one intentionally does not have a C&A date
+    TPP_SYS:
+        type: major
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: LOW
+        controlledBy: CONTRACTOR
+        contingencyPlanTestDt: ## CURDATE-44 ##
+        controlAssessmentDt: ## CURDATE-123 ##
+        hasFiif: "YES"
+        hasPii: "NO"
+        piaRequired: "NO"
+        sornRequired: "NO"
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
@@ -59,6 +313,17 @@ System:
         confidentiality: LOW
         integrity: LOW
         availability: LOW
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-1000 ##
+        contingencyPlanTestDt: ## CURDATE-100 ##
+        controlAssessmentDt: ## CURDATE-1000 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
 
     # The system is used to test when and how disposed systems are displayed in the UI. With this system, a tester
     # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
@@ -69,3 +334,14 @@ System:
         integrity: LOW
         availability: LOW
         sdlcPhase: disposal
+        controlledBy: AGENCY
+        securityAuthorizationDt: ## CURDATE-1000 ##
+        contingencyPlanTestDt: ## CURDATE-1000 ##
+        controlAssessmentDt: ## CURDATE-1000 ##
+        hasFiif: "YES"
+        hasPii: "YES"
+        piaRequired: "YES"
+        piaUrl: http://google.com/search?q=pia
+        sornRequired: "YES"
+        sornUrl: http://google.com/search?q=sorn
+        uniqueProjectId: 123-45-67-89-01-2345-67
