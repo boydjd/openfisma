@@ -119,6 +119,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->_helper->layout->setLayout('anonymous');
         }
         
+        // Get the current step of the process, defaults to zero
+        $step = $this->getRequest()->getParam('step');
+
         // Fetch the incident report draft from the session or create it if necessary
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
@@ -128,12 +131,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Save the current form into the Incident and save the incident into the sesion
-        $incident->merge($this->getRequest()->getPost());
+        $form = $this->getIncidentForm();
+
+        if ($this->_request->isPost()) {
+            $formValid = $form->isValid($this->_request->getPost());
+            $incident->merge($form->getValues());
+        }
                 
         $session->irDraft = serialize($incident);
-
-        // Get the current step of the process, defaults to zero
-        $step = $this->getRequest()->getParam('step');
 
         if (is_null($step)) {
             $step = 0;
@@ -142,6 +147,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
+        } elseif (!$formValid) {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
+            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {

@@ -113,7 +113,6 @@ Role:
             - findings_read
             - findings_update_description
             - findings_inject
-            - findings_approve
             - findings_update_course_of_action
             - findings_update_findings_assignment
             - findings_update_control_assignment
@@ -161,7 +160,6 @@ Role:
             - findings_update_type
             - findings_update_description
             - findings_inject
-            - findings_approve
             - findings_update_course_of_action
             - findings_update_findings_assignment
             - findings_update_control_assignment
@@ -214,7 +212,6 @@ Role:
             - findings_update_description
             - findings_delete
             - findings_inject
-            - findings_approve
             - findings_update_course_of_action
             - findings_update_findings_assignment
             - findings_update_control_assignment
@@ -272,7 +269,6 @@ Role:
             - incident_report_area
             - incident_read
             - incident_classify
-            - incident_reject
             - incident_resolve
             - incident_close
             - incident_create
@@ -434,7 +430,6 @@ Role:
             - incident_admin_area
             - incident_report_area
             - incident_read
-            - incident_reject
             - incident_classify
             - incident_resolve
             - incident_close
