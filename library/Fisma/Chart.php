@@ -60,6 +60,7 @@ class Fisma_Chart
         $this->chartParamArr['chartDataText'] = array();
         $this->chartParamArr['widgets'] = array();
         $this->chartParamArr['links'] = array();
+        $this->chartParamArr['tooltip'] = array();
         $this->inheritanceControle('minimal');
         $this->setAlign('center');
         
@@ -294,7 +295,8 @@ class Fisma_Chart
      * 
      * @return Fisma_Chart
      */
-    public function setLayerCount($inInteger) {
+    public function setLayerCount($inInteger)
+    {
         if ($inInteger < 1) {
             return $this;
         }
@@ -323,7 +325,7 @@ class Fisma_Chart
      * 
      * @return Fisma_Chart
      */
-    public function addColumn($columnLabel, $addValue, $addLink = null)
+    public function addColumn($columnLabel, $addValue, $addLink = null, $tooltip = '')
     {
         // Do not add null values
         if (empty($addValue)) {
@@ -368,6 +370,7 @@ class Fisma_Chart
             
             $this->chartParamArr['chartData'][] = $addValue;
             $this->chartParamArr['links'][] = Fisma_String::escapeJsString($addLink, 'url');
+            $this->chartParamArr['tooltip'][] = $tooltip;
             
         } else {
             // This is a stacked chart. Each element of the chartParamArr['chartType'] array is a layer, not a column
@@ -390,11 +393,14 @@ class Fisma_Chart
             }
             
             for ($layer = 0; $layer < count($addValue); $layer++) {
+            
                 $this->chartParamArr['chartData'][$layer][] = $addValue[$layer];
                 
                 if (!empty($addLink)) {
                     $this->chartParamArr['links'][$layer][] = Fisma_String::escapeJsString($addLink[$layer], 'url');
                 }
+                
+                $this->chartParamArr['tooltip'][$layer][] = $tooltip;
             }
         }
         

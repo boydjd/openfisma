@@ -376,6 +376,37 @@ Fisma.Chart = {
         // create an event handeling function that calls chartClickEvent while preserving the parm object
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
 
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );
+
+        // hook un-highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartUnHighlightPieEvent(chartParamsObj);
+            }
+        );
+
+        /* Hook the onMouseMove even on the foward most event canvas for the pie tooltip
+           The reason for this is because the highlight event wont return the mouse X/Y location */
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        // Hook onMouseMove on it
+        canvases[0].onmousemove = function (e) {
+            Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
+        };
+
+
+
         // use the created function as the click-event-handeler
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
@@ -539,9 +570,11 @@ Fisma.Chart = {
         
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
+        // hook click events for navigation/"drill-down"
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
         
+        // hook highlight event for tooltips
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
             function (ev, seriesIndex, pointIndex, data) {
                 Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
@@ -719,12 +752,66 @@ Fisma.Chart = {
     {
         var toolTips = Fisma.Chart.getElementByClassName('jqplot-highlighter-tooltip');
         
+        /* The chartParamsObj.tooltip may have one of two structures -
+           either an array (of columns)
+           or an array (of layers) of arrays (of columns)   */
+        if (typeof chartParamsObj.tooltip[0] !== 'object') {
+            var customTooltip = chartParamsObj.tooltip[pointIndex];
+        } else {
+            var customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+        }
+        
+        // the same structure for the above applies to chartParamsObj.chartData
+        if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
+            var defaultTooltip = chartParamsObj.chartData[pointIndex];
+        } else {
+            var defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+        }
+        
+        // apply to all tooltips (each chart has one)
         for(var t in toolTips)
         {
-            toolTips[t].innerHTML = '<span class="chartToolTipText">' + 
-                chartParamsObj.chartData[seriesIndex][pointIndex] + 
-                '</span>';
+            var ttHtml = '<span class="chartToolTipText">';
+            if (customTooltip !== '') {
+                ttHtml += customTooltip;
+            } else {
+                ttHtml += defaultTooltip;
+            }
+            ttHtml += '</span>';
+            
+            toolTips[t].innerHTML = ttHtml;
         }
+        
+        /* By this line, we are done for bar charts. The tooltip will auto show itself
+           jqPlot Pie charts however, do not support the tooltip plugin, we need to make our own */
+        if (chartParamsObj.chartType === 'pie') {
+            var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+            pieTooltip.style.display = 'block';
+            pieTooltip.innerHTML = ttHtml;
+        }
+    },
+    
+    chartUnHighlightPieEvent : function (chartParamsObj)
+    {
+        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+        pieTooltip.style.display = 'none';
+        pieTooltip.innerHTML = '';
+    },
+
+    chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
+        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+        
+        var offsetX; var offsetY;
+        if (Fisma.Chart.isIE) {
+            offsetX = window.event.offsetX;
+            offsetY = window.event.offsetY;
+        } else {
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+        }
+        
+        pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
+        pieTooltip.style.top = offsetY + 'px';
     },
     
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
