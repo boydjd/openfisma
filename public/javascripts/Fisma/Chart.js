@@ -404,9 +404,7 @@ Fisma.Chart = {
         canvases[0].onmousemove = function (e) {
             Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
         };
-
-
-
+        
         // use the created function as the click-event-handeler
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
@@ -748,7 +746,7 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
-    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, paramObj)
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data)
     {
         var toolTips = Fisma.Chart.getElementByClassName('jqplot-highlighter-tooltip');
         
@@ -768,17 +766,21 @@ Fisma.Chart = {
             var defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
         }
         
+        // decide tooltip HTML
+        var ttHtml = '<span class="chartToolTipText">';
+        if (customTooltip !== '') {
+            ttHtml += customTooltip;
+        } else {
+            ttHtml += defaultTooltip;
+        }
+        ttHtml += '</span>';
+
+        // apply variables
+        ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
+        ttHtml = ttHtml.replace('#count#', data[1]);
+        
         // apply to all tooltips (each chart has one)
-        for(var t in toolTips)
-        {
-            var ttHtml = '<span class="chartToolTipText">';
-            if (customTooltip !== '') {
-                ttHtml += customTooltip;
-            } else {
-                ttHtml += defaultTooltip;
-            }
-            ttHtml += '</span>';
-            
+        for(var t in toolTips) {
             toolTips[t].innerHTML = ttHtml;
         }
         
@@ -788,6 +790,26 @@ Fisma.Chart = {
             var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
             pieTooltip.style.display = 'block';
             pieTooltip.innerHTML = ttHtml;
+        }
+    },
+    
+    getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
+    {
+        if (typeof chartParamsObj.chartData[0] === 'object') {
+            
+            // then this is a stacked bar chart
+            
+        } else {
+            
+            // This is a basic-bar or pie chart
+            
+            var total = 0;
+            for (var i = 0; i < chartParamsObj.chartData.length; i++) {
+                total += chartParamsObj.chartData[i];
+            }
+            
+            var percentage = chartParamsObj.chartData[pointIndex] / total;
+            return Math.round(percentage * 100);
         }
     },
     
@@ -808,6 +830,7 @@ Fisma.Chart = {
         } else {
             offsetX = e.offsetX;
             offsetY = e.offsetY;
+            offsetY += 45;
         }
         
         pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
