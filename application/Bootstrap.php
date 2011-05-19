@@ -246,8 +246,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
 
         $front = $this->getResource('FrontController');
 
-        if ($this->hasOption('zids'))
-        {
+        if ($this->hasOption('zids')) {
             $zids = new ZIDS_Plugin_Ids($this->getOption('zids'));
             $logger = $this->getResource('Log');
 
