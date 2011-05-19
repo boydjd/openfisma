@@ -18,6 +18,12 @@ Configuration:
             unsigned: true
             default: 0
             comment: Session timeout (seconds)
+        session_inactivity_notice:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            default: 0
+            comment: Session timeout (seconds)
         auth_type:
             type: enum
             notblank: true

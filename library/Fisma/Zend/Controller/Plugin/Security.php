@@ -36,8 +36,8 @@ class Fisma_Zend_Controller_Plugin_Security extends Zend_Controller_Plugin_Abstr
      */
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
-        // reset session timeout cookie
-        Fisma_Cookie::set('session_timeout', Fisma::configuration()->getConfig('session_inactivity_period'));
+        // reset session timestamp cookie
+        Fisma_Cookie::set('session_timestamp', Zend_Date::now()->getTimestamp());
 
         if (!$this->_authenticationRequired($request)) {
             return;
