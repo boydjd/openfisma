@@ -778,6 +778,13 @@ Fisma.Chart = {
         // apply variables
         ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
         ttHtml = ttHtml.replace('#count#', data[1]);
+        ttHtml = ttHtml.replace('#columnName#', chartParamsObj.chartDataText[pointIndex]);
+        if (chartParamsObj.chartLayerText) {
+            ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
+        }
+        if (ttHtml.indexOf('#columnReport#') !== -1) {
+            ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
+        }
         
         // apply to all tooltips (each chart has one)
         for(var t in toolTips) {
@@ -791,6 +798,20 @@ Fisma.Chart = {
             pieTooltip.style.display = 'block';
             pieTooltip.innerHTML = ttHtml;
         }
+    },
+    
+    getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
+    {
+        var report = '';
+        var total = 0;
+        
+        for (var L = 0; L < chartParamsObj.chartLayerText.length; L++) {
+            report += chartParamsObj.chartLayerText[L] + ": " + chartParamsObj.chartData[L][columnIndex] + '<br/>';
+            total += chartParamsObj.chartData[L][columnIndex];
+        }
+        
+        report += 'Total: ' + total;
+        return report;
     },
     
     getPercentage: function (chartParamsObj, seriesIndex, pointIndex)

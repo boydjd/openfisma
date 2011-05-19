@@ -364,6 +364,20 @@ class Fisma_Chart
         // Add label for this column
         $this->chartParamArr['chartDataText'][] = $columnLabel;
         
+        // If the tooltip field is ungiven, apply defaults 
+        if ($tooltip === '') {
+            
+            // apply tooltip default based on chartType
+            switch ($this->getChartType()) {
+            case "stackedbar":
+                $tooltip = "<b>#columnName#</b><hr/>#columnReport#";
+                break;
+            case "pie":
+                $tooltip = "<b>#columnName#</b><hr/>#count# (#percent#%)";
+                break;
+            }
+        }
+        
         // Add data to plot
         if (strpos($this->getChartType(), 'stacked') === false) {
             // This is not a stacked chart. Each data-point/column-height should be in each element of the data array

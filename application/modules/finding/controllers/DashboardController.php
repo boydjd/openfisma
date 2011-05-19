@@ -1073,6 +1073,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Show, hide and filter data on the chart as requested
         switch (strtolower($threatLvl)) {
             case "totals":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Crunch numbers
                 $noMitChart
                     ->convertFromStackedToRegular()
@@ -1082,20 +1084,28 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 break;
             case "high, moderate, and low":
                 // $noMitChart is already in this form
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 break;
             case "high":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
                 $noMitChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FF6600'));
                 break;
             case "low":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);

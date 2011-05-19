@@ -46,7 +46,7 @@
 
 /* style for _text_ on jqPlot tool tips. For the rest of the tooltip, see jquery_jqplot.css/.jqplot-highlighter-tooltip */
 .chartToolTipText {
-    font-size: 20px;
+    font-size: 14px;
 }
 
 /* style for the data-table for screen readers */
