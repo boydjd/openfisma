@@ -51,44 +51,37 @@ class Fisma_Zend_Controller_Action_Helper_ForcedAction extends Zend_Controller_A
     /**
      * Add a forced action to a user's session
      * 
-     * @param int user id
+     * @param string id
      * @param string name of forced action
      * @param array contains module name, controller name, action action for the forced action
      * @return void
      */
     public function registerForcedAction($id, $forcedAction, $forward)
     {
-        // Combine userid with namespace in the plugin to form a unique session name space for a user.
-        $namespace = $this->getPlugin()->getNamespace() . $id; 
-        $this->getPlugin()->registerForcedAction($namespace, $forcedAction, $forward);
+       $this->getPlugin()->registerForcedAction($id, $forcedAction, $forward);
     }
 
     /**
      * Remove a forced action from a user's session
      * 
-     * @param int user id
+     * @param string id
      * @param string name of forced action
      * @return void
      */
     public function unregisterForcedAction($id, $forcedAction)
     {
-        // Combine userid with namespace in the plugin to form a unique session name space for a user.
-        $namespace = $this->getPlugin()->getNamespace() . $id; 
-        $this->getPlugin()->unregisterForcedAction($namespace, $forcedAction);
+       $this->getPlugin()->unregisterForcedAction($id, $forcedAction);
     }
 
     /**
      * Check whether an accesss control exists in a user's session
      * 
-     * @param int user id
+     * @param string id
      * @param string name of forced action
      * @return true if exists, otherwise false
      */
     public function hasForcedAction($id, $forcedAction)
     {
-        // Combine userid with namespace in the plugin to form a unique session name space for a user.
-        $namespace = $this->getPlugin()->getNamespace() . $id; 
-
-        return $this->getPlugin()->hasForcedAction($namespace, $forcedAction);
+        return $this->getPlugin()->hasForcedAction($id, $forcedAction);
     }
 }
