@@ -46,8 +46,9 @@ class Fisma_Inject_Excel
      * v1 2009-04-30 Introduce versioning of excel template
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
      * v3 2011-02-02 Removed asset related fields
+     * v4 2011-03-25 threatLevel and threatDescription are now requiered fields
      */
-    const TEMPLATE_VERSION = 3;
+    const TEMPLATE_VERSION = 4;
     
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -85,7 +86,9 @@ class Fisma_Inject_Excel
         'discoveredDate' => 'Date Discovered',
         'findingSource' => 'Finding Source',
         'findingDescription' => 'Finding Description',
-        'findingRecommendation' => 'Finding Recommendation'
+        'findingRecommendation' => 'Finding Recommendation',
+        'threatLevel' => 'Threat Level',
+        'threatDescription' => 'Threat Description'
     );
 
     /**

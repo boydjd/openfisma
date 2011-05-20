@@ -131,11 +131,9 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                         $oldValue = Fisma_String::htmlToPlainText($oldValue);
                         $newValue = Fisma_String::htmlToPlainText($newValue);
                     }
-                    $oldValue = htmlspecialchars($oldValue);
-                    $newValue = htmlspecialchars($newValue);
 
                     if (empty($oldValue)) {
-                        $oldValue = "<em>No value</em>";
+                        $oldValue = "**No value**";
                     }
 
                     $message = "Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue";

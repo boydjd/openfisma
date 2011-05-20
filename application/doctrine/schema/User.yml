@@ -125,7 +125,6 @@ User:
             refClass: IrIncidentUser
 
     actAs:
-        SoftDelete:
         Timestampable:
             created:
                 name: createdTs
@@ -137,3 +136,5 @@ User:
             logCreateObject: true
             logUpdateObject: true
             logDeleteObject: true
+
+        Fisma_Doctrine_Behavior_Commentable: true

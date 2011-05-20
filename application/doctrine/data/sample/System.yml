@@ -52,3 +52,20 @@ System:
         confidentiality: LOW
         integrity: LOW
         availability: LOW
+
+    # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
+    HIDDEN_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+
+    # The system is used to test when and how disposed systems are displayed in the UI. With this system, a tester
+    # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
+    # The sample user should have access to this system record.
+    DISPOSAL_SYS:
+        type: minor
+        confidentiality: LOW
+        integrity: LOW
+        availability: LOW
+        sdlcPhase: disposal

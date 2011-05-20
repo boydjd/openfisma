@@ -23,7 +23,7 @@ Fisma_Format_Section::startSection('Comments');
                             <?php echo $this->escape($this->userInfo($comment['User']['username']), 'none'); ?>
                         </td>
                         <td>
-                            <?php echo $this->escape($comment['comment']); ?>
+                            <?php echo $this->escape($this->textToHtml($this->escape($comment['comment'])), 'none'); ?>
                         </td>
                     </tr>                
                 <?php

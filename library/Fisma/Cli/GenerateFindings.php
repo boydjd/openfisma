@@ -68,6 +68,8 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         $organizationIds = Doctrine_Query::create()
                             ->select('o.id')
                             ->from('Organization o')
+                            ->leftJoin('o.System s')
+                            ->where("s.sdlcphase <> 'disposal' OR s.sdlcphase IS NULL")
                             ->setHydrationMode(Doctrine::HYDRATE_NONE)
                             ->execute();
 

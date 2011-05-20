@@ -1,0 +1,11 @@
+<?php 
+$operation = "[<a href='{$this->escape($this->viewLink)}'>Back To User View</a>]";
+
+Fisma_Format_Section::startSection(
+    sprintf('User Comments (%s)&nbsp;&nbsp;%s', $this->escape($this->username), $operation)
+);
+
+echo $this->escape($this->dataTable, 'none');
+
+Fisma_Format_Section::stopSection();
+?>

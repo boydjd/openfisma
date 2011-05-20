@@ -120,8 +120,7 @@ Fisma.User = {
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
             }, 
-            null
-        );
+            null);
 
         return panel;
     },
@@ -129,7 +128,7 @@ Fisma.User = {
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
-            return;
+            return true;
         }
 
         Fisma.User.generatePasswordBusy = true;
@@ -159,8 +158,7 @@ Fisma.User = {
                     alert('Failed to generate password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
 
         return false;
     },
@@ -207,7 +205,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null) {
+                    if (data.accountInfo !== null) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -215,7 +213,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue != null) {
+                            if (columnValue !== null) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -234,7 +232,65 @@ Fisma.User = {
                     alert('Failed to check account password: ' + o.statusText);
                 }
             },
-            null
-        );
+            null);
+    },
+
+    /**
+     * Show the comment panel
+     * 
+     * @return void
+     */
+    showCommentPanel : function () {
+        var lockedElement = YAHOO.util.Dom.get('locked');
+
+        // Only show panel in locked status
+        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
+            YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
+            return false;
+        }
+
+        // Create a panel
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var contentTitle = document.createTextNode('Comments (OPTIONAL):');
+        p.appendChild(contentTitle);
+        content.appendChild(p);
+
+        // Add comment textarea to panel
+        var commentTextArea = document.createElement('textarea');
+        commentTextArea.id = 'commentTextArea';
+        commentTextArea.name = 'commentTextArea';
+        commentTextArea.rows = 5;
+        commentTextArea.cols = 60;
+        content.appendChild(commentTextArea);
+
+        // Add line spacing to panel
+        var lineSpacingDiv = document.createElement('div');
+        lineSpacingDiv.style.height = '10px';
+        content.appendChild(lineSpacingDiv);
+
+        // Add submmit button to panel
+        var continueButton = document.createElement('input');
+        continueButton.type = 'button';
+        continueButton.id = 'continueButton';
+        continueButton.value = 'continue';
+        content.appendChild(continueButton);
+
+        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+
+        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        return true;
+    },
+
+    /*
+     * Submit user form after assign comment value to comment element
+     */
+    submitUserForm : function () {
+
+        // Get commentTextArea value from panel and assign its value to comment element
+        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
+        YAHOO.util.Dom.get('comment').value = commentElement;
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+        form.submit();
     }
 };

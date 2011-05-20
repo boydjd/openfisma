@@ -346,4 +346,15 @@ abstract class Fisma_Search_Backend_Abstract
         
         return $table->getSearchableFields();
     }
+    
+    /**
+     * Tokenize a basic search query and return an array of tokens
+     * 
+     * @param string $basicQuery
+     * @return array
+     */
+    public function _tokenizeBasicQuery($basicQuery)
+    {
+        return preg_split("/[\s,]+/", $basicQuery);
+    }
 }

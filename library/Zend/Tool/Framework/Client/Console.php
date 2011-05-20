@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -40,8 +40,10 @@
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ *
+ * @todo methods need more API documentation.
  */
 class Zend_Tool_Framework_Client_Console
     extends Zend_Tool_Framework_Client_Abstract
@@ -98,7 +100,7 @@ class Zend_Tool_Framework_Client_Console
     /**
      * setConfigOptions()
      *
-     * @param $configOptions
+     * @param array $configOptions
      */
     public function setConfigOptions($configOptions)
     {
@@ -109,7 +111,7 @@ class Zend_Tool_Framework_Client_Console
     /**
      * setStorageOptions()
      *
-     * @param $storageOptions
+     * @param array $storageOptions
      */
     public function setStorageOptions($storageOptions)
     {
@@ -117,6 +119,9 @@ class Zend_Tool_Framework_Client_Console
         return $this;
     }
 
+    /**
+		 * @param array $classesToLoad
+		 */
     public function setClassesToLoad($classesToLoad)
     {
         $this->_classesToLoad = $classesToLoad;

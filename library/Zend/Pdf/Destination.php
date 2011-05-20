@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Pdf
  * @subpackage Destination
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -34,7 +34,7 @@
  *
  * @package    Zend_Pdf
  * @subpackage Destination
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Pdf_Destination extends Zend_Pdf_Target
@@ -43,7 +43,7 @@ abstract class Zend_Pdf_Destination extends Zend_Pdf_Target
      * Load Destination object from a specified resource
      *
      * @internal
-     * @param $destinationArray
+     * @param Zend_Pdf_Element $resource
      * @return Zend_Pdf_Destination
      */
     public static function load(Zend_Pdf_Element $resource)
