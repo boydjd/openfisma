@@ -125,10 +125,9 @@ class ZIDS_Plugin_Ids extends Zend_Controller_Plugin_Abstract
    	
 		// init and start PHP IDS
 		require_once 'IDS/Init.php';
-		$input = array ('REQUEST' => $_REQUEST, 
-						'GET' => $_GET, 
-						'POST' => $_POST, 
-						'COOKIE' => $_COOKIE );
+		$input = array ('REQUEST' => array_merge($_REQUEST, $_GET, $_POST, $request->getParams()), 
+						'COOKIE' => $_COOKIE);
+
 		$init = IDS_Init::init ( $this->_config['phpids']['config'] );
 		
 		// set PHPIDS options
