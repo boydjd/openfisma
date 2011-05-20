@@ -2823,7 +2823,9 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-
+        
+        Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
+        
         return rtn;
     },
 
@@ -3098,12 +3100,11 @@ Fisma.Chart = {
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
-
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
-
+        
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
@@ -4557,8 +4558,92 @@ Fisma.Chart = {
         }
 
         return isChartEmpty;
-    }
+    },
+    
+    /**
+     * Place canvases in divs with the appropriate style declairations. 
+     * This is nessesary to force styles when printing.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    placeCanvasesInDivs : function(chartParamsObj) {
 
+        // Get the div that holds all canvases of this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Get a list (obj-array) of all canvases for this chart that are absolute positioned
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this).css('position') == 'absolute';
+            }
+        );
+
+        // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
+        canvases.wrap(
+            function() {
+                var canvas = $(this);
+
+                if (canvas.context.className == 'jqplot-yaxis-tick') {
+
+                    // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            right: canvas.css('right')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            right: 0
+                        }
+                    );
+                    
+                    if (Fisma.Chart.isIE === false) {
+                        div.className = 'chart-yaxis-tick';
+                    } else {
+                        div.className = 'chart-yaxis-tick-InIE';
+                    }
+
+                } else if (canvas.context.className == 'jqplot-xaxis-label') {
+                    
+                    // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            bottom: '0px'
+                        }
+                    );
+
+                } else {
+
+                    // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            left: canvas.css('left')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            left: 0
+                        }
+                    );
+
+                }
+
+                return div;
+            }
+        );
+
+        return this;
+    }
+    
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -4880,6 +4965,9 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
+            // The error message should be hidden before handles test email
+            YAHOO.util.Dom.get('msgbar').style.display = 'none';
+
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -4914,8 +5002,17 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
-    
+            var panelConfig = {
+                    width : "260px",
+                    modal : false
+                };
+            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel(
+                'Test E-mail Configuration',
+                content.innerHTML,
+                null,
+                panelConfig
+            );
+
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
         },
@@ -4959,7 +5056,7 @@ Fisma.Email = function() {
     
             // Remove used panel
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-                Fisma.Email.panelElement.removeMask();
+                Fisma.Email.panelElement.hide();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
@@ -6940,15 +7037,6 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         executeSearch: function (form) {
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                document.getElementById('searchType').value = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles a new search
-            document.getElementById('msgbar').style.display = 'none';
-
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -7123,17 +7211,6 @@ Fisma.Search = function() {
          * @return string URL encoded post data
          */
         generateRequest: function (tableState, table) {
-
-            var searchType = document.getElementById('searchType').value;
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                searchType = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles YUI data
-            document.getElementById('msgbar').style.display = 'none';
-
             var postData = "";
 
             try {
@@ -7596,33 +7673,46 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-
+        
         this.container = document.createElement('div');
-
+        
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(this);";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
-        this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
-
-        this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
-
-        this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
-
+        // IE7 will display floated elements on the next line, not the current line, unless those floated elements
+        // are inserted before the unfloated content on current line.
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
+
+        this.queryFieldContainer = document.createElement('span');
+        this.renderQueryField(this.queryFieldContainer, fieldName);
+        this.containerForm.appendChild(this.queryFieldContainer);
+
+        this.queryTypeContainer = document.createElement('span');
+        this.renderQueryType(this.queryTypeContainer, operator);
+        this.containerForm.appendChild(this.queryTypeContainer);
+
+        this.queryInputContainer = document.createElement('span');
+        this.renderQueryInput(this.queryInputContainer, operands);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
-
         clearDiv.className = "clear";
+        this.containerForm.appendChild(clearDiv);
 
-        this.container.appendChild(clearDiv);
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -8475,11 +8565,6 @@ Fisma.Search.Panel.prototype = {
                 this.criteria.push(criterion);
             }
 
-            // If only one criterion, disable its "minus" button
-            if (1 == this.criteria.length) {
-                this.criteria[0].setRemoveButtonEnabled(false);
-            }
-
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
             Lang.later(null, null, function() { Fisma.Search.updateQueryState(queryState, Dom.get('searchForm')); });
@@ -8513,9 +8598,12 @@ Fisma.Search.Panel.prototype = {
             this.criteria.push(initialCriteria);
 
             // Update DOM
-            var criteriaElement = initialCriteria.render(this.searchableFields[0].name);
-            initialCriteria.setRemoveButtonEnabled(false);
-            this.container.appendChild(criteriaElement);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
+        }
+
+        // If only one criterion, disable its "minus" button
+        if (1 == this.criteria.length) {
+            this.criteria[0].setRemoveButtonEnabled(false);
         }
 
         Fisma.Search.onSetTable(function () {

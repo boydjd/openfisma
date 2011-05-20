@@ -28,6 +28,13 @@
 class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
 {
     /**
+     * Some users to randomly involve in the creation of findings
+     * 
+     * @var string
+     */
+    private $_sampleUsers;
+    
+    /**
      * Configure the arguments accepted for this CLI program
      *
      * @return array An array containing getopt long syntax
@@ -87,9 +94,17 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                                 ->setHydrationMode(Doctrine::HYDRATE_NONE)
                                 ->execute();
                                 
-        // Get root user
-        $rootUser = Doctrine::getTable('User')->findOneByUsername('root');
-        
+        // Get some users
+        $this->_sampleUsers = Doctrine_Query::create()
+                              ->from('User u')
+                              ->where('u.username NOT LIKE ?', 'root')
+                              ->limit(50)
+                              ->execute();
+
+        if (0 == count($this->_sampleUsers)) {
+            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+        }
+
         // Get the evaluation ID for MSA
         $msaQuery = Doctrine_Query::create()
                     ->select('id')
@@ -168,7 +183,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             foreach ($findings as $finding) {
                 $f = new Finding();
                 $f->merge($finding);
-                $f->CreatedBy = $rootUser;
+                $f->CreatedBy = $this->_getRandomUser();
                 $f->save();
                 
                 if ($f->status == 'MSA') {
@@ -177,7 +192,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     $f->save();
 
                     if (rand(0, 1)) {
-                        $f->approve($rootUser, 'Approved by generate-findings.php script.');
+                        $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
                     }
                 } elseif ($f->status == 'EA') {
                     // Create a sample piece of evidence
@@ -185,7 +200,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
 
                     $evidence->filename = "sample-file-name.txt";
                     $evidence->Finding = $f;
-                    $evidence->User = $rootUser;
+                    $evidence->User = $this->_getRandomUser();
                     
                     $evidence->save();
                     
@@ -194,7 +209,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     $f->save();
 
                     if (rand(0, 1)) {
-                        $f->approve($rootUser, 'Approved by generate-findings.php script.');
+                        $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
                     }
                 }
 
@@ -210,5 +225,13 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+    }
+    
+    /**
+     * Return a random user object
+     */
+    private function _getRandomUser()
+    {
+        return $this->_sampleUsers[rand(0, count($this->_sampleUsers))];
     }
 }

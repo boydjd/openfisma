@@ -47,6 +47,9 @@ ExpiresByType image/gif "access plus 10 years"
 ExpiresByType image/png "access plus 10 years"
 ExpiresByType image/vnd.microsoft.icon "access plus 10 years"
 
+# Sets default charset to UTF-8 for whole site
+AddDefaultCharset UTF-8
+
 <IfModule mod_php5.c>
 # Overrides current PHP server settings to harden the server by
 # turning off unwanted options which may be harmful. There are 

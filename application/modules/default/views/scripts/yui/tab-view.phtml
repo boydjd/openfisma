@@ -3,78 +3,83 @@
 </div>
 
 <script type="text/javascript">
+
     YAHOO.util.Event.onDOMReady(function () {
-        var tabView = new YAHOO.widget.TabView();
-        var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
-        var selectedTabCookie = "<?php echo $this->escape($this->selectedTabCookie, 'javascript') ?>";
-        var objectIdCookie = "<?php echo $this->escape($this->objectIdCookie, 'javascript') ?>";
-        var objectId = <?php echo $this->escape($this->objectId, 'none') ?>;
-    
-        var prepareTab = function(args) {
-            // Adds the style and event handlers required for editable fields
-            setupEditFields();
-            
-            // Notice that we are eval'ing any script nodes loaded into this tab. This is only safe as long as
-            // we know exactly which URLs we are loading into the tabview. Otherwise we might inadertently execute
-            // a 3rd party script.
-            var tabContainer = document.getElementById(tabViewContainerId);
-            var scriptNodes = tabContainer.getElementsByTagName('script');
-            for (var i=0; i < scriptNodes.length; i++) {
-                if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
-                    try {
-                        eval(scriptNodes[i].text);
-                    } catch (e) {
-                        alert('Not able to execute one of the scripts embedded in this page: '
-                              + e.message);
-                    } 
-                    // Set a flag that prevents this script from being executed more than once
-                    scriptNodes[i].setAttribute('executeFlag', 'true');
+        var tabViewStorage = new Fisma.Storage("yui.tabview");
+        Fisma.Storage.onReady(function() {
+        
+            var tabView = new YAHOO.widget.TabView();
+            var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
+            var selectedTabCookie = "<?php echo $this->escape($this->selectedTabCookie, 'javascript') ?>";
+            var objectIdCookie = "<?php echo $this->escape($this->objectIdCookie, 'javascript') ?>";
+            var objectId = <?php echo $this->escape($this->objectId, 'none') ?>;
+
+            var prepareTab = function(args) {
+                // Adds the style and event handlers required for editable fields
+                setupEditFields();
+
+                // Notice that we are eval'ing any script nodes loaded into this tab. This is only safe as long as
+                // we know exactly which URLs we are loading into the tabview. Otherwise we might inadertently execute
+                // a 3rd party script.
+                var tabContainer = document.getElementById(tabViewContainerId);
+                var scriptNodes = tabContainer.getElementsByTagName('script');
+                for (var i=0; i < scriptNodes.length; i++) {
+                    if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
+                        try {
+                            eval(scriptNodes[i].text);
+                        } catch (e) {
+                            alert('Not able to execute one of the scripts embedded in this page: '
+                                  + e.message);
+                        } 
+                        // Set a flag that prevents this script from being executed more than once
+                        scriptNodes[i].setAttribute('executeFlag', 'true');
+                    }
                 }
             }
-        }
-        
-        // When the active tab changes, store the active tab in a cookie so that it can be restored
-        // in between page refreshes.
-        var handleTabChange = function(args) {
-            YAHOO.util.Cookie.set(selectedTabCookie, args.newValue, { path: '/' });
-        }
-        
-        // Render tabs
-        <?php
-        foreach ($this->tabs as $tab):
-        ?>
-            var newTab = new YAHOO.widget.Tab({
-                id : "<?php echo  $this->escape($tab['id'], 'javascript') ?>",
-                label : "<?php echo  $this->escape($tab['name'], 'javascript') ?>",
-                dataSrc : "<?php echo $this->escape($tab['url'], 'javascript') ?>",
-                cacheData : true,
-                active: <?php echo  $this->escape($tab['active'], 'javascript') ?>
-            });
-            
-            newTab.subscribe("dataLoadedChange", prepareTab);
-            tabView.addTab(newTab);
-        <?php
-        endforeach;
-        ?>
-        
-        tabView.subscribe('activeIndexChange', handleTabChange);
-        tabView.appendTo(tabViewContainerId);
-    
-        // Tab is selected based on the numerical hash appended to the URL, or if no hash is present,
-        // then by the cookie.
-        var tab = location.hash.substring(1); // Strip the "#" off of the hash
 
-        if (!tab || tab < 0 || tab >= <?php echo $this->escape(count($this->tabs), 'none') ?>) {
-            if (YAHOO.util.Cookie.get(objectIdCookie) == objectId) {
-                tab = YAHOO.util.Cookie.get(selectedTabCookie);
-            } else {
-                YAHOO.util.Cookie.set(objectIdCookie, objectId, {path: '/'});
-                YAHOO.util.Cookie.set(selectedTabCookie, 0, {path: '/'}); 
-                tab = 0;
+            // When the active tab changes, store the active tab in a cookie so that it can be restored
+            // in between page refreshes.
+            var handleTabChange = function(args) {
+                tabViewStorage.set(selectedTabCookie, args.newValue);
             }
-        }
-        tabView.selectTab(tab);
-        Fisma.tabView = tabView;
-        Fisma.prepareTab = prepareTab;
+
+            // Render tabs
+            <?php
+            foreach ($this->tabs as $tab):
+            ?>
+                var newTab = new YAHOO.widget.Tab({
+                    id : "<?php echo  $this->escape($tab['id'], 'javascript') ?>",
+                    label : "<?php echo  $this->escape($tab['name'], 'javascript') ?>",
+                    dataSrc : "<?php echo $this->escape($tab['url'], 'javascript') ?>",
+                    cacheData : true,
+                    active: <?php echo  $this->escape($tab['active'], 'javascript') ?>
+                });
+
+                newTab.subscribe("dataLoadedChange", prepareTab);
+                tabView.addTab(newTab);
+            <?php
+            endforeach;
+            ?>
+
+            tabView.subscribe('activeIndexChange', handleTabChange);
+            tabView.appendTo(tabViewContainerId);
+
+            // Tab is selected based on the numerical hash appended to the URL, or if no hash is present,
+            // then by the cookie.
+            var tab = location.hash.substring(1); // Strip the "#" off of the hash
+
+            if (!tab || tab < 0 || tab >= <?php echo $this->escape(count($this->tabs), 'none') ?>) {
+                if (tabViewStorage.get(objectIdCookie) == objectId) {
+                    tab = tabViewStorage.get(selectedTabCookie);
+                } else {
+                    tabViewStorage.set(objectIdCookie, objectId);
+                    tabViewStorage.set(selectedTabCookie, 0); 
+                    tab = 0;
+                }
+            }
+            tabView.selectTab(tab);
+            Fisma.tabView = tabView;
+            Fisma.prepareTab = prepareTab;
+        });
     });
 </script>

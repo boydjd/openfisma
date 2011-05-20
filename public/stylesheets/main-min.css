@@ -61,6 +61,9 @@ div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align
 .gss{display:block;padding-left:20px;background:url(/images/gss-small.png) no-repeat;}
 .major{display:block;padding-left:20px;background:url(/images/major-small.png) no-repeat;}
 .minor{display:block;padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
+.disposal{background-color:pink;}
+div#showDisposalSystem{margin:0 0 5px 3px;font-weight:bold;}
+div#showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}
 table.systemDocuments td{padding:10px;margin-top:10px;}

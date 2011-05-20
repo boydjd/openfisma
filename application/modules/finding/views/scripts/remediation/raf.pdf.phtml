@@ -70,14 +70,14 @@ $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
 $data = array(array("<b>Finding Number:</b>",    $finding->id,
-                    "<b>Finding Source:</b>",    $this->plainText($finding->Source->name, false)),
+                    "<b>Finding Source:</b>",    Fisma_String::htmlToPdfText($finding->Source->name, false)),
               array("<b>Date Opened:</b>",       $finding->createdTs,
                     "<b>Date Discovered:</b>",   $finding->discoveredDate),
-              array("<b>Organization:</b>",      $this->plainText($system->Organization->name, false),"",""));
+              array("<b>Organization:</b>",      Fisma_String::htmlToPdfText($system->Organization->name, false),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
-$data = array(array("<b>Finding Description:</b>", $this->plainText($finding->description, false),"",""),
-              array("<b>Recommendation:</b>",  $this->plainText($finding->recommendation, false),"",""));
+$data = array(array("<b>Finding Description:</b>", Fisma_String::htmlToPdfText($finding->description),"",""),
+              array("<b>Recommendation:</b>",  Fisma_String::htmlToPdfText($finding->recommendation),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Risk analysis section
@@ -141,10 +141,10 @@ $data = array(array("Based on the threat level and countermeasures currently in 
 $pdf->ezTable($data, null, null, $labelOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
-$data = array(array("<b>Threat Description:</b>", $this->plainText($finding->threat, false), "", ""),
+$data = array(array("<b>Threat Description:</b>", Fisma_String::htmlToPdfText($finding->threat), "", ""),
               array("<b>Threat Level:</b>", $finding->threatLevel, "", ""),
-              array("<b>Description of Countermeasures:</b>", $this->plainText($finding->countermeasures, false), "", ""),
-              array("<b>Countermeasures Effectiveness:</b>", $this->plainText($finding->countermeasuresEffectiveness, false), "", ""));
+              array("<b>Description of Countermeasures:</b>", Fisma_String::htmlToPdfText($finding->countermeasures), "", ""),
+              array("<b>Countermeasures Effectiveness:</b>", Fisma_String::htmlToPdfText($finding->countermeasuresEffectiveness), "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center')); //vertical blank
@@ -195,14 +195,14 @@ $data = array(array('<b>Mitigation Strategy</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 $ecdDate = $finding->currentEcd;
-$data = array(array("<b>Type:</b>", $this->plainText($finding->type), "", ""),
-              array("<b>Description:</b>", $this->plainText($finding->mitigationStrategy, false), "", ""),
+$data = array(array("<b>Type:</b>", Fisma_String::htmlToPdfText($finding->type), "", ""),
+              array("<b>Description:</b>", Fisma_String::htmlToPdfText($finding->mitigationStrategy), "", ""),
               array("<b>Estimated Completion Date:</b>", $ecdDate, "", ""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
 // Endorsement of Risk Level Analysis section
 // only displayed for AR findings
-if ('AR' == $this->plainText($finding->type)) {
+if ('AR' == Fisma_String::htmlToPdfText($finding->type)) {
     // a small separator between the previous section and this one
     $pdf->ezText('___________', BODY_TEXT_SIZE, array('justification'=>'center'));
     $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
