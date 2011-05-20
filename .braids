@@ -12,6 +12,12 @@ library/ZFDebug:
   squashed: true
   type: svn
   url: http://zfdebug.googlecode.com/svn/trunk/library/ZFDebug
+library/ZIDS: 
+  remote: braid/library/ZIDS
+  revision: 6
+  squashed: true
+  type: svn
+  url: http://zids.googlecode.com/svn/zids/zids/library/zids
 library/Zend: 
   remote: braid/library/Zend
   revision: 23589
