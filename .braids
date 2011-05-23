@@ -1,10 +1,4 @@
 --- 
-library/IDS: 
-  remote: braid/library/IDS
-  revision: 1455
-  squashed: true
-  type: svn
-  url: https://dev.itratos.de/svn/php-ids/trunk/lib/IDS
 library/Symfony/Components: 
   remote: braid/library/Symfony/Components
   revision: 24024
