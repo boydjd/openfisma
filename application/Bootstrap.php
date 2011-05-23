@@ -237,12 +237,6 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $front->setRequest('Fisma_Zend_Controller_Request_Http');
     }
 
-    /**
-     * _initZIDS 
-     * 
-     * @access protected
-     * @return void
-     */
     protected function _initZIDS()
     {
         $autoloader = Zend_Loader_Autoloader::getInstance();
