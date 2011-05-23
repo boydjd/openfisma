@@ -40,7 +40,56 @@ Fisma.User = {
      * A boolean which indicates if an account is currently being checked in LDAP
      */
     checkAccountBusy : false,
-    
+
+    /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+        var that = this;
+
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+
+        this.commentTable.addRow(commentRow);
+
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }
+        );
+
+        rowBlinker.start();
+
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
+    },
+
     /**
      * Display a dialog which shows user information for the specified user.
      * 
@@ -251,6 +300,13 @@ Fisma.User = {
 
         // Create a panel
         var content = document.createElement('div');
+
+        var messageContainer = document.createElement('span');
+        var warningMessage = document.createTextNode("The user's status has been set to 'locked' and can't login to"
+                                                   + "the system in the future.");
+        messageContainer.appendChild(warningMessage);
+        content.appendChild(messageContainer);
+
         var p = document.createElement('p');
         var contentTitle = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(contentTitle);
@@ -270,15 +326,14 @@ Fisma.User = {
         content.appendChild(lineSpacingDiv);
 
         // Add submmit button to panel
-        var continueButton = document.createElement('input');
-        continueButton.type = 'button';
-        continueButton.id = 'continueButton';
-        continueButton.value = 'continue';
-        content.appendChild(continueButton);
+        var buttonContainer = document.createElement('span');
+        var submitButton = new YAHOO.widget.Button({type: 'button', label: "Save", container: buttonContainer});
+        content.appendChild(buttonContainer);
 
-        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+        Fisma.HtmlPanel.showPanel('Add Comment', content);
 
-        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        submitButton.on('click', Fisma.User.submitUserForm);
+
         return true;
     },
 

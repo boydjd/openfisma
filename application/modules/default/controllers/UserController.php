@@ -678,6 +678,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Add a comment to a specified user
+     */
+    public function addCommentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $user = Doctrine::getTable('User')->find($id);
+
+        $comment = $this->getRequest()->getParam('comment');
+
+        if ('' != trim(strip_tags($comment))) {
+            $user->getComments()->addComment($comment);
+        } else {
+            $this->view->priorityMessenger('Comment field is blank', 'warning');
+        }
+        
+        $this->_redirect("/user/comments/id/$id");
+    }
+
+    /**
      * Displays the user comment interface
      *
      * @return void
@@ -695,22 +714,24 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->username = $user->username;
         $this->view->viewLink = "/user/view/id/$id";
 
-        $commentData = array();
-        foreach ($comments as $comment) {
-            $commentData[] = array(
-                $comment['createdTs'], 
-                $this->view->userInfo($comment['User']['username']), 
-                $comment['comment'],
-            );
-        }
+        $commentButton = new Fisma_Yui_Form_Button(
+            'commentButton', 
+            array(
+                'label' => 'Add Comment', 
+                'onClickFunction' => 'Fisma.Commentable.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'type' => 'User',
+                    'callback' => array(
+                        'object' => 'User',
+                        'method' => 'commentCallback'
+                    )
+                )
+            )
+        );
 
-        $dataTable = new Fisma_Yui_DataTable_Local();
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, 'YAHOO.widget.DataTable.formatText'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, 'Fisma.TableFormat.formatHtml'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false))
-                  ->setData($commentData);
-
-        $this->view->dataTable = $dataTable;
+        $this->view->commentButton = $commentButton;
+        $this->view->comments = $comments;
     }
 
     /**
