@@ -115,5 +115,19 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show a warning message before a record is deleted.
+     */
+    showDeleteWarning : function (e) {
+
+        if (confirm('WARNING: You are about to delete the record. This action cannot be undone.'
+              + ' Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
+            return true;
+        }
+
+        YAHOO.util.Event.preventDefault(e);
+        return false;
     }
 };

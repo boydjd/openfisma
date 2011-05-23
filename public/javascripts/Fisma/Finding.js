@@ -141,5 +141,15 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        if (confirm('WARNING: You are about to delete the finding record. This action cannot be undone.'
+              + ' Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
+            document.location = "/finding/remediation/delete/id/" + config.id;
+        }
     }
 };
