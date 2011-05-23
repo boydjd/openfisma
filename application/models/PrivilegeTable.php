@@ -27,5 +27,18 @@
  */
 class PrivilegeTable extends Fisma_Doctrine_Table
 {
-
+    /**
+     * Return a query which selects privileges by resource and action
+     *
+     * @param string $resource
+     * @param string $action
+     *
+     * @return Doctrine_Query
+     */
+    public function getResourceActionQuery($resource, $action)
+    {
+        return Doctrine_Query::create()
+               ->from('Privilege p')
+               ->where('p.resource = ? AND p.action = ?', array($resource, $action));
+    }
 }
