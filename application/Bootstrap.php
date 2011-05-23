@@ -229,45 +229,4 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
     }
-
-    /**
-     * _initRequest 
-     * 
-     * @access protected
-     * @return void
-     */
-    protected function _initRequest()
-    {
-        $this->bootstrap('frontcontroller');
-        $front = $this->getResource('frontcontroller');
-
-        $front->setRequest('Fisma_Zend_Controller_Request_Http');
-    }
-
-    /**
-     * _initZIDS 
-     * 
-     * @access protected
-     * @return void
-     */
-    protected function _initZIDS()
-    {
-        $autoloader = Zend_Loader_Autoloader::getInstance();
-        $autoloader->registerNamespace('ZIDS');
-
-        $this->bootstrap('frontcontroller');
-
-        $front = $this->getResource('FrontController');
-
-        if ($this->hasOption('zids')) {
-            $zids = new ZIDS_Plugin_Ids($this->getOption('zids'));
-            $logger = $this->getResource('Log');
-
-            $zids->registerPlugin(new ZIDS_Plugin_ActionPlugin_Ignore());
-            $zids->registerPlugin(new ZIDS_Plugin_ActionPlugin_Log($logger));
-            $zids->registerPlugin(new ZIDS_Plugin_ActionPlugin_Redirect());
-
-            $front->registerPlugin($zids);
-        }
-    }
 }
