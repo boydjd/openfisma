@@ -222,18 +222,4 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
     }
-
-    /**
-     * _initRequest 
-     * 
-     * @access protected
-     * @return void
-     */
-    protected function _initRequest()
-    {
-        $this->bootstrap('frontcontroller');
-        $front = $this->getResource('frontcontroller');
-
-        $front->setRequest('Fisma_Zend_Controller_Request_Http');
-    }
 }
