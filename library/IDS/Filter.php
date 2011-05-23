@@ -119,7 +119,7 @@ class IDS_Filter
             );
         }
 
-        return (bool) @preg_match(
+        return (bool) preg_match(
             '/' . $this->getRule() . '/ms', strtolower($string)
         );
     }
