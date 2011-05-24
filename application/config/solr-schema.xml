@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Default Solr schema file for OpenFISMA. This is only used when the search backend for OpenFISMA
-is configured to "Solr".
+Default Solr schema file for OpenFISMA.
 
 Symlink your Solr installation's schema.xml to this file.
 
