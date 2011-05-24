@@ -16,7 +16,7 @@ Privilege:
     relations:
         # Roles is a many-to-many relationship
         Roles:
-            class: Roles
+            class: Role
             local: privilegeId
             foreign: roleId
             refClass: RolePrivilege

@@ -185,7 +185,7 @@ Incident:
                 logicalName: Police Report Filed For Loss Of PII
             comment: Has a police report been filed?
         piiIndividualsCount:
-            type: int(10)
+            type: integer(10)
             extra:
                 auditLog: true
                 logicalName: Number Of Individuals Affected By Loss Of PII

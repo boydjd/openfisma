@@ -349,7 +349,7 @@ abstract class Fisma_Inject_Abstract
                      ->execute();
         }
 
-        return ($assetRecord) ? $assetRecord[0]['id'] : FALSE;
+        return ($assetRecord) ? $assetRecord[0]['id'] : null;
     }
 
     /**
