@@ -716,15 +716,15 @@ Fisma.Chart = {
             return;
         }
 
-        // Escape, and then unescape all ? and = characters
-        theLink = escape(theLink);
-        theLink = theLink.replace('%3F', '?');
-        theLink = theLink.replace('%3D', '=');
-
         // Does the link contain a variable?
         if (theLink !== false) {
             theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
         }
+
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
 
         if (paramObj.linksdebug === true) {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
