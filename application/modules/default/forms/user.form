@@ -47,6 +47,11 @@ elements.checkAccount.options.label = "Check Account"
 elements.checkAccount.options.onClickFunction = "Fisma.User.checkAccount"
 displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
+elements.mustResetPassword.type = "checkbox"
+elements.mustResetPassword.options.label = "Must Reset Password"
+elements.mustResetPassword.options.value = "1"
+displayGroups.accountInfo.elements.mustResetPassword = "mustResetPassword"
+
 elements.nameFirst.type = "text"
 elements.nameFirst.options.label = "First Name"
 elements.nameFirst.options.required = true

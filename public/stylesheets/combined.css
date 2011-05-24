@@ -577,6 +577,10 @@ span.userInfo:active {
  *******************************************************************************
  */
 
+.chartSection {
+    page-break-inside: avoid;
+}
+
 /* style for the data-table for screen readers */
 .screenReaderTabel {
     width: 100%;
@@ -584,16 +588,16 @@ span.userInfo:active {
 
 /* the div that holds the chart options */
 .widgetSpaceHolder {
-	width: 400px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: left;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
 }
 
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
-	cursor: pointer;
-	width: 20px;
+    cursor: pointer;
+    width: 20px;
 }
 /**
  * jquery.jqplot.css

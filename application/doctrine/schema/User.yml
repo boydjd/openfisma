@@ -102,6 +102,10 @@ User:
         notifyFrequency: integer
         mostRecentNotifyTs: timestamp
 
+        mustResetPassword:
+            type: boolean
+            default: false
+
     relations:
         # Roles is a many-to-many relation
         Roles:

@@ -1,5 +1,15 @@
+body{margin:5px 5px 5px 5px;}
+.chart-yaxis-tick-InIE{right:30px;}
 span#logoutButton{visibility:hidden;}
 div#menubar{display:none;}
+div#skip{display:none;}
+div#logo{float:left;}
+div#logout{float:right;}
+.searchBox{display:none;}
+.yui-pg-container{display:none;}
+img#logoImg{width:145px;height:30px;}
+.chartContainer{margin-top:5px;margin-bottom:5px;page-break-inside:avoid;}
+.chartGear{display:none;}
 div.externalMediaMarking{clear:both;display:block;border:1px solid black;padding:1em;}
 div.toolbar{display:none;}
 ul.yui-nav{display:none;}

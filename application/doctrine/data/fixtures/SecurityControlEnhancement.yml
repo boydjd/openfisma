@@ -104,7 +104,6 @@ SecurityControlEnhancement:
             an overall process for investigation and response to suspicious activities.
     Rev0_AU_06_E2:
         Control: Rev0_AU_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to immediately alert security personnel of inappropriate or 
             unusual activities with security implications.
@@ -118,7 +117,6 @@ SecurityControlEnhancement:
 
     Rev0_AU_09_E1:
         Control: Rev0_AU_09
-        level: NONE
         description: >
             The information system produces audit information on hardware-enforced, write-once media.
 
@@ -185,7 +183,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev0_CP_03_E2:
         Control: Rev0_CP_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training 
             environment.
@@ -206,7 +203,6 @@ SecurityControlEnhancement:
             contingency operations.
     Rev0_CP_04_E3:
         Control: Rev0_CP_04
-        level: NONE
         description: >
             The organization employs automated mechanisms to more thoroughly and effectively test the contingency plan.
 
@@ -394,7 +390,6 @@ SecurityControlEnhancement:
             destroyed, unless an appropriate organization official explicitly authorizes an exception.
     Rev0_MA_03_E4:
         Control: Rev0_MA_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to ensure only authorized personnel use maintenance tools.
 
@@ -451,7 +446,6 @@ SecurityControlEnhancement:
 
     Rev0_PE_09_E1:
         Control: Rev0_PE_09
-        level: NONE
         description: >
             The organization employs redundant and parallel power cabling paths.
 
@@ -464,7 +458,6 @@ SecurityControlEnhancement:
             source.
     Rev0_PE_11_E2:
         Control: Rev0_PE_11
-        level: NONE
         description: >
             The organization provides a long-term alternate power supply for the information system that is 
             self-contained and not reliant on external power generation.
@@ -502,7 +495,6 @@ SecurityControlEnhancement:
             identified and reported.
     Rev0_RA_05_E3:
         Control: Rev0_RA_05
-        level: NONE
         description: >
             Vulnerability scanning procedures include means to ensure adequate scan coverage, both vulnerabilities 
             checked and information system components scanned.
@@ -524,45 +516,38 @@ SecurityControlEnhancement:
 
     Rev0_SC_03_E1:
         Control: Rev0_SC_03
-        level: NONE
         description: >
             The information system employs underlying hardware separation mechanisms to facilitate security 
             function isolation.
     Rev0_SC_03_E2:
         Control: Rev0_SC_03
-        level: NONE
         description: >
             The information system further divides the security functions with the functions enforcing access and 
             information flow control isolated and protected from both nonsecurity functions and from other 
             security functions.
     Rev0_SC_03_E3:
         Control: Rev0_SC_03
-        level: NONE
         description: >
             The information system minimizes the amount of nonsecurity functions included within the isolation 
             boundary containing security functions.
     Rev0_SC_03_E4:
         Control: Rev0_SC_03
-        level: NONE
         description: >
             The information system security maintains its security functions in largely independent modules that 
             avoid unnecessary interactions between modules.
     Rev0_SC_03_E5:
         Control: Rev0_SC_03
-        level: NONE
         description: >
             The information system security maintains its security functions in a layered structure minimizing 
             interactions between layers of the design.
 
     Rev0_SC_05_E1:
         Control: Rev0_SC_05
-        level: NONE
         description: >
             The information system restricts the ability of users to launch denial of service attacks against other 
             information systems or networks.
     Rev0_SC_05_E2:
         Control: Rev0_SC_05
-        level: NONE
         description: >
             The information system manages excess capacity, bandwidth, or other redundancy to limit the effects of 
             information flooding types of denial of service attacks.
@@ -594,20 +579,17 @@ SecurityControlEnhancement:
 
     Rev0_SC_15_E1:
         Control: Rev0_SC_15
-        level: NONE
         description: >
             The information system provides physical disconnect of camera and microphone in a manner that supports 
             ease of use.
 
     Rev0_SI_02_E1:
         Control: Rev0_SI_02
-        level: NONE
         description: >
             The organization centrally manages the flaw remediation process and installs updates automatically 
             without individual user intervention.
     Rev0_SI_02_E2:
         Control: Rev0_SI_02
-        level: NONE
         description: >
             The organization employs automated mechanisms to periodically and upon command determine the state of 
             information system components with regard to flaw remediation.
@@ -625,33 +607,28 @@ SecurityControlEnhancement:
 
     Rev0_SI_04_E1:
         Control: Rev0_SI_04
-        level: NONE
         description: >
             The organization networks individual intrusion detection tools into a systemwide intrusion detection 
             system using common protocols.
     Rev0_SI_04_E2:
         Control: Rev0_SI_04
-        level: NONE
         description: >
             The organization employs automated tools to support near-real-time analysis of events in support of 
             detecting system-level attacks.
     Rev0_SI_04_E3:
         Control: Rev0_SI_04
-        level: NONE
         description: >
             The organization employs automated tools to integrate intrusion detection tools into access control and 
             flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in 
             support of attack isolation and elimination.
     Rev0_SI_04_E4:
         Control: Rev0_SI_04
-        level: NONE
         description: >
             The information system monitors outbound communications for unusual or unauthorized activities 
             indicating the presence of malware (e.g., malicious code, spyware, adware).
 
     Rev0_SI_05_E1:
         Control: Rev0_SI_05
-        level: NONE
         description: >
             The organization employs automated mechanisms to make security alert and advisory information available 
             throughout the organization as needed.
@@ -663,7 +640,6 @@ SecurityControlEnhancement:
             The organization employs automated mechanisms to provide notification of failed security tests.
     Rev0_SI_06_E2:
         Control: Rev0_SI_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to support management of distributed security testing.
 
@@ -674,7 +650,6 @@ SecurityControlEnhancement:
             The organization centrally manages spam and spyware protection mechanisms.
     Rev0_SI_08_E2:
         Control: Rev0_SI_08
-        level: NONE
         description: >
             The information system automatically updates spam and spyware protection mechanisms.
 
@@ -716,7 +691,6 @@ SecurityControlEnhancement:
 
     Rev1_AC_04_E1:
         Control: Rev1_AC_04
-        level: NONE
         description: >
             <p>The information system implements information flow control enforcement using explicit labels on 
             information, source, and destination objects as a basis for flow control decisions.</p>
@@ -724,13 +698,11 @@ SecurityControlEnhancement:
             used, for example, to control the release of certain types of information.</p>
     Rev1_AC_04_E2:
         Control: Rev1_AC_04
-        level: NONE
         description: >
             The information system implements information flow control enforcement using protected processing domains 
             (e.g., domain type-enforcement) as a basis for flow control decisions.
     Rev1_AC_04_E3:
         Control: Rev1_AC_04
-        level: NONE
         description: >
             The information system implements information flow control enforcement using dynamic security policy 
             mechanisms as a basis for flow control decisions.
@@ -877,7 +849,6 @@ SecurityControlEnhancement:
 
     Rev1_AU_09_E1:
         Control: Rev1_AU_09
-        level: NONE
         description: >
             The information system produces audit records on hardware-enforced, write-once media.
 
@@ -913,7 +884,6 @@ SecurityControlEnhancement:
 
     Rev1_CA_07_E1:
         Control: Rev1_CA_07
-        level: NONE
         description: >
             <p>The organization employs an independent certification agent or certification team to monitor the 
             security controls in the information system on an ongoing basis.</p>
@@ -1006,7 +976,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev1_CP_03_E2:
         Control: Rev1_CP_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training 
             environment.
@@ -1029,7 +998,6 @@ SecurityControlEnhancement:
             to support contingency operations.
     Rev1_CP_04_E3:
         Control: Rev1_CP_04
-        level: NONE
         description: >
             The organization employs automated mechanisms to more thoroughly and effectively test/exercise the 
             contingency plan by providing more complete coverage of contingency issues, selecting more realistic 
@@ -1169,7 +1137,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev1_IR_02_E2:
         Control: Rev1_IR_02
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training environment.
 
@@ -1250,7 +1217,6 @@ SecurityControlEnhancement:
             unless an appropriate organization official explicitly authorizes an exception.
     Rev1_MA_03_E4:
         Control: Rev1_MA_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to restrict the use of maintenance tools to authorized 
             personnel only.
@@ -1375,7 +1341,6 @@ SecurityControlEnhancement:
 
     Rev1_PE_09_E1:
         Control: Rev1_PE_09
-        level: NONE
         description: >
             The organization employs redundant and parallel power cabling paths.
 
@@ -1394,7 +1359,6 @@ SecurityControlEnhancement:
             source.
     Rev1_PE_11_E2:
         Control: Rev1_PE_11
-        level: NONE
         description: >
             The organization provides a long-term alternate power supply for the information system that is 
             self-contained and not reliant on external power generation.
@@ -1448,7 +1412,6 @@ SecurityControlEnhancement:
             identified and reported.
     Rev1_RA_05_E3:
         Control: Rev1_RA_05
-        level: NONE
         description: >
             The organization employs vulnerability scanning procedures that can demonstrate the breadth and depth 
             of scan coverage, including vulnerabilities checked and information system components scanned.
@@ -1462,7 +1425,6 @@ SecurityControlEnhancement:
             with sufficient detail to permit analysis and testing of the controls.
     Rev1_SA_04_E2:
         Control: Rev1_SA_04
-        level: NONE
         description: >
             The organization requires in solicitation documents that appropriate documentation be provided 
             describing the design and implementation details of the security controls employed within the 
@@ -1487,31 +1449,26 @@ SecurityControlEnhancement:
 
     Rev1_SC_03_E1:
         Control: Rev1_SC_03
-        level: NONE
         description: >
             The information system employs underlying hardware separation mechanisms to facilitate security function 
             isolation.
     Rev1_SC_03_E2:
         Control: Rev1_SC_03
-        level: NONE
         description: >
             The information system isolates critical security functions (i.e., functions enforcing access and 
             information flow control) from both nonsecurity functions and from other security functions.
     Rev1_SC_03_E3:
         Control: Rev1_SC_03
-        level: NONE
         description: >
             The information system minimizes the number of nonsecurity functions included within the isolation 
             boundary containing security functions.
     Rev1_SC_03_E4:
         Control: Rev1_SC_03
-        level: NONE
         description: >
             The information system security functions are implemented as largely independent modules that avoid 
             unnecessary interactions between modules.
     Rev1_SC_03_E5:
         Control: Rev1_SC_03
-        level: NONE
         description: >
             The information system security functions are implemented as a layered structure minimizing 
             interactions between layers of the design and avoiding any dependence by lower layers on the 
@@ -1519,13 +1476,11 @@ SecurityControlEnhancement:
 
     Rev1_SC_05_E1:
         Control: Rev1_SC_05
-        level: NONE
         description: >
             The information system restricts the ability of users to launch denial of service attacks against other 
             information systems or networks.
     Rev1_SC_05_E2:
         Control: Rev1_SC_05
-        level: NONE
         description: >
             The information system manages excess capacity, bandwidth, or other redundancy to limit the effects of 
             information flooding types of denial of service attacks.
@@ -1582,14 +1537,12 @@ SecurityControlEnhancement:
 
     Rev1_SC_15_E1:
         Control: Rev1_SC_15
-        level: NONE
         description: >
             The information system provides physical disconnect of camera and microphone in a manner that supports 
             ease of use.
 
     Rev1_SC_20_E1:
         Control: Rev1_SC_20
-        level: NONE
         description: >
             The information system, when operating as part of a distributed, hierarchical namespace, provides the 
             means to indicate the security status of child subspaces and (if the child supports secure resolution 
@@ -1599,7 +1552,6 @@ SecurityControlEnhancement:
 
     Rev1_SC_21_E1:
         Control: Rev1_SC_21
-        level: NONE
         description: >
             The information system performs data origin authentication and data integrity verification on all 
             resolution responses whether or not local clients explicitly request this service.
@@ -1630,7 +1582,6 @@ SecurityControlEnhancement:
 
     Rev1_SI_04_E1:
         Control: Rev1_SI_04
-        level: NONE
         description: >
             The organization interconnects and configures individual intrusion detection tools into a systemwide 
             intrusion detection system using common protocols.
@@ -1641,7 +1592,6 @@ SecurityControlEnhancement:
             The organization employs automated tools to support near-real-time analysis of events.
     Rev1_SI_04_E3:
         Control: Rev1_SI_04
-        level: NONE
         description: >
             The organization employs automated tools to integrate intrusion detection tools into access control and 
             flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in 
@@ -1671,12 +1621,10 @@ SecurityControlEnhancement:
 
     Rev1_SI_06_E1:
         Control: Rev1_SI_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide notification of failed automated security tests.
     Rev1_SI_06_E2:
         Control: Rev1_SI_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to support management of distributed security testing.
 
@@ -1694,7 +1642,6 @@ SecurityControlEnhancement:
             discovering discrepancies during integrity verification.
     Rev1_SI_07_E3:
         Control: Rev1_SI_07
-        level: NONE
         description: >
             The organization employs centrally managed integrity verification tools.
 
@@ -1705,7 +1652,6 @@ SecurityControlEnhancement:
             The organization centrally manages spam protection mechanisms.
     Rev1_SI_08_E2:
         Control: Rev1_SI_08
-        level: NONE
         description: >
             The information system automatically updates spam protection mechanisms.
 
@@ -1748,7 +1694,6 @@ SecurityControlEnhancement:
 
     Rev2_AC_04_E1:
         Control: Rev2_AC_04
-        level: NONE
         description: >
             <p>The information system implements information flow control enforcement using explicit labels on 
             information, source, and destination objects as a basis for flow control decisions.</p>
@@ -1756,13 +1701,11 @@ SecurityControlEnhancement:
             used, for example, to control the release of certain types of information.</p>
     Rev2_AC_04_E2:
         Control: Rev2_AC_04
-        level: NONE
         description: >
             The information system implements information flow control enforcement using protected processing domains 
             (e.g., domain type-enforcement) as a basis for flow control decisions.
     Rev2_AC_04_E3:
         Control: Rev2_AC_04
-        level: NONE
         description: >
             The information system implements information flow control enforcement using dynamic security policy 
             mechanisms as a basis for flow control decisions.
@@ -1909,7 +1852,6 @@ SecurityControlEnhancement:
 
     Rev2_AU_09_E1:
         Control: Rev2_AU_09
-        level: NONE
         description: >
             The information system produces audit records on hardware-enforced, write-once media.
 
@@ -1945,7 +1887,6 @@ SecurityControlEnhancement:
 
     Rev2_CA_07_E1:
         Control: Rev2_CA_07
-        level: NONE
         description: >
             <p>The organization employs an independent certification agent or certification team to monitor the 
             security controls in the information system on an ongoing basis.</p>
@@ -2038,7 +1979,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev2_CP_03_E2:
         Control: Rev2_CP_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training 
             environment.
@@ -2061,7 +2001,6 @@ SecurityControlEnhancement:
             to support contingency operations.
     Rev2_CP_04_E3:
         Control: Rev2_CP_04
-        level: NONE
         description: >
             The organization employs automated mechanisms to more thoroughly and effectively test/exercise the 
             contingency plan by providing more complete coverage of contingency issues, selecting more realistic 
@@ -2201,7 +2140,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev2_IR_02_E2:
         Control: Rev2_IR_02
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training environment.
 
@@ -2282,7 +2220,6 @@ SecurityControlEnhancement:
             unless an appropriate organization official explicitly authorizes an exception.
     Rev2_MA_03_E4:
         Control: Rev2_MA_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to restrict the use of maintenance tools to authorized 
             personnel only.
@@ -2397,7 +2334,6 @@ SecurityControlEnhancement:
 
     Rev2_PE_09_E1:
         Control: Rev2_PE_09
-        level: NONE
         description: >
             The organization employs redundant and parallel power cabling paths.
 
@@ -2416,7 +2352,6 @@ SecurityControlEnhancement:
             source.
     Rev2_PE_11_E2:
         Control: Rev2_PE_11
-        level: NONE
         description: >
             The organization provides a long-term alternate power supply for the information system that is 
             self-contained and not reliant on external power generation.
@@ -2469,7 +2404,6 @@ SecurityControlEnhancement:
             organization-defined frequency</em>] or when significant new vulnerabilities are identified and reported.
     Rev2_RA_05_E3:
         Control: Rev2_RA_05
-        level: NONE
         description: >
             The organization employs vulnerability scanning procedures that can demonstrate the breadth and depth 
             of scan coverage, including vulnerabilities checked and information system components scanned.
@@ -2483,7 +2417,6 @@ SecurityControlEnhancement:
             with sufficient detail to permit analysis and testing of the controls.
     Rev2_SA_04_E2:
         Control: Rev2_SA_04
-        level: NONE
         description: >
             The organization requires in solicitation documents that appropriate documentation be provided 
             describing the design and implementation details of the security controls employed within the 
@@ -2508,31 +2441,26 @@ SecurityControlEnhancement:
 
     Rev2_SC_03_E1:
         Control: Rev2_SC_03
-        level: NONE
         description: >
             The information system employs underlying hardware separation mechanisms to facilitate security 
             function isolation.
     Rev2_SC_03_E2:
         Control: Rev2_SC_03
-        level: NONE
         description: >
             The information system isolates critical security functions (i.e., functions enforcing access and 
             information flow control) from both nonsecurity functions and from other security functions.
     Rev2_SC_03_E3:
         Control: Rev2_SC_03
-        level: NONE
         description: >
             The information system minimizes the number of nonsecurity functions included within the isolation 
             boundary containing security functions.
     Rev2_SC_03_E4:
         Control: Rev2_SC_03
-        level: NONE
         description: >
             The information system security functions are implemented as largely independent modules that avoid 
             unnecessary interactions between modules.
     Rev2_SC_03_E5:
         Control: Rev2_SC_03
-        level: NONE
         description: >
             The information system security functions are implemented as a layered structure minimizing interactions 
             between layers of the design and avoiding any dependence by lower layers on the functionality or 
@@ -2540,13 +2468,11 @@ SecurityControlEnhancement:
 
     Rev2_SC_05_E1:
         Control: Rev2_SC_05
-        level: NONE
         description: >
             The information system restricts the ability of users to launch denial of service attacks against 
             other information systems or networks.
     Rev2_SC_05_E2:
         Control: Rev2_SC_05
-        level: NONE
         description: >
             The information system manages excess capacity, bandwidth, or other redundancy to limit the effects of 
             information flooding types of denial of service attacks.
@@ -2612,14 +2538,12 @@ SecurityControlEnhancement:
 
     Rev2_SC_15_E1:
         Control: Rev2_SC_15
-        level: NONE
         description: >
             The information system provides physical disconnect of camera and microphone in a manner that supports 
             ease of use.
 
     Rev2_SC_20_E1:
         Control: Rev2_SC_20
-        level: NONE
         description: >
             The information system, when operating as part of a distributed, hierarchical namespace, provides the 
             means to indicate the security status of child subspaces and (if the child supports secure resolution 
@@ -2629,7 +2553,6 @@ SecurityControlEnhancement:
 
     Rev2_SC_21_E1:
         Control: Rev2_SC_21
-        level: NONE
         description: >
             The information system performs data origin authentication and data integrity verification on all 
             resolution responses whether or not local clients explicitly request this service.
@@ -2660,7 +2583,6 @@ SecurityControlEnhancement:
 
     Rev2_SI_04_E1:
         Control: Rev2_SI_04
-        level: NONE
         description: >
             The organization interconnects and configures individual intrusion detection tools into a systemwide 
             intrusion detection system using common protocols.
@@ -2671,7 +2593,6 @@ SecurityControlEnhancement:
             The organization employs automated tools to support near-real-time analysis of events.
     Rev2_SI_04_E3:
         Control: Rev2_SI_04
-        level: NONE
         description: >
             The organization employs automated tools to integrate intrusion detection tools into access control and 
             flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in 
@@ -2701,12 +2622,10 @@ SecurityControlEnhancement:
 
     Rev2_SI_06_E1:
         Control: Rev2_SI_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide notification of failed automated security tests.
     Rev2_SI_06_E2:
         Control: Rev2_SI_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to support management of distributed security testing.
 
@@ -2724,7 +2643,6 @@ SecurityControlEnhancement:
             discovering discrepancies during integrity verification.
     Rev2_SI_07_E3:
         Control: Rev2_SI_07
-        level: NONE
         description: >
             The organization employs centrally managed integrity verification tools.
 
@@ -2735,7 +2653,6 @@ SecurityControlEnhancement:
             The organization centrally manages spam protection mechanisms.
     Rev2_SI_08_E2:
         Control: Rev2_SI_08
-        level: NONE
         description: >
             The information system automatically updates spam protection mechanisms.
 
@@ -2765,7 +2682,6 @@ SecurityControlEnhancement:
             actions and notifies, as required, appropriate individuals.
     Rev3_AC_02_E5:
         Control: Rev3_AC_02
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -2777,7 +2693,6 @@ SecurityControlEnhancement:
             </ol>
     Rev3_AC_02_E6:
         Control: Rev3_AC_02
-        level: NONE
         description: >
             <p>The information system dynamically manages user privileges and associated access authorizations.</p>
             <p><u>Enhancement Supplemental Guidance:</u> In contrast to conventional access control approaches which 
@@ -2788,7 +2703,6 @@ SecurityControlEnhancement:
             </p>
     Rev3_AC_02_E7:
         Control: Rev3_AC_02
-        level: NONE
         description: >
             <p>The organization:
             <ol>
@@ -2804,7 +2718,6 @@ SecurityControlEnhancement:
 
     Rev3_AC_03_E2:
         Control: Rev3_AC_03
-        level: NONE
         description: >
             <p>The information system enforces dual authorization, based on organizational policies and procedures for 
             [<em>Assignment: organization-defined privileged commands</em>].</p>
@@ -2813,7 +2726,6 @@ SecurityControlEnhancement:
             necessary to ensure public and environmental safety.</p>
     Rev3_AC_03_E3:
         Control: Rev3_AC_03
-        level: NONE
         description: >
             <p>The information system enforces [<em>Assignment: organization-defined nondiscretionary access control 
             policies</em>] over [<em>Assignment: organization-defined set of users and resources</em>] where the policy 
@@ -2843,7 +2755,6 @@ SecurityControlEnhancement:
             have been authorized to assume the associated role.</p>
     Rev3_AC_03_E4:
         Control: Rev3_AC_03
-        level: NONE
         description: >
             The information system enforces a Discretionary Access Control (DAC) policy
             <ol>
@@ -2853,7 +2764,6 @@ SecurityControlEnhancement:
             </ol>
     Rev3_AC_03_E5:
         Control: Rev3_AC_03
-        level: NONE
         description: >
             <p>The information system prevents access to [<em>Assignment: organization-defined security-relevant 
             information</em>] except during secure, nonoperable system states.</p>
@@ -2867,7 +2777,6 @@ SecurityControlEnhancement:
             boot-up, shutdown).</p>
     Rev3_AC_03_E6:
         Control: Rev3_AC_03
-        level: NONE
         description: >
             <p>The organization encrypts or stores off-line in a secure location [<em>Assignment: organization-defined 
             user and/or system information</em>].</p>
@@ -2878,7 +2787,6 @@ SecurityControlEnhancement:
 
     Rev3_AC_04_E1:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system enforces information flow control using explicit security attributes on 
             information, source, and destination objects as a basis for flow control decisions.</p>
@@ -2890,41 +2798,34 @@ SecurityControlEnhancement:
             information.</p>
     Rev3_AC_04_E2:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces information flow control using protected processing domains (e.g., domain 
             type-enforcement) as a basis for flow control decisions.
     Rev3_AC_04_E3:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces dynamic information flow control based on policy that allows or disallows 
             information flows based on changing conditions or operational considerations.
     Rev3_AC_04_E4:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system prevents encrypted data from bypassing content-checking mechanisms.
     Rev3_AC_04_E5:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces [<em>Assignment: organization-defined limitations on the embedding of data 
             types within other data types</em>].
     Rev3_AC_04_E6:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces information flow control on metadata.
     Rev3_AC_04_E7:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces [<em>Assignment: organization-defined one-way flows</em>] using hardware 
             mechanisms.
     Rev3_AC_04_E8:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system enforces information flow control using [<em>Assignment: organization-defined 
             security policy filters</em>] as a basis for flow control decisions.</p>
@@ -2939,19 +2840,16 @@ SecurityControlEnhancement:
             commercial off-the-shelf word processing documents, spreadsheets, or emails).</li></ol></p>
     Rev3_AC_04_E9:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system enforces the use of human review for [<em>Assignment: organization-defined security 
             policy filters</em>] when the system is not capable of making an information flow control decision.
     Rev3_AC_04_E10:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             The information system provides the capability for a privileged administrator to enable/disable 
             [<em>Assignment: organization-defined security policy filters</em>].
     Rev3_AC_04_E11:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system provides the capability for a privileged administrator to configure 
             [<em>Assignment: organization-defined security policy filters</em>] to support different security 
@@ -2961,7 +2859,6 @@ SecurityControlEnhancement:
             with the definitions provided by the organization.</p>
     Rev3_AC_04_E12:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system, when transferring information between different security domains, identifies 
             information flows by data type specification and usage.</p>
@@ -2969,7 +2866,6 @@ SecurityControlEnhancement:
             file naming to reflect type of data and limiting data transfer based on file type.</p>
     Rev3_AC_04_E13:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system, when transferring information between different security domains, decomposes 
             information into policy-relevant subcomponents for submission to policy enforcement mechanisms.</p>
@@ -2982,7 +2878,6 @@ SecurityControlEnhancement:
             transfer of archived information types.</p>
     Rev3_AC_04_E14:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system, when transferring information between different security domains, implements 
             policy filters that constrain data structure and content to [<em>Assignment: organization-defined 
@@ -2995,7 +2890,6 @@ SecurityControlEnhancement:
             file lengths are enforced based upon organization-defined security policy.</li></ol>
     Rev3_AC_04_E15:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system, when transferring information between different security domains, detects 
             unsanctioned information and prohibits the transfer of such information in accordance with the security 
@@ -3006,7 +2900,6 @@ SecurityControlEnhancement:
             information payload.</p>
     Rev3_AC_04_E16:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system enforces security policies regarding information on interconnected systems.</p>
             <p><u>Enhancement Supplemental Guidance:</u> Transferring information between interconnected information 
@@ -3021,7 +2914,6 @@ SecurityControlEnhancement:
             labels.</li></ol></p>
     Rev3_AC_04_E17:
         Control: Rev3_AC_04
-        level: NONE
         description: >
             <p>The information system:
             <ol>
@@ -3066,14 +2958,12 @@ SecurityControlEnhancement:
             separation employing information systems on which the user does not have privileged access.</p>
     Rev3_AC_06_E3:
         Control: Rev3_AC_06
-        level: NONE
         description: >
             The organization authorizes network access to [<em>Assignment: organization-defined privileged 
             commands</em>] only for compelling operational needs and documents the rationale for such access in the 
             security plan for the information system.
     Rev3_AC_06_E4:
         Control: Rev3_AC_06
-        level: NONE
         description: >
             <p>The information system provides separate processing domains to enable finer-grained allocation of user 
             privileges.</p>
@@ -3082,7 +2972,6 @@ SecurityControlEnhancement:
             providing separate processing domains for finer-grained allocation of user privileges.</p>
     Rev3_AC_06_E5:
         Control: Rev3_AC_06
-        level: NONE
         description: >
             <p>The organization limits authorization to super user accounts on the information system to designated 
             system administration personnel.</p>
@@ -3096,7 +2985,6 @@ SecurityControlEnhancement:
             necessary to sufficiently mitigate risk.</p>
     Rev3_AC_06_E6:
         Control: Rev3_AC_06
-        level: NONE
         description: >
             <p>The organization prohibits privileged access to the information system by non-organizational users.</p>
             <p><u>Enhancement Supplemental Guidance:</u> A qualified organizational user may be advised by a 
@@ -3104,13 +2992,11 @@ SecurityControlEnhancement:
 
     Rev3_AC_07_E1:
         Control: Rev3_AC_07
-        level: NONE
         description: >
             The information system automatically locks the account/node until released by an administrator when the 
             maximum number of unsuccessful attempts is exceeded.
     Rev3_AC_07_E2:
         Control: Rev3_AC_07
-        level: NONE
         description: >
             <p>The information system provides additional protection for mobile devices accessed via login by purging 
             information from the device after [Assignment: organization-defined number] consecutive, unsuccessful login 
@@ -3124,27 +3010,23 @@ SecurityControlEnhancement:
 
     Rev3_AC_09_E1:
         Control: Rev3_AC_09
-        level: NONE
         description: >
             The information system notifies the user, upon successful logon/access, of the number of unsuccessful 
             logon/access attempts since the last successful logon/access.
     Rev3_AC_09_E2:
         Control: Rev3_AC_09
-        level: NONE
         description: >
             The information system notifies the user of the number of [<em>Selection: successful logins/accesses; 
             unsuccessful login/access attempts; both</em>] during [<em>Assignment: organization-defined time 
             period</em>].
     Rev3_AC_09_E3:
         Control: Rev3_AC_09
-        level: NONE
         description: >
             The information system notifies the user of [<em>Assignment: organization-defined set of security-related 
             changes to the user's account</em>] during [<em>Assignment: organization-defined time period</em>].
 
     Rev3_AC_11_E1:
         Control: Rev3_AC_11
-        level: NONE
         description: >
             The information system session lock mechanism, when activated on a device with a display screen, places a 
             publically viewable pattern onto the associated display, hiding what was previously visible on the screen.
@@ -3158,18 +3040,15 @@ SecurityControlEnhancement:
 
     Rev3_AC_16_E1:
         Control: Rev3_AC_16
-        level: NONE
         description: >
             The information system dynamically reconfigures security attributes in accordance with an identified 
             security policy as information is created and combined.
     Rev3_AC_16_E2:
         Control: Rev3_AC_16
-        level: NONE
         description: >
             The information system allows authorized entities to change security attributes.
     Rev3_AC_16_E3:
         Control: Rev3_AC_16
-        level: NONE
         description: >
             <p>The information system maintains the binding of security attributes to information with sufficient 
             assurance that the information--attribute association can be used as the basis for automated policy 
@@ -3179,7 +3058,6 @@ SecurityControlEnhancement:
             information (e.g., information flows via cross domain systems).</p>
     Rev3_AC_16_E4:
         Control: Rev3_AC_16
-        level: NONE
         description: >
             <p>The information system allows authorized users to associate security attributes with information.</p>
             <p><u>Enhanced Supplemental Guidance:</u> The support provided by the information system can vary from 
@@ -3187,7 +3065,6 @@ SecurityControlEnhancement:
             ensuring that the combination of attributes selected is valid.</p>
     Rev3_AC_16_E5:
         Control: Rev3_AC_16
-        level: NONE
         description: >
             <p>The information system displays security attributes in human-readable form on each object output from 
             the system to system output devices to identify [<em>Assignment: organization-identified set of special 
@@ -3236,7 +3113,6 @@ SecurityControlEnhancement:
             discovered.
     Rev3_AC_17_E6:
         Control: Rev3_AC_17
-        level: NONE
         description: >
             The organization ensures that users protect information about remote access mechanisms from unauthorized 
             use and disclosure.        
@@ -3282,7 +3158,6 @@ SecurityControlEnhancement:
             connected to the system.</p>
     Rev3_AC_18_E3:
         Control: Rev3_AC_18
-        level: NONE
         description: >
             <p>The organization disables, when not intended for use, wireless networking capabilities internally 
             embedded within information system components prior to issuance and deployment.</p>
@@ -3324,7 +3199,6 @@ SecurityControlEnhancement:
             and accountability for addressing known vulnerabilities in the media (e.g., malicious code insertion).</p>
     Rev3_AC_19_E4:
         Control: Rev3_AC_19
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -3371,7 +3245,6 @@ SecurityControlEnhancement:
 
     Rev3_AC_21_E1:
         Control: Rev3_AC_21
-        level: NONE
         description: >
             The information system employs automated mechanisms to enable authorized users to make information-sharing 
             decisions based on access authorizations of sharing partners and access restrictions on information to be 
@@ -3379,7 +3252,6 @@ SecurityControlEnhancement:
 
     Rev3_AT_02_E1:
         Control: Rev3_AT_02
-        level: NONE
         description: >
             <p>The organization includes practical exercises in security awareness training that simulate actual cyber 
             attacks.</p>
@@ -3389,7 +3261,6 @@ SecurityControlEnhancement:
 
     Rev3_AT_03_E1:
         Control: Rev3_AT_03
-        level: NONE
         description: >
             <p>The organization provides employees with initial and [<em>Assignment: organization-defined 
             frequency</em>] training in the employment and operation of environmental controls.</p>
@@ -3398,7 +3269,6 @@ SecurityControlEnhancement:
             detectors, temperature/humidity, HVAC, and power within the facility.</u>
     Rev3_AT_03_E2:
         Control: Rev3_AT_03
-        level: NONE
         description: >
             <p>The organization provides employees with initial and [<em>Assignment: organization-defined 
             frequency</em>] training in the employment and operation of physical security controls.</p>
@@ -3450,13 +3320,11 @@ SecurityControlEnhancement:
             [<em>Assignment: organization-defined audit failure events requiring real-time alerts</em>].
     Rev3_AU_05_E3:
         Control: Rev3_AU_05
-        level: NONE
         description: >
             The information system enforces configurable traffic volume thresholds representing auditing capacity for 
             network traffic and [<em>Selection: rejects or delays</em>] network traffic above those thresholds.
     Rev3_AU_05_E4:
         Control: Rev3_AU_05
-        level: NONE
         description: >
             The information system invokes a system shutdown in the event of an audit failure, unless an alternative 
             audit capability exists.
@@ -3469,13 +3337,11 @@ SecurityControlEnhancement:
             processes for investigation and response to suspicious activities.
     Rev3_AU_06_E3:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             The organization analyzes and correlates audit records across different repositories to gain 
             organization-wide situational awareness.
     Rev3_AU_06_E4:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             <p>The information system centralizes the review and analysis of audit records from multiple components 
             within the system.</p>
@@ -3483,7 +3349,6 @@ SecurityControlEnhancement:
             and analysis is a Security Information Management (SIM) product. Related control: AU-2.</p>
     Rev3_AU_06_E5:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             <p>The organization integrates analysis of audit records with analysis of vulnerability scanning 
             information, performance data, and network monitoring information to further enhance the ability to 
@@ -3497,7 +3362,6 @@ SecurityControlEnhancement:
             correlating attack detection events with scanning results. Related control: AU-7, RA-5, SI-4.</p>
     Rev3_AU_06_E6:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             <p>The organization correlates information from audit records with information obtained from monitoring 
             physical access to further enhance the ability to identify suspicious, inappropriate, unusual, or 
@@ -3505,7 +3369,6 @@ SecurityControlEnhancement:
             <p><u>Enhancement Supplemental Guidance:</u> Related control: PE-6.</p>
     Rev3_AU_06_E7:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             <p>The organization specifies the permitted actions for each authorized information system process, role, 
             and/or user in the audit and accountability policy.</p>
@@ -3514,14 +3377,12 @@ SecurityControlEnhancement:
             read, write, append, and delete.</p>
     Rev3_AU_06_E8:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             The organization employs automated mechanisms to alert security personnel of the following inappropriate or 
             unusual activities with security implications: [<em>Assignment: organization-defined list of inappropriate 
             or unusual activities that are to result in alerts</em>].
     Rev3_AU_06_E9:
         Control: Rev3_AU_06
-        level: NONE
         description: >
             The organization performs, in a physically dedicated information system, full-text analysis of privileged 
             functions executed.
@@ -3543,18 +3404,15 @@ SecurityControlEnhancement:
 
     Rev3_AU_09_E1:
         Control: Rev3_AU_09
-        level: NONE
         description: >
             The information system produces audit records on hardware-enforced, write-once media.
     Rev3_AU_09_E2:
         Control: Rev3_AU_09
-        level: NONE
         description: >
             The information system backs up audit records [<em>Assignment: organization-defined frequency</em>] onto a 
             different system or media than the system being audited.
     Rev3_AU_09_E3:
         Control: Rev3_AU_09
-        level: NONE
         description: >
             <p>The information system uses cryptographic mechanisms to protect the integrity of audit information and 
             audit tools.</p>
@@ -3564,7 +3422,6 @@ SecurityControlEnhancement:
             hash information.</p>
     Rev3_AU_09_E4:
         Control: Rev3_AU_09
-        level: NONE
         description: >
             <p>The organization:
             <ol>
@@ -3584,7 +3441,6 @@ SecurityControlEnhancement:
 
     Rev3_AU_10_E1:
         Control: Rev3_AU_10
-        level: NONE
         description: >
             <p>The information system associates the identity of the information producer with the information.</p>
             <p><u>Enhancement Supplemental Guidance:</u> This control enhancement supports audit requirements that 
@@ -3594,7 +3450,6 @@ SecurityControlEnhancement:
             security categorization of the information and relevant risk factors.</p>
     Rev3_AU_10_E2:
         Control: Rev3_AU_10
-        level: NONE
         description: >
             <p>The information system validates the binding of the information producer's identity to the 
             information.</p>
@@ -3603,7 +3458,6 @@ SecurityControlEnhancement:
             example, by the use of cryptographic checksums.</p>
     Rev3_AU_10_E3:
         Control: Rev3_AU_10
-        level: NONE
         description: >
             <p>The information system maintains reviewer/releaser identity and credentials within the established chain 
             of custody for all information reviewed or released.</p>
@@ -3615,7 +3469,6 @@ SecurityControlEnhancement:
             enhancement helps ensure that only approved review functions are employed.</p>
     Rev3_AU_10_E4:
         Control: Rev3_AU_10
-        level: NONE
         description: >
             <p>The information system validates the binding of the reviewer's identity to the information at the 
             transfer/release point prior to release/transfer from one security domain to another security domain.</p>
@@ -3623,7 +3476,6 @@ SecurityControlEnhancement:
             information is modified between review and transfer/release.</p>
     Rev3_AU_10_E5:
         Control: Rev3_AU_10
-        level: NONE
         description: >
             <p>The organization employs [<em>Selection: FIPS-validated; NSA-approved</em>] cryptography to implement 
             digital signatures.</p>
@@ -3642,7 +3494,6 @@ SecurityControlEnhancement:
             ordering of the records within the organization-defined tolerance.</p>
     Rev3_AU_12_E2:
         Control: Rev3_AU_12
-        level: NONE
         description: >
             <p>The information system produces a system-wide (logical or physical) audit trail composed of audit 
             records in a standardized format.</p>
@@ -3656,7 +3507,6 @@ SecurityControlEnhancement:
 
     Rev3_AU_14_E1:
         Control: Rev3_AU_14
-        level: NONE
         description: >
             The information system initiates session audits at system start-up.
 
@@ -3717,7 +3567,6 @@ SecurityControlEnhancement:
 
     Rev3_CA_03_E1:
         Control: Rev3_CA_03
-        level: NONE
         description: >
             <p>The organization prohibits the direct connection of an unclassified, national security system to an 
             external network.</p>
@@ -3727,7 +3576,6 @@ SecurityControlEnhancement:
             mediates the communication between the system and the network.</p>
     Rev3_CA_03_E2:
         Control: Rev3_CA_03
-        level: NONE
         description: >
             <p>The organization prohibits the direct connection of a classified, national security system to an 
             external network.</p>
@@ -3740,14 +3588,12 @@ SecurityControlEnhancement:
 
     Rev3_CA_05_E1:
         Control: Rev3_CA_05
-        level: NONE
         description: >
             The organization employs automated mechanisms to help ensure that the plan of action and milestones for the 
             information system is accurate, up to date, and readily available.
 
     Rev3_CA_07_E1:
         Control: Rev3_CA_07
-        level: NONE
         description: >
             <p>The organization employs an independent assessor or assessment team to monitor the security controls in 
             the information system on an ongoing basis.</p>
@@ -3758,7 +3604,6 @@ SecurityControlEnhancement:
             information on assessor independence. Related controls: CA-2, CA-5, CA-6, CM-4.</p>
     Rev3_CA_07_E2:
         Control: Rev3_CA_07
-        level: NONE
         description: >
             <p>The organization plans, schedules, and conducts assessments [<em>Assignment: organization-defined 
             frequency</em>], [<em>Selection: announced; unannounced</em>], [<em>Selection: in-depth monitoring; 
@@ -3860,14 +3705,12 @@ SecurityControlEnhancement:
             with the general tailoring guidance.</p>
     Rev3_CM_03_E3:
         Control: Rev3_CM_03
-        level: NONE
         description: >
             <p>The organization employs automated mechanisms to implement changes to the current information system 
             baseline and deploys the updated baseline across the installed base.</p>
             <p><u>Enhancement Supplemental Guidance:</u> Related controls: CM-2, CM-6.</p>
     Rev3_CM_03_E4:
         Control: Rev3_CM_03
-        level: NONE
         description: >
             <p>The organization requires an information security representative to be a member of the 
             [<em>Assignment: organization-defined configuration change control element 
@@ -3886,7 +3729,6 @@ SecurityControlEnhancement:
             intentional malice.
     Rev3_CM_04_E2:
         Control: Rev3_CM_04
-        level: NONE
         description: >
             <P>The organization, after the information system is changed, checks the security functions to verify that 
             the functions are implemented correctly, operating as intended, and producing the desired outcome with 
@@ -3917,13 +3759,11 @@ SecurityControlEnhancement:
             example, patches, service packs, and where applicable, device drivers.</p>
     Rev3_CM_05_E4:
         Control: Rev3_CM_05
-        level: NONE
         description: >
             The organization enforces a two-person rule for changes to [<em>Assignment: organization-defined 
             information system components and system-level information</em>].
     Rev3_CM_05_E5:
         Control: Rev3_CM_05
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -3934,13 +3774,11 @@ SecurityControlEnhancement:
             </ol>
     Rev3_CM_05_E6:
         Control: Rev3_CM_05
-        level: NONE
         description: >
             The organization limits privileges to change software resident within software libraries 
             (including privileged programs).
     Rev3_CM_05_E7:
         Control: Rev3_CM_05
-        level: NONE
         description: >
             <p>The information system automatically implements [<em>Assignment: organization-defined safeguards and 
             countermeasures</em>] if security functions (or mechanisms) are changed inappropriately.</p>
@@ -3976,7 +3814,6 @@ SecurityControlEnhancement:
             <p><u>Enhancement Supplemental Guidance:</u> Related controls: IR-4, IR-5.</p>
     Rev3_CM_06_E4:
         Control: Rev3_CM_06
-        level: NONE
         description: >
             The information system (including modifications to the baseline configuration) demonstrates conformance 
             to security configuration guidance (i.e., security checklists), prior to being introduced into a 
@@ -3998,7 +3835,6 @@ SecurityControlEnhancement:
             <p><u>Enhancement Supplemental Guidance:</u> Related control: CM-2.</p>
     Rev3_CM_07_E3:
         Control: Rev3_CM_07
-        level: NONE
         description: >
             <p>The organization ensures compliance with [<em>Assignment: organization-defined registration 
             requirements for ports, protocols, and services</em>].</p>
@@ -4054,7 +3890,6 @@ SecurityControlEnhancement:
             within that system.
     Rev3_CM_08_E6:
         Control: Rev3_CM_08
-        level: NONE
         description: >
             <p>The organization includes assessed component configurations and any approved deviations to current 
             deployed configurations in the information system component inventory.</p>
@@ -4066,7 +3901,6 @@ SecurityControlEnhancement:
 
     Rev3_CM_09_E1:
         Control: Rev3_CM_09
-        level: NONE
         description: >
             <p>The organization assigns responsibility for developing the configuration management process to 
             organizational personnel that are not directly involved in system development.</p>
@@ -4096,20 +3930,17 @@ SecurityControlEnhancement:
             [<em>Assignment: organization-defined time period</em>] of contingency plan activation.
     Rev3_CP_02_E4:
         Control: Rev3_CP_02
-        level: NONE
         description: >
             The organization plans for the full resumption of missions and business functions within 
             [<em>Assignment: organization-defined time period</em>] of contingency plan activation.
     Rev3_CP_02_E5:
         Control: Rev3_CP_02
-        level: NONE
         description: >
             The organization plans for the continuance of essential missions and business functions with little or 
             no loss of operational continuity and sustains that continuity until full information system restoration 
             at primary processing and/or storage sites.
     Rev3_CP_02_E6:
         Control: Rev3_CP_02
-        level: NONE
         description: >
             The organization provides for the transfer of all essential missions and business functions to 
             alternate processing and/or storage sites with little or no loss of operational continuity and sustains 
@@ -4123,7 +3954,6 @@ SecurityControlEnhancement:
             response by personnel in crisis situations.
     Rev3_CP_03_E2:
         Control: Rev3_CP_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to provide a more thorough and realistic training 
             environment.
@@ -4146,7 +3976,6 @@ SecurityControlEnhancement:
             to support contingency operations.
     Rev3_CP_04_E3:
         Control: Rev3_CP_04
-        level: NONE
         description: >
             The organization employs automated mechanisms to more thoroughly and effectively test/exercise the 
             contingency plan by providing more complete coverage of contingency issues, selecting more realistic 
@@ -4271,14 +4100,12 @@ SecurityControlEnhancement:
             the operational system.
     Rev3_CP_09_E5:
         Control: Rev3_CP_09
-        level: NONE
         description: >
             The organization transfers information system backup information to the alternate storage site 
             [<em>Assignment: organization-defined time period and transfer rate consistent with the recovery time 
             and recovery point objectives</em>].
     Rev3_CP_09_E6:
         Control: Rev3_CP_09
-        level: NONE
         description: >
             The organization accomplishes information system backup by maintaining a redundant secondary system, 
             not collocated, that can be activated without loss of information or disruption to the operation.
@@ -4306,7 +4133,6 @@ SecurityControlEnhancement:
             and integrity-protected disk images representing a secure, operational state for the components.
     Rev3_CP_10_E5:
         Control: Rev3_CP_10
-        level: NONE
         description: >
             The organization provides [<em>Selection: real-time; near-real-time</em>] 
             [<em>Assignment: organization-defined failover capability for the information system</em>].
@@ -4315,7 +4141,6 @@ SecurityControlEnhancement:
             intervals during a time period defined by the organization's recovery time period.</p>
     Rev3_CP_10_E6:
         Control: Rev3_CP_10
-        level: NONE
         description: >
             The organization protects backup and restoration hardware, firmware, and software.
             <p><u>Enhancement Supplemental Guidance:</u> Protection of backup and restoration hardware, firmware, and software includes both physical 
@@ -4344,20 +4169,17 @@ SecurityControlEnhancement:
             The information system uses multifactor authentication for local access to non-privileged accounts.
     Rev3_IA_02_E5:
         Control: Rev3_IA_02
-        level: NONE
         description: >
             The organization: <ol><li>Allows the use of group authenticators only when used in conjunction with an 
             individual/unique authenticator; and</li><li>Requires individuals to be authenticated with an individual 
             authenticator prior to using a group authenticator.</li></ol>
     Rev3_IA_02_E6:
         Control: Rev3_IA_02
-        level: NONE
         description: >
             The information system uses multifactor authentication for network access to privileged accounts where one 
             of the factors is provided by a device separate from the information system being accessed.
     Rev3_IA_02_E7:
         Control: Rev3_IA_02
-        level: NONE
         description: >
             The information system uses multifactor authentication for network access to non-privileged accounts where 
             one of the factors is provided by a device separate from the information system being accessed.
@@ -4384,7 +4206,6 @@ SecurityControlEnhancement:
 
     Rev3_IA_03_E1:
         Control: Rev3_IA_03
-        level: NONE
         description: >
             <p>The information system authenticates devices before establishing remote and wireless network connections 
             using bidirectional authentication between devices that is cryptographically based.</p>
@@ -4392,13 +4213,11 @@ SecurityControlEnhancement:
             communicating through an external network (e.g., the Internet). Related controls: AC-17, AC-18.</p>
     Rev3_IA_03_E2:
         Control: Rev3_IA_03
-        level: NONE
         description: >
             The information system authenticates devices before establishing network connections using bidirectional 
             authentication between devices that is cryptographically based.
     Rev3_IA_03_E3:
         Control: Rev3_IA_03
-        level: NONE
         description: >
             <p>The organization standardizes, with regard to dynamic address allocation, Dynamic Host Control Protocol 
             (DHCP) lease information and the time assigned to devices, and audits lease information when assigned to a 
@@ -4408,7 +4227,6 @@ SecurityControlEnhancement:
 
     Rev3_IA_04_E1:
         Control: Rev3_IA_04
-        level: NONE
         description: >
             <p>The organization prohibits the use of information system account identifiers as public identifiers for 
             user electronic mail accounts (i.e., user identifier portion of the electronic mail address).</p>
@@ -4416,19 +4234,16 @@ SecurityControlEnhancement:
             extent that the information system allows.</p>
     Rev3_IA_04_E2:
         Control: Rev3_IA_04
-        level: NONE
         description: >
             The organization requires that registration to receive a user ID and password include authorization by a 
             supervisor, and be done in person before a designated registration authority.
     Rev3_IA_04_E3:
         Control: Rev3_IA_04
-        level: NONE
         description: >
             The organization requires multiple forms of certification of individual identification such as documentary 
             evidence or a combination of documents and biometrics be presented to the registration authority.
     Rev3_IA_04_E4:
         Control: Rev3_IA_04
-        level: NONE
         description: >
             <p>The organization manages user identifiers by uniquely identifying the user as [<em>Assignment: 
             organization-defined characteristic identifying user status</em>].</p>
@@ -4436,7 +4251,6 @@ SecurityControlEnhancement:
             contractors and foreign nationals.</p>
     Rev3_IA_04_E5:
         Control: Rev3_IA_04
-        level: NONE
         description: >
             <p>The information system dynamically manages identifiers, attributes, and associated access 
             authorizations.</p>
@@ -4483,13 +4297,11 @@ SecurityControlEnhancement:
             authority with authorization by a designated organizational official (e.g., a supervisor).
     Rev3_IA_05_E4:
         Control: Rev3_IA_05
-        level: NONE
         description: >
             The organization employs automated tools to determine if authenticators are sufficiently strong to resist 
             attacks intended to discover or otherwise compromise the authenticators.
     Rev3_IA_05_E5:
         Control: Rev3_IA_05
-        level: NONE
         description: >
             <p>The organization requires vendors and/or manufacturers of information system components to provide 
             unique authenticators or change default authenticators prior to delivery.</p>
@@ -4503,13 +4315,11 @@ SecurityControlEnhancement:
             components.</p>
     Rev3_IA_05_E6:
         Control: Rev3_IA_05
-        level: NONE
         description: >
             The organization protects authenticators commensurate with the classification or sensitivity of the 
             information accessed.
     Rev3_IA_05_E7:
         Control: Rev3_IA_05
-        level: NONE
         description: >
             <p>The organization ensures that unencrypted static authenticators are not embedded in applications or 
             access scripts or stored on function keys.</p>
@@ -4520,7 +4330,6 @@ SecurityControlEnhancement:
             something else (e.g., a password).</p>
     Rev3_IA_05_E8:
         Control: Rev3_IA_05
-        level: NONE
         description: >
             <p>The organization takes [<em>Assignment: organization-defined measures</em>] to manage the risk of 
             compromise due to individuals having accounts on multiple information systems.</p>
@@ -4564,7 +4373,6 @@ SecurityControlEnhancement:
             automated mechanism.</p>
     Rev3_IR_04_E2:
         Control: Rev3_IR_04
-        level: NONE
         description: >
             <p>The organization includes dynamic reconfiguration of the information system as part of the incident 
             response capability.</p>
@@ -4573,7 +4381,6 @@ SecurityControlEnhancement:
             firewalls and gateways.</p>
     Rev3_IR_04_E3:
         Control: Rev3_IR_04
-        level: NONE
         description: >
             <p>The organization identifies classes of incidents and defines appropriate actions to take in response to 
             ensure continuation of organizational missions and business functions.</p>
@@ -4585,13 +4392,11 @@ SecurityControlEnhancement:
             information flows, or operating in a mode that is reserved solely for when a system is under attack.</p>
     Rev3_IR_04_E4:
         Control: Rev3_IR_04
-        level: NONE
         description: >
             The organization correlates incident information and individual incident responses to achieve an 
             organization-wide perspective on incident awareness and response.
     Rev3_IR_04_E5:
         Control: Rev3_IR_04
-        level: NONE
         description: >
             The organization implements a configurable capability to automatically disable the information system if 
             any of the following security violations are detected: [<em>Assignment: organization-defined list of 
@@ -4615,7 +4420,6 @@ SecurityControlEnhancement:
             The organization employs automated mechanisms to assist in the reporting of security incidents.
     Rev3_IR_06_E2:
         Control: Rev3_IR_06
-        level: NONE
         description: >
             The organization reports information system weaknesses, deficiencies, and/or vulnerabilities associated 
             with reported security incidents to appropriate organizational officials.
@@ -4633,7 +4437,6 @@ SecurityControlEnhancement:
             understanding of current response capabilities and support.</p>
     Rev3_IR_07_E2:
         Control: Rev3_IR_07
-        level: NONE
         description: >
             <p>The organization: <ol><li>Establishes a direct, cooperative relationship between its incident response 
             capability and external providers of information system protection capability; and</li><li>Identifies 
@@ -4684,7 +4487,6 @@ SecurityControlEnhancement:
             equipment from the facility.</li></ol>
     Rev3_MA_03_E4:
         Control: Rev3_MA_03
-        level: NONE
         description: >
             The organization employs automated mechanisms to restrict the use of maintenance tools to authorized 
             personnel only.
@@ -4730,7 +4532,6 @@ SecurityControlEnhancement:
             before reconnecting the component to the information system.</li></ol>
     Rev3_MA_04_E4:
         Control: Rev3_MA_04
-        level: NONE
         description: >
             <p>The organization protects non-local maintenance sessions through the use of a strong authenticator 
             tightly bound to the user and by separating the maintenance session from other network sessions with the 
@@ -4739,7 +4540,6 @@ SecurityControlEnhancement:
             <p><u>Enhancement Supplemental Guidance</u>: Related control: SC-13.</p>
     Rev3_MA_04_E5:
         Control: Rev3_MA_04
-        level: NONE
         description: >
             The organization requires that: <ol><li>Maintenance personnel notify [<em>Assignment: organization-defined 
             personnel</em>] when non-local maintenance is planned (i.e., date/time); and</li><li>A designated 
@@ -4747,20 +4547,17 @@ SecurityControlEnhancement:
             non-local maintenance.</li></ol>
     Rev3_MA_04_E6:
         Control: Rev3_MA_04
-        level: NONE
         description: >
             The organization employs cryptographic mechanisms to protect the integrity and confidentiality of non-local 
             maintenance and diagnostic communications.
     Rev3_MA_04_E7:
         Control: Rev3_MA_04
-        level: NONE
         description: >
             The organization employs remote disconnect verification at the termination of non-local maintenance and 
             diagnostic sessions.
 
     Rev3_MA_05_E1:
         Control: Rev3_MA_05
-        level: NONE
         description: >
             <p>The organization maintains procedures for the use of maintenance personnel that lack appropriate 
             security clearances or are not U.S. citizens, that include the following requirements: <ol><li>Maintenance 
@@ -4781,20 +4578,17 @@ SecurityControlEnhancement:
             can be documented in the security plan for the information system.</p>
     Rev3_MA_05_E2:
         Control: Rev3_MA_05
-        level: NONE
         description: >
             The organization ensures that personnel performing maintenance and diagnostic activities on an information 
             system processing, storing, or transmitting classified information are cleared (i.e., possess appropriate 
             security clearances) for the highest level of information on the system.
     Rev3_MA_05_E3:
         Control: Rev3_MA_05
-        level: NONE
         description: >
             The organization ensures that personnel performing maintenance and diagnostic activities on an information 
             system processing, storing, or transmitting classified information are U.S. citizens.
     Rev3_MA_05_E4:
         Control: Rev3_MA_05
-        level: NONE
         description: >
             The organization ensures that: <ol><li>Cleared foreign nationals (i.e., foreign nationals with appropriate 
             security clearances), are used to conduct maintenance and diagnostic activities on an information system 
@@ -4814,14 +4608,12 @@ SecurityControlEnhancement:
             every location where some media is stored (e.g., in individual offices).</p>
     Rev3_MP_02_E2:
         Control: Rev3_MP_02
-        level: NONE
         description: >
             The information system uses cryptographic mechanisms to protect and restrict access to information on 
             portable digital media.
 
     Rev3_MP_04_E1:
         Control: Rev3_MP_04
-        level: NONE
         description: >
             <p>The organization employs cryptographic mechanisms to protect information in storage.</p>
             <p><u>Enhancement Supplemental Guidance</u>: Related control: SC-13.</p>
@@ -4884,32 +4676,27 @@ SecurityControlEnhancement:
             circumstances for employing the sanitization process. Related control: SI-3.</p>
     Rev3_MP_06_E4:
         Control: Rev3_MP_06
-        level: NONE
         description: >
             The organization sanitizes information system media containing Controlled Unclassified Information (CUI) or 
             other sensitive information in accordance with applicable organizational and/or federal standards and 
             policies.
     Rev3_MP_06_E5:
         Control: Rev3_MP_06
-        level: NONE
         description: >
             The organization sanitizes information system media containing classified information in accordance with 
             NSA standards and policies.
     Rev3_MP_06_E6:
         Control: Rev3_MP_06
-        level: NONE
         description: >
             The organization destroys information system media that cannot be sanitized.
 
     Rev3_PE_02_E1:
         Control: Rev3_PE_02
-        level: NONE
         description: >
             The organization authorizes physical access to the facility where the information system resides based on 
             position or role.
     Rev3_PE_02_E2:
         Control: Rev3_PE_02
-        level: NONE
         description: >
             <p>The organization requires two forms of identification to gain access to the facility where the 
             information system resides.</p>
@@ -4917,7 +4704,6 @@ SecurityControlEnhancement:
             key card, cipher PIN, and biometrics.</p>
     Rev3_PE_02_E3:
         Control: Rev3_PE_02
-        level: NONE
         description: >
             The organization restricts physical access to the facility containing an information system that processes 
             classified information to authorized personnel with appropriate clearances and access authorizations.
@@ -4938,7 +4724,6 @@ SecurityControlEnhancement:
             also PS-3, security requirements for personnel access to SCI.</p>
     Rev3_PE_03_E2:
         Control: Rev3_PE_03
-        level: NONE
         description: >
             <p>The organization performs security checks at the physical boundary of the facility or information system 
             for unauthorized exfiltration of information or information system components.</p>
@@ -4946,25 +4731,21 @@ SecurityControlEnhancement:
             necessary by the organization to adequately mitigate risk associated with exfiltration.</p>
     Rev3_PE_03_E3:
         Control: Rev3_PE_03
-        level: NONE
         description: >
             The organization guards, alarms, and monitors every physical access point to the facility where the 
             information system resides 24 hours per day, 7 days per week.
     Rev3_PE_03_E4:
         Control: Rev3_PE_03
-        level: NONE
         description: >
             The organization uses lockable physical casings to protect [<em>Assignment: organization-defined 
             information system components</em>] from unauthorized physical access.
     Rev3_PE_03_E5:
         Control: Rev3_PE_03
-        level: NONE
         description: >
             The information system detects/prevents physical tampering or alteration of hardware components within the 
             system.
     Rev3_PE_03_E6:
         Control: Rev3_PE_03
-        level: NONE
         description: >
             The organization employs a penetration testing process that includes [<em>Assignment: organization-defined 
             frequency</em>], unannounced attempts to bypass or circumvent security controls associated with physical 
@@ -4989,7 +4770,6 @@ SecurityControlEnhancement:
             The organization escorts visitors and monitors visitor activity, when required.
     Rev3_PE_07_E2:
         Control: Rev3_PE_07
-        level: NONE
         description: >
             The organization requires two forms of identification for visitor access to the facility.
 
@@ -5006,12 +4786,10 @@ SecurityControlEnhancement:
 
     Rev3_PE_09_E1:
         Control: Rev3_PE_09
-        level: NONE
         description: >
             The organization employs redundant and parallel power cabling paths.
     Rev3_PE_09_E2:
         Control: Rev3_PE_09
-        level: NONE
         description: >
             The organization employs automatic voltage controls for [<em>Assignment: organization-defined list of 
             critical information system components</em>].
@@ -5025,7 +4803,6 @@ SecurityControlEnhancement:
             source.
     Rev3_PE_11_E2:
         Control: Rev3_PE_11
-        level: NONE
         description: >
             <p>The organization provides a long-term alternate power supply for the information system that is 
             self-contained and not reliant on external power generation.</p>
@@ -5034,7 +4811,6 @@ SecurityControlEnhancement:
 
     Rev3_PE_12_E1:
         Control: Rev3_PE_12
-        level: NONE
         description: >
             The organization provides emergency lighting for all areas within the facility supporting essential 
             missions and business functions.
@@ -5059,20 +4835,17 @@ SecurityControlEnhancement:
             facility is not staffed on a continuous basis.
     Rev3_PE_13_E4:
         Control: Rev3_PE_13
-        level: NONE
         description: >
             The organization ensures that the facility undergoes [<em>Assignment: organization-defined frequency</em>] 
             fire marshal inspections and promptly resolves identified deficiencies.
 
     Rev3_PE_14_E1:
         Control: Rev3_PE_14
-        level: NONE
         description: >
             The organization employs automatic temperature and humidity controls in the facility to prevent 
             fluctuations potentially harmful to the information system.
     Rev3_PE_14_E2:
         Control: Rev3_PE_14
-        level: NONE
         description: >
             The organization employs temperature and humidity monitoring that provides an alarm or notification of 
             changes potentially harmful to personnel or equipment.
@@ -5094,7 +4867,6 @@ SecurityControlEnhancement:
 
     Rev3_PE_19_E1:
         Control: Rev3_PE_19
-        level: NONE
         description: >
             The organization ensures that information system components, associated data communications, and networks 
             are protected in accordance with: <ol><li>national emissions and TEMPEST policies and procedures; and 
@@ -5102,7 +4874,6 @@ SecurityControlEnhancement:
 
     Rev3_PL_02_E1:
         Control: Rev3_PL_02
-        level: NONE
         description: >
             <p>The organization: <ol><li>Develops a security Concept of Operations (CONOPS) for the information system 
             containing, at a minimum: <ol><li>the purpose of the system;</li><li>a description of the system 
@@ -5113,7 +4884,6 @@ SecurityControlEnhancement:
             the information system.</p>
     Rev3_PL_02_E2:
         Control: Rev3_PL_02
-        level: NONE
         description: >
             <p>The organization develops a functional architecture for the information system that identifies and 
             maintains: <ol><li>External interfaces, the information being exchanged across the interfaces, and the 
@@ -5129,21 +4899,18 @@ SecurityControlEnhancement:
 
     Rev3_PL_04_E1:
         Control: Rev3_PL_04
-        level: NONE
         description: >
             The organization includes in the rules of behavior, explicit restrictions on the use of social networking 
             sites, posting information on commercial websites, and sharing information system account information.
 
     Rev3_PS_03_E1:
         Control: Rev3_PS_03
-        level: NONE
         description: >
             The organization ensures that every user accessing an information system processing, storing, or 
             transmitting classified information is cleared and indoctrinated to the highest classification level of the 
             information on the system.
     Rev3_PS_03_E2:
         Control: Rev3_PS_03
-        level: NONE
         description: >
             <p>The organization ensures that every user accessing an information system processing, storing, or 
             transmitting types of classified information which require formal indoctrination, is formally indoctrinated 
@@ -5154,7 +4921,6 @@ SecurityControlEnhancement:
 
     Rev3_PS_06_E1:
         Control: Rev3_PS_06
-        level: NONE
         description: >
             <p>The organization ensures that access to information with special protection measures is granted only to 
             individuals who: <ol><li>Have a valid access authorization that is demonstrated by assigned official 
@@ -5165,7 +4931,6 @@ SecurityControlEnhancement:
             </p>
     Rev3_PS_06_E2:
         Control: Rev3_PS_06
-        level: NONE
         description: >
             <p>The organization ensures that access to classified information with special protection measures is 
             granted only to individuals who: <ol><li>Have a valid access authorization that is demonstrated by assigned 
@@ -5209,7 +4974,6 @@ SecurityControlEnhancement:
             thorough scanning.
     Rev3_RA_05_E6:
         Control: Rev3_RA_05
-        level: NONE
         description: >
             The organization employs automated mechanisms to compare the results of vulnerability scans over time 
             to determine trends in information system vulnerabilities.
@@ -5222,13 +4986,11 @@ SecurityControlEnhancement:
             organizational officials.
     Rev3_RA_05_E8:
         Control: Rev3_RA_05
-        level: NONE
         description: >
             The organization reviews historic audit logs to determine if a vulnerability identified in the 
             information system has been previously exploited.
     Rev3_RA_05_E9:
         Control: Rev3_RA_05
-        level: NONE
         description: >
             The organization employs an independent penetration agent or penetration team to:
             <ol>
@@ -5264,7 +5026,6 @@ SecurityControlEnhancement:
             interfaces among control components) in sufficient detail to permit analysis and testing of the controls.
     Rev3_SA_04_E3:
         Control: Rev3_SA_04
-        level: NONE
         description: >
             The organization requires software vendors/manufacturers to demonstrate that their software development 
             processes employ state-of-the-practice software and security engineering methods, quality control 
@@ -5277,14 +5038,12 @@ SecurityControlEnhancement:
             information system, and that the owner of the system acknowledges this assignment.
     Rev3_SA_04_E5:
         Control: Rev3_SA_04
-        level: NONE
         description: >
             The organization requires in acquisition documents, that information system components are delivered in 
             a secure, documented configuration, and that the secure configuration is the default configuration for 
             any software reinstalls or upgrades.
     Rev3_SA_04_E6:
         Control: Rev3_SA_04
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -5300,7 +5059,6 @@ SecurityControlEnhancement:
             management.</p>
     Rev3_SA_04_E7:
         Control: Rev3_SA_04
-        level: NONE
         description: >
            The organization:
            <ol>
@@ -5338,7 +5096,6 @@ SecurityControlEnhancement:
             subsystems.</p>
     Rev3_SA_05_E4:
         Control: Rev3_SA_05
-        level: NONE
         description: >
             The organization obtains, protects as required, and makes available to authorized personnel, 
             vendor/manufacturer documentation that describes the low-level design of the information system in 
@@ -5348,14 +5105,12 @@ SecurityControlEnhancement:
             or more modules.</p>
     Rev3_SA_05_E5:
         Control: Rev3_SA_05
-        level: NONE
         description: >
             The organization obtains, protects as required, and makes available to authorized personnel, the source 
             code for the information system to permit analysis and testing.
 
     Rev3_SA_06_E1:
         Control: Rev3_SA_06
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -5373,7 +5128,6 @@ SecurityControlEnhancement:
 
     Rev3_SA_09_E1:
         Control: Rev3_SA_09
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -5388,13 +5142,11 @@ SecurityControlEnhancement:
 
     Rev3_SA_10_E1:
         Control: Rev3_SA_10
-        level: NONE
         description: >
             The organization requires that information system developers/integrators provide an integrity check of 
             software to facilitate organizational verification of software integrity after delivery.
     Rev3_SA_10_E2:
         Control: Rev3_SA_10
-        level: NONE
         description: >
             The organization provides an alternative configuration management process with organizational personnel 
             in the absence of dedicated developer/integrator configuration management team.
@@ -5405,19 +5157,16 @@ SecurityControlEnhancement:
 
     Rev3_SA_11_E1:
         Control: Rev3_SA_11
-        level: NONE
         description: >
             The organization requires that information system developers/integrators employ code analysis tools to 
             examine software for common flaws and document the results of the analysis.
     Rev3_SA_11_E2:
         Control: Rev3_SA_11
-        level: NONE
         description: >
             The organization requires that information system developers/integrators perform a vulnerability 
             analysis to document vulnerabilities, exploitation potential, and risk mitigations.
     Rev3_SA_11_E3:
         Control: Rev3_SA_11
-        level: NONE
         description: >
             The organization requires that information system developers/integrators create a security test and 
             evaluation plan and implement the plan under the witness of an independent verification and validation 
@@ -5425,7 +5174,6 @@ SecurityControlEnhancement:
 
     Rev3_SA_12_E1:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization purchases all anticipated information system components and spares in the initial 
             acquisition.
@@ -5433,7 +5181,6 @@ SecurityControlEnhancement:
             the need to use less trustworthy secondary or resale markets in future years.</p>
     Rev3_SA_12_E2:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization conducts a due diligence review of suppliers prior to entering into contractual 
             agreements to acquire information system hardware, software, firmware, or services.
@@ -5442,7 +5189,6 @@ SecurityControlEnhancement:
             components or products.</p>
     Rev3_SA_12_E3:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization uses trusted shipping and warehousing for information systems, information system 
             components, and information technology products.
@@ -5451,7 +5197,6 @@ SecurityControlEnhancement:
             of a geographically aware beacon to detect shipment diversions or delays. Related control: PE-16.</p>
     Rev3_SA_12_E4:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization employs a diverse set of suppliers for information systems, information system 
             components, information technology products, and information system services.
@@ -5459,7 +5204,6 @@ SecurityControlEnhancement:
             potential harm from a given supplier in a supply chain, increasing the work factor for an adversary.</p>
     Rev3_SA_12_E5:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization employs standard configurations for information systems, information system components, 
             and information technology products.
@@ -5469,7 +5213,6 @@ SecurityControlEnhancement:
             supply chain actions targeted at the organization.</p>
     Rev3_SA_12_E6:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization minimizes the time between purchase decisions and delivery of information systems, 
             information system components, and information technology products.
@@ -5479,14 +5222,12 @@ SecurityControlEnhancement:
             component, or product.</p>
     Rev3_SA_12_E7:
         Control: Rev3_SA_12
-        level: NONE
         description: >
             The organization employs independent analysis and penetration testing against delivered information 
             systems, information system components, and information technology products.
 
     Rev3_SA_12_E1:
         Control: Rev3_SA_14
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -5500,7 +5241,6 @@ SecurityControlEnhancement:
 
     Rev3_SC_02_E1:
         Control: Rev3_SC_02
-        level: NONE
         description: >
             The information system prevents the presentation of information system management-related functionality 
             at an interface for general (i.e., non-privileged) users.
@@ -5512,19 +5252,16 @@ SecurityControlEnhancement:
 
     Rev3_SC_03_E1:
         Control: Rev3_SC_03
-        level: NONE
         description: >
             The information system implements underlying hardware separation mechanisms to facilitate security 
             function isolation.
     Rev3_SC_03_E2:
         Control: Rev3_SC_03
-        level: NONE
         description: >
             The information system isolates security functions enforcing access and information flow control from 
             both nonsecurity functions and from other security functions.
     Rev3_SC_03_E3:
         Control: Rev3_SC_03
-        level: NONE
         description: >
             The organization implements an information system isolation boundary to minimize the number of 
             nonsecurity functions included within the boundary containing security functions.
@@ -5532,13 +5269,11 @@ SecurityControlEnhancement:
             boundary are considered security-relevant.</p>
     Rev3_SC_03_E4:
         Control: Rev3_SC_03
-        level: NONE
         description: >
             The organization implements security functions as largely independent modules that avoid unnecessary 
             interactions between modules.
     Rev3_SC_03_E5:
         Control: Rev3_SC_03
-        level: NONE
         description: >
             The organization implements security functions as a layered structure minimizing interactions between 
             layers of the design and avoiding any dependence by lower layers on the functionality or correctness of 
@@ -5546,7 +5281,6 @@ SecurityControlEnhancement:
 
     Rev3_SC_04_E1:
         Control: Rev3_SC_04
-        level: NONE
         description: >
             The information system does not share resources that are used to interface with systems operating at 
             different security levels.
@@ -5555,13 +5289,11 @@ SecurityControlEnhancement:
 
     Rev3_SC_05_E1:
         Control: Rev3_SC_05
-        level: NONE
         description: >
             The information system restricts the ability of users to launch denial of service attacks against other 
             information systems or networks.
     Rev3_SC_05_E2:
         Control: Rev3_SC_05
-        level: NONE
         description: >
             The information system manages excess capacity, bandwidth, or other redundancy to limit the effects of 
             information flooding types of denial of service attacks.
@@ -5647,7 +5379,6 @@ SecurityControlEnhancement:
             websites.</p>
     Rev3_SC_07_E9:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system, at managed interfaces, denies network traffic and audits internal users 
             (or malicious code) posing a threat to external information systems.
@@ -5657,7 +5388,6 @@ SecurityControlEnhancement:
             looking for indications of an internal threat to the security of external systems.</p>
     Rev3_SC_07_E10:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The organization prevents the unauthorized exfiltration of information across managed interfaces.
             <p><u>Enhancement Supplemental Guidance:</u> Measures to prevent unauthorized exfiltration of information 
@@ -5677,13 +5407,11 @@ SecurityControlEnhancement:
             the network or transport layer.</p>
     Rev3_SC_07_E11:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system checks incoming communications to ensure that the communications are coming from 
             an authorized source and routed to an authorized destination.
     Rev3_SC_07_E12:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system implements host-based boundary protection mechanisms for servers, workstations, 
             and mobile devices.
@@ -5693,14 +5421,12 @@ SecurityControlEnhancement:
             are available.</p>
     Rev3_SC_07_E13:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The organization isolates [<em>Assignment: organization defined key information security tools, 
             mechanisms, and support components</em>] from other internal information system components via 
             physically separate subnets with managed interfaces to other portions of the system.
     Rev3_SC_07_E14:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The organization protects against unauthorized physical connections across the boundary protections 
             implemented at [<em>Assignment: organization-defined list of managed interfaces</em>].
@@ -5714,14 +5440,12 @@ SecurityControlEnhancement:
             Related control: PE-4.</p>
     Rev3_SC_07_E15:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system routes all networked, privileged accesses through a dedicated, managed interface 
             for purposes of access control and auditing.
             <p><u>Enhancement Supplemental Guidance:</u> Related controls: AC-2, AC-3, AC-4, AU-2.</p>
     Rev3_SC_07_E16:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system prevents discovery of specific system components (or devices) composing a 
             managed interface.
@@ -5732,7 +5456,6 @@ SecurityControlEnhancement:
             knowledge for access. Another obfuscation technique is to periodically change network addresses.</p>
     Rev3_SC_07_E17:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The organization employs automated mechanisms to enforce strict adherence to protocol format.
             <p><u>Enhancement Supplemental Guidance:</u> Automated mechanisms used to enforce protocol formats 
@@ -5741,7 +5464,6 @@ SecurityControlEnhancement:
             vulnerabilities that cannot be detected by devices operating at the network or transport layer.</p>
     Rev3_SC_07_E18:
         Control: Rev3_SC_07
-        level: NONE
         description: >
             The information system fails securely in the event of an operational failure of a boundary protection 
             device.
@@ -5763,7 +5485,6 @@ SecurityControlEnhancement:
             example, protected distribution systems. Related control: SC-13.</p>
     Rev3_SC_08_E2:
         Control: Rev3_SC_08
-        level: NONE
         description: >
             The information system maintains the integrity of information during aggregation, packaging, and 
             transformation in preparation for transmission.
@@ -5780,7 +5501,6 @@ SecurityControlEnhancement:
             for example, protected distribution systems. Related control: SC-13.</p>
     Rev3_SC_09_E2:
         Control: Rev3_SC_09
-        level: NONE
         description: >
             The information system maintains the confidentiality of information during aggregation, packaging, and 
             transformation in preparation for transmission.
@@ -5796,62 +5516,52 @@ SecurityControlEnhancement:
             by users.
     Rev3_SC_12_E2:
         Control: Rev3_SC_12
-        level: NONE
         description: >
             The organization produces, controls, and distributes symmetric cryptographic keys using 
             [<em>Selection: NIST-approved, NSA-approved</em>] key management technology and processes.
     Rev3_SC_12_E3:
         Control: Rev3_SC_12
-        level: NONE
         description: >
             The organization produces, controls, and distributes symmetric and asymmetric cryptographic keys using 
             NSA-approved key management technology and processes.
     Rev3_SC_12_E4:
         Control: Rev3_SC_12
-        level: NONE
         description: >
             The organization produces, controls, and distributes asymmetric cryptographic keys using approved PKI 
             Class 3 certificates or prepositioned keying material.
     Rev3_SC_12_E5:
         Control: Rev3_SC_12
-        level: NONE
         description: >
             The organization produces, controls, and distributes asymmetric cryptographic keys using approved PKI 
             Class 3 or Class 4 certificates and hardware security tokens that protect the user's private key.
 
     Rev3_SC_12_E1:
         Control: Rev3_SC_12
-        level: NONE
         description: >
             The organization employs, at a minimum, FIPS-validated cryptography to protect unclassified information.
     Rev3_SC_13_E2:
         Control: Rev3_SC_13
-        level: NONE
         description: >
             The organization employs NSA-approved cryptography to protect classified information.
     Rev3_SC_13_E3:
         Control: Rev3_SC_13
-        level: NONE
         description: >
             The organization employs, at a minimum, FIPS-validated cryptography to protect information when such 
             information must be separated from individuals who have the necessary clearances yet lack the necessary 
             access approvals.
     Rev3_SC_13_E4:
         Control: Rev3_SC_13
-        level: NONE
         description: >
             The organization employs [Selection: FIPS-validated; NSA-approved] cryptography to implement digital 
             signatures.
 
     Rev3_SC_15_E1:
         Control: Rev3_SC_15
-        level: NONE
         description: >
             The information system provides physical disconnect of collaborative computing devices in a manner that 
             supports ease of use.
     Rev3_SC_15_E2:
         Control: Rev3_SC_15
-        level: NONE
         description: >
             The information system or supporting environment blocks both inbound and outbound traffic between 
             instant messaging clients that are independently configured by end users and external service providers.
@@ -5859,20 +5569,17 @@ SecurityControlEnhancement:
             services that are configured by an organization to perform an authorized function.</p>
     Rev3_SC_15_E3:
         Control: Rev3_SC_15
-        level: NONE
         description: >
             The organization disables or removes collaborative computing devices from information systems in 
             [<em>Assignment: organization-defined secure work areas</em>].
 
     Rev3_SC_16_E1:
         Control: Rev3_SC_16
-        level: NONE
         description: >
             The information system validates the integrity of security attributes exchanged between systems.
 
     Rev3_SC_18_E1:
         Control: Rev3_SC_18
-        level: NONE
         description: >
             The information system implements detection and inspection mechanisms to identify unauthorized mobile 
             code and takes corrective actions, when necessary.
@@ -5881,18 +5588,15 @@ SecurityControlEnhancement:
             include, for example, sending word processing files with embedded macros.</p>
     Rev3_SC_18_E2:
         Control: Rev3_SC_18
-        level: NONE
         description: >
             The organization ensures the acquisition, development, and/or use of mobile code to be deployed in 
             information systems meets [<em>Assignment: organization-defined mobile code requirements</em>].
     Rev3_SC_18_E3:
         Control: Rev3_SC_18
-        level: NONE
         description: >
             The information system prevents the download and execution of prohibited mobile code.
     Rev3_SC_18_E4:
         Control: Rev3_SC_18
-        level: NONE
         description: >
             The information system prevents the automatic execution of mobile code in [<em>Assignment: 
             organization-defined software applications</em>] and requires [<em>Assignment: organization-defined 
@@ -5912,7 +5616,6 @@ SecurityControlEnhancement:
 
     Rev3_SC_21_E1:
         Control: Rev3_SC_21
-        level: NONE
         description: >
             The information system performs data origin authentication and data integrity verification on all 
             resolution responses whether or not local clients explicitly request this service.
@@ -5920,24 +5623,20 @@ SecurityControlEnhancement:
 
     Rev3_SC_23_E1:
         Control: Rev3_SC_23
-        level: NONE
         description: >
             The information system invalidates session identifiers upon user logout or other session termination.
     Rev3_SC_23_E2:
         Control: Rev3_SC_23
-        level: NONE
         description: >
             The information system provides a readily observable logout capability whenever authentication is 
             used to gain access to web pages.
     Rev3_SC_23_E3:
         Control: Rev3_SC_23
-        level: NONE
         description: >
             The information system generates a unique session identifier for each session and recognizes only 
             session identifiers that are system-generated.
     Rev3_SC_23_E4:
         Control: Rev3_SC_23
-        level: NONE
         description: >
             The information system generates unique session identifiers with [<em>Assignment: organization-defined 
             randomness requirements</em>].
@@ -5947,7 +5646,6 @@ SecurityControlEnhancement:
 
     Rev3_SC_26_E1:
         Control: Rev3_SC_26
-        level: NONE
         description: >
             The information system includes components that proactively seek to identify web-based malicious code.
             <p><u>Enhancement Supplemental Guidance:</u> Devices that actively seek out web-based malicious code by 
@@ -5955,14 +5653,12 @@ SecurityControlEnhancement:
 
     Rev3_SC_28_E1:
         Control: Rev3_SC_28
-        level: NONE
         description: >
             The organization employs cryptographic mechanisms to prevent unauthorized disclosure and modification 
             of information at rest unless otherwise protected by alternative physical measures.
 
     Rev3_SC_30_E1:
         Control: Rev3_SC_30
-        level: NONE
         description: >
             The organization employs virtualization techniques to support the deployment of a diversity of operating 
             systems and applications that are changed [<em>Assignment: organization-defined frequency</em>].
@@ -5973,20 +5669,17 @@ SecurityControlEnhancement:
             still impede attacker success while helping to reduce the configuration management effort.</p>
     Rev3_SC_30_E2:
         Control: Rev3_SC_30
-        level: NONE
         description: >
             The organization employs randomness in the implementation of the virtualization techniques.
 
     Rev3_SC_31_E1:
         Control: Rev3_SC_31
-        level: NONE
         description: >
             The organization tests a subset of the vendor-identified covert channel avenues to determine if they 
             are exploitable.
 
     Rev3_SC_34_E1:
         Control: Rev3_SC_34
-        level: NONE
         description: >
             The organization employs [<em>Assignment: organization-defined information system components</em>] with 
             no writeable storage that is persistent across component restart or power on/off.
@@ -6000,7 +5693,6 @@ SecurityControlEnhancement:
             </p>
     Rev3_SC_34_E2:
         Control: Rev3_SC_34
-        level: NONE
         description: >
             The organization protects the integrity of the information on read-only media.
             <p><u>Enhancement Supplemental Guidance:</u> This control enhancement covers protecting the integrity of 
@@ -6027,13 +5719,11 @@ SecurityControlEnhancement:
             determine the state of information system components with regard to flaw remediation.
     Rev3_SI_02_E3:
         Control: Rev3_SI_02
-        level: NONE
         description: >
             The organization measures the time between flaw identification and flaw remediation, comparing with 
             [<em>Assignment: organization-defined benchmarks</em>].
     Rev3_SI_02_E4:
         Control: Rev3_SI_02
-        level: NONE
         description: >
             The organization employs automated patch management tools to facilitate flaw remediation to 
             [<em>Assignment: organization-defined information system components</em>].
@@ -6057,18 +5747,15 @@ SecurityControlEnhancement:
             capabilities.
     Rev3_SI_03_E4:
         Control: Rev3_SI_03
-        level: NONE
         description: >
             The information system updates malicious code protection mechanisms only when directed by a privileged 
             user.
     Rev3_SI_03_E5:
         Control: Rev3_SI_03
-        level: NONE
         description: >
             The organization does not allow users to introduce removable media into the information system.
     Rev3_SI_03_E6:
         Control: Rev3_SI_03
-        level: NONE
         description: >
             The organization tests malicious code protection mechanisms [<em>Assignment: organization-defined 
             frequency</em>] by introducing a known benign, non-spreading test case into the information system and 
@@ -6077,7 +5764,6 @@ SecurityControlEnhancement:
 
     Rev3_SI_04_E1:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization interconnects and configures individual intrusion detection tools into a systemwide 
             intrusion detection system using common protocols.
@@ -6088,7 +5774,6 @@ SecurityControlEnhancement:
             The organization employs automated tools to support near real-time analysis of events.
     Rev3_SI_04_E3:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization employs automated tools to integrate intrusion detection tools into access control and 
             flow control mechanisms for rapid response to attacks by enabling reconfiguration of these mechanisms in 
@@ -6122,7 +5807,6 @@ SecurityControlEnhancement:
             prevention capabilities.
     Rev3_SI_04_E7:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The information system notifies [<em>Assignment: organization-defined list of incident response 
             personnel (identified by name and/or by role)</em>] of suspicious events and takes [<em>Assignment: 
@@ -6131,13 +5815,11 @@ SecurityControlEnhancement:
             request for human response.</p>
     Rev3_SI_04_E8:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization protects information obtained from intrusion-monitoring tools from unauthorized 
             access, modification, and deletion.
     Rev3_SI_04_E9:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization tests/exercises intrusion-monitoring tools [<em>Assignment: organization-defined 
             time-period</em>].
@@ -6145,7 +5827,6 @@ SecurityControlEnhancement:
             type and method of deployment of the intrusion-monitoring tools.</p>
     Rev3_SI_04_E10:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization makes provisions so that encrypted traffic is visible to information system monitoring 
             tools.
@@ -6155,7 +5836,6 @@ SecurityControlEnhancement:
             mission-assurance concerns are greater.</p>
     Rev3_SI_04_E11:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization analyzes outbound communications traffic at the external boundary of the system 
             (i.e., system perimeter) and, as deemed necessary, at selected interior points within the system 
@@ -6165,14 +5845,12 @@ SecurityControlEnhancement:
             and attempted communications with suspected malicious external addresses.</p>
     Rev3_SI_04_E12:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization employs automated mechanisms to alert security personnel of the following inappropriate 
             or unusual activities with security implications: [<em>Assignment: organization-defined list of 
             inappropriate or unusual activities that trigger alerts</em>].
     Rev3_SI_04_E13:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization:
             <ol>
@@ -6184,25 +5862,21 @@ SecurityControlEnhancement:
             </ol>
     Rev3_SI_04_E14:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization employs a wireless intrusion detection system to identify rogue wireless devices and to 
             detect attack attempts and potential compromises/breaches to the information system.
     Rev3_SI_04_E15:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization employs an intrusion detection system to monitor wireless communications traffic as 
             the traffic passes from wireless to wireline networks.
     Rev3_SI_04_E16:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization correlates information from monitoring tools employed throughout the information 
             system to achieve organization-wide situational awareness.
     Rev3_SI_04_E17:
         Control: Rev3_SI_04
-        level: NONE
         description: >
             The organization correlates results from monitoring physical, cyber, and supply chain activities to 
             achieve integrated situational awareness.
@@ -6219,17 +5893,14 @@ SecurityControlEnhancement:
 
     Rev3_SI_06_E1:
         Control: Rev3_SI_06
-        level: NONE
         description: >
             The information system provides notification of failed automated security tests.
     Rev3_SI_06_E2:
         Control: Rev3_SI_06
-        level: NONE
         description: >
             The information system provides automated support for the management of distributed security testing.
     Rev3_SI_06_E3:
         Control: Rev3_SI_06
-        level: NONE
         description: >
             The organization reports the result of security function verification to designated organizational 
             officials with information security responsibilities.
@@ -6251,12 +5922,10 @@ SecurityControlEnhancement:
             discovering discrepancies during integrity verification.
     Rev3_SI_07_E3:
         Control: Rev3_SI_07
-        level: NONE
         description: >
             The organization employs centrally managed integrity verification tools.
     Rev3_SI_07_E4:
         Control: Rev3_SI_07
-        level: NONE
         description: >
             The organization requires use of tamper-evident packaging for [<em>Assignment: organization-defined 
             information system components</em>] during [<em>Selection: transportation from vendor to operational site; 
@@ -6269,33 +5938,28 @@ SecurityControlEnhancement:
             The organization centrally manages spam protection mechanisms.
     Rev3_SI_08_E2:
         Control: Rev3_SI_08
-        level: NONE
         description: >
             The information system automatically updates spam protection mechanisms (including signature definitions).
 
     Rev3_SI_13_E1:
         Control: Rev3_SI_13
-        level: NONE
         description: >
             The organization takes the information system component out of service by transferring component 
             responsibilities to a substitute component no later than [<em>Assignment: organization-defined fraction 
             or percentage</em>] of mean time to failure.
     Rev3_SI_13_E2:
         Control: Rev3_SI_13
-        level: NONE
         description: >
             The organization does not allow a process to execute without supervision for more than 
             [<em>Assignment: organization-defined time period</em>].
     Rev3_SI_13_E3:
         Control: Rev3_SI_13
-        level: NONE
         description: >
             The organization manually initiates a transfer between active and standby information system components 
             at least once per [<em>Assignment: organization-defined frequency</em>] if the mean time to failure 
             exceeds [<em>Assignment: organization-defined time period</em>].
     Rev3_SI_13_E4:
         Control: Rev3_SI_13
-        level: NONE
         description: >
             The organization, if an information system component failure is detected:
             <ol>

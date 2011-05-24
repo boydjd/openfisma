@@ -16,27 +16,35 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
-
 /**
- * Test_Application_Models_CookieTable
- * 
- * @uses Test_FismaUnitTest
- * @package Test 
+ * Add mustresetpassword column to user table.
+ *
+ * @codingStandardsIgnoreFile
+ *
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_CookieTable extends Test_FismaUnitTest
+class Version103 extends Doctrine_Migration_Base
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testClassExists()
+    * add mustresetpassword to user table
+    * 
+    * @return void
+    */
+    public function up()
     {
-        $this->assertTrue(class_exists('CookieTable'));
+        $this->addColumn('user', 'mustresetpassword', 'boolean', '1', array('default' => 0));
+    }
+
+    /**
+    * remove mustresetpassword to user table
+    * 
+    * @return void
+    */
+    public function down()
+    {
+        $this->removeColumn('user', 'mustresetpassword');
     }
 }
