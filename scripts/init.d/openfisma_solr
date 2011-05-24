@@ -38,8 +38,10 @@ LOG_FILE=/dev/null
 #LOG_FILE="$OPENFISMA_DIR/data/logs/solr.log"
 
 JAVA="/usr/bin/java"
-JAVA_OPTIONS="-Djetty.home=$SOLR_DIR -Dsolr.solr.home=$SOLR_DIR/solr -Djetty.port=$HTTP_PORT \
-              -DSTOP.PORT=$STOP_PORT -DSTOP.KEY=$INSTANCE_NAME -jar $SOLR_DIR/start.jar"
+JAVA_OPTIONS="-Djetty.home=$SOLR_DIR -Dsolr.solr.home=$SOLR_DIR/solr -Dsolr.data.dir=$SOLR_DIR/solr/data \
+              -Djetty.port=$HTTP_PORT \
+              -DSTOP.PORT=$STOP_PORT -DSTOP.KEY=$INSTANCE_NAME -Djetty.logs=$SOLR_DIR/logs \
+              -jar $SOLR_DIR/start.jar"
 
 USER=${OPENFISMA_USER:="wwwrun"}
 
