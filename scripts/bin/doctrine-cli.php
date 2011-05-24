@@ -57,6 +57,13 @@ try {
     Fisma::setNotificationEnabled(false);
     Fisma::setListenerEnabled(false);
 
+    // Make sure the mysql supports InnoDB
+    if (!Fisma_Cli_Abstract::checkInnoDb()) {
+        throw new Doctrine_Exception(
+            'The current Mysql server does not support InnoDB engine. InnoDB is required for OpenFisma!'
+        );
+    }
+
     /** @todo temporary hack to load large datasets */
     ini_set('memory_limit', '512M');
 
