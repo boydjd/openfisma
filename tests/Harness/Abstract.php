@@ -29,7 +29,7 @@
  * @package    Test
  * @subpackage TestHarness
  */
-abstract class Test_Harness
+abstract class Test_Harness_Abstract
 {
     /**
      * Subclasses must implement this method to identify which test classes should be included in this test suite.

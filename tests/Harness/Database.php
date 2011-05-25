@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../Harness.php'));
+require_once(realpath(dirname(__FILE__) . '/Abstract.php'));
 
 /**
  * This test harness creates a phpunit test suite of database tests.
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../Harness.php'));
  * @package    Test
  * @subpackage Test_Harness
  */
-class Test_Harness_Database extends Test_Harness
+class Test_Harness_Database extends Test_Harness_Abstract
 {
     /**
      * Match all subclasses of FismaUnitTest.
