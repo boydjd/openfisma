@@ -159,6 +159,40 @@ class Test_Library_Doctrine_Query extends Test_Case_Database
     }
 
     /**
+     * Try to inject one kind of clause into a different kind of clause. 
+     * 
+     * For example ->orderBy(u.username GROUP BY u.username) should not add a GROUP BY clause to the query.
+     *
+     * @dataProvider provideMixedClauses
+     * 
+     * @param string $clauseName The name of the DQL method to call (e.g. orderBy)
+     * @param string $clauseValue The value to pass to the clause
+     * @param string $forbiddenText Text that should not be present in the resulting query
+     */
+    public function testInjectOneClauseIntoOtherClause($clauseName, $clauseValue, $forbiddenText)
+    {
+        $q = Doctrine_Query::create()
+             ->from('User u')
+             ->select('u.username')
+             ->$clauseName($clauseValue);
+
+        $this->assertThat($q->getSql(), $this->logicalNot($this->stringContains($forbiddenText)));
+    }
+
+    /**
+     * Return some mixed clauses, for example, a groupBy() that contains an ORDER BY.
+     * 
+     * @return array
+     */
+    public function provideMixedClauses()
+    {
+        return array(
+            array("groupBy", "u.username ORDER BY u.username ", "ORDER BY"),
+            array("orderBy", "u.username GROUP BY u.username ", "GROUP BY")
+        );
+    }
+
+    /**
      * Create a dummy table named "foo"
      */
     protected function _createFooTable()
