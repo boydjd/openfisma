@@ -261,9 +261,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setLayerLabels(
                 array(
                     'Null',
-                    'HIGH',
-                    'MODERATE',
-                    'LOW'
+                    'High',
+                    'Moderate',
+                    'Low'
                 )
             );
             
@@ -621,9 +621,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setLayerLabels(
                 array(
                     'Null',
-                    'HIGH',
-                    'MODERATE',
-                    'LOW'
+                    'High',
+                    'Moderate',
+                    'Low'
                 )
             );
 
@@ -1022,6 +1022,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $rslts = $q->execute();
             
             // Initalize to 0 (query may not return values for 0 counts)
+            $thisNull = 0;
             $thisHigh = 0;
             $thisMod = 0;
             $thisLow = 0;
@@ -1037,6 +1038,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     case 'HIGH':
                         $thisHigh = $thisLevel['count'];
                         break;
+                    default:
+                        $thisNull += $thisLevel['count'];
                 }
             }
             
@@ -1057,6 +1060,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $noMitChart->addColumn(
                 $thisColumnLabel,
                 array(
+                    $thisNull,
                     $thisHigh,
                     $thisMod,
                     $thisLow

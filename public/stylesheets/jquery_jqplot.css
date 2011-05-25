@@ -171,10 +171,11 @@ table.jqplot-cursor-tooltip {
     white-space: nowrap;
     background-color: rgb(208,208,208);
     background: rgba(208,208,208,0.8);
-    opacity: 0.8;
-    filter: alpha(opacity = 80);
     z-index: 1;
     padding: 1px;
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 }
 
 .jqplot-point-label {

@@ -501,6 +501,11 @@ class Fisma_Chart
             $newColData[$c] = $thisColumnTotal;
         }
         
+        // if this was a stackedbar chart, remove the tooltip
+        if (strpos($this->getChartType(), 'stacked') !== false) {
+            $this->chartParamArr['tooltip'] = array();
+        }
+        
         // update chart type
         $t = $this->getChartType();
         $t = str_replace('stacked', '', $t);

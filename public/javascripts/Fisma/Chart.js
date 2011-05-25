@@ -386,7 +386,7 @@ Fisma.Chart = {
         // hook un-highlight event for tooltips
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
             function (ev, seriesIndex, pointIndex, data) {
-                Fisma.Chart.chartUnHighlightPieEvent(chartParamsObj);
+                Fisma.Chart.hideAllChartTooltips();
             }
         );
 
@@ -403,6 +403,11 @@ Fisma.Chart = {
         // Hook onMouseMove on it
         canvases[0].onmousemove = function (e) {
             Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
+        };
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
         };
         
         // use the created function as the click-event-handeler
@@ -528,7 +533,7 @@ Fisma.Chart = {
                 showTooltip: true,
                 tooltipAxes: 'xy',
                 yvalues: 1,
-                tooltipLocation: 's',
+                tooltipLocation: 'e',
                 formatString: "-"
             },
             grid: {
@@ -579,20 +584,78 @@ Fisma.Chart = {
             }
         );    
         
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
+        // Hook the mouse events for column labels (make tooltips show on label hovering)
+        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
+        for (var x = 0; x < columnLabelObjs.length; x++) {
+            
+            // note which column number this object represents
+            columnLabelObjs[x].columnNumber = x;
+            
+            // hook onMouseOver to show tooltip
+            columnLabelObjs[x].onmouseover = function (ev) {
+                var forceStyle = {
+                    'left': this.parentNode.offsetLeft + 'px',
+                    'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
+                    'top': ''
+                }
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
+            }
+            
+            // hook onMouseOut to hide tooltip
+            columnLabelObjs[x].onmouseout = function (ev) {
+                Fisma.Chart.hideAllChartTooltips();
+            }
+            
+            // bring this label to front, otherwise onmouseover will never fire
+            columnLabelObjs[x].style.zIndex = 1;
+        }
+        
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
         
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
-    getElementByClassName : function (cl) {
-        var retnode = [];
-        var myclass = new RegExp('\\b' + cl + '\\b');
-        var elem = document.getElementsByTagName('*');
-        for (var i = 0; i < elem.length; i++) {
-            var classes = elem[i].className;
-            if (myclass.test(classes)) retnode.push(elem[i]);
+    getTooltipObjOfChart : function (chartParamsObj) {
+        return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
+    },
+
+    getElementsByClassWithinObj : function (className, objectType, WithinDiv) {
+        
+        // Is WithinDiv given? If not, assume we are looking from the document.body and down
+        if (WithinDiv === null || WithinDiv === '') {
+            WithinDiv = document.body;
         }
-        return retnode;
+        
+        // Is WithinDiv an object, or object ID? - make it an object
+        if (typeof WithinDiv !== 'object') {
+            WithinDiv = document.getElementById(WithinDiv);
+        }
+        
+        // Find the div that has the jqplot-highlighter-tooltip class
+        var objsFound = $(WithinDiv).find(objectType).filter(
+            function() {
+                return $(this)[0].className.indexOf(className) !== -1;
+            }
+        );
+        
+        // Return results
+        return objsFound;
+    
     },
 
      /**
@@ -746,9 +809,12 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
-    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data)
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
     {
-        var toolTips = Fisma.Chart.getElementByClassName('jqplot-highlighter-tooltip');
+        // Ensure all other tooltips are hidden 
+        Fisma.Chart.hideAllChartTooltips();
+        
+        var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
         
         /* The chartParamsObj.tooltip may have one of two structures -
            either an array (of columns)
@@ -768,7 +834,7 @@ Fisma.Chart = {
         
         // decide tooltip HTML
         var ttHtml = '<span class="chartToolTipText">';
-        if (customTooltip !== '') {
+        if (customTooltip !== '' && customTooltip !== undefined) {
             ttHtml += customTooltip;
         } else {
             ttHtml += defaultTooltip;
@@ -777,8 +843,10 @@ Fisma.Chart = {
 
         // apply variables
         ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
-        ttHtml = ttHtml.replace('#count#', data[1]);
         ttHtml = ttHtml.replace('#columnName#', chartParamsObj.chartDataText[pointIndex]);
+        if (data !== undefined && data !== null) {
+            ttHtml = ttHtml.replace('#count#', data[1]);
+        }
         if (chartParamsObj.chartLayerText) {
             ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
         }
@@ -786,17 +854,40 @@ Fisma.Chart = {
             ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
         }
         
-        // apply to all tooltips (each chart has one)
-        for(var t in toolTips) {
-            toolTips[t].innerHTML = ttHtml;
+        // apply to tooltip
+        toolTipObj.innerHTML = ttHtml;
+        toolTipObj.style.display = 'block';
+        
+        // remove the .bottom and .right property - it should only exist if it is in forceTooltipStyle
+        toolTipObj.style.bottom = '';
+        toolTipObj.style.right = '';
+        
+        // IE7 (7 only) has a problem where it streatches the tooltip div
+        if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+            toolTipObj.style.width = '80px';
+        }
+        
+        // apply tooltip style if requested (this makes it possible to relocate the tooltip)
+        if (forceTooltipStyle !== undefined && forceTooltipStyle !== null) {
+            for(var key in forceTooltipStyle) {
+                toolTipObj.style[key] = forceTooltipStyle[key];
+            }
         }
         
         /* By this line, we are done for bar charts. The tooltip will auto show itself
            jqPlot Pie charts however, do not support the tooltip plugin, we need to make our own */
         if (chartParamsObj.chartType === 'pie') {
+        
+            toolTipObj.style.display = 'none';
+            
             var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
             pieTooltip.style.display = 'block';
             pieTooltip.innerHTML = ttHtml;
+
+            // IE7 (7 only) has a problem where it streatches the tooltip div
+            if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+                pieTooltip.style.width = '200px';
+            }
         }
     },
     
@@ -834,24 +925,45 @@ Fisma.Chart = {
         }
     },
     
-    chartUnHighlightPieEvent : function (chartParamsObj)
+    hideAllChartTooltips : function ()
     {
-        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
-        pieTooltip.style.display = 'none';
-        pieTooltip.innerHTML = '';
+        // Find all divs that are chart tooltips
+        var tooltips = $(document.body).find('div').filter(
+            function() {
+                return $(this)[0].className.indexOf('jqplot-highlighter-tooltip') !== -1;
+            }
+        );
+        
+        // Hide them all
+        for(var x = 0; x < tooltips.length; x++)
+        {
+            tooltips[x].style.display = 'none';
+        }
     },
 
     chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
         var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
         
         var offsetX; var offsetY;
-        if (Fisma.Chart.isIE) {
+        if (window.event !== undefined) {
+            // We are in IE
             offsetX = window.event.offsetX;
             offsetY = window.event.offsetY;
-        } else {
+            offsetY += 65;
+        } else if (e.offsetX !== undefined) {
+            // We are not in IE nor FireFox
             offsetX = e.offsetX;
             offsetY = e.offsetY;
             offsetY += 45;
+        } else if (e.layerX !== undefined) {
+            // We are in Firefox
+            offsetX = e.layerX;
+            offsetY = e.layerY;
+            offsetY += 45;
+        } else {
+            // We are in a browser that clearly dosnt like standards... oh wait, none of them do
+            offsetX = 0;
+            offsetY = 0;
         }
         
         pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
@@ -2121,10 +2233,13 @@ Fisma.Chart = {
             msgOnDom.style.height = '100%';
             msgOnDom.style.textAlign = 'center';
             msgOnDom.style.verticalAlign = 'middle';
-            var textMsgOnDom = document.createTextNode('No data to plot.');
-            msgOnDom.appendChild(textMsgOnDom);
+            msgOnDom.appendChild( document.createTextNode("No data to plot. ") );
+            var changeParamsLink = document.createElement('a');
+            changeParamsLink.href = "JavaScript: Fisma.Chart.setChartSettingsVisibility('" + chartParamsObj.uniqueid + "', 'toggle');";
+            changeParamsLink.appendChild( document.createTextNode('Change chart parameters?') );
+            msgOnDom.appendChild(changeParamsLink);
             targDiv.appendChild(msgOnDom);
-
+            
             // Make sure screen-reader-table is not showing
             var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
             dataTableObj.style.display = 'none';
