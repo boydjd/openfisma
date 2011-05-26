@@ -9138,12 +9138,13 @@ Fisma.Search.Panel.prototype = {
         _timer: null,
 
         /**
-         * Server timestamp.
+         * Timestamp reported by server on the most recent request.
          */
         _serverTimestamp: null,
 
         /**
-         * Local timestamp.
+         * Timestamp on client that corresponds to the server timestamp.
+         * Used to determine how long the client has been idle.
          */
         _localTimestamp: null,
 
@@ -9262,7 +9263,10 @@ Fisma.Search.Panel.prototype = {
                     Manager._inactivityPanelButton.set("disabled", false);
                 }
             };
-            YAHOO.util.Connect.asyncRequest("GET", Manager.REFRESH_SESSION_URI, {success: callback, failure: callback});
+            YAHOO.util.Connect.asyncRequest(
+                "GET",
+                Manager.REFRESH_SESSION_URI,
+                {success: callback, failure: callback});
         },
 
         /**

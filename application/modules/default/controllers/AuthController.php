@@ -307,6 +307,7 @@ class AuthController extends Zend_Controller_Action
      */
     public function refreshSessionAction()
     {
-        $this->view->result = "success";
+        $this->view->result = new Fisma_AsyncResponse();
+        $this->view->result->succeed();
     }
 }
