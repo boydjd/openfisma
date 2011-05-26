@@ -64,12 +64,9 @@ class Version106 extends Doctrine_Migration_Base
      */
     private function _removePrivilege($resource, $action)
     {
-        $privilege = Doctrine_Query::create()
-                   ->from('Privilege')
-                   ->where('resource = ? AND action = ?', array($resource, $action))
-                   ->fetchOne();
+        $privilege = Doctrine::getTable('Privilege')->getResourceActionQuery($resource, $action)->fetchOne();
 
-        $privilege->unlink('Role');
+        $privilege->unlink('Roles');
         $privilege->save();
         $privilege->delete();
     }
@@ -96,9 +93,7 @@ class Version106 extends Doctrine_Migration_Base
                  ->whereIn('r.nickname', $roles)
                  ->execute();
 
-        foreach ($roles as $role) {
-            $privilege->Role[] = $role;
-            $privilege->save();
-        }
+        $privilege->Roles->merge($roles);
+        $privilege->save();
     }
 }
