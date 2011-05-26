@@ -2239,8 +2239,8 @@
             if (this.captureRightClick) {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
                 this.eventCanvas._elem.get(0).oncontextmenu = function() {
-					return false;
-				};
+                    return false;
+                };
             }
             else {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -2493,16 +2493,16 @@
                                     var j = numPoints-1;
 
                                     for(var ii=0; ii < numPoints; ii++) { 
-                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                        var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                        var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
-                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                    			inside = !inside;
-                                    		}
-                                    	}
+                                        if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)  {
+                                            if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                                inside = !inside;
+                                            }
+                                        }
 
-                                    	j = ii;
+                                        j = ii;
                                     }        
                                 }
                                 if (inside) {
@@ -6435,50 +6435,50 @@
     
         // Use the jQuery 1.3.2 extend function since behaviour in jQuery 1.4 seems problematic
     $.jqplot.extend = function() {
-    	// copy reference to target object
-    	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+        // copy reference to target object
+        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-    	// Handle a deep copy situation
-    	if ( typeof target === "boolean" ) {
-    		deep = target;
-    		target = arguments[1] || {};
-    		// skip the boolean and the target
-    		i = 2;
-    	}
-
-    	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
-    	    target = {};
-    	}
-
-    	for ( ; i < length; i++ ){
-    		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null ) {
-    			// Extend the base object
-    			for ( var name in options ) {
-    				var src = target[ name ], copy = options[ name ];
-
-    				// Prevent never-ending loop
-    				if ( target === copy ) {
-    					continue;
-    				}
-
-    				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
-    					target[ name ] = $.jqplot.extend( deep, 
-    						// Never move original objects, clone them
-    						src || ( copy.length != null ? [ ] : { } )
-    					, copy );
-                    }
-    				// Don't bring in undefined values
-    				else if ( copy !== undefined ) {
-    					target[ name ] = copy;
-    				}
-    			}
-    		}
+        // Handle a deep copy situation
+        if ( typeof target === "boolean" ) {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
         }
-    	// Return the modified object
-    	return target;
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+            target = {};
+        }
+
+        for ( ; i < length; i++ ){
+            // Only deal with non-null/undefined values
+            if ( (options = arguments[ i ]) != null ) {
+                // Extend the base object
+                for ( var name in options ) {
+                    var src = target[ name ], copy = options[ name ];
+
+                    // Prevent never-ending loop
+                    if ( target === copy ) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object values
+                    if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
+                        target[ name ] = $.jqplot.extend( deep, 
+                            // Never move original objects, clone them
+                            src || ( copy.length != null ? [ ] : { } )
+                        , copy );
+                    }
+                    // Don't bring in undefined values
+                    else if ( copy !== undefined ) {
+                        target[ name ] = copy;
+                    }
+                }
+            }
+        }
+        // Return the modified object
+        return target;
     };
 
     /**

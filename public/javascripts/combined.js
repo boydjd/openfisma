@@ -2602,6 +2602,7 @@ Fisma.Chart = {
     // Defaults for global chart settings definition:
     globalSettingsDefaults:{
         fadingEnabled:      false,
+        usePatterns:        false,
         barShadows:         false,
         barShadowDepth:     3,
         dropShadows:        false,
@@ -2610,13 +2611,27 @@ Fisma.Chart = {
         pointLabelsOutline: false,
         showDataTable: false
     },
-
+    
+    // URLs to all available pattern images
+    patternURLs: [
+        '/images/pattern-horizontal.png',
+        '/images/pattern-diamonds.png',
+        '/images/pattern-backbg-whitedots.png',
+        '/images/pattern-diagonal-45degree.png',
+        '/images/pattern-bubbles.png',
+        '/images/pattern-checkers.png',
+        '/images/pattern-diagonal-135degree.png',
+        '/images/pattern-diagonal-bricks.png'
+    ],
+    
     // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
     chartsOnDOM:{},
 
     // Is this client-browser Internet Explorer?
     isIE: (window.ActiveXObject) ? true : false,
     
+    // Class static variables
+    hasHookedPostDrawSeries: false,
     
     /**
      * When an external source is needed, this function should handel the returned JSON request
@@ -3142,6 +3157,10 @@ Fisma.Chart = {
         // dont show title on canvas, (it must be above the threat-level-legend if it exists)
         jPlotParamObj.title = null;
         
+        // implement hook nessesary for patterns
+        Fisma.Chart.hookPostDrawSeriesHooks();
+        
+        // trigger jqPlot lib to draw the chart
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
         // hook click events for navigation/"drill-down"
@@ -3282,7 +3301,84 @@ Fisma.Chart = {
 
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
+    
+    hookPostDrawSeriesHooks : function ()
+    {
+        if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
+            // we only push one hook
+            return false;
+        }
+        
+        // Note that we have push this hook
+        Fisma.Chart.hasHookedPostDrawSeries = true;
+        
+        // hook jqPlot's postDrawSeriesHook to draw patterns should the user want this options
+        $.jqplot.postDrawSeriesHooks.push(function (canvasObj) {
+        
+                /* This is called after everytime a layer on a stacked bar chart is drawn (either the high,
+                   moderate, or low), so each time this is called, it is being called for a different color
+                   of chartParamsObj.colors */
+                
+                // Is the checkbox to use patterns in place of colors checked?
+                var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                if (usePatterns === 'false') {
+                    return;
+                }
+                
+                // This code only works with bar charts
+                if (this._barPoints === undefined) {
+                    return;
+                }
+                
+                // Because this is a nested function, chartParamsObj may or may not be the true related
+                // instance to this trigger (it isnt in Firefox). Refreash this variable.
+                if (this.canvas._elem.context.parentNode.id !== undefined) {
+                    var uniqueId = this.canvas._elem.context.parentNode.id;
+                    chartParamsObj = Fisma.Chart.chartsOnDOM[uniqueId];
+                }
+                
+                /* chartParamsObj.patternCounter will be used (incremented for each call of this function) to
+                   keep track of which pattern should be used next (in Fisma.Chart.patternURLs). */
+                // Instance this variable if needed
+                if (Fisma.Chart.chartsOnDOM[uniqueId].patternCounter === undefined) {
+                    Fisma.Chart.chartsOnDOM[uniqueId].patternCounter = 0;
+                }
 
+                // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
+                var myPatternId = Fisma.Chart.chartsOnDOM[uniqueId].patternCounter;
+                var myPatternURL = Fisma.Chart.patternURLs[myPatternId];
+                Fisma.Chart.chartsOnDOM[uniqueId].patternCounter++;
+                
+                // For each bar drawn of this layer/series/color
+                for (var bar = 0; bar < this._barPoints.length; bar++) {
+
+                    var img = new Image();
+                    
+                    // because img.onload will fire within this function, store the bar information on the object
+                    img.barRect = {
+                        'x': this._barPoints[bar][0][0],
+                        'y': this._barPoints[bar][0][1],
+                        'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
+                        'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
+                    }
+                    
+                    img.onload = function () {
+                        // create pattern
+                        var ptrn = canvasObj.createPattern(img, 'repeat');
+                        canvasObj.fillStyle = ptrn;
+                        canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
+                        canvasObj.restore();
+                    }
+                    
+                    // load pattern
+                    img.src = myPatternURL;
+                }
+            }
+        );
+
+    
+    },
+    
     /**
      * Creates the red-orange-yellow threat-legend that shows above charts
      * The generated HTML code should go into the div with the id of the
@@ -3324,8 +3420,15 @@ Fisma.Chart = {
                     cell = document.createElement("td");
                     cell.width = '20%';
                     
-                    var colorToUse = chartParamsObj.colors[layerIndex];
-                    colorToUse = colorToUse.replace('#', '');
+                    // Are we using colors, or patterns?
+                    var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    if (usePatterns === 'true') {
+                        var colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                    } else {
+                        var colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = colorToUse.replace('#', '');
+                    }
+                    
                     var thisLayerText = chartParamsObj.chartLayerText[layerIndex];
                     
                     cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
@@ -3357,9 +3460,13 @@ Fisma.Chart = {
 
         var colorCell;
 
-        // Create the colored box
+        // Create the colored box or pattern
         colorCell = document.createElement("td");
-        colorCell.style.backgroundColor= '#' + blockColor;
+        if (blockColor.indexOf('/') === -1) {                   // is this a URL, or color code?
+            colorCell.style.backgroundColor = '#' + blockColor;  // its a color
+        } else {                                                // its a URL
+            colorCell.style.backgroundImage = 'url(' + blockColor + ')';
+        }
         colorCell.width = '15px';
         colorRow.appendChild(colorCell);
 
@@ -3974,7 +4081,7 @@ Fisma.Chart = {
             return;
         }
 
-        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        var fadingEnabled = ('fadingEnabled');
         if (fadingEnabled === 'false') {
             Fisma.Chart.makeElementVisible(eid);
             if (element.finnishFadeCallback) {
@@ -4639,7 +4746,7 @@ Fisma.Chart = {
         } else {
 
             if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
-                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js';
             } else {
                 return String(Fisma.Chart.globalSettingsDefaults[settingName]);
             }
@@ -13025,8 +13132,8 @@ Fisma.Vulnerability = {
             if (this.captureRightClick) {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
                 this.eventCanvas._elem.get(0).oncontextmenu = function() {
-					return false;
-				};
+                    return false;
+                };
             }
             else {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -13279,16 +13386,16 @@ Fisma.Vulnerability = {
                                     var j = numPoints-1;
 
                                     for(var ii=0; ii < numPoints; ii++) { 
-                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                        var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                        var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
-                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                    			inside = !inside;
-                                    		}
-                                    	}
+                                        if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)  {
+                                            if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                                inside = !inside;
+                                            }
+                                        }
 
-                                    	j = ii;
+                                        j = ii;
                                     }        
                                 }
                                 if (inside) {
@@ -17221,50 +17328,50 @@ Fisma.Vulnerability = {
     
         // Use the jQuery 1.3.2 extend function since behaviour in jQuery 1.4 seems problematic
     $.jqplot.extend = function() {
-    	// copy reference to target object
-    	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+        // copy reference to target object
+        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-    	// Handle a deep copy situation
-    	if ( typeof target === "boolean" ) {
-    		deep = target;
-    		target = arguments[1] || {};
-    		// skip the boolean and the target
-    		i = 2;
-    	}
-
-    	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
-    	    target = {};
-    	}
-
-    	for ( ; i < length; i++ ){
-    		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null ) {
-    			// Extend the base object
-    			for ( var name in options ) {
-    				var src = target[ name ], copy = options[ name ];
-
-    				// Prevent never-ending loop
-    				if ( target === copy ) {
-    					continue;
-    				}
-
-    				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
-    					target[ name ] = $.jqplot.extend( deep, 
-    						// Never move original objects, clone them
-    						src || ( copy.length != null ? [ ] : { } )
-    					, copy );
-                    }
-    				// Don't bring in undefined values
-    				else if ( copy !== undefined ) {
-    					target[ name ] = copy;
-    				}
-    			}
-    		}
+        // Handle a deep copy situation
+        if ( typeof target === "boolean" ) {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
         }
-    	// Return the modified object
-    	return target;
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+            target = {};
+        }
+
+        for ( ; i < length; i++ ){
+            // Only deal with non-null/undefined values
+            if ( (options = arguments[ i ]) != null ) {
+                // Extend the base object
+                for ( var name in options ) {
+                    var src = target[ name ], copy = options[ name ];
+
+                    // Prevent never-ending loop
+                    if ( target === copy ) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object values
+                    if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
+                        target[ name ] = $.jqplot.extend( deep, 
+                            // Never move original objects, clone them
+                            src || ( copy.length != null ? [ ] : { } )
+                        , copy );
+                    }
+                    // Don't bring in undefined values
+                    else if ( copy !== undefined ) {
+                        target[ name ] = copy;
+                    }
+                }
+            }
+        }
+        // Return the modified object
+        return target;
     };
 
     /**
