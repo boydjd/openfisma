@@ -114,6 +114,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function reportAction() 
     {
+        $subFormValid = true;
+
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
@@ -131,15 +133,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Save the current form into the Incident and save the incident into the sesion
-        $form = $this->getIncidentForm();
-
         if ($this->_request->isPost()) {
-            $formValid = $form->isValid($this->_request->getPost());
-            $incident->merge($form->getValues());
+            if (!is_null($step) && $step != 0) {
+                $subForm = $this->getFormPart($step);
+                $subFormValid = $subForm->isValid($this->_request->getPost());
+                $incident->merge($subForm->getValues());
+                $session->irDraft = serialize($incident);
+            }
         }
                 
-        $session->irDraft = serialize($incident);
-
         if (is_null($step)) {
             $step = 0;
         } elseif ($this->getRequest()->getParam('irReportCancel')) {
@@ -147,8 +149,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
-        } elseif (!$formValid) {
-            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
+        } elseif (!$subFormValid) {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
             $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards

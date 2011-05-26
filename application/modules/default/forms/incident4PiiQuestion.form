@@ -17,4 +17,5 @@ displayGroups.help.elements.instructions = "instructions"
 
 elements.piiInvolved.type="select"
 elements.piiInvolved.options.label="Was PII involved?"
+elements.piiInvolved.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiInvolved="piiInvolved"
