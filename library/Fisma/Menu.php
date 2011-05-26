@@ -55,8 +55,7 @@ class Fisma_Menu
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
                 && ($acl->hasPrivilegeForClass('create', 'Finding')
-                    || $acl->hasPrivilegeForClass('inject', 'Finding')
-                    || $acl->hasPrivilegeForClass('approve', 'Finding'))) {
+                    || $acl->hasPrivilegeForClass('inject', 'Finding'))) {
 
                 $findings->addSeparator();    
             }

@@ -40,15 +40,6 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
     protected $_namespace = 'OpenFismaForcedAction';
 
     /**
-     * Return the namespace
-     * @return string
-     */
-    public function getNamespace()
-    {
-        return $this->_namespace;
-    }
-
-    /**
      * Initialize $_session with a namespace if it is not already initialized
      * @param  string $namespace
      */
@@ -61,11 +52,12 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
 
     /**
      * Get all the forced actions stored in a namespace
-     * @param  string $namespace
+     * @param  string $id
      * @return $_session->$namespace 
      */
-    public function getForcedActions($namespace)
+    public function getForcedActions($id)
     {
+        $namespace = $this->_namespace . $id;
         self::setSession($namespace);
 
         // The forced actions are stored as an array in a unique namespace 
@@ -74,13 +66,14 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
 
     /**
      * Add a forced action to an array of namespace of Zend_Session_Namespace
-     * @param string $namespace
+     * @param string $id
      * @param string $forcedAction
      * @param array $forward containing moduleName, controllerName and actionName
      * @return Zend_Controller_Action_Plugin_abstract
      */
-    public function registerForcedAction($namespace, $forcedAction, $forward)
+    public function registerForcedAction($id, $forcedAction, $forward)
     {
+        $namespace = $this->_namespace . $id;
         self::setSession($namespace);
 
         if (!is_array(self::$_session->$namespace)) {
@@ -94,12 +87,14 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
 
     /**
      * Remove an forced action from the array of namespace of Zend_Session_Namespace
-     * @param string $namespace
+     * @param string $id
      * @param string $forcedAction
      * @return Zend_Controller_Action_Plugin_abstract
      */
-    public function unregisterForcedAction($namespace, $forcedAction)
+    public function unregisterForcedAction($id, $forcedAction)
     {
+        $namespace = $this->_namespace . $id;
+
         self::setSession($namespace);
         unset(self::$_session->{$namespace}[$forcedAction]);
 
@@ -108,13 +103,15 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
 
     /**
      * Check whether an forced action exists in the array of namespace of Zend_Session_Namespace
-     * @param string $namespace
+     * @param string $id
      * @param string $forcedAction
      * @return true if the forced action exists, otherwise false
      */
-    public function hasForcedAction($namespace, $forcedAction)
+    public function hasForcedAction($id, $forcedAction)
     {
+        $namespace = $this->_namespace . $id;
         self::setSession($namespace);
+
         if (self::$_session && self::$_session->$namespace) {
             return array_key_exists($forcedAction, self::$_session->$namespace); 
         } 
@@ -137,10 +134,8 @@ class Fisma_Zend_Controller_Plugin_ForcedActionHandler extends Zend_Controller_P
             return;
         }
  
-        $namespace = $this->_namespace . $currentUser->id; 
-  
         // Get foraced actions array stored at user specific session.
-        $forcedActions = $this->getForcedActions($namespace);
+        $forcedActions = $this->getForcedActions($currentUser->id);
 
         if (!empty($forcedActions)) {
             $forcedAction = array_shift($forcedActions); 
