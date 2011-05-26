@@ -116,13 +116,33 @@ class AuthController extends Zend_Controller_Action
             Notification::notify('LOGIN_SUCCESS', $user, $user);
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
             
-            // Get this user's cookies and set them
-            foreach ($user->Cookie as $cookie) {
-                Fisma_Cookie::set($cookie->name, $cookie->value);
-            }
+            // Register rulesOfBehavior forced action so that user can't view other pages 
+            // until Rob is accepted
+            if ($this->_checkUserRulesOfBehavior($user)) {
+                $forward = array("module" => 'default', "controller" => 'User', "action" => 'accept-rob');
+                $this->_helper->ForcedAction->registerForcedAction($user->id, 'rulesOfBehavior', $forward);
+            }            
 
             // Check whether the user's password is about to expire (for database authentication only)
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+
+                // Check if the user's mustResetPassword flag is set 
+                if ($user->mustResetPassword) {
+                    $message = ' You will need to change your password.';
+                    $this->view->priorityMessenger($message, 'warning');
+
+                    // reset default layout and forward to password change action
+                    $this->_helper->layout->setLayout('layout');
+
+                    // Register mustResetPassword forced action so that user can't view other pages 
+                    // until password is changed
+                    $forward = array("module" => 'default', "controller" => "user", "action" => 'password');
+                    $this->_helper->ForcedAction->registerForcedAction($user->id, 'mustResetPassword', $forward);
+
+                    $this->_redirect('/user/password');
+                    return;
+                }
+
                 $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
                 $passWarningPeriod = Fisma::configuration()->getConfig('pass_warning');
                 $passWarningTs = new Zend_Date($user->passwordTs, Fisma_Date::FORMAT_DATE);
@@ -151,18 +171,9 @@ class AuthController extends Zend_Controller_Action
                     $this->_redirect('/user/password');
                     return;
                 }
+
             }
-                        
-            // Check to see if the user needs to review the rules of behavior.
-            // If they do, then send them to that page. Otherwise, send them to
-            // the dashboard.
-            $nextRobReview = new Zend_Date($user->lastRob, Zend_Date::ISO_8601);
-            $nextRobReview->add(Fisma::configuration()->getConfig('rob_duration'), Zend_Date::DAY);
-            if (is_null($user->lastRob) || $nextRobReview->isEarlier(new Zend_Date())) {
-                $this->_helper->layout->setLayout('notice');
-                return $this->render('rule');
-            }
-            
+           
             // Finally, if the user has passed through all of this, 
             // send them to their original requested page or dashboard otherwise
             $session = Fisma::getSession();
@@ -230,7 +241,7 @@ class AuthController extends Zend_Controller_Action
     public function logoutAction() 
     {
         $currentUser = CurrentUser::getInstance();
-
+       
         if ($currentUser) {
             $currentUser->getAuditLog()->write('Logged out');
             Notification::notify('LOGOUT', $currentUser, $currentUser);
@@ -264,5 +275,22 @@ class AuthController extends Zend_Controller_Action
     public function robAction()
     {
     }
+    
+    /**
+     * Check whether user needs to accept rules of behavior
+     * 
+     * @param user object
+     * @return true if user does, otherwise, false 
+     */
+    private function _checkUserRulesOfBehavior($user)
+    {
+        $nextRobReview = new Zend_Date($user->lastRob, Zend_Date::ISO_8601);
+        $nextRobReview->add(Fisma::configuration()->getConfig('rob_duration'), Zend_Date::DAY);
 
+        if (is_null($user->lastRob) || $nextRobReview->isEarlier(new Zend_Date())) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -7,51 +7,185 @@ User:
         nameLast: User
         phoneOffice: (202) 555-7261
         hashType: sha1
-    irc_user:
-        username: irc
-        password: 0p3nfism@
+    mike_green:
+        username: mike.green
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Incident Response
-        nameLast: Coordinator
+        nameFirst: Mike
+        nameLast: Green
         phoneOffice: (202) 555-9271
-        Roles: [irc_role]
-    oig_user:
-        username: oig
-        password: 0p3nfism@
+    alexander_ovechkin:
+        username: alex.ovechkin
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Inspector
-        nameLast: General
+        nameFirst: Alexander
+        nameLast: Ovechkin
         phoneOffice: (202) 555-9627
-        Roles: [oig_role]
-    dbr_user:
-        username: dbr
-        password: 0p3nfism@
+    alexander_semin:
+        username: alexander.semin
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Data Breach
-        nameLast: Representative
+        nameFirst: Alexander
+        nameLast: Semin
         phoneOffice: (301) 555-1462
-        Roles: [dbr_role]
-    pa_user:
-        username: pa
-        password: 0p3nfism@
+    mike_knuble:
+        username: mike.knuble
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Privacy
-        nameLast: Advocate
+        nameFirst: Mike
+        nameLast: Knuble
         phoneOffice: (571) 555-5821
-        Roles: [pa_role]
-    irs_user:
-        username: irs
-        password: 0p3nfism@
+    nicklas_backstrom:
+        username: nicklas.backstrom
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Incident Response
-        nameLast: Specialist
+        nameFirst: Nicklas
+        nameLast: Bäckström
         phoneOffice: (301) 555-7751
-        Roles: [irs_role]
-    hdr_user:
-        username: hdr
-        password: 0p3nfism@
+    michael_neuvirth:
+        username: michael.neuvirth
+        password: Sample1
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Help Desk
-        nameLast: Representative
+        nameFirst: Michael
+        nameLast: Neuvirth
         phoneOffice: (571) 555-8129
-        Roles: [hdr_role]
+    bruce_boudreau:
+        username: bruce.boudreau
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Bruce
+        nameLast: Boudreau
+        phoneOffice: (571) 555-8130
+    george_mcphee:
+        username: george.mcphee
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: George
+        nameLast: McPhee
+        phoneOffice: (571) 555-8231
+    semyon_varlamov:
+        username: semyon.varlamov
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Semyon
+        nameLast: Varlamov
+        phoneOffice: (571) 555-8132
+    braden_holtby:
+        username: braden.holtby
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Braden
+        nameLast: Holtby
+        phoneOffice: (571) 555-8233
+    john_erskine:
+        username: john.erskine
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: John
+        nameLast: Erskine
+        phoneOffice: (571) 555-8134
+    matt_hendricks:
+        username: matt.hendricks
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Matt
+        nameLast: Hendricks
+        phoneOffice: (571) 555-8235
+    matt_bradley:
+        username: matt.bradley
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Matt
+        nameLast: Bradley
+        phoneOffice: (571) 555-8136
+    john_carlson:
+        username: john.carlson
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: John
+        nameLast: Carlson
+        phoneOffice: (571) 555-8237
+    jeff_schultz:
+        username: jeff.schultz
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Jeff
+        nameLast: Schultz
+        phoneOffice: (571) 555-8138
+    karl_alzner:
+        username: karl.alzner
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Karl
+        nameLast: Alzner
+        phoneOffice: (571) 555-8239
+    jason_chimera:
+        username: jason.chimera
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Jason
+        nameLast: Chimera
+        phoneOffice: (571) 555-8401
+    boyd_gordon:
+        username: boyd.gordon
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Boyd
+        nameLast: Gordon
+        phoneOffice: (571) 555-8502
+    marcus_johansson:
+        username: marcus.johansson
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Marcus
+        nameLast: Johansson
+        phoneOffice: (571) 555-8403
+    mathieu_perreault:
+        username: mathieu.perreault
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Mathieu
+        nameLast: Perreault
+        phoneOffice: (571) 555-8504
+    brooks_laich:
+        username: brooks.laich
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Brooks
+        nameLast: Laich
+        phoneOffice: (571) 555-8405
+    marco_sturm:
+        username: marco.sturm
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Marco
+        nameLast: Sturm
+        phoneOffice: (571) 555-8506
+    jason_chimera:
+        username: jason.chimera
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Jason
+        nameLast: Chimera
+        phoneOffice: (571) 555-8407
+    dennis_wideman:
+        username: dennis.wideman
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Dennis
+        nameLast: Wideman
+        phoneOffice: (571) 555-8508
+    tom_poti:
+        username: tom.poti
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Tom
+        nameLast: Poti
+        phoneOffice: (571) 555-8409
+    sean_collins:
+        username: sean.collins
+        password: Sample1
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Sean
+        nameLast: Collins
+        phoneOffice: (571) 555-8510
