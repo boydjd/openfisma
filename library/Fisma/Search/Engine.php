@@ -80,6 +80,14 @@ class Fisma_Search_Engine
     }
 
     /**
+     * Roll back any changes to the index made since the previous commit.
+     */
+    public function rollback()
+    {
+        $this->_client->rollback();
+    }
+
+    /**
      * Delete all documents in the index
      */
     public function deleteAll()
