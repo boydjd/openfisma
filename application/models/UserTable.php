@@ -141,10 +141,18 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
      * @access public
      * @return void
      */
-    public function getUsersLikeUsernameQuery($query)
+    public function getUsersLikeUsernameQuery($query, $includeLockedUser = false)
     {
-        return Doctrine_query::create()
+        $query = Doctrine_query::create()
                ->from('User u')
                ->where('u.username LIKE ?', $query . '%');
+ 
+        // Do not need to display locked user with locktype of manual 
+        // on system inventory user tab.
+        if (!$includeLockedUser) { 
+            $query->andWhere('(u.locktype is null or u.locktype != ?)', 'manual');
+        }
+
+        return $query;    
     }
 }
