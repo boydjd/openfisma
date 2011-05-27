@@ -169,12 +169,14 @@ abstract class Fisma_Cli_Abstract
     {
         $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
         $engines = $conn->fetchAll('SHOW ENGINES');
+        $innodb  = null;
         foreach ($engines as $engine) {
-            if ('innodb' === strtolower($engine['Engine']) && 'no' ===  strtolower($engine['Support'])) {
-                return false;
+            if ('innodb' === strtolower($engine['Engine'])) {
+                $innodb = $engine;
+                break;
             }
         }
 
-        return true;
+        return !empty($innodb) && 'no' !== strtolower($innodb['Support']);
     }
 }
