@@ -270,7 +270,24 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                 success: function (event) {
                     var result = YAHOO.lang.JSON.parse(event.responseText);
                     if (!result.success) {
-                        alert("Not able to move the item: " + result.message);
+                        var alertDiv = document.createElement("div");
+
+                        var p1 = document.createElement("p");
+                        p1.appendChild(document.createTextNode("Error: " + result.message));
+
+                        var p2 = document.createElement("p");
+                        var button = new YAHOO.widget.Button({
+                            label: "OK",
+                            container: p2,
+                            onclick: {
+                                fn: function () {savePanel.hide();}
+                            }
+                        });
+                        
+                        alertDiv.appendChild(p1);
+                        alertDiv.appendChild(p2);
+
+                        savePanel.setBody(alertDiv);
                     } else {
                         tree.popNode(srcNode);
 
@@ -291,9 +308,9 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                         // YUI discards all the event handlers after refreshing a treeview, so we need to make it
                         // draggable all over again.
                         makeTreeDraggable(tree);
+
+                        savePanel.hide();
                     }
-                    
-                    savePanel.hide();
                 },
                 failure: function (event) {
                     alert('Unable to reach the server to save your changes: ' 

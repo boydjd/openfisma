@@ -506,7 +506,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
             } else {
                 $return['success'] = false;
-                $return['message'] = 'Cannot move an organization into itself.';
+                $return['message'] = 'Cannot move an organization or system into itself.';
             }
         } else {
             $return['success'] = false;
