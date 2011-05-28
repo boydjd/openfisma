@@ -128,9 +128,6 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
             yuiNode.labelStyle = treeNode.orgType;
         }
 
-        // Set up drag and drop
-        var yuiNodeDrag = new DDTree(yuiNode.contentElId, dragDropGroup, null);        
-
         // Automatically expand the first 2 levels
         if (depth < 2) {
             yuiNode.expand();
@@ -140,6 +137,19 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         if (treeNode.children.length > 0) {
             renderTreeNodes(treeNode.children, yuiNode, depth + 1);
         }
+    }
+    
+    makeTreeDraggable(tree);
+}
+
+function makeTreeDraggable(tree) {
+    // Get a list of all nodes in the tree
+    var nodes = tree.getNodesBy(function () {return true;});
+    
+    for (var nodeIndex in nodes) {
+        var node = nodes[nodeIndex];
+
+        var yuiNodeDrag = new DDTree(node.contentElId, dragDropGroup, null);
     }
 }
 
@@ -161,7 +171,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
         // Make the dragged proxy look like the source elemnt
         var dragEl = this.getDragEl();
         var clickEl = this.getEl();
-        
+
         dragEl.innerHTML = clickEl.innerHTML;
         YAHOO.util.Dom.setStyle(dragEl, "background", "white");
         YAHOO.util.Dom.setStyle(dragEl, "border", "none");
@@ -226,6 +236,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
 
         var srcNode = tree.getNodeByElement(this.getEl());
         var destNode = tree.getNodeByElement(document.getElementById(id));
+        var dragLocation = getDragLocation(id, event);
 
         // Set up the query string for this operation
         var query = '/organization/move-node/src/' 
@@ -233,7 +244,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                   + '/dest/' 
                   + destNode.data.organizationId 
                   + '/dragLocation/' 
-                  + getDragLocation(id, event);
+                  + dragLocation;
 
         // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
         // but it prevents the user from modifying the tree while an update is already pending.
@@ -259,9 +270,27 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                 success: function (event) {
                     var result = YAHOO.lang.JSON.parse(event.responseText);
                     if (!result.success) {
-                        alert("Not able to move the node: " + result.message);
+                        alert("Not able to move the item: " + result.message);
                     } else {
-                        console.log("success!");
+                        tree.popNode(srcNode);
+
+                        switch (dragLocation) {
+                            case DRAG_ABOVE:
+                                srcNode.insertBefore(destNode);
+                                break;
+                            case DRAG_ONTO:
+                                srcNode.appendTo(destNode);
+                                break;
+                            case DRAG_BELOW:
+                                srcNode.insertAfter(destNode);
+                                break;
+                        }
+
+                        tree.getRoot().refresh();
+                        
+                        // YUI discards all the event handlers after refreshing a treeview, so we need to make it
+                        // draggable all over again.
+                        makeTreeDraggable(tree);
                     }
                     
                     savePanel.hide();

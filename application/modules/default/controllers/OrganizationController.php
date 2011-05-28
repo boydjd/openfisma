@@ -504,7 +504,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
                 // Get refreshed organization tree data
                 $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
-                $return['treeData'] = $this->getOrganizationTree($includeDisposalSystem);
             } else {
                 $return['success'] = false;
                 $return['message'] = 'Cannot move an organization into itself.';
