@@ -2,10 +2,13 @@
 
 echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-Fisma_Format_Section::startSection("Organizations: Tree View <span id='searchResultsTotalFound'></span>"); 
+Fisma_Format_Section::startSection("Organizations: Hierarchy View"); 
 
 ?>
-<div id='showDisposalSystem'><input type='checkbox' id='disposalSystem' >Display Disposed Systems</div>
+<div id='showDisposalSystem'>
+    <input type='checkbox' id='disposalSystem'>
+    <label for="disposalSystem">Display Disposed Systems</label>
+</div>
 
 <div id="orgTree">Loading...</div>
 
@@ -48,10 +51,6 @@ function buildTree() {
 // Global reference to the tree view
 var tree;
 
-// Global map from HTML element Ids back to tree node Ids
-// This is necessary due to a limitation in YUI (see below)
-var treeMap = {};
-
 function showTree(treeNodes) {
     tree = new YAHOO.widget.TreeView("orgTree");
 
@@ -79,30 +78,21 @@ function buildContextMenu() {
 }
 
 function contextMenuHandler(event, eventArgs) {
-    var target = this.contextEventTarget;
+    // Get a reference to the three node that was the target of this context menu event
+    var node = tree.getNodeByElement(this.contextEventTarget);
 
-    // To get the ID of the organization related to this event, we have to do some circuitous logic:
-    // First, get the parent item in the treeview (it is identified by having the class 'ygtvitem')
-    var parentEl = YAHOO.util.Dom.getAncestorByClassName(target, "ygtvcell");
+    var type = node.data.type;
 
-    // Now the organization or system Id & type can be looked up in the treemap
-    var type = treeMap[parentEl.id]['type'];
-
-    // Set to 'system' if the object is a system; set to 'organization' otherwise
+    // Set up the appropriate URL to forward the user to, based on the type of organization represented by this node
     var model = (type == 'agency' || type == 'bureau' || type == 'organization') 
               ? 'organization'
               : 'system';
     
-    // The organization controller expects a parameter called "id" while the system controller expects "oid"
     var idParameter = (type == 'agency' || type == 'bureau' || type == 'organization') 
                     ? 'id'
                     : 'oid';
 
-    var organizationId = treeMap[parentEl.id]['id'];
-
-    // Now check which menu item was selected and redirect
-    var menuItem = eventArgs[1];
-    var url = '/' + model + '/view/' + idParameter + '/' + organizationId;
+    var url = '/' + model + '/view/' + idParameter + '/' + node.data.organizationId;
     window.location = url;
 }
 
@@ -120,7 +110,15 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
         treeNode = treeNodes[i];
         nodeText = "<b>" + PHP_JS().htmlspecialchars(treeNode.label) + "</b> - <i>"
                          + PHP_JS().htmlspecialchars(treeNode.orgTypeLabel) + "</i>";
-        var yuiNode = new YAHOO.widget.TextNode(nodeText, parentNode, false);
+        var yuiNode = new YAHOO.widget.TextNode(
+            {
+                label: nodeText,
+                organizationId: treeNode.id,
+                type: treeNode.orgType,
+                systemId: treeNode.systemId
+            }, 
+            parentNode, false
+        );
 
         // Set the background color of disposal system as pink 
         var sdlcPhase = (treeNode.System) ? treeNode.System.sdlcPhase : false;
@@ -132,16 +130,6 @@ function renderTreeNodes(treeNodes, parentNode, depth) {
 
         // Set up drag and drop
         var yuiNodeDrag = new DDTree(yuiNode.contentElId, dragDropGroup, null);        
-        
-        // Save the org ID into the tree map so it can be looked up later
-        // This is a limitation of the YUI treeview... you can't find a treenode automatically
-        // from an element Id
-        treeMap[yuiNode.contentElId] = {
-            id: treeNode.id,
-            type: treeNode.orgType,
-            systemId: treeNode.systemId,
-            node: yuiNode
-        };
 
         // Automatically expand the first 2 levels
         if (depth < 2) {
@@ -235,24 +223,17 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
     // The drag drop event sends an asynchronous event to the server to update the persistent
     // storage of the tree. 
     onDragDrop: function(event, id) {
-        // Need to get references to the element being moved and the element it is being moved relative to
-        var srcEl = this.getEl();
-        var src = treeMap[srcEl.id];
-        var dest = treeMap[id];
+
+        var srcNode = tree.getNodeByElement(this.getEl());
+        var destNode = tree.getNodeByElement(document.getElementById(id));
 
         // Set up the query string for this operation
-        var dragLocation = getDragLocation(id, event);
         var query = '/organization/move-node/src/' 
-                  + src.id 
+                  + srcNode.data.organizationId 
                   + '/dest/' 
-                  + dest.id 
+                  + destNode.data.organizationId 
                   + '/dragLocation/' 
-                  + dragLocation;
-
-        // Include disposal systems if user check checkbox
-        if (YAHOO.util.Dom.get('disposalSystem').checked === true) {
-            query += '/displayDisposalSystem/true';
-        }
+                  + getDragLocation(id, event);
 
         // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
         // but it prevents the user from modifying the tree while an update is already pending.
@@ -280,12 +261,7 @@ YAHOO.lang.extend(DDTree, YAHOO.util.DDProxy, {
                     if (!result.success) {
                         alert("Not able to move the node: " + result.message);
                     } else {
-                        // The tree loses drag and drop ability when you move items around, because YUI
-                        // changes the element IDs. So we actually need to fully refresh the tree from the server.
-                        /**
-                         * @todo This is clunky, but YUI doesn't seem to provide a good alternative.
-                         */
-                        showTree(result.treeData);
+                        console.log("success!");
                     }
                     
                     savePanel.hide();
