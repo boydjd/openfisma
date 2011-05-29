@@ -47,6 +47,10 @@
         _treeViewContainer: null,
         
         _showDisposedSystems: false,
+        
+        _dragDropGroupName: "organizationTreeDragDropGroup",
+        
+        _savePanel: null,
 
         // These constants are used to track whether a node is being dragged above, onto, or below another node
         _currentDragDestination: null,
@@ -123,7 +127,12 @@
                         // Load the tree data into a tree view
                         this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
                         this._buildTreeNodes(json.treeData, this._treeView.getRoot());
-                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(this._treeView);
+                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                            this._treeView,
+                            this.handleDragDrop,
+                            this,
+                            this._dragDropGroupName
+                        );
 
                         // Expand the first two levels of the tree by default
                         var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
@@ -180,6 +189,86 @@
         
         collapseAll: function () {
             this._treeView.getRoot().collapseAll();
+        },
+        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Set up the GET query string for this operation
+            var query = '/organization/move-node/src/' 
+                      + srcNode.data.organizationId 
+                      + '/dest/' 
+                      + destNode.data.organizationId 
+                      + '/dragLocation/' 
+                      + dragLocation;
+    
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.show();
+    
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+            
+            return true;
+        },
+        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {this._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
         }
     };
 
