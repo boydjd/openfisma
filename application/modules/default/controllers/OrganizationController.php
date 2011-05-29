@@ -356,6 +356,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $this->view->toolbarButtons = $this->getToolbarButtons();
+        
+        // "Return To Search Results" doesn't make sense on this screen, so rename that button:
+        $this->view->toolbarButtons['list']->setValue("View Organization List");
+        
+        // We're already on the tree screen, so don't show a "view tree" button
+        unset($this->view->toolbarButtons['tree']);
 
         $this->render('tree');
     }
@@ -526,7 +532,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $buttons = array();
 
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
                 array(
                     'value' => 'View Organization Hierarchy',

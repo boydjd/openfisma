@@ -458,13 +458,13 @@ div#msgbar {
 }
 
 /* Style for displaying showDisposalSystem div including checkbox and text*/
-div#showDisposalSystem {
+div.showDisposalSystem {
     margin: 0px 0px 5px 3px;
     font-weight: bold;
 }
 
 /* Style for displaying checkbox in organization tree */
-div#showDisposalSystem input {
+div.showDisposalSystem input {
     vertical-align: middle;
     margin: 0px 5px 3px 0px;
 }

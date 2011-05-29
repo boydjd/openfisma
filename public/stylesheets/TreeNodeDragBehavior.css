@@ -1,0 +1,24 @@
+/* @override http://openfisma/stylesheets/TreeNodeDragBehavior.css */
+
+/* Styles for a draggable YUI tree */
+
+.draggableTreeContainer .ygtvlabel {
+    background: none;
+}
+
+.treeNodeDragAbove span {
+    border-top: 4px solid #bbc6d6;
+}
+
+
+.treeNodeDragOnto {
+    background-color: #bbc6d6;
+}
+
+.treeNodeDragBelow span {
+    border-bottom: 4px solid #bbc6d6;
+}
+
+.treeNodeDragProxy {
+    opacity: 0.5;
+}
