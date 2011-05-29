@@ -1,9 +1,13 @@
-/* @override http://openfisma/stylesheets/TreeNodeDragBehavior.css */
-
 /* Styles for a draggable YUI tree */
 
-.draggableTreeContainer .ygtvlabel {
-    background: none;
+div.showDisposalSystem {
+    margin: 0px 0px 5px 3px;
+    font-weight: bold;
+}
+
+div.showDisposalSystem input {
+    vertical-align: middle;
+    margin: 0px 5px 3px 0px;
 }
 
 .treeNodeDragAbove span {
@@ -21,4 +25,47 @@
 
 .treeNodeDragProxy {
     opacity: 0.5;
+}
+
+/* The following styles are for the organization tree view icons */
+.draggableTreeContainer .agency {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/agency-small.png) no-repeat;
+}
+
+.draggableTreeContainer .bureau {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/bureau-small.png) no-repeat;
+}
+
+.draggableTreeContainer .organization {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/organization-small.png) no-repeat;
+}
+
+.draggableTreeContainer .gss {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/gss-small.png) no-repeat;
+}
+
+.draggableTreeContainer .major {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/major-small.png) no-repeat;
+}
+
+.draggableTreeContainer .minor {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/minor-small.png) no-repeat;
+}
+
+.draggableTreeContainer .disposal {
+       display: block;
+       padding-left: 20px; 
+       background-color: pink;
 }

@@ -35,6 +35,8 @@
         if (YAHOO.lang.isNull(this._contentDiv)) {
             throw "Invalid contentDivId";
         }
+        
+        this._storage = new Fisma.PersistentStorage("Organization.Tree");
     };
 
     OTV.prototype = {
@@ -46,35 +48,38 @@
         _loadingContainer: null,        
         _treeViewContainer: null,
         
-        _showDisposedSystems: false,
-        
         _dragDropGroupName: "organizationTreeDragDropGroup",
         
         _savePanel: null,
+        
+        _storage: null,
 
         // These constants are used to track whether a node is being dragged above, onto, or below another node
         _currentDragDestination: null,
 
         render: function () {
+            var that = this;
 
-            this._disposalCheckboxContainer = document.createElement("div");
-            this._renderDisposalCheckbox(this._disposalCheckboxContainer);
-            this._contentDiv.appendChild(this._disposalCheckboxContainer);
-            
-            this._loadingContainer = document.createElement("div");
-            this._renderLoading(this._loadingContainer);
-            this._contentDiv.appendChild(this._loadingContainer);
+            // We need storage before we can render anything
+            Fisma.Storage.onReady(function () {
+                that._disposalCheckboxContainer = document.createElement("div");
+                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
+                that._contentDiv.appendChild(that._disposalCheckboxContainer);
 
-            this._treeViewContainer = document.createElement("div");
-            this._renderTreeView(this._treeViewContainer);
-            this._contentDiv.appendChild(this._treeViewContainer);
+                that._loadingContainer = document.createElement("div");
+                that._renderLoading(that._loadingContainer);
+                that._contentDiv.appendChild(that._loadingContainer);
 
-//            this.addContextMenu();
+                that._treeViewContainer = document.createElement("div");
+                that._renderTreeView(that._treeViewContainer);
+                that._contentDiv.appendChild(that._treeViewContainer);                
+            });
         },
 
         _renderDisposalCheckbox: function (container) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.checked = this._storage.get("includeDisposalSystem");
             YAHOO.util.Dom.generateId(checkbox);
             YAHOO.util.Event.addListener(checkbox, "click", this._handleDisposalCheckboxAction, this, true);
             container.appendChild(checkbox);
@@ -104,7 +109,7 @@
         },
         
         _handleDisposalCheckboxAction: function (event) {
-            this._showDisposedSystems = event.toElement.checked;
+            this._storage.set("includeDisposalSystem", event.toElement.checked);
             this._renderTreeView();
         },
         
@@ -113,7 +118,7 @@
 
             var url = '/organization/tree-data/format/json';
 
-            if (this._showDisposedSystems) {
+            if (this._storage.get("includeDisposalSystem") === true) {
                 url += '/displayDisposalSystem/true';
             }
 
@@ -139,6 +144,7 @@
                         defaultExpandNodes.map(function (node) {node.expand()});
 
                         this._treeView.draw();
+                        this._buildContextMenu();
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
@@ -168,12 +174,12 @@
                     false
                 );
 
-                // Set the background color of disposal systems as pink 
-                var sdlcPhase = (node.System) ? node.System.sdlcPhase : false;
+                // Set the label style
+                yuiNode.labelStyle = node.orgType;
+
+                var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
                 if (sdlcPhase === 'disposal') {
-                    node.labelStyle = node.orgType + ' disposal';
-                } else {
-                    node.labelStyle = node.orgType;
+                    yuiNode.labelStyle += " disposal";
                 }
 
                 // Recurse
@@ -231,6 +237,11 @@
 
                         if (result.success) {
                             treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
+                            // the context menu listener
+                            this._buildContextMenu();
+                            
                             this._savePanel.hide();
                         } else {
                             this._displayDragDropError("Error: " + result.message);
@@ -269,6 +280,38 @@
             alertDiv.appendChild(p2);
 
             this._savePanel.setBody(alertDiv);
+        },
+        
+        _buildContextMenu: function () {
+            var contextMenuItems = ["View"];
+
+            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
+                YAHOO.util.Dom.generateId(),
+                { 
+                    trigger: this._treeView.getEl(),
+                    itemdata: contextMenuItems,
+                    lazyload: true
+                }
+            );
+
+            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
+        },
+
+        _contextMenuHandler: function (event, eventArgs) {
+            var targetElement = eventArgs[1].parent.contextEventTarget;
+            var targetNode = this._treeView.getNodeByElement(targetElement);
+        
+            // Create a request URL to view this object
+            var url;
+            var type = targetNode.data.type;
+
+            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+                var url = '/organization/view/id/' + targetNode.data.organizationId;
+            } else {
+                var url = '/system/view/id/' + targetNode.data.systemId;                
+            }
+
+            window.location = url;
         }
     };
 

@@ -397,6 +397,22 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
+        
+        // Save preferences for this screen
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Organization.Tree';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        if (empty($storage)) {
+            $storage = new Storage();
+            $storage->userId = $userId;
+            $storage->namespace = $namespace;
+            $storage->data = array();
+        }
+        $data = $storage->data;
+        $data['includeDisposalSystem'] = $includeDisposalSystem;
+        $storage->data = $data;
+        $storage->save();
+
         $this->view->treeData = $this->getOrganizationTree($includeDisposalSystem);
     }
 
