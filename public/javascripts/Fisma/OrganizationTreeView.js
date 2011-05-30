@@ -23,11 +23,13 @@
 
 (function() {
     /**
-     * Provides basic session-level storage of data.
+     * A treeview widget that is specialized for displaying the organization/system hierarchy
+     * 
      * @namespace Fisma
      * @class OrganizationTreeView
-     * @todo TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
+     * @extends n/a
      * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
      */
     var OTV = function(contentDivId) {
         this._contentDiv = document.getElementById(contentDivId);
@@ -40,23 +42,70 @@
     };
 
     OTV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
         _contentDiv: null,
-        
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
         _treeView: null,
 
+        /**
+         * The div containing the "include disposal systems" checkbox
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
         _disposalCheckboxContainer: null,
+        
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
         _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
         _treeViewContainer: null,
-        
-        _dragDropGroupName: "organizationTreeDragDropGroup",
-        
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
         _savePanel: null,
-        
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
         _storage: null,
 
-        // These constants are used to track whether a node is being dragged above, onto, or below another node
-        _currentDragDestination: null,
-
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
         render: function () {
             var that = this;
 
@@ -76,6 +125,12 @@
             });
         },
 
+        /**
+         * Render the "include disposal systems" interface
+         *
+         * @method OrganizationTreeView._renderDisposalCheckbox
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
         _renderDisposalCheckbox: function (container) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -92,6 +147,12 @@
             container.setAttribute("class", "showDisposalSystem");
         },
        
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
         _renderLoading: function (container) {
             var loadingImage = document.createElement("img");
             loadingImage.src = "/images/spinners/small.gif";
@@ -100,19 +161,41 @@
             container.appendChild(loadingImage);
         },
 
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
         _showLoadingImage: function () {
             this._loadingContainer.style.display = "block";
         },
-        
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
         _hideLoadingImage: function () {
             this._loadingContainer.style.display = "none";    
         },
-        
+
+        /**
+         * Set the user preference for the include disposal system checkbox and re-render the tree view
+         *
+         * @method OrganizationTreeView._handleDisposalCheckboxAction
+         * @param event {YAHOO.util.Event} The mouse event
+         */
         _handleDisposalCheckboxAction: function (event) {
             this._storage.set("includeDisposalSystem", event.toElement.checked);
             this._renderTreeView();
         },
-        
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
         _renderTreeView: function (container) {
             this._showLoadingImage();
 
@@ -135,8 +218,7 @@
                         Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                             this._treeView,
                             this.handleDragDrop,
-                            this,
-                            this._dragDropGroupName
+                            this
                         );
 
                         // Expand the first two levels of the tree by default
@@ -155,7 +237,17 @@
                 null
             );
         },
-        
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
         _buildTreeNodes: function (nodeList, parent) {
 
             for (var i in nodeList) {
@@ -189,14 +281,36 @@
             }
         },
 
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
         expandAll: function () {
             this._treeView.getRoot().expandAll();
         },
-        
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
         collapseAll: function () {
             this._treeView.getRoot().collapseAll();
         },
-        
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
         handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
             // Set up the GET query string for this operation
             var query = '/organization/move-node/src/' 
@@ -257,10 +371,17 @@
                 }, 
                 null
             );
-            
-            return true;
         },
-        
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
         _displayDragDropError: function (message) {
             var alertDiv = document.createElement("div");
 
@@ -281,7 +402,12 @@
 
             this._savePanel.setBody(alertDiv);
         },
-        
+
+        /**
+         * Add the context menu behavior to the tree view
+         *
+         * @method OrganizationTreeView._buildContextMenu
+         */                
         _buildContextMenu: function () {
             var contextMenuItems = ["View"];
 
@@ -297,6 +423,13 @@
             treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
         },
 
+        /**
+         * A callback for context menu events
+         *
+         * @method OrganizationTreeView._contextMenuHandler
+         * @param event {String} The name of the event
+         * @param eventArgs {Array} An array of YAHOO.util.Event
+         */                
         _contextMenuHandler: function (event, eventArgs) {
             var targetElement = eventArgs[1].parent.contextEventTarget;
             var targetNode = this._treeView.getNodeByElement(targetElement);
