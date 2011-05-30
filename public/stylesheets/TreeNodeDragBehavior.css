@@ -24,7 +24,9 @@ div.showDisposalSystem input {
 }
 
 .treeNodeDragProxy {
-    opacity: 0.5;
+    border: 1px solid #bbc6d6 !important;
+    padding: 3px;
+    opacity: 0.75;
 }
 
 /* The following styles are for the organization tree view icons */

@@ -65,6 +65,14 @@
          * @protected
          */                
         _disposalCheckboxContainer: null,
+
+        /**
+         * The checkbox for "include disposal systems"
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckbox: null,
         
         /**
          * The div containing the loading spinner
@@ -132,15 +140,21 @@
          * @param container {HTMLElement} The container that the checkbox is rendered into
          */
         _renderDisposalCheckbox: function (container) {
-            var checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.checked = this._storage.get("includeDisposalSystem");
-            YAHOO.util.Dom.generateId(checkbox);
-            YAHOO.util.Event.addListener(checkbox, "click", this._handleDisposalCheckboxAction, this, true);
-            container.appendChild(checkbox);
+            this._disposalCheckbox = document.createElement("input");
+            this._disposalCheckbox.type = "checkbox";
+            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
+            YAHOO.util.Dom.generateId(this._disposalCheckbox);
+            YAHOO.util.Event.addListener(
+                this._disposalCheckbox, 
+                "click", 
+                this._handleDisposalCheckboxAction, 
+                this, 
+                true
+            );
+            container.appendChild(this._disposalCheckbox);
             
             var label = document.createElement("label");
-            label.setAttribute("for", checkbox.id);
+            label.setAttribute("for", this._disposalCheckbox.id);
             label.appendChild(document.createTextNode("Display Disposed Systems"));
             container.appendChild(label);
             
@@ -186,7 +200,7 @@
          * @param event {YAHOO.util.Event} The mouse event
          */
         _handleDisposalCheckboxAction: function (event) {
-            this._storage.set("includeDisposalSystem", event.toElement.checked);
+            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
             this._renderTreeView();
         },
 
@@ -223,7 +237,7 @@
 
                         // Expand the first two levels of the tree by default
                         var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        defaultExpandNodes.map(function (node) {node.expand()});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
 
                         this._treeView.draw();
                         this._buildContextMenu();
