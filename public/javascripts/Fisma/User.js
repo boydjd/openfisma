@@ -302,8 +302,8 @@ Fisma.User = {
         var content = document.createElement('div');
 
         var messageContainer = document.createElement('span');
-        var warningMessage = document.createTextNode("The user's status has been set to 'locked' and can't login to"
-                                                   + "the system in the future.");
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
+                                                   + " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 
