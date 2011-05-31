@@ -5,12 +5,14 @@ echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), '
 $actions = '';
 
 foreach ($this->links as $label => $url) {
+    if ('delete' === strtolower($label)) {
+        $deleteUrl = $url;
+    }
     $actions .= "&nbsp;&nbsp;[<a href='$url' id = '" . $label . "Link' >$label</a>]";
 }
 
 Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions); 
 ?>
-
 <div>
     <?php echo $this->escape($this->form, 'none'); ?>
     <?php echo $this->escape($this->tabView, 'none'); ?>
@@ -19,5 +21,6 @@ Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions);
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <script type="text/javascript">
-    YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning);
+    var url = {url : '<?php echo $this->escape($deleteUrl) ?>' };
+    YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning, url);
 </script>
