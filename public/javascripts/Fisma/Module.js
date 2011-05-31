@@ -29,11 +29,7 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' 
-                       + switchButton.payload.id 
-                       + '/enabled/' 
-                       + enabled
-                       + '/format/json/';
+        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
@@ -43,8 +39,7 @@ Fisma.Module = {
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -59,7 +54,7 @@ Fisma.Module = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }

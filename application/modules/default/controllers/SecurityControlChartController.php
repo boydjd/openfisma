@@ -112,13 +112,13 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
         if ($displayBy === 'Family Summary') {
             $rtnChart->setLinks(
-                '/finding/remediation/list/queryType/advanced' .
+                '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' .
                 '/securityControl/textContains/'. $searchVar
             );
         } else {
             $rtnChart->setLinks(
-                '/finding/remediation/list/queryType/advanced' .
+                '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' .
                 '/securityControl/textExactMatch/#ColumnLabel#'
             );

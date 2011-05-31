@@ -47,7 +47,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
                                       '/javascripts/Fisma/Calendar.js',
-                                      '/javascripts/Fisma/Chart.js',
                                       '/javascripts/Fisma/CheckboxTree.js',
                                       '/javascripts/Fisma/Commentable.js',
                                       '/javascripts/Fisma/Finding.js',
@@ -57,6 +56,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
                                       '/javascripts/Fisma/Ldap.js',
+                                      '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
@@ -66,6 +66,10 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Search/CriteriaRenderer.js',
                                       '/javascripts/Fisma/Search/Panel.js',
                                       '/javascripts/Fisma/Spinner.js',
+                                      '/javascripts/Fisma/Storage.js',
+                                      '/javascripts/Fisma/PersistentStorage.js',
+                                      '/javascripts/Fisma/Search/TablePreferences.js',
+                                      '/javascripts/Fisma/Search/QueryState.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',
@@ -75,7 +79,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
-                                      '/javascripts/AC_RunActiveContent.js',
                                       '/javascripts/jquery-min.js',
                                       '/javascripts/jqPlot/core/jquery_jqplot.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
@@ -85,7 +88,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',
-                                      '/javascripts/Fisma/jqplotWrapper.js'
+                                      '/javascripts/Fisma/Chart.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',

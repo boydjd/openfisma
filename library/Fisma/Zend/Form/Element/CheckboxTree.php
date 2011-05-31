@@ -97,7 +97,8 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
     function render(Zend_View_Interface $view = null) 
     {
         $render = '';
-        
+        $render .= "<span id=\"{$this->getName()}\">";
+
         // Setup the tooltip
         $tooltipHtml = '<p>Checking a system or organization will automatically select all of the nested'
                      . ' systems and organizations within it. Clicking the same box again will deselect'
@@ -145,6 +146,8 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
         $render .= "<tr><td>"
                  . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
                  . "</td></tr>";
+
+        $render .= "</span>";
 
         return $render;
     }

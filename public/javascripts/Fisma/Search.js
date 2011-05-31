@@ -55,6 +55,16 @@ Fisma.Search = function() {
         showDeletedRecords : false,
 
         /**
+         * User search preferences for when a search hasn't been executed on this model this session.
+         */
+        searchPreferences: null,
+
+        /**
+         * Boolean flag as to whether the search preferences have been updated.
+         */
+        updateSearchPreferences: false,
+
+        /**
          * Test the current system configuration
          */
         testConfiguration : function () {
@@ -102,14 +112,14 @@ Fisma.Search = function() {
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
+        executeSearch: function (form) {
 
             // Ensure the search type is simple when advance search is hidden
             if (document.getElementById('advancedSearch').style.display == 'none') {
@@ -134,20 +144,15 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -163,6 +168,45 @@ Fisma.Search = function() {
         },
 
         /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            var queryState = new Fisma.Search.QueryState(form.modelName.value);
+            var searchPrefs = {type: form.searchType.value};
+            if (searchPrefs.type === 'advanced') {
+                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                var fields = {};
+                for (var i in panelState) {
+                    fields[panelState[i].field] = panelState[i].operator;
+                }
+                searchPrefs['fields'] = fields;
+            }
+            Fisma.Search.updateSearchPreferences = true;
+            Fisma.Search.searchPreferences = searchPrefs;
+            Fisma.Search.updateQueryState(queryState, form);
+            Fisma.Search.executeSearch(form);
+        },
+
+        /**
+         * Update Query State
+         *
+         * @param queryState {Fisma.Search.QueryState}
+         * @param form Reference to the search form
+         */
+        updateQueryState: function(queryState, form) {
+            var Dom = YAHOO.util.Dom;
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
+            }
+        },
+
+        /**
          * Returns a POST request suitable for submitting a search query
          *
          * @var form A reference to the form
@@ -173,7 +217,7 @@ Fisma.Search = function() {
             var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
+                query['keywords'] = form.keywords.value;
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
@@ -258,7 +302,7 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
+        generateRequest: function (tableState, table) {
 
             var searchType = document.getElementById('searchType').value;
 
@@ -270,35 +314,55 @@ Fisma.Search = function() {
             // The error message of advance search should be hidden before handles YUI data
             document.getElementById('msgbar').style.display = 'none';
 
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=" 
-                              + encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=" 
-                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+
+            if (Fisma.Search.updateSearchPreferences) {
+                postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+            }
+
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -310,7 +374,6 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -325,21 +388,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 
@@ -359,56 +424,50 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
+         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container, searchOptions) {
+        initializeSearchColumnsPanel : function (container) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-            var currentColumn = 0;
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName),
+                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
+                // Title elements used for accessibility
+                checkedTitle = "Column is visible. Click to hide column.",
+                uncheckedTitle = "Column is hidden. Click to unhide column.";
 
-            for (var index in searchOptions) {
-                var searchOption = searchOptions[index];
+            for (var index in columns) {
+                var column = columns[index],
+                    columnName = column.key;
 
-                if (searchOption['hidden'] === true) {
+                if (columnName === "deleteCheckbox") {
                     continue;
                 }
 
-                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
-                var checked = searchOption.initiallyVisible;
-
-                if (cookie) {
-                    checked = (cookie & 1 << currentColumn) != 0;
-                }
-
-                currentColumn++;
-
-                // Title elements used for accessibility
-                var checkedTitle = "Column is visible. Click to hide column.";
-                var uncheckedTitle = "Column is hidden. Click to unhide column.";
+                var checked = !column.hidden;
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : searchOption.label,
+                    label : column.label,
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, columnKey) {
-                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
+                        fn : function (event, obj) {
+                            var table = Fisma.Search.yuiDataTable,
+                                column = table.getColumn(obj.name),
+                                checked = this.get("checked");
 
-                            var table = Fisma.Search.yuiDataTable;
-                            var column = table.getColumn(columnKey);
+                            this.set("title", checked ? checkedTitle : uncheckedTitle);
 
-                            if (this.get('checked')) {
+                            if (checked) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            Fisma.Search.saveColumnCookies();
+                            obj.prefs.setColumnVisibility(obj.name, checked);
                         },
-                        obj : searchOption.name
+                        obj : {name: columnName, prefs: prefs}
                     }
                 });
 
@@ -416,10 +475,6 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
-            saveDiv.style.marginLeft = '20px';
-            saveDiv.style.marginBottom = '20px';
-            // The following line trips up YUI compressor if object notation (.) is used instead of array []
-            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -427,7 +482,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnCookie
+                    fn : Fisma.Search.persistColumnPreferences
                 }
             });
 
@@ -452,78 +507,31 @@ Fisma.Search = function() {
         },
 
         /**
-         * Save the currently visible columns into a cookie
-         *
-         * @param table YUI Table
-         */
-        saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTable;
-            var columnKeys = table.getColumnSet().keys;
-
-            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
-            var prefBitmap = 0;
-            var currentColumn = 0;
-
-            for (var column in columnKeys) {
-                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
-                    continue;
-                }
-
-                if (!columnKeys[column].hidden) {
-                    prefBitmap |= 1 << currentColumn;
-                }
-                
-                currentColumn++;
-            }
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-
-            YAHOO.util.Cookie.set(
-                cookieName,
-                prefBitmap,
-                {
-                    path : "/",
-                    secure : location.protocol == 'https'
-                }
-            );
-        },
-
-        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnCookie : function () {
-            Fisma.Search.saveColumnCookies();
+        persistColumnPreferences : function () {
 
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName);
             Fisma.Search.columnPreferencesSpinner.show();
 
-            YAHOO.util.Connect.asyncRequest(
-                'GET',
-                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
-                {
-                    success : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
+            prefs.persist({
+                success : function (response, object) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
 
-                        var response = YAHOO.lang.JSON.parse(o.responseText);
-
-                        if (response.success) {
-                            message("Your column preferences have been saved", "notice", true);
-                        } else {
-                            message(response.message, "warning", true);
-                        }
-                    },
-
-                    failure : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        message('Error: ' + o.statusText, 'warning', true);
+                    if (object.status === "ok") {
+                        message("Your column preferences have been saved", "notice", true);
+                    } else {
+                        message(object.status, "warning", true);
                     }
+                },
+
+                failure : function (response) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
+
+                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            );
+            });
         },
 
         /**
@@ -555,7 +563,7 @@ Fisma.Search = function() {
             }
             
             // Do some sanity checking
-            if (0 == checkedRecords.length) {
+            if (0 === checkedRecords.length) {
                 message("No records selected for deletion.", "warning", true);
                 
                 return;
@@ -593,13 +601,13 @@ Fisma.Search = function() {
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
-            var postString = "csrf="
-                           + document.getElementById('searchForm').csrf.value
-                           + "&records="
-                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            var postString = "csrf=";
+            postString += document.getElementById('searchForm').csrf.value;
+            postString += "&records=";
+            postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -626,13 +634,12 @@ Fisma.Search = function() {
                         dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
+                        var text = 'An error occurred while trying to delete the records.';
+                        text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
                 },
-                postString
-            );
+                postString);
         },
         
         /**
@@ -653,6 +660,10 @@ Fisma.Search = function() {
          */
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
+            if (YAHOO.lang.isObject(this.yuiDataTable)) {
+                // if already set, go ahead and run the callback
+                this.onSetTableCallback();
+            }
         }
-    }
+    };
 }();

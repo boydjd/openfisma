@@ -83,8 +83,7 @@ Fisma.Commentable = {
 
                  argument: newPanel
              }, 
-             null
-         );
+             null);
          
          // Prevent form submission
          return false;
@@ -100,11 +99,7 @@ Fisma.Commentable = {
       */
      postComment : function() {
          
-         var postUrl = "/comment/add/id/"
-                     + encodeURIComponent(Fisma.Commentable.config.id)
-                     + "/type/"
-                     + encodeURIComponent(Fisma.Commentable.config.type)
-                     + "/format/json";
+         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -119,8 +114,7 @@ Fisma.Commentable = {
                      alert('Document upload failed.');
                  }
              }, 
-             null
-         );
+             null);
                   
          // Prevent form submission
          return false;
@@ -144,7 +138,7 @@ Fisma.Commentable = {
                  // Handle a JSON syntax error by constructing a fake response object
                  responseStatus = new Object();
                  responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server."
+                 responseStatus.message = "Invalid response from server.";
              } else {
                  throw e;
              }

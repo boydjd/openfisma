@@ -14,7 +14,7 @@
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
                            'paginator', 'datasource', 'datatable', 'selector', 'treeview', 'uploader',
-                           'reset-fonts-grids', 'autocomplete', 'progressbar', 'history');
+                           'reset-fonts-grids', 'autocomplete', 'progressbar', 'history', 'swf', 'storage');
 
     $yui = new Fisma_Loader();
     $yui->load($yuiComponents);
@@ -68,6 +68,8 @@
                     }
                 ?>
         </div>
+        <div id="swfstoreContainer"></div>
+
     </body>
     <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
 </html>

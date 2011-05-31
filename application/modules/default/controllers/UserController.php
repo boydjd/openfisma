@@ -71,6 +71,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('locked');
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
+        $form->removeElement('comment');
         return $form;
     }
 
@@ -114,6 +115,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $subject->lockAccount(User::LOCK_TYPE_MANUAL);
                 unset($values['locked']);
                 unset($values['lockTs']);
+
+                if (!empty($values['comment'])) {
+                    $subject->getComments()->addComment($values['comment']);
+                }
             } elseif (!$values['locked'] && $subject->locked) {
                 $subject->unlockAccount();
                 unset($values['locked']);
@@ -435,6 +440,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $links['Audit Log'] = "/user/log/id/{$subject->id}";
         }
         
+        $links['Comments'] = "/user/comments/id/{$subject->id}";
+        
         $links = array_merge($links, parent::getViewLinks($subject));
 
         return $links;
@@ -553,6 +560,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->execute();
 
         $this->view->auditLogLink = "/user/log/id/$id";
+        $this->view->commentLink = "/user/comments/id/$id";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
@@ -691,5 +699,125 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
         $this->_helper->viewRenderer->setNoRender();
+    }
+
+    /**
+     * Displays the user comment interface
+     *
+     * @return void
+     */
+    function commentsAction() 
+    {
+        $id = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($id);
+        if (!$user) {
+            throw new Fisma_Zend_Exception("Invalid User ID");
+        }
+
+        $comments = $user->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+
+        $this->view->username = $user->username;
+        $this->view->viewLink = "/user/view/id/$id";
+
+        $commentData = array();
+        foreach ($comments as $comment) {
+            $commentData[] = array(
+                $comment['createdTs'], 
+                $this->view->userInfo($comment['User']['username']), 
+                $comment['comment'],
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, 'YAHOO.widget.DataTable.formatText'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, 'Fisma.TableFormat.formatHtml'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false))
+                  ->setData($commentData);
+
+        $this->view->dataTable = $dataTable;
+    }
+
+    /**
+     * getUsersAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function getUsersAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'User');
+
+        $query = $this->getRequest()->getParam('query');
+
+        $users = Doctrine::getTable('User')->getUsersLikeUsernameQuery($query)
+                 ->select('u.id, u.username')
+                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                 ->execute();
+
+        $list = array('users' => $users);
+        
+        return $this->_helper->json($list);
+    }
+
+    /**
+     * removeUserRolesAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function removeUserRolesAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        Doctrine_Manager::connection()->beginTransaction();
+
+        $urosToDelete = Doctrine::getTable('UserRoleOrganization')
+                        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+                        ->execute();
+
+        foreach ($urosToDelete as $uro) {
+            $uro->delete();
+            $uro->free();
+        }
+
+        Doctrine_Manager::connection()->commit();
+    }
+
+    /**
+     * addUserRolesToOrganizationAction 
+     * 
+     * @access public
+     * @return void
+     */
+    public function addUserRolesToOrganizationAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $this->_acl->requirePrivilegeForClass('update', 'User');
+
+        $organizationId = $this->getRequest()->getParam('organizationId');
+        $userRoles = $this->getRequest()->getParam('userRoles');
+
+        Doctrine_Manager::connection()->beginTransaction();
+        
+        Doctrine::getTable('UserRoleOrganization')
+        ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+        ->delete();
+
+        foreach ($userRoles as $userRole) { 
+            $userRoleOrganization = new UserRoleOrganization();
+            $userRoleOrganization->organizationId = (int) $organizationId;
+            $userRoleOrganization->userRoleId = (int) $userRole;
+            $userRoleOrganization->save();
+        }
+
+        Doctrine_Manager::connection()->commit();
     }
 }
