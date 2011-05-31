@@ -17,10 +17,15 @@ displayGroups.incident.elements.incidentDate = "incidentDate"
 
 elements.incidentTime.type = "Element_Time"
 elements.incidentTime.options.label = "What time did the incident occur?"
+elements.incidentTime.options.filters.stringtrim.filter = "StringTrim"
+elements.incidentTime.options.filters.null.filter = "Null"
 displayGroups.incident.elements.incidentTime = "incidentTime"
 
 elements.incidentTimezone.type = "select"
+elements.incidentTimezone.options.filters.stringtrim.filter = "StringTrim"
+elements.incidentTimezone.options.filters.null.filter = "Null"
 elements.incidentTimezone.options.label = "In what timezone did the incident occur?"
+
 displayGroups.incident.elements.incidentTimezone = "incidentTimezone"
 
 elements.locationBuilding.type = "text"

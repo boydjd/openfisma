@@ -430,7 +430,7 @@ class User extends BaseUser
                 ->select('e.*')
                 ->from('Event e')
                 ->innerJoin('e.Privilege p')
-                ->innerJoin('p.Role r')
+                ->innerJoin('p.Roles r')
                 ->innerJoin('r.Users u')
                 ->where('u.id = ?', $this->id)
                 ->orderBy('e.name')

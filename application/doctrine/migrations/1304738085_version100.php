@@ -16,27 +16,40 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
-
 /**
- * Test_Application_Models_CookieTable
- * 
- * @uses Test_FismaUnitTest
- * @package Test 
+ * Add unique key on privilege table (resource, action)
+ *
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_CookieTable extends Test_FismaUnitTest
+class Version100 extends Doctrine_Migration_Base
 {
-    /**
-     * testClassExists 
-     * 
+    /** 
+    * Add a unique index to privilege table to avoid records with the same resource and action
+    * @access public
+    * @return void 
+    */
+    public function up()
+    {
+        $this->addIndex('privilege', 'resourceAction', array(
+            'fields' => 
+                array(
+                    0 => 'resource',
+                    1 => 'action',
+                ),
+            'type' => 'unique',
+        ));
+    }
+
+     /**
+     * remove resourceAction index
      * @access public
      * @return void
      */
-    public function testClassExists()
+    public function down()
     {
-        $this->assertTrue(class_exists('CookieTable'));
+        $this->removeIndex('privilege', 'resourceAction');
     }
 }

@@ -16,6 +16,9 @@ Evaluation:
             comment: Which approval group this evaluation belongs to. "Action" is short for course of action and "evidence" refers to evidence artifacts.
         eventId: integer
         privilegeId: integer
+        daysUntilDue:
+            type: integer
+            comment: Number of days that a finding can remain in this workflow status before being considered overdue
 
     relations:
         NextEvaluation:

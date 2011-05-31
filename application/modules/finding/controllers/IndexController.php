@@ -224,35 +224,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             $this->_forward('injection', 'index', 'finding');
         }
     }
-    
-    /**
-     *  Process the form submitted from the approveAction()
-     *  
-     *  @return void
-     */
-    public function processApprovalAction() 
-    {
-        $this->_acl->requirePrivilegeForClass('approve', 'Finding');
-
-        $findings = $this->_request->getPost('findings', array());
-        foreach ($findings as $id) {
-            $finding = new Finding();
-            if ($finding = $finding->getTable()->find($id)) {
-                if (isset($_POST['approve_selected'])) {
-                    if (in_array($finding->type, array('CAP', 'AR' ,'FP'))) {
-                        $finding->status = 'DRAFT';
-                    } else {
-                        $finding->status = 'NEW';
-                    }
-                    $finding->save();
-                } elseif (isset($_POST['delete_selected'])) {
-                    $finding->getAuditLog()->write('Rejected pending finding');
-                    $finding->delete();
-                }
-            }
-        }
-        $this->_redirect('/finding/index/approve');
-    }
 
     /**
      * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?). 

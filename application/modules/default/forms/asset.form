@@ -18,6 +18,8 @@ displayGroups.assetInfo.elements.addressIp = "addressIp"
 elements.addressPort.type = "text"
 elements.addressPort.options.label = "Address Port"
 elements.addressPort.options.validators.alnum.validator = "Digits"
+elements.addressPort.options.filters.stringtrim.filter = "StringTrim"
+elements.addressPort.options.filters.null.filter = "Null"
 displayGroups.assetInfo.elements.addressPort = "addressPort"
 
 elements.product.type = "Form_AutoComplete"

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,28 +17,34 @@
  */
 
 /**
- * PrivilegeTable 
- * 
- * @uses Fisma_Doctrine_Table
- * @package Model 
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * Add mustresetpassword column to user table.
+ *
+ * @codingStandardsIgnoreFile
+ *
+ * @package Migration
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class PrivilegeTable extends Fisma_Doctrine_Table
+class Version103 extends Doctrine_Migration_Base
 {
     /**
-     * Return a query which selects privileges by resource and action
-     *
-     * @param string $resource
-     * @param string $action
-     *
-     * @return Doctrine_Query
-     */
-    public function getResourceActionQuery($resource, $action)
+    * add mustresetpassword to user table
+    * 
+    * @return void
+    */
+    public function up()
     {
-        return Doctrine_Query::create()
-               ->from('Privilege p')
-               ->where('p.resource = ? AND p.action = ?', array($resource, $action));
+        $this->addColumn('user', 'mustresetpassword', 'boolean', '1', array('default' => 0));
+    }
+
+    /**
+    * remove mustresetpassword to user table
+    * 
+    * @return void
+    */
+    public function down()
+    {
+        $this->removeColumn('user', 'mustresetpassword');
     }
 }
