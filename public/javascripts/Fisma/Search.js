@@ -81,9 +81,6 @@ Fisma.Search = function() {
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
 
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
-
             YAHOO.util.Connect.asyncRequest(
                 'POST',
                 '/config/test-search/format/json',
@@ -164,20 +161,25 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent: function(form) {
-            var queryState = new Fisma.Search.QueryState(form.modelName.value);
-            var searchPrefs = {type: form.searchType.value};
-            if (searchPrefs.type === 'advanced') {
-                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
-                var fields = {};
-                for (var i in panelState) {
-                    fields[panelState[i].field] = panelState[i].operator;
+            try {
+                var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                var searchPrefs = {type: form.searchType.value};
+                if (searchPrefs.type === 'advanced') {
+                    var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                    var fields = {};
+                    for (var i in panelState) {
+                        fields[panelState[i].field] = panelState[i].operator;
+                    }
+                    searchPrefs['fields'] = fields;
                 }
-                searchPrefs['fields'] = fields;
+                Fisma.Search.updateSearchPreferences = true;
+                Fisma.Search.searchPreferences = searchPrefs;
+                Fisma.Search.updateQueryState(queryState, form);
+            } catch (e) {
+                message(e);
+            } finally {
+                Fisma.Search.executeSearch(form);
             }
-            Fisma.Search.updateSearchPreferences = true;
-            Fisma.Search.searchPreferences = searchPrefs;
-            Fisma.Search.updateQueryState(queryState, form);
-            Fisma.Search.executeSearch(form);
         },
 
         /**

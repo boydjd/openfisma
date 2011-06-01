@@ -34,13 +34,20 @@ class UserRoleTable extends Fisma_Doctrine_Table
      * @access public
      * @return void
      */
-    public function getRolesAndUsersByOrganizationIdQuery($organizationId)
+    public function getRolesAndUsersByOrganizationIdQuery($organizationId, $includeLockedUser = false)
     {
-        return Doctrine_Query::create()
+        $query = Doctrine_Query::create()
               ->from('Role r')
               ->innerJoin('r.UserRole ur')
               ->innerJoin('ur.Organizations o WITH o.id = ?', $organizationId)
               ->innerJoin('ur.User u');
+
+        // Do not display locked user with locktype of manual 
+        if (!$includeLockedUser) {
+            $query->where('(u.locktype is null or u.locktype != ?)', 'manual');
+        } 
+
+        return $query;
     }
 
     /**
