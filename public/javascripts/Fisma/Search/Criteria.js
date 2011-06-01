@@ -111,7 +111,7 @@ Fisma.Search.Criteria.prototype = {
         this.container = document.createElement('div');
         
         this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(this);";
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
         this.containerForm.enctype = "application/x-www-form-urlencoded";
         this.containerForm.method = "post";
         
