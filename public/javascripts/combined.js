@@ -3287,15 +3287,15 @@ Fisma.Chart = {
             return;
         }
 
-        // Escape, and then unescape all ? and = characters
-        theLink = escape(theLink);
-        theLink = theLink.replace('%3F', '?');
-        theLink = theLink.replace('%3D', '=');
-
         // Does the link contain a variable?
         if (theLink !== false) {
             theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
         }
+
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
 
         if (paramObj.linksdebug === true) {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
@@ -5208,6 +5208,39 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
     }
 };
 /**
@@ -6997,9 +7030,6 @@ Fisma.Search = function() {
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
-
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -10413,6 +10443,40 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show a warning message before a record is deleted.
+     */
+    showDeleteWarning : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
+                         + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                     document.location = config.url
+                                     this.hide();
+                                 }
+                             }, 
+                             { text:"No",  handler : function () {
+                                     this.hide(); 
+                                 }
+                             } 
+                           ] 
+                } ); 
+ 
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+        YAHOO.util.Event.preventDefault(event);
     }
 };
 /**
