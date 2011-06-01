@@ -147,8 +147,7 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                ->from('User u')
                ->where('u.username LIKE ?', $query . '%');
  
-        // Do not need to display locked user with locktype of manual 
-        // on system inventory user tab.
+        // Do not display locked user with locktype of manual 
         if (!$includeLockedUser) { 
             $query->andWhere('(u.locktype is null or u.locktype != ?)', 'manual');
         }

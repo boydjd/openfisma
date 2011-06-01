@@ -42,8 +42,7 @@ class UserRoleTable extends Fisma_Doctrine_Table
               ->innerJoin('ur.Organizations o WITH o.id = ?', $organizationId)
               ->innerJoin('ur.User u');
 
-        // Do not need to display locked user with locktype of manual 
-        // on system inventory user tab.
+        // Do not display locked user with locktype of manual 
         if (!$includeLockedUser) {
             $query->where('(u.locktype is null or u.locktype != ?)', 'manual');
         } 
