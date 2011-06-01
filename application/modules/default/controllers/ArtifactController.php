@@ -90,9 +90,9 @@ class ArtifactController extends Fisma_Zend_Controller_Action_Security
      */
     private function _loadSelectElementFromTable(Zend_Form_Element_Select $select)
     {
-        $table = $select->sourceTable;
-        $indexField = $select->indexField;
-        $labelField = $select->labelField;
+        $table      = Inspekt::getAlnum($select->sourceTable);
+        $indexField = Inspekt::getAlnum($select->indexField);
+        $labelField = Inspekt::getAlnum($select->labelField);
         
         /*
          * This query uses interpolated parameters because there is no parameter binding in the select() or

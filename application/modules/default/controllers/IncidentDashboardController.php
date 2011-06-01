@@ -132,10 +132,10 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function newIncidentsDataAction()
     {
-        $sortBy = $this->getRequest()->getParam('sort-by', 'id');
-        $order = $this->getRequest()->getParam('order', 'asc');
-        $limit = $this->getRequest()->getParam('limit', 10);
-        $offset = $this->getRequest()->getParam('offset', 0);
+        $sortBy = Inspekt::getAlnum($this->getRequest()->getParam('sort-by', 'id'));
+        $order  = Inspekt::getAlpha($this->getRequest()->getParam('order', 'asc'));
+        $limit  = Inspekt::getInt($this->getRequest()->getParam('limit', 10));
+        $offset = Inspekt::getInt($this->getRequest()->getParam('offset', 0));
             
         $newIncidentsQuery = Doctrine::getTable('Incident')->getUserIncidentQuery($this->_me, $this->_acl)
                                   ->select('i.id, i.reportTs, i.additionalInfo, i.piiInvolved')
@@ -168,10 +168,10 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function recentlyUpdatedDataAction()
     {
-        $sortBy = $this->getRequest()->getParam('sort-by', 'modifiedTs');
-        $order = $this->getRequest()->getParam('order', 'desc');
-        $limit = $this->getRequest()->getParam('limit', 10);
-        $offset = $this->getRequest()->getParam('offset', 0);
+        $sortBy = Inspekt::getAlnum($this->getRequest()->getParam('sort-by', 'modifiedTs'));
+        $order  = Inspekt::getAlpha($this->getRequest()->getParam('order', 'desc'));
+        $limit  = Inspekt::getInt($this->getRequest()->getParam('limit', 10));
+        $offset = Inspekt::getInt($this->getRequest()->getParam('offset', 0));
         
         // Calculate the timestamp for 48 hours ago
         $now = Zend_Date::now();
@@ -208,10 +208,10 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function recentlyClosedDataAction()
     {
-        $sortBy = $this->getRequest()->getParam('sort-by', 'closedTs');
-        $order = $this->getRequest()->getParam('order', 'desc');
-        $limit = $this->getRequest()->getParam('limit', 10);
-        $offset = $this->getRequest()->getParam('offset', 0);
+        $sortBy = Inspekt::getAlnum($this->getRequest()->getParam('sort-by', 'closedTs'));
+        $order  = Inspekt::getAlpha($this->getRequest()->getParam('order', 'desc'));
+        $limit  = Inspekt::getInt($this->getRequest()->getParam('limit', 10));
+        $offset = Inspekt::getInt($this->getRequest()->getParam('offset', 0));
         
         // Calculate the timestamp for 5 days ago
         $now = Zend_Date::now();
@@ -249,10 +249,10 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function recentCommentsDataAction()
     {
-        $sortBy = $this->getRequest()->getParam('sort-by', 'id');
-        $order = $this->getRequest()->getParam('order', 'desc');
-        $limit = $this->getRequest()->getParam('limit', 10);
-        $offset = $this->getRequest()->getParam('offset', 0);
+        $sortBy = Inspekt::getAlnum($this->getRequest()->getParam('sort-by', 'id'));
+        $order  = Inspekt::getAlpha($this->getRequest()->getParam('order', 'desc'));
+        $limit  = Inspekt::getInt($this->getRequest()->getParam('limit', 10));
+        $offset = Inspekt::getInt($this->getRequest()->getParam('offset', 0));
         
         // Calculate the timestamp for 48 hours ago
         $now = Zend_Date::now();
