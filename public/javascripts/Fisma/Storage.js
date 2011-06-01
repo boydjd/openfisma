@@ -45,9 +45,18 @@
         if (YAHOO.lang.isNull(FS._storageEngine)) {
             var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
-                null, // no preferred engine
+                YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
-                {engine: engineConf});
+                {
+                    engine: engineConf,
+                    force: false,
+                    order: [
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineSWF
+                    ]
+                }
+            );
         }
     };
 
@@ -60,6 +69,17 @@
      * @static
      */
     FS._storageEngine = null;
+
+    /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
 
     /**
      * Register a callback for when the storage engine is ready.
@@ -75,6 +95,7 @@
             FS._initStorageEngine();
             var engine = FS._storageEngine;
             var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
             if (!(engine.isReady || (engine._swf && locationSession))) {
                 engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {

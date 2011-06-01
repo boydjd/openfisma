@@ -39,6 +39,14 @@ function selectAllUnsafe() {
     }
 }
 
+function selectAllByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","checked");
+}
+
+function selectNoneByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","unchecked");
+}
+
 function selectAll() {
     alert("Not implemented");
 }

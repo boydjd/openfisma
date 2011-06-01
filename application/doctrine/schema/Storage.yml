@@ -2,5 +2,5 @@ Storage:
     columns:
         userId: integer
         namespace: string(255)
-        data: object
+        data: array 
 

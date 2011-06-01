@@ -24,8 +24,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Scripts
- * @version    $Id$
- r*/
+ */
 try {
     $startTime = time();
     
@@ -57,6 +56,13 @@ try {
     $application->bootstrap(array('configuration', 'db', 'registerLogger'));
     Fisma::setNotificationEnabled(false);
     Fisma::setListenerEnabled(false);
+
+    // Make sure the mysql supports InnoDB
+    if (!Fisma_Cli_Abstract::checkInnoDb()) {
+        throw new Doctrine_Exception(
+            'The current Mysql server does not support InnoDB engine. InnoDB is required for OpenFisma!'
+        );
+    }
 
     /** @todo temporary hack to load large datasets */
     ini_set('memory_limit', '512M');
@@ -110,30 +116,39 @@ try {
             
             $source = "$samplePath/$sampleFile";
             $target = "$sampleDataBuildPath/$sampleFile";
-            if (!file_exists($target)) {
-                // If the file doesn't already exist, then we can simply copy the sample data into the build directory
-                if (!copy($source, $target)) {
-                    throw new Fisma_Zend_Exception("Could not copy '$source' to '$target'");
-                }
-            } else {
-                // If the target file does already exist, then we need to merge the YAML files.
-                $sourceHandle = fopen($source, 'r');
-                $targetHandle = fopen($target, 'a');
-                
-                // This file will contain a YAML object header which needs to be stripped out before writing to the
-                // target file.
-                $write = false;
-                while ($buffer = fread($sourceHandle, 10240)) {
-                    if ($write) {
-                        fwrite($targetHandle, $buffer);
-                    } else {
-                        // Look for the first YAML tag in the document and remove it. Then set the $write flag to true
-                        // so that we can stop looking for the tag.
-                        if (preg_match('/[^#]\w+:.*\R/', $buffer, $a)) {
-                            $buffer = preg_replace('/[^#]\w+:.*(?>\r\n|\n|\x0b|\f|\r|\x85)/', '', $buffer, 1);
-                            fwrite($targetHandle, $buffer);
-                            $write = true;
+
+            // When combining fixture files with sample data, we need to strip the YAML 
+            // header off of the sample data file
+            $stripYamlHeader = file_exists($target);
+
+            // If the target file does already exist, then we need to merge the YAML files.
+            $sourceHandle = fopen($source, 'r');
+            $targetHandle = fopen($target, 'a');
+
+            while ($buffer = fgets($sourceHandle)) {
+                if (!$stripYamlHeader) {
+                    if (strpos($buffer, '##') !== FALSE) {
+                        $matches = array();
+                        if (preg_match("/##\s*CURDATE(-|\+)(\d+)\s*##/", $buffer, $matches)) {
+                            $today = Zend_Date::now();
+                            if ('+' == $matches[1]) {
+                                $today->addDay($matches[2]);
+                            } elseif ('-' == $matches[1]) {
+                                $today->subDay($matches[2]);
+                            }
+                            $dateString = "'" . $today->toString('YYYY-MM-dd HH:mm:ss') . "'";
+                            $buffer = preg_replace('/##\s*CURDATE.*##/', $dateString, $buffer);
                         }
+                    }
+
+                    fwrite($targetHandle, $buffer);
+                } else {
+                    // Look for the first YAML tag in the document and remove it. Then set the $write flag to true
+                    // so that we can stop looking for the tag.
+                    if (preg_match('/[^#]\w+:.*\R/', $buffer, $a)) {
+                        $buffer = preg_replace('/[^#]\w+:.*(?>\r\n|\n|\x0b|\f|\r|\x85)/', '', $buffer, 1);
+                        fwrite($targetHandle, $buffer);
+                        $stripYamlHeader = false;
                     }
                 }
             }
@@ -165,8 +180,13 @@ try {
     
     $stopTime = time();
     print("Elapsed time: " . ($stopTime - $startTime) . " seconds\n");
+
 } catch (Zend_Config_Exception $zce) {
-    print "The application is not installed correctly. If you have not run the installer, you should do that now.";
+    // A zend config exception indicates that the application may not be installed properly
+    echo 'The application is not installed correctly.' . PHP_EOL;
+    
+    echo 'Exception ' . get_class($zce) . ' occured: ' . $zce->getMessage() . PHP_EOL;    
+
 } catch (Exception $e) {
     print get_class($e) 
         . "\n" 

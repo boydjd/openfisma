@@ -20,3 +20,5 @@ Network:
                 purify: html
                 notify: true
             comment: Any extra information about this network, such as protocols used, geographic location, etc.
+    actAs:
+        SoftDelete: true

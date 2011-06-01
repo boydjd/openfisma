@@ -70,4 +70,9 @@ class Vm_ProductController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->products = $products;
     }
+    
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }

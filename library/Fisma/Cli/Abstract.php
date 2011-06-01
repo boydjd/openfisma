@@ -159,4 +159,24 @@ abstract class Fisma_Cli_Abstract
         
         print "\nFinished in $minutes minutes and $seconds seconds\n";
     }
+
+    /*
+     * Check InnoDb whether is supported or not in mysql
+     *
+     * @return boolean
+     */
+    public static function checkInnoDb()
+    {
+        $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
+        $engines = $conn->fetchAll('SHOW ENGINES');
+        $innodb  = null;
+        foreach ($engines as $engine) {
+            if ('innodb' === strtolower($engine['Engine'])) {
+                $innodb = $engine;
+                break;
+            }
+        }
+
+        return !empty($innodb) && 'no' !== strtolower($innodb['Support']);
+    }
 }

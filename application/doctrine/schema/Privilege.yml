@@ -10,10 +10,13 @@ Privilege:
             type: string(255)
             comment: A human-readable description of what this privilege means.
 
+    indexes:
+        resourceAction:  { fields: [resource, action], type: unique }
+
     relations:
         # Roles is a many-to-many relationship
         Roles:
-            class: Roles
+            class: Role
             local: privilegeId
             foreign: roleId
             refClass: RolePrivilege

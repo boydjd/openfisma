@@ -777,7 +777,11 @@ tinyMCE.init({
 	theme_advanced_statusbar_location : "bottom",
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
-	spellchecker_languages : "+English=en"
+	spellchecker_languages : "+English=en",
+    setup : function(ed) {
+        ed.onClick.add(Fisma.SessionManager.onActivityEvent);
+        ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
+    }
 });
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -1502,6 +1506,14 @@ function selectAllUnsafe() {
     }
 }
 
+function selectAllByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","checked");
+}
+
+function selectNoneByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","unchecked");
+}
+
 function selectAll() {
     alert("Not implemented");
 }
@@ -1729,9 +1741,18 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
         if (YAHOO.lang.isNull(FS._storageEngine)) {
             var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
-                null, // no preferred engine
+                YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
-                {engine: engineConf});
+                {
+                    engine: engineConf,
+                    force: false,
+                    order: [
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineSWF
+                    ]
+                }
+            );
         }
     };
 
@@ -1744,6 +1765,17 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
      * @static
      */
     FS._storageEngine = null;
+
+    /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
 
     /**
      * Register a callback for when the storage engine is ready.
@@ -1759,6 +1791,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
             FS._initStorageEngine();
             var engine = FS._storageEngine;
             var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
             if (!(engine.isReady || (engine._swf && locationSession))) {
                 engine.subscribe(engine.CE_READY, fn, obj, scope);
             } else {
@@ -2373,7 +2406,7 @@ Fisma.AutoComplete = function() {
          */
         subscribe : function(sType, aArgs, params) {
             document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-
+            $('#' + params.hiddenFieldId).trigger('change');
             // If a valid callback is specified, then call it
             try {
                 var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
@@ -2794,7 +2827,9 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-
+        
+        Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
+        
         return rtn;
     },
 
@@ -3069,12 +3104,11 @@ Fisma.Chart = {
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
-
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
-
+        
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
@@ -3257,13 +3291,15 @@ Fisma.Chart = {
             return;
         }
 
-        // unescape
-        theLink = unescape(theLink);
-
         // Does the link contain a variable?
         if (theLink !== false) {
             theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
         }
+
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
 
         if (paramObj.linksdebug === true) {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
@@ -4526,8 +4562,92 @@ Fisma.Chart = {
         }
 
         return isChartEmpty;
-    }
+    },
+    
+    /**
+     * Place canvases in divs with the appropriate style declairations. 
+     * This is nessesary to force styles when printing.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    placeCanvasesInDivs : function(chartParamsObj) {
 
+        // Get the div that holds all canvases of this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Get a list (obj-array) of all canvases for this chart that are absolute positioned
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this).css('position') == 'absolute';
+            }
+        );
+
+        // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
+        canvases.wrap(
+            function() {
+                var canvas = $(this);
+
+                if (canvas.context.className == 'jqplot-yaxis-tick') {
+
+                    // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            right: canvas.css('right')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            right: 0
+                        }
+                    );
+                    
+                    if (Fisma.Chart.isIE === false) {
+                        div.className = 'chart-yaxis-tick';
+                    } else {
+                        div.className = 'chart-yaxis-tick-InIE';
+                    }
+
+                } else if (canvas.context.className == 'jqplot-xaxis-label') {
+                    
+                    // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            bottom: '0px'
+                        }
+                    );
+
+                } else {
+
+                    // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
+                    var div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            left: canvas.css('left')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            left: 0
+                        }
+                    );
+
+                }
+
+                return div;
+            }
+        );
+
+        return this;
+    }
+    
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -4574,6 +4694,10 @@ Fisma.CheckboxTree = {
         }
 
         var topListItem = clickedBox.parentNode;
+
+        if (topListItem.nextSibling === null) {
+            return;
+        }
 
         // If there are no nested checkboxes, then there is nothing to do
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
@@ -4845,6 +4969,9 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
+            // The error message should be hidden before handles test email
+            YAHOO.util.Dom.get('msgbar').style.display = 'none';
+
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -4879,8 +5006,17 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
-    
+            var panelConfig = {
+                    width : "260px",
+                    modal : false
+                };
+            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel(
+                'Test E-mail Configuration',
+                content.innerHTML,
+                null,
+                panelConfig
+            );
+
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
         },
@@ -4924,7 +5060,7 @@ Fisma.Email = function() {
     
             // Remove used panel
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-                Fisma.Email.panelElement.removeMask();
+                Fisma.Email.panelElement.hide();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
@@ -5076,6 +5212,39 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
     }
 };
 /**
@@ -6840,6 +7009,16 @@ Fisma.Search = function() {
         showDeletedRecords : false,
 
         /**
+         * User search preferences for when a search hasn't been executed on this model this session.
+         */
+        searchPreferences: null,
+
+        /**
+         * Boolean flag as to whether the search preferences have been updated.
+         */
+        updateSearchPreferences: false,
+
+        /**
          * Test the current system configuration
          */
         testConfiguration : function () {
@@ -6855,9 +7034,6 @@ Fisma.Search = function() {
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
-
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -6887,23 +7063,14 @@ Fisma.Search = function() {
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                document.getElementById('searchType').value = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles a new search
-            document.getElementById('msgbar').style.display = 'none';
-
+        executeSearch: function (form) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -6919,9 +7086,6 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -6930,9 +7094,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -6944,6 +7106,50 @@ Fisma.Search = function() {
                 if ('string' == typeof error) {
                     alert(error);
                 }
+            }
+        },
+
+        /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            try {
+                var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                var searchPrefs = {type: form.searchType.value};
+                if (searchPrefs.type === 'advanced') {
+                    var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                    var fields = {};
+                    for (var i in panelState) {
+                        fields[panelState[i].field] = panelState[i].operator;
+                    }
+                    searchPrefs['fields'] = fields;
+                }
+                Fisma.Search.updateSearchPreferences = true;
+                Fisma.Search.searchPreferences = searchPrefs;
+                Fisma.Search.updateQueryState(queryState, form);
+            } catch (e) {
+                message(e);
+            } finally {
+                Fisma.Search.executeSearch(form);
+            }
+        },
+
+        /**
+         * Update Query State
+         *
+         * @param queryState {Fisma.Search.QueryState}
+         * @param form Reference to the search form
+         */
+        updateQueryState: function(queryState, form) {
+            var Dom = YAHOO.util.Dom;
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
             }
         },
 
@@ -7043,47 +7249,56 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
-
-            var searchType = document.getElementById('searchType').value;
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                searchType = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles YUI data
-            document.getElementById('msgbar').style.display = 'none';
-
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+        generateRequest: function (tableState, table) {
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=";
-                    postData += encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=";
-                    postData += encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+
+            if (Fisma.Search.updateSearchPreferences) {
+                postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+            }
+
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -7109,21 +7324,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 
@@ -7379,6 +7596,10 @@ Fisma.Search = function() {
          */
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
+            if (YAHOO.lang.isObject(this.yuiDataTable)) {
+                // if already set, go ahead and run the callback
+                this.onSetTableCallback();
+            }
         }
     };
 }();
@@ -7491,33 +7712,46 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-
+        
         this.container = document.createElement('div');
-
+        
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(this);";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
-        this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
-
-        this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
-
-        this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
-
+        // IE7 will display floated elements on the next line, not the current line, unless those floated elements
+        // are inserted before the unfloated content on current line.
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
+
+        this.queryFieldContainer = document.createElement('span');
+        this.renderQueryField(this.queryFieldContainer, fieldName);
+        this.containerForm.appendChild(this.queryFieldContainer);
+
+        this.queryTypeContainer = document.createElement('span');
+        this.renderQueryType(this.queryTypeContainer, operator);
+        this.containerForm.appendChild(this.queryTypeContainer);
+
+        this.queryInputContainer = document.createElement('span');
+        this.renderQueryInput(this.queryInputContainer, operands);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
-
         clearDiv.className = "clear";
+        this.containerForm.appendChild(clearDiv);
 
-        this.container.appendChild(clearDiv);
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -8274,13 +8508,13 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
     for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
@@ -8328,6 +8562,10 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var Lang = YAHOO.lang;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
 
         if (this.defaultQueryTokens) {
             var index = 0;
@@ -8366,31 +8604,53 @@ Fisma.Search.Panel.prototype = {
                 this.criteria.push(criterion);
             }
 
-            // If only one criterion, disable its "minus" button
-            if (1 == this.criteria.length) {
-                this.criteria[0].setRemoveButtonEnabled(false);
-            }
-
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
-            Fisma.Search.onSetTable(function () {
-                var searchForm = document.getElementById('searchForm');
-            
-                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
-                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
-                // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
-            });
+            Lang.later(null, null, function() { Fisma.Search.updateQueryState(queryState, Dom.get('searchForm')); });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+            var advancedQuery = queryState.getAdvancedQuery();
+
+            for (var i in advancedQuery) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(
+                        advancedQuery[i].field,
+                        advancedQuery[i].operator,
+                        advancedQuery[i].operands));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+        } else if (Fisma.Search.searchPreferences.type === 'advanced') {
+            var fields = Fisma.Search.searchPreferences.fields;
+            for (var i in fields) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(i, fields[i]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
             var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
-            var criteriaElement = initialCriteria.render(this.searchableFields[0].name);
-            initialCriteria.setRemoveButtonEnabled(false);
-            this.container.appendChild(criteriaElement);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         }
+
+        // If only one criterion, disable its "minus" button
+        if (1 == this.criteria.length) {
+            this.criteria[0].setRemoveButtonEnabled(false);
+        }
+
+        Fisma.Search.onSetTable(function () {
+            var searchForm = document.getElementById('searchForm');
+        
+            // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+            setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+        });
     },
   
     /**
@@ -8459,6 +8719,20 @@ Fisma.Search.Panel.prototype = {
         
         return query;
     },
+
+    /**
+     * Get the search panel's state
+     */
+    getPanelState: function () {
+        var state = new Array();
+        
+        for (var index in this.criteria) {
+            var criterion = this.criteria[index];
+            state.push(criterion.getQuery());
+        }
+        
+        return state;
+    },
     
     /**
      * Returns search metadata for a field (specified by name)
@@ -8514,6 +8788,173 @@ Fisma.Search.Panel.prototype = {
         throw "Number of operands not defined for query function: " + queryFunction;
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var Lang = YAHOO.lang;
+    /**
+     * Enable getting and setting of query state information
+     *
+     * @namespace Fisma.Search
+     * @class QueryState
+     * @constructor
+     * @param model {String} Model for which this state information applies.
+     * @param init {Object} Object literal of default state.
+     */
+    var QueryState = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.Storage('Fisma.Search.QueryState');
+        };
+    QueryState.TYPE_SIMPLE = "simple";
+    QueryState.TYPE_ADVANCED = "advanced";
+    QueryState.prototype = {
+        /**
+         * Basic getter for all state information.
+         *
+         * @method getState
+         * @return {Object}
+         */
+        getState: function () {
+            return this._storage.get(this._model);
+        },
+
+        /**
+         * Basic setter for state information
+         *
+         * @method setState
+         * @param value {Object} State information.
+         */
+        setState: function (value) {
+            this._storage.set(this._model, value);
+        },
+
+        /**
+         * Get search type
+         *
+         * @method getSearchType
+         * @return {String} TYPE_SIMPLE or TYPE_ADVANCED, default TYPE_SIMPLE
+         */
+        getSearchType: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.searchType)) {
+                return QueryState.TYPE_SIMPLE;
+            } 
+            switch (state.searchType) {
+                case QueryState.TYPE_SIMPLE:
+                case QueryState.TYPE_ADVANCED:
+                    return state.searchType;
+                default:
+                    throw "Invalid search type encountered.";
+            }
+        },
+
+        /**
+         * Basic setter for search type
+         *
+         * @method setSearchType
+         * @param type {String} Search type, "simple" or "advanced"
+         */
+        setSearchType: function(type) {
+            var oldData = this.getState() || {},
+                newData = {};
+            newData.searchType = type;
+            if (type === "simple") {
+                newData.keywords = oldData.keywords || "";
+            } else if (type === "advanced") {
+                newData.advancedQuery = oldData.advancedQuery || [];
+            } else {
+                throw "Invalid search type specified.";
+            }
+            this.setState(newData);
+        },
+
+        /**
+         * Get search keywords
+         *
+         * @method getKeywords
+         * @return {String} Keywords
+         */
+        getKeywords: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.keywords)) {
+                return "";
+            } 
+            return state.keywords;
+        },
+
+        /**
+         * Basic setter for search keywords
+         *
+         * @method setKeywords
+         * @param type {String} Search keywords
+         */
+        setKeywords: function(keywords) {
+            if (!Lang.isString(keywords)) {
+                throw "Can not set non-string as keywords.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_SIMPLE) {
+                throw "Attempting to save keywords for non-simple search.";
+            }
+            var data = this.getState() || {};
+            data.keywords = keywords;
+            this.setState(data);
+        },
+
+        /**
+         * Get advanced search query
+         *
+         * @method getAdvancedQuery
+         * @return {Object} Query
+         */
+        getAdvancedQuery: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isObject(state.advancedQuery)) {
+                return {};
+            } 
+            return state.advancedQuery;
+        },
+
+        /**
+         * Basic setter for advanced search query.
+         *
+         * @method setAdvancedQuery
+         * @param query {Object} Advanced search query
+         */
+        setAdvancedQuery: function(query) {
+            if (!Lang.isObject(query)) {
+                throw "Can not set non-object as advanced search query.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+                throw "Attempting to save advanced search query for non-advanced search.";
+            }
+            var data = this.getState() || {};
+            data.advancedQuery = query;
+            this.setState(data);
+        }
+    };
+    Fisma.Search.QueryState = QueryState;
+})();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -8670,6 +9111,244 @@ Fisma.Search.Panel.prototype = {
         }
     };
     Fisma.Search.TablePreferences = FSTP;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides session timeout awareness with XHR support.
+     * @namespace Fisma
+     * @class SessionManager
+     */
+    var Manager = { // shorthand, full assignment at bottom
+        /**
+         * Polling delay, in seconds.
+         */
+        POLL_DELAY: 1,
+
+        /**
+         * Name of the cookie used to track server timestamp.
+         */
+        COOKIE_TIMESTAMP: "session_timestamp",
+
+        /**
+         * URI of the refresh session action
+         */
+        REFRESH_SESSION_URI: "/auth/refresh-session/format/json",
+
+        /**
+         * Time (in seconds) before session expires.
+         */
+        _inactivityPeriod: null,
+
+        /**
+         * Time (in seconds) before alerting the user of inactivity.
+         */
+        _inactivityNotice: null,
+
+        /**
+         * Timer object saved on init().
+         */
+        _timer: null,
+
+        /**
+         * Timestamp reported by server on the most recent request.
+         */
+        _serverTimestamp: null,
+
+        /**
+         * Timestamp on client that corresponds to the server timestamp.
+         * Used to determine how long the client has been idle.
+         */
+        _localTimestamp: null,
+
+        /**
+         * YUI Panel For Idle Notice
+         */
+        _inactivityPanel: null,
+
+        /**
+         * YUI Button for the idle notice panel.
+         */
+        _inactivityPanelButton: null,
+
+        /**
+         * Indicates if there has been a recent session refresh if true.
+         */
+        _recentSessionRefresh: false,
+
+        /**
+         * Called onDOMReady to start the polling procedure.
+         *
+         * @method _init
+         * @public
+         * @static
+         */
+        init: function(inactivityPeriod, inactivityNotice) {
+            Manager._inactivityPeriod = Number(inactivityPeriod);
+            Manager._inactivityNotice = Number(inactivityNotice);
+            Manager._serverTimestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            Manager._localTimestamp = Manager._getLocalTimestamp();
+            Manager._timer = YAHOO.lang.later( Manager.POLL_DELAY * 1000, null, Manager.poll, null, true);
+            var Event = YAHOO.util.Event;
+            Event.onDOMReady(function() {
+                Event.addListener(document.body, "click", Manager.onActivityEvent);
+                Event.addListener(document.body, "keypress", Manager.onActivityEvent);
+            });
+        },
+
+        /**
+         * Executes at each polling cycle to test if the session is near timeout.
+         *
+         * @method poll
+         * @public
+         * @static
+         */
+        poll: function() {
+            var timestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            // reset state if server timestamp changes
+            if (timestamp !== Manager._serverTimestamp) {
+                Manager._serverTimestamp = timestamp;
+                Manager._localTimestamp = Manager._getLocalTimestamp();
+                return;
+            }
+
+            var idle = Manager._getLocalTimestamp() - Manager._localTimestamp;
+            // check to see if the session has expired
+            if (idle > Manager._inactivityPeriod) {
+                Manager.logout();
+                return;
+            }
+
+            // see if only two minutes remain
+            if (idle > Manager._inactivityNotice) {
+                Manager.notifyUser();
+            }
+        },
+
+        /**
+         * Notifies the user of an eminent timeout and prompts to continue session.
+         *
+         * @method notifyUser
+         * @public
+         * @static
+         */
+        notifyUser: function() {
+            if (YAHOO.lang.isNull(Manager._inactivityPanel)) {
+                var content = document.createElement("div");
+                content.innerHTML = "Your session will expire soon, please click Continue to continue working.";
+                var buttonDiv = document.createElement("div");
+                YAHOO.util.Dom.setStyle(buttonDiv, "text-align", "right");
+                Manager._inactivityPanelButton = new YAHOO.widget.Button({
+                    type: "push",
+                    label: "Continue",
+                    container: buttonDiv,
+                    onclick: {fn: Manager.continueSession}
+                });
+                content.appendChild(buttonDiv);
+                var panel = new YAHOO.widget.Panel(
+                    "inactivity-notice",
+                    {width: "320px", fixedcenter: true, draggable: false, modal: true, close: false}
+                );
+                panel.setHeader("Your Session Will Expire");
+                panel.setBody(content);
+                panel.render(document.body);
+                Manager._inactivityPanel = panel;
+            }
+            Manager._inactivityPanel.show();
+        },
+
+        /**
+         * Action taken when the user ops to continue their session, responsible for contacting the server.
+         *
+         * @method continueSession
+         * @public
+         * @static
+         */
+        continueSession: function() {
+            if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                Manager._inactivityPanelButton.set("disabled", true);
+            }
+            var callback = function() {
+                if (YAHOO.lang.isObject(Manager._inactivityPanel)) {
+                    Manager._inactivityPanel.hide();
+                }
+                if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                    Manager._inactivityPanelButton.set("disabled", false);
+                }
+            };
+            YAHOO.util.Connect.asyncRequest(
+                "GET",
+                Manager.REFRESH_SESSION_URI,
+                {success: callback, failure: callback});
+        },
+
+        /**
+         * Called when the users session has been determined to be expired. Redirects the user to the Log In screen.
+         *
+         * @method logout
+         * @public
+         * @static
+         */
+        logout: function() {
+            document.location.href = "/auth/logout";
+        },
+
+        /**
+         * Get the current local unix time.
+         *
+         * @method _getLocalTimestamp
+         * @return integer
+         * @public
+         * @static
+         */
+        _getLocalTimestamp: function() {
+            return Math.round((new Date()).getTime() / 1000);
+        },
+
+        /**
+         * Callback function for mouse clicks and key press events.
+         *
+         * @method onActivityEvent
+         * @return void
+         * @public
+         * @static
+         */
+        onActivityEvent: function() {
+            // disable activity listening when the inactivity panel is being displayed to the user
+            if (YAHOO.lang.isObject(Manager._inactivityPanel) && Manager._inactivityPanel.getProperty("visible")) {
+                return;
+            }
+            if (Manager._recentSessionRefresh) {
+                return;
+            }
+            Manager._recentSessionRefresh = true;
+            Manager.continueSession();
+            YAHOO.lang.later(15000, null, function() {Manager._recentSessionRefresh = false;});
+        }
+    };
+    Fisma.SessionManager = Manager;
 })();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -8957,6 +9636,102 @@ Fisma.System = {
      */
     uploadDocumentCallback : function (yuiPanel) {
         window.location.href = window.location.href;
+    },
+
+    /**
+     * removeSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    removeSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.organizationId = config.organizationId;
+        data.userRoles = userRoles;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/remove-user-roles/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+        }});
+    },
+
+    /**
+     * addUser 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addUser : function (event, config) {
+        var data = new Object();
+
+        data.userId = $('#addUserId').val();
+        data.roleId = $('#roles').val();
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/system/add-user/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
+    },
+
+    /**
+     * addSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    addSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.userRoles = userRoles;
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/add-user-roles-to-organization/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     }
 };
 /**
@@ -9544,7 +10319,56 @@ Fisma.User = {
      * A boolean which indicates if an account is currently being checked in LDAP
      */
     checkAccountBusy : false,
-    
+
+    /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+        var that = this;
+
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+
+        this.commentTable.addRow(commentRow);
+
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }
+        );
+
+        rowBlinker.start();
+
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
+    },
+
     /**
      * Display a dialog which shows user information for the specified user.
      * 
@@ -9755,6 +10579,13 @@ Fisma.User = {
 
         // Create a panel
         var content = document.createElement('div');
+
+        var messageContainer = document.createElement('span');
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
+                                                   + " this user's account.");
+        messageContainer.appendChild(warningMessage);
+        content.appendChild(messageContainer);
+
         var p = document.createElement('p');
         var contentTitle = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(contentTitle);
@@ -9774,15 +10605,14 @@ Fisma.User = {
         content.appendChild(lineSpacingDiv);
 
         // Add submmit button to panel
-        var continueButton = document.createElement('input');
-        continueButton.type = 'button';
-        continueButton.id = 'continueButton';
-        continueButton.value = 'continue';
-        content.appendChild(continueButton);
+        var buttonContainer = document.createElement('span');
+        var submitButton = new YAHOO.widget.Button({type: 'button', label: "Save", container: buttonContainer});
+        content.appendChild(buttonContainer);
 
-        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+        Fisma.HtmlPanel.showPanel('Add Comment', content);
 
-        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        submitButton.on('click', Fisma.User.submitUserForm);
+
         return true;
     },
 
@@ -9915,6 +10745,40 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show a warning message before a record is deleted.
+     */
+    showDeleteWarning : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
+                         + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                     document.location = config.url
+                                     this.hide();
+                                 }
+                             }, 
+                             { text:"No",  handler : function () {
+                                     this.hide(); 
+                                 }
+                             } 
+                           ] 
+                } ); 
+ 
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+        YAHOO.util.Event.preventDefault(event);
     }
 };
 /**

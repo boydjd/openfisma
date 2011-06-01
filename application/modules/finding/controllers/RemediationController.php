@@ -80,19 +80,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     */
     public function init()
     {
-        $contextSwitch = $this->_helper->fismaContextSwitch();
-        $contextSwitch->addActionContext('search2', array('xls', 'pdf'))
-                      ->addActionContext('summary-data', array('json', 'xls', 'pdf'));
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('summary-data', 'json')
+                      ->setAutoJsonSerialization(false)
+                      ->initContext();
 
-        if ('search2' == $this->getRequest()->getActionName()) {
-           $contextSwitch->setAutoDisableLayout(true);
+        if (in_array($this->_request->getParam('format'), array('pdf', 'xls'))) {
+            $this->_helper->reportContextSwitch()
+                          ->addActionContext('summary-data', array('pdf', 'xls'));
         }
-        // Quick hack: disable auto-json-serialization for summary-data action
-        if ('summary-data' == $this->getRequest()->getActionName()) {
-           $contextSwitch->setAutoJsonSerialization(false);
-        }
-        
-        $contextSwitch->initContext();
 
         parent::init();
     }
@@ -294,10 +290,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // For excel and PDF requests, return a table format. For JSON requests, return a hierarchical
         // format
         if ('pdf' == $format || 'xls' == $format) {
+            $report = new Fisma_Report();
+            $report->setTitle('Finding Summary')
+                   ->addColumn(new Fisma_Report_Column('Organization/Information System'));
+            
             $allStatuses = Finding::getAllStatuses();
-            array_unshift($allStatuses, 'Organization/Information System');
-            array_push($allStatuses, 'TOTAL');
-            $this->view->columns = $allStatuses;
+            foreach ($allStatuses as $status) {
+                $report->addColumn(new Fisma_Report_Column($status));
+            }
+
+            $report->addColumn(new Fisma_Report_Column('TOTAL'));
 
             // Create a table of data based on the rows which need to be displayed
             $tableData = array();
@@ -357,7 +359,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 }
             }
 
-            $this->view->tableData = $tableData;
+            $report->setData($tableData);
+
+            $this->_helper->reportContextSwitch()->setReport($report);
         } else {
             // Decide whether the response can be gzipped
             $acceptEncodingHeader = $this->getRequest()->getHeader('Accept-Encoding');
@@ -580,6 +584,52 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
+
+        $buttons = array();
+        $buttons['list'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'Return to Search Results',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+        // Only display controls if the finding has not been deleted
+        if (!$finding->isDeleted()) {
+            // Display the delete finding button if the user has the delete finding privilege
+            if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
+
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'deleteFinding', 
+                    array(
+                          'label' => 'Delete Finding',
+                          'onClickFunction' => 'Fisma.Finding.deleteFinding',
+                          'onClickArgument' => array(
+                              'id' => $id
+                        ) 
+                    )
+                );
+            }
+            
+            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
+            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
+                $discardChangesButtonConfig = array(
+                    'value' => 'Discard Changes',
+                    'href' => '/finding/remediation/view/id/' . $finding->id
+                );
+                
+                $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges', 
+                    $discardChangesButtonConfig
+                );
+            
+                $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+                    'saveChanges', 
+                    array('label' => 'Save Changes')
+                );
+            }
+        }
+
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**

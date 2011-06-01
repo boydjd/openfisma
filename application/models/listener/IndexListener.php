@@ -49,7 +49,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $modelName = get_class($record);
         $relationAliases = array();
 
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
         $indexer = new Fisma_Search_Indexer($searchEngine);
         $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
         
@@ -95,7 +95,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             $modelName = get_class($record);
             $relationAliases = array();
 
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+            $searchEngine = Zend_Registry::get('search_engine');
             $indexer = new Fisma_Search_Indexer($searchEngine);
             $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
 
@@ -136,7 +136,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         }
 
         // If the record is softDeleted, then reindex it. Otherwise, delete the record from the index.
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         if ($record->getTable()->hasColumn('deleted_at')) {
             $modelName = get_class($record);

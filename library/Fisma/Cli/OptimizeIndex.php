@@ -32,7 +32,7 @@ class Fisma_Cli_OptimizeIndex extends Fisma_Cli_Abstract
      */
     protected function _run()
     {     
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
         
         $searchEngine->optimizeIndex();
     }
