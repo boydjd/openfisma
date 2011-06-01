@@ -81,9 +81,6 @@ Fisma.Search = function() {
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
 
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
-
             YAHOO.util.Connect.asyncRequest(
                 'POST',
                 '/config/test-search/format/json',

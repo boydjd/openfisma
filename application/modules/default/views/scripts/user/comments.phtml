@@ -4,8 +4,63 @@ $operation = "[<a href='{$this->escape($this->viewLink)}'>Back To User View</a>]
 Fisma_Format_Section::startSection(
     sprintf('User Comments (%s)&nbsp;&nbsp;%s', $this->escape($this->username), $operation)
 );
-
-echo $this->escape($this->dataTable, 'none');
-
+?>
+    <div class="buttonBar">
+        <?php echo $this->escape($this->commentButton, 'none'); ?>
+    </div>
+    <div id="comments">
+        <table id="commentsTable">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($this->comments as $comment):
+                ?>
+                    <tr>
+                        <td><?php echo $this->escape($comment['createdTs']); ?></td>
+                        <td>
+                            <?php echo $this->escape($this->userInfo($comment['User']['username']), 'none'); ?>
+                        </td>
+                        <td>
+                            <?php echo $this->escape($this->textToHtml($this->escape($comment['comment'])), 'none'); ?>
+                        </td>
+                    </tr>
+                <?php
+                endforeach;
+                ?>
+            </tbody>
+        </table>
+    </div>
+<?php
 Fisma_Format_Section::stopSection();
 ?>
+
+<script type="text/javascript">
+// Convert comments table to YUI table
+YAHOO.util.Event.onContentReady('comments', function() {
+    var myColumnDefs = [
+        {key:'timestamp', label:'Timestamp', sortable:true},
+        {key:'username', label:'User', formatter:'html', sortable:true},
+        {key:'comment', label:'Comment', sortable:false}
+    ];
+
+    var myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("commentsTable"));
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    myDataSource.responseSchema = {
+        fields: [
+            {key:'timestamp'},
+            {key:'username'},
+            {key:'comment'}
+        ]
+    };
+
+    var commentTable = new YAHOO.widget.DataTable("comments", myColumnDefs, myDataSource, {});
+    YAHOO.lang.dump(commentTable);
+    Fisma.User.commentTable = commentTable;
+});
+</script>
