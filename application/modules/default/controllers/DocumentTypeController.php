@@ -43,4 +43,9 @@ class DocumentTypeController extends Fisma_Zend_Controller_Action_Object
     {
         return 'Document Type';
     }
+
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }
