@@ -131,6 +131,21 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
+     * Instantiate a search engine and save it in the registry 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initSearchEngine()
+    {
+        $searchConfig = Fisma::$appConf['search'];
+
+        $searchEngine = new Fisma_Search_Engine($searchConfig['host'], $searchConfig['port'], $searchConfig['path']);
+
+        Zend_Registry::set('search_engine', $searchEngine);
+    }
+
+    /**
      * _initRegisterLogger 
      * 
      * @access protected
