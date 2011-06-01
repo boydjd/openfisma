@@ -5208,6 +5208,39 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
     }
 };
 /**
@@ -10413,6 +10446,40 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show a warning message before a record is deleted.
+     */
+    showDeleteWarning : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
+                         + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                     document.location = config.url
+                                     this.hide();
+                                 }
+                             }, 
+                             { text:"No",  handler : function () {
+                                     this.hide(); 
+                                 }
+                             } 
+                           ] 
+                } ); 
+ 
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+        YAHOO.util.Event.preventDefault(event);
     }
 };
 /**
