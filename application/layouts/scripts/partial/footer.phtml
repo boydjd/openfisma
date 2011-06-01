@@ -6,6 +6,8 @@
     <a href="<?php echo $this->escape($mailurl)?>">Contact Administrator</a>&nbsp;|&nbsp;
     <a href="/auth/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
     <a href="/auth/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
-    <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a></i>
+    <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a> 
+        <?php echo $this->escape(Fisma::configuration()->getConfig('app_version')) ?> 
+    </i>
 </div>
 <div class="clear">

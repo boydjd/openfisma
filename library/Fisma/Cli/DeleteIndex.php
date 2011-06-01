@@ -54,7 +54,7 @@ class Fisma_Cli_DeleteIndex extends Fisma_Cli_Abstract
             throw new Fisma_Zend_Exception_User("You must specify either a model or the all option, but not both.");
         }
 
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         if (!is_null($allModels)) {
             $searchEngine->deleteAll($modelName);

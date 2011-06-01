@@ -597,12 +597,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (!$finding->isDeleted()) {
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
-                $deleteFindingButtonConfig = array(
-                    'value' => 'Delete Finding',
-                    'href' => '/finding/remediation/delete/id/' . $finding->id
-                );
 
-                $buttons['delete'] = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'deleteFinding', 
+                    array(
+                          'label' => 'Delete Finding',
+                          'onClickFunction' => 'Fisma.Finding.deleteFinding',
+                          'onClickArgument' => array(
+                              'id' => $id
+                        ) 
+                    )
+                );
             }
             
             // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
