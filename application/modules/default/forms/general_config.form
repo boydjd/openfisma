@@ -39,6 +39,15 @@ elements.session_inactivity_period.options.required = true
 elements.session_inactivity_period.options.tooltip = "<p><b>Session Timeout</b></p><p>Enter the number of minutes you will allow the users to remain idle without logging them off of the application. Please note that <b>idle</b> refers to time that the user is not submitting information to the server, they may be editing findings and formatting responses in the application but this is still considered inactivity.</p>"
 displayGroups.general.elements.session_inactivity_period = "session_inactivity_period"
 
+elements.session_inactivity_notice.type = "text"
+elements.session_inactivity_notice.options.label = "Session Timeout Notification (minutes)"
+elements.session_inactivity_notice.options.validators.digits.validator = "Digits"
+elements.session_inactivity_notice.options.validators.greaterThan.validator = "GreaterThan"
+elements.session_inactivity_notice.options.validators.greaterThan.options.min = 0
+elements.session_inactivity_notice.options.required = true
+elements.session_inactivity_notice.options.tooltip = "<p><b>Session Timeout Notification</b></p><p>Enter the number of minutes to wait before notifying the user that their session is near expiration.</p>"
+displayGroups.general.elements.session_inactivity_notice = "session_inactivity_notice"
+
 elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"
 elements.auth_type.options.multiOptions.database = "database"
