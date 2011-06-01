@@ -578,7 +578,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $visibleColumns = $this->_getColumnVisibility();
 
         // Look up searchable columns and add them to the table
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         foreach ($searchableFields as $fieldName => $searchParams) {
 
@@ -724,7 +724,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         // Execute simple search (default) or advanced search (if explicitly requested)
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
         
         // For exports, disable highlighting and result length truncation
         if (!empty($format)) {

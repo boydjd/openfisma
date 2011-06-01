@@ -575,35 +575,10 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     {
         $response = new Fisma_AsyncResponse;
 
-        // Get system search configuration
-        $configuration = Fisma::configuration();
-
-        $storedConfig = array(
-            'search_backend' => $configuration->getConfig('search_backend'),
-            'search_solr_host' => $configuration->getConfig('search_solr_host'),
-            'search_solr_port' => $configuration->getConfig('search_solr_port'),
-            'search_solr_path' => $configuration->getConfig('search_solr_path')
-        );
-        
-        // Get posted form configuration and strip out empty fields
-        $request = $this->getRequest();
-
-        $formConfig = array(
-            'search_backend' => $request->getParam('search_backend'),
-            'search_solr_host' => $request->getParam('search_solr_host'),
-            'search_solr_port' => $request->getParam('search_solr_port'),
-            'search_solr_path' => $request->getParam('search_solr_path')
-        );
-        
-        $formConfig = array_filter($formConfig);
-        
-        // Merge system configuration into form configuration and then validate the merged configuration
-        $searchConfiguration = array_merge($storedConfig, $formConfig);
-
         try {
-            $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
+            $searchEngine = Zend_Registry::get('search_engine');
         
-            $result = $searchBackend->validateConfiguration();
+            $result = $searchEngine->validateConfiguration();
     
             if ($result !== true) {
                 $response->fail($result);
@@ -682,29 +657,18 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function searchAction()
     {
-        $form = $this->_getConfigForm('search_config');
+        // elements.testConfiguration.type = "Form_Button"
+        // elements.testConfiguration.options.label = "Test Configuration"
+        // elements.testConfiguration.options.onClickFunction = "Fisma.Search.testConfiguration"
 
-        if ($this->getRequest()->isPost()) {
-            $newValues = $this->getRequest()->getPost();
-
-            $this->_saveConfigurationForm($form, $newValues);
-
-            $this->_redirect('/config/search');
-        }
-
-        // Populate default values for non-submit button elements
-        foreach ($form->getElements() as $element) {
-
-            if ($element instanceof Zend_Form_Element_Submit) {
-                continue;
-            }
-            
-            $name = $element->getName();            
-            $value = Fisma::configuration()->getConfig($name);
-
-            $form->setDefault($name, $value);
-        }
-
-        $this->view->form = $form;
+        $this->view->parameters = Fisma::$appConf['search'];
+        
+        $this->view->testSearchButton = new Fisma_Yui_Form_Button(
+            'testConfiguration',
+            array(
+                'label' => 'Test Search Configuration', 
+                'onClickFunction' => 'Fisma.Search.testConfiguration'
+            )
+        );
     }
 }

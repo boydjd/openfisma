@@ -18,22 +18,27 @@ displayGroups.help.elements.instructions = "instructions"
 elements.piiMobileMedia.type="select"
 elements.piiMobileMedia.options.label="Was the PII stored on Mobile Media?"
 elements.piiMobileMedia.options.tooltip = "<i>Mobile media</i> refers to any computer storage device which can be removed from a computer and carried separately, such as a CD, DVD, USB drive, etc." 
+elements.piiMobileMedia.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiMobileMedia="piiMobileMedia"
 
 elements.piiMobileMediaType.type="select"
 elements.piiMobileMediaType.options.label="What type of Mobile Media?"
+elements.piiMobileMediaType.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiMobileMediaType="piiMobileMediaType"
 
 elements.piiEncrypted.type="select"
 elements.piiEncrypted.options.label="Was the PII encrypted?"
+elements.piiEncrypted.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiEncrypted="piiEncrypted"
 
 elements.piiAuthoritiesContacted.type="select"
 elements.piiAuthoritiesContacted.options.label="Were authorities contacted?"
+elements.piiAuthoritiesContacted.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiAuthoritiesContacted="piiAuthoritiesContacted"
 
 elements.piiPoliceReport.type="select"
 elements.piiPoliceReport.options.label="Was a police report filed?"
+elements.piiPoliceReport.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiPoliceReport="piiPoliceReport"
 
 elements.piiIndividualsCount.type="text"
@@ -41,15 +46,19 @@ elements.piiIndividualsCount.options.label="How many individuals are affected by
 elements.piiIndividualsCount.options.style="width:100px"
 elements.piiIndividualsCount.options.tooltip = "For example, if a file containing 100 unique social security numbers was lost, then that would affect 100 individuals." 
 elements.piiIndividualsCount.options.validators.alnum.validator = "Digits"
+elements.piiIndividualsCount.options.filters.null.filter = "Null"
+elements.piiIndividualsCount.options.filters.stringtrim.filter = "StringTrim"
 displayGroups.pii.elements.piiIndividualsCount="piiIndividualsCount"
 
 elements.piiIndividualsNotified.type="select"
 elements.piiIndividualsNotified.options.label="Have the affected individuals been notified?"
+elements.piiIndividualsNotified.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiIndividualsNotified="piiIndividualsNotified"
 
 elements.piiShipment.type="select"
 elements.piiShipment.options.label="Was the PII lost in a shipment?"
 elements.piiShipment.options.tooltip = "Shipments include standard carriers like the postal service, FedEx, and UPS, as well as private couriers or interoffice mail." 
+elements.piiShipment.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiShipment="piiShipment"
 
 elements.piiAdditional.type="textarea"
