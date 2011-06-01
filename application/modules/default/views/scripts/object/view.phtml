@@ -24,6 +24,8 @@ Fisma_Format_Section::stopSection();
 ?>
 
 <script type="text/javascript">
-    var url = {url : '<?php echo $this->escape($deleteUrl) ?>' };
-    YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning, url);
+    YAHOO.util.Event.onDOMReady(function () {
+        var url = {url : '<?php echo $this->escape($deleteUrl) ?>' };
+        YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning, url);
+    });
 </script>
