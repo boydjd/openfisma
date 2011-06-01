@@ -35,4 +35,9 @@ class Finding_SourceController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Source';
+    
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }
