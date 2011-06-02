@@ -657,10 +657,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function searchAction()
     {
-        // elements.testConfiguration.type = "Form_Button"
-        // elements.testConfiguration.options.label = "Test Configuration"
-        // elements.testConfiguration.options.onClickFunction = "Fisma.Search.testConfiguration"
-
         $this->view->parameters = Fisma::$appConf['search'];
         
         $this->view->testSearchButton = new Fisma_Yui_Form_Button(
@@ -670,5 +666,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 'onClickFunction' => 'Fisma.Search.testConfiguration'
             )
         );
+        
+        $this->view->csrfToken = Zend_Controller_Front::getInstance()
+                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
+                                 ->getToken();
     }
 }
