@@ -219,4 +219,16 @@ class Fisma_String
 
         return $text;
     }
+
+    /**
+     * A helper for converting string from UTF-8 to ISO-8859-1//TRANSLIT.
+     * 
+     * @param UTF-8 encoded string $text
+     * @return ISO-8859-1//TRANSLIT encoded string 
+     */
+    static function convertUTF8ToISOTRANSLIT($text)
+    {
+        $text = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
+        return $text;
+    }
 }
