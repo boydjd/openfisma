@@ -228,7 +228,6 @@ class Fisma_String
      */
     static function convertUTF8ToISOTRANSLIT($text)
     {
-        $text = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
-        return $text;
+        return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
     }
 }
