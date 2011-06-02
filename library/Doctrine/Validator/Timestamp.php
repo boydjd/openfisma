@@ -44,7 +44,7 @@ class Doctrine_Validator_Timestamp
             return true;
         }
 
-        $e = explode(' ', trim($value));
+        $e = explode('T', trim($value));
         $date = isset($e[0]) ? $e[0]:null;
         $time = isset($e[1]) ? $e[1]:null;
 
