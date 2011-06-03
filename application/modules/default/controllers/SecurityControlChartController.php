@@ -102,12 +102,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
-        // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
-        if (Fisma::configuration()->getConfig('search_backend') === 'solr') {
-            $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
-        } else {
-            $searchVar = '#ColumnLabel#';
-        }
+        $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
 
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
         if ($displayBy === 'Family Summary') {
