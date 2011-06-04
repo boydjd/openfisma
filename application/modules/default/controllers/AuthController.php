@@ -40,6 +40,19 @@ class AuthController extends Zend_Controller_Action
     const CREDENTIAL_ERROR_MESSAGE = "Invalid username or password";
 
     /**
+     * Initialize internal members.
+     * 
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('refresh-session', 'json')
+                      ->initContext();
+    }
+
+    /**
      * Handling user login
      * 
      * The login process verifies the credential provided by the user. The authentication can
@@ -185,10 +198,17 @@ class AuthController extends Zend_Controller_Action
                 $this->_helper->layout->setLayout('layout');
                 $this->_redirect('/index/index');
             }
-        } catch(Zend_Auth_Exception $e) {
+        } catch (Zend_Auth_Exception $zae) {
             // If any Auth exceptions are caught during login, 
             // then return to the login screen and display the message
-            $this->view->assign('error', $e->getMessage());
+            $this->view->assign('error', $zae->getMessage());
+        } catch (Fisma_Zend_Exception $fze) {
+            $userMessage = 'Authentication is not configured correctly. Contact your server administrator.';
+            $this->view->assign('error', $userMessage);
+
+            // No stack trace is logged because zend ldap will include the stack trace in its log message
+            $logMessage = $fze->getMessage();
+            $this->getInvokeArg('bootstrap')->getResource('log')->err($logMessage);
         }
     }
 
@@ -285,5 +305,16 @@ class AuthController extends Zend_Controller_Action
         }
 
         return false;
+    }
+
+    /**
+     * A no-op action to continue the users' session
+     *
+     * @return void
+     */
+    public function refreshSessionAction()
+    {
+        $this->view->result = new Fisma_AsyncResponse();
+        $this->view->result->succeed();
     }
 }

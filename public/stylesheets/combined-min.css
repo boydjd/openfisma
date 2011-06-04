@@ -68,6 +68,19 @@ div.switchButton,div.switchButton span.border{display:block;width:93px;height:27
 div.switchButton span.border{background-position:left top;margin:0;}
 div.switchButton span.spinner{visibility:hidden;position:relative;top:-23px;left:97px;}
 div.toolbar{font-weight:bold;background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;text-align:right;}
+div.showDisposalSystem{margin:0 0 5px 3px;font-weight:bold;}
+div.showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
+.treeNodeDragAbove span{border-top:4px solid #bbc6d6;}
+.treeNodeDragOnto{background-color:#bbc6d6;}
+.treeNodeDragBelow span{border-bottom:4px solid #bbc6d6;}
+.treeNodeDragProxy{border:1px solid #bbc6d6!important;padding:3px;opacity:.75;}
+.draggableTreeContainer .agency{display:block;padding-left:20px;background:url(/images/agency-small.png) no-repeat;}
+.draggableTreeContainer .bureau{display:block;padding-left:20px;background:url(/images/bureau-small.png) no-repeat;}
+.draggableTreeContainer .organization{display:block;padding-left:20px;background:url(/images/organization-small.png) no-repeat;}
+.draggableTreeContainer .gss{display:block;padding-left:20px;background:url(/images/gss-small.png) no-repeat;}
+.draggableTreeContainer .major{display:block;padding-left:20px;background:url(/images/major-small.png) no-repeat;}
+.draggableTreeContainer .minor{display:block;padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
+.draggableTreeContainer .disposal{display:block;padding-left:20px;background-color:pink;}
 span.userInfo{padding-left:17px;padding-right:1px;border-bottom:1px dashed black;background:url(/images/user-info.png) no-repeat 0 1px;}
 span.userInfo:hover{cursor:pointer;}
 span.userInfo:active{color:#416ed7;}
@@ -166,15 +179,6 @@ tr.over td{background:#bcd4ec;}
 .notice h1{text-align:left;padding:5px 5px;color:#44637a;background-color:#ddd;line-height:23px;font-weight:bold;margin-top:0;}
 div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;display:none;}
 .yui-navset div.loading div{background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
-.agency{display:block;padding-left:20px;background:url(/images/agency-small.png) no-repeat;}
-.bureau{display:block;padding-left:20px;background:url(/images/bureau-small.png) no-repeat;}
-.organization{display:block;padding-left:20px;background:url(/images/organization-small.png) no-repeat;}
-.gss{display:block;padding-left:20px;background:url(/images/gss-small.png) no-repeat;}
-.major{display:block;padding-left:20px;background:url(/images/major-small.png) no-repeat;}
-.minor{display:block;padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
-.disposal{background-color:pink;}
-div#showDisposalSystem{margin:0 0 5px 3px;font-weight:bold;}
-div#showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}
 table.systemDocuments td{padding:10px;margin-top:10px;}

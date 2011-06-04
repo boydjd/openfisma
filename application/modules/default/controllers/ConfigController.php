@@ -105,7 +105,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             /**
              * @todo More ugliness. Remove this.
              */
-            if (in_array($name, array('session_inactivity_period'))) {
+            if (in_array($name, array('session_inactivity_period', 'session_inactivity_notice'))) {
                 $value /= 60; // Convert from seconds to minutes
             }
             
@@ -435,7 +435,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 /**
                  * @todo this needs to be cleaned up
                  */
-                if ('session_inactivity_period' == $item) {
+                if ('session_inactivity_period' == $item || 'session_inactivity_notice' == $item) {
                     $value *= 60; // convert minutes to seconds
                 }
 
@@ -657,10 +657,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function searchAction()
     {
-        // elements.testConfiguration.type = "Form_Button"
-        // elements.testConfiguration.options.label = "Test Configuration"
-        // elements.testConfiguration.options.onClickFunction = "Fisma.Search.testConfiguration"
-
         $this->view->parameters = Fisma::$appConf['search'];
         
         $this->view->testSearchButton = new Fisma_Yui_Form_Button(
@@ -670,5 +666,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 'onClickFunction' => 'Fisma.Search.testConfiguration'
             )
         );
+        
+        $this->view->csrfToken = Zend_Controller_Front::getInstance()
+                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
+                                 ->getToken();
     }
 }

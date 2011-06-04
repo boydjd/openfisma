@@ -76,10 +76,12 @@ Fisma.Search = function() {
             Fisma.Search.testConfigurationActive = true;
 
             var testConfigurationButton = document.getElementById('testConfiguration');
-            testConfigurationButton.className = "yui-button yui-push-button yui-button-disabled";
+            YAHOO.util.Dom.addClass(testConfigurationButton, "yui-button-disabled");
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
+            
+            var postData = "csrf=" + document.getElementById('csrfToken').value;
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -94,7 +96,7 @@ Fisma.Search = function() {
                             message(response.message, "warning", true);
                         }
 
-                        testConfigurationButton.className = "yui-button yui-push-button";
+                        YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
                         Fisma.Search.testConfigurationActive = false;
                         spinner.hide();
                     },
@@ -104,7 +106,8 @@ Fisma.Search = function() {
 
                         spinner.hide();
                     }
-                }
+                },
+                postData
             );
         },
 
@@ -161,20 +164,25 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent: function(form) {
-            var queryState = new Fisma.Search.QueryState(form.modelName.value);
-            var searchPrefs = {type: form.searchType.value};
-            if (searchPrefs.type === 'advanced') {
-                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
-                var fields = {};
-                for (var i in panelState) {
-                    fields[panelState[i].field] = panelState[i].operator;
+            try {
+                var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                var searchPrefs = {type: form.searchType.value};
+                if (searchPrefs.type === 'advanced') {
+                    var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                    var fields = {};
+                    for (var i in panelState) {
+                        fields[panelState[i].field] = panelState[i].operator;
+                    }
+                    searchPrefs['fields'] = fields;
                 }
-                searchPrefs['fields'] = fields;
+                Fisma.Search.updateSearchPreferences = true;
+                Fisma.Search.searchPreferences = searchPrefs;
+                Fisma.Search.updateQueryState(queryState, form);
+            } catch (e) {
+                message(e);
+            } finally {
+                Fisma.Search.executeSearch(form);
             }
-            Fisma.Search.updateSearchPreferences = true;
-            Fisma.Search.searchPreferences = searchPrefs;
-            Fisma.Search.updateQueryState(queryState, form);
-            Fisma.Search.executeSearch(form);
         },
 
         /**

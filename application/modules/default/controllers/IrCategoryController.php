@@ -96,4 +96,9 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Object
     {
         return 'Incident Categories';
     }
+    
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }

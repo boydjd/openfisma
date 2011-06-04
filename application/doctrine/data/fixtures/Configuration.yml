@@ -6,6 +6,8 @@ Configuration:
 
         session_inactivity_period: 1200 
 
+        session_inactivity_notice: 1080
+
         auth_type: database
 
         send_type: sendmail

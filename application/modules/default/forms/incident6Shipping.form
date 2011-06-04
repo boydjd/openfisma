@@ -22,6 +22,7 @@ displayGroups.pii.elements.piiShipmentSenderCompany="piiShipmentSenderCompany"
 elements.piiShipmentSenderContacted.type="select"
 elements.piiShipmentSenderContacted.label="l"
 elements.piiShipmentSenderContacted.options.label="Has the shipping company been contacted?"
+elements.piiShipmentSenderContacted.options.filters.null.filter = "Null"
 displayGroups.pii.elements.piiShipmentSenderContacted="piiShipmentSenderContacted"
 
 elements.piiShipmentTimeline.type="textarea"
