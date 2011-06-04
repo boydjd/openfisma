@@ -5,7 +5,7 @@
         <?php
             echo $this->escape($this->headTitle()->prepend(Fisma::configuration()->getConfig('system_name')), 'none');
 
-            $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'button');
+            $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'button', 'reset-fonts-grids');
 
             $yui = new Fisma_Loader();
             $yui->load($yuiComponents);

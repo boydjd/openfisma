@@ -30,16 +30,16 @@ class Fisma_Search_Indexer
     /**
      * Reference to the search engine used by this indexer.
      * 
-     * @var Fisma_Search_Backend_Abstract
+     * @var Fisma_Search_Engine
      */
     private $_searchEngine;
 
     /**
      * Constructor
      *
-     * @param Fisma_Search_Backend_Abstract $searchEngine
+     * @param Fisma_Search_Engine $searchEngine
      */
-    public function __construct(Fisma_Search_Backend_Abstract $searchEngine)
+    public function __construct(Fisma_Search_Engine $searchEngine)
     {
         $this->_searchEngine = $searchEngine;
     }

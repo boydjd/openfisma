@@ -1,0 +1,4 @@
+These init scripts are written for and tested on OpenSUSE. As such, they should be LSB-compliant, but no guarantees are
+made.
+
+http://refspecs.freestandards.org/LSB_3.2.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html

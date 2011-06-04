@@ -25,8 +25,20 @@
  * @package    Fisma
  * @subpackage Fisma_Search
  */
-class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
+class Fisma_Search_Engine
 {
+    /**
+     * True if highlighting should be turned on
+     */
+    private $_highlightingEnabled = true;
+
+    /**
+     * Search results are limited to this number of characters per field
+     *
+     * @var int
+     */
+    private $_maxRowLength = 100;
+
     /**
      * Client object is used for communicating with Solr server
      *
@@ -35,7 +47,10 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
     private $_client;
 
     /**
-     * Constructor
+     * Constructs a search engine client object
+     * 
+     * The constructor is public to keep the design clean, but in production you probably don't want to instantiate
+     * your own instance at runtime. Instead, use a pre-built search engine object from the registry.
      *
      * @param string $hostname Hostname or IP address where Solr's servlet container is running
      * @param int $port The port that Solr's servlet container is listening on
@@ -929,5 +944,204 @@ class Fisma_Search_Backend_Solr extends Fisma_Search_Backend_Abstract
             // If no IDs match, then return an impossible condition
             return ('id:0');
         }
+    }
+
+    /**
+     * Escape a parameter for inclusion in a Lucene query
+     *
+     * @see http://lucene.apache.org/java/2_4_0/queryparsersyntax.html#Escaping%20Special%20Characters
+     *
+     * @param string $parameter
+     * @return string Escaped parameter
+     */
+    public function escape($parameter)
+    {
+        $specialChars = '+-!(){}[]^"~*?:\&|';
+
+        return addcslashes($parameter, $specialChars);
+    }
+
+    /**
+     * Get Max Row Length
+     *
+     * @return int
+     */
+    public function getMaxRowLength()
+    {
+        return $this->_maxRowLength;
+    }
+
+    /**
+     * Set Max Row Length
+     *
+     * Set to null to turn off row length limit
+     *
+     * @param int $length
+     */
+    public function setMaxRowLength($length)
+    {
+        $this->_maxRowLength = $length;
+    }
+
+    /**
+     * Get whether highlighting is enabled or not
+     *
+     * @return bool
+     */
+    public function getHighlightingEnabled()
+    {
+        return $this->_highlightingEnabled;
+    }
+
+    /**
+     * Control highlighting behavior
+     *
+     * @param bool $enabled
+     */
+    public function setHighlightingEnabled($enabled)
+    {
+        $this->_highlightingEnabled = $enabled;
+    }
+
+    /**
+     * Convert HTML string to a form that is ideal for text indexing
+     *
+     * This removes tags but ensures that the removal of tags does not result in separate words being concatenated
+     * together.
+     *
+     * Notice that malformed HTML inputs may be mangled by this method.
+     *
+     * @param string $htmlString
+     * @return string
+     */
+    protected function _convertHtmlToIndexString($html)
+    {
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $html = str_replace(chr(10), ' ', $html);
+        $html = str_replace(chr(13), ' ', $html);
+
+        // Remove tags, but be careful not to concatenate together two words that were split by a tag
+        $html = preg_replace('/(\w)<.*?>(\W)/', '$1$2', $html);
+        $html = preg_replace('/(\W)<.*?>(\w)/', '$1$2', $html);
+        $html = preg_replace('/<.*?>/', ' ', $html);
+
+        // Decode entities (this way we don't index words like 'lt', 'rt', and 'amp')
+        $html = html_entity_decode($html);
+
+        // Remove excess whitespace
+        $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);
+        $html = preg_replace('/^\s+/', '', $html);
+        $html = preg_replace('/\s+$/', '', $html);
+        $html = preg_replace('/ +/', ' ', $html);
+
+        return $html;
+    }
+    
+    /**
+     * Return an array of ACL terms
+     *
+     * e.g. the following return value indicates a user has access to any document where the 'id' field is 1 or 2
+     *
+     * array(
+     *     array('field' => 'id', 'value' => 1),
+     *     array('field' => 'id', 'value' => 2),
+     * )
+     *
+     * @param Doctrine_Table $table
+     * @return mixed Array of acl terms or null if ACL does not apply
+     */
+    protected function _getAclTerms($table) 
+    {
+        $aclFields = $table->getAclFields();
+
+        // If no ACL fields, then don't return any ACL terms
+        if (count($aclFields) == 0) {
+            return null;
+        }
+
+        $ids = array();
+        
+        foreach ($aclFields as $aclFieldName => $callback) {      
+            $aclIds = call_user_func($callback);
+
+            if ($aclIds === false) {
+                $message = "Could not call ACL ID provider ($callback) for ACL field ($name).";
+
+                throw new Fisma_Zend_Exception($message);
+            }
+
+            foreach ($aclIds as &$aclId) {
+                $ids[] = array(
+                    'field' => $aclFieldName,
+                    'value' => $this->escape($aclId)
+                );
+            }
+        }
+
+        return $ids;
+    }
+    
+    /**
+     * Returns the raw value for a field based on the search metadata definition.
+     *
+     * This has the ability to load data from a related model as well.
+     *
+     * @param Doctrine_Table $table
+     * @param array $object
+     * @param string $doctrineFieldName Name of field given by Doctrine
+     * @param array $searchFieldDefinition
+     * return mixed The raw value of the field
+     */
+    protected function _getRawValueForField($table, $object, $doctrineFieldName, $searchFieldDefinition)
+    {
+        $rawValue = null;
+
+        if (!isset($searchFieldDefinition['join'])) {
+            $rawValue = $object[$table->getFieldName($doctrineFieldName)];
+        } else {
+            // Handle nested relations
+            $relationParts = explode('.', $searchFieldDefinition['join']['relation']);
+
+            $relatedObject = $object;
+
+            foreach ($relationParts as $relationPart) {
+                $relatedObject = $relatedObject[$relationPart];
+            }
+
+            $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
+        }
+        
+        return $rawValue;
+    }
+    
+    /**
+     * Return searchable fields for a particular model
+     *
+     * @param string $type Name of model 
+     */
+    protected function _getSearchableFields($type)
+    {
+        $table = Doctrine::getTable($type);
+
+        if (!($table instanceof Fisma_Search_Searchable)) {
+            $message = 'Objects which are to be indexed must have a table that implements'
+                     . ' the Fisma_Search_Searchable interface';
+
+            throw new Fisma_Zend_Exception($message);
+        }
+        
+        return $table->getSearchableFields();
+    }
+    
+    /**
+     * Tokenize a basic search query and return an array of tokens
+     * 
+     * @param string $basicQuery
+     * @return array
+     */
+    public function _tokenizeBasicQuery($basicQuery)
+    {
+        return preg_split("/[\s,]+/", $basicQuery);
     }
 }

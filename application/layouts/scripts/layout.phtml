@@ -1,12 +1,11 @@
 <?php
     echo $this->escape("{$this->doctype()}\n", 'none');
     $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period');
+    $inactivityNotice = Fisma::configuration()->getConfig('session_inactivity_notice');
 ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="refresh" 
-              content="<?php echo $this->escape($inactivityPeriod, 'none'); ?>;url=/auth/logout">
 
     <?php 
     echo $this->partial('partial/title.phtml');
@@ -34,6 +33,11 @@
     echo $this->escape($this->headScript(), 'none');
     echo $this->escape($this->headLink(), 'none');
     ?>
+        <script type="text/javascript">
+            Fisma.SessionManager.init(
+                <?php echo $this->escape($inactivityPeriod, 'json');?>,
+                <?php echo $this->escape($inactivityNotice, 'json'); ?>);
+        </script>
     </head>
     <body class="yui-skin-sam">
         <div id='skip'>
