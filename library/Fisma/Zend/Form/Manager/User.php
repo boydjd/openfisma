@@ -43,9 +43,10 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
         $roles  = Doctrine_Query::create()
                     ->select('*')
                     ->from('Role')
+                    ->orderBy('name')
                     ->execute();
         foreach ($roles as $role) {
-            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->nickname . ' - ' . $role->name));
         }
 
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {

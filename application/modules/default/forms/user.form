@@ -81,12 +81,12 @@ elements.email.options.attribs.size = 35
 elements.email.options.validators.email.validator = "EmailAddress"
 displayGroups.accountInfo.elements.email = "email"
 
-; The roles are populated dynamically in the account controller since they can
+; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
 ; change at any time.
 elements.role.type = "multiselect"
 elements.role.options.label = "Role(s)"
 elements.role.options.required = false
-elements.role.options.size = 5
+elements.role.options.size = 10
 displayGroups.accountInfo.elements.roles = "role"
 
 elements.title.type = "text"

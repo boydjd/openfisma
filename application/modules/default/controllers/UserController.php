@@ -485,7 +485,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($organizationTree as $organization) {
                 $organizations->addCheckbox(
                     $organization['id'], 
-                    $organization['name'], 
+                    $organization['nickname'] . ' - ' . $organization['name'], 
                     $organization['level'], 
                     $roleId
                 );
