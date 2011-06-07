@@ -316,9 +316,11 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
          */
         $data = $this->_report->getData();
 
+        $view = Zend_Layout::getMvcInstance()->getView();
         foreach ($data as &$row) {
             $row = array_map('Fisma_String::plainTextToReportText', array_values($row));
-            $row = array_map('htmlentities', array_values($row));
+            $row = array_map('Fisma_String::convertToLatin1', array_values($row));
+            $row = array_map($view->escape, array_values($row));
         }
 
         $view->data = $data;
