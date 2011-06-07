@@ -7,16 +7,15 @@
     </i>
 </p>
 
-<p>
-    <table class="keyValues">
-        <?php foreach ($this->parameters as $key => $value): ?>
-            <tr>
-                <td><?php echo $this->escape($key); ?></td>
-                <td><?php echo $this->escape($value); ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-</p>
+<input id="csrfToken" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
+<table class="keyValues">
+    <?php foreach ($this->parameters as $key => $value): ?>
+        <tr>
+            <td><?php echo $this->escape($key); ?></td>
+            <td><?php echo $this->escape($value); ?></td>
+        </tr>
+    <?php endforeach; ?>
+</table>
 
 <p>
     <?php echo $this->escape($this->testSearchButton, 'none'); ?>

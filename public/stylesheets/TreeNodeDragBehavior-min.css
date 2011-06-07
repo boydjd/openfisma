@@ -1,0 +1,13 @@
+div.showDisposalSystem{margin:0 0 5px 3px;font-weight:bold;}
+div.showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
+.treeNodeDragAbove span{border-top:4px solid #bbc6d6;}
+.treeNodeDragOnto{background-color:#bbc6d6;}
+.treeNodeDragBelow span{border-bottom:4px solid #bbc6d6;}
+.treeNodeDragProxy{border:1px solid #bbc6d6!important;padding:3px;opacity:.75;}
+.draggableTreeContainer .agency{display:block;padding-left:20px;background:url(/images/agency-small.png) no-repeat;}
+.draggableTreeContainer .bureau{display:block;padding-left:20px;background:url(/images/bureau-small.png) no-repeat;}
+.draggableTreeContainer .organization{display:block;padding-left:20px;background:url(/images/organization-small.png) no-repeat;}
+.draggableTreeContainer .gss{display:block;padding-left:20px;background:url(/images/gss-small.png) no-repeat;}
+.draggableTreeContainer .major{display:block;padding-left:20px;background:url(/images/major-small.png) no-repeat;}
+.draggableTreeContainer .minor{display:block;padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
+.draggableTreeContainer .disposal{display:block;padding-left:20px;background-color:pink;}

@@ -6589,6 +6589,472 @@ Fisma.Module = {
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A treeview widget that is specialized for displaying the organization/system hierarchy
+     * 
+     * @namespace Fisma
+     * @class OrganizationTreeView
+     * @extends n/a
+     * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
+     */
+    var OTV = function(contentDivId) {
+        this._contentDiv = document.getElementById(contentDivId);
+        
+        if (YAHOO.lang.isNull(this._contentDiv)) {
+            throw "Invalid contentDivId";
+        }
+        
+        this._storage = new Fisma.PersistentStorage("Organization.Tree");
+    };
+
+    OTV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _contentDiv: null,
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
+        _treeView: null,
+
+        /**
+         * The div containing the "include disposal systems" checkbox
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckboxContainer: null,
+
+        /**
+         * The checkbox for "include disposal systems"
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckbox: null,
+        
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _treeViewContainer: null,
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
+        _savePanel: null,
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
+        _storage: null,
+
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
+        render: function () {
+            var that = this;
+
+            // We need storage before we can render anything
+            Fisma.Storage.onReady(function () {
+                that._disposalCheckboxContainer = document.createElement("div");
+                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
+                that._contentDiv.appendChild(that._disposalCheckboxContainer);
+
+                that._loadingContainer = document.createElement("div");
+                that._renderLoading(that._loadingContainer);
+                that._contentDiv.appendChild(that._loadingContainer);
+
+                that._treeViewContainer = document.createElement("div");
+                that._renderTreeView(that._treeViewContainer);
+                that._contentDiv.appendChild(that._treeViewContainer);                
+            });
+        },
+
+        /**
+         * Render the "include disposal systems" interface
+         *
+         * @method OrganizationTreeView._renderDisposalCheckbox
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderDisposalCheckbox: function (container) {
+            this._disposalCheckbox = document.createElement("input");
+            this._disposalCheckbox.type = "checkbox";
+            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
+            YAHOO.util.Dom.generateId(this._disposalCheckbox);
+            YAHOO.util.Event.addListener(
+                this._disposalCheckbox, 
+                "click", 
+                this._handleDisposalCheckboxAction, 
+                this, 
+                true
+            );
+            container.appendChild(this._disposalCheckbox);
+            
+            var label = document.createElement("label");
+            label.setAttribute("for", this._disposalCheckbox.id);
+            label.appendChild(document.createTextNode("Display Disposed Systems"));
+            container.appendChild(label);
+            
+            container.setAttribute("class", "showDisposalSystem");
+        },
+       
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderLoading: function (container) {
+            var loadingImage = document.createElement("img");
+            loadingImage.src = "/images/spinners/small.gif";
+
+            container.style.display = "none";
+            container.appendChild(loadingImage);
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
+        _showLoadingImage: function () {
+            this._loadingContainer.style.display = "block";
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
+        _hideLoadingImage: function () {
+            this._loadingContainer.style.display = "none";    
+        },
+
+        /**
+         * Set the user preference for the include disposal system checkbox and re-render the tree view
+         *
+         * @method OrganizationTreeView._handleDisposalCheckboxAction
+         * @param event {YAHOO.util.Event} The mouse event
+         */
+        _handleDisposalCheckboxAction: function (event) {
+            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
+            this._renderTreeView();
+        },
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderTreeView: function (container) {
+            this._showLoadingImage();
+
+            var url = '/organization/tree-data/format/json';
+
+            if (this._storage.get("includeDisposalSystem") === true) {
+                url += '/displayDisposalSystem/true';
+            }
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                url, 
+                {
+                    success: function (response) {
+                        var json = YAHOO.lang.JSON.parse(response.responseText);
+
+                        // Load the tree data into a tree view
+                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                            this._treeView,
+                            this.handleDragDrop,
+                            this
+                        );
+
+                        // Expand the first two levels of the tree by default
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+
+                        this._treeView.draw();
+                        this._buildContextMenu();
+                        this._hideLoadingImage();
+                    },
+                    failure: function (response) {
+                        alert('Unable to load the organization tree: ' + response.statusText);
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
+        _buildTreeNodes: function (nodeList, parent) {
+
+            for (var i in nodeList) {
+                var node = nodeList[i];
+                var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                                 + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+
+                var yuiNode = new YAHOO.widget.TextNode(
+                    {
+                        label: nodeText,
+                        organizationId: node.id,
+                        type: node.orgType,
+                        systemId: node.systemId
+                    }, 
+                    parent,
+                    false
+                );
+
+                // Set the label style
+                yuiNode.labelStyle = node.orgType;
+
+                var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
+                if (sdlcPhase === 'disposal') {
+                    yuiNode.labelStyle += " disposal";
+                }
+
+                // Recurse
+                if (node.children.length > 0) {
+                    this._buildTreeNodes(node.children, yuiNode);
+                }
+            }
+        },
+
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
+        expandAll: function () {
+            this._treeView.getRoot().expandAll();
+        },
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
+        collapseAll: function () {
+            this._treeView.getRoot().collapseAll();
+        },
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Set up the GET query string for this operation
+            var query = '/organization/move-node/src/' 
+                      + srcNode.data.organizationId 
+                      + '/dest/' 
+                      + destNode.data.organizationId 
+                      + '/dragLocation/' 
+                      + dragLocation;
+    
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.show();
+    
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
+                            // the context menu listener
+                            this._buildContextMenu();
+                            
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {this._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
+        },
+
+        /**
+         * Add the context menu behavior to the tree view
+         *
+         * @method OrganizationTreeView._buildContextMenu
+         */                
+        _buildContextMenu: function () {
+            var contextMenuItems = ["View"];
+
+            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
+                YAHOO.util.Dom.generateId(),
+                { 
+                    trigger: this._treeView.getEl(),
+                    itemdata: contextMenuItems,
+                    lazyload: true
+                }
+            );
+
+            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
+        },
+
+        /**
+         * A callback for context menu events
+         *
+         * @method OrganizationTreeView._contextMenuHandler
+         * @param event {String} The name of the event
+         * @param eventArgs {Array} An array of YAHOO.util.Event
+         */                
+        _contextMenuHandler: function (event, eventArgs) {
+            var targetElement = eventArgs[1].parent.contextEventTarget;
+            var targetNode = this._treeView.getNodeByElement(targetElement);
+        
+            // Create a request URL to view this object
+            var url;
+            var type = targetNode.data.type;
+
+            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+                var url = '/organization/view/id/' + targetNode.data.organizationId;
+            } else {
+                var url = '/system/view/id/' + targetNode.data.systemId;                
+            }
+
+            window.location = url;
+        }
+    };
+
+    Fisma.OrganizationTreeView = OTV;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
  * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
@@ -7030,10 +7496,12 @@ Fisma.Search = function() {
             Fisma.Search.testConfigurationActive = true;
 
             var testConfigurationButton = document.getElementById('testConfiguration');
-            testConfigurationButton.className = "yui-button yui-push-button yui-button-disabled";
+            YAHOO.util.Dom.addClass(testConfigurationButton, "yui-button-disabled");
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
+            
+            var postData = "csrf=" + document.getElementById('csrfToken').value;
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -7048,7 +7516,7 @@ Fisma.Search = function() {
                             message(response.message, "warning", true);
                         }
 
-                        testConfigurationButton.className = "yui-button yui-push-button";
+                        YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
                         Fisma.Search.testConfigurationActive = false;
                         spinner.hide();
                     },
@@ -7058,7 +7526,8 @@ Fisma.Search = function() {
 
                         spinner.hide();
                     }
-                }
+                },
+                postData
             );
         },
 
@@ -10191,6 +10660,331 @@ Fisma.TableFormat = {
         }        
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Adds drag-and-drop functionality to a yui treeview widget
+     * 
+     * @namespace Fisma
+     * @class TreeNodeDragBehavior
+     * @extends n/a
+     * @constructor
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @param element {YAHOO.widget.TreeView} A reference to a tree node that is made draggable 
+     */
+    var TNDB = function(treeView, callback, callbackContext, element) {
+        if (typeof(callback) != "function") {
+            throw "The callback parameter must be a function";
+        }
+
+        this._dragDropGroup = YAHOO.util.Dom.generateId;
+        this._treeView = treeView;
+        this._dragFinishedCallback = callback;
+        this._dragFinishedCallbackContext = callbackContext;
+
+        TNDB.superclass.constructor.call(this, element, this._dragDropGroup, null);
+
+        // Style the proxy element
+        YAHOO.util.Dom.addClass(this.getDragEl(), "treeNodeDragProxy");
+    };
+    
+    YAHOO.lang.extend(TNDB, YAHOO.util.DDProxy, {
+
+        /**
+         * The tree view whose behavior is being modified
+         * 
+         * @property _treeview
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */        
+        _treeView: null,
+
+        /**
+         * The element which is the target of any current drag/drop operation
+         * 
+         * @property _currentDragTarget
+         * @type HTMLElement
+         * @protected
+         */                
+        _currentDragTarget: null,
+
+        /**
+         * Tracks if the current drag was successful across several event handlers
+         * 
+         * @property _currentDragSuccessful
+         * @type boolean
+         * @protected
+         */                
+        _currentDragSuccessful: false,
+
+        /**
+         * Unique ID for this drag and drop group
+         * 
+         * @property _dragDropGroup
+         * @type string
+         * @protected
+         */                
+        _dragDropGroup: null,
+
+        /**
+         * A callback when the user attempts to move a tree node
+         * 
+         * @property _dragFinishedCallback
+         * @type string
+         * @protected
+         */                        
+        _dragFinishedCallback: null,
+
+        /**
+         * The scope for the callback function
+         * 
+         * @property _dragFinishedCallbackContext
+         * @type string
+         * @protected
+         */                
+        _dragFinishedCallbackContext: null,
+        
+        /**
+         * Override DDProxy to handle the start of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.startDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        startDrag: function (event, id) {
+            // Make the dragged proxy look like the source elemnt
+            var dragEl = this.getDragEl();
+            var clickEl = this.getEl();
+    
+            dragEl.innerHTML = clickEl.innerHTML;
+            YAHOO.util.Dom.setStyle(dragEl, "background", "white");
+            YAHOO.util.Dom.setStyle(dragEl, "border", "none");
+        },
+
+        /**
+         * Override DDProxy to handle the end of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.endDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */        
+        endDrag: function (event, id) {
+            var srcEl = this.getEl();
+            var proxy = this.getDragEl();
+
+            // Remove any visual highlighting
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+    
+            if (!this._currentDragSuccessful) {
+                // Animate the proxy element returning to its origin
+                YAHOO.util.Dom.setStyle(proxy, "visibility", "");
+                var anim = new YAHOO.util.Motion(
+                    proxy, 
+                    { points: { to: YAHOO.util.Dom.getXY(srcEl) } },
+                    0.2,
+                    YAHOO.util.Easing.easeOut
+                );
+            
+                // Hide the proxy element when the animation finishes
+                anim.onComplete.subscribe(function () {
+                    YAHOO.util.Dom.setStyle(proxy.id, "visibility", "hidden");
+                });
+                anim.animate();
+                this._currentDragSuccessful = false;
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy hovers over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOver
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOver: function (event, id) {
+            var dragLocation = this._getDragLocation(id, event);
+            
+            /* If the drag is near the top of the element, then we set the top border. 
+             * If its near the middle, we highlight the entire element. If its near the
+             * bottom, we set the bottom border.
+             */
+            this._currentDragTarget = YAHOO.util.Dom.get(id);   
+
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+
+            if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
+            } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragOnto');
+            } else {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragBelow');
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy stops hovering over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOut: function (event, id) {
+            // The drag out event removes provides visual feedback.
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy is moused up over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragDrop
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragDrop: function(event, id) {
+            var srcNode = this._treeView.getNodeByElement(this.getEl());
+            var destNode = this._treeView.getNodeByElement(document.getElementById(id));
+            var dragLocation = this._getDragLocation(id, event);
+    
+            var success = this._dragFinishedCallback.call(
+                this._dragFinishedCallbackContext, 
+                this, 
+                srcNode, 
+                destNode, 
+                dragLocation
+            );
+
+            this._currentDragSuccessful = success;
+        },
+
+        /**
+         * Implementers should call this function when they have successfully run their callback
+         * 
+         * This method will reorder the nodes in the tree view to match the requested drag/drop event
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param srcNode {YAHOO.util.Event} The tree node being dragged
+         * @param destNode {String} The tree node that is being hovered over
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} A target location relative to the destination node
+         */
+        completeDragDrop: function(srcNode, destNode, dragLocation) {
+            this._treeView.popNode(srcNode);
+
+            switch (dragLocation) {
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ABOVE:
+                    srcNode.insertBefore(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO:
+                    srcNode.appendTo(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
+                    srcNode.insertAfter(destNode);
+                    break;
+            }
+
+            this._treeView.getRoot().refresh();
+            
+            // YUI discards all the event handlers after refreshing a treeview, so we need to make it
+            // draggable all over again.
+            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                this._treeView,
+                this._dragFinishedCallback,
+                this._dragFinishedCallbackContext
+            );            
+        },
+
+        /**
+         * Determines where the user intends to drop the current node, based on where the mouse is relative to the
+         * target node.
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param targetElement {HTMLElement} The DOM element that the mouse is over
+         * @param event {YAHOO.util.Event} The mouse event
+         * @returns {TreeNodeDragBehavior.DRAG_LOCATION}
+         */
+        _getDragLocation: function (targetElement, event) {
+            var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
+            var height = targetRegion.bottom - targetRegion.top;
+            var dragVerticalOffset = YAHOO.util.Event.getPageY(event) - targetRegion.top;
+
+            // This ratio indicates how far down the drag was inside the element. This is used for deciding 
+            // whether the mouse is near the top, near the bottom, or somewhere in the middle.
+            var verticalRatio = dragVerticalOffset / height;
+
+            if (verticalRatio < 0.25) {
+                return TNDB.DRAG_LOCATION.ABOVE;
+            } else if (verticalRatio < 0.75) {
+                return TNDB.DRAG_LOCATION.ONTO;
+            } else {
+                return TNDB.DRAG_LOCATION.BELOW;
+            }
+        }
+    });
+
+    /**
+     * Adds the draggable behavior to an existing tree view
+     *
+     * @method TreeNodeDragBehavior.onReady
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @static
+     */
+    TNDB.makeTreeViewDraggable = function (treeView, callback, callbackContext) {
+
+        // Get a list of all nodes in the tree
+        var nodes = treeView.getNodesBy(function (node) {return true;});
+
+        for (var nodeIndex in nodes) {
+            var node = nodes[nodeIndex];
+
+            var yuiNodeDrag = new TNDB(treeView, callback, callbackContext, node.contentElId, this._dragDropGroup);
+        }
+    };
+    
+    /**
+     * Constants that represent drag targets relative to a destination node
+     *
+     * @property DRAG_LOCATION
+     * @static
+     */
+    TNDB.DRAG_LOCATION = {
+        ABOVE: 0,
+        ONTO: 1,
+        BELOW: 2
+    };
+
+    Fisma.TreeNodeDragBehavior = TNDB;
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *

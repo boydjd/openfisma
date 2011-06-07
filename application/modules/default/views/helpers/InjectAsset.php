@@ -58,6 +58,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Ldap.js',
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/Module.js',
+                                      '/javascripts/Fisma/OrganizationTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
@@ -76,6 +77,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
+                                      '/javascripts/Fisma/TreeNodeDragBehavior.js',
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
@@ -104,6 +106,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',
                                       '/stylesheets/SwitchButton.css',
+                                      '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css'
                                 )

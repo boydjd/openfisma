@@ -356,6 +356,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $this->view->toolbarButtons = $this->getToolbarButtons();
+        
+        // "Return To Search Results" doesn't make sense on this screen, so rename that button:
+        $this->view->toolbarButtons['list']->setValue("View Organization List");
+        
+        // We're already on the tree screen, so don't show a "view tree" button
+        unset($this->view->toolbarButtons['tree']);
 
         $this->render('tree');
     }
@@ -391,6 +397,22 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
+        
+        // Save preferences for this screen
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Organization.Tree';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        if (empty($storage)) {
+            $storage = new Storage();
+            $storage->userId = $userId;
+            $storage->namespace = $namespace;
+            $storage->data = array();
+        }
+        $data = $storage->data;
+        $data['includeDisposalSystem'] = $includeDisposalSystem;
+        $storage->data = $data;
+        $storage->save();
+
         $this->view->treeData = $this->getOrganizationTree($includeDisposalSystem);
     }
 
@@ -504,10 +526,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
                 // Get refreshed organization tree data
                 $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
-                $return['treeData'] = $this->getOrganizationTree($includeDisposalSystem);
             } else {
                 $return['success'] = false;
-                $return['message'] = 'Cannot move an organization into itself.';
+                $return['message'] = 'Cannot move an organization or system into itself.';
             }
         } else {
             $return['success'] = false;
@@ -527,7 +548,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $buttons = array();
 
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
                 array(
                     'value' => 'View Organization Hierarchy',
