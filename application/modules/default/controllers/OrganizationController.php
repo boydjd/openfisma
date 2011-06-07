@@ -556,9 +556,58 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 )
             );
         }
-
+        
         $buttons = array_merge($buttons, parent::getToolbarButtons());
+    
+        $id = $this->getRequest()->getParam('id');
+        if (
+            !empty($id)
+            && $this->_acl->hasPrivilegeForClass('create', 'System')
+            && $this->_acl->hasPrivilegeForClass('create', 'Organization')
+            && $this->_acl->hasPrivilegeForClass('update', 'Organization')
+        ) {
 
+            $buttons['convertToSystem'] = new Fisma_Yui_Form_Button_Link(
+                'convertToSystemButton',
+                array(
+                    'value' => 'Convert To System',
+                    'href' => '/organization/convert-to-system/id/' . $id
+                )
+            );
+        }
+        
         return $buttons;
+    }
+    
+    public function convertToSystemAction()
+    {
+        if (!$this->_acl->hasPrivilegeForClass('create', 'System')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Systems');            
+        }
+
+        if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Organization');            
+        }
+
+        if (!$this->_acl->hasPrivilegeForClass('update', 'Organization')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot update Organization');            
+        }        
+    
+        $id = $this->getRequest()->getParam('id');
+        
+        $organization = Doctrine::getTable('Organization')->find($id);
+        
+        $organization->convertToSystem();
+        
+        $msg = "NOTICE: " . $organization->nickname . ' is now a system, however all FIPS-199 and ' . 
+            'FISMA Data must now be set';
+        $this->view->priorityMessenger($msg, 'warning');
+        
+        $this->viewAction();
+        $this->renderScript('system/view.phtml');
+
     }
 }

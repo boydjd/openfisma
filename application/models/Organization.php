@@ -368,4 +368,54 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     {
         return $this->id;
     }
+    
+    /**
+     * Converts the current system to an organization
+     * 
+     * @return void
+     */
+    public function convertToOrganization()
+    {
+        $oldSystemId = $this->systemId;
+        
+        // break system relation        
+        $this->systemId = null;
+        $this->orgType = 'organization';
+        $this->save();
+        
+        // deleted old system information
+        $deleteQuery = Doctrine_Query::create()
+            ->delete()
+            ->from('System')
+            ->where('id = ?', $oldSystemId)
+            ->limit(1);
+        $deleteQuery->execute();
+    }
+    
+    /**
+     * Converts the current organization to a system
+     * 
+     * @return void
+     */
+    public function convertToSystem()
+    {
+        // create system row
+        $newSystemRow = new System();
+        $newSystemRow->type = 'minor';
+        $newSystemRow->sdlcPhase = 'initiation';
+        $newSystemRow->confidentiality = 'NA';
+        $newSystemRow->integrity = 'MODERATE';
+        $newSystemRow->availability = 'MODERATE';
+        $newSystemRow->controlledBy = 'AGENCY';
+        $newSystemRow->hasFiif = 'NO';
+        $newSystemRow->hasPii = 'NO';
+        $newSystemRow->piaRequired = 'NO';
+        $newSystemRow->sornRequired = 'NO';
+        $newSystemRow->save();
+        
+        // create system relation        
+        $this->systemId = $newSystemRow->id;
+        $this->orgType = 'system';
+        $this->save();
+    }
 }

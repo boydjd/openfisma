@@ -40,7 +40,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * All privileges to system objects are based on the parent 'Organization' objects
      */
     protected $_aclResource = 'Organization';
-
+    
     /**
      * View the specified system
      *
@@ -85,6 +85,22 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'href' => $findingSearchUrl
             )
         );
+        
+        if (
+            $this->_acl->hasPrivilegeForClass('create', 'System')
+            && $this->_acl->hasPrivilegeForClass('create', 'Organization')
+            && $this->_acl->hasPrivilegeForClass('update', 'System')
+        ) {
+
+            $convertToOrgUrl = '/system/convert-to-org/id/' . $id;
+            $this->view->convertToOrgButton = new Fisma_Yui_Form_Button_Link(
+                'convertToOrg',
+                    array(
+                        'value' => 'Convert To Organization',
+                        'href' => $convertToOrgUrl
+                    )
+                );
+        }
 
         $this->view->tabView = $tabView;
     }
@@ -110,6 +126,38 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->system = $this->view->organization->System;
 
         $this->render();
+    }
+
+    public function convertToOrgAction()
+    {
+        if (!$this->_acl->hasPrivilegeForClass('create', 'System')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Systems');            
+        }
+
+        if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Organization');            
+        }
+
+        if (!$this->_acl->hasPrivilegeForClass('update', 'System')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot update System');            
+        }
+    
+        $id = $this->getRequest()->getParam('id');
+        $organizationId = $this->getRequest()->getParam('oid');
+        
+        if ($id) {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);            
+        } elseif ($organizationId) {
+            $organization = Doctrine::getTable('Organization')->find($organizationId);            
+        } else {
+            throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
+        }          
+        
+        $organization->convertToOrganization();
+        $this->_redirect("/organization/view/id/" . $organization->id);
     }
 
     /**
