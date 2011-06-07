@@ -226,7 +226,7 @@ class Fisma_String
      * @param UTF-8 encoded string $text
      * @return ISO-8859-1//TRANSLIT encoded string 
      */
-    static function convertUTF8ToISOTRANSLIT($text)
+    static function convertToLatin1($text)
     {
         return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
     }

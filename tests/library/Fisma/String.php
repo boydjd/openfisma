@@ -211,10 +211,10 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
     /**
      * Test convertUTF8ToISOTRANSLIT convert UTF-8 encoded string to ISO-8859-1//TRANSLIT 
      */
-    public function testconvertUTF8ToISOTRANSLIT()
+    public function testConvertToLatin1()
     {
         $text = "This is the Euro symbol '€'";
         $translitText = "This is the Euro symbol 'EUR'"; 
-        $this->assertEquals($translitText, Fisma_String::convertUTF8ToISOTRANSLIT($text));
+        $this->assertEquals($translitText, Fisma_String::convertToLatin1($text));
     }
 }
