@@ -240,6 +240,10 @@ Role:
             - user_read
             - user_update
             - user_delete
+            - poc_create
+            - poc_read
+            - poc_update
+            - poc_delete
             - organization_create
             - organization_read
             - organization_update
