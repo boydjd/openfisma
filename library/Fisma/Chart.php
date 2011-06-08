@@ -307,6 +307,16 @@ class Fisma_Chart
         return $this;
     }
     
+    public function getLayerCount() {
+    
+        if ($this->isStacked() === false) {
+            return 1;
+        } else {
+            // There is one layer-label for every layer
+            return count($this->chartParamArr['chartLayerText']);
+        }
+    }
+    
     public function setAlign($inString)
     {
         $this->chartParamArr['align'] = $inString;
@@ -395,6 +405,15 @@ class Fisma_Chart
                     "addValue param in Fisma_Chart->addColumn() is expected to be an array when " . 
                     "building a stacked chart."
                 );
+            }
+            
+            // Ensure a stacked bar chart with N layers(stacks) has a value for each layer. count($addValue) should = N
+            if (count($addValue) !== $this->getLayerCount()) {
+                    throw new Fisma_Zend_Exception(
+                        "When adding a column to a stacked bar chart, you must add a value for each layer(stack)." . 
+                        "Fisma_Chart->addColumn() was called to add a column with " . count($addValue) . " layers," . 
+                        " expected " . $this->getLayerCount()
+                    );
             }
             
             // We need to know the dimensions of the data array
