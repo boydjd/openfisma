@@ -71,6 +71,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('mustResetPassword');
         return $form;
     }
 

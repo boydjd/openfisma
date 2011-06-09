@@ -102,22 +102,14 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
-        $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
-
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-        if ($displayBy === 'Family Summary') {
-            $rtnChart->setLinks(
-                '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                '/securityControl/textContains/'. $searchVar
-            );
-        } else {
-            $rtnChart->setLinks(
-                '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                '/securityControl/textExactMatch/#ColumnLabel#'
-            );
-        }
+        $rtnChart->setLinks(
+            '/finding/remediation/list?q=' .
+            '/denormalizedStatus/textDoesNotContain/CLOSED' .
+            '/securityControl/' . 
+            ( $displayBy === 'Family Summary' ? 'textContains' : 'textExactMatch' ) .
+            '/#ColumnLabel#'
+        );
             
         // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');

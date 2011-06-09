@@ -221,6 +221,17 @@ class Fisma_String
     }
 
     /**
+     * A helper for converting string from UTF-8 to ISO-8859-1//TRANSLIT.
+     * 
+     * @param UTF-8 encoded string $text
+     * @return ISO-8859-1//TRANSLIT encoded string 
+     */
+    static function convertToLatin1($text)
+    {
+        return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
+    }
+
+    /*
     * A helper for converting HTML to text suitable for use in the PDF generator.
     * 
     * This is *NOT* intended to satisfactorily strip malicious content from HTML. This assumes the input is safe 
@@ -263,5 +274,4 @@ class Fisma_String
 
         return $html;
     }   
-
 }

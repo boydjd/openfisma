@@ -8997,7 +8997,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
         var urlParam = urlParams[i];
         var keyValuePair = urlParam.split("=");
 
-        // Looking for a parameter called "q"
+        // parse parameters
         if ("q" == keyValuePair[0]) {
             var criteriaString = keyValuePair[1];
             this.defaultQueryTokens = criteriaString.split("/");
@@ -9006,8 +9006,8 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             if (this.defaultQueryTokens[0] === '') {
                 this.defaultQueryTokens.splice(0, 1);
             }
-
-            break;
+        } else if ("show" === keyValuePair[0]) {
+            this.showAll = "all" === keyValuePair[1];
         }
     }
 };
@@ -9023,6 +9023,11 @@ Fisma.Search.Panel.prototype = {
      * A list of current selected criteria
      */
     criteria : [],
+
+    /**
+     * Flag indicating that we want to show all results, no advanced search.
+     */
+    showAll: false,
     
     /**
      * Render the advanced search box
@@ -9036,7 +9041,11 @@ Fisma.Search.Panel.prototype = {
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
 
-        if (this.defaultQueryTokens) {
+        if (this.showAll) {
+            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            this.criteria.push(initialCriteria);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
+        } else if (this.defaultQueryTokens) {
             var index = 0;
             
             // If a default query is specified, then switch to advanced mode and set up the UI for those criteria
