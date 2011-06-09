@@ -40,7 +40,7 @@ class Version102 extends Doctrine_Migration_Base
         $schema = Fisma::$appConf['db']['schema'];
 
         Doctrine_Manager::connection()->commit();
-        $dbh->query("ALTER DATABASE $schema CHARACTER SET utf8");
+        $dbh->query("ALTER DATABASE $schema CHARACTER SET utf8 COLLATE=utf8_unicode_ci");
 
         $tableSql = "SELECT table_name FROM information_schema.tables WHERE table_schema like '$schema'";
 
@@ -48,14 +48,14 @@ class Version102 extends Doctrine_Migration_Base
 
         // change each table to utf-8
         for ($i = 0; $i < count($tables); $i++) {
-            $changeTableSql = "ALTER TABLE " . $tables[$i]['table_name'] . " CHARACTER SET utf8";
+            $changeTableSql = "ALTER TABLE " . $tables[$i]['table_name'] . " CHARACTER SET utf8 COLLATE=utf8_unicode_ci";
             $dbh->query($changeTableSql);
         }
   
         // the column types include text, tinytext, mediumtext, longtext, varchar, char, enum 
         // need to convert ot utf-8
-        $colInfoSql = "SELECT column_name, table_name, column_type,column_default,is_nullable 
-                         FROM information_schema.columns 
+        $colInfoSql = "SELECT column_name, table_name, column_type,column_default,is_nullable,column_comment, 
+                         column_default FROM information_schema.columns 
                          WHERE table_schema like '$schema' 
                          AND (column_type in ('text','tinytext','mediumtext','longtext') 
                          OR column_type like 'varchar%' 
@@ -66,6 +66,9 @@ class Version102 extends Doctrine_Migration_Base
         for ($i = 0; $i < count($columns); $i++) {
             $convertSqls = $this->_constructConvertSql( $columns[$i]['column_name'], 
                                                         $columns[$i]['column_type'], 
+                                                        $columns[$i]['column_comment'],
+                                                        $columns[$i]['column_default'],
+                                                        $columns[$i]['is_nullable'],
                                                         $columns[$i]['table_name']);
 
             for ($n =0; $n < count($convertSqls); $n++) {
@@ -90,7 +93,10 @@ class Version102 extends Doctrine_Migration_Base
      * @return array contains sqls 
      */
     private function _constructConvertSql($columnName, 
-                                          $colunmType, 
+                                          $columnType, 
+                                          $columnComment, 
+                                          $columnDefault, 
+                                          $is_nullable, 
                                           $tableName)
     {
 
@@ -99,11 +105,24 @@ class Version102 extends Doctrine_Migration_Base
         // audit log table are already UTF-8 encoded. To convert UTF-8 encoded data, it needs to use 
         // following two sqls in sequence. 
         $queries = array();
-        if (strtolower(substr($tableName, -4)) == '_log') {
-            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET BINARY"; 
-            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
+        $sql = "ALTER table $tableName CHANGE $columnName $columnName $columnType CHARACTER SET utf8 COLLATE utf8_unicode_ci ";
+
+        if ( strtolower($is_nullable) == 'no' ) {
+            $sql .= " NOT NULL ";
+        }
+        if ($columnDefault == '') {
+            $sql .=  " COMMENT '$columnComment'";
+        } else if (strtolower($is_nullable) != 'no' && ($columnDefault == 'NULL' || $columnDefault == 'NOT NULL')) {
+            $sql .=  "$columnDefault COMMENT '$columnComment'";
         } else {
-            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $colunmType CHARACTER SET utf8"; 
+            $sql .=  "DEFAULT '$columnDefault' COMMENT '$columnComment'";
+        } 
+
+        if (strtolower(substr($tableName, -4)) == '_log') {
+            $queries[] = "ALTER table $tableName CHANGE $columnName $columnName $columnType CHARACTER SET BINARY"; 
+            $queries[] = $sql; 
+        } else {
+            $queries[] = $sql;
         }
         return $queries;
     }
