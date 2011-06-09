@@ -92,14 +92,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             && $this->_acl->hasPrivilegeForClass('update', 'System')
         ) {
 
-            $convertToOrgUrl = '/system/convert-to-org/id/' . $id;
-            $this->view->convertToOrgButton = new Fisma_Yui_Form_Button_Link(
-                'convertToOrg',
-                    array(
-                        'value' => 'Convert To Organization',
-                        'href' => $convertToOrgUrl
-                    )
-                );
+            $this->view->convertToOrgButton = new Fisma_Yui_Form_Button(
+                'convertToOrg', 
+                array(
+                      'label' => 'Convert To Organization',
+                      'onClickFunction' => 'Fisma.System.convertToSystem',
+                      'onClickArgument' => array(
+                          'id' => $id
+                    ) 
+                )
+            );
+                
         }
 
         $this->view->tabView = $tabView;
@@ -130,19 +133,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
     public function convertToOrgAction()
     {
-        if (!$this->_acl->hasPrivilegeForClass('create', 'System')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot create Systems');            
-        }
-
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
             throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
                 'cannot create Organization');            
-        }
-
-        if (!$this->_acl->hasPrivilegeForClass('update', 'System')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot update System');            
         }
     
         $id = $this->getRequest()->getParam('id');

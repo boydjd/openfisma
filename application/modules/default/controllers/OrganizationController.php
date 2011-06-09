@@ -581,20 +581,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     
     public function convertToSystemAction()
     {
-        if (!$this->_acl->hasPrivilegeForClass('create', 'System')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot create Systems');            
-        }
-
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
             throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
                 'cannot create Organization');            
         }
-
-        if (!$this->_acl->hasPrivilegeForClass('update', 'Organization')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot update Organization');            
-        }        
     
         $id = $this->getRequest()->getParam('id');
         
