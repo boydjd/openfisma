@@ -306,28 +306,18 @@
             str = hl.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
         }
         elem.html(str);
-        
-        if(neighbor.gridData){
-            var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]}; //@line 305  
-        } else {
-            var gridpos = {
-                x: (neighbor.points[1][0] + (neighbor.points[2][0]-neighbor.points[1][0]) ),
-                y: neighbor.points[1][1]
-            };
-        }
-        //var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
-        
+        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
         var ms = 0;
         var fact = 0.707;
         if (series.markerRenderer.show == true) { 
             ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
         }
-        
-        var loc = locations;
-        if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
-            loc = oppositeLocations;
-        }
-        
+		
+		var loc = locations;
+		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+			loc = oppositeLocations;
+		}
+		
         switch (loc[locationIndicies[hl.tooltipLocation]]) {
             case 'nw':
                 var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
@@ -396,7 +386,7 @@
                     plot.restorePreviousSeriesOrder();
                 }
                hl.isHighlighting = false;
-              ctx = null;
+        	  ctx = null;
             
             }
             else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
