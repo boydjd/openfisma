@@ -266,7 +266,7 @@ class Fisma_Inject_Excel
                 $securityControlTable = Doctrine::getTable('SecurityControl');
                 
                 $conditions = 'code = ? and securityControlCatalogId = ?';
-                $parameters = array($finding['securityControl'], $securityControlCatalogId);
+                $parameters = array($finding['securityControl'], $this->_securityControlCatalogId);
 
                 $securityControls = $securityControlTable->findByDql($conditions, $parameters);
 
