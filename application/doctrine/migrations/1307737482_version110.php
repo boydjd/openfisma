@@ -17,33 +17,39 @@
  */
 
 /**
- * Version100 
- * 
- * @uses Doctrine_Migration_Base
- * @package Migration 
+ * Add unique key on privilege table (resource, action)
+ *
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Mark Ma <mark.ma@reyosoft.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version100 extends Doctrine_Migration_Base
+class Version110 extends Doctrine_Migration_Base
 {
-    /**
-     * Update application version.
-     */
+    /** 
+    * Add a unique index to privilege table to avoid records with the same resource and action
+    * @access public
+    * @return void 
+    */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.13.2'";
-        $conn->exec($updateSql);
+        $this->addIndex('privilege', 'resourceAction', array(
+            'fields' => 
+                array(
+                    0 => 'resource',
+                    1 => 'action',
+                ),
+            'type' => 'unique',
+        ));
     }
 
-    /**
-     * Remove configuration 
+     /**
+     * remove resourceAction index
+     * @access public
+     * @return void
      */
     public function down()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.13.1'";
-        $conn->exec($updateSql);
+        $this->removeIndex('privilege', 'resourceAction');
     }
 }
