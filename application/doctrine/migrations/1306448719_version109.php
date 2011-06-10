@@ -41,4 +41,9 @@ class Version109 extends Doctrine_Migration_Base
     {
         $this->removeColumn('configuration', 'session_inactivity_notice');
     }
+
+    public function postUp()
+    {
+        Doctrine_Query::create()->update("Configuration")->set("session_inactivity_notice", "session_inactivity_period * ?", 0.9)->execute();
+    }
 }
