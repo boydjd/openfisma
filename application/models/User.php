@@ -422,7 +422,8 @@ class User extends BaseUser
      */
     public function getAvailableEvents()
     {
-        $availableEvents = null;
+        $availableEvents = array();
+        
         if ('root' == $this->username) {
             $query = Doctrine::getTable('Event')->findAll();
         } else {
