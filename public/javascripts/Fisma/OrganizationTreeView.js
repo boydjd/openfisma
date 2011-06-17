@@ -403,11 +403,13 @@
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
+
+            var panel = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {this._savePanel.hide();}
+                    fn: function () {panel._savePanel.hide();}
                 }
             });
             
