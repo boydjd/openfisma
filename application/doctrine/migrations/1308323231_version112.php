@@ -17,7 +17,7 @@
  */
 
 /**
- * Remove configuration fields for Search -- this is basically the reverse of migration 81
+ * Make evaluation.daysuntildue have a default value of 7 and force all current null values on this table to 7
  *
  * @codingStandardsIgnoreFile
  *
