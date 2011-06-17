@@ -347,6 +347,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 break;
             case 'EA':
                 $this->status = 'EN';
+                $this->CurrentEvaluation = null;
                 break;
         }
         $this->_updateNextDueDate();
