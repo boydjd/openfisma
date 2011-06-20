@@ -28,21 +28,32 @@
  */
 class Version114 extends Doctrine_Migration_Base
 {
+
+    /** 
+    * Update the findings table such that all rows that are non-MSA, non-EA and non-NULL-currentevaluationids 
+    * have NULL for their currentevaluationid
+    * 
+    * @return void 
+    */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "
-                    UPDATE finding f
-                    SET f.currentevaluationid = NULL
-                    WHERE 
-                        f.status <> 'EA'
-                        AND f.status <> 'MSA'
-                        AND f.currentevaluationid IS NOT NULL";
-        $conn->exec($updateSql);
+        $q = Doctrine_Query::create()
+            ->update('Finding f')
+            ->set('f.currentEvaluationId', 'NULL')
+            ->where("f.status <> 'EA'")
+            ->andWhere("f.status <> 'MSA'")
+            ->andWhere("f.currentEvaluationId IS NOT NULL");
+        $q->execute();
     }
     
+    /** 
+    * Downgrade. The actions performed on the database in this migration's upgrade is undoable, but should not
+    * disable the ability to downgrade further.
+    * 
+    * @return void 
+    */
     public function down()
     {
-        
+        // this change in up() is undoable, but should not halt the abiliy to downgrade
     }
 }
