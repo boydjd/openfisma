@@ -730,7 +730,8 @@ Fisma.Chart = {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
             msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
             if (theLink !== false) { msg += "The link with this element is " + theLink; }
-            alert(msg);
+            var config = {text : msg};
+            Fisma.Util.showAlertDialog(config);
         } else {
 
             // We are not in link-debug mode, navigate if there is a link

@@ -111,7 +111,8 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     var config = {text : 'Document upload failed.'};
+                     Fisma.Util.showAlertDialog(config);
                  }
              }, 
              null);
@@ -145,7 +146,8 @@ Fisma.Commentable = {
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var config = {text : "Error: " + responseStatus.message};
+             Fisma.Util.showAlertDialog(config);
 
              return;
          }

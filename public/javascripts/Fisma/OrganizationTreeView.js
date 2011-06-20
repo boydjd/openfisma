@@ -244,7 +244,8 @@
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        var config = {text : 'Unable to load the organization tree: ' + response.statusText};
+                        Fisma.Util.showAlertDialog(config);
                     },
                     scope: this
                 }, 

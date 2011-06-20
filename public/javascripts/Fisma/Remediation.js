@@ -31,9 +31,6 @@ Fisma.Remediation = {
      * @return {Boolean} False to interrupt consequent operations
      */
     upload_evidence : function() {
-        if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
-            return false;
-        }
 
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
@@ -53,119 +50,22 @@ Fisma.Remediation = {
         document.finding_detail_upload_evidence.action = document.finding_detail.action;
     },
 
-    /**
-     * To approve evidence with optional comment
+   /**
+     * To approve or deny mitigation strategy or evidence with comment
      * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
+     * @param {String} action The action name: APPROVED or DENIED
+     * @param {String} formId 
+     * @param {String} panelTitle the text shows on the panel.
      */
-    ev_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
-            return false;
-        }
+    remediationAction : function(action, formId, panelTitle) {
 
         var content = document.createElement('div');
         var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        };
-        
-        return true;
-    },
-
-    /**
-     * To deny evidence with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ev_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
-            return false;
+        if ('APPROVED' === action) {
+            var c_title = document.createTextNode('Comments (OPTIONAL):');
+        } else {
+            var c_title = document.createTextNode('Comments:');
         }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments:'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to deny.');
-                return;
-            }
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'DENIED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-            return;
-        };
-        
-        return true;
-    },
-
-    /**
-     * To approve mitigation strategy with optional comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(c_title);
         content.appendChild(p);
         var textarea = document.createElement('textarea');
@@ -182,74 +82,33 @@ Fisma.Remediation = {
         button.id = 'dialog_continue';
         button.value = 'Continue';
         content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        };
-        
-        return true;
-    },
+       
+        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-    /**
-     * To deny mitigation strategy with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments:');
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
+            var form2 = document.getElementById(formId);
             var comment = document.getElementById('dialog_comment').value;
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to submit.');
-                return;
+
+            if ('DENIED' === action) { 
+                if (comment.match(/^\s*$/)) {
+                    var config = {text : 'Comments are required in order to submit.', zIndex : 10000};
+                    Fisma.Util.showAlertDialog(config);
+                    return;
+                }
             }
+
             form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
+            form2.elements['decision'].value = action;
             var submitMsa = document.createElement('input');
             submitMsa.type = 'hidden';
             submitMsa.name = 'submit_msa';
-            submitMsa.value = 'DENIED';
+            submitMsa.value = action;
             form2.appendChild(submitMsa);
             form2.submit();
             return;
         };
         
         return true;
-    }
+    },
+
 };

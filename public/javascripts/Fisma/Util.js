@@ -118,28 +118,38 @@ Fisma.Util = {
     },
 
     /**
-     * Show a warning message before a record is deleted.
+     * Show confirm window with warning message. config object can have width, text, isLink, url and func
+     * 
+     * @param event
+     * @param config 
      */
-    showDeleteWarning : function (event, config) {
-        var  warningDialog =  
+    showConfirmDialog : function (event, config) {
+            var  warningDialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
+                { width: config.width ? config.width : "300px", 
                   fixedcenter: true, 
                   visible: false, 
                   draggable: false, 
                   close: true,
                   modal: true,
-                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
-                         + "Do you want to continue?", 
+                  text: config.text, 
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
                   buttons: [ { text:"Yes", handler : function () {
-                                     document.location = config.url
+                                     if (config.url) {
+                                         document.location = config.url;
+                                     }else if(config.func) {
+                                         var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                         if ('function' ===  typeof funcObj) {
+                                             funcObj.apply(this, config.args);
+                                         }
+                                     }
+                                     
                                      this.hide();
                                  }
                              }, 
                              { text:"No",  handler : function () {
-                                     this.hide(); 
+                                     this.hide();
                                  }
                              } 
                            ] 
@@ -148,6 +158,42 @@ Fisma.Util = {
         warningDialog.setHeader("Are you sure?");
         warningDialog.render(document.body);
         warningDialog.show();
-        YAHOO.util.Event.preventDefault(event);
+        if (config.isLink) {
+            YAHOO.util.Event.preventDefault(event);
+        }
+    },
+ 
+    /**
+     * Show alert warning message. The config object can have width, text and zIndex property
+     * 
+     * @param config object
+     */
+    showAlertDialog : function (config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: config.width ? config.width : "400px", 
+                  fixedcenter: true, 
+                  visible: true, 
+                  close: true,
+                  modal: false,
+                  text: config.text, 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  effect:{
+                         effect: YAHOO.widget.ContainerEffect.FADE,
+                         duration: 0.25
+                  }, 
+                  zIndex: config.zIndex ? config.zIndex : null ,
+                  draggable: true,
+                  buttons: [ { text:"Ok", handler : function () {
+                                     this.hide();
+                                 }
+                             } 
+                        ] 
+                } ); 
+ 
+        warningDialog.setHeader("WARNING");
+        warningDialog.render(document.body);
+        warningDialog.show();
     }
 };

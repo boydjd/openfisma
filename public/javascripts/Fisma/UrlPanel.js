@@ -74,7 +74,8 @@ Fisma.UrlPanel = function() {
                     },
                     failure : function(o) {
                         /** @todo english */
-                        alert('Failed to load the specified panel.');
+                        var config = {text : 'Failed to load the specific panel.'};
+                        Fisma.Util.showAlertDialog(config);
                     },
                     argument : panel
                 }, null);

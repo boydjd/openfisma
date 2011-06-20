@@ -97,7 +97,8 @@ Fisma.Email = function() {
             
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                alert("Recipient is required.");
+                var config = {text : "Recipient is required.", zIndex : 10000 };
+                Fisma.Util.showAlertDialog(config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -121,8 +122,8 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    alert('Failed to send test mail: ' + o.statusText);
-                    
+                    var config = {text : 'Failed to send test mail: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(config);
                     spinner.hide();
                 }
             }, null);

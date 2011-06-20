@@ -24,7 +24,8 @@ YAHOO.util.Event.onDOMReady(function () {
                                             document.getElementById('sources').disabled = false;
                                         },
                                         failure: function(o) {
-                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            var config = {text : 'Unable to load finding summary: ' + o.statusText};
+                                            Fisma.Util.showAlertDialog(config);
                                             hideLoadingRow();
                                         }
                                     }, 
@@ -70,7 +71,8 @@ function reloadTable(url) {
                                             document.getElementById('sources').disabled = false;
                                         },
                                         failure: function(o) {
-                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            var config = {text : 'Unable to load finding summary: ' + o.statusText};
+                                            Fisma.Util.showAlertDialog(config);
                                             hideLoadingRow();
                                         }
                                     }, 
