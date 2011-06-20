@@ -26,17 +26,24 @@
  * @author Dale Frey <dale.frey@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version114 extends Doctrine_Migration_Base
+class Version112 extends Doctrine_Migration_Base
 {
+    /**
+     * Make evaluation.daysuntildue have a default value of 7.
+     * Force all current null values of evaluation.daysuntildue to 7.
+     *
+     * @return void
+     */
     public function up()
     {
-        $conn = Doctrine_Manager::connection();
-        $updateSql = "
-                    UPDATE evaluation
-                    SET daysuntildue = 7
-                    WHERE daysuntildue IS NULL";
-        $conn->exec($updateSql);
+        // Force all current null values on this table to 7
+        $q = Doctrine_Query::create()
+            ->update('Evaluation')
+            ->set('daysUntilDue', 7)
+            ->where('daysUntilDue IS NULL');
+        $q->execute();
         
+        // Make evaluation.daysuntildue have a default value of 7
         $this->changeColumn(
             'evaluation',
             'daysuntildue',
@@ -49,8 +56,15 @@ class Version114 extends Doctrine_Migration_Base
         );
     }
     
+    /**
+     * Undo the default-change done in up().
+     * The evaluation.daysuntildue value change(s) are not undo-able.
+     *
+     * @return void
+     */
     public function down()
     {
+        // Undo the default-change done in up()
         $this->changeColumn('evaluation', 'daysuntildue', null, 'int', array('notnull' => false));
     }
 }
