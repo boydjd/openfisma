@@ -344,6 +344,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $data = $this->_report->getData();
 
         foreach ($data as &$row) {
+            $row = array_map('strip_tags', $row);
             $row = array_map('Fisma_String::plainTextToReportText', $row);
         }
 
