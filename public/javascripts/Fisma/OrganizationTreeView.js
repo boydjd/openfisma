@@ -404,12 +404,12 @@
 
             var p2 = document.createElement("p");
 
-            var panel = this;
+            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {panel._savePanel.hide();}
+                    fn: function () {that._savePanel.hide();}
                 }
             });
             
