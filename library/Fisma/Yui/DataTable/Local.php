@@ -35,6 +35,14 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
     private $_data;
     
     /**
+     * An array of events for the data-table to listen for, and the javascript function name to tigger for each
+     * i.e. eventListeners['checkboxClickEvent'] => 'myJavaScriptFunctionName'
+     * 
+     * @var 
+     */
+    public $eventListeners = array();
+    
+    /**
      * Set the table's data
      * 
      * Fluent interface
@@ -65,7 +73,8 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
             'columns' => $this->getColumns(),
             'data' => $this->_data,
             'columnDefinitions' => $this->_getYuiColumnDefinitions(),
-            'responseSchema' => $this->_getYuiResponseSchema()
+            'responseSchema' => $this->_getYuiResponseSchema(),
+            'eventListeners' => $this->eventListeners
         );
         
         return $view->partial('yui/data-table-local.phtml', 'default', $data);

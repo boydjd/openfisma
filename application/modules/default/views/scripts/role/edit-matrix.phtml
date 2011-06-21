@@ -1,0 +1,38 @@
+<form action="/role/edit-matrix" method="post">
+
+    <?php
+        echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+        Fisma_Format_Section::startSection("Privilege Matrix Edittor");
+        echo $this->escape($this->dataTable, 'none');
+        Fisma_Format_Section::stopSection();
+    ?>
+
+    <input type="hidden" name="rolePrivChanges" id="rolePrivChanges" value="" />
+
+</form>
+
+<script>
+    
+    var rolePrivChanges = [];
+    
+    function dataTableCheckboxClick(oArgs) {
+    
+        var checkboxObj = oArgs.target;
+        var column = this.getColumn(checkboxObj);
+        var roleName = column.key;
+        // The 2nd column (hidden) has the privilegeId
+        var privilegeId = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0].textContent;
+
+        // Update array of changes to apply
+        var newChange = {
+            'roleName': roleName,
+            'privilegeId': privilegeId,
+            'newValue': checkboxObj.checked
+        }
+        rolePrivChanges.push(newChange);
+        
+        // Put change-list into the form to be submitted
+        YAHOO.util.Dom.get('rolePrivChanges').value = YAHOO.lang.JSON.stringify(rolePrivChanges);
+    }
+
+</script>
