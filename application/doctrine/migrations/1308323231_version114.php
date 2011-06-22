@@ -26,7 +26,7 @@
  * @author Dale Frey <dale.frey@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version112 extends Doctrine_Migration_Base
+class Version114 extends Doctrine_Migration_Base
 {
     /**
      * Make evaluation.daysuntildue have a default value of 7.
