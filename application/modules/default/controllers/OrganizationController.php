@@ -562,18 +562,20 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->getRequest()->getParam('id');
         if (
             !empty($id)
-            && $this->_acl->hasPrivilegeForClass('create', 'System')
             && $this->_acl->hasPrivilegeForClass('create', 'Organization')
-            && $this->_acl->hasPrivilegeForClass('update', 'Organization')
         ) {
 
-            $buttons['convertToSystem'] = new Fisma_Yui_Form_Button_Link(
-                'convertToSystemButton',
+            $buttons['convertToSystem'] = new Fisma_Yui_Form_Button(
+                'convertToSys', 
                 array(
-                    'value' => 'Convert To System',
-                    'href' => '/organization/convert-to-system/id/' .  $this->view->escape($id, 'javascript')
+                      'label' => 'Convert To System',
+                      'onClickFunction' => 'Fisma.System.convertToSystem',
+                      'onClickArgument' => array(
+                          'id' => $id
+                    ) 
                 )
             );
+            
         }
         
         return $buttons;
@@ -589,15 +591,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->getRequest()->getParam('id');
         
         $organization = Doctrine::getTable('Organization')->find($id);
-        
         $organization->convertToSystem();
         
         $msg = "NOTICE: " . $organization->nickname . ' is now a system, however all FIPS-199 and ' . 
             'FISMA Data must now be set';
         $this->view->priorityMessenger($msg, 'warning');
         
-        $this->viewAction();
-        $this->renderScript('system/view.phtml');
-
+        $this->_redirect('/system/view/oid/' . $id);
     }
 }

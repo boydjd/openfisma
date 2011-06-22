@@ -405,7 +405,6 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      */
     public function convertToSystem()
     {
-
         try {
         
             Doctrine_Manager::connection()->beginTransaction();

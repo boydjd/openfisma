@@ -96,7 +96,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'convertToOrg', 
                 array(
                       'label' => 'Convert To Organization',
-                      'onClickFunction' => 'Fisma.System.convertToSystem',
+                      'onClickFunction' => 'Fisma.System.convertToOrganization',
                       'onClickArgument' => array(
                           'id' => $id
                     ) 
