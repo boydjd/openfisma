@@ -10212,36 +10212,130 @@ Fisma.System = {
         });
     },
     
+/**
+     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * system to an organization, and if yes, redirects to the proper action.
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    convertToOrganization : function (event, config) {
+    
+        var yesButtonEvent = function () {
+                Fisma.System.showWaitPanelWhileConverting();
+                this.hide(); 
+                document.location = "/system/convert-to-org/id/" + config.id;
+            };
+        var noButtonEvent = function () {
+                this.destroy(); 
+            };
+        var dialogButtons = 
+            [
+                {
+                    text: "Yes",
+                    handler: yesButtonEvent
+                }, 
+                {
+                    text:"No",
+                    handler: noButtonEvent
+                } 
+            ];
+        var dialogConfig = {
+            width: "300px", 
+            fixedcenter: true, 
+            visible: false, 
+            draggable: false, 
+            close: true,
+            modal: true,
+            text: "Are you sure you want to convert this system to an organization?", 
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+            constraintoviewport: true, 
+            buttons: dialogButtons
+        };
+        
+        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+    },
+    
+    /**
+     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * organization to a system, and if yes, redirects to the proper action.
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
     convertToSystem : function (event, config) {
-        var warningDialog =  
-            new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
-                  fixedcenter: true, 
-                  visible: false, 
-                  draggable: false, 
-                  close: true,
-                  modal: true,
-                  text: "WARNING: You are about to convert this System to an Organization. " +
+    
+        var dialogText = "WARNING: You are about to convert this organization to a system. " +
                         "After this conversion all system information (FIPS-199 and FISMA Data) will be " +
-                        "perminently lost.\n\n" +
-                        "Do you want to continue?", 
-                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-                  constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                   document.location = "/system/convert-to-org/id/" + config.id;
-                                   this.hide(); 
-                               }
-                             }, 
-                             { text:"No",  handler : function () {
-                                   this.hide(); 
-                               }
-                             } 
-                           ] 
-                } ); 
- 
-         warningDialog.setHeader("Are you sure?");
-         warningDialog.render(document.body);
-         warningDialog.show();
+                        "permanently lost.\n\n" +
+                        "Do you want to continue?"
+        var yesButtonEvent = function () {
+                Fisma.System.showWaitPanelWhileConverting();
+                this.hide(); 
+                document.location = "/organization/convert-to-system/id/" + config.id;
+            };
+        var noButtonEvent = function () {
+                this.destroy(); 
+            };
+        var dialogButtons = 
+            [
+                {
+                    text: "Yes",
+                    handler: yesButtonEvent
+                }, 
+                {
+                    text:"No",
+                    handler: noButtonEvent
+                } 
+            ];
+        var dialogConfig = {
+            width: "300px", 
+            fixedcenter: true, 
+            visible: false, 
+            draggable: false, 
+            close: true,
+            modal: true,
+            text: dialogText, 
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+            constraintoviewport: true, 
+            buttons: dialogButtons
+        };
+        
+        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+    },
+    
+    /**
+     * showWaitPanelWhileConverting - Shows YUI wain panel on the DOM. Use when navigating away from this page.
+     * 
+     * @access public
+     * @return void
+     */
+    showWaitPanelWhileConverting : function () {
+        var savePanel = new YAHOO.widget.Panel(
+            "savePanel",
+            {
+                width: "250px",
+                fixedcenter: true,
+                close: false,
+                draggable: false,
+                modal: true,
+                visible: true
+            }
+        );
+        savePanel.setHeader('Converting...');
+        savePanel.render(document.body);
+        savePanel.setBody('<img src="/images/loading_bar.gif">');
+        savePanel.show();
     }
 };
 /**
