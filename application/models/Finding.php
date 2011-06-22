@@ -76,7 +76,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      * 
      * @var array
      */
-    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'EN'=>0);
 
     /**
      * Override the Doctrine hook to initialize new finding objects
@@ -428,8 +428,16 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                         . " invalid status: '$this->status'");
         }
 
+        if (array_key_exists($this->status, $this->_overdue)) {
+            // This is a New, Draft, or EN status
+            $daysuntildue = $this->_overdue[$this->status];
+        } else {
+            // Get the daysUntilDue value for this workflow status on the Evaluation table
+            $daysuntildue = $this->CurrentEvaluation->daysUntilDue;
+        }
+
         $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
-        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
+        $nextDueDate->add($daysuntildue, Zend_Date::DAY);
         $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
     }
 
