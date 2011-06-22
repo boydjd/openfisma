@@ -54,6 +54,8 @@ Fisma.Search.CriteriaRenderer = function () {
 
             highEnd.type = "text";
             highEnd.className = "date";
+            Fisma.Search.onKeyPress(highEnd);
+
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
         },
@@ -86,6 +88,8 @@ Fisma.Search.CriteriaRenderer = function () {
 
             highEnd.type = "text";
             highEnd.className = "float";
+            Fisma.Search.onKeyPress(highEnd);
+
             container.appendChild(highEnd);
         },
 
@@ -117,6 +121,8 @@ Fisma.Search.CriteriaRenderer = function () {
 
             highEnd.type = "text";
             highEnd.className = "integer";
+            Fisma.Search.onKeyPress(highEnd);
+
             container.appendChild(highEnd);
         },
 
