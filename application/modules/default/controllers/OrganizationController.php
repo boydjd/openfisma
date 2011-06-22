@@ -571,7 +571,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 'convertToSystemButton',
                 array(
                     'value' => 'Convert To System',
-                    'href' => '/organization/convert-to-system/id/' . $id
+                    'href' => '/organization/convert-to-system/id/' .  $this->view->escape($id, 'javascript')
                 )
             );
         }

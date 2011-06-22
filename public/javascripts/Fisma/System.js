@@ -128,6 +128,15 @@ Fisma.System = {
         });
     },
     
+    /**
+     * convertToSystem - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * organization to a system, and if yes, redirects to the proper action.
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
     convertToSystem : function (event, config) {
         var warningDialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
@@ -144,12 +153,32 @@ Fisma.System = {
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
                   buttons: [ { text:"Yes", handler : function () {
-                                   document.location = "/system/convert-to-org/id/" + config.id;
-                                   this.hide(); 
+                                   
+                            // Show wait panel
+                                    var savePanel = new YAHOO.widget.Panel(
+                                        "savePanel",
+                                        {
+                                            width: "250px",
+                                            fixedcenter: true,
+                                            close: false,
+                                            draggable: false,
+                                            modal: true,
+                                            visible: true
+                                        }
+                                    );
+                                    
+                                    savePanel.setHeader('Converting...');
+                                    savePanel.render(document.body);
+
+                                    savePanel.setBody('<img src="/images/loading_bar.gif">');
+                                    savePanel.show();
+
+                                    this.hide(); 
+                                    document.location = "/system/convert-to-org/id/" + config.id;
                                }
                              }, 
                              { text:"No",  handler : function () {
-                                   this.hide(); 
+                                   this.destroy(); 
                                }
                              } 
                            ] 

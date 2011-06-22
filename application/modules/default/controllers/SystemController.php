@@ -138,15 +138,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'cannot create Organization');            
         }
     
-        $id = $this->getRequest()->getParam('id');
-        $organizationId = $this->getRequest()->getParam('oid');
-        
-        if ($id) {
-            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);            
-        } elseif ($organizationId) {
-            $organization = Doctrine::getTable('Organization')->find($organizationId);            
+        $systemId = $this->getRequest()->getParam('id');
+        if ($systemId) {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($systemId);         
         } else {
-            throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
+            throw new Fisma_Zend_Exception("Required parameter 'id' is missing.");
         }          
         
         $organization->convertToOrganization();

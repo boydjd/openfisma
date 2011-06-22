@@ -376,20 +376,26 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      */
     public function convertToOrganization()
     {
+        
         $oldSystemId = $this->systemId;
         
-        // break system relation        
-        $this->systemId = null;
-        $this->orgType = 'organization';
-        $this->save();
+        try {
         
-        // deleted old system information
-        $deleteQuery = Doctrine_Query::create()
-            ->delete()
-            ->from('System')
-            ->where('id = ?', $oldSystemId)
-            ->limit(1);
-        $deleteQuery->execute();
+            Doctrine_Manager::connection()->beginTransaction();
+            
+            $system = $this->System;
+            $this->System = null;
+            $this->orgType = 'organization';
+            $this->save();
+            $system->delete();
+
+            Doctrine_Manager::connection()->commit();
+            
+        } catch (Exception $e) {
+            // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+            Doctrine_Manager::connection()->rollback();
+            throw $e;
+        }
     }
     
     /**
@@ -399,23 +405,36 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      */
     public function convertToSystem()
     {
-        // create system row
-        $newSystemRow = new System();
-        $newSystemRow->type = 'minor';
-        $newSystemRow->sdlcPhase = 'initiation';
-        $newSystemRow->confidentiality = 'NA';
-        $newSystemRow->integrity = 'MODERATE';
-        $newSystemRow->availability = 'MODERATE';
-        $newSystemRow->controlledBy = 'AGENCY';
-        $newSystemRow->hasFiif = 'NO';
-        $newSystemRow->hasPii = 'NO';
-        $newSystemRow->piaRequired = 'NO';
-        $newSystemRow->sornRequired = 'NO';
-        $newSystemRow->save();
+
+        try {
         
-        // create system relation        
-        $this->systemId = $newSystemRow->id;
-        $this->orgType = 'system';
-        $this->save();
+            Doctrine_Manager::connection()->beginTransaction();
+            
+            // create system row
+            $newSystem = new System();
+            $newSystem->type = 'minor';
+            $newSystem->sdlcPhase = 'initiation';
+            $newSystem->confidentiality = 'NA';
+            $newSystem->integrity = 'MODERATE';
+            $newSystem->availability = 'MODERATE';
+            $newSystem->controlledBy = 'AGENCY';
+            $newSystem->hasFiif = 'NO';
+            $newSystem->hasPii = 'NO';
+            $newSystem->piaRequired = 'NO';
+            $newSystem->sornRequired = 'NO';
+            $newSystem->save();
+
+            // create system relation        
+            $this->systemId = $newSystem->id;
+            $this->orgType = 'system';
+            $this->save();
+            
+            Doctrine_Manager::connection()->commit();
+            
+        } catch (Exception $e) {
+            // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+            Doctrine_Manager::connection()->rollback();
+            throw $e;
+        }
     }
 }
