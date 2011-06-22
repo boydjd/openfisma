@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id: ArtifactController.php 3266 2010-04-27 04:32:18Z mhaase $
  */
 class CommentController extends Fisma_Zend_Controller_Action_Security
 {
