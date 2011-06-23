@@ -146,6 +146,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }          
         
         $organization->convertToOrganization();
+        
+        $this->view->priorityMessenger('Converted to organization successfully', 'notice');
         $this->_redirect("/organization/view/id/" . $organization->id);
     }
 

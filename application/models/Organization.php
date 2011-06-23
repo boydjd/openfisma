@@ -403,7 +403,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      * 
      * @return void
      */
-    public function convertToSystem()
+    public function convertToSystem($type, $sdlcPhase, $confidentiality, $integrity, $availability)
     {
         try {
         
@@ -411,11 +411,11 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             
             // create system row
             $newSystem = new System();
-            $newSystem->type = 'minor';
-            $newSystem->sdlcPhase = 'initiation';
-            $newSystem->confidentiality = 'NA';
-            $newSystem->integrity = 'MODERATE';
-            $newSystem->availability = 'MODERATE';
+            $newSystem->type = $type;
+            $newSystem->sdlcPhase = $sdlcPhase;
+            $newSystem->confidentiality = $confidentiality;
+            $newSystem->integrity = $integrity;
+            $newSystem->availability = $availability;
             $newSystem->controlledBy = 'AGENCY';
             $newSystem->hasFiif = 'NO';
             $newSystem->hasPii = 'NO';

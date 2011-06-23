@@ -10223,63 +10223,14 @@ Fisma.System = {
      */
     convertToOrganization : function (event, config) {
     
+        var dialogText = "WARNING: You are about to convert this system to an organization. " +
+                        "After this conversion all system information (FIPS-199 and FISMA Data) will be " +
+                        "permanently lost.\n\n" +
+                        "Do you want to continue?";
         var yesButtonEvent = function () {
                 Fisma.System.showWaitPanelWhileConverting();
                 this.hide(); 
                 document.location = "/system/convert-to-org/id/" + config.id;
-            };
-        var noButtonEvent = function () {
-                this.destroy(); 
-            };
-        var dialogButtons = 
-            [
-                {
-                    text: "Yes",
-                    handler: yesButtonEvent
-                }, 
-                {
-                    text:"No",
-                    handler: noButtonEvent
-                } 
-            ];
-        var dialogConfig = {
-            width: "300px", 
-            fixedcenter: true, 
-            visible: false, 
-            draggable: false, 
-            close: true,
-            modal: true,
-            text: "Are you sure you want to convert this system to an organization?", 
-            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-            constraintoviewport: true, 
-            buttons: dialogButtons
-        };
-        
-        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
-    },
-    
-    /**
-     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
-     * organization to a system, and if yes, redirects to the proper action.
-     * 
-     * @param event $event 
-     * @param config $config 
-     * @access public
-     * @return void
-     */
-    convertToSystem : function (event, config) {
-    
-        var dialogText = "WARNING: You are about to convert this organization to a system. " +
-                        "After this conversion all system information (FIPS-199 and FISMA Data) will be " +
-                        "permanently lost.\n\n" +
-                        "Do you want to continue?"
-        var yesButtonEvent = function () {
-                Fisma.System.showWaitPanelWhileConverting();
-                this.hide(); 
-                document.location = "/organization/convert-to-system/id/" + config.id;
             };
         var noButtonEvent = function () {
                 this.destroy(); 
@@ -10312,6 +10263,174 @@ Fisma.System = {
         warningDialog.setHeader("Are you sure?");
         warningDialog.render(document.body);
         warningDialog.show();
+    },
+    
+    /**
+     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * organization to a system, and if yes, calls Fisma.System.AskForOrgToSysInput()
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    convertToSystem : function (event, config) {
+    
+        var yesButtonEvent = function () {
+                Fisma.System.AskForOrgToSysInput(config.id);
+                this.destroy();
+            };
+        var noButtonEvent = function () {
+                this.destroy();
+            };
+        var dialogButtons = 
+            [
+                {
+                    text: "Yes",
+                    handler: yesButtonEvent
+                }, 
+                {
+                    text:"No",
+                    handler: noButtonEvent
+                } 
+            ];
+        var dialogConfig = {
+            width: "300px", 
+            fixedcenter: true, 
+            visible: false, 
+            draggable: false, 
+            close: true,
+            modal: true,
+            text: "Are you sure you want to convert this organization to a system?", 
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+            constraintoviewport: true, 
+            buttons: dialogButtons
+        };
+        
+        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+    },
+    
+    /**
+     * AskForOrgToSysInput - Shows an input dialog for the user to input the needed information for 
+     * a Oranization-t-o-System conversion (the system FIPS-199 and FISMA Data).
+     * After input, will redirect the user to /organization/convert-to-system/~
+     *
+     * @access public
+     * @return void
+     */
+    AskForOrgToSysInput : function (sysId) {
+        
+        var inputForm = Fisma.System.getSystemConversionForm(sysId);
+        inputForm.name = 'sysConversionForm';
+        inputForm.id = 'sysConversionForm';
+        inputForm.className = 'yui-pe-content';
+        document.body.appendChild(inputForm);
+        
+        var submitButtonEvent = function () {
+                Fisma.System.showWaitPanelWhileConverting();
+                YAHOO.util.Dom.get('sysConversionForm').submit();
+                this.hide(); 
+            };
+        var cancleButtonEvent = function () {
+                this.destroy(); 
+            };
+
+        var inputSysInfoDialog = new YAHOO.widget.Dialog(
+            "sysConversionForm",  
+            {
+                width : "300px", 
+                fixedcenter : true, 
+                visible : false,  
+                constraintoviewport : true, 
+                buttons:
+                [
+                    { text:"Submit", handler:submitButtonEvent, isDefault:true }, 
+                    { text:"Cancel", handler:cancleButtonEvent }
+                ] 
+            }
+        ); 
+
+        YAHOO.util.Dom.removeClass("sysConversionForm", "yui-pe-content");
+        
+        inputSysInfoDialog.render();
+        inputSysInfoDialog.show();
+    },
+    
+    /**
+     * getSystemConversionForm - Creates and HTML input form which asks for the requiered information needed to 
+     * convert an organization to a system
+     * 
+     * @access public
+     * @return void
+     */
+    getSystemConversionForm : function (sysId) {
+    
+        var addInputRowOnTable = function (addToTable, descriptionText, opts) {
+
+            var myRow = document.createElement('tr');
+
+            var cellDescr = document.createElement('td');
+            var descTextNode = document.createTextNode(descriptionText);
+            cellDescr.appendChild(descTextNode);
+
+            var cellInput = document.createElement('td');
+            cellInput.align = 'right';
+            cellInput.appendChild(rtnHighModLowSelectObj(descriptionText, opts));
+
+            myRow.appendChild(cellDescr);
+            myRow.appendChild(cellInput);
+            addToTable.appendChild(myRow);
+        };
+
+        var rtnHighModLowSelectObj = function (selectObjName, states) {
+
+            var selectObj = document.createElement('select');
+            selectObj.name = selectObjName.replace(' ', '');
+
+            for (var x = 0; x < states.length; x++) {
+                var myOption = document.createElement('option');
+                myOption.value = states[x];
+                var optText = document.createTextNode(states[x]);
+                var boldOptText = document.createElement('b');
+                boldOptText.appendChild(optText);
+                myOption.appendChild(boldOptText);
+                selectObj.appendChild(myOption);
+            }
+
+            return selectObj;
+        };
+
+        var myDialogForm = document.createElement('form');
+        myDialogForm.id = 'sysConversionForm';
+        myDialogForm.method = 'post';
+        myDialogForm.action = '/organization/convert-to-system/id/' + sysId;
+        
+        var dialogHead = document.createElement('div');
+        dialogHead.className = 'hd';
+        dialogHead.appendChild(document.createTextNode('Please enter system information'));
+        var dialogBody = document.createElement('div');
+        dialogBody.className = 'bd';
+        
+        var msg = document.createTextNode("Please input the needed system information in order to complete conversion");
+        dialogBody.appendChild(msg);
+        dialogBody.appendChild(document.createElement('br'));
+        dialogBody.appendChild(document.createElement('br'));
+
+        var tbl = document.createElement('table');
+        tbl.width = '100%';
+        addInputRowOnTable(tbl, 'Type', ['gss', 'major', 'minor']);
+        addInputRowOnTable(tbl, 'SDLC Phase', ['initiation','development','implementation','operations','disposal']);
+        addInputRowOnTable(tbl, 'Confidentiality', ['NA', 'HIGH', 'MODERATE', 'LOW']);
+        addInputRowOnTable(tbl, 'Integrity', ['HIGH', 'MODERATE', 'LOW']);
+        addInputRowOnTable(tbl, 'Availability', ['HIGH', 'MODERATE', 'LOW']);
+        dialogBody.appendChild(tbl);
+
+        myDialogForm.appendChild(dialogHead);
+        myDialogForm.appendChild(dialogBody);
+        return myDialogForm;
     },
     
     /**

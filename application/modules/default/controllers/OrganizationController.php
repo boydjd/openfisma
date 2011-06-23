@@ -587,15 +587,19 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
                 'cannot create Organization');            
         }
-    
+        
         $id = $this->getRequest()->getParam('id');
         
-        $organization = Doctrine::getTable('Organization')->find($id);
-        $organization->convertToSystem();
+        $type = $this->getRequest()->getParam('Type');
+        $sdlcPhase = $this->getRequest()->getParam('SDLCPhase');
+        $confidentiality = $this->getRequest()->getParam('Confidentiality');
+        $integrity = $this->getRequest()->getParam('Integrity');
+        $availability = $this->getRequest()->getParam('Availability');
         
-        $msg = "NOTICE: " . $organization->nickname . ' is now a system, however all FIPS-199 and ' . 
-            'FISMA Data must now be set';
-        $this->view->priorityMessenger($msg, 'warning');
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $organization->convertToSystem($type, $sdlcPhase, $confidentiality, $integrity, $availability);
+        
+        $this->view->priorityMessenger('Converted to system successfully', 'notice');
         
         $this->_redirect('/system/view/oid/' . $id);
     }
