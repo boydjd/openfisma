@@ -137,7 +137,7 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     // Reset the page to 1 if search form is submitted 
-                    if (typeof form.search != "undefined" && 'Search' === form.search.value) {
+                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
                         dataTable.get('paginator').setPage(1);
                     }
                 },
