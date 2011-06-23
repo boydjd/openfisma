@@ -133,8 +133,15 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         }
     }
 
+    /**
+     * editMatrixAction - calls _saveMatrix, and displays a table of privileges associated with each role
+     * 
+     * @return void
+     */
      public function editMatrixAction()
      {
+        $this->_acl->requirePrivilegeForClass('update', 'Role');
+
         // If this is caled from a form-post, save the changes
         $this->_saveMatrix();
 
@@ -237,8 +244,17 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $this->view->dataTable = $dataTable;
      }
     
+    /**
+     * _saveMatrix - If rolePrivChanges exists through http-post, will save the role/privilege changes
+     * rolePrivChanges is expected to be a string/json-object, when json-decoded, to be an array of 
+     * objects, each with a newValue, privilegeId, and roleName property.
+     *
+     * @return void
+     */
     private function _saveMatrix()
     {
+        $this->_acl->requirePrivilegeForClass('update', 'Role');
+        
         // Check if there is changes to apply
         $rolePrivChanges = $this->getRequest()->getParam('rolePrivChanges');
         if (is_null($rolePrivChanges)) {
@@ -288,6 +304,29 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         // Send priority messenger
         $msg = implode("<br/>", $msg);
         $this->view->priorityMessenger($msg, 'notice');
+    }
+    
+    /**
+     * parent::getToolbarButtons located in FZCAO, and extends its returned array with a button to 
+     * edit the Privilege Matrix
+     *
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = parent::getToolbarButtons();
+        
+        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $buttons['editMatrix'] = new Fisma_Yui_Form_Button_Link(
+                'editMatrix',
+                array(
+                    'value' => 'Edit Privilege Matrix',
+                    'href' => '/role/edit-matrix'
+                )
+            );
+        }
+        
+        return $buttons;
     }
     
     protected function _isDeletable()
