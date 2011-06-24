@@ -141,10 +141,9 @@ Fisma.Search.Criteria.prototype = {
         this.containerForm.appendChild(clearDiv);
 
         var searchTypeField = document.createElement('input');
-        searchTypeField.type = 'submit';
+        searchTypeField.type = 'hidden';
         searchTypeField.name = 'searchType';
         searchTypeField.value = 'advanced';
-        searchTypeField.style.display = 'none';
         this.containerForm.appendChild(searchTypeField);
 
         this.container.appendChild(this.containerForm);
