@@ -649,22 +649,6 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        },
-
-        /**
-         * Key press listener
-         * 
-         * @param element The element to which the key event sould be attached
-         */
-        onKeyPress : function (element) {
-            var searchForm = YAHOO.util.Dom.get('searchForm');
-            var keyHandle = new YAHOO.util.KeyListener(
-                                    element,
-                                    {keys : 13},
-                                    function () {
-                                        Fisma.Search.handleSearchEvent(searchForm);
-                                    });
-            keyHandle.enable();
         }
     };
 }();
