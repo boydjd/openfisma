@@ -134,7 +134,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * editMatrixAction - calls _saveMatrix, and displays a table of privileges associated with each role
+     * calls _saveMatrix, and displays a table of privileges associated with each role
      * 
      * @return void
      */
@@ -245,7 +245,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      }
     
     /**
-     * _saveMatrix - If rolePrivChanges exists through http-post, will save the role/privilege changes
+     * If rolePrivChanges exists through http-post, will save the role/privilege changes
      * rolePrivChanges is expected to be a string/json-object, when json-decoded, to be an array of 
      * objects, each with a newValue, privilegeId, and roleName property.
      *
