@@ -10212,8 +10212,8 @@ Fisma.System = {
         });
     },
     
-/**
-     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+    /**
+     * Triggers a pop-up confirmation asking if the user truly wants to convert the current
      * system to an organization, and if yes, redirects to the proper action.
      * 
      * @param event $event 
@@ -10266,7 +10266,7 @@ Fisma.System = {
     },
     
     /**
-     * convertToOrganization - Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * Triggers a pop-up confirmation asking if the user truly wants to convert the current
      * organization to a system, and if yes, calls Fisma.System.AskForOrgToSysInput()
      * 
      * @param event $event 
@@ -10294,6 +10294,7 @@ Fisma.System = {
                     handler: noButtonEvent
                 } 
             ];
+        var dialogMessage = "Are you sure you want to convert this organization to a system?";
         var dialogConfig = {
             width: "300px", 
             fixedcenter: true, 
@@ -10301,7 +10302,7 @@ Fisma.System = {
             draggable: false, 
             close: true,
             modal: true,
-            text: "Are you sure you want to convert this organization to a system?", 
+            text: dialogMessage, 
             icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
             constraintoviewport: true, 
             buttons: dialogButtons
@@ -10314,7 +10315,7 @@ Fisma.System = {
     },
     
     /**
-     * AskForOrgToSysInput - Shows an input dialog for the user to input the needed information for 
+     * Shows an input dialog for the user to input the needed information for 
      * a Oranization-t-o-System conversion (the system FIPS-199 and FISMA Data).
      * After input, will redirect the user to /organization/convert-to-system/~
      *
@@ -10337,7 +10338,10 @@ Fisma.System = {
         var cancleButtonEvent = function () {
                 this.destroy(); 
             };
-
+        var dialogButtons = [
+                { text:"Submit", handler:submitButtonEvent, isDefault:true }, 
+                { text:"Cancel", handler:cancleButtonEvent }
+            ];
         var inputSysInfoDialog = new YAHOO.widget.Dialog(
             "sysConversionForm",  
             {
@@ -10345,11 +10349,7 @@ Fisma.System = {
                 fixedcenter : true, 
                 visible : false,  
                 constraintoviewport : true, 
-                buttons:
-                [
-                    { text:"Submit", handler:submitButtonEvent, isDefault:true }, 
-                    { text:"Cancel", handler:cancleButtonEvent }
-                ] 
+                buttons : dialogButtons
             }
         ); 
 
@@ -10360,7 +10360,7 @@ Fisma.System = {
     },
     
     /**
-     * getSystemConversionForm - Creates and HTML input form which asks for the requiered information needed to 
+     * Creates and HTML input form which asks for the requiered information needed to 
      * convert an organization to a system
      * 
      * @access public
@@ -10434,7 +10434,7 @@ Fisma.System = {
     },
     
     /**
-     * showWaitPanelWhileConverting - Shows YUI wain panel on the DOM. Use when navigating away from this page.
+     * Shows YUI wain panel on the DOM. Use when navigating away from this page.
      * 
      * @access public
      * @return void
