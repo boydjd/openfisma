@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2009 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -28,7 +28,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Inject
- * @version    $Id$
  */
 class Fisma_Inject_Excel
 {
@@ -99,6 +98,24 @@ class Fisma_Inject_Excel
     private $_excelTemplateStartRow = 4;
     
     /**
+     * Holds the 800-53 catalog number that this spreadsheet was generated from
+     * 
+     * This is used during parsing to lookup the corresponding security control, since the security control code
+     * (e.g. AC-01) is not a unique key, but the pair (catalog, security control code) is a unique key.
+     * 
+     * @var int
+     */
+    private $_securityControlCatalogId;
+
+    /**
+     * The primary key of the upload object associated with this spreadsheet. This is used to trace a particular
+     * finding back to the file it came from.
+     * 
+     * @var int
+     */
+    private $_uploadId;
+
+    /**
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
      * Compatible with older versions of Excel through the Office Compatibility Pack.
      * 
@@ -129,7 +146,9 @@ class Fisma_Inject_Excel
         }
         
         // Look up the control catalog ID for this template in the spreadsheet properties. This is used later.
-        $securityControlCatalogId = (int)$spreadsheet->CustomDocumentProperties->SecurityControlCatalogId;
+        $this->_securityControlCatalogId = (int)$spreadsheet->CustomDocumentProperties->SecurityControlCatalogId;
+        
+        $this->_uploadId = $uploadId;
 
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
         $namespaces = $spreadsheet->getNamespaces(true);
@@ -147,11 +166,44 @@ class Fisma_Inject_Excel
         array_shift($findingData);
         array_shift($findingData);
         
-        // Now process each remaining row
-        /**
-         * @todo Perform these commits in a single transaction.
-         */
-        $rowNumber = $this->_excelTemplateStartRow;
+        // Now load the remaining rows into OpenFISMA
+        Doctrine_Manager::connection()->beginTransaction();
+        $originalIndexAutocommit = IndexListener::getAutocommitEnabled();
+        IndexListener::setAutocommitEnabled(false);
+        
+        try {            
+            $findings = $this->_parseRowsIntoFindings($findingData);
+            $findings->save();
+        } catch (Exception $e) {
+            // We are not interested in the exception per se, just want to roll back and then rethrow
+            Doctrine_Manager::connection()->rollback();
+            Zend_Registry::get('search_engine')->rollback();
+            IndexListener::setAutocommitEnabled($originalIndexAutocommit);
+
+            throw $e;
+        }
+
+        Doctrine_Manager::connection()->commit();
+        Zend_Registry::get('search_engine')->commit();
+        IndexListener::setAutocommitEnabled($originalIndexAutocommit);
+
+        return count($findings);
+    }
+
+    /**
+     * Convert row data (in array format) into new findings and return a collection of new findings
+     * 
+     * @param array $findingData Associative array of finding data coming from excel
+     * @return Doctrine_Collection Collection of Finding objects.
+     */
+    private function _parseRowsIntoFindings($findingData)
+    {
+        $findings = new Doctrine_Collection('Finding');
+        
+        // Our array is offset from excel's row numbering, so we need to keep track of which row we are on in Excel's
+        // representation, so if an error occurs we can provide a useful error message to the user.
+        $currentExcelRowNumber = $this->_excelTemplateStartRow;
+
         foreach ($findingData as $row) {
             // Copy the row data into a local array
             $finding = array();
@@ -181,7 +233,7 @@ class Fisma_Inject_Excel
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
                 if (empty($finding[$columnName])) {
                     throw new Fisma_Zend_Exception_InvalidFileFormat(
-                        "Row $rowNumber: Required column \"$columnDescription\" is empty"
+                        "Row $currentExcelRowNumber: Required column \"$columnDescription\" is empty"
                     );
                 }
             }
@@ -190,21 +242,22 @@ class Fisma_Inject_Excel
             // from turning into spaghetti. When debugging this code, it will probably be helpful to remove these
             // suppressions.
             $poam = array();
-            $poam['uploadId'] = $uploadId;
+            $poam['uploadId'] = $this->_uploadId;
             $organization = Doctrine::getTable('Organization')->findOneByNickname($finding['systemNickname']);
             if (!$organization) {
                 throw new Fisma_Zend_Exception_InvalidFileFormat(
-                    "Row $rowNumber: Invalid system selected. Your template may be out of date. Please try downloading 
-                    it again."
+                    "Row $currentExcelRowNumber: Invalid system selected. Your template may be out of date. Please try"
+                    . " downloading it again."
                 );
             }
             $poam['responsibleOrganizationId'] = $organization->id;
             
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
-                throw new Fisma_Zend_Exception_InvalidFileFormat("Row $rowNumber: Invalid finding source selected. Your
-                                                      template may
-                                                      be out of date. Please try downloading it again.");
+                throw new Fisma_Zend_Exception_InvalidFileFormat(
+                    "Row $currentExcelRowNumber: Invalid finding source selected. Your template may"
+                    . " be out of date. Please try downloading it again."
+                );
             }
             $poam['sourceId'] = $sourceTable->id;
                         
@@ -213,13 +266,13 @@ class Fisma_Inject_Excel
                 $securityControlTable = Doctrine::getTable('SecurityControl');
                 
                 $conditions = 'code = ? and securityControlCatalogId = ?';
-                $parameters = array($finding['securityControl'], $securityControlCatalogId);
+                $parameters = array($finding['securityControl'], $this->_securityControlCatalogId);
 
                 $securityControls = $securityControlTable->findByDql($conditions, $parameters);
 
                 if (count($securityControls) != 1) {
-                    $error = "Row $rowNumber: Invalid security control selected. Your template may be out of date."
-                           . 'Please try downloading it again.';
+                    $error = "Row $currentExcelRowNumber: Invalid security control selected. Your template may"
+                           . " be out of date. Please try downloading it again.";
                     throw new Fisma_Zend_Exception_InvalidFileFormat($error);
                 }
                 $poam['securityControlId'] = $securityControls[0]->id;
@@ -240,11 +293,17 @@ class Fisma_Inject_Excel
             if (!empty($finding['findingMitigationStrategy'])) {
                 $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
             }
+
             if (!empty($finding['ecdDate'])) {
-                $poam['currentEcd'] = $finding['ecdDate'];
+                $ecdDate = new Zend_Date($finding['ecdDate'], 'yyyy-MM-ddThh:mm:ss.S');
+                $poam['currentEcd'] = $ecdDate->toString('yyyy-MM-dd');
             }
+
             $poam['ecdLocked'] = 0;
-            $poam['discoveredDate'] = $finding['discoveredDate'];
+
+            $discoveredDate = new Zend_Date($finding['discoveredDate'], 'yyyy-MM-ddThh:mm:ss.S');
+            $poam['discoveredDate'] = $discoveredDate->toString('yyyy-MM-dd');
+
             if (empty($finding['threatLevel'])) {
                 $poam['threatLevel'] = 'NONE';
             } else {
@@ -265,10 +324,11 @@ class Fisma_Inject_Excel
             $findingRecord = new Finding();
             $findingRecord->merge($poam);
             $findingRecord->CreatedBy = CurrentUser::getInstance();
-            $findingRecord->save();
-            $rowNumber++;
+            $findings[] = $findingRecord;
+            
+            $currentExcelRowNumber++;
         }
-        return $rowNumber - $this->_excelTemplateStartRow;
+        
+        return $findings;
     }
 }
-

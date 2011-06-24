@@ -1038,8 +1038,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     case 'HIGH':
                         $thisHigh = $thisLevel['count'];
                         break;
+                    case NULL:
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
                     default:
-                        $thisNull += $thisLevel['count'];
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
                 }
             }
             
@@ -1066,6 +1070,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisLow
                 ),
                 array(
+                    $basicSearchLink . '/threatLevel/enumIs/NULL',
                     $basicSearchLink . '/threatLevel/enumIs/HIGH',
                     $basicSearchLink . '/threatLevel/enumIs/MODERATE',
                     $basicSearchLink . '/threatLevel/enumIs/LOW'
@@ -1088,11 +1093,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 break;
             case "high, moderate, and low":
                 // $noMitChart is already in this form
-                // Remove the nullCount layer
+                // Remove null-counts (findings without threatLevels)
                 $noMitChart->deleteLayer(0);
                 break;
             case "high":
-                // Remove the nullCount layer
+                // Remove null-counts (findings without threatLevels)
                 $noMitChart->deleteLayer(0);
                 // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
@@ -1100,7 +1105,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $noMitChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // Remove the nullCount layer
+                // Remove null-counts (findings without threatLevels)
                 $noMitChart->deleteLayer(0);
                 // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
@@ -1108,7 +1113,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $noMitChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // Remove the nullCount layer
+                // Remove null-counts (findings without threatLevels)
                 $noMitChart->deleteLayer(0);
                 // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);

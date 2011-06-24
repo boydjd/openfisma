@@ -528,6 +528,79 @@ div.toolbar {
     padding: 5px 10px;
     text-align: right;
 }
+/* Styles for a draggable YUI tree */
+
+div.showDisposalSystem {
+    margin: 0px 0px 5px 3px;
+    font-weight: bold;
+}
+
+div.showDisposalSystem input {
+    vertical-align: middle;
+    margin: 0px 5px 3px 0px;
+}
+
+.treeNodeDragAbove span {
+    border-top: 4px solid #bbc6d6;
+}
+
+
+.treeNodeDragOnto {
+    background-color: #bbc6d6;
+}
+
+.treeNodeDragBelow span {
+    border-bottom: 4px solid #bbc6d6;
+}
+
+.treeNodeDragProxy {
+    border: 1px solid #bbc6d6 !important;
+    padding: 3px;
+    opacity: 0.75;
+}
+
+/* The following styles are for the organization tree view icons */
+.draggableTreeContainer .agency {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/agency-small.png) no-repeat;
+}
+
+.draggableTreeContainer .bureau {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/bureau-small.png) no-repeat;
+}
+
+.draggableTreeContainer .organization {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/organization-small.png) no-repeat;
+}
+
+.draggableTreeContainer .gss {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/gss-small.png) no-repeat;
+}
+
+.draggableTreeContainer .major {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/major-small.png) no-repeat;
+}
+
+.draggableTreeContainer .minor {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/minor-small.png) no-repeat;
+}
+
+.draggableTreeContainer .disposal {
+       display: block;
+       padding-left: 20px; 
+       background-color: pink;
+}
 /* Style for the UserInfo view helper */
 
 span.userInfo {
@@ -1249,60 +1322,6 @@ div#msgbar {
 .yui-navset div.loading div {
     background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
     height:8em; /* hold some space while loading */
-}
-
-/* The following styles are for the organization tree view icons */
-.agency {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/agency-small.png) no-repeat;
-}
-
-.bureau {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/bureau-small.png) no-repeat;
-}
-
-.organization {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/organization-small.png) no-repeat;
-}
-
-.gss {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/gss-small.png) no-repeat;
-}
-
-.major {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/major-small.png) no-repeat;
-}
-
-.minor {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/minor-small.png) no-repeat;
-}
-
-/* Style for displaying background color of disposal systems are pink */
-.disposal {
-    background-color: pink;
-}
-
-/* Style for displaying showDisposalSystem div including checkbox and text*/
-div#showDisposalSystem {
-    margin: 0px 0px 5px 3px;
-    font-weight: bold;
-}
-
-/* Style for displaying checkbox in organization tree */
-div#showDisposalSystem input {
-    vertical-align: middle;
-    margin: 0px 5px 3px 0px;
 }
 
 /* 

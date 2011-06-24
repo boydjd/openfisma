@@ -193,4 +193,9 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msgs);
         }
     }
+
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }
