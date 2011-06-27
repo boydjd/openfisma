@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
- * @version    $Id$
  */
 class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
@@ -1022,6 +1021,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $rslts = $q->execute();
             
             // Initalize to 0 (query may not return values for 0 counts)
+            $thisNull = 0;
             $thisHigh = 0;
             $thisMod = 0;
             $thisLow = 0;
@@ -1036,6 +1036,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         break;
                     case 'HIGH':
                         $thisHigh = $thisLevel['count'];
+                        break;
+                    case NULL:
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
+                    default:
+                        $thisNull += $thisRslt['COUNT'];
                         break;
                 }
             }
@@ -1057,11 +1063,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $noMitChart->addColumn(
                 $thisColumnLabel,
                 array(
+                    $thisNull,
                     $thisHigh,
                     $thisMod,
                     $thisLow
                 ),
                 array(
+                    $basicSearchLink . '/threatLevel/enumIs/NULL',
                     $basicSearchLink . '/threatLevel/enumIs/HIGH',
                     $basicSearchLink . '/threatLevel/enumIs/MODERATE',
                     $basicSearchLink . '/threatLevel/enumIs/LOW'
@@ -1082,20 +1090,28 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 break;
             case "high, moderate, and low":
                 // $noMitChart is already in this form
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
                 break;
             case "high":
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
                 // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
                 $noMitChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
                 // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FF6600'));
                 break;
             case "low":
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
                 // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);

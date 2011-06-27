@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class UserController extends Fisma_Zend_Controller_Action_Object
 {
@@ -71,6 +70,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('mustResetPassword');
         return $form;
     }
 
