@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend
- * @version    $Id$
  */
 class Fisma_Zend_Form_Decorator_RenderSelf extends Zend_Form_Decorator_Abstract
 {

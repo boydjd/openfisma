@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,23 +17,33 @@
  */
 
 /**
- * Cve 
+ * Version113 
  * 
- * @uses BaseCve
- * @package Model 
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @uses Doctrine_Migration_Base
+ * @package Migration 
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Cve extends BaseCve
+class Version113 extends Doctrine_Migration_Base
 {
     /**
-     * Get a URL to this external reference
-     * 
-     * @return string
+     * Update application version.
      */
-    public function getUrl()
+    public function up()
     {
-        return 'http://web.nvd.nist.gov/view/vuln/detail?vulnId=' . $this->value;
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.2'";
+        $conn->exec($updateSql);
+    }
+
+    /**
+     * Remove configuration 
+     */
+    public function down()
+    {
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.1'";
+        $conn->exec($updateSql);
     }
 }

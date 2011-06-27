@@ -26,7 +26,6 @@ require_once(realpath(dirname(__FILE__) . '/../../../../../FismaUnitTest.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
- * @version    $Id$
  */
 class Test_Library_Fisma_Doctrine_Behavior_AttachArtifacts_Generator extends Test_FismaUnitTest
 {

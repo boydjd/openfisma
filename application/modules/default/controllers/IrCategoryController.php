@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id: IncidentDashboardController.php 3257 2010-04-26 17:49:51Z mhaase $
  */
 class IrCategoryController extends Fisma_Zend_Controller_Action_Object
 {

@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_Commentable
- * @version    $Id: AuditLoggable.php 2722 2009-12-11 08:43:24Z jackson.yang $
  */
 class Fisma_Doctrine_Behavior_Commentable extends Doctrine_Template
 {
