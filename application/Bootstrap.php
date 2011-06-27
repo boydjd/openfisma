@@ -20,7 +20,6 @@
  * Bootstrap class for Zend_Application 
  * 
  * @uses Zend_Application_Bootstrap_Bootstrap
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3

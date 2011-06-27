@@ -20,7 +20,6 @@
  * Add event for system document creation
  * 
  * @package Migration
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
