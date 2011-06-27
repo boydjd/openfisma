@@ -229,7 +229,7 @@ echo $this->escape($exportPdf, 'none');
     <?php 
     foreach ($this->statusArray as $status):
         if ($status == 'TOTAL'):
-            $url = Fisma_Url::customUrl('/finding/remediation/list');
+            $url = Fisma_Url::customUrl('/finding/remediation/list?show=all');
         else:
             $url = Fisma_Url::customUrl(
                 '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/' 

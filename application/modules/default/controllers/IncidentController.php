@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class IncidentController extends Fisma_Zend_Controller_Action_Object
 {
@@ -134,7 +133,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         // Save the current form into the Incident and save the incident into the sesion
         if ($this->_request->isPost()) {
-            if (!is_null($step) && $step != 0) {
+            if (!is_null($step) && $step != 0 && $step < 8) {
                 $subForm = $this->getFormPart($step);
                 $subFormValid = $subForm->isValid($this->_request->getPost());
                 $incident->merge($subForm->getValues());
@@ -183,7 +182,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             if ($this->getRequest()->getParam('irReportForwards')) {
                 $step = 7;
             } else {
-                $step = 4;
+                $step = 5;
             }
         } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
             if ($this->getRequest()->getParam('irReportForwards')) {

@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Finding = {
@@ -141,5 +140,38 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
     }
 };

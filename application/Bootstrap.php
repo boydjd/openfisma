@@ -20,7 +20,6 @@
  * Bootstrap class for Zend_Application 
  * 
  * @uses Zend_Application_Bootstrap_Bootstrap
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
@@ -128,6 +127,21 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
                 )
             )
         );
+    }
+
+    /**
+     * Instantiate a search engine and save it in the registry 
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initSearchEngine()
+    {
+        $searchConfig = Fisma::$appConf['search'];
+
+        $searchEngine = new Fisma_Search_Engine($searchConfig['host'], $searchConfig['port'], $searchConfig['path']);
+
+        Zend_Registry::set('search_engine', $searchEngine);
     }
 
     /**

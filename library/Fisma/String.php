@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_String
- * @version    $Id$
  */
 class Fisma_String
 {
@@ -99,48 +98,6 @@ class Fisma_String
         // Remove any remaining tags and decode entities
         $html = strip_tags($html);
         $html = html_entity_decode($html);
-        
-        // Remove excess whitespace
-        $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);
-        $html = preg_replace('/^\s+/', '', $html);
-        $html = preg_replace('/\s+$/', '', $html);
-        $html = preg_replace('/ +/', ' ', $html);
-
-        return $html;
-    }
-
-    /**
-     * A helper for converting HTML to text suitable for use in the PDF generator.
-     * 
-     * This is *NOT* intended to satisfactorily strip malicious content from HTML. This assumes the input is safe 
-     * markup which just needs to be coerced into plain text format.
-     *
-     * This function behaves in a similar manner to htmlToPlainText(), but allows HTML entities as well
-     * as I, B and U formatting tags.
-     * 
-     * @param string $html HTML input
-     * @return string PDF text output
-     */
-    static function htmlToPdfText($html)
-    {
-        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
-        // the last word on the previous line, but consecutive spaces are culled out later.
-        $html = str_replace(chr(10), ' ', $html);
-        $html = str_replace(chr(13), ' ', $html);
-
-        // Convert <p> and <br> into unix line endings
-        $html = preg_replace('/<p[^>]*?>/i', "\n", $html);
-        $html = preg_replace('/<\/p[^>]*?>/i', "\n", $html);
-        $html = preg_replace('/<br[^>]*?>/i', "\n", $html);
-        
-        // Convert list tags into plain text
-        $html = preg_replace('/<[uo]l[^>]>/i', '', $html);
-        $html = preg_replace('/<\/[uo]l[^>]>/i', "\n", $html);
-        $html = preg_replace('/<li[^>]*?>/i', "\n* ", $html);
-        $html = preg_replace('/<\/li>/i', '', $html);
-        
-        // Remove any remaining tags, except for I, B and U
-        $html = strip_tags($html, '<i><b><u>');
         
         // Remove excess whitespace
         $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);
@@ -245,4 +202,75 @@ class Fisma_String
 
         return str_replace($search, $replace, $string);
     }
+
+    /**
+     * A helper for converting plaintext to text suitable for use in the PDF and excel generator.
+     * 
+     * @param string $text plain text input
+     * @return string PDF and excel text output
+     */
+    static function plainTextToReportText($text)
+    {
+        // Remove excess whitespace
+        $text = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $text);
+        $text = preg_replace('/\s+$/', '', $text);
+        $text = preg_replace('/\b +/', ' ', $text);
+
+        return $text;
+    }
+
+    /**
+     * A helper for converting string from UTF-8 to ISO-8859-1//TRANSLIT.
+     * 
+     * @param UTF-8 encoded string $text
+     * @return ISO-8859-1//TRANSLIT encoded string 
+     */
+    static function convertToLatin1($text)
+    {
+        return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
+    }
+
+    /*
+    * A helper for converting HTML to text suitable for use in the PDF generator.
+    * 
+    * This is *NOT* intended to satisfactorily strip malicious content from HTML. This assumes the input is safe 
+    * markup which just needs to be coerced into plain text format.
+    *
+    * This function behaves in a similar manner to htmlToPlainText(), but allows HTML entities as well
+    * as I, B and U formatting tags.
+    * 
+    * @param string $html HTML input
+    * @return string PDF text output
+    */
+    static function htmlToPdfText($html)
+    {
+        // Remove line feeds. They are replaced with spaces to prevent the next word on the next line from adjoining
+        // the last word on the previous line, but consecutive spaces are culled out later.
+        $html = str_replace(chr(10), ' ', $html);
+        $html = str_replace(chr(13), ' ', $html);
+ 
+        // Convert <p> and <br> into unix line endings
+        $html = preg_replace('/<p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<\/p[^>]*?>/i', "\n", $html);
+        $html = preg_replace('/<br[^>]*?>/i', "\n", $html);
+
+        // Convert list tags into plain text
+        $html = preg_replace('/<[uo]l[^>]>/i', '', $html);
+        $html = preg_replace('/<\/[uo]l[^>]>/i', "\n", $html);
+        $html = preg_replace('/<li[^>]*?>/i', "\n* ", $html);
+        $html = preg_replace('/<\/li>/i', '', $html);
+
+        // Remove any remaining tags, except for I, B and U
+        $html = strip_tags($html, '<i><b><u>');
+
+        // Remove excess whitespace
+        $html = preg_replace('/[ ]*\R[ ]*/', "\n", $html);
+        $html = preg_replace('/^\s+/', '', $html);
+        $html = preg_replace('/\s+$/', '', $html);
+        $html = preg_replace('/ +/', ' ', $html);
+
+        $html = iconv("UTF-8", "ISO-8859-1//TRANSLIT", $html);
+
+        return $html;
+    }   
 }

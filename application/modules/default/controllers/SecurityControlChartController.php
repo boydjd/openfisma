@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
- * @version    $Id$
  */
 class SecurityControlChartController extends Fisma_Zend_Controller_Action_Security
 {
@@ -102,27 +101,14 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             
         }
 
-        // Insert quotes around VALUE in securityControl/textContains/VALUE when using Solr
-        if (Fisma::configuration()->getConfig('search_backend') === 'solr') {
-            $searchVar = $this->view->escape('"#ColumnLabel#"', 'url');
-        } else {
-            $searchVar = '#ColumnLabel#';
-        }
-
         // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-        if ($displayBy === 'Family Summary') {
-            $rtnChart->setLinks(
-                '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                '/securityControl/textContains/'. $searchVar
-            );
-        } else {
-            $rtnChart->setLinks(
-                '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                '/securityControl/textExactMatch/#ColumnLabel#'
-            );
-        }
+        $rtnChart->setLinks(
+            '/finding/remediation/list?q=' .
+            '/denormalizedStatus/textDoesNotContain/CLOSED' .
+            '/securityControl/' . 
+            ( $displayBy === 'Family Summary' ? 'textContains' : 'textExactMatch' ) .
+            '/#ColumnLabel#'
+        );
             
         // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');

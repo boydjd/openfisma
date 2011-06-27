@@ -18,6 +18,12 @@ Configuration:
             unsigned: true
             default: 0
             comment: Session timeout (seconds)
+        session_inactivity_notice:
+            type: integer(2)
+            notblank: true
+            unsigned: true
+            default: 0
+            comment: Session timeout (seconds)
         auth_type:
             type: enum
             notblank: true
@@ -190,18 +196,3 @@ Configuration:
             notblank: true
             comment: The ID of the default security control catalog which is used when the user does not explicitly specify a security control catalog.
             default: 4
-        search_backend:
-            type: enum
-            values: [solr, zend_search_lucene]
-            notblank: true
-            comment: The backend for the search engine.
-            default: zend_search_lucene
-        search_solr_host:
-            type: string(255)
-            comment: The hostname or IP address that Solr is listening on.
-        search_solr_port:
-            type: integer(5)
-            comment: The IP port that Solr is listening on.
-        search_solr_path:
-            type: string(255)
-            comment: The path that the Solr service is running within its container. (Usually /solr)

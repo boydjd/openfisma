@@ -26,7 +26,6 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Fisma
- * @version    $Id$
  */
 class Test_Library_Fisma_String extends Test_FismaUnitTest
 {
@@ -107,62 +106,7 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         
         $this->assertEquals($plaintext, Fisma_String::htmlToPlainText($html));
     }
-
-    /**
-     * Test HTML to PDF text converts paragraphs and line breaks
-     */
-    public function testHtmlToPdfTextParagraphsAndLineBreaks()
-    {
-        $html = " <p attrib='value'> First \r\n paragraph.</p>  <p>This and that.</p> More <br> line <br /> breaks";
-        $pdftext = "First paragraph.\n\nThis and that.\nMore\nline\nbreaks";
-        
-        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
-    }
-    
-    /**
-     * Test handling of list items in the HTML to pdf text converter
-     */
-    public function testHtmlToPdfTextListItems()
-    {
-        $html = "<p>I will now list things:</p> <ul><li class='stuff' />Item 1 <li> Item 2 </li> <li> Item 3 </li>";
-        $pdftext = "I will now list things:\n\n* Item 1\n* Item 2\n* Item 3";
-        
-        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
-    }
-    
-    /**
-     * Test white space in between tags should be preserved
-     */
-    public function testHtmlToPdfTextWhitespaceBetweenTags()
-    {
-        $html = "<p> Spaces <span>between</span> <span>tagged</span> words.</p>";
-        $pdftext = "Spaces between tagged words.";
-        
-        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
-    }
-
-    /**
-     * Test to ensure allowed formatting tags are preserved in PDF.
-     */
-    public function testHtmlToPdfAllowedFormatting()
-    {
-        $html = "<p> Style <b>some</b> <i>neat</i> words.</p>";
-        $pdftext = "Style <b>some</b> <i>neat</i> words.";
-        
-        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
-    }
-
-    /**
-     * Test that HTML entities are retained for output to PDF
-     */
-    public function testHtmlToPdfHtmlEntities()
-    {
-        $html = '<p>HTML Entities &copy; allowed &amp; fun!</p>';
-        $pdftext = 'HTML Entities &copy; allowed &amp; fun!';
-
-        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
-    }
-
+   
     /**
      * Test handling of consecutive line breaks in the text to HTML converter
      */
@@ -249,5 +193,67 @@ class Test_Library_Fisma_String extends Test_FismaUnitTest
         $this->assertEquals('-', Fisma_String::replaceInvalidChars('–'));
         $this->assertEquals('-', Fisma_String::replaceInvalidChars('—'));
         $this->assertEquals('...', Fisma_String::replaceInvalidChars('…'));
+    }
+
+    /**
+     * Test plaintextToReportText reserve the leading white spaces 
+     * and remove excess white spaces.
+     */
+    public function testPlainTextToReportTextReserveLeadingWhiteSpaces()
+    {
+        $text = "    First     line.    ";
+        $reporttext = "    First line.";
+        
+        $this->assertEquals($reporttext, Fisma_String::plainTextToReportText($text));
+    }
+
+    /**
+     * Test convertUTF8ToISOTRANSLIT convert UTF-8 encoded string to ISO-8859-1//TRANSLIT 
+     */
+    public function testConvertToLatin1()
+    {
+        $text = "This is the Euro symbol '€'";
+        $translitText = "This is the Euro symbol 'EUR'"; 
+        $this->assertEquals($translitText, Fisma_String::convertToLatin1($text));
+    }
+
+    /*
+    * Test HTML to PDF text converts paragraphs and line breaks
+    */
+    public function testHtmlToPdfTextParagraphsAndLineBreaks()
+    {
+        $html = " <p attrib='value'> First \r\n paragraph.</p>  <p>This and that.</p> More <br> line <br /> breaks";
+        $pdftext = "First paragraph.\n\nThis and that.\nMore\nline\nbreaks";
+        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
+    }
+
+    /**
+    * Test handling of list items in the HTML to pdf text converter
+    */
+    public function testHtmlToPdfTextListItems()
+    {
+        $html = "<p>I will now list things:</p> <ul><li class='stuff' />Item 1 <li> Item 2 </li> <li> Item 3 </li>";
+        $pdftext = "I will now list things:\n\n* Item 1\n* Item 2\n* Item 3";
+        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
+    }
+    
+    /**
+    * Test white space in between tags should be preserved
+    */
+    public function testHtmlToPdfTextWhitespaceBetweenTags()
+    {
+        $html = "<p> Spaces <span>between</span> <span>tagged</span> words.</p>";
+        $pdftext = "Spaces between tagged words.";
+        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
+    }
+
+    /**
+    * Test to ensure allowed formatting tags are preserved in PDF.
+    */
+    public function testHtmlToPdfAllowedFormatting()
+    {
+        $html = "<p> Style <b>some</b> <i>neat</i> words.</p>";
+        $pdftext = "Style <b>some</b> <i>neat</i> words.";
+        $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
     }
 }

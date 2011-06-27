@@ -777,7 +777,11 @@ tinyMCE.init({
 	theme_advanced_statusbar_location : "bottom",
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
-	spellchecker_languages : "+English=en"
+	spellchecker_languages : "+English=en",
+    setup : function(ed) {
+        ed.onClick.add(Fisma.SessionManager.onActivityEvent);
+        ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
+    }
 });
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -5208,6 +5212,39 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
     }
 };
 /**
@@ -6552,6 +6589,472 @@ Fisma.Module = {
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A treeview widget that is specialized for displaying the organization/system hierarchy
+     * 
+     * @namespace Fisma
+     * @class OrganizationTreeView
+     * @extends n/a
+     * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
+     */
+    var OTV = function(contentDivId) {
+        this._contentDiv = document.getElementById(contentDivId);
+        
+        if (YAHOO.lang.isNull(this._contentDiv)) {
+            throw "Invalid contentDivId";
+        }
+        
+        this._storage = new Fisma.PersistentStorage("Organization.Tree");
+    };
+
+    OTV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _contentDiv: null,
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
+        _treeView: null,
+
+        /**
+         * The div containing the "include disposal systems" checkbox
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckboxContainer: null,
+
+        /**
+         * The checkbox for "include disposal systems"
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckbox: null,
+        
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _treeViewContainer: null,
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
+        _savePanel: null,
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
+        _storage: null,
+
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
+        render: function () {
+            var that = this;
+
+            // We need storage before we can render anything
+            Fisma.Storage.onReady(function () {
+                that._disposalCheckboxContainer = document.createElement("div");
+                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
+                that._contentDiv.appendChild(that._disposalCheckboxContainer);
+
+                that._loadingContainer = document.createElement("div");
+                that._renderLoading(that._loadingContainer);
+                that._contentDiv.appendChild(that._loadingContainer);
+
+                that._treeViewContainer = document.createElement("div");
+                that._renderTreeView(that._treeViewContainer);
+                that._contentDiv.appendChild(that._treeViewContainer);                
+            });
+        },
+
+        /**
+         * Render the "include disposal systems" interface
+         *
+         * @method OrganizationTreeView._renderDisposalCheckbox
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderDisposalCheckbox: function (container) {
+            this._disposalCheckbox = document.createElement("input");
+            this._disposalCheckbox.type = "checkbox";
+            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
+            YAHOO.util.Dom.generateId(this._disposalCheckbox);
+            YAHOO.util.Event.addListener(
+                this._disposalCheckbox, 
+                "click", 
+                this._handleDisposalCheckboxAction, 
+                this, 
+                true
+            );
+            container.appendChild(this._disposalCheckbox);
+            
+            var label = document.createElement("label");
+            label.setAttribute("for", this._disposalCheckbox.id);
+            label.appendChild(document.createTextNode("Display Disposed Systems"));
+            container.appendChild(label);
+            
+            container.setAttribute("class", "showDisposalSystem");
+        },
+       
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderLoading: function (container) {
+            var loadingImage = document.createElement("img");
+            loadingImage.src = "/images/spinners/small.gif";
+
+            container.style.display = "none";
+            container.appendChild(loadingImage);
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
+        _showLoadingImage: function () {
+            this._loadingContainer.style.display = "block";
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
+        _hideLoadingImage: function () {
+            this._loadingContainer.style.display = "none";    
+        },
+
+        /**
+         * Set the user preference for the include disposal system checkbox and re-render the tree view
+         *
+         * @method OrganizationTreeView._handleDisposalCheckboxAction
+         * @param event {YAHOO.util.Event} The mouse event
+         */
+        _handleDisposalCheckboxAction: function (event) {
+            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
+            this._renderTreeView();
+        },
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderTreeView: function (container) {
+            this._showLoadingImage();
+
+            var url = '/organization/tree-data/format/json';
+
+            if (this._storage.get("includeDisposalSystem") === true) {
+                url += '/displayDisposalSystem/true';
+            }
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                url, 
+                {
+                    success: function (response) {
+                        var json = YAHOO.lang.JSON.parse(response.responseText);
+
+                        // Load the tree data into a tree view
+                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                            this._treeView,
+                            this.handleDragDrop,
+                            this
+                        );
+
+                        // Expand the first two levels of the tree by default
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+
+                        this._treeView.draw();
+                        this._buildContextMenu();
+                        this._hideLoadingImage();
+                    },
+                    failure: function (response) {
+                        alert('Unable to load the organization tree: ' + response.statusText);
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
+        _buildTreeNodes: function (nodeList, parent) {
+
+            for (var i in nodeList) {
+                var node = nodeList[i];
+                var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                                 + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+
+                var yuiNode = new YAHOO.widget.TextNode(
+                    {
+                        label: nodeText,
+                        organizationId: node.id,
+                        type: node.orgType,
+                        systemId: node.systemId
+                    }, 
+                    parent,
+                    false
+                );
+
+                // Set the label style
+                yuiNode.labelStyle = node.orgType;
+
+                var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
+                if (sdlcPhase === 'disposal') {
+                    yuiNode.labelStyle += " disposal";
+                }
+
+                // Recurse
+                if (node.children.length > 0) {
+                    this._buildTreeNodes(node.children, yuiNode);
+                }
+            }
+        },
+
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
+        expandAll: function () {
+            this._treeView.getRoot().expandAll();
+        },
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
+        collapseAll: function () {
+            this._treeView.getRoot().collapseAll();
+        },
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Set up the GET query string for this operation
+            var query = '/organization/move-node/src/' 
+                      + srcNode.data.organizationId 
+                      + '/dest/' 
+                      + destNode.data.organizationId 
+                      + '/dragLocation/' 
+                      + dragLocation;
+    
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.show();
+    
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
+                            // the context menu listener
+                            this._buildContextMenu();
+                            
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {this._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
+        },
+
+        /**
+         * Add the context menu behavior to the tree view
+         *
+         * @method OrganizationTreeView._buildContextMenu
+         */                
+        _buildContextMenu: function () {
+            var contextMenuItems = ["View"];
+
+            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
+                YAHOO.util.Dom.generateId(),
+                { 
+                    trigger: this._treeView.getEl(),
+                    itemdata: contextMenuItems,
+                    lazyload: true
+                }
+            );
+
+            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
+        },
+
+        /**
+         * A callback for context menu events
+         *
+         * @method OrganizationTreeView._contextMenuHandler
+         * @param event {String} The name of the event
+         * @param eventArgs {Array} An array of YAHOO.util.Event
+         */                
+        _contextMenuHandler: function (event, eventArgs) {
+            var targetElement = eventArgs[1].parent.contextEventTarget;
+            var targetNode = this._treeView.getNodeByElement(targetElement);
+        
+            // Create a request URL to view this object
+            var url;
+            var type = targetNode.data.type;
+
+            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+                var url = '/organization/view/id/' + targetNode.data.organizationId;
+            } else {
+                var url = '/system/view/id/' + targetNode.data.systemId;                
+            }
+
+            window.location = url;
+        }
+    };
+
+    Fisma.OrganizationTreeView = OTV;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
  * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
@@ -6993,13 +7496,12 @@ Fisma.Search = function() {
             Fisma.Search.testConfigurationActive = true;
 
             var testConfigurationButton = document.getElementById('testConfiguration');
-            testConfigurationButton.className = "yui-button yui-push-button yui-button-disabled";
+            YAHOO.util.Dom.addClass(testConfigurationButton, "yui-button-disabled");
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
-
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
+            
+            var postData = "csrf=" + document.getElementById('csrfToken').value;
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -7014,7 +7516,7 @@ Fisma.Search = function() {
                             message(response.message, "warning", true);
                         }
 
-                        testConfigurationButton.className = "yui-button yui-push-button";
+                        YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
                         Fisma.Search.testConfigurationActive = false;
                         spinner.hide();
                     },
@@ -7024,7 +7526,8 @@ Fisma.Search = function() {
 
                         spinner.hide();
                     }
-                }
+                },
+                postData
             );
         },
 
@@ -7081,20 +7584,25 @@ Fisma.Search = function() {
          * @param form Reference to the search form
          */
         handleSearchEvent: function(form) {
-            var queryState = new Fisma.Search.QueryState(form.modelName.value);
-            var searchPrefs = {type: form.searchType.value};
-            if (searchPrefs.type === 'advanced') {
-                var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
-                var fields = {};
-                for (var i in panelState) {
-                    fields[panelState[i].field] = panelState[i].operator;
+            try {
+                var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                var searchPrefs = {type: form.searchType.value};
+                if (searchPrefs.type === 'advanced') {
+                    var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                    var fields = {};
+                    for (var i in panelState) {
+                        fields[panelState[i].field] = panelState[i].operator;
+                    }
+                    searchPrefs['fields'] = fields;
                 }
-                searchPrefs['fields'] = fields;
+                Fisma.Search.updateSearchPreferences = true;
+                Fisma.Search.searchPreferences = searchPrefs;
+                Fisma.Search.updateQueryState(queryState, form);
+            } catch (e) {
+                message(e);
+            } finally {
+                Fisma.Search.executeSearch(form);
             }
-            Fisma.Search.updateSearchPreferences = true;
-            Fisma.Search.searchPreferences = searchPrefs;
-            Fisma.Search.updateQueryState(queryState, form);
-            Fisma.Search.executeSearch(form);
         },
 
         /**
@@ -7677,7 +8185,7 @@ Fisma.Search.Criteria.prototype = {
         this.container = document.createElement('div');
         
         this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(this);";
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
         this.containerForm.enctype = "application/x-www-form-urlencoded";
         this.containerForm.method = "post";
         
@@ -8489,7 +8997,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
         var urlParam = urlParams[i];
         var keyValuePair = urlParam.split("=");
 
-        // Looking for a parameter called "q"
+        // parse parameters
         if ("q" == keyValuePair[0]) {
             var criteriaString = keyValuePair[1];
             this.defaultQueryTokens = criteriaString.split("/");
@@ -8498,8 +9006,8 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             if (this.defaultQueryTokens[0] === '') {
                 this.defaultQueryTokens.splice(0, 1);
             }
-
-            break;
+        } else if ("show" === keyValuePair[0]) {
+            this.showAll = "all" === keyValuePair[1];
         }
     }
 };
@@ -8515,6 +9023,11 @@ Fisma.Search.Panel.prototype = {
      * A list of current selected criteria
      */
     criteria : [],
+
+    /**
+     * Flag indicating that we want to show all results, no advanced search.
+     */
+    showAll: false,
     
     /**
      * Render the advanced search box
@@ -8528,7 +9041,11 @@ Fisma.Search.Panel.prototype = {
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
 
-        if (this.defaultQueryTokens) {
+        if (this.showAll) {
+            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            this.criteria.push(initialCriteria);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
+        } else if (this.defaultQueryTokens) {
             var index = 0;
             
             // If a default query is specified, then switch to advanced mode and set up the UI for those criteria
@@ -9072,6 +9589,244 @@ Fisma.Search.Panel.prototype = {
         }
     };
     Fisma.Search.TablePreferences = FSTP;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides session timeout awareness with XHR support.
+     * @namespace Fisma
+     * @class SessionManager
+     */
+    var Manager = { // shorthand, full assignment at bottom
+        /**
+         * Polling delay, in seconds.
+         */
+        POLL_DELAY: 1,
+
+        /**
+         * Name of the cookie used to track server timestamp.
+         */
+        COOKIE_TIMESTAMP: "session_timestamp",
+
+        /**
+         * URI of the refresh session action
+         */
+        REFRESH_SESSION_URI: "/auth/refresh-session/format/json",
+
+        /**
+         * Time (in seconds) before session expires.
+         */
+        _inactivityPeriod: null,
+
+        /**
+         * Time (in seconds) before alerting the user of inactivity.
+         */
+        _inactivityNotice: null,
+
+        /**
+         * Timer object saved on init().
+         */
+        _timer: null,
+
+        /**
+         * Timestamp reported by server on the most recent request.
+         */
+        _serverTimestamp: null,
+
+        /**
+         * Timestamp on client that corresponds to the server timestamp.
+         * Used to determine how long the client has been idle.
+         */
+        _localTimestamp: null,
+
+        /**
+         * YUI Panel For Idle Notice
+         */
+        _inactivityPanel: null,
+
+        /**
+         * YUI Button for the idle notice panel.
+         */
+        _inactivityPanelButton: null,
+
+        /**
+         * Indicates if there has been a recent session refresh if true.
+         */
+        _recentSessionRefresh: false,
+
+        /**
+         * Called onDOMReady to start the polling procedure.
+         *
+         * @method _init
+         * @public
+         * @static
+         */
+        init: function(inactivityPeriod, inactivityNotice) {
+            Manager._inactivityPeriod = Number(inactivityPeriod);
+            Manager._inactivityNotice = Number(inactivityNotice);
+            Manager._serverTimestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            Manager._localTimestamp = Manager._getLocalTimestamp();
+            Manager._timer = YAHOO.lang.later( Manager.POLL_DELAY * 1000, null, Manager.poll, null, true);
+            var Event = YAHOO.util.Event;
+            Event.onDOMReady(function() {
+                Event.addListener(document.body, "click", Manager.onActivityEvent);
+                Event.addListener(document.body, "keypress", Manager.onActivityEvent);
+            });
+        },
+
+        /**
+         * Executes at each polling cycle to test if the session is near timeout.
+         *
+         * @method poll
+         * @public
+         * @static
+         */
+        poll: function() {
+            var timestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            // reset state if server timestamp changes
+            if (timestamp !== Manager._serverTimestamp) {
+                Manager._serverTimestamp = timestamp;
+                Manager._localTimestamp = Manager._getLocalTimestamp();
+                return;
+            }
+
+            var idle = Manager._getLocalTimestamp() - Manager._localTimestamp;
+            // check to see if the session has expired
+            if (idle > Manager._inactivityPeriod) {
+                Manager.logout();
+                return;
+            }
+
+            // see if only two minutes remain
+            if (idle > Manager._inactivityNotice) {
+                Manager.notifyUser();
+            }
+        },
+
+        /**
+         * Notifies the user of an eminent timeout and prompts to continue session.
+         *
+         * @method notifyUser
+         * @public
+         * @static
+         */
+        notifyUser: function() {
+            if (YAHOO.lang.isNull(Manager._inactivityPanel)) {
+                var content = document.createElement("div");
+                content.innerHTML = "Your session will expire soon, please click Continue to continue working.";
+                var buttonDiv = document.createElement("div");
+                YAHOO.util.Dom.setStyle(buttonDiv, "text-align", "right");
+                Manager._inactivityPanelButton = new YAHOO.widget.Button({
+                    type: "push",
+                    label: "Continue",
+                    container: buttonDiv,
+                    onclick: {fn: Manager.continueSession}
+                });
+                content.appendChild(buttonDiv);
+                var panel = new YAHOO.widget.Panel(
+                    "inactivity-notice",
+                    {width: "320px", fixedcenter: true, draggable: false, modal: true, close: false}
+                );
+                panel.setHeader("Your Session Will Expire");
+                panel.setBody(content);
+                panel.render(document.body);
+                Manager._inactivityPanel = panel;
+            }
+            Manager._inactivityPanel.show();
+        },
+
+        /**
+         * Action taken when the user ops to continue their session, responsible for contacting the server.
+         *
+         * @method continueSession
+         * @public
+         * @static
+         */
+        continueSession: function() {
+            if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                Manager._inactivityPanelButton.set("disabled", true);
+            }
+            var callback = function() {
+                if (YAHOO.lang.isObject(Manager._inactivityPanel)) {
+                    Manager._inactivityPanel.hide();
+                }
+                if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                    Manager._inactivityPanelButton.set("disabled", false);
+                }
+            };
+            YAHOO.util.Connect.asyncRequest(
+                "GET",
+                Manager.REFRESH_SESSION_URI,
+                {success: callback, failure: callback});
+        },
+
+        /**
+         * Called when the users session has been determined to be expired. Redirects the user to the Log In screen.
+         *
+         * @method logout
+         * @public
+         * @static
+         */
+        logout: function() {
+            document.location.href = "/auth/logout";
+        },
+
+        /**
+         * Get the current local unix time.
+         *
+         * @method _getLocalTimestamp
+         * @return integer
+         * @public
+         * @static
+         */
+        _getLocalTimestamp: function() {
+            return Math.round((new Date()).getTime() / 1000);
+        },
+
+        /**
+         * Callback function for mouse clicks and key press events.
+         *
+         * @method onActivityEvent
+         * @return void
+         * @public
+         * @static
+         */
+        onActivityEvent: function() {
+            // disable activity listening when the inactivity panel is being displayed to the user
+            if (YAHOO.lang.isObject(Manager._inactivityPanel) && Manager._inactivityPanel.getProperty("visible")) {
+                return;
+            }
+            if (Manager._recentSessionRefresh) {
+                return;
+            }
+            Manager._recentSessionRefresh = true;
+            Manager.continueSession();
+            YAHOO.lang.later(15000, null, function() {Manager._recentSessionRefresh = false;});
+        }
+    };
+    Fisma.SessionManager = Manager;
 })();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -9915,6 +10670,331 @@ Fisma.TableFormat = {
     }
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Adds drag-and-drop functionality to a yui treeview widget
+     * 
+     * @namespace Fisma
+     * @class TreeNodeDragBehavior
+     * @extends n/a
+     * @constructor
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @param element {YAHOO.widget.TreeView} A reference to a tree node that is made draggable 
+     */
+    var TNDB = function(treeView, callback, callbackContext, element) {
+        if (typeof(callback) != "function") {
+            throw "The callback parameter must be a function";
+        }
+
+        this._dragDropGroup = YAHOO.util.Dom.generateId;
+        this._treeView = treeView;
+        this._dragFinishedCallback = callback;
+        this._dragFinishedCallbackContext = callbackContext;
+
+        TNDB.superclass.constructor.call(this, element, this._dragDropGroup, null);
+
+        // Style the proxy element
+        YAHOO.util.Dom.addClass(this.getDragEl(), "treeNodeDragProxy");
+    };
+    
+    YAHOO.lang.extend(TNDB, YAHOO.util.DDProxy, {
+
+        /**
+         * The tree view whose behavior is being modified
+         * 
+         * @property _treeview
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */        
+        _treeView: null,
+
+        /**
+         * The element which is the target of any current drag/drop operation
+         * 
+         * @property _currentDragTarget
+         * @type HTMLElement
+         * @protected
+         */                
+        _currentDragTarget: null,
+
+        /**
+         * Tracks if the current drag was successful across several event handlers
+         * 
+         * @property _currentDragSuccessful
+         * @type boolean
+         * @protected
+         */                
+        _currentDragSuccessful: false,
+
+        /**
+         * Unique ID for this drag and drop group
+         * 
+         * @property _dragDropGroup
+         * @type string
+         * @protected
+         */                
+        _dragDropGroup: null,
+
+        /**
+         * A callback when the user attempts to move a tree node
+         * 
+         * @property _dragFinishedCallback
+         * @type string
+         * @protected
+         */                        
+        _dragFinishedCallback: null,
+
+        /**
+         * The scope for the callback function
+         * 
+         * @property _dragFinishedCallbackContext
+         * @type string
+         * @protected
+         */                
+        _dragFinishedCallbackContext: null,
+        
+        /**
+         * Override DDProxy to handle the start of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.startDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        startDrag: function (event, id) {
+            // Make the dragged proxy look like the source elemnt
+            var dragEl = this.getDragEl();
+            var clickEl = this.getEl();
+    
+            dragEl.innerHTML = clickEl.innerHTML;
+            YAHOO.util.Dom.setStyle(dragEl, "background", "white");
+            YAHOO.util.Dom.setStyle(dragEl, "border", "none");
+        },
+
+        /**
+         * Override DDProxy to handle the end of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.endDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */        
+        endDrag: function (event, id) {
+            var srcEl = this.getEl();
+            var proxy = this.getDragEl();
+
+            // Remove any visual highlighting
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+    
+            if (!this._currentDragSuccessful) {
+                // Animate the proxy element returning to its origin
+                YAHOO.util.Dom.setStyle(proxy, "visibility", "");
+                var anim = new YAHOO.util.Motion(
+                    proxy, 
+                    { points: { to: YAHOO.util.Dom.getXY(srcEl) } },
+                    0.2,
+                    YAHOO.util.Easing.easeOut
+                );
+            
+                // Hide the proxy element when the animation finishes
+                anim.onComplete.subscribe(function () {
+                    YAHOO.util.Dom.setStyle(proxy.id, "visibility", "hidden");
+                });
+                anim.animate();
+                this._currentDragSuccessful = false;
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy hovers over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOver
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOver: function (event, id) {
+            var dragLocation = this._getDragLocation(id, event);
+            
+            /* If the drag is near the top of the element, then we set the top border. 
+             * If its near the middle, we highlight the entire element. If its near the
+             * bottom, we set the bottom border.
+             */
+            this._currentDragTarget = YAHOO.util.Dom.get(id);   
+
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+
+            if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
+            } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragOnto');
+            } else {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragBelow');
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy stops hovering over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOut: function (event, id) {
+            // The drag out event removes provides visual feedback.
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy is moused up over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragDrop
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragDrop: function(event, id) {
+            var srcNode = this._treeView.getNodeByElement(this.getEl());
+            var destNode = this._treeView.getNodeByElement(document.getElementById(id));
+            var dragLocation = this._getDragLocation(id, event);
+    
+            var success = this._dragFinishedCallback.call(
+                this._dragFinishedCallbackContext, 
+                this, 
+                srcNode, 
+                destNode, 
+                dragLocation
+            );
+
+            this._currentDragSuccessful = success;
+        },
+
+        /**
+         * Implementers should call this function when they have successfully run their callback
+         * 
+         * This method will reorder the nodes in the tree view to match the requested drag/drop event
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param srcNode {YAHOO.util.Event} The tree node being dragged
+         * @param destNode {String} The tree node that is being hovered over
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} A target location relative to the destination node
+         */
+        completeDragDrop: function(srcNode, destNode, dragLocation) {
+            this._treeView.popNode(srcNode);
+
+            switch (dragLocation) {
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ABOVE:
+                    srcNode.insertBefore(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO:
+                    srcNode.appendTo(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
+                    srcNode.insertAfter(destNode);
+                    break;
+            }
+
+            this._treeView.getRoot().refresh();
+            
+            // YUI discards all the event handlers after refreshing a treeview, so we need to make it
+            // draggable all over again.
+            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                this._treeView,
+                this._dragFinishedCallback,
+                this._dragFinishedCallbackContext
+            );            
+        },
+
+        /**
+         * Determines where the user intends to drop the current node, based on where the mouse is relative to the
+         * target node.
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param targetElement {HTMLElement} The DOM element that the mouse is over
+         * @param event {YAHOO.util.Event} The mouse event
+         * @returns {TreeNodeDragBehavior.DRAG_LOCATION}
+         */
+        _getDragLocation: function (targetElement, event) {
+            var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
+            var height = targetRegion.bottom - targetRegion.top;
+            var dragVerticalOffset = YAHOO.util.Event.getPageY(event) - targetRegion.top;
+
+            // This ratio indicates how far down the drag was inside the element. This is used for deciding 
+            // whether the mouse is near the top, near the bottom, or somewhere in the middle.
+            var verticalRatio = dragVerticalOffset / height;
+
+            if (verticalRatio < 0.25) {
+                return TNDB.DRAG_LOCATION.ABOVE;
+            } else if (verticalRatio < 0.75) {
+                return TNDB.DRAG_LOCATION.ONTO;
+            } else {
+                return TNDB.DRAG_LOCATION.BELOW;
+            }
+        }
+    });
+
+    /**
+     * Adds the draggable behavior to an existing tree view
+     *
+     * @method TreeNodeDragBehavior.onReady
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @static
+     */
+    TNDB.makeTreeViewDraggable = function (treeView, callback, callbackContext) {
+
+        // Get a list of all nodes in the tree
+        var nodes = treeView.getNodesBy(function (node) {return true;});
+
+        for (var nodeIndex in nodes) {
+            var node = nodes[nodeIndex];
+
+            var yuiNodeDrag = new TNDB(treeView, callback, callbackContext, node.contentElId, this._dragDropGroup);
+        }
+    };
+    
+    /**
+     * Constants that represent drag targets relative to a destination node
+     *
+     * @property DRAG_LOCATION
+     * @static
+     */
+    TNDB.DRAG_LOCATION = {
+        ABOVE: 0,
+        ONTO: 1,
+        BELOW: 2
+    };
+
+    Fisma.TreeNodeDragBehavior = TNDB;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -10042,7 +11122,56 @@ Fisma.User = {
      * A boolean which indicates if an account is currently being checked in LDAP
      */
     checkAccountBusy : false,
-    
+
+    /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+        var that = this;
+
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+
+        this.commentTable.addRow(commentRow);
+
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }
+        );
+
+        rowBlinker.start();
+
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
+    },
+
     /**
      * Display a dialog which shows user information for the specified user.
      * 
@@ -10253,6 +11382,13 @@ Fisma.User = {
 
         // Create a panel
         var content = document.createElement('div');
+
+        var messageContainer = document.createElement('span');
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
+                                                   + " this user's account.");
+        messageContainer.appendChild(warningMessage);
+        content.appendChild(messageContainer);
+
         var p = document.createElement('p');
         var contentTitle = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(contentTitle);
@@ -10272,15 +11408,14 @@ Fisma.User = {
         content.appendChild(lineSpacingDiv);
 
         // Add submmit button to panel
-        var continueButton = document.createElement('input');
-        continueButton.type = 'button';
-        continueButton.id = 'continueButton';
-        continueButton.value = 'continue';
-        content.appendChild(continueButton);
+        var buttonContainer = document.createElement('span');
+        var submitButton = new YAHOO.widget.Button({type: 'button', label: "Save", container: buttonContainer});
+        content.appendChild(buttonContainer);
 
-        Fisma.HtmlPanel.showPanel('Add Comment', content.innerHTML);
+        Fisma.HtmlPanel.showPanel('Add Comment', content);
 
-        YAHOO.util.Dom.get('continueButton').onclick = Fisma.User.submitUserForm;
+        submitButton.on('click', Fisma.User.submitUserForm);
+
         return true;
     },
 
@@ -10413,6 +11548,40 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show a warning message before a record is deleted.
+     */
+    showDeleteWarning : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
+                         + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                     document.location = config.url
+                                     this.hide();
+                                 }
+                             }, 
+                             { text:"No",  handler : function () {
+                                     this.hide(); 
+                                 }
+                             } 
+                           ] 
+                } ); 
+ 
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+        YAHOO.util.Event.preventDefault(event);
     }
 };
 /**

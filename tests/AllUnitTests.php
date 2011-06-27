@@ -29,7 +29,6 @@ require_once 'bootstrap.php';
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
- * @version    $Id$
  */
 class AllUnitTests
 {

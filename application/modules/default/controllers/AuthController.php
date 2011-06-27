@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class AuthController extends Zend_Controller_Action
 {
@@ -38,6 +37,19 @@ class AuthController extends Zend_Controller_Action
      * The error message displayed when a user's credentials are incorrect
      */
     const CREDENTIAL_ERROR_MESSAGE = "Invalid username or password";
+
+    /**
+     * Initialize internal members.
+     * 
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('refresh-session', 'json')
+                      ->initContext();
+    }
 
     /**
      * Handling user login
@@ -292,5 +304,16 @@ class AuthController extends Zend_Controller_Action
         }
 
         return false;
+    }
+
+    /**
+     * A no-op action to continue the users' session
+     *
+     * @return void
+     */
+    public function refreshSessionAction()
+    {
+        $this->view->result = new Fisma_AsyncResponse();
+        $this->view->result->succeed();
     }
 }

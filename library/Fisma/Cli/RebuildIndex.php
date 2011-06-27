@@ -73,7 +73,7 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
         sort($searchableClasses);
         
         // Do the actual indexing
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         foreach ($searchableClasses as $searchableClass) {
             $this->_rebuildIndex($searchEngine, $searchableClass);
@@ -83,10 +83,10 @@ class Fisma_Cli_RebuildIndex extends Fisma_Cli_Abstract
     /**
      * Rebuild a specific model index
      * 
-     * @param Fisma_Search_Backend_Abstract $searchEngine The engine to use for indexing
+     * @param Fisma_Search_Engine $searchEngine The engine to use for indexing
      * @param string $modelName The name of the model to index
      */
-    private function _rebuildIndex(Fisma_Search_Backend_Abstract $searchEngine, $modelName)
+    private function _rebuildIndex(Fisma_Search_Engine $searchEngine, $modelName)
     {
         $searchEngine->deleteByType($modelName);
 

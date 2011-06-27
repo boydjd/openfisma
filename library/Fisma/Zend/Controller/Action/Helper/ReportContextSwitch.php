@@ -25,7 +25,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Controller
- * @version    $Id $
  */
 class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Controller_Action_Helper_ContextSwitch
 {
@@ -316,9 +315,11 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
          */
         $data = $this->_report->getData();
 
+        $view = Zend_Layout::getMvcInstance()->getView();
         foreach ($data as &$row) {
-            $row = array_map('Fisma_String::htmlToPdfText', array_values($row));
-            $row = array_map('htmlentities', array_values($row));
+            $row = array_map('Fisma_String::plainTextToReportText', array_values($row));
+            $row = array_map('Fisma_String::convertToLatin1', array_values($row));
+            $row = array_map($view->escape, array_values($row));
         }
 
         $view->data = $data;
@@ -342,7 +343,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $data = $this->_report->getData();
 
         foreach ($data as &$row) {
-            $row = array_map('Fisma_String::htmlToPlainText', $row);
+            $row = array_map('Fisma_String::plainTextToReportText', $row);
         }
 
         $view->title = $this->_report->getTitle();

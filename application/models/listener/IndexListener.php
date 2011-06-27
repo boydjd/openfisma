@@ -27,6 +27,33 @@
 class IndexListener extends Fisma_Doctrine_Record_Listener
 {
     /**
+     * Controls whether search index changes are auto-committed or not
+     * 
+     * @var bool
+     */
+    static private $_autoCommit = true;
+
+    /**
+     * Get whether index changes are auto-committed or not
+     * 
+     * @return bool
+     */
+    static public function getAutoCommitEnabled()
+    {
+        return self::$_autoCommit;
+    }
+
+    /**
+     * Set whether index changes are auto-committed or not
+     * 
+     * @param bool $enabled
+     */
+    static public function setAutoCommitEnabled($enabled)
+    {
+        self::$_autoCommit = $enabled;
+    }
+    
+    /**
      * New records always get indexed
      * 
      * @param Doctrine_Event $event The listened doctrine event to process
@@ -49,7 +76,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         $modelName = get_class($record);
         $relationAliases = array();
 
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
         $indexer = new Fisma_Search_Indexer($searchEngine);
         $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
         
@@ -59,7 +86,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
         $indexer->indexRecordsFromQuery($indexQuery, $modelName);
 
-        $searchEngine->commit();
+        if (self::$_autoCommit) {
+            $searchEngine->commit();
+        }
     }
 
     /**
@@ -95,7 +124,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             $modelName = get_class($record);
             $relationAliases = array();
 
-            $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+            $searchEngine = Zend_Registry::get('search_engine');
             $indexer = new Fisma_Search_Indexer($searchEngine);
             $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
 
@@ -105,7 +134,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
 
             $indexer->indexRecordsFromQuery($indexQuery, $modelName);
 
-            $searchEngine->commit();
+            if (self::$_autoCommit) {
+                $searchEngine->commit();
+            }
         }
 
         // If an indexed field changed on a related model, then reindex the affected documents belonging to that 
@@ -136,7 +167,7 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
         }
 
         // If the record is softDeleted, then reindex it. Otherwise, delete the record from the index.
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         if ($record->getTable()->hasColumn('deleted_at')) {
             $modelName = get_class($record);
@@ -154,7 +185,9 @@ class IndexListener extends Fisma_Doctrine_Record_Listener
             $searchEngine->deleteObject(get_class($record), $record->toArray());
         }
 
-        $searchEngine->commit();
+        if (self::$_autoCommit) {
+            $searchEngine->commit();
+        }
     }
     
     /**

@@ -21,7 +21,6 @@
  * delete the email verification feature because it is rarely used. 
  * 
  * @package       Migration
- * @version       $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author        Mark Ma <markjtma@users.sourceforge.net>
  * @license       http://www.openfisma.org/content/license GPLv3

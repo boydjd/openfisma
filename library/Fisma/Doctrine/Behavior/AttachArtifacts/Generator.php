@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_AuditLoggable
- * @version    $Id$
  */
 class Fisma_Doctrine_Behavior_AttachArtifacts_Generator extends Doctrine_Record_Generator
 {
