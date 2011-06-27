@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Exception
- * @version    $Id$
  */
 class Fisma_Zend_Exception_InvalidFileFormat extends Fisma_Zend_Exception
 {

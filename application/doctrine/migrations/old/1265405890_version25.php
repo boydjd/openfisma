@@ -20,7 +20,6 @@
  * Add version data to Configuration 
  * 
  * @package Migration
- * @version $Id: 1265230322_version24.php 2918 2010-02-03 22:39:54Z mhaase $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3

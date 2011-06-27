@@ -29,7 +29,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Record
- * @version    $Id$
  */
 abstract class Fisma_Doctrine_Record extends Doctrine_Record
 {

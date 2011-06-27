@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_Commentable
- * @version    $Id: Generator.php 3054 2010-03-02 22:36:04Z mhaase $
  */
 class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Generator
 {

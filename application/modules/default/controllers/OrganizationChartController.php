@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
  * @subpackage SUBPACKAGE
- * @version    $Id$
  */
 class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
 {

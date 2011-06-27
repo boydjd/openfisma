@@ -27,7 +27,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Chart
- * @version    $Id$
  */
 class Fisma_Chart
 {

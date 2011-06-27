@@ -31,7 +31,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_AsyncResponse
- * @version    $Id$
  */
 class Fisma_AsyncResponse
 {
