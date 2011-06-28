@@ -1,0 +1,12 @@
+<form action="/role/save-matrix" method="post">
+
+    <?php
+        echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+        Fisma_Format_Section::startSection("Edit Privileges");
+        echo $this->escape($this->dataTable, 'none');
+        Fisma_Format_Section::stopSection();
+    ?>
+
+    <input type="hidden" name="rolePrivChanges" id="rolePrivChanges" value="" />
+
+</form>

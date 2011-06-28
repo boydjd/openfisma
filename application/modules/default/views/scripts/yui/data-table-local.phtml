@@ -56,11 +56,11 @@
         
         // Enable other events triggered from the data-table
         var eventListeners = <?php echo $this->escape($this->eventListeners, 'json'); ?>;
-        for(var eventName in eventListeners)
+        for (var eventName in eventListeners)
         {
             // Each element of eventListeners, has a key of the event-name, and a value of a javascript function name
-            var eventHandeler = Fisma.Util.getObjectFromName(eventListeners[eventName]);
-            dataTable.subscribe(eventName, eventHandeler);
+            var eventHandler = Fisma.Util.getObjectFromName(eventListeners[eventName]);
+            dataTable.subscribe(eventName, eventHandler);
         }
         
     });

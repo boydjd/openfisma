@@ -1,0 +1,1 @@
+Fisma.Role={rolePrivChanges:{},dataTableCheckboxClick:function(e){var f=e.target;var c=this.getColumn(f);var b=c.key;var d=this.getRow(f).childNodes[1].childNodes[0].childNodes[0].textContent;var a={roleName:b,privilegeId:d,newValue:f.checked};Fisma.Role.rolePrivChanges[b+d]=a;YAHOO.util.Dom.get("rolePrivChanges").value=YAHOO.lang.JSON.stringify(Fisma.Role.rolePrivChanges)}};

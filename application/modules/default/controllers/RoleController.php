@@ -48,7 +48,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $links['Privileges'] = "{$this->_moduleName}/{$this->_controllerName}"
                                  . "/right/id/{$subject->id}";
             
-            $links['Edit Privilege Matrix'] = '/role/edit-matrix';
+            $links['Edit Privilege Matrix'] = '/role/view-matrix';
         }
         
         $links = array_merge($links, parent::getViewLinks($subject));
@@ -134,66 +134,63 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * calls _saveMatrix, and displays a table of privileges associated with each role
+     * Sisplays a (checkbox-)table of privileges associated with each role
      * 
      * @return void
      */
-     public function editMatrixAction()
+     public function viewMatrixAction()
      {
         $this->_acl->requirePrivilegeForClass('update', 'Role');
-
-        // If this is caled from a form-post, save the changes
-        $this->_saveMatrix();
 
         // Add button to save changes (submit form)
         $this->view->toolbarButtons = array();
         $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
-            'SaveChanges',
-            'SaveChanges',
+            'saveChanges',
+            'Save Changes',
             array(
                 'label' => 'Save Changes'
             )
         );
 
-        // YUI data-table to print
+        // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();
         $rowStructure = array();
         
-        // Add event handeler pointer (on checkboxClickEvent, call dataTableCheckboxClick
-        $dataTable->eventListeners['checkboxClickEvent'] = 'dataTableCheckboxClick';
+        // Add event handler pointer (on checkboxClickEvent, call dataTableCheckboxClick
+        $dataTable->addEventListener('checkboxClickEvent', 'Fisma.Role.dataTableCheckboxClick');
         
-        // The first columns will the be privilege-description
+        // The first column will the be privilege-description
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
                 'Privilege',
                 true,
                 'YAHOO.widget.DataTable.formatText',
                 null,
-                'privDesc'
+                'privilegeDescription'
             )
         );
-        $rowStructure['privDesc'] = '';
+        $rowStructure['privilegeDescription'] = '';
         
-        // The second columns will be the privilege-id (hidden)
+        // The second column will be the privilege-id (hidden)
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
                 'Privilege ID',
                 true,
                 'YAHOO.widget.DataTable.formatText',
                 null,
-                'privId',
+                'privilegeId',
                 true
             )
         );
-        $rowStructure['privId'] = '';
+        $rowStructure['privilegeId'] = '';
 
         // Get a list of all roles
-        $q = Doctrine_Query::create()
+        $rolesQuery = Doctrine_Query::create()
             ->select('r.nickname')
             ->from('Role r')
             ->orderBy('r.nickname')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        $roles = $q->execute();
+        $roles = $rolesQuery->execute();
 
         // Add a column for each role
         foreach ($roles as $role) {
@@ -214,21 +211,21 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Get a list of what role each privilege is associated with
-        $q = Doctrine_Query::create()
+        $privilegeQuery = Doctrine_Query::create()
             ->select('r.nickname, p.description, p.action')
             ->from('Privilege p')
             ->leftJoin('p.Roles r')
             ->orderBy('p.description')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        $privileges = $q->execute();
+        $privileges = $privilegeQuery->execute();
 
         // Add a row for each privilege
         $dataTableRows = array();
         foreach ($privileges as $privilege) {
 
             $newRow = $rowStructure;
-            $newRow['privDesc'] = $privilege['description'];
-            $newRow['privId'] = $privilege['id'];
+            $newRow['privilegeDescription'] = $privilege['description'];
+            $newRow['privilegeId'] = $privilege['id'];
 
             // Update (set true) any cell of this privilege row, that has this role
             foreach ($privilege['Roles'] as $role) {
@@ -239,71 +236,83 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $dataTableRows[] = array_values($newRow);
         }
         
-        // Set the rows into the table, and push to view
         $dataTable->setData($dataTableRows);
         $this->view->dataTable = $dataTable;
      }
     
     /**
-     * If rolePrivChanges exists through http-post, will save the role/privilege changes
+     * If rolePrivChanges exists (post/get), will save the role/privilege changes, Redirects to viewMatrixAction.
+     * 
      * rolePrivChanges is expected to be a string/json-object, when json-decoded, to be an array of 
      * objects, each with a newValue, privilegeId, and roleName property.
      *
      * @return void
      */
-    private function _saveMatrix()
+    public function saveMatrixAction()
     {
         $this->_acl->requirePrivilegeForClass('update', 'Role');
         
-        // Check if there is changes to apply
+        // Check if there are changes to apply
         $rolePrivChanges = $this->getRequest()->getParam('rolePrivChanges');
-        if (is_null($rolePrivChanges)) {
-            return;
-        }
+        if (!is_null($rolePrivChanges)) {
         
-        // json string to array
-        $rolePrivChanges = json_decode($rolePrivChanges, true);
-        
-        // Priority messanger
-        $msg = array();
-        
-        // Apply each requested change
-        foreach ($rolePrivChanges as $change) {
-        
-            $privId = $change['privilegeId'];
-            $roleId = Doctrine::getTable('Role')->findOneByNickname($change['roleName'])->id;
-            $privDesc = Doctrine::getTable('Privilege')->findOneById($privId)->description;
-            
-            // Remove this privilege for this role
-            $q = Doctrine_Query::create()
-                ->delete('RolePrivilege rp')
-                ->where('rp.roleId = ' . $roleId)
-                ->andWhere('rp.privilegeId = ' . $privId);
-            $q->execute();
+            $rolePrivChanges = json_decode($rolePrivChanges, true);
 
-            // Add this privilege for this role if that was requested
-            if ((int) $change['newValue'] === 1) {
-                $newRolePrivilege = new RolePrivilege;
-                $newRolePrivilege->roleId = $roleId;
-                $newRolePrivilege->privilegeId = $privId;
-                $newRolePrivilege->save();
+            // Priority messenger
+            $msg = array();
+
+            // Apply each requested change
+            Doctrine_Manager::connection()->beginTransaction();
+            try {
+                foreach ($rolePrivChanges as $change) {
+
+                    $privilegeId = $change['privilegeId'];
+                    $roleId = Doctrine::getTable('Role')->findOneByNickname($change['roleName'])->id;
+                    $privilegeDescription = Doctrine::getTable('Privilege')->findOneById($privilegeId)->description;
+
+                    // Remove this privilege for this role
+                    $removeRolePrivilegeQuery = Doctrine_Query::create()
+                        ->delete('RolePrivilege rp')
+                        ->where('rp.roleId = ' . $roleId)
+                        ->andWhere('rp.privilegeId = ' . $privilegeId);
+                    $removeRolePrivilegeQuery->execute();
+
+                    // Add this privilege for this role if that was requested
+                    if ((int) $change['newValue'] === 1) {
+                        $newRolePrivilege = new RolePrivilege;
+                        $newRolePrivilege->roleId = $roleId;
+                        $newRolePrivilege->privilegeId = $privilegeId;
+                        $newRolePrivilege->save();
+                    }
+
+                    // Add to message stack
+                    if ((int) $change['newValue'] === 1) {
+                        $verb = 'Added ';
+                        $adj = 'to';
+                    } else {
+                        $verb = 'Removed ';
+                        $adj = 'from';
+                    }
+
+                    $msg[] = $verb . " the '" . $privilegeDescription . "' privilege " . $adj . " the " . $change['roleName'] . ' role.';
+                }
+                
+                Doctrine_Manager::connection()->commit();
+                
+            } catch (Exception $e) {
+                Doctrine_Manager::connection()->rollBack();
+                $this->view->priorityMessenger('An error occurred while saving privileges', 'warning');
+                $this->_redirect('/role/view-matrix');
+                return;
             }
             
-            // Add to message stack
-            if ((int) $change['newValue'] === 1) {
-                $verb = 'Added ';
-                $adj = 'to';
-            } else {
-                $verb = 'Removed ';
-                $adj = 'from';
-            }
-            
-            $msg[] = $verb . " the '" . $privDesc . "' ability " . $adj . " the " . $change['roleName'] . ' role.';
+            // Send priority messenger
+            $msg = implode("<br/>", $msg);
+            $this->view->priorityMessenger($msg, 'notice');
         }
         
-        // Send priority messenger
-        $msg = implode("<br/>", $msg);
-        $this->view->priorityMessenger($msg, 'notice');
+        // Now that the privileges have been saved, redirect back to the view-mode
+        $this->_redirect('/role/view-matrix');
     }
     
     /**
@@ -321,7 +330,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 'editMatrix',
                 array(
                     'value' => 'Edit Privilege Matrix',
-                    'href' => '/role/edit-matrix'
+                    'href' => '/role/view-matrix'
                 )
             );
         }
