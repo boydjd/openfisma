@@ -226,6 +226,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $newRow = $rowStructure;
             $newRow['privilegeDescription'] = $privilege['description'];
             $newRow['privilegeId'] = $privilege['id'];
+            $newRow['foo'] = 'bar';
 
             // Update (set true) any cell of this privilege row, that has this role
             foreach ($privilege['Roles'] as $role) {
