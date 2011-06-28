@@ -29,8 +29,8 @@ var incidentCallback = {
                                    });
         },
         failure: function(o) {
-            var config = {text : "Error loading Incident Data"};
-            Fisma.Util.showAlertDialog(config);
+            var message = { text : "Error loading Incident Data" };
+            Fisma.Util.showAlertDialog(message);
         }
     } 
 

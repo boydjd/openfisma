@@ -153,8 +153,8 @@ Fisma.Search = function() {
             } catch (error) {
                 // If a string is thrown, then display that string to the user
                 if ('string' == typeof error) {
-                    var config = {text : error};
-                    Fisma.Util.showAlertDialog(config);
+                    var alertMessage = {text : error};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             }
         },

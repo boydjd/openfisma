@@ -204,8 +204,8 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    var config = {text : 'Failed to generate password: ' + o.statusText};
-                    Fisma.Util.showAlertDialog(config);
+                    var alertMessage = {text : 'Failed to generate password: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);
@@ -279,8 +279,8 @@ Fisma.User = {
                 failure : function(o) {
                     spinner.hide();
 
-                    var config = {text : 'Failed to check account password: ' + o.statusText};
-                    Fisma.Util.showAlertDialog(config);
+                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);

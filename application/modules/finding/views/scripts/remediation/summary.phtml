@@ -24,8 +24,8 @@ YAHOO.util.Event.onDOMReady(function () {
                                             document.getElementById('sources').disabled = false;
                                         },
                                         failure: function(o) {
-                                            var config = {text : 'Unable to load finding summary: ' + o.statusText};
-                                            Fisma.Util.showAlertDialog(config);
+                                            var message = {text : 'Unable to load finding summary: ' + o.statusText};
+                                            Fisma.Util.showAlertDialog(message);
                                             hideLoadingRow();
                                         }
                                     }, 

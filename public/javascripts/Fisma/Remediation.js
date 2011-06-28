@@ -91,24 +91,26 @@ Fisma.Remediation = {
 
             if ('DENIED' === action) { 
                 if (comment.match(/^\s*$/)) {
-                    var config = {text : 'Comments are required in order to submit.', zIndex : 10000};
-                    Fisma.Util.showAlertDialog(config);
+                    var alertMessage = {text : 'Comments are required in order to submit.'};
+                    var config = {zIndex : 10000};
+                    Fisma.Util.showAlertDialog(alertMessage, config);
                     return;
                 }
             }
 
             form2.elements['comment'].value = comment;
             form2.elements['decision'].value = action;
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = action;
-            form2.appendChild(submitMsa);
+
+            var sub = document.createElement('input');
+            sub.type = 'hidden';
+            sub.name = 'submit_msa';
+            sub.value = action;
+            form2.appendChild(sub);
             form2.submit();
             return;
         };
         
         return true;
-    },
+    }
 
 };

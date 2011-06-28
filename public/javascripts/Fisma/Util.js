@@ -124,76 +124,91 @@ Fisma.Util = {
      * @param config 
      */
     showConfirmDialog : function (event, config) {
-            var  warningDialog =  
-            new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: config.width ? config.width : "300px", 
-                  fixedcenter: true, 
-                  visible: false, 
-                  draggable: false, 
-                  close: true,
-                  modal: true,
-                  text: config.text, 
-                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-                  constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                     if (config.url) {
-                                         document.location = config.url;
-                                     }else if(config.func) {
-                                         var funcObj = Fisma.Util.getObjectFromName(config.func);
-                                         if ('function' ===  typeof funcObj) {
-                                             funcObj.apply(this, config.args);
-                                         }
-                                     }
-                                     
-                                     this.hide();
-                                 }
-                             }, 
-                             { text:"No",  handler : function () {
-                                     this.hide();
-                                 }
-                             } 
-                           ] 
-                } ); 
+        var confirmDialog = Fisma.Util.getDialog();
  
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
+        var buttons = [ { text:"Yes", handler : function () {
+                            if (config.url) {
+                                document.location = config.url;
+                             }else if(config.func) {
+                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 if (YAHOO.lang.isFunction(funcObj)) {
+                                     if (config.args) {
+                                         funcObj.apply(this, config.args);
+                                     } else {
+                                         funcObj.call();
+                                     }
+                                 }
+                             }
+                             this.destroy();
+                            }
+                        },
+                        { text:"No",  handler : function () {
+                            this.destroy();
+                            }    
+                        } 
+                     ]; 
+ 
+        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setBody(config.text); 
+        confirmDialog.cfg.queueProperty("buttons", buttons); 
+        if (config.width) {
+            confirmDialog.cfg.setProperty("width", config.width); 
+        }
+        confirmDialog.render(document.body);
+        confirmDialog.show();
         if (config.isLink) {
             YAHOO.util.Event.preventDefault(event);
         }
     },
  
     /**
-     * Show alert warning message. The config object can have width, text and zIndex property
+     * Show alert warning message. The config object can have width and zIndex property
      * 
+     * @param message object
      * @param config object
      */
-    showAlertDialog : function (config) {
-        var  warningDialog =  
+    showAlertDialog : function (message, config) {
+        var alertDialog = Fisma.Util.getDialog();
+ 
+        var handleOk =  function() {
+            this.destroy();
+        };
+        var button = [ { text: "Ok", handler: handleOk } ];
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(message.text); 
+        alertDialog.cfg.queueProperty("buttons", button); 
+
+        if (!YAHOO.lang.isUndefined(config) && config.width) {
+            alertDialog.cfg.setProperty("width", config.width); 
+        }
+        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
+            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
+        }
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+    },
+
+    /**
+     * Generate a YUI SimpleDialog
+     * 
+     * @return a YUI SimpleDialog
+     */
+    getDialog : function(){
+        var dialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: config.width ? config.width : "400px", 
+                { width: "400px", 
                   fixedcenter: true, 
-                  visible: true, 
+                  visible: false, 
                   close: true,
-                  modal: false,
-                  text: config.text, 
+                  modal: true,
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
-                  effect:{
-                         effect: YAHOO.widget.ContainerEffect.FADE,
-                         duration: 0.25
-                  }, 
-                  zIndex: config.zIndex ? config.zIndex : null ,
-                  draggable: true,
-                  buttons: [ { text:"Ok", handler : function () {
-                                     this.hide();
-                                 }
-                             } 
-                        ] 
+                  draggable: false
                 } ); 
- 
-        warningDialog.setHeader("WARNING");
-        warningDialog.render(document.body);
-        warningDialog.show();
+
+        return dialog;
     }
+
 };

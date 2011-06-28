@@ -61,8 +61,8 @@ Fisma.Module = {
         }
         
         if (!responseStatus.success) {
-            var config = {text : 'Error: Not able to change module status. Reason: ' + responseStatus.message};
-            Fisma.Util.showAlertDialog(config);
+            var alertMessage = {text : 'Error: Not able to change module status. Reason: ' + responseStatus.message};
+            Fisma.Util.showAlertDialog(alertMessage);
         }
         
         // Disable switch button spinner

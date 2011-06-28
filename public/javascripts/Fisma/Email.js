@@ -97,8 +97,9 @@ Fisma.Email = function() {
             
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                var config = {text : "Recipient is required.", zIndex : 10000 };
-                Fisma.Util.showAlertDialog(config);
+                var alertMessage = {text : "Recipient is required."};
+                var config = {zIndex : 10000};
+                Fisma.Util.showAlertDialog(alertMessage, config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -122,8 +123,8 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    var config = {text : 'Failed to send test mail: ' + o.statusText};
-                    Fisma.Util.showAlertDialog(config);
+                    var alertMessage = {text : 'Failed to send test mail: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                     spinner.hide();
                 }
             }, null);
