@@ -232,30 +232,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Delete a specified organization.
-     *
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        if ($organization) {
-            $this->_acl->requirePrivilegeForObject('delete', $organization);
-
-            if ($organization->delete()) {
-                $msg = "Organization deleted successfully";
-                $model = 'notice';
-            } else {
-                $msg = "Failed to delete the Organization";
-                $model = 'warning';
-            }
-            $this->view->priorityMessenger($msg, $model);
-        }
-        $this->_redirect('/organization/list');
-    }
-
-    /**
      * Override parent to check if the object is a system object, in which case the user is redirected.
      * 
      * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong 
