@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -18,9 +19,6 @@
 
 /**
  * Finish the work started in version 55 by dropping the tables for IrIncidentActor and IrIncidentObserver
- * 
- * This file contains generated code... skip standards check.
- * @codingStandardsIgnoreFile
  * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
