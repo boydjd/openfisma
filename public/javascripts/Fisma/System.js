@@ -238,7 +238,7 @@ Fisma.System = {
      * @access public
      * @return void
      */
-    AskForOrgToSysInput : function (sysId) {
+    askForOrgToSysInput : function (sysId) {
         
         var inputForm = Fisma.System.getSystemConversionForm(sysId);
         inputForm.name = 'sysConversionForm';
