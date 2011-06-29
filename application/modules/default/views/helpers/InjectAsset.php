@@ -72,6 +72,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Search/TablePreferences.js',
                                       '/javascripts/Fisma/Search/QueryState.js',
                                       '/javascripts/Fisma/System.js',
+                                      '/javascripts/Fisma/SystemAggregationView.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',

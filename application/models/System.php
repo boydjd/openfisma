@@ -413,4 +413,35 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         }
     }
     
+    public function toAggregationTreeNode()
+    {
+        return array (
+            'id' => $this->id,
+            'label' => $this->Organization->nickname . ' - ' . $this->Organization->name,
+            'sysTypeLabel' => $this->getTypeLabel(),
+            'parent' => $this->aggregateSystemId,
+            'children' => array()
+        );
+    }
+
+    public function isAggregatedBy(System $system)
+    {
+        $result = false;
+        $temp = $this;
+
+        do {
+            if ($temp == $system) {
+                $result = true;
+                break;
+            }
+            // must test before dereferencing relation, otherwise a new object is created if the relation is null
+            if (!empty($temp->aggregateSystemId)) {
+                $temp = $temp->AggregateSystem;
+            } else {
+                $temp = null;
+            }
+        } while (!empty($temp));
+
+        return $result;
+    }
 }

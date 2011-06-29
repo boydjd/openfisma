@@ -29,6 +29,7 @@ Organization:
             local: systemId
             foreign: id
             foreignType: one # Forces Doctrine to make this one-to-one instead of one-to-many
+            foreignAlias: Organization
 
     actAs:
         NestedSet:

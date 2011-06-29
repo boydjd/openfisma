@@ -1,0 +1,31 @@
+<?php
+
+echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+
+Fisma_Format_Section::startSection("Organizations: Hierarchy View"); 
+
+?>
+
+<p>
+    <button type="button" id="expandAllButton">Expand All</button>
+    <button type="button" id="collapseAllButton">Collapse All</button>
+</p>
+
+<div id="sysTreeContainer" class="draggableTreeContainer"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(
+    function () {
+        var treeView = new Fisma.SystemAggregationView("sysTreeContainer");
+        treeView.render();
+        
+        var expandAllButton = new YAHOO.widget.Button("expandAllButton");
+        expandAllButton.on("click", treeView.expandAll, treeView, true);
+
+        var collapseAllButton = new YAHOO.widget.Button("collapseAllButton");
+        collapseAllButton.on("click", treeView.collapseAll, treeView, true);
+    }
+);
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

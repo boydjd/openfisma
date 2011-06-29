@@ -120,6 +120,20 @@ Fisma_Format_Section::startSection('Details');
         ?>
         </td>
     </tr>
+    <tr>
+        <td>Aggregate System</td>
+        <td>
+        <?php if (!empty($this->aggregateSystem)): ?>
+            <a href="/system/view/id/<?php echo $this->escape($this->aggregateSystem->id); ?>">
+                <?php echo $this->escape($this->aggregateSystem->Organization->nickname); ?>
+                -
+                <?php echo $this->escape($this->aggregateSystem->Organization->name); ?>
+            </a>
+        <?php else: ?>
+            <i>None</i>
+        <?php endif; ?>
+        </td>
+    </tr>
 </table>
 <?php
 Fisma_Format_Section::stopSection();
