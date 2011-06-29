@@ -2171,6 +2171,16 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
+     * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
+     * will be returned.
+     * If the setting being looked for has never beem set, and there is no default value, an 
+     * exception is thown.
+     *
+     * @param string settingName
+     * @return string
+     */
     getGlobalSetting : function (settingName)
     {
 
@@ -2188,6 +2198,13 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Saves a setting with the that can be recalled later with Fisma.Chart.getGlobalSetting()
+     *
+     * @param string settingName
+     * @param string newValue
+     * @return void
+     */
     setGlobalSetting : function (settingName, newValue)
     {
         YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
@@ -2288,10 +2305,18 @@ Fisma.Chart = {
 
     },
 
+    /**
+     * Shows the loading spinner in the place of the given chart on the DOM.
+     * If a chart has already been drawn, it will be destoryed.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     showChartLoadingMsg : function (chartParamsObj)
     {
         // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
 
         // Show spinner
         Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
@@ -2360,8 +2385,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Returns true if there is no data to 
-     * plot, or if all plot data are 0s
+     * Returns true if there is no data to plot, or if all plot data is 0
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
      * @param object
