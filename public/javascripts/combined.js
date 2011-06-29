@@ -9032,9 +9032,10 @@ Fisma.Search.Panel.prototype = {
         var Lang = YAHOO.lang;
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
+        var i, advancedCriterion, initialCriteria;
 
         if (this.showAll) {
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
             this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         } else if (this.defaultQueryTokens) {
@@ -9080,8 +9081,8 @@ Fisma.Search.Panel.prototype = {
         } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
             var advancedQuery = queryState.getAdvancedQuery();
 
-            for (var i in advancedQuery) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in advancedQuery) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(
@@ -9093,8 +9094,8 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else if (Fisma.Search.searchPreferences.type === 'advanced') {
             var fields = Fisma.Search.searchPreferences.fields;
-            for (var i in fields) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in fields) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(i, fields[i]));
@@ -9103,7 +9104,7 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
