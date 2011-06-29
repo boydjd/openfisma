@@ -508,8 +508,11 @@ Fisma.FindingSummary = function() {
             // Render the link
             var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
+            var summaryView = YAHOO.lang.isValue(this.summaryView) ? this.summaryView : 'OHV';
             if (expanded) {
                 uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
+            } else if (summaryView === 'SAV') {
+                uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
             } else {
                 uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
             }
@@ -523,7 +526,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
+            var uri = '/finding/summary/data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 

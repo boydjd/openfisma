@@ -8,18 +8,20 @@ var findingSummary;
 
 YAHOO.util.Event.onDOMReady(function () {
     // Reset popup menus to default state (some browsers will maintain the state if the user hits the back button
+    document.getElementById('summaryViews').selectedIndex = 0;
     document.getElementById('types').selectedIndex = 0;
     document.getElementById('sources').selectedIndex = 0;
 
     // Load summary data
     YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/finding/remediation/summary-data/format/json', 
+                                    '/finding/summary/data/format/json', 
                                     {
                                         success: function(o) {
-                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText);
+                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText).summaryData;
                                             hideLoadingRow();
                                             findingSummary = new Fisma.FindingSummary();
                                             findingSummary.render('findingSummaryTable', summaryData, true);
+                                            document.getElementById('summaryViews').disabled = false;
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -57,6 +59,7 @@ function reloadTable(url) {
         orgTable.deleteRow(orgTable.rows.length - 1);
     }
 
+    document.getElementById('summaryViews').disabled = true;
     document.getElementById('types').disabled = true;
     document.getElementById('sources').disabled = true;
     
@@ -64,9 +67,10 @@ function reloadTable(url) {
                                     url, 
                                     {
                                         success: function(o) {
-                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText);
+                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText).summaryData;
                                             hideLoadingRow();
                                             findingSummary.render('findingSummaryTable', summaryData, true);
+                                            document.getElementById('summaryViews').disabled = false;
                                             document.getElementById('types').disabled = false;
                                             document.getElementById('sources').disabled = false;
                                         },
@@ -85,8 +89,12 @@ function hideLoadingRow() {
 }
 
 function menuHandler(source) {
+    var summaryTypeEl = document.getElementById('summaryViews');
     var typeFilterEl = document.getElementById('types');
     var sourceFilterEl = document.getElementById('sources');
+    
+    var selectedView = summaryTypeEl.options[summaryTypeEl.selectedIndex];
+    findingSummary.summaryView = selectedView.value;
     
     var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
     findingSummary.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
@@ -94,12 +102,13 @@ function menuHandler(source) {
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
     findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
 
+    var viewParam = "view=" + encodeURIComponent(selectedView.value) + "&";
     var typeParam = (selectedType.value == 'ALL') ? '' : 'type=' + encodeURIComponent(selectedType.value) + "&";
     var sourceParam = ((selectedSource.value == 'ALL_SOURCES') 
                     ? '' 
                     : 'sourceNickname=' + encodeURIComponent(selectedSource.value)) + "&";
 
-    var url = '/finding/remediation/summary-data/format/json?' + typeParam + sourceParam;
+    var url = '/finding/summary/data/format/json?' + viewParam + typeParam + sourceParam;
 
     reloadTable(url);
 
@@ -126,6 +135,12 @@ function menuHandler(source) {
 </script>
 
 <div class="searchBox" style="text-align: center;">
+    <b>Summary Type:&nbsp;</b>
+    <select id="summaryViews" onchange="menuHandler(this);" disabled="true">
+        <option value="OHV">Organization Hierarchy View</option>
+        <option value="SAV">System Aggregation View</option>
+        <option value="POCV">Point of Contact View</option>
+    </select>
     <b>Filter by Mitigation Type:&nbsp;</b>
     <select id='types' onchange='menuHandler(this);' disabled="true">
         <option value="ALL">All Types</option>

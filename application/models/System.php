@@ -81,7 +81,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      * 
      * @var array
      */
-    private $_typeMap = array(
+    private static $_typeMap = array(
         'gss' => 'General Support System',
         'major' => 'Major Application',
         'minor' => 'Minor Application'
@@ -123,7 +123,12 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      */
     public function getTypeLabel() 
     {
-        return $this->_typeMap[$this->type];
+        return self::$_typeMap[$this->type];
+    }
+
+    public static function getAllTypeLabels()
+    {
+        return self::$_typeMap;
     }
 
     /**

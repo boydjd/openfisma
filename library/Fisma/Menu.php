@@ -47,7 +47,7 @@ class Fisma_Menu
             $findings = new Fisma_Yui_Menu('Findings');
             
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
+                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
                 $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Finding', '/finding/remediation'));
             }

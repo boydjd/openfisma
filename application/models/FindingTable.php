@@ -58,6 +58,13 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'label' => 'Organizational Unit',
                         'renderer' => 'text',
                         'query' => 'oneInput',
+                    ),
+                    'systemAggregationSubtree' => array(
+                        'idField' => 'responsibleOrganizationId',
+                        'idProvider' => 'OrganizationTable::getSystemAggregationSubtreeIds',
+                        'label' => 'System',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
                     )
                 ),
                 'label' => 'Responsible Organization',
