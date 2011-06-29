@@ -136,7 +136,7 @@ class AuthController extends Zend_Controller_Action
             }            
 
             // Check whether the user's password is about to expire (for database authentication only)
-            if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+            if ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username) {
 
                 // Check if the user's mustResetPassword flag is set 
                 if ($user->mustResetPassword) {

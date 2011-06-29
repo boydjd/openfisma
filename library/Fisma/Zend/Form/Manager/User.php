@@ -48,6 +48,10 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
             $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
         }
 
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('checkAccount');
             $this->_view->requirements =  $passwordRequirements->direct();
@@ -55,13 +59,13 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
             $form->removeElement('generate_password');
-            $form->removeElement('mustResetPassword');
+
+            // root user should always show Must Reset Password
+            if ($user && 'root' != $user->username) {
+                $form->removeElement('mustResetPassword');
+            }
         }
         
-        // Show lock explanation if account is locked. Hide explanation otherwise.
-        $userId = $this->_request->getParam('id');
-        $user = Doctrine::getTable('User')->find($userId);
-
         if ($user && $user->locked) {
             $reason = $user->getLockReason();
             $form->getElement('lockReason')->setValue($reason);
