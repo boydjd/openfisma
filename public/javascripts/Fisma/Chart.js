@@ -649,6 +649,14 @@ Fisma.Chart = {
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
+    /**
+     * Gets the tooltip div created for the chart 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return object[]
+     */
     getTooltipObjOfChart : function (chartParamsObj) {
         return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
     },
@@ -731,6 +739,13 @@ Fisma.Chart = {
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
     
+    /**
+     * Setup the jqPlot library to hook its draw event. Upon postDrawSeriesHooks, create chart patterns if desiered.
+     * This function will return and do nothing if it was called before, this is to prevent multiple hooks being
+     * placed into jqPlot.
+     *
+     * @return void
+     */
     hookPostDrawSeriesHooks : function ()
     {
         if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
@@ -920,6 +935,12 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    /**
+     * Event handler for the hilight event of charts. Upon hilighting is when the chart tooltip contents should
+     * be updated, and shown if not already.
+     *
+     * @return void
+     */
     chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
     {
         // Ensure all other tooltips are hidden 
@@ -1003,6 +1024,12 @@ Fisma.Chart = {
         }
     },
     
+    /**
+     * Returns HTML code to be injected into a tooltip. When rendered in a browser, is a human readable
+     * report showing information about the given column.
+     *
+     * @return string
+     */
     getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
     {
         var report = '';
@@ -1017,6 +1044,12 @@ Fisma.Chart = {
         return report;
     },
     
+    /**
+     * For pie-slice (or bar) referenced by pointIndex (which column/slice), returns the
+     * percentage that slice represents.
+     *
+     * @return int
+     */
     getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
     {
         if (typeof chartParamsObj.chartData[0] === 'object') {
@@ -1038,6 +1071,11 @@ Fisma.Chart = {
         }
     },
     
+    /**
+     * Hides all chart tooltips throughout the entire DOM for all charts
+     *
+     * @return void
+     */
     hideAllChartTooltips : function ()
     {
         // Find all divs that are chart tooltips
@@ -1054,6 +1092,12 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * with the mouse
+     *
+     * @return void
+     */
     chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
         var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
         
@@ -1083,6 +1127,12 @@ Fisma.Chart = {
         pieTooltip.style.top = offsetY + 'px';
     },
     
+    /**
+     * The event handeler for a chart click. This function should determine if the user needs to be
+     * navigated to another page or not
+     *
+     * @return void
+     */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
@@ -1764,6 +1814,17 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the pie chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
     {
         var tbl     = document.createElement("table");
@@ -1802,6 +1863,17 @@ Fisma.Chart = {
         dataTableObj.appendChild(tbl);
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the bar chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromBarChart : function (chartParamsObj, dataTableObj)
     {
         var x = 0;
@@ -1948,6 +2020,14 @@ Fisma.Chart = {
             }
     },
 
+    /**
+     * Removes data-labels that are within a certain range of eachother. If two labels are close,
+     * the data-label showing the lesser value is hidden.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
 
@@ -2044,6 +2124,11 @@ Fisma.Chart = {
                 });
     },
 
+    /**
+     * The event listener for the Hide button shown in chart options
+     *
+     * @return void
+     */
     hideButtonClick : function (scope, chartParamsObj, obj)
     {
         Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
@@ -2145,29 +2230,6 @@ Fisma.Chart = {
                     thisOpt.text = thisOpt.value;
                 }
             }
-        }
-    },
-
-    showSetingMode : function (showBasic)
-    {
-        var x = 0;
-        var hideThese;
-        var showThese;
-
-        if (showBasic === true) {
-            showThese = document.getElementsByName('chartSettingsBasic');
-            hideThese = document.getElementsByName('chartSettingsGlobal');
-        } else {
-            hideThese = document.getElementsByName('chartSettingsBasic');
-            showThese = document.getElementsByName('chartSettingsGlobal');
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-            hideThese[x].style.display = 'none';
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-                showThese[x].style.display = '';
         }
     },
 

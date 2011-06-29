@@ -22,9 +22,9 @@
 <div class="section chartSection">
 <div class="yui-navset">
     
-    <div id="<?php echo $this->escape($this->chartId, 'none'); ?>title" class="jqplot-title"></div>
+    <div id="<?php echo $this->escape($this->chartId); ?>title" class="jqplot-title"></div>
     
-    <div id="<?php echo $this->escape($this->chartId, 'none'); ?>loader" class="loading">
+    <div id="<?php echo $this->escape($this->chartId); ?>loader" class="loading">
         <div>
         </div>
     </div>
@@ -32,14 +32,14 @@
     <div id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
                     echo $this->escape($this->divContainerArgs, 'none'); ?> >
     
-            <div id="<?php echo $this->escape($this->chartId, 'none'); ?>toplegend">
+            <div id="<?php echo $this->escape($this->chartId); ?>toplegend">
             </div>
             
-            <div id="<?php echo $this->escape($this->chartId, 'none'); ?>pieTooltip"
+            <div id="<?php echo $this->escape($this->chartId); ?>pieTooltip"
                 class="jqplot-highlighter-tooltip pieToolTip">
             </div>
             
-            <div id="<?php echo $this->escape($this->chartId, 'none'); ?>" >
+            <div id="<?php echo $this->escape($this->chartId); ?>" >
                 Loading chart data...
             </div>
     </div>
