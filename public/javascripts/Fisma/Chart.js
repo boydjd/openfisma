@@ -620,7 +620,7 @@ Fisma.Chart = {
         
         // Hook the mouse events for column labels (make tooltips show on label hovering)
         var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
-        for (var x = 0; x < columnLabelObjs.length; x++) {
+        for (x = 0; x < columnLabelObjs.length; x++) {
             
             // note which column number this object represents
             columnLabelObjs[x].columnNumber = x;
@@ -631,14 +631,14 @@ Fisma.Chart = {
                     'left': this.parentNode.offsetLeft + 'px',
                     'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
                     'top': ''
-                }
+                };
                 Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
-            }
+            };
             
             // hook onMouseOut to hide tooltip
             columnLabelObjs[x].onmouseout = function (ev) {
                 Fisma.Chart.hideAllChartTooltips();
-            }
+            };
             
             // bring this label to front, otherwise onmouseover will never fire
             columnLabelObjs[x].style.zIndex = 1;
@@ -735,7 +735,7 @@ Fisma.Chart = {
     {
         if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
             // we only push one hook
-            return false;
+            return;
         }
         
         // Note that we have push this hook
@@ -789,7 +789,7 @@ Fisma.Chart = {
                         'y': this._barPoints[bar][0][1],
                         'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
                         'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
-                    }
+                    };
                     
                     img.onload = function () {
                         // create pattern
@@ -797,15 +797,17 @@ Fisma.Chart = {
                         canvasObj.fillStyle = ptrn;
                         canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
                         canvasObj.restore();
-                    }
+                    };
                     
                     // load pattern
                     img.src = myPatternURL;
                 }
+                
+                return;
             }
         );
 
-    
+        return;
     },
     
     /**
@@ -844,17 +846,19 @@ Fisma.Chart = {
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
                 
+                var colorToUse;
+                var usePatterns;
                 for(var layerIndex in chartParamsObj.chartLayerText)
                 {
                     cell = document.createElement("td");
                     cell.width = '20%';
                     
                     // Are we using colors, or patterns?
-                    var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
                     if (usePatterns === 'true') {
-                        var colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                        colorToUse = Fisma.Chart.patternURLs[layerIndex];
                     } else {
-                        var colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = chartParamsObj.colors[layerIndex];
                         colorToUse = colorToUse.replace('#', '');
                     }
                     
@@ -922,21 +926,22 @@ Fisma.Chart = {
         Fisma.Chart.hideAllChartTooltips();
         
         var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
+        var defaultTooltip;
         
         /* The chartParamsObj.tooltip may have one of two structures -
            either an array (of columns)
            or an array (of layers) of arrays (of columns)   */
         if (typeof chartParamsObj.tooltip[0] !== 'object') {
-            var customTooltip = chartParamsObj.tooltip[pointIndex];
+            customTooltip = chartParamsObj.tooltip[pointIndex];
         } else {
-            var customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+            customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
         }
         
         // the same structure for the above applies to chartParamsObj.chartData
         if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
-            var defaultTooltip = chartParamsObj.chartData[pointIndex];
+            defaultTooltip = chartParamsObj.chartData[pointIndex];
         } else {
-            var defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+            defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
         }
         
         // decide tooltip HTML
@@ -1017,6 +1022,7 @@ Fisma.Chart = {
         if (typeof chartParamsObj.chartData[0] === 'object') {
             
             // then this is a stacked bar chart
+            return 0;
             
         } else {
             
@@ -2410,12 +2416,13 @@ Fisma.Chart = {
         // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
         canvases.wrap(
             function() {
+                var div;
                 var canvas = $(this);
 
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -2438,7 +2445,7 @@ Fisma.Chart = {
                 } else if (canvas.context.className == 'jqplot-xaxis-label') {
                     
                     // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             bottom: '0px'
@@ -2448,7 +2455,7 @@ Fisma.Chart = {
                 } else {
 
                     // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
