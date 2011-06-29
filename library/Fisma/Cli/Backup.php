@@ -28,6 +28,7 @@
  
 class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 {
+    const SECONDS_PER_DAY = 86400;
 
     // default values while config has not yet been loaded       
     private $_myTimeStamp;   // the time stamp to name the backup folder with
@@ -242,9 +243,8 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         }
         
         // set timeThreshold to the time() that would be oldest acceptable age for a previous created backup
-        $SECONDS_PER_DAY = 86400;
-        $timeThreshold = time() - ($SECONDS_PER_DAY * (integer)$retentionPeriod);
-        
+        $timeThreshold = time() - (self::SECONDS_PER_DAY * (integer)$retentionPeriod);
+
         $previousBackups = scandir($this->_backupRoot);
         foreach ($previousBackups as $oldBackupName) {
             
@@ -288,8 +288,18 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         print "   done\n";
         return $toReturn;
     }
-    
-    private function _scanDirRecursive($targetPath, $includeDirs = true, $includeFiles = true) {
+
+    /**
+     * Create a list of all of the subdirectories and files nested within a specified directory.
+     * 
+     * This is similar to the POSIX "find" command.
+     * 
+     * @param string $targetPath The base path that you want to enumerate files from.
+     * @param bool $includeDirs If true, then recurse into subdirectories.
+     * @param bool $includeFiles If true, then include files contained in the directories.
+     */
+    private function _scanDirRecursive($targetPath, $includeDirs = true, $includeFiles = true) 
+    {
         $stack = array();
         
         $targetPath = realpath($targetPath);
@@ -308,7 +318,10 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                 }
                 
                 if (is_dir($targetPath . '/' . $thisFile)) {
-                    $stack = array_merge($stack, $this->_scanDirRecursive($targetPath . '/' . $thisFile . '/', $includeDirs, $includeFiles));
+                    $stack = array_merge(
+                        $stack, 
+                        $this->_scanDirRecursive($targetPath . '/' . $thisFile . '/', $includeDirs, $includeFiles)
+                    );
                 }
                 
             }
@@ -316,19 +329,25 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         
         return $stack;
     }
-    
-    private function _removeDirectory($dirPath) {
+
+    /**
+     * Recursively unlinks a directory and all of its contents
+     * 
+     * @param string $dirPath The path you want to unlink.
+     */
+    private function _removeDirectory($dirPath) 
+    {
 
         // remove all files in tree
         $files = $this->_scanDirRecursive($dirPath, false, true);
-        foreach($files as $file) {
+        foreach ($files as $file) {
             unlink($file);
         }
         
         // remove all sub-directories in tree
         $dirs = $this->_scanDirRecursive($dirPath, true, false);
         $dirs = array_reverse($dirs);
-        foreach($dirs as $thisDir) {
+        foreach ($dirs as $thisDir) {
             rmdir($thisDir);
         }
         
@@ -337,12 +356,18 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         
     }
     
-    private function _createZip($filesFromPath, $destination) {
-
+    /**
+     * Create a zip file that includes all the files in a specified path
+     * 
+     * @param string $filesFromPath The name of the path that contains the files you want to zip.
+     * @param string $destination The name of the zip file you want to create.
+     */
+    private function _createZip($filesFromPath, $destination) 
+    {
         //create the archive
         $zip = new ZipArchive();
 
-        if($zip->open($destination, ZIPARCHIVE::CREATE) !== true) {
+        if ($zip->open($destination, ZIPARCHIVE::CREATE) !== true) {
             return false;
         }
 
@@ -351,7 +376,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $files = $this->_scanDirRecursive($filesFromPath, false, true);
 
         //add the files
-        foreach($files as $file) {
+        foreach ($files as $file) {
             $pathWithinZip = str_replace($filesFromPath . '/', '', $file);
             $zip->addFile($file, $pathWithinZip);
         }
@@ -359,6 +384,4 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $zip->close();
         return file_exists($destination);
     }
-
-
 }

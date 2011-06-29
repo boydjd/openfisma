@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -20,7 +20,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
 
 /**
  * Tests for the Fisma_Chart class
- * 
+ *
  * @author     Dale Frey
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,7 +29,6 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  */
 class Test_Library_Fisma_Chart extends Test_FismaUnitTest
 {
-
     public function testConvertFromStackedToRegular()
     {
         $chart = new Fisma_Chart(200, 300, 'uniqueIdHere', '/my/external/source/URL');
@@ -39,7 +38,7 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
             ->addColumn('My Column Label', array(1, 2, 3))
             ->addColumn('My Column Label', array(1, 2, 3))
             ->addColumn('My Column Label', array(1, 2, 3));
-            
+
         $this->assertEquals($chart->getChartType(), 'stackedbar');
 
         $chart->convertFromStackedToRegular();
@@ -47,13 +46,13 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
         $this->assertEquals($chart->getChartType(), 'bar');
         $this->assertEquals($chart->getColumnCount(), 3);
         $this->assertFalse($chart->isStacked());
-        
+
     }
 
     public function testAddColumn()
     {
         $chart = new Fisma_Chart(200, 300, 'uniqueIdHere', '/my/external/source/URL');
- 
+
         // Should rasied an exception - cannot add a column without a setChartType() called previously
         try {
             $chart->addColumn('My Column Label', 7, 'http://www.google.com');
@@ -61,7 +60,7 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
         } catch (Exception $e)  {
             // exception expected, moving on...
         }
-        
+
         $chart->setChartType('bar');
 
         // Should rasied an exception - cannot add an array of numbers to a non-stacked (regular) bar chart.
@@ -71,7 +70,7 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
         } catch (Exception $e)  {
             // exception expected, moving on...
         }
-        
+
         $chart->setChartType('stackedbar');
         $chart->setLayerLabels(array('HIGH', 'MODERATE', 'LOW'));
 
@@ -82,8 +81,6 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
         } catch (Exception $e)  {
             // exception expected, moving on...
         }
-
-
     }
 
     public function testIsStacked()
@@ -92,7 +89,7 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
 
         $chart->setChartType('bar');
         $this->assertFalse($chart->isStacked());
-        
+
         $chart->setChartType('pie');
         $this->assertFalse($chart->isStacked());
 
@@ -101,17 +98,17 @@ class Test_Library_Fisma_Chart extends Test_FismaUnitTest
 
         $chart->setChartType('stackedbar');
         $this->assertTrue($chart->isStacked());
-        
+
         $chart->setChartType('stackedline');
         $this->assertTrue($chart->isStacked());
-        
+
     }
 
     public function testSetChartType()
     {
         $chart = new Fisma_Chart(200, 300, 'uniqueIdHere', '/my/external/source/URL');
         $chart->setChartType('bar');
-        
+
         $this->assertEquals('bar', $chart->getChartType());
 
     }
