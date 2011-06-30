@@ -192,42 +192,14 @@ Fisma.System = {
      */
     convertToSystem : function (event, config) {
     
-        var yesButtonEvent = function () {
-                Fisma.System.askForOrgToSysInput(config.id);
-                this.destroy();
-            };
-        var noButtonEvent = function () {
-                this.destroy();
-            };
-        var dialogButtons = 
-            [
-                {
-                    text: "Yes",
-                    handler: yesButtonEvent
-                }, 
-                {
-                    text:"No",
-                    handler: noButtonEvent
-                } 
-            ];
-        var dialogMessage = "Are you sure you want to convert this organization to a system?";
-        var dialogConfig = {
-            width: "300px", 
-            fixedcenter: true, 
-            visible: false, 
-            draggable: false, 
-            close: true,
-            modal: true,
-            text: dialogMessage, 
-            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-            constraintoviewport: true, 
-            buttons: dialogButtons
-        };
-        
-        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
+        Fisma.Util.showConfirmDialog(
+            event, 
+            {
+                text: "Are you sure you want to convert this organization to a system?",
+                func: 'Fisma.System.askForOrgToSysInput',
+                args: [config.id]
+            }
+        );
     },
     
     /**
