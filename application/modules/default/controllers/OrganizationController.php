@@ -571,7 +571,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                       'label' => 'Convert To System',
                       'onClickFunction' => 'Fisma.System.convertToSystem',
                       'onClickArgument' => array(
-                          'id' => $id
+                          'id' => $this->view->escape($id, 'url')
                     ) 
                 )
             );

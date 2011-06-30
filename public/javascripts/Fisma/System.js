@@ -193,7 +193,7 @@ Fisma.System = {
     convertToSystem : function (event, config) {
     
         var yesButtonEvent = function () {
-                Fisma.System.AskForOrgToSysInput(config.id);
+                Fisma.System.askForOrgToSysInput(config.id);
                 this.destroy();
             };
         var noButtonEvent = function () {
@@ -350,13 +350,13 @@ Fisma.System = {
     },
     
     /**
-     * Shows YUI wain panel on the DOM. Use when navigating away from this page.
+     * Shows YUI wait panel on the DOM. Use when navigating away from this page.
      * 
      * @access public
      * @return void
      */
     showWaitPanelWhileConverting : function () {
-        var savePanel = new YAHOO.widget.Panel(
+        var waitPanel = new YAHOO.widget.Panel(
             "savePanel",
             {
                 width: "250px",
@@ -367,9 +367,9 @@ Fisma.System = {
                 visible: true
             }
         );
-        savePanel.setHeader('Converting...');
-        savePanel.render(document.body);
-        savePanel.setBody('<img src="/images/loading_bar.gif">');
-        savePanel.show();
+        waitPanel.setHeader('Converting...');
+        waitPanel.render(document.body);
+        waitPanel.setBody('<img src="/images/loading_bar.gif">');
+        waitPanel.show();
     }
 };

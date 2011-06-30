@@ -86,11 +86,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
         
-        if (
-            $this->_acl->hasPrivilegeForClass('create', 'System')
-            && $this->_acl->hasPrivilegeForClass('create', 'Organization')
-            && $this->_acl->hasPrivilegeForClass('update', 'System')
-        ) {
+        if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
 
             $this->view->convertToOrgButton = new Fisma_Yui_Form_Button(
                 'convertToOrg', 
