@@ -181,16 +181,6 @@ Configuration:
             notblank: true
             comment: This is used to construct self referencing URLs in non-HTTP contexts. The installer should overwrite this value.
             default: ""
-        app_version:
-            type: string(10)
-            notblank: true
-            comment: The version of the application
-            default: 0
-        yui_version:
-            type: string(10)
-            notblank: true
-            comment: The version of YUI being used by the application
-            default: 0
         default_security_control_catalog_id:
             type: integer(1)
             notblank: true
