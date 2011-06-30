@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -19,8 +20,6 @@
 /**
  * Create tables vulnerability, vulnerability_bugtraq, vulnerability_cve, vulnerability_resolution, vulnerability_upload, 
  * vulnerability_xref, vulnerability_audit_log, vulnerability_comment.
- *
- * @codingStandardsIgnoreFile
  *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}

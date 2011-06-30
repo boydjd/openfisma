@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -19,8 +20,6 @@
 /**
  * Rename the current security control table, then create new security control table, security catalog control table,
  * and security control enhancements table.
- * 
- * @codingStandardsIgnoreFile
  * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
