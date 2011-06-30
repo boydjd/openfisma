@@ -204,7 +204,7 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    var alertMessage = {text : 'Failed to generate password: ' + o.statusText};
+                    var alertMessage = 'Failed to generate password: ' + o.statusText;
                     Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
@@ -304,8 +304,8 @@ Fisma.User = {
         var content = document.createElement('div');
 
         var messageContainer = document.createElement('span');
-        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
-                                                   + " this user's account.");
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
+                                                    " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 

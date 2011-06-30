@@ -61,7 +61,7 @@ Fisma.Module = {
         }
         
         if (!responseStatus.success) {
-            var alertMessage = {text : 'Error: Not able to change module status. Reason: ' + responseStatus.message};
+            var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
             Fisma.Util.showAlertDialog(alertMessage);
         }
         

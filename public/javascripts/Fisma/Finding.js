@@ -137,8 +137,7 @@ Fisma.Finding = {
                 },
                 
                 failure : function (connection) {
-                    var alertMessage = {text : 'Unable to load security control definition.'};
-                    Fisma.Util.showAlertDialog(alertMessage);
+                    Fisma.Util.showAlertDialog('Unable to load security control definition.');
                 }
             }
         );

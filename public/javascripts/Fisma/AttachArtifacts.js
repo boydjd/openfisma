@@ -138,7 +138,7 @@ Fisma.AttachArtifacts = {
         var fileUploadEl = document.getElementById('fileUpload');
 
         if ("" === fileUploadEl.value) {
-            var alertMessage = {text : "Please select a file."};
+            var alertMessage = "Please select a file.";
             var config = {zIndex : 10000};
             Fisma.Util.showAlertDialog(alertMessage, config);
             
@@ -250,8 +250,7 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    var alertMessage = {text : 'Document upload failed.'};
-                    Fisma.Util.showAlertDialog(alertMessage);
+                    Fisma.Util.showAlertDialog('Document upload failed.');
                 }
             }, 
             null);
@@ -364,7 +363,7 @@ Fisma.AttachArtifacts = {
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            var alertMessage = {text : "Upload Failed: " + responseStatus.message};
+            var alertMessage = "Upload Failed: " + responseStatus.message;
             var config = {zIndex : 10000};
             Fisma.Util.showAlertDialog(alertMessage, config);
  

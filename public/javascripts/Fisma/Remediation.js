@@ -61,10 +61,11 @@ Fisma.Remediation = {
 
         var content = document.createElement('div');
         var p = document.createElement('p');
+        var c_title;
         if ('APPROVED' === action) {
-            var c_title = document.createTextNode('Comments (OPTIONAL):');
+            c_title = document.createTextNode('Comments (OPTIONAL):');
         } else {
-            var c_title = document.createTextNode('Comments:');
+            c_title = document.createTextNode('Comments:');
         }
         p.appendChild(c_title);
         content.appendChild(p);
@@ -91,7 +92,7 @@ Fisma.Remediation = {
 
             if ('DENIED' === action) { 
                 if (comment.match(/^\s*$/)) {
-                    var alertMessage = {text : 'Comments are required in order to submit.'};
+                    var alertMessage = 'Comments are required in order to submit.';
                     var config = {zIndex : 10000};
                     Fisma.Util.showAlertDialog(alertMessage, config);
                     return;

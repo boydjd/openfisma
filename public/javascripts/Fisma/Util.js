@@ -167,7 +167,7 @@ Fisma.Util = {
      * @param message object
      * @param config object
      */
-    showAlertDialog : function (message, config) {
+    showAlertDialog : function (alertMessage, config) {
         var alertDialog = Fisma.Util.getDialog();
  
         var handleOk =  function() {
@@ -176,7 +176,7 @@ Fisma.Util = {
         var button = [ { text: "Ok", handler: handleOk } ];
 
         alertDialog.setHeader("WARNING");
-        alertDialog.setBody(message.text); 
+        alertDialog.setBody(alertMessage); 
         alertDialog.cfg.queueProperty("buttons", button); 
 
         if (!YAHOO.lang.isUndefined(config) && config.width) {
