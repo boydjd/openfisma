@@ -118,36 +118,97 @@ Fisma.Util = {
     },
 
     /**
-     * Show a warning message before a record is deleted.
+     * Show confirm window with warning message. config object can have width, text, isLink, url and func
+     * 
+     * @param event
+     * @param config 
      */
-    showDeleteWarning : function (event, config) {
-        var  warningDialog =  
+    showConfirmDialog : function (event, config) {
+        var confirmDialog = Fisma.Util.getDialog();
+ 
+        var buttons = [ { text:"Yes", handler : function () {
+                            if (config.url) {
+                                document.location = config.url;
+                             }else if(config.func) {
+                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 if (YAHOO.lang.isFunction(funcObj)) {
+                                     if (config.args) {
+                                         funcObj.apply(this, config.args);
+                                     } else {
+                                         funcObj.call();
+                                     }
+                                 }
+                             }
+                             this.destroy();
+                            }
+                        },
+                        { text:"No",  handler : function () {
+                            this.destroy();
+                            }    
+                        } 
+                     ]; 
+ 
+        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setBody(config.text); 
+        confirmDialog.cfg.queueProperty("buttons", buttons); 
+        if (config.width) {
+            confirmDialog.cfg.setProperty("width", config.width); 
+        }
+        confirmDialog.render(document.body);
+        confirmDialog.show();
+        if (config.isLink) {
+            YAHOO.util.Event.preventDefault(event);
+        }
+    },
+ 
+    /**
+     * Show alert warning message. The config object can have width and zIndex property
+     * 
+     * @param message object
+     * @param config object
+     */
+    showAlertDialog : function (alertMessage, config) {
+        var alertDialog = Fisma.Util.getDialog();
+ 
+        var handleOk =  function() {
+            this.destroy();
+        };
+        var button = [ { text: "Ok", handler: handleOk } ];
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(alertMessage); 
+        alertDialog.cfg.queueProperty("buttons", button); 
+
+        if (!YAHOO.lang.isUndefined(config) && config.width) {
+            alertDialog.cfg.setProperty("width", config.width); 
+        }
+        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
+            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
+        }
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+    },
+
+    /**
+     * Generate a YUI SimpleDialog
+     * 
+     * @return a YUI SimpleDialog
+     */
+    getDialog : function(){
+        var dialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
+                { width: "400px", 
                   fixedcenter: true, 
                   visible: false, 
-                  draggable: false, 
                   close: true,
                   modal: true,
-                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
-                         + "Do you want to continue?", 
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                     document.location = config.url
-                                     this.hide();
-                                 }
-                             }, 
-                             { text:"No",  handler : function () {
-                                     this.hide(); 
-                                 }
-                             } 
-                           ] 
+                  draggable: false
                 } ); 
- 
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
-        YAHOO.util.Event.preventDefault(event);
+
+        return dialog;
     }
+
 };

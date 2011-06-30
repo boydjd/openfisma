@@ -153,7 +153,7 @@ Fisma.Search = function() {
             } catch (error) {
                 // If a string is thrown, then display that string to the user
                 if ('string' == typeof error) {
-                    alert(error);
+                    Fisma.Util.showAlertDialog(error);
                 }
             }
         },
@@ -553,12 +553,26 @@ Fisma.Search = function() {
                 
                 return;
             }
-            
-            if (!confirm("Delete " + checkedRecords.length + " records?")) {
-                return;
-            }
+            var deleteRecords = [];
+            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));          
 
+            var warningMessage = '';  
+            if (1 === checkedRecords.length) {
+                warningMessage = 'Delete 1 record?';
+            } else {
+                warningMessage = "Delete " + checkedRecords.length + " records?";
+            }
+            var config = {text : warningMessage, 
+                          func : 'Fisma.Search.doDelete', 
+                          args : deleteRecords  };
+            var e = null;
+            Fisma.Util.showConfirmDialog(e, config);
+           
+          },
+
+         doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
+            var dataTable = Fisma.Search.yuiDataTable;
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             
@@ -592,7 +606,7 @@ Fisma.Search = function() {
             var postString = "csrf=";
             postString += document.getElementById('searchForm').csrf.value;
             postString += "&records=";
-            postString += YAHOO.lang.JSON.stringify(checkedRecords);
+            postString += checkedRecords;
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(

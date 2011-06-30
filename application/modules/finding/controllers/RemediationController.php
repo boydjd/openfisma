@@ -602,9 +602,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     'deleteFinding', 
                     array(
                           'label' => 'Delete Finding',
-                          'onClickFunction' => 'Fisma.Finding.deleteFinding',
+                          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
-                              'id' => $id
+                              'url' => "/finding/remediation/delete/id/$id",
+                              'text' => "WARNING: You are about to delete the finding record. This action cannot be " 
+                                        . "undone. Do you want to continue?",
+                              'isLink' => false
                         ) 
                     )
                 );

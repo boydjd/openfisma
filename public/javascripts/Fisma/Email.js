@@ -83,8 +83,7 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                panelConfig
-            );
+                panelConfig );
 
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
@@ -97,7 +96,9 @@ Fisma.Email = function() {
             
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                alert("Recipient is required.");
+                var alertMessage = "Recipient is required.";
+                var config = {zIndex : 10000};
+                Fisma.Util.showAlertDialog(alertMessage, config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -121,8 +122,8 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    alert('Failed to send test mail: ' + o.statusText);
-                    
+                    var alertMessage = 'Failed to send test mail: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                     spinner.hide();
                 }
             }, null);

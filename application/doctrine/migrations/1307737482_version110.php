@@ -17,33 +17,39 @@
  */
 
 /**
- * Add inactivity notification time configuration to Configuration model.
+ * Add unique key on privilege table (resource, action)
  *
- * @package   Migration
+ * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license   http://www.openfisma.org/content/license GPLv3
+ * @author Mark Ma <mark.ma@reyosoft.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version109 extends Doctrine_Migration_Base
+class Version110 extends Doctrine_Migration_Base
 {
+    /** 
+    * Add a unique index to privilege table to avoid records with the same resource and action
+    * @access public
+    * @return void 
+    */
     public function up()
     {
-        $this->addColumn(
-            'configuration',
-            'session_inactivity_notice',
-            'integer',
-            '2',
-            array( 'notblank' => '1', 'unsigned' => '1', 'default' => '0', 'comment' => 'Session timeout (seconds)')
-        );
+        $this->addIndex('privilege', 'resourceAction', array(
+            'fields' => 
+                array(
+                    0 => 'resource',
+                    1 => 'action',
+                ),
+            'type' => 'unique',
+        ));
     }
 
+     /**
+     * remove resourceAction index
+     * @access public
+     * @return void
+     */
     public function down()
     {
-        $this->removeColumn('configuration', 'session_inactivity_notice');
-    }
-
-    public function postUp()
-    {
-        Doctrine_Query::create()->update("Configuration")->set("session_inactivity_notice", "session_inactivity_period * ?", 0.9)->execute();
+        $this->removeIndex('privilege', 'resourceAction');
     }
 }

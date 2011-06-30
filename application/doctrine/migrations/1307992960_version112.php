@@ -17,33 +17,33 @@
  */
 
 /**
- * Add inactivity notification time configuration to Configuration model.
- *
- * @package   Migration
+ * Version112 
+ * 
+ * @uses Doctrine_Migration_Base
+ * @package Migration 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license   http://www.openfisma.org/content/license GPLv3
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version109 extends Doctrine_Migration_Base
+class Version112 extends Doctrine_Migration_Base
 {
+    /**
+     * Update application version.
+     */
     public function up()
     {
-        $this->addColumn(
-            'configuration',
-            'session_inactivity_notice',
-            'integer',
-            '2',
-            array( 'notblank' => '1', 'unsigned' => '1', 'default' => '0', 'comment' => 'Session timeout (seconds)')
-        );
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.1'";
+        $conn->exec($updateSql);
     }
 
+    /**
+     * Remove configuration 
+     */
     public function down()
     {
-        $this->removeColumn('configuration', 'session_inactivity_notice');
-    }
-
-    public function postUp()
-    {
-        Doctrine_Query::create()->update("Configuration")->set("session_inactivity_notice", "session_inactivity_period * ?", 0.9)->execute();
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.0'";
+        $conn->exec($updateSql);
     }
 }

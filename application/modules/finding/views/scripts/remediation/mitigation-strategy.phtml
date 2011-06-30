@@ -134,10 +134,23 @@ foreach ($array as $row) {
         continue;
     }
 }
+$warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
+           . 'Please click "YES" to confirm your action or click "No" to stop.';
+$url = "$postAction/do/submitmitigation";
+
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
-    $submitMitigationButton = new Fisma_Yui_Form_Button('submitMitigation', 
-                                                  array('label' => 'Submit Mitigation Strategy', 
-                                                        'onClickFunction' => 'submitMitigationStrategy')    );
+    $submitMitigationButton = new Fisma_Yui_Form_Button(
+        'submitMitigation', 
+        array(
+              'label' => 'Submit Mitigation Strategy', 
+              'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+              'onClickArgument' => array(
+                  'url' =>  $url,
+                  'text' => $warning 
+              )
+        )
+    );
+
     if (
         $this->finding->isDeleted() || 
         false == $complete || 
@@ -146,13 +159,6 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
         $submitMitigationButton->readOnly = true;
     }
 ?>
-    <script type="text/javascript">
-        function submitMitigationStrategy(event, obj) {
-            if (form_confirm(document.finding_detail, "Submit Mitigation Strategy")) {
-                document.location = "<?php echo $this->escape($postAction, 'javascript')?>/do/submitmitigation";
-            }
-        }
-    </script>
     <p><i>The mitigation strategy, security control, and risk analysis sections must
           be fully completed before this can be submitted for approval.</i></p>
 
@@ -166,21 +172,21 @@ if (
     $this->acl()->hasPrivilegeForObject('mitigation_strategy_revise', $finding)
 ) {
     $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
-             . 'Are you sure that you want to continue?';
-    $reviseMitigationButton = new Fisma_Yui_Form_Button('reviseMitigationButton',
-                                                  array('label' => 'Revise Mitigation Strategy', 
-                                                        'onClickFunction' => 'reviseMitigationStrategy'));
+             . ' Are you sure that you want to continue?';
+    $url = "$postAction/do/revisemitigation";
+    $reviseMitigationButton = new Fisma_Yui_Form_Button(
+        'reviseMitigationButton',
+        array(
+              'label' => 'Revise Mitigation Strategy', 
+              'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+              'onClickArgument' => array(
+                  'url' =>  $url,
+                  'text' => $message, 
+                  'isLink' => false
+              )
+        )
+    );
 ?>
-    <script language="javascript">
-        function reviseMitigationStrategy()
-        {
-            var str = "<?php echo $this->escape($message, 'javascript')?>";
-            if(confirm(str) == true){
-                location.href = "<?php echo $this->escape($postAction, 'javascript')?>/do/revisemitigation";
-            }
-            return false;
-        }
-    </script>
     <div class='buttonBar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
 <?php
 }  
@@ -239,12 +245,40 @@ if ($finding->status != 'NEW'
         ) {
             echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
             echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
-            echo $this->escape('<input name="submit_msa" type="button" value="APPROVED" ', 'none');
-            echo $this->escape('onclick="Fisma.Remediation.ms_approve(document.finding_detail);"/>&nbsp;', 'none');
-            echo $this->escape(
-                '<input type="button" value="DENIED" onclick="Fisma.Remediation.ms_deny(document.finding_detail);" />',
-                'none'
+
+            $message = 'WARNING: You are about to approve the mitigation strategy. This action cannot be undone.'
+                      . ' Are you sure that you want to continue?';
+    
+            $approveButton = new Fisma_Yui_Form_Button(
+                'approveButton',
+                array(
+                      'label' => 'APPROVED', 
+                      'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                      'onClickArgument' => array(
+                          'text' => $message, 
+                          'func' => 'Fisma.Remediation.remediationAction',
+                          'args' => array("APPROVED", "finding_detail", "Mitigation Strategy Approval") 
+                      )
+                )
             );
+            echo $this->escape($approveButton, 'none');
+    
+            $message = 'WARNING: You are about to deny the mitigation strategy. This action cannot be undone.'
+                      . ' Are you sure that you want to continue?';
+            $denyButton = new Fisma_Yui_Form_Button(
+                'denyButton',
+                array(
+                      'label' => 'DENIED', 
+                      'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                      'onClickArgument' => array(
+                          'text' => $message, 
+                          'func' => 'Fisma.Remediation.remediationAction',
+                          'args' => array("DENIED", "finding_detail", "Mitigation Strategy Denial")
+                      )
+                )
+            );
+
+            echo $this->escape($denyButton, 'none');
         } else {
             echo $this->escape("PENDING", 'none');
         }
