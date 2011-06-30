@@ -154,7 +154,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();
-        $rowStructure = array();
+        
+        // Each row (array) must be an array of ColumnName => CellValue
+        $blankRow = array();
         
         // Add event handler pointer (on checkboxClickEvent, call dataTableCheckboxClick
         $dataTable->addEventListener('checkboxClickEvent', 'Fisma.Role.dataTableCheckboxClick');
@@ -169,7 +171,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 'privilegeDescription'
             )
         );
-        $rowStructure['privilegeDescription'] = '';
+        
+        // Add this key (column-name) to the row template
+        $blankRow['privilegeDescription'] = '';
         
         // The second column will be the privilege-id (hidden)
         $dataTable->addColumn(
@@ -182,7 +186,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 true
             )
         );
-        $rowStructure['privilegeId'] = '';
+        
+        // Add this key (column-name) to the row template
+        $blankRow['privilegeId'] = '';
 
         // Get a list of all roles
         $rolesQuery = Doctrine_Query::create()
@@ -206,8 +212,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 )
             );
             
-            // Add column to row-structure variable
-            $rowStructure[$role['nickname']] = '';
+            // Add this key (column-name) to the row template
+            $blankRow[$role['nickname']] = '';
+
         }
 
         // Get a list of what role each privilege is associated with
@@ -223,7 +230,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $dataTableRows = array();
         foreach ($privileges as $privilege) {
 
-            $newRow = $rowStructure;
+            // Copy from blank row, so that all column-names exists as keys in this row array
+            $newRow = $blankRow;
+            
             $newRow['privilegeDescription'] = $privilege['description'];
             $newRow['privilegeId'] = $privilege['id'];
 
@@ -266,35 +275,48 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             try {
                 foreach ($rolePrivChanges as $change) {
 
+                    $roleName = $change['roleName'];
                     $privilegeId = $change['privilegeId'];
-                    $roleId = Doctrine::getTable('Role')->findOneByNickname($change['roleName'])->id;
+                    $roleId = Doctrine::getTable('Role')->findOneByNickname($roleName)->id;
                     $privilegeDescription = Doctrine::getTable('Privilege')->findOneById($privilegeId)->description;
-
-                    // Remove this privilege for this role
-                    $removeRolePrivilegeQuery = Doctrine_Query::create()
-                        ->delete('RolePrivilege rp')
-                        ->where('rp.roleId = ' . $roleId)
-                        ->andWhere('rp.privilegeId = ' . $privilegeId);
-                    $removeRolePrivilegeQuery->execute();
+                    
+                    // Check if this role has this privilege already
+                    $targetRolePrivilegeCount = Doctrine_Query::create()
+                        ->select('roleid')
+                        ->from('RolePrivilege')
+                        ->where('roleid = ' . $roleId)
+                        ->andWhere('privilegeid = ' . $privilegeId)
+                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                        ->count();
+                    $roleHasPrivilege = $targetRolePrivilegeCount > 0 ? true : false;
+                    
+                    // The checkbox was either checked (add) or unchecked (deleted)
+                    $operation = (int) $change['newValue'] === 1 ? 'add' : 'delete';
 
                     // Add this privilege for this role if that was requested
-                    if ((int) $change['newValue'] === 1) {
+                    if ($operation === 'add' && $roleHasPrivilege === false) {
+                    
                         $newRolePrivilege = new RolePrivilege;
                         $newRolePrivilege->roleId = $roleId;
                         $newRolePrivilege->privilegeId = $privilegeId;
                         $newRolePrivilege->save();
+                    
+                        // Add to message stack
+                        $msg[] = "Added the '" . $privilegeDescription . "' privilege to the " . $roleName . ' role.';
+                        
+                    } elseif ($operation === 'delete' && $roleHasPrivilege === true) {
+                    
+                        // Remove this privilege for this role
+                        $removeRolePrivilegeQuery = Doctrine_Query::create()
+                            ->delete('RolePrivilege rp')
+                            ->where('rp.roleId = ' . $roleId)
+                            ->andWhere('rp.privilegeId = ' . $privilegeId);
+                        $removeRolePrivilegeQuery->execute();
+                        
+                        // Add to message stack
+                        $msg[] = "Removed the '" . $privilegeDescription . "' privilege from the " . $roleName . ' role.';
                     }
 
-                    // Add to message stack
-                    if ((int) $change['newValue'] === 1) {
-                        $verb = 'Added ';
-                        $adj = 'to';
-                    } else {
-                        $verb = 'Removed ';
-                        $adj = 'from';
-                    }
-
-                    $msg[] = $verb . " the '" . $privilegeDescription . "' privilege " . $adj . " the " . $change['roleName'] . ' role.';
                 }
                 
                 Doctrine_Manager::connection()->commit();
@@ -306,9 +328,11 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 return;
             }
             
-            // Send priority messenger
-            $msg = implode("<br/>", $msg);
-            $this->view->priorityMessenger($msg, 'notice');
+            // Send priority messenger if there are messeges to send
+            if (!empty($msg)) {
+                $msg = implode("<br/>", $msg);
+                $this->view->priorityMessenger($msg, 'notice');
+            }
         }
         
         // Now that the privileges have been saved, redirect back to the view-mode
