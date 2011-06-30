@@ -661,20 +661,20 @@ Fisma.Chart = {
         return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
     },
 
-    getElementsByClassWithinObj : function (className, objectType, WithinDiv) {
+    getElementsByClassWithinObj : function (className, objectType, withinDiv) {
         
         // Is WithinDiv given? If not, assume we are looking from the document.body and down
-        if (WithinDiv === null || WithinDiv === '') {
-            WithinDiv = document.body;
+        if (withinDiv === null || withinDiv === '') {
+            withinDiv = document.body;
         }
         
-        // Is WithinDiv an object, or object ID? - make it an object
-        if (typeof WithinDiv !== 'object') {
-            WithinDiv = document.getElementById(WithinDiv);
+        // Is withinDiv an object, or object ID? - make it an object
+        if (typeof withinDiv !== 'object') {
+            withinDiv = document.getElementById(withinDiv);
         }
         
         // Find the div that has the jqplot-highlighter-tooltip class
-        var objsFound = $(WithinDiv).find(objectType).filter(
+        var objsFound = $(withinDiv).find(objectType).filter(
             function() {
                 return $(this)[0].className.indexOf(className) !== -1;
             }
@@ -863,6 +863,7 @@ Fisma.Chart = {
                 
                 var colorToUse;
                 var usePatterns;
+                var thisLayerText;
                 for(var layerIndex in chartParamsObj.chartLayerText)
                 {
                     cell = document.createElement("td");
@@ -877,7 +878,7 @@ Fisma.Chart = {
                         colorToUse = colorToUse.replace('#', '');
                     }
                     
-                    var thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    thisLayerText = chartParamsObj.chartLayerText[layerIndex];
                     
                     cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
                     
