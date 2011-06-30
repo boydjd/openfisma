@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -18,8 +19,6 @@
 
 /**
  * Add configuration fields for Search
- *
- * @codingStandardsIgnoreFile
  *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}

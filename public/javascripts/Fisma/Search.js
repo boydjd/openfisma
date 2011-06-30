@@ -135,6 +135,11 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    // Reset the page to 1 if search form is submitted 
+                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
+                        dataTable.get('paginator').setPage(1);
+                    }
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -581,7 +586,7 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
+                    dataTable.get('paginator').setPage(1);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,

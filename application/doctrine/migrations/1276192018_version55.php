@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -26,9 +27,6 @@
  * It isn't possible to drop the old tables in this migration because the drop tables will run BEFORE we copy the
  * data over in the postUp() method. (We could store the contents of the tables in a class variable, but that seems
  * risky.) So tables are dropped in version 56.
- * 
- * This file contains generated code... skip standards check.
- * @codingStandardsIgnoreFile
  * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}

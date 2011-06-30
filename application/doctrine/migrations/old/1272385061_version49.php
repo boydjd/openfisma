@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -20,7 +21,6 @@
  * Add incident workflow definition table
  * 
  * This file contains generated code... skip standards check.
- * @codingStandardsIgnoreFile
  * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}

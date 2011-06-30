@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -19,8 +20,6 @@
 /**
  * Add new cookie table 
  *
- * @codingStandardsIgnoreFile
- * 
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
