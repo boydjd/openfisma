@@ -120,6 +120,11 @@ Fisma.Util = {
     /**
      * Show confirm window with warning message. config object can have width, text, isLink, url and func
      * 
+     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
+     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
+     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
+     * "YES" button is clicked.
+     *
      * @param event
      * @param config 
      */
@@ -163,8 +168,10 @@ Fisma.Util = {
  
     /**
      * Show alert warning message. The config object can have width and zIndex property
-     * 
-     * @param message object
+     *
+     * Generanlly, it can just pass alert message string if it does not need to override default config 
+     *
+     * @param message string
      * @param config object
      */
     showAlertDialog : function (alertMessage, config) {
