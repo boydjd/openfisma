@@ -21,7 +21,6 @@
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -83,8 +82,7 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                panelConfig
-            );
+                panelConfig);
 
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;

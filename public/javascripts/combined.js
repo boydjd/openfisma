@@ -806,7 +806,6 @@ tinyMCE.init({
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
@@ -1349,7 +1348,6 @@ function updateTimeField(id) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 function setupEditFields() {
@@ -1489,7 +1487,6 @@ if (window.HTMLElement) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo Write a safe version of this function called selectAll that takes some kind
  *       of scope as a parameter so that it can be limited.
@@ -1873,7 +1870,6 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -2291,7 +2287,6 @@ Fisma.AttachArtifacts = {
  * @requires  YAHOO.widget.AutoComplete
  * @requires  YAHOO.widget.DS_XHR
  * @requires  Fisma
- * @version   $Id$
  */
 
 Fisma.AutoComplete = function() {
@@ -2444,7 +2439,6 @@ Fisma.AutoComplete = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 /**
@@ -3195,7 +3189,7 @@ Fisma.Chart = {
         
         // Hook the mouse events for column labels (make tooltips show on label hovering)
         var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
-        for (var x = 0; x < columnLabelObjs.length; x++) {
+        for (x = 0; x < columnLabelObjs.length; x++) {
             
             // note which column number this object represents
             columnLabelObjs[x].columnNumber = x;
@@ -3206,14 +3200,14 @@ Fisma.Chart = {
                     'left': this.parentNode.offsetLeft + 'px',
                     'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
                     'top': ''
-                }
+                };
                 Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
-            }
+            };
             
             // hook onMouseOut to hide tooltip
             columnLabelObjs[x].onmouseout = function (ev) {
                 Fisma.Chart.hideAllChartTooltips();
-            }
+            };
             
             // bring this label to front, otherwise onmouseover will never fire
             columnLabelObjs[x].style.zIndex = 1;
@@ -3224,24 +3218,32 @@ Fisma.Chart = {
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
 
+    /**
+     * Gets the tooltip div created for the chart 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return object[]
+     */
     getTooltipObjOfChart : function (chartParamsObj) {
         return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
     },
 
-    getElementsByClassWithinObj : function (className, objectType, WithinDiv) {
+    getElementsByClassWithinObj : function (className, objectType, withinDiv) {
         
         // Is WithinDiv given? If not, assume we are looking from the document.body and down
-        if (WithinDiv === null || WithinDiv === '') {
-            WithinDiv = document.body;
+        if (withinDiv === null || withinDiv === '') {
+            withinDiv = document.body;
         }
         
-        // Is WithinDiv an object, or object ID? - make it an object
-        if (typeof WithinDiv !== 'object') {
-            WithinDiv = document.getElementById(WithinDiv);
+        // Is withinDiv an object, or object ID? - make it an object
+        if (typeof withinDiv !== 'object') {
+            withinDiv = document.getElementById(withinDiv);
         }
         
         // Find the div that has the jqplot-highlighter-tooltip class
-        var objsFound = $(WithinDiv).find(objectType).filter(
+        var objsFound = $(withinDiv).find(objectType).filter(
             function() {
                 return $(this)[0].className.indexOf(className) !== -1;
             }
@@ -3306,11 +3308,18 @@ Fisma.Chart = {
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
     
+    /**
+     * Setup the jqPlot library to hook its draw event. Upon postDrawSeriesHooks, create chart patterns if desiered.
+     * This function will return and do nothing if it was called before, this is to prevent multiple hooks being
+     * placed into jqPlot.
+     *
+     * @return void
+     */
     hookPostDrawSeriesHooks : function ()
     {
         if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
             // we only push one hook
-            return false;
+            return;
         }
         
         // Note that we have push this hook
@@ -3364,7 +3373,7 @@ Fisma.Chart = {
                         'y': this._barPoints[bar][0][1],
                         'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
                         'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
-                    }
+                    };
                     
                     img.onload = function () {
                         // create pattern
@@ -3372,15 +3381,17 @@ Fisma.Chart = {
                         canvasObj.fillStyle = ptrn;
                         canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
                         canvasObj.restore();
-                    }
+                    };
                     
                     // load pattern
                     img.src = myPatternURL;
                 }
+                
+                return;
             }
         );
 
-    
+        return;
     },
     
     /**
@@ -3419,21 +3430,24 @@ Fisma.Chart = {
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
                 
+                var colorToUse;
+                var usePatterns;
+                var thisLayerText;
                 for(var layerIndex in chartParamsObj.chartLayerText)
                 {
                     cell = document.createElement("td");
                     cell.width = '20%';
                     
                     // Are we using colors, or patterns?
-                    var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
                     if (usePatterns === 'true') {
-                        var colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                        colorToUse = Fisma.Chart.patternURLs[layerIndex];
                     } else {
-                        var colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = chartParamsObj.colors[layerIndex];
                         colorToUse = colorToUse.replace('#', '');
                     }
                     
-                    var thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    thisLayerText = chartParamsObj.chartLayerText[layerIndex];
                     
                     cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
                     
@@ -3491,27 +3505,34 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    /**
+     * Event handler for the hilight event of charts. Upon hilighting is when the chart tooltip contents should
+     * be updated, and shown if not already.
+     *
+     * @return void
+     */
     chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
     {
         // Ensure all other tooltips are hidden 
         Fisma.Chart.hideAllChartTooltips();
         
         var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
+        var defaultTooltip;
         
         /* The chartParamsObj.tooltip may have one of two structures -
            either an array (of columns)
            or an array (of layers) of arrays (of columns)   */
         if (typeof chartParamsObj.tooltip[0] !== 'object') {
-            var customTooltip = chartParamsObj.tooltip[pointIndex];
+            customTooltip = chartParamsObj.tooltip[pointIndex];
         } else {
-            var customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+            customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
         }
         
         // the same structure for the above applies to chartParamsObj.chartData
         if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
-            var defaultTooltip = chartParamsObj.chartData[pointIndex];
+            defaultTooltip = chartParamsObj.chartData[pointIndex];
         } else {
-            var defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+            defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
         }
         
         // decide tooltip HTML
@@ -3573,6 +3594,12 @@ Fisma.Chart = {
         }
     },
     
+    /**
+     * Returns HTML code to be injected into a tooltip. When rendered in a browser, is a human readable
+     * report showing information about the given column.
+     *
+     * @return string
+     */
     getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
     {
         var report = '';
@@ -3587,11 +3614,18 @@ Fisma.Chart = {
         return report;
     },
     
+    /**
+     * For pie-slice (or bar) referenced by pointIndex (which column/slice), returns the
+     * percentage that slice represents.
+     *
+     * @return int
+     */
     getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
     {
         if (typeof chartParamsObj.chartData[0] === 'object') {
             
             // then this is a stacked bar chart
+            return 0;
             
         } else {
             
@@ -3607,6 +3641,11 @@ Fisma.Chart = {
         }
     },
     
+    /**
+     * Hides all chart tooltips throughout the entire DOM for all charts
+     *
+     * @return void
+     */
     hideAllChartTooltips : function ()
     {
         // Find all divs that are chart tooltips
@@ -3623,6 +3662,12 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * with the mouse
+     *
+     * @return void
+     */
     chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
         var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
         
@@ -3652,6 +3697,12 @@ Fisma.Chart = {
         pieTooltip.style.top = offsetY + 'px';
     },
     
+    /**
+     * The event handeler for a chart click. This function should determine if the user needs to be
+     * navigated to another page or not
+     *
+     * @return void
+     */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
@@ -4333,6 +4384,17 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the pie chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
     {
         var tbl     = document.createElement("table");
@@ -4371,6 +4433,17 @@ Fisma.Chart = {
         dataTableObj.appendChild(tbl);
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the bar chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromBarChart : function (chartParamsObj, dataTableObj)
     {
         var x = 0;
@@ -4517,6 +4590,14 @@ Fisma.Chart = {
             }
     },
 
+    /**
+     * Removes data-labels that are within a certain range of eachother. If two labels are close,
+     * the data-label showing the lesser value is hidden.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
 
@@ -4613,6 +4694,11 @@ Fisma.Chart = {
                 });
     },
 
+    /**
+     * The event listener for the Hide button shown in chart options
+     *
+     * @return void
+     */
     hideButtonClick : function (scope, chartParamsObj, obj)
     {
         Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
@@ -4717,29 +4803,16 @@ Fisma.Chart = {
         }
     },
 
-    showSetingMode : function (showBasic)
-    {
-        var x = 0;
-        var hideThese;
-        var showThese;
-
-        if (showBasic === true) {
-            showThese = document.getElementsByName('chartSettingsBasic');
-            hideThese = document.getElementsByName('chartSettingsGlobal');
-        } else {
-            hideThese = document.getElementsByName('chartSettingsBasic');
-            showThese = document.getElementsByName('chartSettingsGlobal');
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-            hideThese[x].style.display = 'none';
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-                showThese[x].style.display = '';
-        }
-    },
-
+    /**
+     * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
+     * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
+     * will be returned.
+     * If the setting being looked for has never beem set, and there is no default value, an 
+     * exception is thown.
+     *
+     * @param string settingName
+     * @return string
+     */
     getGlobalSetting : function (settingName)
     {
 
@@ -4757,6 +4830,13 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Saves a setting with the that can be recalled later with Fisma.Chart.getGlobalSetting()
+     *
+     * @param string settingName
+     * @param string newValue
+     * @return void
+     */
     setGlobalSetting : function (settingName, newValue)
     {
         YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
@@ -4857,10 +4937,18 @@ Fisma.Chart = {
 
     },
 
+    /**
+     * Shows the loading spinner in the place of the given chart on the DOM.
+     * If a chart has already been drawn, it will be destoryed.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     showChartLoadingMsg : function (chartParamsObj)
     {
         // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
 
         // Show spinner
         Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
@@ -4929,8 +5017,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Returns true if there is no data to 
-     * plot, or if all plot data are 0s
+     * Returns true if there is no data to plot, or if all plot data is 0
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
      * @param object
@@ -4985,12 +5072,13 @@ Fisma.Chart = {
         // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
         canvases.wrap(
             function() {
+                var div;
                 var canvas = $(this);
 
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -5013,7 +5101,7 @@ Fisma.Chart = {
                 } else if (canvas.context.className == 'jqplot-xaxis-label') {
                     
                     // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             bottom: '0px'
@@ -5023,7 +5111,7 @@ Fisma.Chart = {
                 } else {
 
                     // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -5163,7 +5251,6 @@ Fisma.CheckboxTree = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -5350,7 +5437,6 @@ Fisma.Commentable = {
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -5412,8 +5498,7 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                panelConfig
-            );
+                panelConfig);
 
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
@@ -5488,7 +5573,6 @@ Fisma.Email = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Finding = {
@@ -5670,7 +5754,6 @@ Fisma.Finding = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.FindingSummary = function() {
@@ -6387,7 +6470,6 @@ Fisma.Highlighter = function() {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 Fisma.HtmlPanel = function() {
     return {
@@ -6455,7 +6537,6 @@ Fisma.HtmlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.Incident = {
@@ -6743,7 +6824,6 @@ Fisma.Incident = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Ldap = {
@@ -6919,7 +6999,6 @@ Fisma.Ldap = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Module = {
@@ -7374,11 +7453,13 @@ Fisma.Module = {
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
+
+            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {this._savePanel.hide();}
+                    fn: function () {that._savePanel.hide();}
                 }
             });
             
@@ -7584,7 +7665,6 @@ Fisma.Module = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Remediation = {
@@ -7953,6 +8033,11 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    // Reset the page to 1 if search form is submitted 
+                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
+                        dataTable.get('paginator').setPage(1);
+                    }
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -8399,7 +8484,7 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
+                    dataTable.get('paginator').setPage(1);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -9438,9 +9523,10 @@ Fisma.Search.Panel.prototype = {
         var Lang = YAHOO.lang;
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
+        var i, advancedCriterion, initialCriteria;
 
         if (this.showAll) {
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
             this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         } else if (this.defaultQueryTokens) {
@@ -9486,8 +9572,8 @@ Fisma.Search.Panel.prototype = {
         } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
             var advancedQuery = queryState.getAdvancedQuery();
 
-            for (var i in advancedQuery) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in advancedQuery) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(
@@ -9499,8 +9585,8 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else if (Fisma.Search.searchPreferences.type === 'advanced') {
             var fields = Fisma.Search.searchPreferences.fields;
-            for (var i in fields) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in fields) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(i, fields[i]));
@@ -9509,7 +9595,7 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
@@ -10249,7 +10335,6 @@ Fisma.Search.Panel.prototype = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -10304,7 +10389,6 @@ Fisma.Spinner.prototype.hide = function () {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -10501,7 +10585,6 @@ Fisma.SwitchButton.prototype = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.System = {
@@ -10629,7 +10712,6 @@ Fisma.System = {
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView = {};
@@ -10654,7 +10736,6 @@ Fisma.TabView = {};
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView.Roles = function() {
@@ -10727,7 +10808,6 @@ Fisma.TabView.Roles = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
 
 Fisma.TableFormat = {
@@ -11415,7 +11495,6 @@ Fisma.TableFormat = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.UrlPanel = function() {
@@ -11499,7 +11578,6 @@ Fisma.UrlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.User = {
@@ -11782,8 +11860,8 @@ Fisma.User = {
         var content = document.createElement('div');
 
         var messageContainer = document.createElement('span');
-        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
-                                                   + " this user's account.");
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
+                                                     " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 
@@ -11850,7 +11928,6 @@ Fisma.User = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Util = {

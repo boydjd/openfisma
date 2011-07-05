@@ -27,7 +27,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Chart
- * @version    $Id$
  */
 class Fisma_Chart
 {
@@ -37,11 +36,11 @@ class Fisma_Chart
      *     Obj['chartData']       Array to pass to jqPlot as the data to plot (numbers).
      *     Obj['chartDataText']   Array of labels (strings) for each data set in chartData
      *     Obj['chartLayerText']  Array of labels (strings) for each different line/layer in a milti-line-char or 
-                                  stacked-bar-chart
+     *                            stacked-bar-chart
      *     Obj['links']           (optional) Array of links of which the browser should navigate to when a given data 
-           element is clicked on
+     *     element is clicked on
      *     Obj['linksdebug']      (optional) Boolean, if set true, an alert box of what was clicked on will pop up 
-                                  instead of browser navigation based on Obj['links']
+     *                            instead of browser navigation based on Obj['links']
      *
      * @var Array
      */
@@ -307,8 +306,8 @@ class Fisma_Chart
         return $this;
     }
     
-    public function getLayerCount() {
-    
+    public function getLayerCount()
+    {
         if ($this->isStacked() === false) {
             return 1;
         } else {

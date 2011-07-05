@@ -25,7 +25,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Form
- * @version    $Id$
  */
 class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                                 implements Zend_Form_Decorator_Marker_File_Interface

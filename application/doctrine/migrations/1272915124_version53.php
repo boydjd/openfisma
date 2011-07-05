@@ -20,7 +20,6 @@
  * Insert incident privileges
  * 
  * @package Migration
- * @version $Id: 1268671549_version30.php 3105 2010-03-15 16:53:47Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3

@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsources.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    View_Helper
- * @version    $Id$
  */
 class View_Helper_SourceSelect extends Zend_View_Helper_Abstract
 {

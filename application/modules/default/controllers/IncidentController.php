@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class IncidentController extends Fisma_Zend_Controller_Action_Object
 {
@@ -177,13 +176,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $step--;
             }
         }
-        
+
         // Skip past PII sections if they are not applicable
-        if ($step == 5 && 'YES' != $incident->piiInvolved) {
+        if (($step == 5 || $step == 6) && 'YES' != $incident->piiInvolved) {
             if ($this->getRequest()->getParam('irReportForwards')) {
                 $step = 7;
             } else {
-                $step = 5;
+                $step = 4;
             }
         } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
             if ($this->getRequest()->getParam('irReportForwards')) {
@@ -192,7 +191,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $step = 5;
             }            
         }
-        
+
         // Load the form part corresponding to this step
         if ($step < count($this->_formParts)) {
             $formPart = $this->getFormPart($step);            

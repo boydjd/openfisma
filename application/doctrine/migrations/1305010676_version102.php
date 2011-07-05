@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -18,8 +19,6 @@
 
 /**
  * Convert entire database to utf-8
- *
- * @codingStandardsIgnoreFile
  *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
