@@ -85,7 +85,3 @@ class Vm_View_Helper_CvssColors extends Zend_View_Helper_Abstract
         }
     }
 }
-            
-
-        
-    

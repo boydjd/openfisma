@@ -178,7 +178,8 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
                          *
                          * I tried to make this compact so it would have the highest likelihood of fitting in a field.
                          */
-                        $row->$fieldName = "><&“”<script>alert('$modelName - $fieldName - $currentRow');</script>" . rand();
+                        $row->$fieldName = "><&“”<script>alert('$modelName - $fieldName - $currentRow');</script>" 
+                                         . rand();
                     }
                 }
 
