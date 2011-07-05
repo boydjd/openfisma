@@ -1985,7 +1985,9 @@ Fisma.AttachArtifacts = {
         var fileUploadEl = document.getElementById('fileUpload');
 
         if ("" === fileUploadEl.value) {
-            alert("Please select a file.");
+            var alertMessage = "Please select a file.";
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
             
             return false;
         }
@@ -2095,7 +2097,7 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    alert('Document upload failed.');
+                    Fisma.Util.showAlertDialog('Document upload failed.');
                 }
             }, 
             null);
@@ -2208,8 +2210,10 @@ Fisma.AttachArtifacts = {
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            alert("Upload Failed: " + responseStatus.message);
-            
+            var alertMessage = "Upload Failed: " + responseStatus.message;
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+ 
             progressTextEl.nodeValue = 'Uploading...';
             
             document.getElementById('progressBarContainer').style.display = 'none';
@@ -3740,7 +3744,7 @@ Fisma.Chart = {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
             msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
             if (theLink !== false) { msg += "The link with this element is " + theLink; }
-            alert(msg);
+            Fisma.Util.showAlertDialog(msg);
         } else {
 
             // We are not in link-debug mode, navigate if there is a link
@@ -5342,7 +5346,7 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     Fisma.Util.showAlertDialog('Document upload failed.');
                  }
              }, 
              null);
@@ -5376,7 +5380,8 @@ Fisma.Commentable = {
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var alertMessage = "Error: " + responseStatus.message;
+             Fisma.Util.showAlertDialog(alertMessage);
 
              return;
          }
@@ -5511,7 +5516,9 @@ Fisma.Email = function() {
             
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                alert("Recipient is required.");
+                var alertMessage = "Recipient is required.";
+                var config = {zIndex : 10000};
+                Fisma.Util.showAlertDialog(alertMessage, config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -5535,8 +5542,8 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    alert('Failed to send test mail: ' + o.statusText);
-                    
+                    var alertMessage = 'Failed to send test mail: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                     spinner.hide();
                 }
             }, null);
@@ -5690,44 +5697,12 @@ Fisma.Finding = {
                 },
                 
                 failure : function (connection) {
-                    alert('Unable to load security control definition.');
+                    Fisma.Util.showAlertDialog('Unable to load security control definition.');
                 }
             }
         );
-    },
-
-    /**
-     * Show the warning message before a find is deleted.
-     */
-    deleteFinding : function (event, config) {
-        var  warningDialog =  
-            new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
-                  fixedcenter: true, 
-                  visible: false, 
-                  draggable: false, 
-                  close: true,
-                  modal: true,
-                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
-                        + "Do you want to continue?", 
-                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-                  constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                   document.location = "/finding/remediation/delete/id/" + config.id;
-                                   this.hide(); 
-                               }
-                             }, 
-                             { text:"No",  handler : function () {
-                                   this.hide(); 
-                               }
-                             } 
-                           ] 
-                } ); 
- 
-         warningDialog.setHeader("Are you sure?");
-         warningDialog.render(document.body);
-         warningDialog.show();
     }
+
 };
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -7040,7 +7015,8 @@ Fisma.Module = {
         }
         
         if (!responseStatus.success) {
-            alert('Error: Not able to change module status. Reason: ' + responseStatus.message);
+            var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
+            Fisma.Util.showAlertDialog(alertMessage);
         }
         
         // Disable switch button spinner
@@ -7294,7 +7270,8 @@ Fisma.Module = {
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
                     },
                     scope: this
                 }, 
@@ -7674,9 +7651,6 @@ Fisma.Remediation = {
      * @return {Boolean} False to interrupt consequent operations
      */
     upload_evidence : function() {
-        if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
-            return false;
-        }
 
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
@@ -7696,119 +7670,23 @@ Fisma.Remediation = {
         document.finding_detail_upload_evidence.action = document.finding_detail.action;
     },
 
-    /**
-     * To approve evidence with optional comment
+   /**
+     * To approve or deny mitigation strategy or evidence with comment
      * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
+     * @param {String} action The action name: APPROVED or DENIED
+     * @param {String} formId 
+     * @param {String} panelTitle the text shows on the panel.
      */
-    ev_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
-            return false;
-        }
+    remediationAction : function(action, formId, panelTitle) {
 
         var content = document.createElement('div');
         var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        };
-        
-        return true;
-    },
-
-    /**
-     * To deny evidence with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ev_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
-            return false;
+        var c_title;
+        if ('APPROVED' === action) {
+            c_title = document.createTextNode('Comments (OPTIONAL):');
+        } else {
+            c_title = document.createTextNode('Comments:');
         }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments:'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to deny.');
-                return;
-            }
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'DENIED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-            return;
-        };
-        
-        return true;
-    },
-
-    /**
-     * To approve mitigation strategy with optional comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(c_title);
         content.appendChild(p);
         var textarea = document.createElement('textarea');
@@ -7825,76 +7703,37 @@ Fisma.Remediation = {
         button.id = 'dialog_continue';
         button.value = 'Continue';
         content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            var comment = document.getElementById('dialog_comment').value;
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        };
-        
-        return true;
-    },
+       
+        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-    /**
-     * To deny mitigation strategy with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments:');
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
+            var form2 = document.getElementById(formId);
             var comment = document.getElementById('dialog_comment').value;
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to submit.');
-                return;
+
+            if ('DENIED' === action) { 
+                if (comment.match(/^\s*$/)) {
+                    var alertMessage = 'Comments are required in order to submit.';
+                    var config = {zIndex : 10000};
+                    Fisma.Util.showAlertDialog(alertMessage, config);
+                    return;
+                }
             }
+
             form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = 'DENIED';
-            form2.appendChild(submitMsa);
+            form2.elements['decision'].value = action;
+
+            var sub = document.createElement('input');
+            sub.type = 'hidden';
+            sub.name = 'submit_msa';
+            sub.value = action;
+            form2.appendChild(sub);
             form2.submit();
             return;
         };
         
         return true;
     }
+
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -8056,7 +7895,7 @@ Fisma.Search = function() {
             } catch (error) {
                 // If a string is thrown, then display that string to the user
                 if ('string' == typeof error) {
-                    alert(error);
+                    Fisma.Util.showAlertDialog(error);
                 }
             }
         },
@@ -8456,12 +8295,26 @@ Fisma.Search = function() {
                 
                 return;
             }
-            
-            if (!confirm("Delete " + checkedRecords.length + " records?")) {
-                return;
-            }
+            var deleteRecords = [];
+            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));          
 
+            var warningMessage = '';  
+            if (1 === checkedRecords.length) {
+                warningMessage = 'Delete 1 record?';
+            } else {
+                warningMessage = "Delete " + checkedRecords.length + " records?";
+            }
+            var config = {text : warningMessage, 
+                          func : 'Fisma.Search.doDelete', 
+                          args : deleteRecords  };
+            var e = null;
+            Fisma.Util.showConfirmDialog(e, config);
+           
+          },
+
+         doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
+            var dataTable = Fisma.Search.yuiDataTable;
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             
@@ -8495,7 +8348,7 @@ Fisma.Search = function() {
             var postString = "csrf=";
             postString += document.getElementById('searchForm').csrf.value;
             postString += "&records=";
-            postString += YAHOO.lang.JSON.stringify(checkedRecords);
+            postString += checkedRecords;
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -11547,7 +11400,7 @@ Fisma.UrlPanel = function() {
                     },
                     failure : function(o) {
                         /** @todo english */
-                        alert('Failed to load the specified panel.');
+                        Fisma.Util.showAlertDialog('Failed to load the specific panel.');
                     },
                     argument : panel
                 }, null);
@@ -11762,7 +11615,8 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    alert('Failed to generate password: ' + o.statusText);
+                    var alertMessage = 'Failed to generate password: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);
@@ -11836,7 +11690,8 @@ Fisma.User = {
                 failure : function(o) {
                     spinner.hide();
 
-                    alert('Failed to check account password: ' + o.statusText);
+                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);
@@ -12026,38 +11881,106 @@ Fisma.Util = {
     },
 
     /**
-     * Show a warning message before a record is deleted.
+     * Show confirm window with warning message. config object can have width, text, isLink, url and func
+     * 
+     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
+     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
+     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
+     * "YES" button is clicked.
+     *
+     * @param event
+     * @param config 
      */
-    showDeleteWarning : function (event, config) {
-        var  warningDialog =  
+    showConfirmDialog : function (event, config) {
+        var confirmDialog = Fisma.Util.getDialog();
+ 
+        var buttons = [ { text:"Yes", handler : function () {
+                            if (config.url) {
+                                document.location = config.url;
+                             }else if(config.func) {
+                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 if (YAHOO.lang.isFunction(funcObj)) {
+                                     if (config.args) {
+                                         funcObj.apply(this, config.args);
+                                     } else {
+                                         funcObj.call();
+                                     }
+                                 }
+                             }
+                             this.destroy();
+                            }
+                        },
+                        { text:"No",  handler : function () {
+                            this.destroy();
+                            }    
+                        } 
+                     ]; 
+ 
+        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setBody(config.text); 
+        confirmDialog.cfg.queueProperty("buttons", buttons); 
+        if (config.width) {
+            confirmDialog.cfg.setProperty("width", config.width); 
+        }
+        confirmDialog.render(document.body);
+        confirmDialog.show();
+        if (config.isLink) {
+            YAHOO.util.Event.preventDefault(event);
+        }
+    },
+ 
+    /**
+     * Show alert warning message. The config object can have width and zIndex property
+     *
+     * Generanlly, it can just pass alert message string if it does not need to override default config 
+     *
+     * @param message string
+     * @param config object
+     */
+    showAlertDialog : function (alertMessage, config) {
+        var alertDialog = Fisma.Util.getDialog();
+ 
+        var handleOk =  function() {
+            this.destroy();
+        };
+        var button = [ { text: "Ok", handler: handleOk } ];
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(alertMessage); 
+        alertDialog.cfg.queueProperty("buttons", button); 
+
+        if (!YAHOO.lang.isUndefined(config) && config.width) {
+            alertDialog.cfg.setProperty("width", config.width); 
+        }
+        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
+            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
+        }
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+    },
+
+    /**
+     * Generate a YUI SimpleDialog
+     * 
+     * @return a YUI SimpleDialog
+     */
+    getDialog : function(){
+        var dialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
+                { width: "400px", 
                   fixedcenter: true, 
                   visible: false, 
-                  draggable: false, 
                   close: true,
                   modal: true,
-                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
-                         + "Do you want to continue?", 
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                     document.location = config.url
-                                     this.hide();
-                                 }
-                             }, 
-                             { text:"No",  handler : function () {
-                                     this.hide(); 
-                                 }
-                             } 
-                           ] 
+                  draggable: false
                 } ); 
- 
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
-        YAHOO.util.Event.preventDefault(event);
+
+        return dialog;
     }
+
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
