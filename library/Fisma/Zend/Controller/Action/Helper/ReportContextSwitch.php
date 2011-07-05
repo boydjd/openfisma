@@ -25,7 +25,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Controller
- * @version    $Id $
  */
 class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Controller_Action_Helper_ContextSwitch
 {
@@ -344,6 +343,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
         $data = $this->_report->getData();
 
         foreach ($data as &$row) {
+            $row = array_map('Fisma_String::htmlToPlainText', $row);
             $row = array_map('Fisma_String::plainTextToReportText', $row);
         }
 

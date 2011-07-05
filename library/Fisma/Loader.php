@@ -20,7 +20,6 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license 
- * @version   $Id$
  * @package   Fisma_Loader
  */
 

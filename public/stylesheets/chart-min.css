@@ -1,4 +1,6 @@
 .chartSection{page-break-inside:avoid;}
+.pieToolTip{position:absolute;top:0;left:0;z-index:1;display:none;}
+.chartToolTipText{font-size:14px;}
 .screenReaderTabel{width:100%;}
 .widgetSpaceHolder{width:400px;margin-left:auto;margin-right:auto;text-align:left;}
 .chartGear{cursor:pointer;width:20px;}

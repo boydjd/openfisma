@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Report
- * @version    $Id$
  */
 class Fisma_Report_Column
 {

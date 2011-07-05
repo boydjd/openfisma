@@ -167,9 +167,15 @@ abstract class Fisma_Cli_Abstract
      */
     public static function checkInnoDb()
     {
-        $conn = Doctrine_Manager::getInstance()->getCurrentConnection();
-        $engines = $conn->fetchAll('SHOW ENGINES');
-        $innodb  = null;
+        $db = Fisma::$appConf['db'];
+        $host = $db['host'];
+        $user = $db['username'];
+        $passward = $db['password'];
+
+        $dbh = new PDO("mysql:host={$host}", $user, $passward);
+        $engines = $dbh->query("SHOW ENGINES")->fetchAll();
+
+        $innodb = null;
         foreach ($engines as $engine) {
             if ('innodb' === strtolower($engine['Engine'])) {
                 $innodb = $engine;

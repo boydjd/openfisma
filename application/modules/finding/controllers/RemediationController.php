@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 {
@@ -1199,5 +1198,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
+    }
+
+    /**
+     * Override createAction() to show the warning message on the finding create page if there is no system.
+     * 
+     * @return void
+     */
+    public function createAction()
+    {
+        parent::createAction();
+
+        $systemCount = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')->count(); 
+        if (0 === $systemCount) {
+            $message = "There are no organizations or systems to create findings for. "
+                     . "Please create an organization or system first.";
+            $this->view->priorityMessenger($message, 'warning');
+        }
     }
 }
