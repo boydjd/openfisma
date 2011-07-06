@@ -8069,7 +8069,24 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        }
+        },
+
+        /**
+         * Key press listener
+         * 
+         * @param element The element to which the key event sould be attached
+         */
+        onKeyPress : function (element) {
+            var searchForm = YAHOO.util.Dom.get('searchForm');
+            var keyHandle = new YAHOO.util.KeyListener(
+                                    element,
+                                    // Just listen to 'Return' and 'Enter' key
+                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                    function () {
+                                        Fisma.Search.handleSearchEvent(searchForm);
+                                    });
+            keyHandle.enable();
+         }
     };
 }();
 /**
@@ -8184,11 +8201,6 @@ Fisma.Search.Criteria.prototype = {
         
         this.container = document.createElement('div');
         
-        this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
-        this.containerForm.enctype = "application/x-www-form-urlencoded";
-        this.containerForm.method = "post";
-        
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -8196,31 +8208,23 @@ Fisma.Search.Criteria.prototype = {
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.containerForm.appendChild(this.buttonsContainer);
+        this.container.appendChild(this.buttonsContainer);
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.containerForm.appendChild(this.queryFieldContainer);
+        this.container.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.containerForm.appendChild(this.queryTypeContainer);
+        this.container.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.containerForm.appendChild(this.queryInputContainer);
+        this.container.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
         clearDiv.className = "clear";
-        this.containerForm.appendChild(clearDiv);
-
-        var searchTypeField = document.createElement('input');
-        searchTypeField.type = 'hidden';
-        searchTypeField.name = 'searchType';
-        searchTypeField.value = 'advanced';
-        this.containerForm.appendChild(searchTypeField);
-
-        this.container.appendChild(this.containerForm);
+        this.container.appendChild(clearDiv);
 
         return this.container;
     },
@@ -8713,6 +8717,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8727,6 +8732,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8745,6 +8751,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8758,6 +8765,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8776,6 +8784,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8789,6 +8798,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8824,6 +8834,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -8845,6 +8856,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -8864,6 +8876,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -8882,6 +8895,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**

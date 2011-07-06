@@ -661,7 +661,7 @@ Fisma.Search = function() {
             var keyHandle = new YAHOO.util.KeyListener(
                                     element,
                                     // Just listen to 'Return' and 'Enter' key
-                                    {keys : 13},
+                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
                                     function () {
                                         Fisma.Search.handleSearchEvent(searchForm);
                                     });
