@@ -243,4 +243,18 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ->leftJoin('o.System s')
             ->where('o.name LIKE ?', $query . '%');
     }
+    
+    /**
+     * Get the basic items needed for an organization select UI: id, nickname and name
+     * 
+     * @return Doctrine_Query
+     */
+    public function getOrganizationSelectQuery()
+    {
+        return Doctrine_Query::create()
+            ->select('o.id, o.nickname, o.name')
+            ->from('Organization o')
+            ->leftJoin('o.System s')
+            ->orderBy('o.nickname');
+    }
 }

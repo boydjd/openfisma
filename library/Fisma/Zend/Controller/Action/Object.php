@@ -314,7 +314,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    $msg   = "{$this->_modelName} created successfully";
+                    $msg   = $this->getSingularModelName() . ' created successfully';
                     $type = 'notice';
                     $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
@@ -326,7 +326,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 }
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $this->view->priorityMessenger("Unable to create the {$this->_modelName}:<br>$errorString", 'warning');
+                $message = 'Unable to create a ' . $this->getSingularModelName();
+                $this->view->priorityMessenger("$message:<br>$errorString", 'warning');
             }
         }
 
@@ -375,7 +376,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if ($form->isValid($post)) {
                 try {
                     $result = $this->saveValue($form, $subject);
-                    $msg   = "{$this->_modelName} updated successfully";
+                    $msg   = $this->getSingularModelName() . ' updated successfully';
                     $type = 'notice';
 
                     // Refresh the form, in case the changes to the model affect the form
@@ -394,7 +395,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $this->view->priorityMessenger($msg, $type);
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $error = "Error while trying to save: {$this->_modelName}: <br>$errorString";
+                $message = 'Error while trying to save the ' . $this->getSingularModelName();
+                $error = "$message:<br>$errorString";
                 $this->view->priorityMessenger($error, 'warning');
             }
         }
@@ -426,14 +428,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         if (!$subject) {
-            $msg   = "Invalid {$this->_modelName} ID";
+            $msg   = 'Invalid ' . $this->getSingularModelName() . ' ID';
             $type = 'warning';
         } else {
             try {
                 Doctrine_Manager::connection()->beginTransaction();
                 $subject->delete();
                 Doctrine_Manager::connection()->commit();
-                $msg   = "{$this->_modelName} deleted successfully";
+                $msg   = $this->getSingularModelName() . ' deleted successfully';
                 $type = 'notice';
             } catch (Fisma_Zend_Exception_User $e) {
                 $msg  = $e->getMessage();

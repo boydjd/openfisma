@@ -70,6 +70,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('reportingOrganizationId');
         $form->removeElement('mustResetPassword');
         return $form;
     }
@@ -159,6 +160,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
+
+            $this->_updatePocIndex($subject->id);
+
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -567,6 +571,28 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * When creating or modifying User object, update the POC index.
+     * 
+     * The index listener will automatically update the index for User, but not for POC. To keep the two indices
+     * consistent, we have to manually update the POC index.
+     * 
+     * @param int $id The primary key of the User/POC object.
+     */
+    private function _updatePocIndex($id)
+    {
+        $searchEngine = Zend_Registry::get('search_engine');
+        $indexer = new Fisma_Search_Indexer($searchEngine);
+        $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
+        
+        // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+        $baseClassAlias = $relationAliases['Poc'];
+        $indexQuery->andWhere("$baseClassAlias.id = ?", $id);
+
+        $indexer->indexRecordsFromQuery($indexQuery, 'Poc');
+        $searchEngine->commit();
+    }
+
+    /**
      * Generate a password that meet the application's password complexity requirements.
      * 
      * @return void
@@ -822,5 +848,60 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Override to fill in option values for the select elements, etc.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);        
+        $passwordRequirements = new Fisma_Zend_Controller_Action_Helper_PasswordRequirements();
+
+        if ('create' == $this->_request->getActionName()) {
+            $form->getElement('password')->setRequired(true);
+        }
+        $roles  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('Role')
+                    ->orderBy('nickname')
+                    ->execute();
+        foreach ($roles as $role) {
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->nickname . ' - ' . $role->name));
+        }
+
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+
+        if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+            $form->removeElement('checkAccount');
+            $this->_view->requirements =  $passwordRequirements->direct();
+        } else {
+            $form->removeElement('password');
+            $form->removeElement('confirmPassword');
+            $form->removeElement('generate_password');
+
+            // root user should always show Must Reset Password
+            if ($user && 'root' != $user->username) {
+                $form->removeElement('mustResetPassword');
+            }
+        }
+        
+        if ($user && $user->locked) {
+            $reason = $user->getLockReason();
+            $form->getElement('lockReason')->setValue($reason);
+
+            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $form->getElement('lockTs')->setValue($lockTs->get(Fisma_Date::FORMAT_DATETIME));
+        } else {
+            $form->removeElement('lockReason');
+            $form->removeElement('lockTs');
+        }
+
+        return $form;
     }
 }
