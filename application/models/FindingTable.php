@@ -215,6 +215,28 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'Poc',
+                    'relation' => 'PointOfContact', 
+                    'field' => 'username'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'pocOrg' => array(
+                'initiallyVisible' => false,
+                'label' => 'POC Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'deleted_at' => array(
                 'hidden' => true,
                 'type' => 'datetime'

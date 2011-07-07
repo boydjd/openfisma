@@ -1,8 +1,71 @@
 Poc:
-    sample_poc:
-        username: poc
+    tomas_vokoun:
+        username: tomas.vokoun
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Poc
-        nameLast: User
-        phoneOffice: (202) 555-7261
-
+        nameFirst: Tomáš
+        nameLast: Vokoun
+        phoneOffice: (202) 555-8912
+        ReportingOrganization: NRL_ORG
+    roman_hamrlik:
+        username: roman.hamrlik
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Roman
+        nameLast: Hamrlik
+        phoneOffice: (202) 555-8913
+        ReportingOrganization: MARITIME_ORG
+    joel_ward:
+        username: joel.ward
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Joel
+        nameLast: Ward
+        phoneOffice: (202) 555-8914
+        ReportingOrganization: RAIL_ORG
+    jeff_halpern:
+        username: jeff.halpern
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Jeff
+        nameLast: Halpern
+        phoneOffice: (202) 555-8915
+        ReportingOrganization: MIDWEST_ORG
+    olie_kolzig:
+        username: olie.kolzig
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Olie
+        nameLast: Kolzig
+        phoneOffice: (202) 555-8916
+        ReportingOrganization: NORTHEAST_ORG
+    troy_brouwer:
+        username: troy.brouwer
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Troy
+        nameLast: Brouwer
+        phoneOffice: (202) 555-8917
+        ReportingOrganization: SOUTHEAST_ORG
+    chris_bourque:
+        username: chris.bourque
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Chris
+        nameLast: Bourque
+        phoneOffice: (202) 555-8918
+        ReportingOrganization: WEST_COAST_ORG
+    dmitry_orlov:
+        username: dmitry.orlov
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Dmitry
+        nameLast: Orlov
+        phoneOffice: (202) 555-8919
+        ReportingOrganization: MIDWEST_ORG
+    evgeny_kuznetsov:
+        username: evgeny.kuznetsov
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Evgeny
+        nameLast: Kuznetsov
+        phoneOffice: (202) 555-8920
+        ReportingOrganization: RNI_ORG
+    mattias_sjogren:
+        username: mattias_sjogren
+        email: openfisma-default-install@googlegroups.com
+        nameFirst: Mattias
+        nameLast: Sjögren
+        phoneOffice: (202) 555-8921
+        ReportingOrganization: NORTHEAST_ORG

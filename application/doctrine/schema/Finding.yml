@@ -180,9 +180,9 @@ Finding:
         createdByUserId:
             type: integer
             comment: Foreign key to the user who created this finding
-        assignedToUserId:
+        pocId:
             type: integer
-            comment: Foreign key to the user who is assigned to this finding
+            comment: Foreign key to the point of contact for this finding
         uploadId:
             type: integer
             comment: Foreign key to the upload log
@@ -216,9 +216,9 @@ Finding:
             local: createdByUserId
             foreign: id
             foreignAlias: Findings
-        AssignedTo:
-            class: User
-            local: assignedToUserId
+        PointOfContact:
+            class: Poc
+            local: pocId
             foreign: id
             foreignAlias: Findings
         CurrentEvaluation:

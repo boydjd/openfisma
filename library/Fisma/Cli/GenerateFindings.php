@@ -33,6 +33,13 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
      * @var string
      */
     private $_sampleUsers;
+
+    /**
+     * Some points of contact (poc's) to randomly assign to findings
+     * 
+     * @var string
+     */
+    private $_samplePocs;
     
     /**
      * Configure the arguments accepted for this CLI program
@@ -104,6 +111,17 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
         if (0 == count($this->_sampleUsers)) {
             throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
         }
+
+        // Get some sample POCs
+        $this->_samplePocs = Doctrine_Query::create()
+                             ->from('Poc p')
+                             ->where('p.username NOT LIKE ?', 'root')
+                             ->limit(50)
+                             ->execute();
+
+        if (0 == count($this->_samplePocs)) {
+            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+        }        
 
         // Get the evaluation ID for MSA
         $msaQuery = Doctrine_Query::create()
@@ -184,6 +202,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                 $f = new Finding();
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
+                $f->PointOfContact = $this->_getRandomPoc();
                 $f->save();
                 
                 if ($f->status == 'MSA') {
@@ -229,9 +248,21 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
     
     /**
      * Return a random user object
+     * 
+     * @return User
      */
     private function _getRandomUser()
     {
         return $this->_sampleUsers[rand(0, count($this->_sampleUsers))];
+    }
+
+    /**
+     * Return a random POC
+     * 
+     * @return Poc
+     */
+    private function _getRandomPoc()
+    {
+        return $this->_samplePocs[rand(0, count($this->_samplePocs))];
     }
 }
