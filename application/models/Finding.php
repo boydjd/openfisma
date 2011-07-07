@@ -764,12 +764,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      */
     protected function validateOnInsert()
     {
-        $org = $this->ResponsibleOrganization;
+        $org = $this->Organization;
 
         if ($org->orgType == 'system' && $org->System->sdlcPhase == 'disposal') {
             $message = 'Cannot create a finding for a System in the Disposal phase.';
             
-            $this->getErrorStack()->add('ResponsibleOrganization', $message);
+            $this->getErrorStack()->add('Organization', $message);
         }
     }
 

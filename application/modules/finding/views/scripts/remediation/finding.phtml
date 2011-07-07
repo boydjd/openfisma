@@ -1,6 +1,6 @@
 <?php 
     $finding = $this->finding;
-    $orgId = $finding->ResponsibleOrganization->nickname;
+    $orgId = $finding->Organization->nickname;
     $status  = $finding->getStatus();
 ?>
 
@@ -122,7 +122,7 @@
             <tr>
                 <td>
                     <div>
-                        Responsible Organization:
+                        Organization:
                     </div>
                 </td>
                 <td>
@@ -132,8 +132,8 @@
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                     <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
-                         <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
-                         - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
+                         <?php echo $this->escape($finding->Organization->nickname);?> 
+                         - <?php echo $this->escape($finding->Organization->name);?>
                     </a>
                     </span>
 

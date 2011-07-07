@@ -213,7 +213,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
-            ->innerJoin('f.ResponsibleOrganization o')
+            ->innerJoin('f.Organization o')
             ->andWhere('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', $visibleOrgs)
             ->groupBy('fam')
@@ -287,7 +287,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $systemCountsQuery = Doctrine_Query::create();
                 $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, o.name, f.threatLevel')
                     ->from('Finding f')
-                    ->leftJoin('f.ResponsibleOrganization o')
+                    ->leftJoin('f.Organization o')
                     ->where('o.orgtype = "system"')
                     ->whereIn('o.id ', FindingTable::getOrganizationIds())
                     ->groupBy('o.nickname, f.threatLevel')

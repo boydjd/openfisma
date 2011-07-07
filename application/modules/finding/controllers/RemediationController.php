@@ -115,7 +115,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $organization = Doctrine::getTable('Organization')->find($values['responsibleOrganizationId']);
 
         if ($organization !== false) {
-            $finding->ResponsibleOrganization = $organization;
+            $finding->Organization = $organization;
         } else {
             throw new Fisma_Zend_Exception("The user tried to associate a new finding with a"
                                          . " non-existent organization (id={$values['orgSystemId']}).");
@@ -644,11 +644,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
             
-            $system = $finding->ResponsibleOrganization->System;
+            $system = $finding->Organization->System;
             if (NULL == $system->fipsCategory) {
                 throw new Fisma_Zend_Exception('The security categorization for ' .
                      '(' . $finding->responsibleOrganizationId . ')' . 
-                     $finding->ResponsibleOrganization->name . ' is not defined. An analysis of ' .
+                     $finding->Organization->name . ' is not defined. An analysis of ' .
                      'risk cannot be generated unless these values are defined.');
             }
             $this->view->securityCategorization = $system->fipsCategory;
@@ -677,7 +677,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_viewFinding();
         
         $finding = $this->view->finding;
-        $organization = $finding->ResponsibleOrganization;
+        $organization = $finding->Organization;
 
         // For users who can view organization or system URLs, construct that URL
         $controller = ($organization->orgType == 'system' ? 'system' : 'organization');
@@ -829,7 +829,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $finding = $this->_getSubject($id);
-        $orgNickname = $finding->ResponsibleOrganization->nickname;
+        $orgNickname = $finding->Organization->nickname;
 
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);

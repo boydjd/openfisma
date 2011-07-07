@@ -234,7 +234,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->addSelect('IFNULL(ROUND(AVG(DATEDIFF(NOW(), f.nextduedate))), 0) j')
                         ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) k')
                         ->from('Finding f')
-                        ->leftJoin('f.ResponsibleOrganization o')
+                        ->leftJoin('f.Organization o')
                         ->where('DATEDIFF(NOW(), f.nextduedate) > 0')
                         ->groupBy('o.id, f.denormalizedStatus')
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);

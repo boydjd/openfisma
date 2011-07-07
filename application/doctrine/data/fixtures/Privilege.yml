@@ -96,7 +96,7 @@ Privilege:
     findings_update_findings_assignment:
         resource: finding
         action: update_assignment
-        description: Edit Responsible System
+        description: Edit Finding Organization
     findings_update_control_assignment:
         resource: finding
         action: update_control_assignment

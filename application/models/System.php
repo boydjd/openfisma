@@ -364,8 +364,8 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         if (isset($modified['sdlcPhase']) && $modified['sdlcPhase'] == 'disposal') {
             $query = $this->getTable()->createQuery()
                      ->from('Finding f')
-                     ->leftJoin('f.ResponsibleOrganization ro')
-                     ->leftJoin('ro.System s')
+                     ->leftJoin('f.Organization o')
+                     ->leftJoin('o.System s')
                      ->where('f.status != ?', 'CLOSED')
                      ->andWhere('s.id = ?', $this->id);
                  

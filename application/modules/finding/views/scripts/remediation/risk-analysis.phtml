@@ -1,6 +1,6 @@
 <?php 
     $finding = $this->finding; 
-    $organization = $finding->ResponsibleOrganization->nickname;
+    $organization = $finding->Organization->nickname;
 ?>
 <?php
 if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
