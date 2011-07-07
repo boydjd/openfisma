@@ -865,11 +865,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             switch ($dragLocation) {
                 case self::DRAG_ABOVE:
                 case self::DRAG_BELOW:
-                    $src->AggregateSystem = $dest->AggregateSystem;
+                    $src->aggregateSystemId = $dest->aggregateSystemId;
                     $src->save();
                     break;
                 case self::DRAG_ONTO:
-                    $src->AggregateSystem = $dest;
+                    $src->aggregateSystemId = $dest->id;
                     $src->save();
                     break;
                 default:
