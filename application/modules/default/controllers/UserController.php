@@ -71,6 +71,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('reportingOrganizationId');
         $form->removeElement('mustResetPassword');
         return $form;
     }
@@ -823,5 +824,60 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Override to fill in option values for the select elements, etc.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        $passwordRequirements = new Fisma_Zend_Controller_Action_Helper_PasswordRequirements();
+
+        if ('create' == $this->_request->getActionName()) {
+            $form->getElement('password')->setRequired(true);
+        }
+        $roles  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('Role')
+                    ->execute();
+        foreach ($roles as $role) {
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+        }
+
+        if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+            $form->removeElement('checkAccount');
+            $this->_view->requirements =  $passwordRequirements->direct();
+        } else {
+            $form->removeElement('password');
+            $form->removeElement('confirmPassword');
+            $form->removeElement('generate_password');
+        }
+        
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+
+        if ($user && $user->locked) {
+            $reason = $user->getLockReason();
+            $form->getElement('lockReason')->setValue($reason);
+
+            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $form->getElement('lockTs')->setValue($lockTs->get(Fisma_Date::FORMAT_DATETIME));
+        } else {
+            $form->removeElement('lockReason');
+            $form->removeElement('lockTs');
+        }
+        
+        // Populate <select> for responsible organization
+        $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery()->execute();
+        $selectArray = $this->view->systemSelect($organizations);
+        $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
+
+        return $form;
     }
 }

@@ -244,6 +244,10 @@ class Fisma_Menu
 
             $admin->add(new Fisma_Yui_MenuItem('Password Policy', '/config/password'));
 
+            if ($acl->hasPrivilegeForClass('read', 'Poc')) {
+                $admin->add(new Fisma_Yui_MenuItem('Points of Contact', '/poc/list'));                
+            }
+
             $admin->add(new Fisma_Yui_MenuItem('Privacy Policy', '/config/privacy'));
 
             if ($acl->hasPrivilegeForClass('read', 'Role')) {

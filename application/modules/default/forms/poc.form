@@ -10,10 +10,10 @@ elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 
 elements.username.type = "text"
-elements.username.options.label = "Username"
+elements.username.options.label = "POC Name"
 elements.username.options.required = true
 elements.username.options.attribs.size = 35
-elements.username.options.filters.lower.filter = "StringToLower"
+elements.username.options.tooltip = "<p><b>POC Name</b></p><p>This is similar to a username, except that points of contact are not allowed to log in. If you are using directory-based authentication, then this username must exist in one of the directories that you are authenticating against.</p>"
 displayGroups.poc.elements.username = "username"
 
 elements.checkAccount.type = "Form_Button"
@@ -59,6 +59,12 @@ elements.comment.type = "hidden"
 elements.comment.options.hideLabel = true
 elements.comment.options.filters.stringtrim.filter = "StringTrim"
 displayGroups.poc.elements.comment = "comment"
+
+elements.reportingOrganizationId.type = "select"
+elements.reportingOrganizationId.options.label = "Reporting Organization"
+elements.reportingOrganizationId.options.required = true
+elements.reportingOrganizationId.options.tooltip = "<p><b>Reporting Organization</b></p><p>The reporting organization is the organization within the enterprise that this point of contact or user reports to. In other words, it is this person's managing organization.</p>"
+displayGroups.poc.elements.reportingOrganizationId = "reportingOrganizationId"
 
 elements.save.type = "Form_Button"
 elements.save.options.label = "Save"

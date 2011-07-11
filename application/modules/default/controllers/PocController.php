@@ -32,9 +32,40 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Poc';
+
+    /**
+     * Override to provide a better singular name
+     */
+    public function getSingularModelName()
+    {
+        return 'Point of Contact';
+    }
    
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Override to fill in option values for the select elements, etc.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        // Remove the "Check Account" button if we're not using external authentication
+        if (Fisma::configuration()->getConfig('auth_type') == 'database') {
+            $form->removeElement('checkAccount');
+        }
+        
+        // Populate <select> for responsible organization
+        $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery()->execute();
+        $selectArray = $this->view->systemSelect($organizations);
+        $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
+
+        return $form;
     }
 }

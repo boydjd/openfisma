@@ -54,6 +54,22 @@ Poc:
                 notify: true
             Fisma_Doctrine_Validator_Phone: true
             comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
+
+        reportingOrganizationId:
+            type: integer
+            comment: Foreign key to the point of contact\'s reporting organization.
+            extra:
+                auditLog: true
+                logicalName: Reporting Organization  
+
+    relations:
+        # Each POC can have 1 reporting organization, but each organization can have 0-n reporting POCs
+        ReportingOrganization:
+            class: Organization
+            local: reportingOrganizationId
+            foreign: id
+            foreignAlias: Pocs
+
     actAs:
         Timestampable:
             created:

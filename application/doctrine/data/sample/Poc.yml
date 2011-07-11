@@ -2,7 +2,7 @@ Poc:
     sample_poc:
         username: poc
         email: openfisma-default-install@googlegroups.com
-        nameFirst: Poc
+        nameFirst: POC
         nameLast: User
         phoneOffice: (202) 555-7261
 

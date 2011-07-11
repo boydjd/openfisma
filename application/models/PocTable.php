@@ -35,7 +35,7 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         return array (
             'username' => array(
                 'initiallyVisible' => true,
-                'label' => 'User Name',
+                'label' => 'POC Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
