@@ -161,6 +161,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
+
+            $this->_updatePocIndex($subject->id);
+
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -566,6 +569,28 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         parent::_createObject();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
+    }
+
+    /**
+     * When creating or modifying User object, update the POC index.
+     * 
+     * The index listener will automatically update the index for User, but not for POC. To keep the two indices
+     * consistent, we have to manually update the POC index.
+     * 
+     * @param int $id The primary key of the User/POC object.
+     */
+    private function _updatePocIndex($id)
+    {
+        $searchEngine = Zend_Registry::get('search_engine');
+        $indexer = new Fisma_Search_Indexer($searchEngine);
+        $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
+        
+        // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+        $baseClassAlias = $relationAliases['Poc'];
+        $indexQuery->andWhere("$baseClassAlias.id = ?", $id);
+
+        $indexer->indexRecordsFromQuery($indexQuery, 'Poc');
+        $searchEngine->commit();
     }
 
     /**
