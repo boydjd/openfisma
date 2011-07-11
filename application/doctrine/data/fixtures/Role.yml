@@ -268,6 +268,10 @@ Role:
             - organization_delete
             - organization_read
             - organization_update
+            - poc_create
+            - poc_read
+            - poc_update
+            - poc_delete
             - product_create
             - product_delete
             - product_read

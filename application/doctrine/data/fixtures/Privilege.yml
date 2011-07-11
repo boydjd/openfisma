@@ -253,6 +253,24 @@ Privilege:
         action: delete
         description: Delete Organizations/Systems
 
+    # Pocs CRUD
+    poc_create:
+        resource: poc
+        action: create
+        description: Create Pocs
+    poc_read:
+        resource: poc
+        action: read
+        description: View Pocs
+    poc_update:
+        resource: poc
+        action: update
+        description: Edit Pocs
+    poc_delete:
+        resource: poc
+        action: delete
+        description: Delete Pocs
+ 
     # Products CRUD
     product_create:
         resource: product
