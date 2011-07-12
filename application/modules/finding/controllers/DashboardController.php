@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
- * @version    $Id$
  */
 class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
@@ -42,7 +41,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('total-type', 'json')
                       ->addActionContext('findingforecast', 'json')
                       ->addActionContext('chartfindnomitstrat', 'json')
-                      ->addActionContext('chart-finding', 'json')
                       ->addActionContext('chartfindingbyorgdetail', 'json')
                       ->initContext();
     }
@@ -95,7 +93,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // Mid-left chart - Findings by Worklow Process
         $chartTotalStatus 
-            = new Fisma_Chart(420, 275, 'chartTotalStatus', '/finding/dashboard/chart-finding/format/json');
+            = new Fisma_Chart(420, 275, 'chartTotalStatus', '/dashboard/chart-finding/format/json');
         $chartTotalStatus
                 ->setTitle('Findings by Workflow Process')
                 ->addWidget(
@@ -171,6 +169,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->findingOrgChart = $findingOrgChart->export();
 
         // Bottom-Bottom chart - Current Security Control Deficiencies
+        $securityFamilies = $this->_getSecurityControleFamilies();
+        foreach ($securityFamilies as &$familyName) {
+            $familyName = 'Family: ' . $familyName;
+        }
+        array_unshift($securityFamilies, 'Family Summary');
         $controlDeficienciesChart = new Fisma_Chart();
         $controlDeficienciesChart
                 ->setTitle('Current Security Control Deficiencies')
@@ -184,19 +187,50 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'displaySecurityBy',
                     'Display By:',
                     'combo',
-                    'Family',
-                    array(
-                        'Family',
-                        'Family and Control Number'
-                    )
+                    'Family Summary',
+                    $securityFamilies
                 );
 
         $this->view->controlDeficienciesChart = $controlDeficienciesChart->export();
     }
+    
+    /**
+     * Gets a list of all Security Controle Families that have
+     * findings associated with them, and can be seen from the
+     * current user (ACL).
+     *
+     * @return array
+     */
+    private function _getSecurityControleFamilies()
+    {
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            return array();
+        }
+
+        $families = Doctrine_Query::create()
+            ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
+            ->from('SecurityControl sc')
+            ->innerJoin('sc.Findings f')
+            ->innerJoin('f.ResponsibleOrganization o')
+            ->andWhere('f.status <> ?', 'CLOSED')
+            ->whereIn('o.id', $visibleOrgs)
+            ->groupBy('fam')
+            ->orderBy('fam')
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+        
+        $familyArray = array();        
+        foreach ($families as $famResult)
+            $familyArray[] = $famResult['sc_fam'];
+
+        return $familyArray;
+    }
 
     /**
      * Calculate Organization statistics based on params.
-     * Params expected by $this->_request->getParam(...)
+     * Params expected by $this->getRequest()->getParam(...)
      * Expected params: displayBy
      * Returns exported Fisma_Chart
      *
@@ -204,128 +238,212 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function chartfindingbyorgdetailAction()
     {
-        $displayBy = urldecode($this->_request->getParam('displayBy'));
+        $displayBy = urldecode($this->getRequest()->getParam('displayBy'));
         $displayBy = strtolower($displayBy);
 
-        $threatLevel = urldecode($this->_request->getParam('threatLevel'));
+        $threatLevel = urldecode($this->getRequest()->getParam('threatLevel'));
         $threatLevel = strtolower($threatLevel);
         
-        if ($displayBy === 'everything') {
-            
-            /* TODO: remove this, Everything is no longer an option/mode for this chart */
-            $rtnChart = $this->_chartfindingorgbasic();
-            
-        } else {
-        
-            $rtnChart = new Fisma_Chart();
-            $rtnChart
-                ->setThreatLegendVisibility(true)
-                ->setThreatLegendWidth(450)
-                ->setAxisLabelY('Number of Findings')
-                ->setChartType('stackedbar')
-                ->setColors(
-                    array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
-                    )
+        $rtnChart = new Fisma_Chart();
+        $rtnChart
+            ->setThreatLegendVisibility(true)
+            ->setThreatLegendWidth(450)
+            ->setAxisLabelY('Number of Findings')
+            ->setChartType('stackedbar')
+            ->setColors(
+                array(
+                    "#FF0000",
+                    "#FF6600",
+                    "#FFC000"
                 )
-                ->setLayerLabels(
-                    array(
-                        'HIGH',
-                        'MODERATE',
-                        'LOW'
-                    )
-                );
+            )
+            ->setLayerLabels(
+                array(
+                    'Null',
+                    'High',
+                    'Moderate',
+                    'Low'
+                )
+            );
+            
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $rtnChart->export('array');
+            return;
+        }
+        
+        $basicLink =
+            '/finding/remediation/list?q=' . 
+            '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+            '/organization/organizationSubtree/';
+        
+        if ($displayBy === 'system') {
+            
+            /* Because of the number of systems this query involves, and the fact
+                that Systems shouldnt have children (unlike Bureaus for example) 
+                a different query will be used here */
+                
+                $systemCountsQuery = Doctrine_Query::create();
+                $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, o.name, f.threatLevel')
+                    ->from('Finding f')
+                    ->leftJoin('f.ResponsibleOrganization o')
+                    ->where('o.orgtype = "system"')
+                    ->whereIn('o.id ', FindingTable::getOrganizationIds())
+                    ->groupBy('o.nickname, f.threatLevel')
+                    ->orderBy('o.nickname')
+                    ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+                $systemCounts = $systemCountsQuery->execute();
+                
+                $findingCounts = array('NULL' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
+                foreach ($systemCounts as $systemCountInfo) {
+                    
+                    $orgName = $systemCountInfo['o_nickname'];
+                    
+                    if (!empty($lastResultOrg) && $systemCountInfo['o_nickname'] !== $lastResultOrg) {
+                        // then all high/mod/low counts for the lastResultOrg organization have been scanned through
+                        
+                        $rtnChart->addColumn(
+                            $orgName,
+                            array_values($findingCounts),
+                            array(
+                                '',
+                                $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
+                                $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
+                                $basicLink . $orgName . '/threatLevel/enumIs/LOW'
+                            ),
+                            $systemCountInfo['o_name'] . '<hr/>#columnReport#'
+                        );
+                        
+                        $findingCounts = array('Null' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
+                        $lastOrgChartted = $orgName;
+                    }
+                    
+                    if (in_array($systemCountInfo['f_threatLevel'], $findingCounts)) {
+                        // findingCounts [ of this threatLevel ] = number of findings of this threatLevel
+                        $findingCounts[$systemCountInfo['f_threatLevel']] = $systemCountInfo['f_COUNT'];
+                    } else {
+                        $findingCounts['NULL'] = $systemCountInfo['f_COUNT'];
+                    }
+                    
+                    $lastResultOrg = $orgName;
+                    
+                }
 
-            // get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
+                // Was the last organization in the systemCounts array added to the chart?
+                if ($orgName !== $lastOrgChartted) {
+                    $rtnChart->addColumn(
+                        $orgName,
+                        $findingCounts,
+                        array(
+                            '',
+                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/HIGH',
+                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/MODERATE',
+                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/LOW'
+                        )
+                    );
+                }                
+                                
+        } else {
+
+            // Get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
             $parents = $this->_getOrganizationsByOrgType($displayBy);
 
-            // for each parent (foreach agency, or bBureau, etc)
+            // For each parent (foreach agency, or bBureau, etc)
             foreach ($parents as $thisParentOrg) {
 
                 $childrenTotaled = $this->_getSumsOfOrgChildren($thisParentOrg['id']);
 
-                // do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
+                // Do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
                 $childrenTotaled = array_values($childrenTotaled);
-
-                $basicLink =
-                    '/finding/remediation/list/queryType/advanced' . 
-                    '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/organization/organizationSubtree/' . $thisParentOrg['nickname'];
 
                 $rtnChart->addColumn(
                     $thisParentOrg['nickname'],
                     $childrenTotaled,
                     array(
-                        $basicLink . '/threatLevel/enumIs/HIGH',
-                        $basicLink . '/threatLevel/enumIs/MODERATE',
-                        $basicLink . '/threatLevel/enumIs/LOW'
-                    )
+                        '',
+                        $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/HIGH',
+                        $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/MODERATE',
+                        $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/LOW'
+                    ),
+                    $thisParentOrg['name'] . '<hr/>#columnReport#'
                 );
 
             }
         }
 
-        if ($rtnChart->isStacked() == true && $threatLevel !== 'High, Moderate, and Low') {
-            switch ($threatLevel) {
-            
-                case 'totals':
-                    $rtnChart
-                        ->convertFromStackedToRegular()
-                        ->setColors(array('#3366FF'))
-                        ->setThreatLegendVisibility(false)
-                        ->setLinks(
-                            '/finding/remediation/list/queryType/advanced' . 
-                            '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                            '/organization/organizationSubtree/#ColumnLabel#'
-                        );
+        switch ($threatLevel) {
 
-                    break;
-                case 'high':
-                    $rtnChart
-                        ->deleteLayer(1)
-                        ->deleteLayer(0)
-                        ->setColors(array('#FF0000'));
-                    break;                        
-                case 'moderate':
-                    $rtnChart
-                        ->deleteLayer(2)
-                        ->deleteLayer(0)
-                        ->setColors(array('#FF6600'));
-                    break;
-                case 'low';
-                    $rtnChart
-                        ->deleteLayer(2)
-                        ->deleteLayer(1)
-                        ->setColors(array('#FFC000'));
-                    break;
-            }
+            case 'high, moderate, and low':
+                // Remove null-count layer/stack in this stacked bar chart
+                $rtnChart->deleteLayer(0);
+                break;
+                
+            case 'totals':
+                $rtnChart
+                    ->convertFromStackedToRegular()
+                    ->setColors(array('#3366FF'))
+                    ->setThreatLegendVisibility(false)
+                    ->setLinks(
+                        '/finding/remediation/list?q=' . 
+                        '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+                        '/organization/organizationSubtree/#ColumnLabel#'
+                    );
+
+                break;
+            case 'high':
+                // Remove null-count layer/stack in this stacked bar chart
+                $rtnChart->deleteLayer(0);
+
+                $rtnChart
+                    ->deleteLayer(2)
+                    ->deleteLayer(1)
+                    ->setColors(array('#FF0000'));
+                break;                        
+            case 'moderate':
+                // Remove null-count layer/stack in this stacked bar chart
+                $rtnChart->deleteLayer(0);
+
+                $rtnChart
+                    ->deleteLayer(2)
+                    ->deleteLayer(0)
+                    ->setColors(array('#FF6600'));
+                break;
+            case 'low';
+                // Remove null-count layer/stack in this stacked bar chart
+                $rtnChart->deleteLayer(0);
+
+                $rtnChart
+                    ->deleteLayer(1)
+                    ->deleteLayer(0)
+                    ->setColors(array('#FFC000'));
+                break;
         }
 
-        // the context switch will turn this array into a json reply (the responce to the external source)
+        // The context switch will turn this array into a json reply (the responce to the external source)
         $this->view->chart = $rtnChart->export('array');
     }
 
     /**
-     * Computes the sums of HIGH/MODERATE/LOW of all children reported from _getAllChildrenOfOrg($orgId)
+     * Computes the sums of HIGH/MODERATE/LOW/NULL of all children reported from _getAllChildrenOfOrg($orgId)
      *
      * @return array
      */
     private function _getSumsOfOrgChildren($orgId)
     {
     
-        // get all children of the given organization id
+        // Get all children of the given organization id
         $childList = $this->_getAllChildrenOfOrg($orgId);
     
+        $totalNull = 0;
         $totalHigh = 0;
         $totalMod = 0;
         $totalLow = 0;
     
-        // for each organization (that is a child of $orgId)
+        // For each organization (that is a child of $orgId)
         foreach ($childList as $thisChildOrg) {
             
-            // for each threat level total (of findings) of this organization (high.mod,low)
+            // For each threat level total (of findings) of this organization (high.mod,low)
             foreach ($thisChildOrg['Findings'] as $thisThreatLvl) {
             
                 switch ($thisThreatLvl['threatLevel']) {
@@ -338,13 +456,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     case 'LOW':
                         $totalLow += $thisThreatLvl['COUNT'];
                         break;
+                    case NULL:
+                        $totalNull += $thisThreatLvl['COUNT'];
+                        break;
+                    case '':
+                        $totalNull += $thisThreatLvl['COUNT'];
+                        break;
                 }
                 
             }
             
         }
         
-        return array('HIGH' => $totalHigh, 'MODERATE' => $totalMod, 'LOW' => $totalLow);
+        return array('NULL' => $totalNull, 'HIGH' => $totalHigh, 'MODERATE' => $totalMod, 'LOW' => $totalLow);
     }
     
     /**
@@ -367,6 +491,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getAllChildrenOfOrg($orgId, $includeParent = true)
     {
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            return array();
+        }
+    
         // get the left and right nodes (lft and rgt) of the target system from the system table
         $q = Doctrine_Query::create();
         $q
@@ -384,9 +514,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->addSelect('COUNT(f.id), o.id, o.nickname, f.threatlevel')
             ->from('Organization o')
             ->leftJoin('o.Findings f')
-            ->whereIn('f.responsibleorganizationid=o.id')
-            ->andWhereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-            ->where($parLft . ' < o.lft')
+            ->where('f.responsibleorganizationid=o.id')
+            ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
+            ->andWhere($parLft . ' < o.lft')
             ->andWhere('f.status <> "CLOSED"')
             ->andWhere($parRgt . ' > o.rgt')
             ->groupBy('o.nickname, f.threatlevel')
@@ -401,7 +531,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->addSelect('COUNT(f.id), o.id, o.nickname, f.threatlevel')
                 ->from('Organization o')
                 ->leftJoin('o.Findings f')
-                ->whereIn('f.responsibleorganizationid=o.id')
+                ->whereIn('f.responsibleorganizationid', FindingTable::getOrganizationIds())
                 ->where('o.id = ?', $orgId)
                 ->andWhere('f.status <> "CLOSED"')
                 ->groupBy('o.nickname, f.threatlevel')
@@ -414,9 +544,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     }
     
     /**
-     * Gets a list of organizations that are at the leven given
+     * Gets a list of organizations that are at the level given
      * This is usefull for obtaining Agency and Bureau IDs
-     * Returns array('id','nickname') for each result in an array
+     * Returns array('id','nickname','name') for each result in an array
      *
      * @return array
      */
@@ -427,7 +557,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('o.id, o.nickname')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
                 ->leftJoin('o.System s')
                 ->where('s.type = ?', $orgType)
@@ -441,7 +571,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('o.id, o.nickname')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
                 ->leftJoin('o.System s')
                 ->where('s.type = "gss" OR s.type = "major"')
@@ -455,7 +585,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('id, nickname')
+                ->addSelect('id, nickname, name')
                 ->from('Organization o')
                 ->where('orgtype = ?', $orgType)
                 ->whereIn('o.id ', FindingTable::getOrganizationIds())
@@ -466,22 +596,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
     }
 
-    public function chartFindingAction()
-    {
-        $displayBy = urldecode($this->_request->getParam('displayBy'));
-        $rtnChart = $this->_chartfindingstatus();
-
-        // export as array, the context switch will translate it to a JSON responce
-        $this->view->chart = $rtnChart->export('array');
-    }
-
     public function chartoverdueAction()
     {
-        $dayRanges = str_replace(' ', '', urldecode($this->_request->getParam('dayRanges')));
+        $dayRanges = str_replace(' ', '', urldecode($this->getRequest()->getParam('dayRanges')));
         $dayRanges = explode(',', $dayRanges);
         $dayRanges[] = 365 * 10;    // The last ##+ column
 
-        $findingType = urldecode($this->_request->getParam('pastThreatLvl'));
+        $findingType = urldecode($this->getRequest()->getParam('pastThreatLvl'));
 
         $thisChart = new Fisma_Chart();
         $thisChart
@@ -500,11 +621,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->setLayerLabels(
                 array(
-                    'HIGH',
-                    'MODERATE',
-                    'LOW'
+                    'Null',
+                    'High',
+                    'Moderate',
+                    'Low'
                 )
             );
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $thisChart->export('array');
+            return;
+        }
 
         $nonStackedLinks = array();
 
@@ -525,15 +654,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $q
                 ->addSelect('threatlevel threat, COUNT(f.id)')
                 ->from('Finding f')
-                ->where('f.nextduedate BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
+                ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy('threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
-            //$this->view->q = $q->getSqlQuery();
 
             // We will get three results, each for a count of High Mod, Low
+            $thisNull = 0;
             $thisHigh = 0;
             $thisMod = 0;
             $thisLow = 0;
@@ -547,6 +676,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         break;
                     case "HIGH":
                         $thisHigh = $thisRslt['COUNT'];
+                        break;
+                    case NULL:
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
+                    case '':
+                        $thisNull += $thisRslt['COUNT'];
                         break;
                 }
             }
@@ -563,29 +698,30 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             
             // The links to associate with entire columns when this is not a stacked bar chart
-            $nonStackedLinks[] = '/finding/remediation/list/queryType/advanced' .
+            $nonStackedLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
+                '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
 
             $thisChart->addColumn(
                 $thisColLabel,
                 array(
+                    $thisNull,
                     $thisHigh,
                     $thisMod,
                     $thisLow
                 ),
-                array(
-                    '/finding/remediation/list/queryType/advanced' . 
+                array('',
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/HIGH',
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/MODERATE',
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/nextDueDate/dateBetween/' . $thisFromDate . '/' . $thisToDate .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/LOW'
                 )
             );
@@ -603,22 +739,29 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
-                // $thisChart is already in this form
+                // Remove null-count layer
+                $thisChart->deleteLayer(0);
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove null-count layer
+                $thisChart->deleteLayer(0);
+                // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove null-count layer
+                $thisChart->deleteLayer(0);
+                // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove null-count layer
+                $thisChart->deleteLayer(0);
+                // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FFC000'));
@@ -635,7 +778,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _chartfindingorgbasic()
     {
-        $findingType = urldecode($this->_request->getParam('threatLevel'));
+        $findingType = urldecode($this->getRequest()->getParam('threatLevel'));
 
         if ($findingType === 'Totals') {
 
@@ -661,7 +804,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisOrg['nickname'],
                     $thisOrg['count'],
-                    '/finding/remediation/list/queryType/advanced' .
+                    '/finding/remediation/list?q=' .
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/textExactMatch/' . $thisOrg['nickname']
                 );
@@ -688,6 +831,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )
                 ->setLayerLabels(
                     array(
+                        'Null',
                         'HIGH',
                         'MODERATE',
                         'LOW'
@@ -734,15 +878,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $thisHigh
                     ),
                     array(
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced/' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         'organization/textExactMatch/' . $thisOrg['nickname'] .
                         '/threatLevel/enumIs/LOW'
@@ -790,7 +934,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart->addColumn(
                     $thisThreatCount['nickname'],
                     $thisThreatCount['count'],
-                    '/finding/remediation/list/queryType/advanced' . 
+                    '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                     '/organization/textExactMatch/' . $thisThreatCount['nickname'] .
                     '/threatLevel/enumIs/' . strtoupper($findingType)
@@ -802,183 +946,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * Calculate the finding statistics by status
-     *
-     * @return Fisma_Chart
-     */
-    private function _chartfindingstatus()
-    {
-        $findingType = urldecode($this->_request->getParam('findingType'));
-
-        $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setChartType('stackedbar')
-            ->setThreatLegendVisibility(true)
-            ->setColors(
-                array(
-                    "#FF0000",
-                    "#FF6600",
-                    "#FFC000"
-                )
-            )
-            ->setLayerLabels(
-                array(
-                    'High',
-                    'Moderate',
-                    'Low'
-                )
-            );
-
-        $q = Doctrine_Query::create()
-            ->select('count(f.id), threatlevel, denormalizedstatus')
-            ->from('Finding f')
-            ->groupBy('f.denormalizedstatus, f.threatlevel')
-            ->orderBy('f.denormalizedstatus, f.threatlevel')
-            ->where('f.status <> "CLOSED"')
-            ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        $rslts = $q->execute();
-
-        // sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
-        $sortedRslts = array();
-        foreach ($rslts as $thisRslt) {
-
-            if (empty($sortedRslts[$thisRslt['denormalizedStatus']])) {
-                $sortedRslts[$thisRslt['denormalizedStatus']] = array();
-            }
-
-            $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
-        }
-        
-        $nonStackedLinks = array();
-        
-        // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
-        for ($x = 0; $x < 7; $x++) {
-
-            // Which status are we adding this time? (this will be the column label on the chart)
-            switch ($x) {
-            case 0:
-                $thisStatus = 'NEW';
-                break;
-            case 1:
-                $thisStatus = 'DRAFT';
-                break;
-            case 2:
-                $thisStatus = 'MS ISSO';
-                break;
-            case 3:
-                $thisStatus = 'MS IV&V';
-                break;
-            case 4:
-                $thisStatus = 'EN';
-                break;
-            case 5:
-                $thisStatus = 'EV ISSO';
-                break;
-            case 6:
-                $thisStatus = 'EV IV&V';
-                break;
-            }
-
-            // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
-            if (!empty($sortedRslts[$thisStatus]['HIGH'])) {
-                $highCount = $sortedRslts[$thisStatus]['HIGH'];
-            } else {
-                $highCount = 0;
-            }
-            
-            if (!empty($sortedRslts[$thisStatus]['MODERATE'])) {
-                $modCount = $sortedRslts[$thisStatus]['MODERATE'];
-            } else {
-                $modCount = 0;
-            }
-            
-            if (!empty($sortedRslts[$thisStatus]['LOW'])) {
-                $lowCount = $sortedRslts[$thisStatus]['LOW'];
-            } else {
-                $lowCount = 0;
-            }
-
-            // Prepare for a stacked-bar chart (these are the counts on each stack within the column)
-            $addColumnCounts = array($highCount, $modCount, $lowCount);
-
-            // Make each area of the chart link
-            $basicLink = '/finding/remediation/list/queryType/advanced' .
-                '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
-            $nonStackedLinks[] = $basicLink;
-            $stackedLinks = array(
-                $basicLink . '/threatLevel/enumIs/HIGH',
-                $basicLink . '/threatLevel/enumIs/MODERATE',
-                $basicLink . '/threatLevel/enumIs/LOW'
-            );
-            
-            // Create this column as a stacked-bar chart for now (filtration later in function)
-            $thisChart->addColumn(
-                $thisStatus,
-                $addColumnCounts,
-                $stackedLinks
-            );
-        }
-
-        // Show, hide and filter chart data as requested
-        switch (strtolower($findingType)) {
-            case "totals":
-                // Crunch numbers
-                $thisChart
-                    ->convertFromStackedToRegular()
-                    ->setLinks($nonStackedLinks)
-                    ->setThreatLegendVisibility(false)
-                    ->setColors(
-                        array(
-                            '#CECECE',
-                            '#67F967',
-                            '#FFCACA',
-                            '#FF2424',
-                            '#FF9E3D',
-                            '#CACAFF',
-                            '#2424FF'
-                        )
-                    );
-                break;
-            case "high, moderate, and low":
-                // $thisChart is already in this form
-                break;
-            case "high":
-                // remove the Low and Moderate columns/layers
-                $thisChart->deleteLayer(2);
-                $thisChart->deleteLayer(1);
-                $thisChart->setColors(array('#FF0000'));
-                break;
-            case "moderate":
-                // remove the Low and High columns/layers
-                $thisChart->deleteLayer(2);
-                $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FF6600'));
-                break;
-            case "low":
-                // remove the Moderate and High columns/layers
-                $thisChart->deleteLayer(1);
-                $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FFC000'));
-                break;
-        }
-
-        return $thisChart;
-
-    }
-
-    /**
      * Calculate "finding forcast" data for a chart based on finding.currentecd in the database
      *
      * @return void
      */
     public function chartfindnomitstratAction()
     {
-        $dayRange = $this->_request->getParam('dayRangesMitChart');
+        $dayRange = $this->getRequest()->getParam('dayRangesMitChart');
         $dayRange = str_replace(' ', '', $dayRange);
         $dayRange = explode(',', $dayRange);
 
-        $threatLvl = $this->_request->getParam('noMitThreatLvl');
+        $threatLvl = $this->getRequest()->getParam('noMitThreatLvl');
 
         $noMitChart = new Fisma_Chart();
         $noMitChart
@@ -997,12 +975,20 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setConcatColumnLabels(false)
             ->setLayerLabels(
                 array(
+                    'Null',
                     'High',
                     'Moderate',
                     'Low'
                 )
             );
-            
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $noMitChart->export('array');
+            return;
+        }
+
         $nonStackedLinks = array();
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
@@ -1018,7 +1004,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $toDayStr = $toDay->toString('YYY-MM-dd');
             
             if ($x !== count($dayRange) - 2) {
-                $fromDay->addDay(-1);
+                $fromDay->addday(-1);
                 $fromDayStr = $fromDay->toString('YYY-MM-dd');
                 $fromDayInt--;
             }
@@ -1036,7 +1022,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
             
-            // initalize to 0 (query may not return values for 0 counts)
+            // Initalize to 0 (query may not return values for 0 counts)
+            $thisNull = 0;
             $thisHigh = 0;
             $thisMod = 0;
             $thisLow = 0;
@@ -1044,40 +1031,47 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             foreach ($rslts as $thisLevel) {
                 switch ($thisLevel['threatLevel']) {
                     case 'LOW':
-                        $thisHigh = $thisLevel['count'];
+                        $thisLow = $thisLevel['count'];
                         break;
                     case 'MODERATE':
                         $thisMod = $thisLevel['count'];
                         break;
                     case 'HIGH':
-                        $thisLow = $thisLevel['count'];
+                        $thisHigh = $thisLevel['count'];
+                        break;
+                    case NULL:
+                        $thisNull += $thisRslt['COUNT'];
+                        break;
+                    default:
+                        $thisNull += $thisRslt['COUNT'];
                         break;
                 }
             }
             
-            // make URL to the search page with date params
-            $basicSearchLink = '/finding/remediation/list/queryType/advanced' . 
-                '/denormalizedStatus/textDoesNotContain/CLOSED' . 
+            // Make URL to the search page with date params
+            $basicSearchLink = '/finding/remediation/list?q=' . 
                 '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
                 
-            // make this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
-            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/CLOSED';
-            $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/EN';
+            // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
+            $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/CLOSED';
+            $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/EN';
             foreach ($this->_getEvaluationNames() as $thisStatus) {
-                $basicSearchLink .= '/denormalizedStatus/textDoesNotContain/' . $thisStatus;
+                $basicSearchLink .= '/denormalizedStatus/textNotExactMatch/' . $thisStatus;
             }
             
-            // remembers links for a non-stacked bar chart in the even the user is querying "totals"
+            // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
             $nonStackedLinks[] = $basicSearchLink;
             
             $noMitChart->addColumn(
                 $thisColumnLabel,
                 array(
+                    $thisNull,
                     $thisHigh,
                     $thisMod,
                     $thisLow
                 ),
                 array(
+                    $basicSearchLink . '/threatLevel/enumIs/NULL',
                     $basicSearchLink . '/threatLevel/enumIs/HIGH',
                     $basicSearchLink . '/threatLevel/enumIs/MODERATE',
                     $basicSearchLink . '/threatLevel/enumIs/LOW'
@@ -1089,6 +1083,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Show, hide and filter data on the chart as requested
         switch (strtolower($threatLvl)) {
             case "totals":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Crunch numbers
                 $noMitChart
                     ->convertFromStackedToRegular()
@@ -1098,28 +1094,36 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 break;
             case "high, moderate, and low":
                 // $noMitChart is already in this form
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
+                // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
                 $noMitChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
+                // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove null-counts (findings without threatLevels)
+                $noMitChart->deleteLayer(0);
+                // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);
                 $noMitChart->setColors(array('#FFC000'));
                 break;
         }
 
-        // export as array, the context switch will translate it to a JSON responce
+        // Export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $noMitChart->export('array');
     }
 
@@ -1152,15 +1156,16 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     public function findingforecastAction()
     {
 
-        $dayRange = $this->_request->getParam('dayRangesStatChart');
+        $dayRange = $this->getRequest()->getParam('dayRangesStatChart');
         $dayRange = str_replace(' ', '', $dayRange);
         $dayRange = explode(',', $dayRange);
         
-        $threatLvl = $this->_request->getParam('forcastThreatLvl');
+        $threatLvl = $this->getRequest()->getParam('forcastThreatLvl');
 
-        $highCount = array();
-        $modCount = array();
-        $lowCount = array();
+        $highCount = 0;
+        $modCount = 0;
+        $lowCount = 0;
+        $nullCount = 0;
         $chartDataText = array();
         $totalChartLinks = array();
 
@@ -1174,6 +1179,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setAxisLabelY('Number of Findings')
             ->setLayerLabels(
                 array(
+                    'Null',
                     'High',
                     'Moderate',
                     'Low'
@@ -1186,6 +1192,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     "#FFC000"
                 )
             );
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $thisChart->export('array');
+            return;
+        }
 
         for ($x = 0; $x < count($dayRange) - 1; $x++) {
 
@@ -1214,9 +1227,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy('f.threatlevel')
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            
             $results = $q->execute();
             $this->view->rtn = $results;
-
+            
             $highCount = $modCount = $lowCount = 0;
             foreach ($results as $thisRslt) {
                 switch ($thisRslt['threatLevel']) {
@@ -1229,6 +1243,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     case 'LOW':
                         $lowCount = $thisRslt['COUNT'];
                         break;
+                    case NULL:
+                        $nullCount += $thisRslt['COUNT'];
+                        break;
+                    case '':
+                        $nullCount += $thisRslt['COUNT'];
+                        break;
                 }
             }
 
@@ -1237,21 +1257,23 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->addColumn(
                     $thisColumnLabel,
                     array(
+                        $nullCount,
                         $highCount,
                         $modCount,
                         $lowCount
                     ),
-                    array('/finding/remediation/list/queryType/advanced' .
+                    array('',
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' .
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list/queryType/advanced' .
+                        '/finding/remediation/list?q=' .
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
                         '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list/queryType/advanced' . 
+                        '/finding/remediation/list?q=' . 
                         '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                         '/currentEcd/dateBetween/' . 
                         $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
@@ -1260,7 +1282,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 );
                 
             // Note the links to set in the even this is a totals (basic-bar) chart
-            $totalChartLinks[] = '/finding/remediation/list/queryType/advanced' .
+            $totalChartLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                 '/currentEcd/dateBetween/' . $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
         }
@@ -1276,29 +1298,36 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->setColors(array('#3366FF'));
                 break;
             case "high, moderate, and low":
-                // $thisChart is already in this form
+                // Remove the nullCount layer
+                $thisChart->deleteLayer(0);
                 break;
             case "high":
-                // remove the Low and Moderate columns/layers
+                // Remove the nullCount layer
+                $thisChart->deleteLayer(0);
+                // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
                 $thisChart->setColors(array('#FF0000'));
                 break;
             case "moderate":
-                // remove the Low and High columns/layers
+                // Remove the nullCount layer
+                $thisChart->deleteLayer(0);
+                // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FF6600'));
                 break;
             case "low":
-                // remove the Moderate and High columns/layers
+                // Remove the nullCount layer
+                $thisChart->deleteLayer(0);
+                // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
                 $thisChart->setColors(array('#FFC000'));
                 break;
         }
 
-        // export as array, the context switch will translate it to a JSON responce
+        // Export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
     }
 

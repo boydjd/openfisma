@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Util = {
@@ -87,8 +86,7 @@ Fisma.Util = {
                 YAHOO.widget.Overlay.BOTTOM_LEFT,
                 null,
                 [0, VERTICAL_OFFSET]
-            ]
-        );        
+            ]);        
     },
     
     /**
@@ -116,5 +114,107 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show confirm window with warning message. config object can have width, text, isLink, url and func
+     * 
+     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
+     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
+     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
+     * "YES" button is clicked.
+     *
+     * @param event
+     * @param config 
+     */
+    showConfirmDialog : function (event, config) {
+        var confirmDialog = Fisma.Util.getDialog();
+ 
+        var buttons = [ { text:"Yes", handler : function () {
+                            if (config.url) {
+                                document.location = config.url;
+                             }else if(config.func) {
+                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 if (YAHOO.lang.isFunction(funcObj)) {
+                                     if (config.args) {
+                                         funcObj.apply(this, config.args);
+                                     } else {
+                                         funcObj.call();
+                                     }
+                                 }
+                             }
+                             this.destroy();
+                            }
+                        },
+                        { text:"No",  handler : function () {
+                            this.destroy();
+                            }    
+                        } 
+                     ]; 
+ 
+        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setBody(config.text); 
+        confirmDialog.cfg.queueProperty("buttons", buttons); 
+        if (config.width) {
+            confirmDialog.cfg.setProperty("width", config.width); 
+        }
+        confirmDialog.render(document.body);
+        confirmDialog.show();
+        if (config.isLink) {
+            YAHOO.util.Event.preventDefault(event);
+        }
+    },
+ 
+    /**
+     * Show alert warning message. The config object can have width and zIndex property
+     *
+     * Generanlly, it can just pass alert message string if it does not need to override default config 
+     *
+     * @param message string
+     * @param config object
+     */
+    showAlertDialog : function (alertMessage, config) {
+        var alertDialog = Fisma.Util.getDialog();
+ 
+        var handleOk =  function() {
+            this.destroy();
+        };
+        var button = [ { text: "Ok", handler: handleOk } ];
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(alertMessage); 
+        alertDialog.cfg.queueProperty("buttons", button); 
+
+        if (!YAHOO.lang.isUndefined(config) && config.width) {
+            alertDialog.cfg.setProperty("width", config.width); 
+        }
+        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
+            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
+        }
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+    },
+
+    /**
+     * Generate a YUI SimpleDialog
+     * 
+     * @return a YUI SimpleDialog
+     */
+    getDialog : function(){
+        var dialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "400px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  close: true,
+                  modal: true,
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  draggable: false
+                } ); 
+
+        return dialog;
     }
+
 };

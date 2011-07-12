@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Ldap = {
@@ -49,7 +48,7 @@ Fisma.Ldap = {
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
-                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+                ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }

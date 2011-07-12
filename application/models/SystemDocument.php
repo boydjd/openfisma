@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
- * @version    $Id$
  */
 class SystemDocument extends BaseSystemDocument
 {
@@ -61,7 +60,7 @@ class SystemDocument extends BaseSystemDocument
     public function getIconUrl()
     {
         $pi = pathinfo($this->fileName);
-        $extension = strtolower($pi['extension']);
+        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
         $imagePath = Fisma::getPath('image');
         if (file_exists("$imagePath/mimetypes/$extension.png")) {
             return "/images/mimetypes/$extension.png";

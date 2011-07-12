@@ -1,0 +1,69 @@
+/*******************************************************************************
+ *
+ * chart.css
+ *
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Contains styling rules for elements related to charts but are not part of
+ * the jqPlot library.
+ *
+ * Author:    Dale Frey <dale.frey@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ *
+ *******************************************************************************
+ */
+
+.chartSection {
+    page-break-inside: avoid;
+}
+
+/* style for our cutom-made tooltip. This is nessesary for jqPlotPie charts as they do not support tooltips out of the box */
+.pieToolTip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: none
+}
+
+/* style for _text_ on jqPlot tool tips. For the rest of the tooltip, see jquery_jqplot.css/.jqplot-highlighter-tooltip */
+.chartToolTipText {
+    font-size: 14px;
+}
+
+/* style for the data-table for screen readers */
+.screenReaderTabel {
+    width: 100%;
+}
+
+/* the div that holds the chart options */
+.widgetSpaceHolder {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+/* the gear icon that toggles chart-options visibility */
+.chartGear {
+    cursor: pointer;
+    width: 20px;
+}

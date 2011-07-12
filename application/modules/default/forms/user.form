@@ -47,6 +47,11 @@ elements.checkAccount.options.label = "Check Account"
 elements.checkAccount.options.onClickFunction = "Fisma.User.checkAccount"
 displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 
+elements.mustResetPassword.type = "checkbox"
+elements.mustResetPassword.options.label = "Must Reset Password"
+elements.mustResetPassword.options.value = "1"
+displayGroups.accountInfo.elements.mustResetPassword = "mustResetPassword"
+
 elements.nameFirst.type = "text"
 elements.nameFirst.options.label = "First Name"
 elements.nameFirst.options.required = true
@@ -76,12 +81,12 @@ elements.email.options.attribs.size = 35
 elements.email.options.validators.email.validator = "EmailAddress"
 displayGroups.accountInfo.elements.email = "email"
 
-; The roles are populated dynamically in the account controller since they can
+; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
 ; change at any time.
 elements.role.type = "multiselect"
 elements.role.options.label = "Role(s)"
-elements.role.options.required = true
-elements.role.options.size = 5
+elements.role.options.required = false
+elements.role.options.size = 10
 displayGroups.accountInfo.elements.roles = "role"
 
 elements.title.type = "text"
@@ -107,8 +112,14 @@ elements.lockTs.type = "Element_ConstantText"
 elements.lockTs.options.label = "Lock Timestamp"
 displayGroups.accountInfo.elements.lockTs = "lockTs"
 
-elements.save.type = "Form_Button_Submit"
+elements.comment.type = "hidden"
+elements.comment.options.hideLabel = true
+elements.comment.options.filters.stringtrim.filter = "StringTrim"
+displayGroups.accountInfo.elements.comment = "comment"
+
+elements.save.type = "Form_Button"
 elements.save.options.label = "Save"
+elements.save.options.onClickFunction = "Fisma.User.showCommentPanel"
 displayGroups.accountInfo.elements.save = "save"
 
 ; The systems part of the account form is generated dynamically at runtime

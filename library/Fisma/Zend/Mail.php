@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Mail
- * @version    $Id$
  */
 class Fisma_Zend_Mail extends Zend_Mail
 {
@@ -42,6 +41,7 @@ class Fisma_Zend_Mail extends Zend_Mail
      */
     public function __construct()
     {
+        $this->_charset = 'UTF-8';
         $view = new Fisma_Zend_View();
         $this->_contentTpl = $view->setScriptPath(
             Fisma::getPath('application') . '/modules/default/views/scripts/mail'

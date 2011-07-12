@@ -79,7 +79,7 @@
                 $addEvent = new Fisma_Yui_Form_Button('addNotificationEvents',
                                                       array('label' => 'Select',
                                                             'onClickFunction' => 'addNotificationEvents'));
-                $addEvent->imageSrc = '/images/right_arrow.png';
+                $addEvent->imageSrc = $this->serverUrl('/images/right_arrow.png');
                 echo $this->escape($addEvent, 'none');
                 ?>
             </p>
@@ -88,7 +88,7 @@
                 $removeEvent = new Fisma_Yui_Form_Button('removeNotificationEvents',
                                                          array('label' => 'Remove',
                                                                'onClickFunction' => 'removeNotificationEvents'));
-                $removeEvent->imageSrc = '/images/left_arrow.png';
+                $removeEvent->imageSrc = $this->serverUrl('/images/left_arrow.png');
                 echo $this->escape($removeEvent, 'none');
                 ?>
             </p>

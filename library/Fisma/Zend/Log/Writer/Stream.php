@@ -53,4 +53,33 @@ class Fisma_Zend_Log_Writer_Stream extends Zend_Log_Writer_Stream
 
         $this->_formatter = $formatter;
     }
+
+    /**
+     * Create a new instance of Fisma_Zend_Log_Writer_Stream
+     *
+     * This is a direct copy of the factory method from Zend_Log_Writer_Stream. The reason this is here is due to the
+     * usage of self() in the parent class. Because PHP 5.2 does not have late static binding, self() ends up calling
+     * the constructor of the parent class, rather than the overridden constructor that we've defined and implemented
+     * here in this class. This could easily be resolved by changing Zend_Log to use the static() keyword instead of
+     * the self() keyword, which was added in PHP 5.3 along with late static binding. Alas, this is not going to
+     * happen as ZF still supports PHP 5.2, so this ugliness will just have to be here.
+     *
+     * @param  array|Zend_Config $config
+     * @return Zend_Log_Writer_Stream
+     */
+    static public function factory($config)
+    {
+        $config = self::_parseConfig($config);
+        $config = array_merge(array(
+            'stream' => null,
+            'mode'   => null,
+        ), $config);
+
+        $streamOrUrl = isset($config['url']) ? $config['url'] : $config['stream'];
+
+        return new self(
+            $streamOrUrl,
+            $config['mode']
+        );
+    }
 }

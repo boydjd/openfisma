@@ -1,0 +1,33 @@
+<div>
+    <i>
+        System policy states that you must review and accept the Rules of Behavior
+        for <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'))?> every
+        <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days. If you do not accept these
+        rules then you will be logged off.
+    </i>
+</div>
+
+<?php Fisma_Format_Section::startSection(Fisma::configuration()->getConfig('system_name') . ' Rules of Behavior'); ?>
+<div>
+    <?php echo $this->escape($this->behaviorRule, 'none'); ?>
+</div>
+
+<div>
+    <form method="post" action="/user/accept-rob">
+    <?php
+    $cancelButton = new Fisma_Yui_Form_Button_Link('cancel', 
+                                  array('value' => 'Cancel', 
+                                        'href' => '/auth/logout'));
+    echo $this->escape($cancelButton, 'none'); 
+    ?>
+    <?php
+    $acceptButton = new Fisma_Yui_Form_Button_Submit('accept', 
+                                  'Accept',
+                                  array('label' => 'Accept'));
+   
+    echo $this->escape($acceptButton, 'none');
+    ?>
+    </form>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>
+

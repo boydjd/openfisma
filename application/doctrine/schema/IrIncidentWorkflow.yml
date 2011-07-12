@@ -1,6 +1,4 @@
 IrIncidentWorkflow:
-    listeners: [XssListener]
-
     columns:
         name: 
             type: string(255)

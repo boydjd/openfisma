@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_AuditLoggable
- * @version    $Id$
  */
 class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Record_Listener
 {
@@ -131,11 +130,9 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                         $oldValue = Fisma_String::htmlToPlainText($oldValue);
                         $newValue = Fisma_String::htmlToPlainText($newValue);
                     }
-                    $oldValue = htmlspecialchars($oldValue);
-                    $newValue = htmlspecialchars($newValue);
 
                     if (empty($oldValue)) {
-                        $oldValue = "<em>No value</em>";
+                        $oldValue = "**No value**";
                     }
 
                     $message = "Updated $logicalName\n\nOLD:\n$oldValue\n\nNEW:\n$newValue";

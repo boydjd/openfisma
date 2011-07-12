@@ -24,7 +24,8 @@ YAHOO.util.Event.onDOMReady(function () {
                                             document.getElementById('sources').disabled = false;
                                         },
                                         failure: function(o) {
-                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            var message = 'Unable to load finding summary: ' + o.statusText;
+                                            Fisma.Util.showAlertDialog(message);
                                             hideLoadingRow();
                                         }
                                     }, 
@@ -70,7 +71,8 @@ function reloadTable(url) {
                                             document.getElementById('sources').disabled = false;
                                         },
                                         failure: function(o) {
-                                            alert('Unable to load finding summary: ' + o.statusText);
+                                            var alertMessage = 'Unable to load finding summary: ' + o.statusText;
+                                            Fisma.Util.showAlertDialog(alertMessage);
                                             hideLoadingRow();
                                         }
                                     }, 
@@ -91,11 +93,14 @@ function menuHandler(source) {
     
     var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
     findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
-    
-    var url = '/finding/remediation/summary-data'
-            + ((selectedType.value == 'ALL') ? '' : '/type/' + selectedType.value)
-            + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/sourceNickname/' + selectedSource.value)
-            + '/format/json';
+
+    var typeParam = (selectedType.value == 'ALL') ? '' : 'type=' + encodeURIComponent(selectedType.value) + "&";
+    var sourceParam = ((selectedSource.value == 'ALL_SOURCES') 
+                    ? '' 
+                    : 'sourceNickname=' + encodeURIComponent(selectedSource.value)) + "&";
+
+    var url = '/finding/remediation/summary-data/format/json?' + typeParam + sourceParam;
+
     reloadTable(url);
 
     <?php 
@@ -104,9 +109,9 @@ function menuHandler(source) {
                   . $this->escape($status, 'url');
 
         if ('TOTAL' == $status):
-            $url = '/finding/remediation/list/queryType/advanced';
+            $url = '/finding/remediation/list?q=';
         else:
-            $url = '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/'
+            $url = '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/'
                  . $this->escape($status, 'url');
         endif;
     ?>
@@ -143,19 +148,19 @@ function menuHandler(source) {
 <?php
 $expandAll = new Fisma_Yui_Form_Button('expandAll', 
                                        array('label' => 'Expand All', 
-                                             'imageSrc' => '/images/expand.png',
+                                             'imageSrc' => $this->serverUrl('/images/expand.png'),
                                              'onClickFunction' => 'expandAll'));
 echo $this->escape($expandAll, 'none');
 
 $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
                                          array('label' => 'Collapse All', 
-                                             'imageSrc' => '/images/collapse.png',
+                                             'imageSrc' => $this->serverUrl('/images/collapse.png'),
                                              'onClickFunction' => 'collapseAll'));
 echo $this->escape($collapseAll, 'none');
 
 $exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
                                        array('label' => 'Export to PDF', 
-                                             'imageSrc' => '/images/pdf.gif',
+                                             'imageSrc' => $this->serverUrl('/images/pdf.gif'),
                                              'onClickFunction' => 'exportPdf'));
 echo $this->escape($exportPdf, 'none');
 ?>
@@ -226,10 +231,10 @@ echo $this->escape($exportPdf, 'none');
     <?php 
     foreach ($this->statusArray as $status):
         if ($status == 'TOTAL'):
-            $url = Fisma_Url::customUrl('/finding/remediation/list');
+            $url = Fisma_Url::customUrl('/finding/remediation/list?show=all');
         else:
             $url = Fisma_Url::customUrl(
-                '/finding/remediation/list/queryType/advanced/denormalizedStatus/textExactMatch/' 
+                '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/' 
                 . rawurlencode($status)
             );
         endif;

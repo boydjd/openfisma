@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_AttachArtifacts
- * @version    $Id$
  */
 class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Record
 {
@@ -38,7 +37,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Re
     public function getIconUrl()
     {
         $pi = pathinfo($this->fileName);
-        $extension = strtolower($pi['extension']);
+        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
         $imagePath = Fisma::getPath('image');
         
         if (file_exists("$imagePath/mimetypes/$extension.png")) {
@@ -116,7 +115,7 @@ class Fisma_Doctrine_Behavior_AttachArtifacts_Artifact extends Fisma_Doctrine_Re
 
         // Try to create directory (and parents) if it does not exist already
         if (!is_dir($path)) {
-            $mkdirResult = mkdir($path, 0770, true);
+            $mkdirResult = mkdir($path, 0777 & ~umask(), true);
             
             if (!$mkdirResult) {
                 throw new Fisma_Zend_Exception("Unable to make artifact path: $path");

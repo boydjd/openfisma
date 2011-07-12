@@ -21,18 +21,10 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
  */
-
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
 
 var Fisma = {};
 
@@ -348,7 +340,7 @@ function switchYear(step){
     var oYear = document.getElementById('gen_shortcut');
     var year = oYear.getAttribute('year');
     year = Number(year) + Number(step);
-	oYear.setAttribute('year', year);
+    oYear.setAttribute('year', year);
     var url = oYear.getAttribute('url') + year + '/';
     var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
     tmp[0].innerHTML = year;

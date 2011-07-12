@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -20,7 +21,6 @@
  * Update YUI version 
  * 
  * @package Migration
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
@@ -32,11 +32,9 @@ class Version92 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $yui = Doctrine::getTable('Configuration')->findOneByName('yui_version');
-        $yui->value = '2.8.2';
-        $yui->save();
-        $yui->free();
-        unset($yui);
+        $config = Doctrine_Query::create()->from('Configuration')->fetchOne();
+        $config->yui_version = '2.8.2';
+        $config->save();
     }
 
     /**
@@ -44,10 +42,8 @@ class Version92 extends Doctrine_Migration_Base
      */
     public function down()
     {
-        $yui = Doctrine::getTable('Configuration')->findOneByName('yui_version');
-        $yui->value = '2.8.0r4';
-        $yui->save();
-        $yui->free();
-        unset($yui);
+        $config = Doctrine_Query::create()->from('Configuration')->fetchOne();
+        $config->yui_version = '2.8.0r4';
+        $config->save();
     }
 }

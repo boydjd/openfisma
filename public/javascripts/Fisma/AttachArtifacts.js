@@ -22,7 +22,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -124,8 +123,7 @@ Fisma.AttachArtifacts = {
                 
                 argument: newPanel
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -138,8 +136,10 @@ Fisma.AttachArtifacts = {
         // Verify that a file is selected
         var fileUploadEl = document.getElementById('fileUpload');
 
-        if ("" == fileUploadEl.value) {
-            alert("Please select a file.");
+        if ("" === fileUploadEl.value) {
+            var alertMessage = "Please select a file.";
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
             
             return false;
         }
@@ -163,8 +163,8 @@ Fisma.AttachArtifacts = {
             // Remove the inderminate progress bar
             var progressBarContainer = document.getElementById('progressBarContainer');
 
-            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
-            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'), 10);
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'), 10);
 
             YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
 
@@ -181,7 +181,7 @@ Fisma.AttachArtifacts = {
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
 
             yuiProgressBar.set('anim', true);
-            var animation = yuiProgressBar.get('anim')
+            var animation = yuiProgressBar.get('anim');
             animation.duration = 2;
             animation.method = YAHOO.util.Easing.easeNone;
             
@@ -199,8 +199,7 @@ Fisma.AttachArtifacts = {
                 function () {
                     that.getProgress.call(that);
                 },
-                this.sampleInterval
-            );
+                this.sampleInterval);
         }
 
         // Display the progress bar
@@ -215,8 +214,7 @@ Fisma.AttachArtifacts = {
             function () {
                 that.postForm.call(that);
             },
-            0
-        );
+            0);
         
         return false;
     },
@@ -233,18 +231,13 @@ Fisma.AttachArtifacts = {
 
         var that = this;
         
-        var module = "";
-        if (this.config.server.module) {
-            module = "/" + encodeURIComponent(this.config.server.module);
-        }
-        var postUrl = module
-                    + "/"
-                    + encodeURIComponent(this.config.server.controller)
-                    + "/"
-                    + encodeURIComponent(this.config.server.action)
-                    + "/id/"
-                    + encodeURIComponent(this.config.id)
-                    + "/format/json";
+        var postUrl = "/"; 
+        postUrl += encodeURIComponent(this.config.server.controller);
+        postUrl += "/";
+        postUrl += encodeURIComponent(this.config.server.action);
+        postUrl += "/id/";
+        postUrl += encodeURIComponent(this.config.id);
+        postUrl += "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
         YAHOO.util.Connect.asyncRequest(
@@ -256,11 +249,10 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    alert('Document upload failed.');
+                    Fisma.Util.showAlertDialog('Document upload failed.');
                 }
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -328,12 +320,10 @@ Fisma.AttachArtifacts = {
                             function () {
                                 that.getProgress.call(that);
                             }, 
-                            that.sampleInterval
-                        );
+                            that.sampleInterval);
                     }
                 }, 
-                null
-            );
+                null);
         }
     },
     
@@ -352,7 +342,7 @@ Fisma.AttachArtifacts = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -365,15 +355,17 @@ Fisma.AttachArtifacts = {
         
         // Update progress to 100%
         if (this.yuiProgressBar) {
-            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.get('anim').duration = 0.5;
             this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            alert("Upload Failed: " + responseStatus.message);
-            
+            var alertMessage = "Upload Failed: " + responseStatus.message;
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+ 
             progressTextEl.nodeValue = 'Uploading...';
             
             document.getElementById('progressBarContainer').style.display = 'none';

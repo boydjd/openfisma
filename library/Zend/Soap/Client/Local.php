@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage Client
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -83,8 +83,7 @@ class Zend_Soap_Client_Local extends Zend_Soap_Client
         // Perform request as is
         ob_start();
         $this->_server->handle($request);
-        $response = ob_get_contents();
-        ob_end_clean();
+        $response = ob_get_clean();
 
         return $response;
     }

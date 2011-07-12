@@ -21,7 +21,6 @@
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -43,7 +42,7 @@ Fisma.Spinner = function (container) {
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
-}
+};
 
 Fisma.Spinner.prototype.show = function () {
     this.spinner.style.visibility = 'visible';

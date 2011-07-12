@@ -145,8 +145,9 @@ abstract class Fisma_Cli_Abstract
         try {
             $this->_run();
         } catch (Fisma_Zend_Exception_User $e) {
-            echo $e->getMessage() . "\n\n" . $this->getHelpText();
-            
+            $stderr = fopen('php://stderr', 'w'); 
+            fwrite($stderr, $e->getMessage() . "\n\n" . $this->getHelpText()); 
+            fclose($stderr);
             return;
         }
 
@@ -157,5 +158,31 @@ abstract class Fisma_Cli_Abstract
         $seconds = $elapsed - ($minutes * 60);
         
         print "\nFinished in $minutes minutes and $seconds seconds\n";
+    }
+
+    /*
+     * Check InnoDb whether is supported or not in mysql
+     *
+     * @return boolean
+     */
+    public static function checkInnoDb()
+    {
+        $db = Fisma::$appConf['db'];
+        $host = $db['host'];
+        $user = $db['username'];
+        $passward = $db['password'];
+
+        $dbh = new PDO("mysql:host={$host}", $user, $passward);
+        $engines = $dbh->query("SHOW ENGINES")->fetchAll();
+
+        $innodb = null;
+        foreach ($engines as $engine) {
+            if ('innodb' === strtolower($engine['Engine'])) {
+                $innodb = $engine;
+                break;
+            }
+        }
+
+        return !empty($innodb) && 'no' !== strtolower($innodb['Support']);
     }
 }

@@ -30,7 +30,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Listener
- * @version    $Id$
  */
 class XssListener extends Fisma_Doctrine_Record_Listener
 {
@@ -92,12 +91,14 @@ class XssListener extends Fisma_Doctrine_Record_Listener
             // Whenever the configuration is modified, the definition rev needs to be incremented.
             // This prevents HTML Purifier from using a stale cach definition
             $config->set('Cache.DefinitionImpl', null); // remove this later
-            $config->set('Core.Encoding', 'ASCII'); /** @todo utf8 */
             $config->set('HTML.Doctype', 'HTML 4.01 Strict'); /** @todo put the purifier into the registry */
 
             // Make sure to keep the following line in sync with Tiny MCE so users aren't surprised when their
             // data looks different before storage and after retreival.
-            $config->set('HTML.Allowed', 'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table,tr,th,td');
+            $config->set(
+                'HTML.Allowed',
+                'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table[summary],tr,th[abbr],td[abbr]'
+            );
             
             // Conform user submitted HTML to our doctype
             $config->set('HTML.TidyLevel', 'medium'); 

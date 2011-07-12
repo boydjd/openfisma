@@ -24,7 +24,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class MetainfoController extends Fisma_Zend_Controller_Action_Security
 {
@@ -85,7 +84,6 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             }
         } elseif (in_array($module, array('threat_level', 'countermeasures-effectiveness'))) {
             $list = array(
-                ""         => null,
                 "LOW"      => "LOW",
                 "MODERATE" => "MODERATE",
                 "HIGH"     => "HIGH"

@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
- * @version    $Id$
  */
 class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
 {
@@ -372,6 +371,37 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
                 );
             }
         }
+
+        // The following date fields need be validated since Solr update index function does not 
+        // accept invalid date format 
+        $validator = new Zend_Validate_Date('yyyy-MM-dd');
+        if (isset($modified['securityAuthorizationDt']) 
+            && !$validator->isValid($modified['securityAuthorizationDt'])) {
+                 
+            $this->getErrorStack()->add(
+                'securityAuthorizationDt', 
+                'Last Security Authorization Date provided is not a valid date.'
+            );
+        }
+
+        if (isset($modified['contingencyPlanTestDt']) 
+            && !$validator->isValid($modified['contingencyPlanTestDt'])) {
+                 
+            $this->getErrorStack()->add(
+                'contingencyPlanTestDt', 
+                'Last Contingency Plan Test Date provided is not a valid date.'
+            );
+        }
+
+        if (isset($modified['controlAssessmentDt']) 
+            && !$validator->isValid($modified['controlAssessmentDt'])) {
+                 
+            $this->getErrorStack()->add(
+                'controlAssessmentDt', 
+                'Last Self-Assessment Date provided is not a valid date.'
+            );
+        }
+
     }
     
     public function preDelete($event)

@@ -6,6 +6,8 @@ Configuration:
 
         session_inactivity_period: 1200 
 
+        session_inactivity_notice: 1080
+
         auth_type: database
 
         send_type: sendmail
@@ -54,7 +56,7 @@ Configuration:
 
         host_url: "https://openfisma.agency.gov:443"
 
-        app_version: 2.10.0
+        app_version: 2.14.3
 
         yui_version: 2.8.2
 

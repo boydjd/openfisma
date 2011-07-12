@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
- * @version    $Id$
  */
 class SecurityControlChartController extends Fisma_Zend_Controller_Action_Security
 {
@@ -35,7 +34,6 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
         parent::init();
         
         $this->_helper->fismaContextSwitch()
-                      ->setActionContext('control-deficiencies', 'xml')
                       ->setActionContext('control-deficiencies', 'json')
                       ->initContext();
     }
@@ -45,84 +43,74 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
      */
     public function controlDeficienciesAction()
     {
-        $displayBy = urldecode($this->_request->getParam('displaySecurityBy'));
-        $displayBy = strtolower($displayBy);
+        $displayBy = urldecode($this->getRequest()->getParam('displaySecurityBy'));
 
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setColors(array('#3366FF'))
             ->setChartType('bar')
             ->setConcatColumnLabels(false)
-            ->setAxisLabelY('number of findings');
+            ->setAxisLabelY('Number of Findings');
+        
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            $this->view->chart = $rtnChart->export('array');
+            return;
+        }
         
         $deficienciesQuery = Doctrine_Query::create()
-            ->select('COUNT(*) AS count, sc.code')
+            ->select('COUNT(*) AS count, sc.code, SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.ResponsibleOrganization o')
-            ->andWhere('f.status <> ?', 'CLOSED')
+            ->where('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', FindingTable::getOrganizationIds())
-            ->groupBy('sc.code')
-            ->orderBy('sc.code')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        
-        $defQueryRslt = $deficienciesQuery->execute();
-        
-        if ($displayBy !== 'family') {
 
-            foreach ($defQueryRslt as $thisElement) {
-                $rtnChart->addColumn($thisElement['sc_code'], $thisElement['sc_count']);
-            }
-            
-            // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-            $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textExactMatch/#ColumnLabel#'
-                );
-            
+        // What is the "Display By" drop-down box set to?
+        if ($displayBy === 'Family Summary') {
+            // It is set to Family Summary (default)
+            $deficienciesQuery
+                ->groupBy('fam')
+                ->orderBy('fam');
         } else {
-            
-            $totalingFamily = '';
-            $totalCount = '';
-
-            foreach ($defQueryRslt as $thisElement) {
-
-                $thisFamily = explode('-', $thisElement['sc_code']);
-                $thisFamily = $thisFamily[0];
-                
-                // initalizes the totalingFamily variable
-                if ($totalingFamily === '') {
-                    $totalingFamily = $thisFamily;
-                }
-                
-                // Are we now seeing the results of the next family?
-                if ($totalingFamily !== $thisFamily && $totalCount > 0) {
-                
-                    // if so, add the total of the last family to the chart
-                    $rtnChart->addColumn($totalingFamily, $totalCount);
-                    
-                    // and start counting the total for the next family
-                    $totalCount = 0;
-                    $totalingFamily = $thisFamily;
-                }
-                
-                // Add to the total for this family
-                $totalCount += $thisElement['sc_count'];
-            }
-            
-            // add the last found family (not added yet since column additions are done on family-name-change)
-            $rtnChart->addColumn($totalingFamily, $totalCount);
-            
-            // pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
-            $rtnChart
-                ->setLinks(
-                    '/finding/remediation/list/queryType/advanced/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/securityControl/textContains/#ColumnLabel#'
-                );
+            // It is set to a specific family, the $displayBy value should be something like "Family: AC"
+            $targetFamily = explode(': ', $displayBy);
+            $targetFamily = $targetFamily[1];
+            $deficienciesQuery
+                ->andWhere('SUBSTRING_INDEX(sc.code, "-", 1)=?', $targetFamily)
+                ->groupBy('sc.code')
+                ->orderBy('sc.code');
         }
+
+        $deficiencyQueryResult = $deficienciesQuery->execute();
+
+        foreach ($deficiencyQueryResult as $thisElement) {
+        
+            if ($displayBy === 'Family Summary') {
+                $columnLabel = $thisElement['sc_fam'];
+            } else {
+                $columnLabel = $thisElement['sc_code'];
+            }
+        
+            $rtnChart->addColumn(
+                $columnLabel,
+                $thisElement['sc_count']
+            );
             
-        // the context switch will convert this array to a JSON resonce
+        }
+
+        // Pass a string instead of an array to Fisma_Chart to set all columns to link with this URL-rule
+        $rtnChart->setLinks(
+            '/finding/remediation/list?q=' .
+            '/denormalizedStatus/textDoesNotContain/CLOSED' .
+            '/securityControl/' . 
+            ( $displayBy === 'Family Summary' ? 'textContains' : 'textExactMatch' ) .
+            '/#ColumnLabel#'
+        );
+            
+        // The context switch will convert this array to a JSON responce
         $this->view->chart = $rtnChart->export('array');
         
     }

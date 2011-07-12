@@ -9,7 +9,7 @@ Fisma_Format_Section::startSection("Incident Report Canceled");
     $continueButton = new Fisma_Yui_Form_Button_Link('returnToHome',
                               array('value' => 'Continue', 
                                     'href' => "/", 
-                                    'imageSrc' => '/images/right_arrow.png'));
+                                    'imageSrc' => $this->serverUrl('/images/right_arrow.png')));
     echo $this->escape($continueButton, 'none');
     ?>
 </p>

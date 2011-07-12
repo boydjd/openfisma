@@ -5,3 +5,4 @@ User:
         email: openfisma-default-install@googlegroups.com
         nameFirst: Super
         nameLast: User
+        mustResetPassword: true

@@ -22,7 +22,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -67,13 +66,13 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set click handler
     this.element.onclick = function () {
         that.toggleSwitch.call(that);
-    }
+    };
     
     /* 
      * Callback will be a string like 'Fisma.Module.handleSwitchButtonStateChange', which needs to be converted into a 
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
-    if ('' != callback) {
+    if ('' !== callback) {
         callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
@@ -83,7 +82,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
             throw "Specified callback is not a function: " + callback;
         }
     }
-}
+};
 
 Fisma.SwitchButton.prototype = {
     
@@ -140,7 +139,7 @@ Fisma.SwitchButton.prototype = {
                     to : -54,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = false;
         } else {
@@ -152,14 +151,14 @@ Fisma.SwitchButton.prototype = {
                     to : 0,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = true;
         }        
         
         var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
                                                   animationAttributes, 
-                                                  .1, 
+                                                  0.1, 
                                                   YAHOO.util.Easing.easeOut);
 
         toggleAnimation.onTween.subscribe(
@@ -170,7 +169,7 @@ Fisma.SwitchButton.prototype = {
                  */
                 that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
             }
-        )
+        );
 
         toggleAnimation.animate();
 

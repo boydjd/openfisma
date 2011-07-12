@@ -1,12 +1,11 @@
 <?php
     echo $this->escape("{$this->doctype()}\n", 'none');
     $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period');
+    $inactivityNotice = Fisma::configuration()->getConfig('session_inactivity_notice');
 ?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="refresh" 
-              content="<?php echo $this->escape($inactivityPeriod, 'none'); ?>;url=/auth/logout">
 
     <?php 
     echo $this->partial('partial/title.phtml');
@@ -14,7 +13,7 @@
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
                            'paginator', 'datasource', 'datatable', 'selector', 'treeview', 'uploader',
-                           'reset-fonts-grids', 'autocomplete', 'progressbar', 'history');
+                           'reset-fonts-grids', 'autocomplete', 'progressbar', 'history', 'swf', 'storage');
 
     $yui = new Fisma_Loader();
     $yui->load($yuiComponents);
@@ -24,6 +23,7 @@
     $this->injectAsset('/javascripts/combined.js', 'js', true);
     $this->injectAsset('/stylesheets/combined.css', 'css', true);
     $this->injectAsset('/stylesheets/print.css', 'css', false, 'print');
+    $this->injectAsset('/stylesheets/ie8hacks.css', 'css', false, 'screen', 'IE 8');
     $this->injectAsset('/stylesheets/ie7hacks.css', 'css', false, 'screen', 'IE 7');
     $this->injectAsset('/stylesheets/ie6hacks.css', 'css', false, 'screen', 'IE 6');
 
@@ -33,6 +33,11 @@
     echo $this->escape($this->headScript(), 'none');
     echo $this->escape($this->headLink(), 'none');
     ?>
+        <script type="text/javascript">
+            Fisma.SessionManager.init(
+                <?php echo $this->escape($inactivityPeriod, 'json');?>,
+                <?php echo $this->escape($inactivityNotice, 'json'); ?>);
+        </script>
     </head>
     <body class="yui-skin-sam">
         <div id='skip'>
@@ -67,6 +72,8 @@
                     }
                 ?>
         </div>
+        <div id="swfstoreContainer"></div>
+
     </body>
     <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
 </html>

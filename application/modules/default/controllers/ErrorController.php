@@ -24,7 +24,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class ErrorController extends Zend_Controller_Action
 {
@@ -55,7 +54,7 @@ class ErrorController extends Zend_Controller_Action
         $this->getInvokeArg('bootstrap')->getResource('Log')->log($content, Zend_Log::ERR);
         $this->view->content = $content;
 
-        if ($errors->exception instanceof Fisma_Zend_Exception_InvalidPrivilege) {
+        if ($errors->exception instanceof Fisma_Zend_Exception_User) {
             $this->view->message = $errors->exception->getMessage();
         } else {         
             $this->view->message = "<p>An unexpected error has occurred. This error has been logged"

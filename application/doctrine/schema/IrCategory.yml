@@ -1,6 +1,4 @@
 IrCategory:
-    listeners: [XssListener]
-    
     columns:
         createdTs: 
             type: timestamp

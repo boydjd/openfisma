@@ -20,7 +20,6 @@
  * @author    Xhorse 
  * @copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/mw/index.php?title=License
- * @version   $Id$
  * @package   Fisma_Zend_Auth
  */
 
@@ -41,12 +40,25 @@ class Fisma_Zend_Auth_Adapter_Ldap extends Zend_Auth_Adapter_Ldap
     {
         $parentResult = parent::authenticate();
         $user = Doctrine::getTable('User')->findOneByUsername($this->getUsername());
-        $result = new Zend_Auth_Result(
-            $parentResult->getCode(),
-            $user,
-            $parentResult->getMessages()
-        );
+
+        $returnCode = $parentResult->getCode();
+        $messages = $parentResult->getMessages();
         
+        if ($returnCode == Zend_Auth_Result::FAILURE) {
+            $message = 'LDAP Authentication failed with code '
+                     . $returnCode
+                     . " and messages: \n[LDAP MESSAGE] "
+                     . implode("\n[LDAP MESSAGE] ", $messages);
+
+            throw new Fisma_Zend_Exception($message);
+        }
+
+        $result = new Zend_Auth_Result(
+            $returnCode,
+            $user,
+            $messages
+        );
+
         return $result;
     }
 }

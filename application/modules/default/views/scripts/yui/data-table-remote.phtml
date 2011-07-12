@@ -74,10 +74,6 @@
             tableConfiguration
         );
         
-        // Register data table with Fisma.Search -- this allows it to be found after this scope disappears
-        // @todo This is an undesirable dependency, but its not easy to fix without a registry (I think).
-        Fisma.Search.setTable(dataTable);
-        
         // Update number of returned records
         dataTable.handleDataReturnPayload = function(request, response, payload) { 
             payload.totalRecords = response.meta.totalRecords; 
@@ -115,8 +111,8 @@
             
             // Reject clicks for deleted records
             if (rowData.getData('deleted_at')) {
-                alert('This record cannot be viewed because it was deleted.');
-                
+                var message = 'This record cannot be viewed because it was deleted.';
+                Fisma.Util.showAlertDialog(message);
                 return;
             }
             

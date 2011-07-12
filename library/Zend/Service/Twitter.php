@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Twitter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version    $Id$
  */
@@ -39,7 +39,7 @@
  * @category   Zend
  * @package    Zend_Service
  * @subpackage Twitter
- * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Service_Twitter extends Zend_Rest_Client
@@ -131,11 +131,15 @@ class Zend_Service_Twitter extends Zend_Rest_Client
     public function __construct($options = null, Zend_Oauth_Consumer $consumer = null)
     {
         $this->setUri('http://api.twitter.com');
-        if (!is_array($options)) $options = array();
-        $options['siteUrl'] = self::OAUTH_BASE_URI;
         if ($options instanceof Zend_Config) {
             $options = $options->toArray();
         }
+
+        if (!is_array($options)) {
+            $options = array();
+        }
+        $options['siteUrl'] = self::OAUTH_BASE_URI;
+
         $this->_options = $options;
         if (isset($options['username'])) {
             $this->setUsername($options['username']);
@@ -923,8 +927,7 @@ class Zend_Service_Twitter extends Zend_Rest_Client
 
     /**
      * Protected function to validate that the integer is valid or return a 0
-     * @param $int
-     * @throws Zend_Http_Client_Exception if HTTP request fails or times out
+     * @param mixed $int
      * @return integer
      */
     protected function _validInteger($int)

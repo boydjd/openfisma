@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Menu
- * @version    $Id$
  */
 class Fisma_Menu
 {
@@ -50,12 +49,12 @@ class Fisma_Menu
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
+                $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Finding', '/finding/remediation'));
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
                 && ($acl->hasPrivilegeForClass('create', 'Finding')
-                    || $acl->hasPrivilegeForClass('inject', 'Finding')
-                    || $acl->hasPrivilegeForClass('approve', 'Finding'))) {
+                    || $acl->hasPrivilegeForClass('inject', 'Finding'))) {
 
                 $findings->addSeparator();    
             }
@@ -206,6 +205,7 @@ class Fisma_Menu
             $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/incident/report'));
       
             $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/incident/list'));
+            $incidentMenu->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Incident', '/incident'));
 
             $incidentMenu->addSeparator();
 
@@ -318,6 +318,7 @@ class Fisma_Menu
         $menu = new Fisma_Yui_Menu('Vulnerabilities');
 
         $menu->add(new Fisma_Yui_MenuItem('Search', '/vm/vulnerability/list'));
+        $menu->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Vulnerability', '/vm/vulnerability'));
 
         $menu->addSeparator();
 

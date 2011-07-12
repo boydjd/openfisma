@@ -40,7 +40,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
                 'irReportSave', 
                 array(
                     'label' => 'Submit Report', 
-                    'imageSrc' => '/images/add.png',
+                    'imageSrc' => $this->serverUrl('/images/add.png'),
                     'class' => 'left'
                 )
             );
@@ -54,7 +54,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
             'irReportCancel', 
             array(
                 'label' => 'Cancel Report', 
-                'imageSrc' => "/images/del.png",
+                'imageSrc' => $this->serverUrl("/images/del.png"),
             )
         );
         echo $this->escape($irReportCancelButton, 'none');
@@ -71,7 +71,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
                 'irReportBackwards', 
                 array(
                     'label' => 'Go Back', 
-                    'imageSrc' => '/images/left_arrow.png',
+                    'imageSrc' => $this->serverUrl('/images/left_arrow.png'),
                     'class' => 'left'
                 )
             );

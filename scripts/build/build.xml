@@ -9,8 +9,9 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,editable.js,selectallselectnone.js,AC_RunActiveContent.js,jquery-min.js,nesteddatatable.js"/>
-            <fileset dir="${location.js}/Fisma" includes="**/*.js"/>
+            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,editable.js,selectallselectnone.js,jquery-min.js,nesteddatatable.js"/>
+            <filelist dir="${location.js}" files="Fisma/Storage.js"/>
+            <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
         </concat>
         <echo message="JavaScript concatenated."/>
@@ -19,7 +20,7 @@
     <target name="-css.concat">
         <echo message="Concatenating stylesheets..."/>
         <concat destfile="${location.css}/combined.css" force="no">
-            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,install.css,login.css,print.css,combined.css"/>
+            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,ie8hacks.css,install.css,login.css,print.css,combined.css"/>
         </concat>
         <echo message="Stylesheets concatenated."/>
     </target>

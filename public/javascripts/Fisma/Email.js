@@ -21,7 +21,6 @@
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -38,8 +37,11 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
+            // The error message should be hidden before handles test email
+            YAHOO.util.Dom.get('msgbar').style.display = 'none';
+
             // Remove used old panel if necessary
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
@@ -72,8 +74,16 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
-    
+            var panelConfig = {
+                    width : "260px",
+                    modal : false
+                };
+            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel(
+                'Test E-mail Configuration',
+                content.innerHTML,
+                null,
+                panelConfig);
+
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
         },
@@ -83,9 +93,11 @@ Fisma.Email = function() {
          */
         sendTestEmail : function() {
             
-            if (document.getElementById('testEmailRecipient').value == '') {
+            if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                alert("Recipient is required.");
+                var alertMessage = "Recipient is required.";
+                var config = {zIndex : 10000};
+                Fisma.Util.showAlertDialog(alertMessage, config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -109,18 +121,20 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    alert('Failed to send test mail: ' + o.statusText);
-                    
+                    var alertMessage = 'Failed to send test mail: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                     spinner.hide();
                 }
             }, null);
     
             // Remove used panel
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-                Fisma.Email.panelElement.removeMask();
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+                Fisma.Email.panelElement.hide();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
+            
+            return true;
         }
     };
 }();

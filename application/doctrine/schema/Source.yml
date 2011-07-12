@@ -1,5 +1,5 @@
 Source:
-    listeners: [XssListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
         
     columns:
         name: 

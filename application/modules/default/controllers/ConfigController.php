@@ -24,7 +24,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class ConfigController extends Fisma_Zend_Controller_Action_Security
 {
@@ -105,7 +104,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             /**
              * @todo More ugliness. Remove this.
              */
-            if (in_array($name, array('session_inactivity_period'))) {
+            if (in_array($name, array('session_inactivity_period', 'session_inactivity_notice'))) {
                 $value /= 60; // Convert from seconds to minutes
             }
             
@@ -435,7 +434,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 /**
                  * @todo this needs to be cleaned up
                  */
-                if ('session_inactivity_period' == $item) {
+                if ('session_inactivity_period' == $item || 'session_inactivity_notice' == $item) {
                     $value *= 60; // convert minutes to seconds
                 }
 
@@ -495,67 +494,75 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function testEmailConfigAction()
-    {        
-        // Load the form from notification_config.form file
-        $form = $this->_getConfigForm('email_config');
-        if ($this->_request->isPost()) {
-            $postEmailConfigValues = $this->_request->getPost();
-            if ($form->isValid($postEmailConfigValues)) {
-                try{
-                    $postEmailConfigValues = $form->getValues();
-                    // Because user may not specified password for test on UI page,
-                    // so have retrieve the saved one before if possible. 
-                    if (empty($postEmailConfigValues['smtp_password'])) {
-                        $password = Fisma::configuration()->getConfig('smtp_password');
+    {
+        // Get system email configuration
+        $configuration = Fisma::configuration();
+        $storedConfig = array(
+            'sender' => $configuration->getConfig('sender'),
+            'subject' => $configuration->getConfig('subject'),
+            'smtp_host' => $configuration->getConfig('smtp_host'),
+            'smtp_username' => $configuration->getConfig('smtp_username'),
+            'smtp_password' => $configuration->getConfig('smtp_password'),
+            'send_type' => $configuration->getConfig('send_type'),
+            'smtp_port' => $configuration->getConfig('smtp_port'),
+            'smtp_tls' => $configuration->getConfig('smtp_tls')
+        );
 
-                        if (!empty($password[0])) {
-                            $postEmailConfigValues['smtp_password'] = $password[0]->value;
-                        }
-                    }
-                    // The test e-mail template content
-                    $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the" 
-                                 . " administrator to determine if the e-mail configuration is" 
-                                 . " working correctly. There is no need to reply to this e-mail.";
+        // Get posted form configuration and strip out empty fields
+        $request = $this->getRequest();
 
-                    // Define Zend_Mail() for sending test email
-                    $mail = new Zend_Mail();
-                    $mail->addTo($postEmailConfigValues['recipient']);
-                    $mail->setFrom($postEmailConfigValues['sender']);
-                    $mail->setSubject($postEmailConfigValues['subject']);
-                    $mail->setBodyText($mailContent);
+        $formConfig = array(
+            'recipient' => $request->getParam('recipient'),
+            'sender' => $request->getParam('sender'),
+            'subject' => $request->getParam('subject'),
+            'smtp_host' => $request->getParam('smtp_host'),
+            'smtp_username' => $request->getParam('smtp_username'),
+            'smtp_password' => $request->getParam('smtp_password'),
+            'send_type' => $request->getParam('send_type'),
+            'smtp_port' => $request->getParam('smtp_port'),
+            'smtp_tls' => $request->getParam('smtp_tls')
+        );
 
-                    // Sendmail transport
-                    if ($postEmailConfigValues['send_type'] == 'sendmail') {
-                        $mail->send();
-                    } elseif ($postEmailConfigValues['send_type'] == 'smtp') {
-                        // SMTP transport
-                        $emailConfig = array('auth'     => 'login',
-                                             'username' => $postEmailConfigValues['smtp_username'],
-                                             'password' => $postEmailConfigValues['smtp_password'],
-                                             'port'     => $postEmailConfigValues['smtp_port']);
-                        if (1 == $postEmailConfigValues['smtp_tls']) {
-                            $emailConfig['ssl'] = 'tls';
-                        }
-                        $transport = new Zend_Mail_Transport_Smtp($postEmailConfigValues['smtp_host'], $emailConfig);
-                        $mail->send($transport);
-                    }
-                    $type = 'message';
-                    /** @todo english */
-                    $msg  = 'Sent test email to ' . $postEmailConfigValues['recipient'] . ' successfully !';
-                } catch (Zend_Mail_Exception $e) {
-                    $type = 'warning';
-                    $msg  = $e->getMessage();
+        $formConfig = array_filter($formConfig);
+
+        // Merge system email configuration into form configuration
+        $emailConfiguration = array_merge($storedConfig, $formConfig);
+
+        try{
+            // The test e-mail template content
+            $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the" 
+                         . " administrator to determine if the e-mail configuration is" 
+                         . " working correctly. There is no need to reply to this e-mail.";
+
+            // Define Zend_Mail() for sending test email
+            $mail = new Zend_Mail();
+            $mail->addTo($emailConfiguration['recipient']);
+            $mail->setFrom($emailConfiguration['sender']);
+            $mail->setSubject($emailConfiguration['subject']);
+            $mail->setBodyText($mailContent);
+
+            // Sendmail transport
+            if ($emailConfiguration['send_type'] == 'sendmail') {
+                $mail->send();
+            } elseif ($emailConfiguration['send_type'] == 'smtp') {
+                // SMTP transport
+                $emailConfig = array('auth'     => 'login',
+                                     'username' => $emailConfiguration['smtp_username'],
+                                     'password' => $emailConfiguration['smtp_password'],
+                                     'port'     => $emailConfiguration['smtp_port']);
+                if (1 == $emailConfiguration['smtp_tls']) {
+                    $emailConfig['ssl'] = 'tls';
                 }
-            } else {
-                $type = 'warning';
-                $msg  = Fisma_Zend_Form_Manager::getErrors($form);
+                $transport = new Zend_Mail_Transport_Smtp($emailConfiguration['smtp_host'], $emailConfig);
+                $mail->send($transport);
             }
-        } else {
+            $type = 'message';
+            $msg  = 'Sent test email to ' . $emailConfiguration['recipient'] . ' successfully !';
+        } catch (Zend_Mail_Exception $e) {
             $type = 'warning';
-            /** @todo english */
-            $msg  = "Invalid Parameters";
+            $msg  = $e->getMessage();
         }
-        
+
         $this->view->msg = $msg;
         $this->view->type = $type;
     }
@@ -567,37 +574,16 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     {
         $response = new Fisma_AsyncResponse;
 
-        // Get system search configuration
-        $configuration = Fisma::configuration();
-
-        $storedConfig = array(
-            'search_backend' => $configuration->getConfig('search_backend'),
-            'search_solr_host' => $configuration->getConfig('search_solr_host'),
-            'search_solr_port' => $configuration->getConfig('search_solr_port'),
-            'search_solr_path' => $configuration->getConfig('search_solr_path')
-        );
+        try {
+            $searchEngine = Zend_Registry::get('search_engine');
         
-        // Get posted form configuration and strip out empty fields
-        $request = $this->getRequest();
-
-        $formConfig = array(
-            'search_backend' => $request->getParam('search_backend'),
-            'search_solr_host' => $request->getParam('search_solr_host'),
-            'search_solr_port' => $request->getParam('search_solr_port'),
-            'search_solr_path' => $request->getParam('search_solr_path')
-        );
-        
-        $formConfig = array_filter($formConfig);
-        
-        // Merge system configuration into form configuration and then validate the merged configuration
-        $searchConfiguration = array_merge($storedConfig, $formConfig);
-        
-        $searchBackend = Fisma_Search_BackendFactory::getSearchBackend($searchConfiguration);
-        
-        $result = $searchBackend->validateConfiguration();
+            $result = $searchEngine->validateConfiguration();
     
-        if ($result !== true) {
-            $response->fail($result);
+            if ($result !== true) {
+                $response->fail($result);
+            }
+        } catch (Fisma_Search_Exception $fse) {
+            $response->fail($fse->getMessage());
         }
 
         $this->view->response = $response;        
@@ -670,29 +656,18 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function searchAction()
     {
-        $form = $this->_getConfigForm('search_config');
-
-        if ($this->getRequest()->isPost()) {
-            $newValues = $this->getRequest()->getPost();
-
-            $this->_saveConfigurationForm($form, $newValues);
-
-            $this->_redirect('/config/search');
-        }
-
-        // Populate default values for non-submit button elements
-        foreach ($form->getElements() as $element) {
-
-            if ($element instanceof Zend_Form_Element_Submit) {
-                continue;
-            }
-            
-            $name = $element->getName();            
-            $value = Fisma::configuration()->getConfig($name);
-
-            $form->setDefault($name, $value);
-        }
-
-        $this->view->form = $form;
+        $this->view->parameters = Fisma::$appConf['search'];
+        
+        $this->view->testSearchButton = new Fisma_Yui_Form_Button(
+            'testConfiguration',
+            array(
+                'label' => 'Test Search Configuration', 
+                'onClickFunction' => 'Fisma.Search.testConfiguration'
+            )
+        );
+        
+        $this->view->csrfToken = Zend_Controller_Front::getInstance()
+                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
+                                 ->getToken();
     }
 }

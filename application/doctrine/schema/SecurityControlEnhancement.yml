@@ -1,6 +1,4 @@
 SecurityControlEnhancement:
-    listeners: [XssListener]
-
     columns:
         number: 
             type: integer(2)

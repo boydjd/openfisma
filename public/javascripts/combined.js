@@ -757,7 +757,7 @@ tinyMCE.init({
 	mode : "textareas",
 	cleanup : false,
 	element_format : "html",
-	plugins : "spellchecker, searchreplace, insertdatetime, print, fullscreen",
+	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
@@ -777,7 +777,11 @@ tinyMCE.init({
 	theme_advanced_statusbar_location : "bottom",
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
-	spellchecker_languages : "+English=en"
+	spellchecker_languages : "+English=en",
+    setup : function(ed) {
+        ed.onClick.add(Fisma.SessionManager.onActivityEvent);
+        ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
+    }
 });
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -802,18 +806,10 @@ tinyMCE.init({
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
  */
-
-// Required for AC_RunActiveContent
-// @TODO Move into own file
-
-var requiredMajorVersion = 9;
-var requiredMinorVersion = 0;
-var requiredRevision = 45;
 
 var Fisma = {};
 
@@ -1129,7 +1125,7 @@ function switchYear(step){
     var oYear = document.getElementById('gen_shortcut');
     var year = oYear.getAttribute('year');
     year = Number(year) + Number(step);
-	oYear.setAttribute('year', year);
+    oYear.setAttribute('year', year);
     var url = oYear.getAttribute('url') + year + '/';
     var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
     tmp[0].innerHTML = year;
@@ -1352,7 +1348,6 @@ function updateTimeField(id) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 function setupEditFields() {
@@ -1492,7 +1487,6 @@ if (window.HTMLElement) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo Write a safe version of this function called selectAll that takes some kind
  *       of scope as a parameter so that it can be limited.
@@ -1507,6 +1501,14 @@ function selectAllUnsafe() {
     for (i in checkboxes) {
         checkboxes[i].checked = 'checked';
     }
+}
+
+function selectAllByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","checked");
+}
+
+function selectNoneByName(event, config) {
+    $('input:checkbox[name="' + config.name + '"]').attr("checked","unchecked");
 }
 
 function selectAll() {
@@ -1534,298 +1536,6 @@ function elDump(el) {
         props += prop + ' : ' + el[prop] + '\n';
     }
     alert(props);
-}
-//v1.7
-// Flash Player Version Detection
-// Detect Client Browser type
-// Copyright 2005-2007 Adobe Systems Incorporated.  All rights reserved.
-var isIE  = (navigator.appVersion.indexOf("MSIE") != -1) ? true : false;
-var isWin = (navigator.appVersion.toLowerCase().indexOf("win") != -1) ? true : false;
-var isOpera = (navigator.userAgent.indexOf("Opera") != -1) ? true : false;
-
-function ControlVersion()
-{
-	var version;
-	var axo;
-	var e;
-
-	// NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
-
-	try {
-		// version will be set for 7.X or greater players
-		axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
-		version = axo.GetVariable("$version");
-	} catch (e) {
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 6.X players only
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
-			
-			// installed player is some revision of 6.0
-			// GetVariable("$version") crashes for versions 6.0.22 through 6.0.29,
-			// so we have to be careful. 
-			
-			// default to the first public version
-			version = "WIN 6,0,21,0";
-
-			// throws if AllowScripAccess does not exist (introduced in 6.0r47)		
-			axo.AllowScriptAccess = "always";
-
-			// safe to call for 6.0r47 or greater
-			version = axo.GetVariable("$version");
-
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 4.X or 5.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = axo.GetVariable("$version");
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 3.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
-			version = "WIN 3,0,18,0";
-		} catch (e) {
-		}
-	}
-
-	if (!version)
-	{
-		try {
-			// version will be set for 2.X player
-			axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-			version = "WIN 2,0,0,11";
-		} catch (e) {
-			version = -1;
-		}
-	}
-	
-	return version;
-}
-
-// JavaScript helper required to detect Flash Player PlugIn version information
-function GetSwfVer(){
-	// NS/Opera version >= 3 check for Flash plugin in plugin array
-	var flashVer = -1;
-	
-	if (navigator.plugins != null && navigator.plugins.length > 0) {
-		if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
-			var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
-			var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
-			var descArray = flashDescription.split(" ");
-			var tempArrayMajor = descArray[2].split(".");			
-			var versionMajor = tempArrayMajor[0];
-			var versionMinor = tempArrayMajor[1];
-			var versionRevision = descArray[3];
-			if (versionRevision == "") {
-				versionRevision = descArray[4];
-			}
-			if (versionRevision[0] == "d") {
-				versionRevision = versionRevision.substring(1);
-			} else if (versionRevision[0] == "r") {
-				versionRevision = versionRevision.substring(1);
-				if (versionRevision.indexOf("d") > 0) {
-					versionRevision = versionRevision.substring(0, versionRevision.indexOf("d"));
-				}
-			}
-			var flashVer = versionMajor + "." + versionMinor + "." + versionRevision;
-		}
-	}
-	// MSN/WebTV 2.6 supports Flash 4
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.6") != -1) flashVer = 4;
-	// WebTV 2.5 supports Flash 3
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv/2.5") != -1) flashVer = 3;
-	// older WebTV supports Flash 2
-	else if (navigator.userAgent.toLowerCase().indexOf("webtv") != -1) flashVer = 2;
-	else if ( isIE && isWin && !isOpera ) {
-		flashVer = ControlVersion();
-	}	
-	return flashVer;
-}
-
-// When called with reqMajorVer, reqMinorVer, reqRevision returns true if that version or greater is available
-function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision)
-{
-	versionStr = GetSwfVer();
-	if (versionStr == -1 ) {
-		return false;
-	} else if (versionStr != 0) {
-		if(isIE && isWin && !isOpera) {
-			// Given "WIN 2,0,0,11"
-			tempArray         = versionStr.split(" "); 	// ["WIN", "2,0,0,11"]
-			tempString        = tempArray[1];			// "2,0,0,11"
-			versionArray      = tempString.split(",");	// ['2', '0', '0', '11']
-		} else {
-			versionArray      = versionStr.split(".");
-		}
-		var versionMajor      = versionArray[0];
-		var versionMinor      = versionArray[1];
-		var versionRevision   = versionArray[2];
-
-        	// is the major.revision >= requested major.revision AND the minor version >= requested minor
-		if (versionMajor > parseFloat(reqMajorVer)) {
-			return true;
-		} else if (versionMajor == parseFloat(reqMajorVer)) {
-			if (versionMinor > parseFloat(reqMinorVer))
-				return true;
-			else if (versionMinor == parseFloat(reqMinorVer)) {
-				if (versionRevision >= parseFloat(reqRevision))
-					return true;
-			}
-		}
-		return false;
-	}
-}
-
-function AC_AddExtension(src, ext)
-{
-  if (src.indexOf('?') != -1)
-    return src.replace(/\?/, ext+'?'); 
-  else
-    return src + ext;
-}
-
-function AC_Generateobj(objAttrs, params, embedAttrs) 
-{ 
-  var str = '';
-  if (isIE && isWin && !isOpera)
-  {
-    str += '<object ';
-    for (var i in objAttrs)
-    {
-      str += i + '="' + objAttrs[i] + '" ';
-    }
-    str += '>';
-    for (var i in params)
-    {
-      str += '<param name="' + i + '" value="' + params[i] + '" /> ';
-    }
-    str += '</object>';
-  }
-  else
-  {
-    str += '<embed ';
-    for (var i in embedAttrs)
-    {
-      str += i + '="' + embedAttrs[i] + '" ';
-    }
-    str += '> </embed>';
-  }
-
-  return str;
-}
-
-function AC_FL_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".swf", "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-     , "application/x-shockwave-flash"
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_SW_RunContent(){
-  var ret = 
-    AC_GetArgs
-    (  arguments, ".dcr", "src", "clsid:166B1BCA-3F9C-11CF-8075-444553540000"
-     , null
-    );
-  return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
-}
-
-function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
-  var ret = new Object();
-  ret.embedAttrs = new Object();
-  ret.params = new Object();
-  ret.objAttrs = new Object();
-  for (var i=0; i < args.length; i=i+2){
-    var currArg = args[i].toLowerCase();    
-
-    switch (currArg){	
-      case "classid":
-        break;
-      case "pluginspage":
-        ret.embedAttrs[args[i]] = args[i+1];
-        break;
-      case "src":
-      case "movie":	
-        args[i+1] = AC_AddExtension(args[i+1], ext);
-        ret.embedAttrs["src"] = args[i+1];
-        ret.params[srcParamName] = args[i+1];
-        break;
-      case "onafterupdate":
-      case "onbeforeupdate":
-      case "onblur":
-      case "oncellchange":
-      case "onclick":
-      case "ondblclick":
-      case "ondrag":
-      case "ondragend":
-      case "ondragenter":
-      case "ondragleave":
-      case "ondragover":
-      case "ondrop":
-      case "onfinish":
-      case "onfocus":
-      case "onhelp":
-      case "onmousedown":
-      case "onmouseup":
-      case "onmouseover":
-      case "onmousemove":
-      case "onmouseout":
-      case "onkeypress":
-      case "onkeydown":
-      case "onkeyup":
-      case "onload":
-      case "onlosecapture":
-      case "onpropertychange":
-      case "onreadystatechange":
-      case "onrowsdelete":
-      case "onrowenter":
-      case "onrowexit":
-      case "onrowsinserted":
-      case "onstart":
-      case "onscroll":
-      case "onbeforeeditfocus":
-      case "onactivate":
-      case "onbeforedeactivate":
-      case "ondeactivate":
-      case "type":
-      case "codebase":
-      case "id":
-        ret.objAttrs[args[i]] = args[i+1];
-        break;
-      case "width":
-      case "height":
-      case "align":
-      case "vspace": 
-      case "hspace":
-      case "class":
-      case "title":
-      case "accesskey":
-      case "name":
-      case "tabindex":
-        ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i+1];
-        break;
-      default:
-        ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i+1];
-    }
-  }
-  ret.objAttrs["classid"] = classid;
-  if (mimeType) ret.embedAttrs["type"] = mimeType;
-  return ret;
 }
 /*!
  * jQuery JavaScript Library v1.4.2
@@ -2426,6 +2136,161 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
  * @param oArgs.tdOldHeight {Integer} The original height, in pixels, of the row in the master record before it was expanded.
  */
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides basic session-level storage of data.
+     * @namespace Fisma
+     * @class Storage
+     * @constructor
+     * @param namespace {String} The data namespace.
+     */
+    var FS = function(namespace) {
+        this.namespace = namespace;
+        FS._initStorageEngine();
+    };
+
+    /**
+     * Helper to ensure the storage engine is initialized
+     *
+     * @method _initStorageEngine
+     * @protected
+     * @static
+     */
+    FS._initStorageEngine = function() {
+        if (YAHOO.lang.isNull(FS._storageEngine)) {
+            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            FS._storageEngine = YAHOO.util.StorageManager.get(
+                YAHOO.util.StorageEngineGears.ENGINE_NAME,
+                YAHOO.util.StorageManager.LOCATION_SESSION,
+                {
+                    engine: engineConf,
+                    force: false,
+                    order: [
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineSWF
+                    ]
+                }
+            );
+        }
+    };
+
+    /**
+     * Underlying storage engine.
+     *
+     * @property Storage._storageEngine
+     * @type Object
+     * @private
+     * @static
+     */
+    FS._storageEngine = null;
+
+    /**
+     * Clear all storage space.
+     *
+     * @method clear
+     * @static
+     */
+    FS.clear = function() {
+        FS._initStorageEngine();
+        FS._storageEngine.clear();
+    };
+
+    /**
+     * Register a callback for when the storage engine is ready.
+     *
+     * @method Storage.onReady
+     * @param fn {Function} Callback function.
+     * @param obj {Object} Object passed to callback.
+     * @param scope {Object|Boolean} Object to use for callback scope, true to use obj as scope.
+     * @static
+     */
+    FS.onReady = function(fn, obj, scope) {
+        YAHOO.util.Event.onContentReady('swfstoreContainer', function() {
+            FS._initStorageEngine();
+            var engine = FS._storageEngine;
+            var locationSession = YAHOO.util.StorageManager.LOCATION_SESSION === engine._location;
+            // check readiness (this is how the YAHOO examples do it)
+            if (!(engine.isReady || (engine._swf && locationSession))) {
+                engine.subscribe(engine.CE_READY, fn, obj, scope);
+            } else {
+                var s = new YAHOO.util.Subscriber(fn, obj, scope);
+                s.fn.call(s.getScope(window), s.obj);
+            }
+        });
+    };
+    FS.prototype = {
+        /**
+         * Get value for key
+         *
+         * @method Storage.get
+         * @param key {String}
+         * @return {String|Array|Object}
+         */
+        get: function(key) {
+            return this._get(key);
+        },
+        /**
+         * Set value for key
+         *
+         * @method Storage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
+        set: function(key, value) {
+            this._set(key, value);
+        },
+
+        /**
+         * Internal convenience method for decoding values.
+         *
+         * @method Storage._get
+         * @param key {String}
+         * @return {String|Array|Object}
+         * @protected
+         */
+        _get: function(key) {
+            var value = FS._storageEngine.getItem(this.namespace + ":" + key);
+
+            return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
+        },
+        /**
+         * Internal convenience method for encoding values.
+         *
+         * @method Storage._set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         * @protected
+         */
+        _set: function(key, value) {
+            FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
+        }
+    };
+    Fisma.Storage = FS;
+})();
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -2481,7 +2346,6 @@ Fisma.AssessmentPlanEntry = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -2583,8 +2447,7 @@ Fisma.AttachArtifacts = {
                 
                 argument: newPanel
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -2597,8 +2460,10 @@ Fisma.AttachArtifacts = {
         // Verify that a file is selected
         var fileUploadEl = document.getElementById('fileUpload');
 
-        if ("" == fileUploadEl.value) {
-            alert("Please select a file.");
+        if ("" === fileUploadEl.value) {
+            var alertMessage = "Please select a file.";
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
             
             return false;
         }
@@ -2622,8 +2487,8 @@ Fisma.AttachArtifacts = {
             // Remove the inderminate progress bar
             var progressBarContainer = document.getElementById('progressBarContainer');
 
-            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'));
-            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'));
+            var progressBarWidth = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'width'), 10);
+            var progressBarHeight = parseInt(YAHOO.util.Dom.getStyle(progressBarContainer, 'height'), 10);
 
             YAHOO.util.Dom.removeClass(progressBarContainer, 'attachArtifactsProgressBar');
 
@@ -2640,7 +2505,7 @@ Fisma.AttachArtifacts = {
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
 
             yuiProgressBar.set('anim', true);
-            var animation = yuiProgressBar.get('anim')
+            var animation = yuiProgressBar.get('anim');
             animation.duration = 2;
             animation.method = YAHOO.util.Easing.easeNone;
             
@@ -2658,8 +2523,7 @@ Fisma.AttachArtifacts = {
                 function () {
                     that.getProgress.call(that);
                 },
-                this.sampleInterval
-            );
+                this.sampleInterval);
         }
 
         // Display the progress bar
@@ -2674,8 +2538,7 @@ Fisma.AttachArtifacts = {
             function () {
                 that.postForm.call(that);
             },
-            0
-        );
+            0);
         
         return false;
     },
@@ -2692,18 +2555,13 @@ Fisma.AttachArtifacts = {
 
         var that = this;
         
-        var module = "";
-        if (this.config.server.module) {
-            module = "/" + encodeURIComponent(this.config.server.module);
-        }
-        var postUrl = module
-                    + "/"
-                    + encodeURIComponent(this.config.server.controller)
-                    + "/"
-                    + encodeURIComponent(this.config.server.action)
-                    + "/id/"
-                    + encodeURIComponent(this.config.id)
-                    + "/format/json";
+        var postUrl = "/"; 
+        postUrl += encodeURIComponent(this.config.server.controller);
+        postUrl += "/";
+        postUrl += encodeURIComponent(this.config.server.action);
+        postUrl += "/id/";
+        postUrl += encodeURIComponent(this.config.id);
+        postUrl += "/format/json";
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
         YAHOO.util.Connect.asyncRequest(
@@ -2715,11 +2573,10 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    alert('Document upload failed.');
+                    Fisma.Util.showAlertDialog('Document upload failed.');
                 }
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -2787,12 +2644,10 @@ Fisma.AttachArtifacts = {
                             function () {
                                 that.getProgress.call(that);
                             }, 
-                            that.sampleInterval
-                        );
+                            that.sampleInterval);
                     }
                 }, 
-                null
-            );
+                null);
         }
     },
     
@@ -2811,7 +2666,7 @@ Fisma.AttachArtifacts = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
@@ -2824,15 +2679,17 @@ Fisma.AttachArtifacts = {
         
         // Update progress to 100%
         if (this.yuiProgressBar) {
-            this.yuiProgressBar.get('anim').duration = .5;
+            this.yuiProgressBar.get('anim').duration = 0.5;
             this.yuiProgressBar.set('value', 100);
         }
         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            alert("Upload Failed: " + responseStatus.message);
-            
+            var alertMessage = "Upload Failed: " + responseStatus.message;
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+ 
             progressTextEl.nodeValue = 'Uploading...';
             
             document.getElementById('progressBarContainer').style.display = 'none';
@@ -2910,7 +2767,6 @@ Fisma.AttachArtifacts = {
  * @requires  YAHOO.widget.AutoComplete
  * @requires  YAHOO.widget.DS_XHR
  * @requires  Fisma
- * @version   $Id$
  */
 
 Fisma.AutoComplete = function() {
@@ -2960,7 +2816,7 @@ Fisma.AutoComplete = function() {
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
                 
-                if (0 == Fisma.AutoComplete.requestCount) {
+                if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });
@@ -3025,7 +2881,7 @@ Fisma.AutoComplete = function() {
          */
         subscribe : function(sType, aArgs, params) {
             document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-
+            $('#' + params.hiddenFieldId).trigger('change');
             // If a valid callback is specified, then call it
             try {
                 var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
@@ -3063,7 +2919,6 @@ Fisma.AutoComplete = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 /**
@@ -3092,7 +2947,7 @@ Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
  */
 Fisma.Blinker.prototype.start = function () {
     this.cycle();
-}
+};
 
 /**
  * The state transition method
@@ -3116,10 +2971,9 @@ Fisma.Blinker.prototype.cycle = function () {
             function () {
                 that.cycle.call(that);
             },
-            this.interval
-        );
+            this.interval);
     }
-}
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -3170,7 +3024,7 @@ Fisma.Calendar = function () {
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
-            textEl.onfocus = function () {calendar.show()};
+            textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
@@ -3187,14 +3041,14 @@ Fisma.Calendar = function () {
                 textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
-            }
+            };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);            
         }
     };
 }();
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -3211,45 +3065,2555 @@ Fisma.Calendar = function () {
  *
  * @fileoverview Client-side behavior related to the Finding module
  *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @author    Dale Frey <dale.frey@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 Fisma.Chart = {
 
+    // Constants
+    CHART_CREATE_SUCCESS: 1,
+    CHART_CREATE_FAILURE: 2,
+    CHART_CREATE_EXTERNAL: 3,
+
+    // Defaults for global chart settings definition:
+    globalSettingsDefaults:{
+        fadingEnabled:      false,
+        usePatterns:        false,
+        barShadows:         false,
+        barShadowDepth:     3,
+        dropShadows:        false,
+        gridLines:          false,
+        pointLabels:        false,
+        pointLabelsOutline: false,
+        showDataTable: false
+    },
+    
+    // URLs to all available pattern images
+    patternURLs: [
+        '/images/pattern-horizontal.png',
+        '/images/pattern-diamonds.png',
+        '/images/pattern-backbg-whitedots.png',
+        '/images/pattern-diagonal-45degree.png',
+        '/images/pattern-bubbles.png',
+        '/images/pattern-checkers.png',
+        '/images/pattern-diagonal-135degree.png',
+        '/images/pattern-diagonal-bricks.png'
+    ],
+    
+    // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
+    chartsOnDOM:{},
+
+    // Is this client-browser Internet Explorer?
+    isIE: (window.ActiveXObject) ? true : false,
+    
+    // Class static variables
+    hasHookedPostDrawSeries: false,
+    
     /**
-     * A generic handler for link events in an XML/SWF chart that will interpolate query parameters into a specified
-     * URL and then redirect the user to that URL.
+     * When an external source is needed, this function should handel the returned JSON request
+     * The chartParamsObj object that went into Fisma.Chart.createJQChart(obj) would be the chartParamsObj here, and
+     * the "value" parameter should be the returned JSON request.
+     * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
+     * returns the return value of Fisma.Chart.createJQChart(), or false on external source failure.
      *
-     * This function takes a variable argument list. The first argument is the URL. The URL can contain '%s' tokens
-     * which will be interpolated one-by-one with the remaining arguments.
-     *
-     * Example: handleLink('/param1/%s/param2/%s?q=%s', 'A', 'B', 'C') would redirect the user to the URL
-     * /param1/A/param2/B?q=C
-     *
-     * @param baseUrl A [trusted] URL with a sprintf style '%s' in it that represents the request parameter
-     * @param variable arguments
+     * @return integer
      */
-    handleLink : function (baseUrl) {
+    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj)
+    {
+        // If anything (json) was returned at all...
+        if (value) {
 
-        // Sanity check: number of argument place holders in URL equals number of arguments to this function
-        var placeHolders = baseUrl.match(/%s/);
-        
-        if (placeHolders.length != arguments.length - 1) {
-            throw "Expected " + placeHolders.length + " arguments but found " + (arguments.length - 1);
+            // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
+            if (value.results[0]) {
+                chartParamsObj = Fisma.Chart.mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value);
+            } else {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+                throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+            }
+            
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            
+            // validate that chart plotting data (numeric information) was returned
+            if (typeof chartParamsObj.chartData === 'undefined') {
+                throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
+            } 
+
+            // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
+            return Fisma.Chart.createJQChart(chartParamsObj);
+
+        } else {
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
+        }
+    },
+
+    /**
+     * Creates a chart within a div by the name of chartParamsObj.uniqueid.
+     * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
+     * This function may return before the actual creation of a chart if there is an external source.
+     *
+     * @return boolean
+     */
+    createJQChart : function (chartParamsObj)
+    {
+
+        // load in default values for paramiters, and replace it with any given params
+        var defaultParams = {
+            concatXLabel: false,
+            nobackground: true,
+            drawGridLines: false,
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: regular',
+            pointLabelAdjustX: -3,
+            pointLabelAdjustY: -7,
+            AxisLabelX: '',
+            AxisLabelY: '',
+            DataTextAngle: -30
+        };
+        chartParamsObj = jQuery.extend(true, defaultParams, chartParamsObj);
+
+        // param validation
+        if (document.getElementById(chartParamsObj.uniqueid) === false) {
+            throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj.uniqueid;
         }
 
-        // Loop over the variable length arguments (skipping the first argument, which is baseUrl)
-        var argumentIndex;
+        // set chart width to chartParamsObj.width
+        Fisma.Chart.setChartWidthAttribs(chartParamsObj);
 
-        for (argumentIndex = 1; argumentIndex < arguments.length; argumentIndex++) {
-            baseUrl = baseUrl.replace('%s', escape(arguments[argumentIndex]));
+        // Ensure the load spinner is visible
+        Fisma.Chart.makeElementVisible(chartParamsObj.uniqueid + 'loader');
+
+        // is the data being loaded from an external source? (Or is it all in the chartParamsObj obj?)
+        if (chartParamsObj.externalSource) {
+
+            /*
+             * If it is being loaded from an external source
+             *   setup a json request
+             *   have the json request return to createJQChart_asynchReturn
+             *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj.externalSource taken out
+            */
+
+            document.getElementById(chartParamsObj.uniqueid).innerHTML = 'Loading chart data...';
+
+            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
+            var externalSource = chartParamsObj.externalSource;
+            if (!chartParamsObj.oldExternalSource) {
+                chartParamsObj.oldExternalSource = chartParamsObj.externalSource;
+            }
+            chartParamsObj.externalSource = undefined;
+
+            // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
+            chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
+            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g,'%20');
+            chartParamsObj.lastURLpull = externalSource;
+
+            var myDataSource = new YAHOO.util.DataSource(externalSource);
+            myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+            myDataSource.responseSchema = {resultsList: "chart"};
+
+            var callback1 = {
+                success : Fisma.Chart.createJQChart_asynchReturn,
+                failure : Fisma.Chart.createJQChart_asynchReturn,
+                argument: chartParamsObj
+            };
+            myDataSource.sendRequest("", callback1);
+
+            return Fisma.Chart.CHART_CREATE_EXTERNAL;
+        }
+
+        // clear the chart area
+        document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
+        document.getElementById(chartParamsObj.uniqueid).className = '';
+        document.getElementById(chartParamsObj.uniqueid + 'toplegend').innerHTML = '';
+
+        // handel aliases and short-cut vars
+        if (typeof chartParamsObj.barMargin !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj.barMargin}}});
+            chartParamsObj.barMargin = undefined;
+        }
+        if (typeof chartParamsObj.legendLocation !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj.legendLocation }});
+            chartParamsObj.legendLocation = undefined;
+        }
+        if (typeof chartParamsObj.legendRowCount !== 'undefined') {
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj.legendRowCount}}});
+            chartParamsObj.legendRowCount = undefined;
+        }
+
+        // make sure the numbers to be plotted in chartParamsObj.chartData are infact numbers and not an array of strings of numbers
+        chartParamsObj.chartData = Fisma.Chart.forceIntegerArray(chartParamsObj.chartData);
+
+        // hide the loading spinner and show the canvas target
+        document.getElementById(chartParamsObj.uniqueid + 'holder').style.display = '';
+        Fisma.Chart.makeElementInvisible(chartParamsObj.uniqueid + 'holder');
+        document.getElementById(chartParamsObj.uniqueid + 'loader').style.position = 'absolute';
+        document.getElementById(chartParamsObj.uniqueid + 'loader').finnishFadeCallback = new Function ("Fisma.Chart.fadeIn('" + chartParamsObj.uniqueid + "holder', 500);");
+        Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'loader', 500);
+
+        // now that we have the chartParamsObj.chartData, do we need to make the chart larger and scrollable?
+        Fisma.Chart.setChartWidthAttribs(chartParamsObj);
+
+        // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
+        // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
+        Fisma.Chart.chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
+
+        // call the correct function based on chartType, or state there will be no chart created
+        var rtn = Fisma.Chart.CHART_CREATE_FAILURE;
+        if (!Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+
+            switch(chartParamsObj.chartType)
+            {
+                case 'stackedbar':
+                    chartParamsObj.varyBarColor = false;
+                                if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
+                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                    break;
+                case 'bar':
+
+                    // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                    if (typeof chartParamsObj.chartData[0] === 'object') {
+
+                        // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                        // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+
+                        chartParamsObj.varyBarColor = false;
+                        chartParamsObj.showlegend = true;
+
+                    } else {
+                        chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
+                        chartParamsObj.links = [chartParamsObj.links];
+                        chartParamsObj.varyBarColor = true;
+                        chartParamsObj.showlegend = false;
+                    }
+
+                    chartParamsObj.stackSeries = false;
+                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                    break;
+
+                case 'line':
+                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                    break;
+                case 'stackedline':
+                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                    break;
+                case 'pie':
+                    chartParamsObj.links = [chartParamsObj.links];
+                    rtn = Fisma.Chart.createChartPie(chartParamsObj);
+                    break;
+                default:
+                    throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
+            }
+        }
+
+        // chart tweeking external to the jqPlot library
+        Fisma.Chart.removeOverlappingPointLabels(chartParamsObj);
+        Fisma.Chart.applyChartBackground(chartParamsObj);
+        Fisma.Chart.applyChartWidgets(chartParamsObj);
+        Fisma.Chart.createChartThreatLegend(chartParamsObj);
+        Fisma.Chart.applyChartBorders(chartParamsObj);
+        Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
+        Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+        Fisma.Chart.getTableFromChartData(chartParamsObj);
+        Fisma.Chart.setTitle(chartParamsObj);
+        Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
+        
+        return rtn;
+    },
+
+    /**
+     * Takes a chartParamsObj and merges content of 
+     * externResponse-object into it based in the inheritance mode
+     * set in externResponse.
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     * 
+    */
+    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse)
+    {
+        var joinedParam = {};
+
+        // Is there an inheritance mode? 
+        if (externResponse.results[0].inheritCtl) {
+            if (externResponse.results[0].inheritCtl === 'minimal') {
+                // Inheritance mode set to minimal, retain certain attribs and merge
+                joinedParam = externResponse.results[0];
+                joinedParam.width = chartParamsObj.width;
+                joinedParam.height = chartParamsObj.height;
+                joinedParam.uniqueid = chartParamsObj.uniqueid;
+                joinedParam.externalSource = chartParamsObj.externalSource;
+                joinedParam.oldExternalSource = chartParamsObj.oldExternalSource;
+                joinedParam.widgets = chartParamsObj.widgets;
+            } else if (externResponse.results[0].inheritCtl === 'none') {
+                // Inheritance mode set to none, replace the joinedParam object
+                joinedParam = externResponse.results[0];
+            } else {
+                throw 'Error - Unknown chart inheritance mode';
+            }
+        } else {
+            // No inheritance mode, by default, merge everything
+            joinedParam = jQuery.extend(true, chartParamsObj, externResponse.results[0],true);
+        }
+
+        return joinedParam;
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a pie chart
+      * based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return void
+     */
+    createChartPie : function (chartParamsObj)
+    {
+        var x = 0;
+        var dataSet = [];
+        usedLabelsPie = chartParamsObj.chartDataText;
+
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+            chartParamsObj.chartDataText[x] += ' (' + chartParamsObj.chartData[x]  + ')';
+            dataSet[dataSet.length] = [chartParamsObj.chartDataText[x], chartParamsObj.chartData[x]];
+        }
+
+        var jPlotParamObj = {
+            seriesColors: chartParamsObj.colors,
+            grid: {
+                drawBorder: false,
+                drawGridlines: false,
+                shadow: false
+            },
+            axes: {
+                xaxis:{
+                    tickOptions: {
+                        angle: chartParamsObj.DataTextAngle,
+                        fontSize: '10pt',
+                        formatString: '%.0f'
+                    }
+                },
+                yaxis:{
+                    tickOptions: {
+                        formatString: '%.0f'
+                    }
+                }
+
+            },
+            seriesDefaults:{
+                renderer:$.jqplot.PieRenderer,
+                rendererOptions: {
+                    sliceMargin: 0,
+                    showDataLabels: true,
+                    shadowAlpha: 0.15,
+                    shadowOffset: 0,
+                    lineLabels: true,
+                    lineLabelsLineColor: '#777',
+                    diameter: chartParamsObj.height * 0.55,
+                    dataLabelFormatString: "%d%"
+                }
+            },
+            legend: {
+                location: 's',
+                show: true,
+                rendererOptions: {
+                    numberRows: 2
+                }
+            }
+        };
+
+        jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
+
+        // bug killer (for IE7) - state the height for the container div for emulated excanvas
+        $("[id="+chartParamsObj.uniqueid+"]").css('height', chartParamsObj.height);
+
+        // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+        jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
+
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+
+        plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
+
+        // create an event handeling function that calls chartClickEvent while preserving the parm object
+        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );
+
+        // hook un-highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.hideAllChartTooltips();
+            }
+        );
+
+        /* Hook the onMouseMove even on the foward most event canvas for the pie tooltip
+           The reason for this is because the highlight event wont return the mouse X/Y location */
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        // Hook onMouseMove on it
+        canvases[0].onmousemove = function (e) {
+            Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
+        };
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
+        // use the created function as the click-event-handeler
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
+
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a stacked
+      * bar chart based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
+     */
+    createChartStackedBar : function (chartParamsObj)
+    {
+        var x = 0; var y = 0;
+        var thisSum = 0;
+        var maxSumOfAll = 0;
+        var chartCeilingValue = 0;
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+
+            thisSum = 0;
+
+            for (y = 0; y < chartParamsObj.chartData.length; y++) {
+                thisSum += chartParamsObj.chartData[y][x];
+            }
+
+            if (thisSum > maxSumOfAll) { maxSumOfAll = thisSum; }
+
+            if (chartParamsObj.concatXLabel === true) {
+                chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
+            }
+        }
+
+        var seriesParam = [];
+        if (chartParamsObj.chartLayerText) {
+            for (x = 0; x < chartParamsObj.chartLayerText.length; x++) {
+                seriesParam[x] = {label: chartParamsObj.chartLayerText[x]};
+            }
+        }
+
+        // Make sure the Y-axis (row labels) are not offset by the formatter string rounding their values...
+        // (make the top most row label divisible by 5)
+        chartCeilingValue = Math.ceil(maxSumOfAll / 5) * 5;
+
+        // Force Y-axis row labels to be divisible by 5
+        yAxisTicks = [];
+        yAxisTicks[0] = 0;
+        yAxisTicks[1] = (chartCeilingValue/5);
+        yAxisTicks[2] = (chartCeilingValue/5) * 2;
+        yAxisTicks[3] = (chartCeilingValue/5) * 3;
+        yAxisTicks[4] = (chartCeilingValue/5) * 4;
+        yAxisTicks[5] = (chartCeilingValue/5) * 5;
+
+        $.jqplot.config.enablePlugins = true;
+
+        var jPlotParamObj = {
+            seriesColors: chartParamsObj.colors,
+            stackSeries: true,
+            series: seriesParam,
+            seriesDefaults:{
+                renderer: $.jqplot.BarRenderer,
+                rendererOptions:{
+                    barWidth: 35,
+                    showDataLabels: true,
+                    varyBarColor: chartParamsObj.varyBarColor,
+                    shadowAlpha: 0.15,
+                    shadowOffset: 0
+                },
+                pointLabels:{
+                    show: false,
+                    location: 's',
+                    hideZeros: true
+                }
+            },
+            axesDefaults: {
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                borderWidth: 0,
+                labelOptions: {
+                    enableFontSupport: true,
+                    fontFamily: 'arial, helvetica, clean, sans-serif',
+                    fontSize: '12pt',
+                    textColor: '#555555'
+                }
+            },
+            axes: {
+                xaxis:{
+                    label: chartParamsObj.AxisLabelX,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    renderer: $.jqplot.CategoryAxisRenderer,
+                    ticks: chartParamsObj.chartDataText,
+                    tickOptions: {
+                        angle: chartParamsObj.DataTextAngle,
+                        fontFamily: 'arial, helvetica, clean, sans-serif',
+                        fontSize: '10pt',
+                        textColor: '#000000'
+                    }
+                },
+                yaxis:{
+                    label: chartParamsObj.AxisLabelY,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                    min: 0,
+                    max: chartCeilingValue,
+                    autoscale: true,
+                    ticks: yAxisTicks,
+                    tickOptions: {
+                        formatString: '%.0f',
+                        fontFamily: 'arial, helvetica, clean, sans-serif',
+                        fontSize: '10pt',
+                        textColor: '#000000'
+                    }
+                }
+
+            },
+            highlighter: {
+                show: true,
+                showMarker:false,
+                showTooltip: true,
+                tooltipAxes: 'xy',
+                yvalues: 1,
+                tooltipLocation: 'e',
+                formatString: "-"
+            },
+            grid: {
+                gridLineWidth: 0,
+                shadow: false,
+                borderWidth: 1,
+                gridLineColor: '#FFFFFF',
+                background: 'transparent',
+                drawGridLines: chartParamsObj.drawGridLines,
+                show: chartParamsObj.drawGridLines
+                },
+            legend: {
+                show: chartParamsObj.showlegend,
+                rendererOptions: {
+                    numberRows: 1
+                },
+                location: 'nw'
+            }
+        };
+
+        // bug killer - The canvas object for IE does not understand what transparency is...
+        if (Fisma.Chart.isIE) {
+            jPlotParamObj.grid.background = '#FFFFFF';
+        }
+
+        // bug killer (for IE7) - state the height for the container div for emulated excanvas
+        $("[id="+chartParamsObj.uniqueid+"]").css('height', chartParamsObj.height);
+
+        // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
+        jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
+
+        // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
+        jPlotParamObj = Fisma.Chart.alterChartByGlobals(jPlotParamObj);
+
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+        
+        // implement hook nessesary for patterns
+        Fisma.Chart.hookPostDrawSeriesHooks();
+        
+        // trigger jqPlot lib to draw the chart
+        plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
+
+        // hook click events for navigation/"drill-down"
+        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
+        
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );    
+        
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
+        // Hook the mouse events for column labels (make tooltips show on label hovering)
+        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
+        for (x = 0; x < columnLabelObjs.length; x++) {
+            
+            // note which column number this object represents
+            columnLabelObjs[x].columnNumber = x;
+            
+            // hook onMouseOver to show tooltip
+            columnLabelObjs[x].onmouseover = function (ev) {
+                var forceStyle = {
+                    'left': this.parentNode.offsetLeft + 'px',
+                    'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
+                    'top': ''
+                };
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
+            };
+            
+            // hook onMouseOut to hide tooltip
+            columnLabelObjs[x].onmouseout = function (ev) {
+                Fisma.Chart.hideAllChartTooltips();
+            };
+            
+            // bring this label to front, otherwise onmouseover will never fire
+            columnLabelObjs[x].style.zIndex = 1;
         }
         
-        location.href = baseUrl;
+        Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
+        
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    /**
+     * Gets the tooltip div created for the chart 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return object[]
+     */
+    getTooltipObjOfChart : function (chartParamsObj) {
+        return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
+    },
+
+    getElementsByClassWithinObj : function (className, objectType, withinDiv) {
+        
+        // Is WithinDiv given? If not, assume we are looking from the document.body and down
+        if (withinDiv === null || withinDiv === '') {
+            withinDiv = document.body;
+        }
+        
+        // Is withinDiv an object, or object ID? - make it an object
+        if (typeof withinDiv !== 'object') {
+            withinDiv = document.getElementById(withinDiv);
+        }
+        
+        // Find the div that has the jqplot-highlighter-tooltip class
+        var objsFound = $(withinDiv).find(objectType).filter(
+            function() {
+                return $(this)[0].className.indexOf(className) !== -1;
+            }
+        );
+        
+        // Return results
+        return objsFound;
+    
+    },
+
+     /**
+      * Fires the jqPlot library, and creates a stacked
+      * line chart based on input chart object
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
+     */
+    createChartStackedLine : function (chartParamsObj)
+    {
+        var x = 0; var y = 0;
+        var thisSum = 0;
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            thisSum = 0;
+
+            for (y = 0; y < ['chartData'].length; y++) {
+                thisSum += ['chartData'][y][x];
+            }
+
+            chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
+        }
+
+        plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
+            seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
+            series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
+            seriesDefaults:{
+                fill:false,
+                showMarker: true,
+                showLine: true
+            },
+            axes: {
+                xaxis:{
+                    renderer:$.jqplot.CategoryAxisRenderer,
+                    ticks:chartParamsObj.chartDataText
+                },
+                yaxis:{
+                    min: 0
+                }
+            },
+            highlighter: { show: false },
+            legend: {
+                        show: true,
+                        rendererOptions: {
+                            numberRows: 1
+                        },
+                        location: 'nw'
+                    }
+        });
+
+        return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+    
+    /**
+     * Setup the jqPlot library to hook its draw event. Upon postDrawSeriesHooks, create chart patterns if desiered.
+     * This function will return and do nothing if it was called before, this is to prevent multiple hooks being
+     * placed into jqPlot.
+     *
+     * @return void
+     */
+    hookPostDrawSeriesHooks : function ()
+    {
+        if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
+            // we only push one hook
+            return;
+        }
+        
+        // Note that we have push this hook
+        Fisma.Chart.hasHookedPostDrawSeries = true;
+        
+        // hook jqPlot's postDrawSeriesHook to draw patterns should the user want this options
+        $.jqplot.postDrawSeriesHooks.push(function (canvasObj) {
+        
+                /* This is called after everytime a layer on a stacked bar chart is drawn (either the high,
+                   moderate, or low), so each time this is called, it is being called for a different color
+                   of chartParamsObj.colors */
+                
+                // Is the checkbox to use patterns in place of colors checked?
+                var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                if (usePatterns === 'false') {
+                    return;
+                }
+                
+                // This code only works with bar charts
+                if (this._barPoints === undefined) {
+                    return;
+                }
+                
+                // Because this is a nested function, chartParamsObj may or may not be the true related
+                // instance to this trigger (it isnt in Firefox). Refreash this variable.
+                if (this.canvas._elem.context.parentNode.id !== undefined) {
+                    var uniqueId = this.canvas._elem.context.parentNode.id;
+                    chartParamsObj = Fisma.Chart.chartsOnDOM[uniqueId];
+                }
+                
+                /* chartParamsObj.patternCounter will be used (incremented for each call of this function) to
+                   keep track of which pattern should be used next (in Fisma.Chart.patternURLs). */
+                // Instance this variable if needed
+                if (Fisma.Chart.chartsOnDOM[uniqueId].patternCounter === undefined) {
+                    Fisma.Chart.chartsOnDOM[uniqueId].patternCounter = 0;
+                }
+
+                // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
+                var myPatternId = Fisma.Chart.chartsOnDOM[uniqueId].patternCounter;
+                var myPatternURL = Fisma.Chart.patternURLs[myPatternId];
+                Fisma.Chart.chartsOnDOM[uniqueId].patternCounter++;
+                
+                // For each bar drawn of this layer/series/color
+                for (var bar = 0; bar < this._barPoints.length; bar++) {
+
+                    var img = new Image();
+                    
+                    // because img.onload will fire within this function, store the bar information on the object
+                    img.barRect = {
+                        'x': this._barPoints[bar][0][0],
+                        'y': this._barPoints[bar][0][1],
+                        'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
+                        'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
+                    };
+                    
+                    img.onload = function () {
+                        // create pattern
+                        var ptrn = canvasObj.createPattern(img, 'repeat');
+                        canvasObj.fillStyle = ptrn;
+                        canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
+                        canvasObj.restore();
+                    };
+                    
+                    // load pattern
+                    img.src = myPatternURL;
+                }
+                
+                return;
+            }
+        );
+
+        return;
+    },
+    
+    /**
+     * Creates the red-orange-yellow threat-legend that shows above charts
+     * The generated HTML code should go into the div with the id of the
+     * chart's uniqueId + "toplegend"
+     *
+     * @return boolean/integer
+     */
+    createChartThreatLegend : function (chartParamsObj)
+    {
+        if (chartParamsObj.showThreatLegend && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            if (chartParamsObj.showThreatLegend === true) {
+
+                // Is a width given for the width of the legend? OR should we assume 100%?
+                var threatLegendWidth = '100%';
+                if (chartParamsObj.threatLegendWidth) {
+                    threatLegendWidth = chartParamsObj.threatLegendWidth;
+                }
+
+                var cell;
+
+                // Tabel to hold all colored boxes and labels
+                var threatTable = document.createElement("table");
+                threatTable.style.fontSize = '12px';
+                threatTable.style.color = '#555555';
+                threatTable.width = threatLegendWidth;
+                var tblBody = document.createElement("tbody");
+                var row = document.createElement("tr");
+
+                cell = document.createElement("td");
+                cell.style.textAlign = 'center';
+                cell.style.fontWeight = 'bold';
+                cell.width = '40%';
+                var textLabel = document.createTextNode('Threat Level');
+                cell.appendChild(textLabel);
+                row.appendChild(cell);
+                
+                var colorToUse;
+                var usePatterns;
+                var thisLayerText;
+                for(var layerIndex in chartParamsObj.chartLayerText)
+                {
+                    cell = document.createElement("td");
+                    cell.width = '20%';
+                    
+                    // Are we using colors, or patterns?
+                    usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    if (usePatterns === 'true') {
+                        colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                    } else {
+                        colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = colorToUse.replace('#', '');
+                    }
+                    
+                    thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    
+                    cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
+                    
+                    row.appendChild(cell);
+                }
+
+                // close and post table on DOM
+                tblBody.appendChild(row);
+                threatTable.appendChild(tblBody);
+                var thisChartId = chartParamsObj.uniqueid;
+                var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
+                topLegendOnDOM.appendChild(threatTable);
+            }
+        }        
+    },
+
+    /**
+     * Creates a single color (i.e. red/orange/yellow) tabels to be added 
+     * into the threat-legend that shows above charts
+     *
+     * @return table
+     */
+    createThreatLegendSingleColor : function (blockColor, textLabel) {
+
+        var colorBlockTbl = document.createElement("table");
+        var colorBody = document.createElement("tbody");
+        var colorRow = document.createElement("tr");
+
+        var colorCell;
+
+        // Create the colored box or pattern
+        colorCell = document.createElement("td");
+        if (blockColor.indexOf('/') === -1) {                   // is this a URL, or color code?
+            colorCell.style.backgroundColor = '#' + blockColor;  // its a color
+        } else {                                                // its a URL
+            colorCell.style.backgroundImage = 'url(' + blockColor + ')';
+        }
+        colorCell.width = '15px';
+        colorRow.appendChild(colorCell);
+
+        // Forced space between colored box and label
+        colorCell = document.createElement("td");
+        colorCell.width = '3px';
+        colorRow.appendChild(colorCell);
+
+        // Apply label
+        colorCell = document.createElement("td");
+        colorCell.style.fontSize = '12px';
+        var textLabelObj = document.createTextNode('   ' + textLabel);
+        colorCell.appendChild(textLabelObj);
+        colorRow.appendChild(colorCell);
+
+        colorBody.appendChild(colorRow);
+        colorBlockTbl.appendChild(colorBody);
+        return colorBlockTbl;    
+    },
+
+    /**
+     * Event handler for the hilight event of charts. Upon hilighting is when the chart tooltip contents should
+     * be updated, and shown if not already.
+     *
+     * @return void
+     */
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
+    {
+        // Ensure all other tooltips are hidden 
+        Fisma.Chart.hideAllChartTooltips();
+        
+        var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
+        var defaultTooltip;
+        
+        /* The chartParamsObj.tooltip may have one of two structures -
+           either an array (of columns)
+           or an array (of layers) of arrays (of columns)   */
+        if (typeof chartParamsObj.tooltip[0] !== 'object') {
+            customTooltip = chartParamsObj.tooltip[pointIndex];
+        } else {
+            customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+        }
+        
+        // the same structure for the above applies to chartParamsObj.chartData
+        if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
+            defaultTooltip = chartParamsObj.chartData[pointIndex];
+        } else {
+            defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+        }
+        
+        // decide tooltip HTML
+        var ttHtml = '<span class="chartToolTipText">';
+        if (customTooltip !== '' && customTooltip !== undefined) {
+            ttHtml += customTooltip;
+        } else {
+            ttHtml += defaultTooltip;
+        }
+        ttHtml += '</span>';
+
+        // apply variables
+        ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
+        ttHtml = ttHtml.replace('#columnName#', chartParamsObj.chartDataText[pointIndex]);
+        if (data !== undefined && data !== null) {
+            ttHtml = ttHtml.replace('#count#', data[1]);
+        }
+        if (chartParamsObj.chartLayerText) {
+            ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
+        }
+        if (ttHtml.indexOf('#columnReport#') !== -1) {
+            ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
+        }
+        
+        // apply to tooltip
+        toolTipObj.innerHTML = ttHtml;
+        toolTipObj.style.display = 'block';
+        
+        // remove the .bottom and .right property - it should only exist if it is in forceTooltipStyle
+        toolTipObj.style.bottom = '';
+        toolTipObj.style.right = '';
+        
+        // IE7 (7 only) has a problem where it streatches the tooltip div
+        if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+            toolTipObj.style.width = '80px';
+        }
+        
+        // apply tooltip style if requested (this makes it possible to relocate the tooltip)
+        if (forceTooltipStyle !== undefined && forceTooltipStyle !== null) {
+            for(var key in forceTooltipStyle) {
+                toolTipObj.style[key] = forceTooltipStyle[key];
+            }
+        }
+        
+        /* By this line, we are done for bar charts. The tooltip will auto show itself
+           jqPlot Pie charts however, do not support the tooltip plugin, we need to make our own */
+        if (chartParamsObj.chartType === 'pie') {
+        
+            toolTipObj.style.display = 'none';
+            
+            var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+            pieTooltip.style.display = 'block';
+            pieTooltip.innerHTML = ttHtml;
+
+            // IE7 (7 only) has a problem where it streatches the tooltip div
+            if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+                pieTooltip.style.width = '200px';
+            }
+        }
+    },
+    
+    /**
+     * Returns HTML code to be injected into a tooltip. When rendered in a browser, is a human readable
+     * report showing information about the given column.
+     *
+     * @return string
+     */
+    getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
+    {
+        var report = '';
+        var total = 0;
+        
+        for (var L = 0; L < chartParamsObj.chartLayerText.length; L++) {
+            report += chartParamsObj.chartLayerText[L] + ": " + chartParamsObj.chartData[L][columnIndex] + '<br/>';
+            total += chartParamsObj.chartData[L][columnIndex];
+        }
+        
+        report += 'Total: ' + total;
+        return report;
+    },
+    
+    /**
+     * For pie-slice (or bar) referenced by pointIndex (which column/slice), returns the
+     * percentage that slice represents.
+     *
+     * @return int
+     */
+    getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
+    {
+        if (typeof chartParamsObj.chartData[0] === 'object') {
+            
+            // then this is a stacked bar chart
+            return 0;
+            
+        } else {
+            
+            // This is a basic-bar or pie chart
+            
+            var total = 0;
+            for (var i = 0; i < chartParamsObj.chartData.length; i++) {
+                total += chartParamsObj.chartData[i];
+            }
+            
+            var percentage = chartParamsObj.chartData[pointIndex] / total;
+            return Math.round(percentage * 100);
+        }
+    },
+    
+    /**
+     * Hides all chart tooltips throughout the entire DOM for all charts
+     *
+     * @return void
+     */
+    hideAllChartTooltips : function ()
+    {
+        // Find all divs that are chart tooltips
+        var tooltips = $(document.body).find('div').filter(
+            function() {
+                return $(this)[0].className.indexOf('jqplot-highlighter-tooltip') !== -1;
+            }
+        );
+        
+        // Hide them all
+        for(var x = 0; x < tooltips.length; x++)
+        {
+            tooltips[x].style.display = 'none';
+        }
+    },
+
+    /**
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * with the mouse
+     *
+     * @return void
+     */
+    chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
+        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+        
+        var offsetX; var offsetY;
+        if (window.event !== undefined) {
+            // We are in IE
+            offsetX = window.event.offsetX;
+            offsetY = window.event.offsetY;
+            offsetY += 65;
+        } else if (e.offsetX !== undefined) {
+            // We are not in IE nor FireFox
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+            offsetY += 45;
+        } else if (e.layerX !== undefined) {
+            // We are in Firefox
+            offsetX = e.layerX;
+            offsetY = e.layerY;
+            offsetY += 45;
+        } else {
+            // We are in a browser that clearly dosnt like standards... oh wait, none of them do
+            offsetX = 0;
+            offsetY = 0;
+        }
+        
+        pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
+        pieTooltip.style.top = offsetY + 'px';
+    },
+    
+    /**
+     * The event handeler for a chart click. This function should determine if the user needs to be
+     * navigated to another page or not
+     *
+     * @return void
+     */
+    chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
+    {
+
+        var theLink = false;
+        if (paramObj.links) {
+            if (typeof paramObj.links === 'string') {
+                theLink = paramObj.links;
+            } else {
+                if (paramObj.links[seriesIndex]) {
+                    if (typeof paramObj.links[seriesIndex] === "object") {
+                        theLink = paramObj.links[seriesIndex][pointIndex];
+                    } else {
+                        theLink = paramObj.links[seriesIndex];
+                    }
+                }
+            }
+        }
+
+        // bail on blank link
+        if (theLink === '') {
+            return;
+        }
+
+        // Does the link contain a variable?
+        if (theLink !== false) {
+            theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
+        }
+
+        // Escape, and then unescape all ? and = characters
+        theLink = escape(theLink);
+        theLink = theLink.replace('%3F', '?');
+        theLink = theLink.replace('%3D', '=');
+
+        if (paramObj.linksdebug === true) {
+            var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
+            msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
+            if (theLink !== false) { msg += "The link with this element is " + theLink; }
+            Fisma.Util.showAlertDialog(msg);
+        } else {
+
+            // We are not in link-debug mode, navigate if there is a link
+            if (theLink !== false && theLink !== 'false' && String(theLink) !== 'null') {
+                document.location = theLink;
+            }
+
+        }
+    },
+
+    /**
+     * Converts an array from strings to integers, for example;
+     * ["1", 2, "3", 4] would become [1, 2, 3, 4]
+     * This is a bug killer for external source plotting data as
+     * the jqPlot lib expects integers, and JSON may not always 
+     * be encoded that way
+     *
+     * @return array
+     */
+    forceIntegerArray : function (inptArray)
+    {
+        var x = 0;
+        for (x = 0; x < inptArray.length; x++) {
+            if (typeof inptArray[x] === 'object') {
+                inptArray[x] = Fisma.Chart.forceIntegerArray(inptArray[x]);
+            } else {
+                inptArray[x] = parseInt(inptArray[x], 10);    // make sure this is an int, and not a string of a number
+            }
+        }
+
+        return inptArray;
+    },
+
+    /**
+     * Manually draws borders onto the shadow canvas
+     * This function is nessesary as jqPlot's API does not allow 
+     * you to choose which borders are drawn and which are not.
+     * If "L" exists within chartParamsObj.borders, the left border is
+     * drawn, if "R" does (too), then the right is drawn and so on.
+     *
+     * @return void
+     */
+    applyChartBorders : function (chartParamsObj)
+    {
+        var x = 0;
+
+        // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
+        if (typeof chartParamsObj.borders === 'undefined') {
+            if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
+                // default for bar and stacked bar charts are bottom-left (BL)
+                chartParamsObj.borders = 'BL';
+            } else {
+                // assume no default for other chart types
+                return;
+            }
+        }
+
+        // Get the area of our containing divs
+        var targDiv = document.getElementById(chartParamsObj.uniqueid);
+        var children = targDiv.childNodes;
+
+        for (x = children.length - 1; x > 0; x--) {
+            // search for a canvs
+            if (typeof children[x].nodeName !== 'undefined') {
+
+                // search for a canvas that is the shadow canvas
+                if (String(children[x].nodeName).toLowerCase() === 'canvas' && children[x].className === 'jqplot-series-shadowCanvas') {
+
+                    // this is the canvas we want to draw on
+                    var targCanv = children[x];
+                    var context = targCanv.getContext('2d');
+
+                    var h = children[x].height;
+                    var w = children[x].width;
+
+                    context.strokeStyle = '#777777';
+                    context.lineWidth = 3;
+                    context.beginPath();
+
+                    // Draw left border?
+                    if (chartParamsObj.borders.indexOf('L') !== -1) {
+                        context.moveTo(0,0);
+                        context.lineTo(0, h);
+                        context.stroke();
+                    }               
+
+                    // Draw bottom border?
+                    if (chartParamsObj.borders.indexOf('B') !== -1) {
+                        context.moveTo(0, h);
+                        context.lineTo(w, h);
+                        context.stroke();
+                    }
+
+                    // Draw right border?
+                    if (chartParamsObj.borders.indexOf('R') !== -1) {
+                        context.moveTo(w, 0);
+                        context.lineTo(w, h);
+                        context.stroke();
+                    }
+
+                    // Draw top border?
+                    if (chartParamsObj.borders.indexOf('T') !== -1) {
+                        context.moveTo(0, 0);
+                        context.lineTo(w, 0);
+                        context.stroke();
+                    }
+
+                    return;
+                }
+            }
+        }
+    },
+
+    applyChartBackground : function (chartParamsObj)
+    {
+
+        var targDiv = document.getElementById(chartParamsObj.uniqueid);
+
+        // Dont display a background? Defined in either nobackground or background.nobackground
+        if (chartParamsObj.nobackground) {
+            if (chartParamsObj.nobackground === true) { return; }
+        }
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.nobackground) {
+                if (chartParamsObj.background.nobackground === true) {
+                    return;
+                }
+            }
+        }
+
+        // What is the HTML we should inject?
+        var backURL = '/images/logoShark.png'; // default location
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.URL) {
+                backURL = chartParamsObj.background.URL;
+            }
+        }
+        var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
+
+        // But wait, is there an override issued for the HTML of the background to inject?
+        if (chartParamsObj.background) {
+            if (chartParamsObj.background.overrideHTML) {
+                backURL = chartParamsObj.background.overrideHTML;
+            }
+        }
+
+        // Where do we inject the background in the DOM? (different for differnt chart rederers)
+        var cpy;
+        var insertBeforeChild;
+        if (chartParamsObj.chartType === 'pie') {
+            cpy = targDiv.childNodes[3];
+            insertBeforeChild = targDiv.childNodes[4];
+        } else {    
+            cpy = targDiv.childNodes[6];
+            insertBeforeChild = targDiv.childNodes[5];
+        }
+
+        var cpyStyl = cpy.style;
+
+        injectedBackgroundImg = document.createElement('span');
+        injectedBackgroundImg.setAttribute('align', 'center');
+        injectedBackgroundImg.setAttribute('style' , 'position: absolute; left: ' + cpyStyl.left + '; top: ' + cpyStyl.top + '; width: ' + cpy.width + 'px; height: ' + cpy.height + 'px;');
+
+        var inserted = targDiv.insertBefore(injectedBackgroundImg, insertBeforeChild);
+        inserted.innerHTML = injectHTML;
+    },
+
+    /**
+     * Creates the chart widgets/options (regular options, not global-settings).
+     * The generated HTML for these "widgets" as placed in a div by the id of the
+     * chart's uniqueId + "WidgetSpace"
+     *
+     * @return void
+     */
+    applyChartWidgets : function (chartParamsObj)
+    {
+        var x = 0;
+        var y = 0;
+
+        var wigSpace = document.getElementById(chartParamsObj.uniqueid + 'WidgetSpace');
+
+        // Are there widgets for this chart?
+        if (typeof chartParamsObj.widgets === 'undefined') {
+            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            return;
+        } else if (chartParamsObj.widgets.length === 0) {
+            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            return;
+        }
+
+        if (chartParamsObj.widgets) {
+
+            var addHTML = '';
+
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+
+                // create a widget id if one is not explicitly given
+                if (!thisWidget.uniqueid) {
+                    thisWidget.uniqueid = chartParamsObj.uniqueid + '_widget' + x;
+                    chartParamsObj.widgets[x].uniqueid = thisWidget.uniqueid;
+                }
+
+                // print the label text to be displayed to the left of the widget if one is given
+                addHTML += '<tr><td nowrap align=left>' + thisWidget.label + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
+
+                switch(thisWidget.type) {
+                    case 'combo':
+
+                        addHTML += '<select id="' + thisWidget.uniqueid + '" onChange="Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
+                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+
+                        for (y = 0; y < thisWidget.options.length; y++) {
+                            addHTML += '<option value="' + thisWidget.options[y] + '">' + thisWidget.options[y] + '</option><br/>';
+                        }
+
+                        addHTML += '</select>';
+
+                        break;
+
+                    case 'text':
+
+                        addHTML += '<input onKeyDown="if(event.keyCode==13){Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget.uniqueid + '" />';
+                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+                        break;
+
+                    default:
+                        throw 'Error - Widget ' + x + "'s type (" + thisWidget.type + ') is not a known widget type';
+                }
+
+
+                addHTML += '</td></tr>';
+
+            }
+
+            // add this widget HTML to the DOM
+            wigSpace.innerHTML = '<table>' + addHTML + '</table>';
+
+        }
+
+        Fisma.Chart.applyChartWidgetSettings(chartParamsObj);
+    },
+
+    /**
+     * Looks at chartParamsObj["widget"], or for every chart-options/widget, loads the
+     * values for this opt/widget into the user-interface object for this option.
+     * This value may be loaded froma saved cookie, fallback to a default, or
+     * be foreced to a certain value every time if the PHP wrapper demands it.
+     *
+     * @return void
+     */
+    applyChartWidgetSettings : function (chartParamsObj)
+    {
+        var x = 0;
+
+        if (chartParamsObj.widgets) {
+
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+
+                // load the value for widgets
+                var thisWigInDOM = document.getElementById(thisWidget.uniqueid);
+                if (thisWidget.forcevalue) {
+                    // this widget value is forced to a certain value upon every load/reload
+                    thisWigInDOM.value = thisWidget.forcevalue;
+                    thisWigInDOM.text = thisWidget.forcevalue;
+                } else {
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    if (thisWigCookieValue !== null) {
+                        // the value has been coosen in the past and is stored as a cookie
+                        thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
+                        thisWigInDOM.value = thisWigCookieValue;
+                        thisWigInDOM.text = thisWigCookieValue;
+                    } else {
+                        // no saved value/cookie. Is there a default given in the chartParamsObj object
+                        if (thisWidget.defaultvalue) {
+                            thisWigInDOM.value = thisWidget.defaultvalue;
+                            thisWigInDOM.text = thisWidget.defaultvalue;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * When an external source is queried (JSON query), all chart parameters/options/widgets
+     * are placed into the query URL. This function builds the trailing query to be appended
+     * to the static external source URL.
+     * Returns the chartParamsObj object given to this function with chartParamsObj.externalSourceParams altered.
+     *
+     * @return Array
+     */
+    buildExternalSourceParams : function (chartParamsObj)
+    {
+
+        // build arguments to send to the remote data source
+
+        var x = 0;
+        var thisWidgetValue = '';
+        chartParamsObj.externalSourceParams = '';
+
+        if (chartParamsObj.widgets) {
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+
+                var thisWidget = chartParamsObj.widgets[x];
+                var thisWidgetName = thisWidget.uniqueid;
+                var thisWidgetOnDOM = document.getElementById(thisWidgetName);
+
+                // is this widget actully on the DOM? Or should we load the cookie?         
+                if (thisWidgetOnDOM) {
+                    // widget is on the DOM
+                    thisWidgetValue = thisWidgetOnDOM.value;
+                } else {
+                    // not on DOM, is there a cookie?
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    if (thisWigCookieValue !== null) {
+                        // there is a cookie value, us it
+                        thisWidgetValue = thisWigCookieValue;
+                    } else {
+                        // there is no cookie, is there a default value?
+                        if (thisWidget.defaultvalue) {
+                            thisWidgetValue = thisWidget.defaultvalue;
+                        }
+                    }
+                }
+
+                chartParamsObj.externalSourceParams += '/' + thisWidgetName + '/' + thisWidgetValue;
+            }
+        }
+
+        return chartParamsObj;
+    },
+
+     /**
+      * Event handeler for when a user changes combo-boxes or textboxes 
+      * of chart settings.
+      *
+      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+      *
+      * @param object
+      * @return void
+     */
+    widgetEvent : function (chartParamsObj)
+    {
+        var x = 0;
+
+        // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
+        if (chartParamsObj.widgets) {
+            for (x = 0; x < chartParamsObj.widgets.length; x++) {
+                var thisWidgetName = chartParamsObj.widgets[x].uniqueid;
+                var thisWidgetValue = document.getElementById(thisWidgetName).value;
+                YAHOO.util.Cookie.set(chartParamsObj.uniqueid + '_' + thisWidgetName, thisWidgetValue, {path: "/"});
+            }
+        }
+
+        // build arguments to send to the remote data source
+        chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
+
+        // restore externalSource so a json request is fired when calling createJQPChart
+        chartParamsObj.externalSource = chartParamsObj.oldExternalSource;
+        chartParamsObj.oldExternalSource = undefined;
+
+        chartParamsObj.chartData = undefined;
+        chartParamsObj.chartDataText = undefined;
+
+        // re-create chart entirly
+        document.getElementById(chartParamsObj.uniqueid + 'holder').finnishFadeCallback = new Function ("Fisma.Chart.makeElementVisible('" + chartParamsObj.uniqueid + "loader'); Fisma.Chart.createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); Fisma.Chart.finnishFadeCallback = '';");
+        Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'holder', 300);
+    },
+
+    makeElementVisible : function (eleId)
+    {
+        var ele = document.getElementById(eleId);
+        ele.style.opacity = '1';
+        ele.style.filter = "alpha(opacity = '100')";
+    },
+
+    makeElementInvisible : function (eleId)
+    {
+        var ele = document.getElementById(eleId);
+        ele.style.opacity = '0';
+        ele.style.filter = "alpha(opacity = '0')";
+    },
+
+    fadeIn : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) {
+            return;
+        }
+
+        var fadingEnabled = ('fadingEnabled');
+        if (fadingEnabled === 'false') {
+            Fisma.Chart.makeElementVisible(eid);
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = undefined;
+            }
+            return;
+        }
+
+        if (typeof element.isFadingNow !== 'undefined') {
+            if (element.isFadingNow === true) {
+                return;
+            }
+        }
+        element.isFadingNow = true;
+
+        element.FadeState = null;
+        element.FadeTimeLeft = undefined;
+
+        Fisma.Chart.makeElementInvisible(eid);
+        element.style.opacity = '0';
+        element.style.filter = "alpha(opacity = '0')";
+
+        Fisma.Chart.fade(eid, TimeToFade);
+    },
+
+    fadeOut : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) { return; }
+
+        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        if (fadingEnabled === 'false') {
+            Fisma.Chart.makeElementInvisible(eid);
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = undefined;
+            }
+            return;
+        }
+
+        if (typeof element.isFadingNow !== 'undefined') {
+            if (element.isFadingNow === true) {
+                return;
+            }
+        }
+        element.isFadingNow = true;
+
+        element.FadeState = null;
+        element.FadeTimeLeft = undefined;
+
+        Fisma.Chart.makeElementVisible(eid);
+        element.style.opacity = '1';
+        element.style.filter = "alpha(opacity = '100')";
+
+        Fisma.Chart.fade(eid, TimeToFade);
+    },
+
+    fade : function (eid, TimeToFade)
+    {
+
+        var element = document.getElementById(eid);
+        if (element === null) { return; }
+
+        //  element.style = '';
+
+        if(element.FadeState === null)
+        {
+            if(element.style.opacity === null || element.style.opacity === '' || element.style.opacity === '1')
+            {
+                element.FadeState = 2;
+            } else {
+                element.FadeState = -2;
+            }
+        }
+
+        if (element.FadeState === 1 || element.FadeState === -1) {
+            element.FadeState = element.FadeState === 1 ? -1 : 1;
+            element.FadeTimeLeft = TimeToFade - element.FadeTimeLeft;
+        } else {
+            element.FadeState = element.FadeState === 2 ? -1 : 1;
+            element.FadeTimeLeft = TimeToFade;
+            setTimeout("Fisma.Chart.animateFade(" + new Date().getTime() + ",'" + eid + "'," + TimeToFade + ")", 33);
+        }  
+    },
+
+    animateFade : function (lastTick, eid, TimeToFade)
+    {  
+        var curTick = new Date().getTime();
+        var elapsedTicks = curTick - lastTick;
+
+        var element = document.getElementById(eid);
+
+        if(element.FadeTimeLeft <= elapsedTicks)
+        {
+            if (element.FadeState === 1) {
+                element.style.filter = 'alpha(opacity = 100)';
+                element.style.opacity = '1';
+            } else {
+                element.style.filter = 'alpha(opacity = 0)';
+                element.style.opacity = '0';
+            }
+            element.isFadingNow = false;
+            element.FadeState = element.FadeState === 1 ? 2 : -2;
+
+            if (element.finnishFadeCallback) {
+                element.finnishFadeCallback();
+                element.finnishFadeCallback = '';
+            }
+            return;
+        }
+
+        element.FadeTimeLeft -= elapsedTicks;
+        var newOpVal = element.FadeTimeLeft/TimeToFade;
+        if(element.FadeState === 1) {
+            newOpVal = 1 - newOpVal;
+        }
+
+        element.style.opacity = newOpVal;
+        element.style.filter = 'alpha(opacity = "' + (newOpVal*100) + '")';
+
+        setTimeout("Fisma.Chart.animateFade(" + curTick + ",'" + eid + "'," + TimeToFade + ")", 33);
+    },
+
+    /**
+     * This function controles how width and scrolling is handeled with the chart's canvase's
+     * parent div. If autoWidth (or in PHP Fisma_Chart->widthAuto(true);) is set, the parent
+     * div will always be scrollable. If not, it may still be automatically set scrollable if
+     * the with in chartParamsObj.width is less than the minimum with required by the chart (calculated
+     * in this function).
+     *
+     * NOTE: This function does not actully look at the DOM. It assumes the author to used
+     *       Fisma_Chart->setWidth() knew what he was doing and set it correctly.
+     *       The static width given to charts is considered a minimum width.
+     *
+     * @return void
+     */
+    setChartWidthAttribs : function (chartParamsObj)
+    {
+
+        var makeScrollable = false;
+        var minSpaceRequired;
+
+        // Determin if we need to make this chart scrollable...
+        // Do we really have the chart data to plot?
+        if (chartParamsObj.chartData) {
+            // Is this a bar chart?
+            if (chartParamsObj.chartType === 'bar' || chartParamsObj.chartType === 'stackedbar') {
+
+                // How many bars does it have?
+                var barCount;
+                if (chartParamsObj.chartType === 'stackedbar') {
+                    if (typeof chartParamsObj.chartData[0] === 'undefined') {
+                        return;
+                    } else {
+                        barCount = chartParamsObj.chartData[0].length;
+                    }
+                } else if (chartParamsObj.chartType === 'bar') {
+                    barCount = chartParamsObj.chartData.length;
+                }
+
+                // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
+                minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
+
+                // Do we not have enough space for a non-scrolling chart?
+                if (chartParamsObj.width < minSpaceRequired) {
+
+                    // We need to make this chart scrollable
+                    makeScrollable = true;
+                }
+            }
+        }
+
+        // Is auto-width enabeled? (set width to 100% and make scrollable)
+        if (typeof chartParamsObj.autoWidth !== 'undefined') {
+            if (chartParamsObj.autoWidth === true) {
+                makeScrollable = true;
+            }
+        }
+
+        if (makeScrollable === true) {
+
+            document.getElementById(chartParamsObj.uniqueid + 'loader').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = 'auto';
+            document.getElementById(chartParamsObj.uniqueid).style.width = minSpaceRequired + 'px';
+            document.getElementById(chartParamsObj.uniqueid  + 'toplegend').style.width = minSpaceRequired + 'px';
+
+            // handel alignment
+            if (chartParamsObj.align === 'center') {
+                document.getElementById(chartParamsObj.uniqueid).style.marginLeft = 'auto';
+                document.getElementById(chartParamsObj.uniqueid).style.marginRight = 'auto';
+                document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.marginLeft = 'auto';
+                document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.marginRight = 'auto';
+            }
+
+        } else {
+
+            document.getElementById(chartParamsObj.uniqueid + 'loader').style.width = '100%';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = chartParamsObj.width + 'px';
+            document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = '';
+            document.getElementById(chartParamsObj.uniqueid).style.width = chartParamsObj.width + 'px';
+            document.getElementById(chartParamsObj.uniqueid + 'toplegend').width = chartParamsObj.width + 'px';
+        }
+
+    },
+
+    /**
+     * Builds a table based on the data to plot on the chart for screen readers.
+     * The generated HTML should generally be placed in a div by the Id of the
+     * chart's uniqueId + "table"
+     *
+     * @param object
+     * @return String
+     */
+    getTableFromChartData : function (chartParamsObj)
+    {
+        if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            return;
+        }
+
+        var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
+        dataTableObj.innerHTML = '';
+
+        if (Fisma.Chart.getGlobalSetting('showDataTable') === 'true') {
+
+            if (chartParamsObj.chartType === 'pie') {
+                Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
+            } else {
+                Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
+            }
+
+            // Show the table generated based on chart data
+            dataTableObj.style.display = '';
+            // Hide, erase, and collapse the container of the chart divs
+            document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
+            document.getElementById(chartParamsObj.uniqueid).style.width = 0;
+            document.getElementById(chartParamsObj.uniqueid).style.height = 0;
+            // Ensure the threat-level-legend is hidden
+            document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.display = 'none';
+
+        } else {
+            dataTableObj.style.display = 'none';
+        }
+    },
+
+    /**
+     * Creates a HTML table showing the data represented by the pie chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
+    getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
+    {
+        var tbl     = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+
+        var x = 0;
+        var cell;
+        var cellText;
+        var row;
+
+        // row of slice-labels
+        row = document.createElement("tr");
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            cell = document.createElement("th");
+            cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        // row of data
+        row = document.createElement("tr");
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+            cell = document.createElement("td");
+            cellText = document.createTextNode(chartParamsObj.chartData[x]);
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        tbl.appendChild(tblBody);
+        tbl.setAttribute("border", "1");
+        tbl.setAttribute("width", "100%");
+
+        dataTableObj.appendChild(tbl);
+    },
+
+    /**
+     * Creates a HTML table showing the data represented by the bar chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
+    getTableFromBarChart : function (chartParamsObj, dataTableObj)
+    {
+        var x = 0;
+        var y = 0;
+        var cell;
+        var cellText;
+
+        var tbl     = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+        var row = document.createElement("tr");
+
+        // add a column for layer names if this is a stacked chart
+        if (typeof chartParamsObj.chartLayerText !== 'undefined') {
+            cell = document.createElement("td");
+            cellText = document.createTextNode(" ");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+
+        for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
+            cell = document.createElement("th");
+            cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
+            cell.setAttribute("style", "font-style: bold;");
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+
+        for (x = 0; x < chartParamsObj.chartData.length; x++) {
+
+            var thisEle = chartParamsObj.chartData[x];
+            row = document.createElement("tr");
+
+            // each layer label
+            if (typeof chartParamsObj.chartLayerText !== 'undefined') {
+                cell = document.createElement("th");
+                cellText = document.createTextNode(chartParamsObj.chartLayerText[x]);
+                cell.setAttribute("style", "font-style: bold;");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            if (typeof(thisEle) === 'object') {
+
+                for (y = 0; y < thisEle.length; y++) {
+                    cell = document.createElement("td");
+                    cellText = document.createTextNode(thisEle[y]);
+                    cell.setAttribute("style", "font-style: bold;");
+                    cell.appendChild(cellText);
+                    row.appendChild(cell);
+                }
+
+            } else {
+
+                cell = document.createElement("td");
+                cellText = document.createTextNode(thisEle);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            tblBody.appendChild(row);
+
+        }
+
+        tbl.appendChild(tblBody);
+        tbl.setAttribute("border", "1");
+        tbl.setAttribute("width", "100%");
+
+        dataTableObj.appendChild(tbl);
+    },
+
+    /**
+     * Removes decimals from point labels, along with some other minor maintenance
+     * - removes data/point-labels that are 0s
+     * - Applies outlines if the globalSettings is set so
+     * - forces color to black, and bolds the font
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    removeDecFromPointLabels : function (chartParamsObj)
+    {
+            var outlineStyle = '';
+            var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
+
+            var x = 0;
+            for (x = 0; x < chartOnDOM.childNodes.length; x++) {
+
+                    var thisChld = chartOnDOM.childNodes[x];
+
+                    // IE Support - IE does not support .classList, manually make this
+                    if (typeof thisChld.classList === 'undefined') {
+                        thisChld.classList = String(thisChld.className).split(' ');
+                    }
+
+                    if (thisChld.classList) {
+                        if (thisChld.classList[0] === 'jqplot-point-label') {
+
+                                // convert this from a string to a number to a string again (removes decimal if its needless)
+                                thisLabelValue = parseInt(thisChld.innerHTML, 10);
+                                thisChld.innerHTML = thisLabelValue;
+                                thisChld.value = thisLabelValue;
+
+                                // if this number is 0, hide it (0s overlap with other numbers on bar charts)
+                                if (parseInt(thisChld.innerHTML, 10) === 0 || isNaN(thisLabelValue)) {
+                                    thisChld.innerHTML = '';
+                                }
+
+                                // add outline to this point label so it is easily visible on dark color backgrounds (outlines are done through white-shadows)
+                                if (Fisma.Chart.getGlobalSetting('pointLabelsOutline') === 'true') {
+
+                                    outlineStyle = 'text-shadow: ';
+                                    outlineStyle += '#FFFFFF 0px -1px 0px, ';
+                                    outlineStyle += '#FFFFFF 0px 1px 0px, ';
+                                    outlineStyle += '#FFFFFF 1px 0px 0px, ';
+                                    outlineStyle += '#FFFFFF -1px 1px 0px, ';
+                                    outlineStyle += '#FFFFFF -1px -1px 0px, ';
+                                    outlineStyle += '#FFFFFF 1px 1px 0px; ';
+
+                                    thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
+                                    thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
+
+                                } else {
+                                    thisChld.innerHTML = '<span style="' + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
+                                }
+
+                                // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
+                                var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                                var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                                thisLeftNbrValue += chartParamsObj.pointLabelAdjustX;
+                                thisTopNbrValue += chartParamsObj.pointLabelAdjustY;
+                                if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
+                                if (thisLabelValue >= 1000) { thisLeftNbrValue -= 3; }
+                                thisChld.style.left = thisLeftNbrValue + 'px';
+                                thisChld.style.top = thisTopNbrValue + 'px';
+
+                                // force color to black
+                                thisChld.style.color = 'black';
+
+                        }
+                    }
+            }
+    },
+
+    /**
+     * Removes data-labels that are within a certain range of eachother. If two labels are close,
+     * the data-label showing the lesser value is hidden.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    removeOverlappingPointLabels : function (chartParamsObj)
+    {
+
+            // This function will deal with removing point labels that collie with eachother
+            // There is no need for this unless this is a stacked-bar or stacked-line chart
+            if (chartParamsObj.chartType !== 'stackedbar' && chartParamsObj.chartType !== 'stackedline') {
+                return;
+            }
+
+            var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
+
+            var pointLabels_info = [];  //array of objects {left, top, value, obj}, one for each data label
+                            
+            var pointLabelLeft;     // the x-offset of the data label
+            var pointLabelTop;      // the y=offset of the data label
+            var pointLabelValue;    // the numerical value the data label displays (casted as an integer)
+
+            var x = 0;
+            var y = 0;
+            var d = 0;
+
+            for (x = 0; x < chartOnDOM.childNodes.length; x++) {
+
+                var thisChld = chartOnDOM.childNodes[x];
+
+                // IE support - IE dosnt supply .classList array, just a className string. Manually build Fisma.Chart....
+                if (typeof thisChld.classList === 'undefined') {
+                    thisChld.classList = String(thisChld.className).split(' ');
+                }
+
+                if (thisChld.classList[0] === 'jqplot-point-label') {
+
+                    var chldIsRemoved = false;
+
+                    if (typeof thisChld.isRemoved !== 'undefined') {
+                        chldIsRemoved = thisChld.isRemoved;
+                    }
+
+                    if (chldIsRemoved === false) {
+                        // index this point labels position
+
+                        // remove "px" from string, and conver to number
+                        pointLabelLeft = parseInt(String(thisChld.style.left).replace('px', ''), 10);
+                        pointLabelTop = parseInt(String(thisChld.style.top).replace('px', ''), 10);
+                        pointLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
+
+                        var thispLabelInfo = {
+                            left: pointLabelLeft, 
+                            top: pointLabelTop, 
+                            value: pointLabelValue, 
+                            obj: thisChld
+                        };
+
+                        pointLabels_info.push(thispLabelInfo);
+                    }
+                }
+            }
+
+            // Ensure point labels do not collide with others
+                $.each(pointLabels_info, function(index, thisPointLabel) {
+
+                    /* now determin the distance between this point label, and all
+                       point labels within this column. pointLabels_info[]
+                       holds all point labels within this column. */
+
+                    $.each(pointLabels_info, function(index, checkAgainst) {
+
+                        // get the distance from thisPointLabel to checkAgainst point label
+                        var deltaX = (thisPointLabel.left - checkAgainst.left);
+                        deltaX = deltaX * deltaX;
+                        var deltaY = (thisPointLabel.top - checkAgainst.top);
+                        deltaY = deltaY * deltaY;
+                        var d = Math.sqrt(deltaX + deltaY);
+                        
+                        if (d < 17 && d !== 0 && !isNaN(checkAgainst.value) && !isNaN(thisPointLabel.value)) {
+
+                            // remove whichever label has the lower number
+
+                            if (checkAgainst.value < thisPointLabel.value) {
+                                checkAgainst.obj.innerHTML = '';
+                                checkAgainst.obj.isRemoved = true;
+                            } else {
+                                thisPointLabel.obj.innerHTML = '';
+                                thisPointLabel.obj.isRemoved = true;
+                            }
+
+                            // We jave just removed a point label, so this function will need to be run again
+                            // as the labels will need to be reindexed.
+
+                            Fisma.Chart.removeOverlappingPointLabels(chartParamsObj);
+                            return;
+                        }
+                    });
+                });
+    },
+
+    /**
+     * The event listener for the Hide button shown in chart options
+     *
+     * @return void
+     */
+    hideButtonClick : function (scope, chartParamsObj, obj)
+    {
+        Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
+    },
+
+    /**
+     * Controles if the YUI-tab-view of the settings for a given drawn chart on the DOM
+     * is visible or not.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    setChartSettingsVisibility : function (chartId, boolVisible)
+    {
+        var menuHolderId = chartId + 'WidgetSpaceHolder';
+        var menuObj = document.getElementById(menuHolderId);
+
+        if (boolVisible === 'toggle') {
+            if (menuObj.style.display === 'none') {
+                boolVisible = true;
+            } else {
+                boolVisible = false;
+            }
+        }
+
+        if (boolVisible === true) {
+            menuObj.style.display = '';
+        } else {
+            menuObj.style.display = 'none';
+        }
+    },
+
+    /**
+     * Will take values from checkboxes/textboxes within the Global Settings tab of
+     * a chart and save each settings into cookies, and then trigger Fisma.Chart.redrawAllCharts()
+     *
+     * @return void
+     */
+    globalSettingUpdate : function (mouseEvent, chartUniqueId)
+    {
+        // get this chart's GlobSettings menue
+        var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
+
+        // get all elements of this chart's GlobSettings menue
+        var settingOpts = settingsMenue.childNodes;
+
+        var x = 0;
+        for (x = 0; x < settingOpts.length; x++) {
+            var thisOpt = settingOpts[x];
+            if (thisOpt.nodeName === 'INPUT') {
+                if (thisOpt.type === 'checkbox') {
+                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.checked);
+                } else {
+                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.value);
+                }
+            }
+        }
+
+        Fisma.Chart.redrawAllCharts();
+    },
+
+    /**
+     * Will update checkboxes/textboxes within the Global Settings tab of
+     * the chart to be equal to the current cookie state for each setting 
+     * or the default stored in globalSettingsDefaults.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return void
+     */
+    globalSettingRefreshUi : function (chartParamsObj)
+    {
+        /*
+            Every input-element (setting UI) has an id equal to the cookie name 
+            to which its value is stored. So wee we have to do is look for a
+            cookie based on the id for each input element
+        */
+
+        // get this chart's GlobSettings menue
+        var settingsMenue = document.getElementById(chartParamsObj.uniqueid + 'GlobSettings');
+
+        // get all elements of this chart's GlobSettings menue
+        var settingOpts = settingsMenue.childNodes;
+
+        var x = 0;
+        for (x = 0; x < settingOpts.length; x++) {
+            var thisOpt = settingOpts[x];
+            if (thisOpt.nodeName === 'INPUT') {
+
+                // By this line (and in this block), we know we have found an input element on this GlobSettings menue
+
+                if (thisOpt.type === 'checkbox') {
+                    thisOpt.checked = (Fisma.Chart.getGlobalSetting(thisOpt.id) ==='true') ? true : false;
+                } else {
+                    thisOpt.value = Fisma.Chart.getGlobalSetting(thisOpt.id);
+                    thisOpt.text = thisOpt.value;
+                }
+            }
+        }
+    },
+
+    /**
+     * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
+     * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
+     * will be returned.
+     * If the setting being looked for has never beem set, and there is no default value, an 
+     * exception is thown.
+     *
+     * @param string settingName
+     * @return string
+     */
+    getGlobalSetting : function (settingName)
+    {
+
+        var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
+
+        if (rtnValue !== null) {
+            return rtnValue;
+        } else {
+
+            if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js';
+            } else {
+                return String(Fisma.Chart.globalSettingsDefaults[settingName]);
+            }
+        }
+    },
+
+    /**
+     * Saves a setting with the that can be recalled later with Fisma.Chart.getGlobalSetting()
+     *
+     * @param string settingName
+     * @param string newValue
+     * @return void
+     */
+    setGlobalSetting : function (settingName, newValue)
+    {
+        YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
+    },
+
+    /**
+     * Will alter the input chart object based on 
+     * settings(cookies) or defaults stored in globalSettingsDefaults.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * Returns: The given object, which may or may not have alterations
+     *
+     * @param object
+     * @return object
+     */
+    alterChartByGlobals : function (chartParamObj)
+    {
+
+        // Show bar shadows?
+        if (Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
+            chartParamObj.seriesDefaults.rendererOptions.shadowDepth = 3;
+            chartParamObj.seriesDefaults.rendererOptions.shadowOffset = 3;
+        }
+
+        // Depth of bar shadows?
+        if (Fisma.Chart.getGlobalSetting('barShadowDepth') !== 'no-setting' && Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
+            chartParamObj.seriesDefaults.rendererOptions.shadowDepth = Fisma.Chart.getGlobalSetting('barShadowDepth');
+            chartParamObj.seriesDefaults.rendererOptions.shadowOffset = Fisma.Chart.getGlobalSetting('barShadowDepth');
+        }
+
+        // grid-lines?
+        if (Fisma.Chart.getGlobalSetting('gridLines') === 'true') {
+            chartParamObj.grid.gridLineWidth = 1;
+            chartParamObj.grid.borderWidth = 0;
+            chartParamObj.grid.gridLineColor = undefined;
+            chartParamObj.grid.drawGridLines = true;
+            chartParamObj.grid.show = true;
+        }
+
+        // grid-lines?
+        if (Fisma.Chart.getGlobalSetting('dropShadows') !== 'false') {
+            chartParamObj.grid.shadow = true;
+        }   
+
+        // point labels?
+        if (Fisma.Chart.getGlobalSetting('pointLabels') === 'true') {
+            chartParamObj.seriesDefaults.pointLabels.show = true;
+        }
+
+        // point labels outline?
+            /* no alterations to the chartParamObject needs to be done here, this is handeled by Fisma.Chart.removeDecFromPointLabels() */  
+
+
+        return chartParamObj;
+    },
+
+
+    /**
+     * Redraws all charts and refreashes all options dialogs associated.
+     *
+     * If using IE, will post a loading message, and re-call this function
+     * again with doRedrawNow=true based on a timer
+     *
+     * The reason for the use of the timer is to ensure the browser repaints
+     * its content area, and the loading message is actully shown 
+     * (and yes, this is nessesary).
+     */
+    redrawAllCharts : function (doRedrawNow)
+    {
+        var thisParamObj;
+        var uniqueid;
+        
+        // First, show a loading message showing that the chart is loading
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];    
+            Fisma.Chart.showChartLoadingMsg(thisParamObj);
+        }
+
+        // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
+        if (Fisma.Chart.isIE === true) {
+            if (doRedrawNow !== true || doRedrawNow === null) { 
+                setTimeout("Fisma.Chart.redrawAllCharts(true);", 300);
+                return;
+            }
+        }
+
+        // Now redraw and refreash charts and chart options
+        for (uniqueid in Fisma.Chart.chartsOnDOM) {
+
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
+
+            // redraw chart
+            Fisma.Chart.createJQChart(thisParamObj);
+
+            // refreash Global Settings UI
+            Fisma.Chart.globalSettingRefreshUi(thisParamObj);
+        }
+
+    },
+
+    /**
+     * Shows the loading spinner in the place of the given chart on the DOM.
+     * If a chart has already been drawn, it will be destoryed.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    showChartLoadingMsg : function (chartParamsObj)
+    {
+        // Ensure the threat-level-legend is hidden
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
+
+        // Show spinner
+        Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
+
+        // Create text "Loading" message
+        var chartContainer = document.getElementById(chartParamsObj['uniqueid']);
+        var loadChartDataMsg = document.createTextNode("\n\n\n\nLoading chart data...");
+        var pTag = document.createElement('p');
+        pTag.align = 'center';
+        pTag.appendChild(loadChartDataMsg);
+
+        // Show text "Loading" message
+        chartContainer.innerHTML = '';      // clear the current chart container div
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(document.createElement('br'));
+        chartContainer.appendChild(pTag);
+    },
+    
+    setTitle : function (chartParamsObj)
+    {
+        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
+            var titleNode = document.createTextNode(chartParamsObj.title);
+            titleArea.innerHTML = '';
+            titleArea.appendChild(titleNode);
+            titleArea.appendChild(document.createElement('br'));
+        }
+    },
+    
+    /**
+     * Will insert a "No data to plot" message when there is no 
+     * data to plot, or all plot data are 0s
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    showMsgOnEmptyChart : function (chartParamsObj)
+    {
+        if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var targDiv = document.getElementById(chartParamsObj.uniqueid);
+
+            // Place message on DOM
+            var insertBeforeChild = targDiv.childNodes[1];
+            var msgOnDom = document.createElement('div');
+            msgOnDom.height = '100%';
+            msgOnDom.style.align = 'center';
+            msgOnDom.style.position = 'absolute';
+            msgOnDom.style.width = chartParamsObj.width + 'px';
+            msgOnDom.style.height = '100%';
+            msgOnDom.style.textAlign = 'center';
+            msgOnDom.style.verticalAlign = 'middle';
+            msgOnDom.appendChild( document.createTextNode("No data to plot. ") );
+            var changeParamsLink = document.createElement('a');
+            changeParamsLink.href = "JavaScript: Fisma.Chart.setChartSettingsVisibility('" + chartParamsObj.uniqueid + "', 'toggle');";
+            changeParamsLink.appendChild( document.createTextNode('Change chart parameters?') );
+            msgOnDom.appendChild(changeParamsLink);
+            targDiv.appendChild(msgOnDom);
+            
+            // Make sure screen-reader-table is not showing
+            var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
+            dataTableObj.style.display = 'none';
+        }
+    },
+
+    /**
+     * Returns true if there is no data to plot, or if all plot data is 0
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return boolean
+     */
+    chartIsEmpty : function (chartParamsObj)
+    {
+        var isChartEmpty = true;
+        var x = 0; var y = 0;
+
+        for (x in chartParamsObj.chartData) {
+
+            if (typeof chartParamsObj.chartData[x] === 'object') {
+
+                for (y in chartParamsObj.chartData[x]) {
+                    if (parseInt(chartParamsObj.chartData[x][y], 10) > 0) {
+                        isChartEmpty = false;
+                    }
+                }
+
+            } else {
+                if (parseInt(chartParamsObj.chartData[x], 10) > 0) {
+                    isChartEmpty = false;
+                }
+            }
+
+        }
+
+        return isChartEmpty;
+    },
+    
+    /**
+     * Place canvases in divs with the appropriate style declairations. 
+     * This is nessesary to force styles when printing.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
+    placeCanvasesInDivs : function(chartParamsObj) {
+
+        // Get the div that holds all canvases of this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Get a list (obj-array) of all canvases for this chart that are absolute positioned
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this).css('position') == 'absolute';
+            }
+        );
+
+        // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
+        canvases.wrap(
+            function() {
+                var div;
+                var canvas = $(this);
+
+                if (canvas.context.className == 'jqplot-yaxis-tick') {
+
+                    // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
+                    div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            right: canvas.css('right')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            right: 0
+                        }
+                    );
+                    
+                    if (Fisma.Chart.isIE === false) {
+                        div.className = 'chart-yaxis-tick';
+                    } else {
+                        div.className = 'chart-yaxis-tick-InIE';
+                    }
+
+                } else if (canvas.context.className == 'jqplot-xaxis-label') {
+                    
+                    // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
+                    div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            bottom: '0px'
+                        }
+                    );
+
+                } else {
+
+                    // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
+                    div = $('<div />').css(
+                        {
+                            position: 'absolute',
+                            top: canvas.css('top'),
+                            left: canvas.css('left')
+                        }
+                    );
+                    canvas.css(
+                        {
+                            top: 0,
+                            left: 0
+                        }
+                    );
+
+                }
+
+                return div;
+            }
+        );
+
+        return this;
     }
+    
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -3296,6 +5660,10 @@ Fisma.CheckboxTree = {
         }
 
         var topListItem = clickedBox.parentNode;
+
+        if (topListItem.nextSibling === null) {
+            return;
+        }
 
         // If there are no nested checkboxes, then there is nothing to do
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
@@ -3363,7 +5731,6 @@ Fisma.CheckboxTree = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -3427,8 +5794,7 @@ Fisma.Commentable = {
 
                  argument: newPanel
              }, 
-             null
-         );
+             null);
          
          // Prevent form submission
          return false;
@@ -3444,11 +5810,7 @@ Fisma.Commentable = {
       */
      postComment : function() {
          
-         var postUrl = "/comment/add/id/"
-                     + encodeURIComponent(Fisma.Commentable.config.id)
-                     + "/type/"
-                     + encodeURIComponent(Fisma.Commentable.config.type)
-                     + "/format/json";
+         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -3460,11 +5822,10 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     Fisma.Util.showAlertDialog('Document upload failed.');
                  }
              }, 
-             null
-         );
+             null);
                   
          // Prevent form submission
          return false;
@@ -3488,14 +5849,15 @@ Fisma.Commentable = {
                  // Handle a JSON syntax error by constructing a fake response object
                  responseStatus = new Object();
                  responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server."
+                 responseStatus.message = "Invalid response from server.";
              } else {
                  throw e;
              }
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var alertMessage = "Error: " + responseStatus.message;
+             Fisma.Util.showAlertDialog(alertMessage);
 
              return;
          }
@@ -3837,7 +6199,6 @@ Fisma.ControlTree.prototype = {
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -3854,8 +6215,11 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
+            // The error message should be hidden before handles test email
+            YAHOO.util.Dom.get('msgbar').style.display = 'none';
+
             // Remove used old panel if necessary
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
@@ -3888,8 +6252,16 @@ Fisma.Email = function() {
             content.appendChild(sendBtn);
     
             // Load panel
-            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel('Test E-mail Configuration', content.innerHTML);
-    
+            var panelConfig = {
+                    width : "260px",
+                    modal : false
+                };
+            Fisma.Email.panelElement = Fisma.HtmlPanel.showPanel(
+                'Test E-mail Configuration',
+                content.innerHTML,
+                null,
+                panelConfig);
+
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
         },
@@ -3899,9 +6271,11 @@ Fisma.Email = function() {
          */
         sendTestEmail : function() {
             
-            if (document.getElementById('testEmailRecipient').value == '') {
+            if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                alert("Recipient is required.");
+                var alertMessage = "Recipient is required.";
+                var config = {zIndex : 10000};
+                Fisma.Util.showAlertDialog(alertMessage, config);
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -3925,18 +6299,20 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    alert('Failed to send test mail: ' + o.statusText);
-                    
+                    var alertMessage = 'Failed to send test mail: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                     spinner.hide();
                 }
             }, null);
     
             // Remove used panel
-            if (Fisma.Email.panelElement != null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
-                Fisma.Email.panelElement.removeMask();
+            if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
+                Fisma.Email.panelElement.hide();
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
+            
+            return true;
         }
     };
 }();
@@ -3961,7 +6337,6 @@ Fisma.Email = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Finding = {
@@ -4079,12 +6454,13 @@ Fisma.Finding = {
                 },
                 
                 failure : function (connection) {
-                    alert('Unable to load security control definition.');
+                    Fisma.Util.showAlertDialog('Unable to load security control definition.');
                 }
             }
         );
     }
-}
+
+};
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -4110,7 +6486,6 @@ Fisma.Finding = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.FindingSummary = function() {
@@ -4157,6 +6532,7 @@ Fisma.FindingSummary = function() {
 
             // Render each node at this level
             for (var nodeId in tree) {
+                var c;
                 var node = tree[nodeId];
 
                 // Append two rows ('ontime' and 'overdue') to the table for this node
@@ -4177,7 +6553,7 @@ Fisma.FindingSummary = function() {
 
                 var expandControlImage = document.createElement('img');
                 expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img"
+                expandControlImage.id = node.nickname + "Img";
 
                 var expandControl = document.createElement('a');
                 expandControl.appendChild(expandControlImage);
@@ -4216,9 +6592,9 @@ Fisma.FindingSummary = function() {
                 
                 // Render the remaining cells on the this row (which are all summary counts)
                 var i = 1; // start at 1 because the system label is in the first cell
-                for (var c in ontime) {
+                for (c in ontime) {
                     count = ontime[c];
-                    cell = firstRow.insertCell(i++);
+                    cell = firstRow.insertCell(i);
                     if (c == 'CLOSED' || c == 'TOTAL') {
                         // The last two colums don't have the ontime/overdue distinction
                         cell.className = "noDueDate";
@@ -4227,10 +6603,11 @@ Fisma.FindingSummary = function() {
                         cell.className = 'onTime';                
                     }
                     this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    i += 1;
                 }
 
                 // Now add cells to the second row
-                for (var c in overdue) {
+                for (c in overdue) {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
@@ -4302,7 +6679,7 @@ Fisma.FindingSummary = function() {
             var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
             if (treeNode.hasOverdue) {
                 // Do not hide the overdue row. Instead, update the counts
-                var i = 0;
+                i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
@@ -4362,7 +6739,7 @@ Fisma.FindingSummary = function() {
                 ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
                 overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
 
-                var i = 0;
+                i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
                     this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
@@ -4466,11 +6843,11 @@ Fisma.FindingSummary = function() {
         findNode : function (nodeName, tree) {
             for (var nodeId in tree) {
                 node = tree[nodeId];
-                if (node.nickname == nodeName) {
+                if (node.nickname === nodeName) {
                     return node;
                 } else if (node.children.length > 0) {
                     var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode != false) {
+                    if (foundNode !== false) {
                         return foundNode;
                     }
                 }
@@ -4507,10 +6884,11 @@ Fisma.FindingSummary = function() {
          * @param expanded Used to generate link
          */
         updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+            var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
-                    var link = document.createElement('a');
+                    link = document.createElement('a');
                     link.href = this.makeLink(orgName, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
@@ -4535,7 +6913,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
-                        var link = document.createElement('a');
+                        link = document.createElement('a');
                         link.href = this.makeLink(orgName, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
@@ -4567,40 +6945,36 @@ Fisma.FindingSummary = function() {
                 var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 
                 if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + nowStr;
+                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
                 } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + nowStr;
+                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
                 }
             }
 
             // Include any status
             var statusString = '';
-            if (status != '' && status !='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + escape(status);
+            if (status !== '' && status !=='TOTAL') {
+                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
             }
 
             // Include any filters
             var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType != '') {
-                filterType = '/type/enumIs/' + this.filterType;
+            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
+                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
             }
 
             var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource != '') {
-                filterSource = '/source/textExactMatch/' + this.filterSource;
+            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
+                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
             }
 
             // Render the link
-            var uri = '/finding/remediation/list/queryType/advanced'
-                    + onTimeString
-                    + statusString
-                    + filterType
-                    + filterSource;
+            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             if (expanded) {
-                uri += '/organization/textExactMatch/' + orgName;
+                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
             } else {
-                uri += '/organization/organizationSubtree/' + orgName;
+                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
             }
 
             return uri;            
@@ -4612,9 +6986,7 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/'
-                    + format
-                    + this.listExpandedNodes(this.treeRoot, '');
+            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 
@@ -4689,11 +7061,7 @@ Fisma.Highlighter = function() {
 
             var escapedDelimiter = Fisma.Util.escapeRegexValue(delimiter);
 
-            var regex = new RegExp("^(.*?)" 
-                                   + escapedDelimiter
-                                   + "(.*?)"
-                                   + escapedDelimiter
-                                   + "(.*?)$");
+            var regex = new RegExp("^(.*?)" + escapedDelimiter + "(.*?)" + escapedDelimiter + "(.*?)$");
 
             for (var i in elements) {
                 var element = elements[i];
@@ -4795,7 +7163,7 @@ Fisma.Highlighter = function() {
 
                     var newTextNode = document.createTextNode(match);
 
-                    if (j % 2 == 0) {
+                    if (j % 2 === 0) {
                         // This is a plaintext node
                         parentNode.appendChild(newTextNode);
                     } else {
@@ -4809,7 +7177,7 @@ Fisma.Highlighter = function() {
                 }
             }
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -4834,9 +7202,7 @@ Fisma.Highlighter = function() {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
-
 Fisma.HtmlPanel = function() {
     return {
         /**
@@ -4850,12 +7216,12 @@ Fisma.HtmlPanel = function() {
          */
         showPanel : function(title, html, element, userConfig) {
             // Initialize element or its id representing the panel with default value conditionally
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -4873,7 +7239,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (typeof(html) != 'undefined' && html != null && html != '') {
+            if (html !== '') {
                 panel.setBody(html);
                 panel.center();
             }
@@ -4903,7 +7269,6 @@ Fisma.HtmlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.Incident = {
@@ -5112,11 +7477,11 @@ Fisma.Incident = {
 
         //The first child of <td> block should be Name field.
         var nameField = YAHOO.util.Dom.getFirstChild(tdForm);
-        var nameElClone = nameField.cloneNode(true) 
+        var nameElClone = nameField.cloneNode(true);
 
         //The next sibling should be role field  
         var roleField = YAHOO.util.Dom.getNextSibling(nameField);
-        var roleElClone = roleField.cloneNode(true) 
+        var roleElClone = roleField.cloneNode(true);
 
         newTdElForm.appendChild(nameElClone); 
         newTdElForm.appendChild(roleElClone); 
@@ -5124,9 +7489,6 @@ Fisma.Incident = {
         //create p node for Desription and textarea
         var elP = document.createElement('p');
         elP.innerHTML = 'Description: ';
-
-        var newTextareaEl = document.createElement('textarea');
-        newTextareaEl.setAttribute('id',textareaId);
 
         var descField = YAHOO.util.Dom.getNextSibling(roleField);
         var textareaField = YAHOO.util.Dom.getFirstChild(descField);
@@ -5136,10 +7498,19 @@ Fisma.Incident = {
         var textareaCols = YAHOO.util.Dom.getAttribute(textareaField, 'cols');
         var textareaName = YAHOO.util.Dom.getAttribute(textareaField, 'name');
 
+        // To create an element with a NAME attribute and its value for IE.
+        var newTextareaEl;
+        if (YAHOO.env.ua.ie) {
+            newTextareaEl = document.createElement("<textarea name='" + textareaName + "'></textarea>");
+        } else {
+            newTextareaEl = document.createElement('textarea');
+        }
+
+        newTextareaEl.setAttribute('id',textareaId);
         newTextareaEl.setAttribute('rows',textareaRows);
         newTextareaEl.setAttribute('cols',textareaCols);
         newTextareaEl.setAttribute('name',textareaName);
- 
+
         elP.appendChild(newTextareaEl);
         newTdElForm.appendChild(elP); 
 
@@ -5185,7 +7556,6 @@ Fisma.Incident = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Ldap = {
@@ -5215,7 +7585,7 @@ Fisma.Ldap = {
             var piece = pieces[pieceIndex];
 
             if ('id' == piece) {
-                ldapConfigId = pieces[parseInt(pieceIndex) + 1];
+                ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }
@@ -5254,6 +7624,93 @@ Fisma.Ldap = {
     }  
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    Fisma.Menu = {
+        resolveOnClickObjects: function(obj) {
+            if (obj.onclick && obj.onclick.fn) {
+                obj.onclick.fn = Fisma.Util.getObjectFromName(obj.onclick.fn);
+            }
+
+            if (obj.submenu) {
+                var groups = obj.submenu.itemdata;
+                for (var i in groups) {
+                    var group = groups[i];
+                    for (var j in group) {
+                        var item = group[j];
+                        Fisma.Menu.resolveOnClickObjects(item);
+                    }
+                }
+            }
+        },
+
+        goTo: function(eType, eObject, param) {
+            // create dialog
+            var Dom = YAHOO.util.Dom,
+                Event = YAHOO.util.Event,
+                Panel = YAHOO.widget.Panel,
+                contentDiv = document.createElement("div"),
+                errorDiv = document.createElement("div"),
+                form = document.createElement('form'),
+                textField = document.createElement('input'),
+                button = document.createElement('input');
+            Dom.setAttribute(textField, "type", "text");
+            Dom.setAttribute(button, "type", "submit");
+            Dom.setAttribute(button, "value", "Go");
+            form.innerHTML = "ID: ";
+            form.appendChild(textField);
+            form.appendChild(button);
+            contentDiv.appendChild(errorDiv);
+            contentDiv.appendChild(form);
+
+            // Add event listener
+            var fn = function(ev, obj) {
+                Event.stopEvent(ev);
+                var input = Number(obj.textField.value.trim());
+                if (isFinite(input)) {
+                    obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
+                    window.location = obj.controller + "/view/id/" + input;
+                } else { // input NaN
+                    obj.errorDiv.innerHTML = "Please enter a single ID number.";
+                }
+            };
+            param.textField = textField;
+            param.errorDiv = errorDiv;
+            Event.addListener(form, "submit", fn, param);
+
+            // show the panel
+            var panel = new Panel(Dom.generateId(), {modal: true});
+            panel.setHeader("Go To " + param.model + "...");
+            panel.setBody(contentDiv);
+            panel.render(document.body);
+            panel.center();
+            panel.show();
+            textField.focus();
+        }
+    };
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -5274,7 +7731,6 @@ Fisma.Ldap = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Module = {
@@ -5284,11 +7740,7 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' 
-                       + switchButton.payload.id 
-                       + '/enabled/' 
-                       + enabled
-                       + '/format/json/';
+        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
         
         YAHOO.util.Connect.asyncRequest(
             'GET', 
@@ -5298,8 +7750,7 @@ Fisma.Module = {
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null
-        );
+            null);
     },
     
     /**
@@ -5314,14 +7765,15 @@ Fisma.Module = {
                 // Handle a JSON syntax error by constructing a fake response object
                 responseStatus = new Object();
                 responseStatus.success = false;
-                responseStatus.message = "Invalid response from server."
+                responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
         }
         
         if (!responseStatus.success) {
-            alert('Error: Not able to change module status. Reason: ' + responseStatus.message);
+            var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
+            Fisma.Util.showAlertDialog(alertMessage);
         }
         
         // Disable switch button spinner
@@ -5329,6 +7781,601 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A treeview widget that is specialized for displaying the organization/system hierarchy
+     * 
+     * @namespace Fisma
+     * @class OrganizationTreeView
+     * @extends n/a
+     * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
+     */
+    var OTV = function(contentDivId) {
+        this._contentDiv = document.getElementById(contentDivId);
+        
+        if (YAHOO.lang.isNull(this._contentDiv)) {
+            throw "Invalid contentDivId";
+        }
+        
+        this._storage = new Fisma.PersistentStorage("Organization.Tree");
+    };
+
+    OTV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _contentDiv: null,
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
+        _treeView: null,
+
+        /**
+         * The div containing the "include disposal systems" checkbox
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckboxContainer: null,
+
+        /**
+         * The checkbox for "include disposal systems"
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckbox: null,
+        
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _treeViewContainer: null,
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
+        _savePanel: null,
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
+        _storage: null,
+
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
+        render: function () {
+            var that = this;
+
+            // We need storage before we can render anything
+            Fisma.Storage.onReady(function () {
+                that._disposalCheckboxContainer = document.createElement("div");
+                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
+                that._contentDiv.appendChild(that._disposalCheckboxContainer);
+
+                that._loadingContainer = document.createElement("div");
+                that._renderLoading(that._loadingContainer);
+                that._contentDiv.appendChild(that._loadingContainer);
+
+                that._treeViewContainer = document.createElement("div");
+                that._renderTreeView(that._treeViewContainer);
+                that._contentDiv.appendChild(that._treeViewContainer);                
+            });
+        },
+
+        /**
+         * Render the "include disposal systems" interface
+         *
+         * @method OrganizationTreeView._renderDisposalCheckbox
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderDisposalCheckbox: function (container) {
+            this._disposalCheckbox = document.createElement("input");
+            this._disposalCheckbox.type = "checkbox";
+            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
+            YAHOO.util.Dom.generateId(this._disposalCheckbox);
+            YAHOO.util.Event.addListener(
+                this._disposalCheckbox, 
+                "click", 
+                this._handleDisposalCheckboxAction, 
+                this, 
+                true
+            );
+            container.appendChild(this._disposalCheckbox);
+            
+            var label = document.createElement("label");
+            label.setAttribute("for", this._disposalCheckbox.id);
+            label.appendChild(document.createTextNode("Display Disposed Systems"));
+            container.appendChild(label);
+            
+            container.setAttribute("class", "showDisposalSystem");
+        },
+       
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderLoading: function (container) {
+            var loadingImage = document.createElement("img");
+            loadingImage.src = "/images/spinners/small.gif";
+
+            container.style.display = "none";
+            container.appendChild(loadingImage);
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
+        _showLoadingImage: function () {
+            this._loadingContainer.style.display = "block";
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
+        _hideLoadingImage: function () {
+            this._loadingContainer.style.display = "none";    
+        },
+
+        /**
+         * Set the user preference for the include disposal system checkbox and re-render the tree view
+         *
+         * @method OrganizationTreeView._handleDisposalCheckboxAction
+         * @param event {YAHOO.util.Event} The mouse event
+         */
+        _handleDisposalCheckboxAction: function (event) {
+            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
+            this._renderTreeView();
+        },
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderTreeView: function (container) {
+            this._showLoadingImage();
+
+            var url = '/organization/tree-data/format/json';
+
+            if (this._storage.get("includeDisposalSystem") === true) {
+                url += '/displayDisposalSystem/true';
+            }
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                url, 
+                {
+                    success: function (response) {
+                        var json = YAHOO.lang.JSON.parse(response.responseText);
+
+                        // Load the tree data into a tree view
+                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                            this._treeView,
+                            this.handleDragDrop,
+                            this
+                        );
+
+                        // Expand the first two levels of the tree by default
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+
+                        this._treeView.draw();
+                        this._buildContextMenu();
+                        this._hideLoadingImage();
+                    },
+                    failure: function (response) {
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
+        _buildTreeNodes: function (nodeList, parent) {
+
+            for (var i in nodeList) {
+                var node = nodeList[i];
+                var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                                 + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+
+                var yuiNode = new YAHOO.widget.TextNode(
+                    {
+                        label: nodeText,
+                        organizationId: node.id,
+                        type: node.orgType,
+                        systemId: node.systemId
+                    }, 
+                    parent,
+                    false
+                );
+
+                // Set the label style
+                yuiNode.labelStyle = node.orgType;
+
+                var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
+                if (sdlcPhase === 'disposal') {
+                    yuiNode.labelStyle += " disposal";
+                }
+
+                // Recurse
+                if (node.children.length > 0) {
+                    this._buildTreeNodes(node.children, yuiNode);
+                }
+            }
+        },
+
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
+        expandAll: function () {
+            this._treeView.getRoot().expandAll();
+        },
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
+        collapseAll: function () {
+            this._treeView.getRoot().collapseAll();
+        },
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Set up the GET query string for this operation
+            var query = '/organization/move-node/src/' 
+                      + srcNode.data.organizationId 
+                      + '/dest/' 
+                      + destNode.data.organizationId 
+                      + '/dragLocation/' 
+                      + dragLocation;
+    
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.show();
+    
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
+                            // the context menu listener
+                            this._buildContextMenu();
+                            
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+
+            var that = this;
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {that._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
+        },
+
+        /**
+         * Add the context menu behavior to the tree view
+         *
+         * @method OrganizationTreeView._buildContextMenu
+         */                
+        _buildContextMenu: function () {
+            var contextMenuItems = ["View"];
+
+            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
+                YAHOO.util.Dom.generateId(),
+                { 
+                    trigger: this._treeView.getEl(),
+                    itemdata: contextMenuItems,
+                    lazyload: true
+                }
+            );
+
+            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
+        },
+
+        /**
+         * A callback for context menu events
+         *
+         * @method OrganizationTreeView._contextMenuHandler
+         * @param event {String} The name of the event
+         * @param eventArgs {Array} An array of YAHOO.util.Event
+         */                
+        _contextMenuHandler: function (event, eventArgs) {
+            var targetElement = eventArgs[1].parent.contextEventTarget;
+            var targetNode = this._treeView.getNodeByElement(targetElement);
+        
+            // Create a request URL to view this object
+            var url;
+            var type = targetNode.data.type;
+
+            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+                var url = '/organization/view/id/' + targetNode.data.organizationId;
+            } else {
+                var url = '/system/view/id/' + targetNode.data.systemId;                
+            }
+
+            window.location = url;
+        }
+    };
+
+    Fisma.OrganizationTreeView = OTV;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Class to store local data and persist to the server.
+     *
+     * @namespace Fisma
+     * @class PeristentStorage
+     * @extends Fisma.Storage
+     * @constructor
+     * @param namespace {String} Namespace of stored data.
+     */
+    Fisma.PersistentStorage = function(namespace) {
+        Fisma.PersistentStorage.superclass.constructor.call(this, namespace);
+    };
+    YAHOO.extend(Fisma.PersistentStorage, Fisma.Storage, {
+        /**
+         * @property _modified
+         * @type Array
+         * @protected
+         */
+        _modified: null,
+
+        /**
+         * Set value for key
+         *
+         * @method PersistentStorage.set
+         * @param key {String}
+         * @param value {String|Array|Object}
+         */
+        set: function(key, value) {
+            if (this._modified === null) {
+                this._modified = {};
+            }
+            this._modified[key] = value;
+            return this._set(key, value);
+        },
+
+        /**
+         * Initialize the local storage with default values.
+         *
+         * @method Storage.init
+         * @param values {Object} Object literal of key-value pairs to set
+         */
+        init: function(values) {
+            for (var key in values) {
+                this._set(key, values[key]);
+            }
+        },
+        /**
+         * Synchronize the server with the local state.
+         *
+         * @method PersistentStorage.sync
+         * @param reply {Array} Array of keys to reply with, null implies all keys.
+         * @param callback {Function|Object} Callback function/object.
+         */
+        sync: function(reply, callback) {
+            var successFn = null,
+                failureFn = null,
+                scope = null;
+            if (callback) {
+                if (typeof(callback) == "function") {
+                    successFn = callback;
+                } else if (callback.success && typeof(callback.success) == "function") {
+                    successFn = callback.success;
+                }
+                if (callback.failure && typeof(callback.failure) == "function") {
+                    failureFn = callback.failure;
+                }
+                if (callback.scope) {
+                    scope = callback.scope;
+                }
+            }
+            Fisma.Storage.onReady(function() {
+                var uri = '/storage/sync/format/json',
+                    csrfInputs = YAHOO.util.Selector.query('input[name^=csrf]'),
+                    callback = {
+                        scope: this,
+                        success: function(response) {
+                            var object = YAHOO.lang.JSON.parse(response.responseText);
+                            if (object.status == "ok") {
+                                this.init(object.data);
+                                this._modified = null;
+                            }
+                            if (successFn) {
+                                successFn.call(scope ? scope : this, response, object);
+                            }
+                        },
+                        failure: function() {
+                            if (failureFn) {
+                                failureFn.call(scope ? scope : this);
+                            }
+                        }
+                    },
+                    postData = $.param({
+                        csrf: (YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0) ? csrfInputs[0].value : '',
+                        namespace: this.namespace,
+                        updates: YAHOO.lang.JSON.stringify(this._modified),
+                        reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
+                    });
+                YAHOO.util.Connect.asyncRequest ( 'POST', uri , callback , postData );
+            }, this, true);
+        }
+    });
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -5352,7 +8399,6 @@ Fisma.Module = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Remediation = {
@@ -5362,15 +8408,11 @@ Fisma.Remediation = {
      * @return {Boolean} False to interrupt consequent operations
      */
     upload_evidence : function() {
-        if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
-            return false;
-        }
 
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
             '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init
-        );
+            Fisma.Remediation.upload_evidence_form_init);
 
         return false;
     },
@@ -5385,122 +8427,23 @@ Fisma.Remediation = {
         document.finding_detail_upload_evidence.action = document.finding_detail.action;
     },
 
-    /**
-     * To approve evidence with optional comment
+   /**
+     * To approve or deny mitigation strategy or evidence with comment
      * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
+     * @param {String} action The action name: APPROVED or DENIED
+     * @param {String} formId 
+     * @param {String} panelTitle the text shows on the panel.
      */
-    ev_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
-            return false;
-        }
+    remediationAction : function(action, formId, panelTitle) {
 
         var content = document.createElement('div');
         var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
+        var c_title;
+        if ('APPROVED' === action) {
+            c_title = document.createTextNode('Comments (OPTIONAL):');
+        } else {
+            c_title = document.createTextNode('Comments:');
         }
-    },
-
-    /**
-     * To deny evidence with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ev_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        p.appendChild(document.createTextNode('Comments:'));
-        content.appendChild(p);
-        var dt = document.createElement('textarea');
-        dt.rows = 5;
-        dt.cols = 60;
-        dt.id = 'dialog_comment';
-        dt.name = 'comment';
-        content.appendChild(dt);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-
-        Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to deny.');
-                return;
-            }
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_ea';
-            submitMsa.value = 'DENIED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        }
-    },
-
-    /**
-     * To approve mitigation strategy with optional comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_approve : function(formname) {
-        if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(c_title);
         content.appendChild(p);
         var textarea = document.createElement('textarea');
@@ -5517,80 +8460,38 @@ Fisma.Remediation = {
         button.id = 'dialog_continue';
         button.value = 'Continue';
         content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
-            }
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'APPROVED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = 'APPROVED';
-            form2.appendChild(submitMsa);
-            form2.submit();
-        }
-    },
+       
+        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-    /**
-     * To deny mitigation strategy with comment
-     * 
-     * @param {String} formname The main form name from page
-     * @return {Boolean} False if user gives up this operation
-     */
-    ms_deny : function(formname) {
-        if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
-            return false;
-        }
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title = document.createTextNode('Comments:');
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-        
-        Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
-            var form2 = formname;
-            if  (document.all) { // IE
-                var comment = document.getElementById('dialog_comment').innerHTML;
-            } else {// firefox
-                var comment = document.getElementById('dialog_comment').value;
+            var form2 = document.getElementById(formId);
+            var comment = document.getElementById('dialog_comment').value;
+
+            if ('DENIED' === action) { 
+                if (comment.match(/^\s*$/)) {
+                    var alertMessage = 'Comments are required in order to submit.';
+                    var config = {zIndex : 10000};
+                    Fisma.Util.showAlertDialog(alertMessage, config);
+                    return;
+                }
             }
-            if (comment.match(/^\s*$/)) {
-                alert('Comments are required in order to submit.');
-                return;
-            }
+
             form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = 'DENIED';
-            var submitMsa = document.createElement('input');
-            submitMsa.type = 'hidden';
-            submitMsa.name = 'submit_msa';
-            submitMsa.value = 'DENIED';
-            form2.appendChild(submitMsa);
+            form2.elements['decision'].value = action;
+
+            var sub = document.createElement('input');
+            sub.type = 'hidden';
+            sub.name = 'submit_msa';
+            sub.value = action;
+            form2.appendChild(sub);
             form2.submit();
-        }
+            return;
+        };
+        
+        return true;
     }
-}
+
+};
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -5648,6 +8549,16 @@ Fisma.Search = function() {
         showDeletedRecords : false,
 
         /**
+         * User search preferences for when a search hasn't been executed on this model this session.
+         */
+        searchPreferences: null,
+
+        /**
+         * Boolean flag as to whether the search preferences have been updated.
+         */
+        updateSearchPreferences: false,
+
+        /**
          * Test the current system configuration
          */
         testConfiguration : function () {
@@ -5659,13 +8570,12 @@ Fisma.Search = function() {
             Fisma.Search.testConfigurationActive = true;
 
             var testConfigurationButton = document.getElementById('testConfiguration');
-            testConfigurationButton.className = "yui-button yui-push-button yui-button-disabled";
+            YAHOO.util.Dom.addClass(testConfigurationButton, "yui-button-disabled");
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
-
-            var form = document.getElementById('search_config');
-            YAHOO.util.Connect.setForm(form);
+            
+            var postData = "csrf=" + document.getElementById('csrfToken').value;
 
             YAHOO.util.Connect.asyncRequest(
                 'POST',
@@ -5680,7 +8590,7 @@ Fisma.Search = function() {
                             message(response.message, "warning", true);
                         }
 
-                        testConfigurationButton.className = "yui-button yui-push-button";
+                        YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
                         Fisma.Search.testConfigurationActive = false;
                         spinner.hide();
                     },
@@ -5690,28 +8600,20 @@ Fisma.Search = function() {
 
                         spinner.hide();
                     }
-                }
+                },
+                postData
             );
         },
 
         /**
-         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         * Executes a search
          *
          * Two types of query are possible: simple and advanced. A hidden field is used to determine which of the
          * two to use while handling this event.
          *
          * @param form Reference to the search form
          */
-        handleSearchEvent : function (form) {
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                document.getElementById('searchType').value = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles a new search
-            document.getElementById('msgbar').style.display = 'none';
-
+        executeSearch: function (form) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
@@ -5728,19 +8630,19 @@ Fisma.Search = function() {
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
-                    dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
+                    // Reset the page to 1 if search form is submitted 
+                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
+                        dataTable.get('paginator').setPage(1);
+                    }
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var query = this.getQuery(form);
-
-                var postData = this.convertQueryToPostData(query);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -5750,8 +8652,52 @@ Fisma.Search = function() {
             } catch (error) {
                 // If a string is thrown, then display that string to the user
                 if ('string' == typeof error) {
-                    alert(error);
+                    Fisma.Util.showAlertDialog(error);
                 }
+            }
+        },
+
+        /**
+         * Handles a search event. This works in tandem with the search.form and Fisma_Zend_Controller_Action_Object.
+         *
+         * @param form Reference to the search form
+         */
+        handleSearchEvent: function(form) {
+            try {
+                var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                var searchPrefs = {type: form.searchType.value};
+                if (searchPrefs.type === 'advanced') {
+                    var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
+                    var fields = {};
+                    for (var i in panelState) {
+                        fields[panelState[i].field] = panelState[i].operator;
+                    }
+                    searchPrefs['fields'] = fields;
+                }
+                Fisma.Search.updateSearchPreferences = true;
+                Fisma.Search.searchPreferences = searchPrefs;
+                Fisma.Search.updateQueryState(queryState, form);
+            } catch (e) {
+                message(e);
+            } finally {
+                Fisma.Search.executeSearch(form);
+            }
+        },
+
+        /**
+         * Update Query State
+         *
+         * @param queryState {Fisma.Search.QueryState}
+         * @param form Reference to the search form
+         */
+        updateQueryState: function(queryState, form) {
+            var Dom = YAHOO.util.Dom;
+            var searchType = form.searchType.value;
+            queryState.setSearchType(searchType);
+            if (searchType === "simple") {
+                queryState.setKeywords(form.keywords.value);
+            } else if (searchType === "advanced") {
+                queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
             }
         },
 
@@ -5766,7 +8712,7 @@ Fisma.Search = function() {
             var query = {queryType : searchType};
 
             if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value
+                query['keywords'] = form.keywords.value;
             } else if ('advanced' == searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
@@ -5851,47 +8797,56 @@ Fisma.Search = function() {
          * @param table From YUI
          * @return string URL encoded post data
          */
-        handleYuiDataTableEvent : function (tableState, table) {
-
-            var searchType = document.getElementById('searchType').value;
-
-            // Ensure the search type is simple when advance search is hidden
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-                searchType = 'simple';
-            }
-
-            // The error message of advance search should be hidden before handles YUI data
-            document.getElementById('msgbar').style.display = 'none';
-
-            var postData = "sort=" + tableState.sortedBy.key +
-                           "&dir=" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
-                           "&start=" + tableState.pagination.recordOffset +
-                           "&count=" + tableState.pagination.rowsPerPage +
-                           "&csrf=" + document.getElementById('searchForm').csrf.value;
+        generateRequest: function (tableState, table) {
+            var postData = "";
 
             try {
-                if ('simple' == searchType) {
-                    postData += "&queryType=simple&keywords=" 
-                              + encodeURIComponent(document.getElementById('keywords').value);
-                } else if ('advanced' == searchType) {
-                    var queryData = Fisma.Search.advancedSearchPanel.getQuery();
-
-                    postData += "&queryType=advanced&query=" 
-                              + encodeURIComponent(YAHOO.lang.JSON.stringify(queryData));
-                } else {
-                    throw "Invalid value for search type: " + searchType;
-                }
+                postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
                     message(error, 'warning', true);
                 }
             }
 
-            postData += "&showDeleted=" + Fisma.Search.showDeletedRecords;
-
             table.getDataSource().connMethodPost = true;
 
             return postData;
+        },
+
+        /**
+         * Method to generate the post data for the current query and table state
+         *
+         * @param tableState From YUI
+         * @return {String} Post data representation of the current query
+         */
+        buildPostRequest: function (tableState) {
+            var searchType = document.getElementById('searchType').value;
+            var postData = {
+                sort: tableState.sortedBy.key,
+                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                start: tableState.pagination.recordOffset,
+                count: tableState.pagination.rowsPerPage,
+                csrf: document.getElementById('searchForm').csrf.value,
+                showDeleted: Fisma.Search.showDeletedRecords,
+                queryType: searchType
+            };
+            if ('simple' == searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+            } else if ('advanced' == searchType) {
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else {
+                throw "Invalid value for search type: " + searchType;
+            }
+
+            if (Fisma.Search.updateSearchPreferences) {
+                postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+            }
+
+            var postDataArray = [];
+            for (var key in postData) {
+                postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
+            }
+            return postDataArray.join("&");
         },
 
         /**
@@ -5903,7 +8858,6 @@ Fisma.Search = function() {
          * @param dataTable The YUI data table to perform highlighting on
          */
         highlightSearchResultsTable :  function (dataTable) {
-            var dataTable = Fisma.Search.yuiDataTable;
 
             var tbody = dataTable.getTbodyEl();
 
@@ -5918,21 +8872,23 @@ Fisma.Search = function() {
          * Show or hide the advanced search options UI
          */
         toggleAdvancedSearchPanel : function () {
-            if (document.getElementById('advancedSearch').style.display == 'none') {
-
-                document.getElementById('advancedSearch').style.display = 'block';
-                document.getElementById('keywords').style.visibility = 'hidden';
-                document.getElementById('searchType').value = 'advanced';
-
+            var Dom = YAHOO.util.Dom;
+            var yuiButton = YAHOO.widget.Button.getButton("advanced");
+            var advancedSearch = Dom.get("advancedSearch");
+            if (advancedSearch.style.display == 'none') {
+                advancedSearch.style.display = 'block';
+                Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'advanced';
+                yuiButton.set("checked", true);
             } else {
-
-                document.getElementById('advancedSearch').style.display = 'none';
-                document.getElementById('keywords').style.visibility = 'visible';
-                document.getElementById('searchType').value = 'simple';
+                advancedSearch.style.display = 'none';
+                Dom.get('keywords').style.visibility = 'visible';
+                Dom.get('searchType').value = 'simple';
+                yuiButton.set("checked", false);
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
-                document.getElementById('msgbar').style.display = 'none';
+                Dom.get('msgbar').style.display = 'none';
             }
         },
 
@@ -5952,56 +8908,50 @@ Fisma.Search = function() {
          *
          * @param container The HTML element to render into
          * @param searchOptions The options defined in Fisma_Search_Searchable interface
+         * @param columnVisibility Initial visibility of table columns
          */
-        initializeSearchColumnsPanel : function (container, searchOptions) {
+        initializeSearchColumnsPanel : function (container) {
 
             // Set up the cookie used for tracking which columns are visible
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-            var currentColumn = 0;
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName),
+                columns = Fisma.Search.yuiDataTable.getColumnSet().keys,
+                // Title elements used for accessibility
+                checkedTitle = "Column is visible. Click to hide column.",
+                uncheckedTitle = "Column is hidden. Click to unhide column.";
 
-            for (var index in searchOptions) {
-                var searchOption = searchOptions[index];
+            for (var index in columns) {
+                var column = columns[index],
+                    columnName = column.key;
 
-                if (searchOption['hidden'] === true) {
+                if (columnName === "deleteCheckbox") {
                     continue;
                 }
 
-                // Use the cookie to determine which buttons are on, or use the metadata if no cookie exists
-                var checked = searchOption.initiallyVisible;
-
-                if (cookie) {
-                    checked = (cookie & 1 << currentColumn) != 0;
-                }
-
-                currentColumn++;
-
-                // Title elements used for accessibility
-                var checkedTitle = "Column is visible. Click to hide column.";
-                var uncheckedTitle = "Column is hidden. Click to unhide column.";
+                var checked = !column.hidden;
 
                 var columnToggleButton = new YAHOO.widget.Button({
                     type : "checkbox",
-                    label : searchOption.label,
+                    label : column.label,
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, columnKey) {
-                            this.set("title", this.get("checked") ? checkedTitle : uncheckedTitle);
+                        fn : function (event, obj) {
+                            var table = Fisma.Search.yuiDataTable,
+                                column = table.getColumn(obj.name),
+                                checked = this.get("checked");
 
-                            var table = Fisma.Search.yuiDataTable;
-                            var column = table.getColumn(columnKey);
+                            this.set("title", checked ? checkedTitle : uncheckedTitle);
 
-                            if (this.get('checked')) {
+                            if (checked) {
                                 table.showColumn(column);
                             } else {
                                 table.hideColumn(column);
                             }
 
-                            Fisma.Search.saveColumnCookies();
+                            obj.prefs.setColumnVisibility(obj.name, checked);
                         },
-                        obj : searchOption.name
+                        obj : {name: columnName, prefs: prefs}
                     }
                 });
 
@@ -6009,10 +8959,6 @@ Fisma.Search = function() {
             }
 
             var saveDiv = document.createElement('div');
-            saveDiv.style.marginLeft = '20px';
-            saveDiv.style.marginBottom = '20px';
-            // The following line trips up YUI compressor if object notation (.) is used instead of array []
-            saveDiv.style['float'] = 'right';
 
             // Create the Save button
             var saveButton = new YAHOO.widget.Button({
@@ -6020,7 +8966,7 @@ Fisma.Search = function() {
                 label : "Save Column Preferences",
                 container : saveDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnCookie
+                    fn : Fisma.Search.persistColumnPreferences
                 }
             });
 
@@ -6045,78 +8991,31 @@ Fisma.Search = function() {
         },
 
         /**
-         * Save the currently visible columns into a cookie
-         *
-         * @param table YUI Table
-         */
-        saveColumnCookies : function () {
-            var table = Fisma.Search.yuiDataTable;
-            var columnKeys = table.getColumnSet().keys;
-
-            // Column preferences are stored as a bitmap (1=>visible, 0=>hidden)
-            var prefBitmap = 0;
-            var currentColumn = 0;
-
-            for (var column in columnKeys) {
-                if (columnKeys[column].formatter == Fisma.TableFormat.formatCheckbox) {
-                    continue;
-                }
-
-                if (!columnKeys[column].hidden) {
-                    prefBitmap |= 1 << currentColumn;
-                }
-                
-                currentColumn++;
-            }
-
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-
-            YAHOO.util.Cookie.set(
-                cookieName,
-                prefBitmap,
-                {
-                    path : "/",
-                    secure : location.protocol == 'https'
-                }
-            );
-        },
-
-        /**
          * Persist the column cookie into the user's profile
          */
-        persistColumnCookie : function () {
-            Fisma.Search.saveColumnCookies();
+        persistColumnPreferences : function () {
 
-            var modelName = document.getElementById('modelName').value;
-            var cookieName = modelName + "Columns";
-            var cookie = YAHOO.util.Cookie.get(cookieName);
-
+            var modelName = document.getElementById('modelName').value,
+                prefs = new Fisma.Search.TablePreferences(modelName);
             Fisma.Search.columnPreferencesSpinner.show();
 
-            YAHOO.util.Connect.asyncRequest(
-                'GET',
-                '/user/set-cookie/name/' + cookieName + '/value/' + cookie + '/format/json',
-                {
-                    success : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
+            prefs.persist({
+                success : function (response, object) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
 
-                        var response = YAHOO.lang.JSON.parse(o.responseText);
-
-                        if (response.success) {
-                            message("Your column preferences have been saved", "notice", true);
-                        } else {
-                            message(response.message, "warning", true);
-                        }
-                    },
-
-                    failure : function (o) {
-                        Fisma.Search.columnPreferencesSpinner.hide();
-
-                        message('Error: ' + o.statusText, 'warning', true);
+                    if (object.status === "ok") {
+                        message("Your column preferences have been saved", "notice", true);
+                    } else {
+                        message(object.status, "warning", true);
                     }
+                },
+
+                failure : function (response) {
+                    Fisma.Search.columnPreferencesSpinner.hide();
+
+                    message('Error: ' + response.statusText, 'warning', true);
                 }
-            );
+            });
         },
 
         /**
@@ -6148,17 +9047,31 @@ Fisma.Search = function() {
             }
             
             // Do some sanity checking
-            if (0 == checkedRecords.length) {
+            if (0 === checkedRecords.length) {
                 message("No records selected for deletion.", "warning", true);
                 
                 return;
             }
-            
-            if (!confirm("Delete " + checkedRecords.length + " records?")) {
-                return;
-            }
+            var deleteRecords = [];
+            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));          
 
+            var warningMessage = '';  
+            if (1 === checkedRecords.length) {
+                warningMessage = 'Delete 1 record?';
+            } else {
+                warningMessage = "Delete " + checkedRecords.length + " records?";
+            }
+            var config = {text : warningMessage, 
+                          func : 'Fisma.Search.doDelete', 
+                          args : deleteRecords  };
+            var e = null;
+            Fisma.Util.showConfirmDialog(e, config);
+           
+          },
+
+         doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
+            var dataTable = Fisma.Search.yuiDataTable;
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             
@@ -6181,18 +9094,18 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
+                    dataTable.get('paginator').setPage(1);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
                 argument : dataTable.getState()
-            }
+            };
 
             // Create a post string containing the IDs of the records to delete and the CSRF token
-            var postString = "csrf="
-                           + document.getElementById('searchForm').csrf.value
-                           + "&records="
-                           + YAHOO.lang.JSON.stringify(checkedRecords);
+            var postString = "csrf=";
+            postString += document.getElementById('searchForm').csrf.value;
+            postString += "&records=";
+            postString += checkedRecords;
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -6219,13 +9132,12 @@ Fisma.Search = function() {
                         dataSource.sendRequest(postData, onDataTableRefresh);
                     },
                     failure : function(o) {
-                        var text = 'An error occurred while trying to delete the records.'
-                                 + ' The error has been logged for administrator review.'; 
+                        var text = 'An error occurred while trying to delete the records.';
+                        text += ' The error has been logged for administrator review.'; 
                         message(text, "warning", true);
                     }
                 },
-                postString
-            );
+                postString);
         },
         
         /**
@@ -6246,8 +9158,12 @@ Fisma.Search = function() {
          */
         onSetTable : function(callback) {
             this.onSetTableCallback = callback;
+            if (YAHOO.lang.isObject(this.yuiDataTable)) {
+                // if already set, go ahead and run the callback
+                this.onSetTableCallback();
+            }
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -6358,33 +9274,46 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-
+        
         this.container = document.createElement('div');
-
+        
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
-        this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
-
-        this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
-
-        this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
-
+        // IE7 will display floated elements on the next line, not the current line, unless those floated elements
+        // are inserted before the unfloated content on current line.
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
+
+        this.queryFieldContainer = document.createElement('span');
+        this.renderQueryField(this.queryFieldContainer, fieldName);
+        this.containerForm.appendChild(this.queryFieldContainer);
+
+        this.queryTypeContainer = document.createElement('span');
+        this.renderQueryType(this.queryTypeContainer, operator);
+        this.containerForm.appendChild(this.queryTypeContainer);
+
+        this.queryInputContainer = document.createElement('span');
+        this.renderQueryInput(this.queryInputContainer, operands);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
-
         clearDiv.className = "clear";
+        this.containerForm.appendChild(clearDiv);
 
-        this.container.appendChild(clearDiv);
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -6608,31 +9537,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
+        return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : operands
-        }
-
-        return response;
+            operands : this.getOperands()
+        };
     },
 
     /**
@@ -6693,8 +9602,28 @@ Fisma.Search.Criteria.prototype = {
         }
         
         throw "No field found with this name: " + fieldName;
+    },
+
+    getOperands: function() {
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
+
+        return queryGenerator(this.queryInputContainer);
+    },
+
+    hasBlankOperands: function() {
+        var operands = this.getOperands();
+        for (var i in operands) {
+            if ('' === $P.trim(operands[i])) {
+                return true;
+            }
+        }
+        return false;
     }
-};/**
+
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6751,7 +9680,8 @@ Fisma.Search.CriteriaDefinition = function () {
         sortableText : {
             textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
-            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'}
+            textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
+            textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
         },
         
         "enum" : {
@@ -7117,13 +10047,12 @@ Fisma.Search.CriteriaRenderer = function () {
  * Constructor
  * 
  * @param advancedSearchOptions Contains searchable fields and pre-defined filters
- * @param pathname The URL path, used to generate default search filters
  */
-Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
-
+Fisma.Search.Panel = function (advancedSearchOptions) {
+    var index;
     var searchableFields = advancedSearchOptions;
 
-    if (0 == searchableFields.length) {
+    if (0 === searchableFields.length) {
         throw "Field array cannot be empty";
     }
     
@@ -7141,37 +10070,37 @@ Fisma.Search.Panel = function (advancedSearchOptions, pathname) {
     );
 
     // Copy all visible (non-hidden) fields into this panel
-    this.searchableFields = {};
+    this.searchableFields = [];
     
-    for (var index in searchableFields) {
+    for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
         if (searchableField.hidden !== true) {
-            this.searchableFields[index] = searchableField;
+            this.searchableFields[this.searchableFields.length] = searchableField;
         }
     }
 
-    // A pathname can contain default query criteria if it contains the keyword 'advanced'
+    // If default search criteria is included as a URL parameter, parse that out here.
     this.defaultQueryTokens = null;
-    
-    if (pathname) {
-        var pathTokens = pathname.split('/');
 
-        for (var index in pathTokens) {
-            var pathToken = pathTokens[index];
+    var urlParamString = document.location.search.substring(1); // strip the leading "?" character
+    var urlParams = urlParamString.split('&');
 
-            // If the 'advanced' token is found (and has more tokens after it), then save the 
-            // rest of the tokens into the object
-            var start = parseInt(index);
+    for (var i in urlParams) {
+        var urlParam = urlParams[i];
+        var keyValuePair = urlParam.split("=");
 
-            if ('advanced' == pathToken && pathTokens.length > (start + 1)) {
-                
-                pathTokens.splice(0, start + 1);
-                
-                this.defaultQueryTokens = pathTokens;
-                
-                break;
+        // parse parameters
+        if ("q" == keyValuePair[0]) {
+            var criteriaString = keyValuePair[1];
+            this.defaultQueryTokens = criteriaString.split("/");
+
+            // Remove first element if it's empty
+            if (this.defaultQueryTokens[0] === '') {
+                this.defaultQueryTokens.splice(0, 1);
             }
+        } else if ("show" === keyValuePair[0]) {
+            this.showAll = "all" === keyValuePair[1];
         }
     }
 };
@@ -7187,6 +10116,11 @@ Fisma.Search.Panel.prototype = {
      * A list of current selected criteria
      */
     criteria : [],
+
+    /**
+     * Flag indicating that we want to show all results, no advanced search.
+     */
+    showAll: false,
     
     /**
      * Render the advanced search box
@@ -7195,8 +10129,17 @@ Fisma.Search.Panel.prototype = {
      */
     render : function (container) {
         this.container = container;
+        var Dom = YAHOO.util.Dom;
+        var Lang = YAHOO.lang;
+        var QueryState = Fisma.Search.QueryState;
+        var queryState = new QueryState(Dom.get("modelName").value);
+        var i, advancedCriterion, initialCriteria;
 
-        if (this.defaultQueryTokens) {
+        if (this.showAll) {
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            this.criteria.push(initialCriteria);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
+        } else if (this.defaultQueryTokens) {
             var index = 0;
             
             // If a default query is specified, then switch to advanced mode and set up the UI for those criteria
@@ -7233,31 +10176,53 @@ Fisma.Search.Panel.prototype = {
                 this.criteria.push(criterion);
             }
 
-            // If only one criterion, disable its "minus" button
-            if (1 == this.criteria.length) {
-                this.criteria[0].setRemoveButtonEnabled(false);
-            }
-
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
-            Fisma.Search.onSetTable(function () {
-                var searchForm = document.getElementById('searchForm');
-            
-                // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
-                // (notice the length of delay doesn't matter, this just puts the search event AFTER the YUI render
-                // event in the dispatch queue)
-                setTimeout(function () {Fisma.Search.handleSearchEvent(searchForm);}, 1);
-            });
+            Lang.later(null, null, function() { Fisma.Search.updateQueryState(queryState, Dom.get('searchForm')); });
+        } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+            var advancedQuery = queryState.getAdvancedQuery();
+
+            for (i in advancedQuery) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(
+                        advancedQuery[i].field,
+                        advancedQuery[i].operator,
+                        advancedQuery[i].operands));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
+        } else if (Fisma.Search.searchPreferences.type === 'advanced') {
+            var fields = Fisma.Search.searchPreferences.fields;
+            for (i in fields) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+                this.criteria.push(advancedCriterion);
+                this.container.appendChild(
+                    advancedCriterion.render(i, fields[i]));
+            }
+            // Display the advanced search UI and submit the initial query request XHR
+            Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
-            var criteriaElement = initialCriteria.render(this.searchableFields[0].name);
-            initialCriteria.setRemoveButtonEnabled(false);
-            this.container.appendChild(criteriaElement);
+            this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         }
+
+        // If only one criterion, disable its "minus" button
+        if (1 == this.criteria.length) {
+            this.criteria[0].setRemoveButtonEnabled(false);
+        }
+
+        Fisma.Search.onSetTable(function () {
+            var searchForm = document.getElementById('searchForm');
+        
+            // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
+            setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
+        });
     },
   
     /**
@@ -7318,13 +10283,27 @@ Fisma.Search.Panel.prototype = {
         
         for (var index in this.criteria) {
             var criterion = this.criteria[index];
-
-            queryPart = criterion.getQuery();
-            
-            query.push(queryPart);
+            if (criterion.hasBlankOperands()) {
+                continue;
+            }
+            query.push(criterion.getQuery());
         }
         
         return query;
+    },
+
+    /**
+     * Get the search panel's state
+     */
+    getPanelState: function () {
+        var state = new Array();
+        
+        for (var index in this.criteria) {
+            var criterion = this.criteria[index];
+            state.push(criterion.getQuery());
+        }
+        
+        return state;
     },
     
     /**
@@ -7377,8 +10356,334 @@ Fisma.Search.Panel.prototype = {
                 throw "Number of operands not defined for query function: " + queryFunction;
                 break;
         }
+        
+        throw "Number of operands not defined for query function: " + queryFunction;
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var Lang = YAHOO.lang;
+    /**
+     * Enable getting and setting of query state information
+     *
+     * @namespace Fisma.Search
+     * @class QueryState
+     * @constructor
+     * @param model {String} Model for which this state information applies.
+     * @param init {Object} Object literal of default state.
+     */
+    var QueryState = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.Storage('Fisma.Search.QueryState');
+        };
+    QueryState.TYPE_SIMPLE = "simple";
+    QueryState.TYPE_ADVANCED = "advanced";
+    QueryState.prototype = {
+        /**
+         * Basic getter for all state information.
+         *
+         * @method getState
+         * @return {Object}
+         */
+        getState: function () {
+            return this._storage.get(this._model);
+        },
+
+        /**
+         * Basic setter for state information
+         *
+         * @method setState
+         * @param value {Object} State information.
+         */
+        setState: function (value) {
+            this._storage.set(this._model, value);
+        },
+
+        /**
+         * Get search type
+         *
+         * @method getSearchType
+         * @return {String} TYPE_SIMPLE or TYPE_ADVANCED, default TYPE_SIMPLE
+         */
+        getSearchType: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.searchType)) {
+                return QueryState.TYPE_SIMPLE;
+            } 
+            switch (state.searchType) {
+                case QueryState.TYPE_SIMPLE:
+                case QueryState.TYPE_ADVANCED:
+                    return state.searchType;
+                default:
+                    throw "Invalid search type encountered.";
+            }
+        },
+
+        /**
+         * Basic setter for search type
+         *
+         * @method setSearchType
+         * @param type {String} Search type, "simple" or "advanced"
+         */
+        setSearchType: function(type) {
+            var oldData = this.getState() || {},
+                newData = {};
+            newData.searchType = type;
+            if (type === "simple") {
+                newData.keywords = oldData.keywords || "";
+            } else if (type === "advanced") {
+                newData.advancedQuery = oldData.advancedQuery || [];
+            } else {
+                throw "Invalid search type specified.";
+            }
+            this.setState(newData);
+        },
+
+        /**
+         * Get search keywords
+         *
+         * @method getKeywords
+         * @return {String} Keywords
+         */
+        getKeywords: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isValue(state.keywords)) {
+                return "";
+            } 
+            return state.keywords;
+        },
+
+        /**
+         * Basic setter for search keywords
+         *
+         * @method setKeywords
+         * @param type {String} Search keywords
+         */
+        setKeywords: function(keywords) {
+            if (!Lang.isString(keywords)) {
+                throw "Can not set non-string as keywords.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_SIMPLE) {
+                throw "Attempting to save keywords for non-simple search.";
+            }
+            var data = this.getState() || {};
+            data.keywords = keywords;
+            this.setState(data);
+        },
+
+        /**
+         * Get advanced search query
+         *
+         * @method getAdvancedQuery
+         * @return {Object} Query
+         */
+        getAdvancedQuery: function() {
+            var state = this.getState();
+            if (!Lang.isObject(state) || !Lang.isObject(state.advancedQuery)) {
+                return {};
+            } 
+            return state.advancedQuery;
+        },
+
+        /**
+         * Basic setter for advanced search query.
+         *
+         * @method setAdvancedQuery
+         * @param query {Object} Advanced search query
+         */
+        setAdvancedQuery: function(query) {
+            if (!Lang.isObject(query)) {
+                throw "Can not set non-object as advanced search query.";
+            }
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+                throw "Attempting to save advanced search query for non-advanced search.";
+            }
+            var data = this.getState() || {};
+            data.advancedQuery = query;
+            this.setState(data);
+        }
+    };
+    Fisma.Search.QueryState = QueryState;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    var YL = YAHOO.lang,
+        FPS = Fisma.PersistentStorage,
+    /**
+     * Enable getting and setting of datatable-related preferences.
+     *
+     * @namespace Fisma.Search
+     * @class TablePreferences
+     * @constructor
+     * @param model {String} Model for which this table is representing.
+     * @param init {Object} Object literal of default state.
+     */
+        FSTP = function(model, init) {
+            this._model = model;
+            this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
+            this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
+            this._state = null;
+            Fisma.Storage.onReady(function() {
+                var data = this._storage.get(this._model);
+                this._state = YL.isObject(init) ? init : {};
+                if (YL.isObject(data)) {
+                    this._state = YL.merge(data, this._state);
+                }
+            }, this, true);
+        };
+    FSTP.prototype = {
+        /**
+         * Get specified columns visibility.
+         *
+         * @method TablePreferences.getColumnVisibility
+         * @param column {String} Column key.
+         * @param def {Boolean} Default state
+         * @return {Boolean}
+         */
+        getColumnVisibility: function (column, def) {
+            this._stateReady();
+            if (YL.isValue(this._state.columnVisibility[column])) {
+                return this._state.columnVisibility[column] ? true : false; // always return boolean
+            }
+            // if default not provided, assume false
+            return YL.isValue(def) && def ? true : false;
+        },
+
+        /**
+         * Set the specified columns visibility.
+         *
+         * @method TablePreferences.setColumnVisibility
+         * @param column {String} Column key.
+         * @param value {Boolean} Is visible?
+         */
+        setColumnVisibility: function (column, value) {
+            this._stateReady();
+            this._state.columnVisibility[column] = value;
+            this._storage.set(this._model, this._state);
+        },
+
+        /**
+         * Get sort column and direction
+         *
+         * @method TablePreferences.getSort
+         * @return {Object}
+         */
+        getSort: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
+        },
+        /**
+         * Set the sort column and direction
+         *
+         * @method TablePreferences.setSort
+         * @param column {String} Column key.
+         * @param dir {String} Sort direction
+         */
+        setSort: function(column, dir) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.sort = {column: column, dir: dir};
+            this._localStorage.set(this._model, data);
+        },
+
+        /**
+         * Get current page number
+         *
+         * @method TablePreferences.getpage
+         * @return {Integer}
+         */
+        getPage: function() {
+            var data = this._localStorage.get(this._model);
+            return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
+        },
+        /**
+         * Set the current page number
+         *
+         * @method TablePreferences.setPage
+         * @param page {Integer} Page number.
+         */
+        setPage: function(page) {
+            var data = this._localStorage.get(this._model);
+            data = YL.isObject(data) ? data : {};
+            data.page = page;
+            this._localStorage.set(this._model, data);
+        },
+
+        /**
+         * Save table preferences
+         *
+         * @method TablePreferences.persist
+         * @param callback {Function|Object} Callback on completion.
+         */
+        persist: function (callback) {
+            var m = this._model,
+                s = this._storage;
+            // force a "set" to ensure sync will know it's been modified
+            s.set(m, s.get(m));
+            s.sync([m], callback);
+        },
+
+        /**
+         * Internal method to assert the object is ready.
+         *
+         * @method TablePreferences._stateReady
+         * @protected
+         */
+        _stateReady: function() {
+            if (this._state === null) {
+                throw "Attempting to use storage engine before it is ready.";
+            }
+            if (typeof(this._state.columnVisibility) === 'undefined') {
+                this._state.columnVisibility = {};
+            }
+        }
+    };
+    Fisma.Search.TablePreferences = FSTP;
+})();
 (function() {
     var Lang = YAHOO.lang,
         Event = YAHOO.util.Event,
@@ -7571,6 +10876,244 @@ Fisma.Search.Panel.prototype = {
     });
 })();
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides session timeout awareness with XHR support.
+     * @namespace Fisma
+     * @class SessionManager
+     */
+    var Manager = { // shorthand, full assignment at bottom
+        /**
+         * Polling delay, in seconds.
+         */
+        POLL_DELAY: 1,
+
+        /**
+         * Name of the cookie used to track server timestamp.
+         */
+        COOKIE_TIMESTAMP: "session_timestamp",
+
+        /**
+         * URI of the refresh session action
+         */
+        REFRESH_SESSION_URI: "/auth/refresh-session/format/json",
+
+        /**
+         * Time (in seconds) before session expires.
+         */
+        _inactivityPeriod: null,
+
+        /**
+         * Time (in seconds) before alerting the user of inactivity.
+         */
+        _inactivityNotice: null,
+
+        /**
+         * Timer object saved on init().
+         */
+        _timer: null,
+
+        /**
+         * Timestamp reported by server on the most recent request.
+         */
+        _serverTimestamp: null,
+
+        /**
+         * Timestamp on client that corresponds to the server timestamp.
+         * Used to determine how long the client has been idle.
+         */
+        _localTimestamp: null,
+
+        /**
+         * YUI Panel For Idle Notice
+         */
+        _inactivityPanel: null,
+
+        /**
+         * YUI Button for the idle notice panel.
+         */
+        _inactivityPanelButton: null,
+
+        /**
+         * Indicates if there has been a recent session refresh if true.
+         */
+        _recentSessionRefresh: false,
+
+        /**
+         * Called onDOMReady to start the polling procedure.
+         *
+         * @method _init
+         * @public
+         * @static
+         */
+        init: function(inactivityPeriod, inactivityNotice) {
+            Manager._inactivityPeriod = Number(inactivityPeriod);
+            Manager._inactivityNotice = Number(inactivityNotice);
+            Manager._serverTimestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            Manager._localTimestamp = Manager._getLocalTimestamp();
+            Manager._timer = YAHOO.lang.later( Manager.POLL_DELAY * 1000, null, Manager.poll, null, true);
+            var Event = YAHOO.util.Event;
+            Event.onDOMReady(function() {
+                Event.addListener(document.body, "click", Manager.onActivityEvent);
+                Event.addListener(document.body, "keypress", Manager.onActivityEvent);
+            });
+        },
+
+        /**
+         * Executes at each polling cycle to test if the session is near timeout.
+         *
+         * @method poll
+         * @public
+         * @static
+         */
+        poll: function() {
+            var timestamp = YAHOO.util.Cookie.get(Manager.COOKIE_TIMESTAMP);
+            // reset state if server timestamp changes
+            if (timestamp !== Manager._serverTimestamp) {
+                Manager._serverTimestamp = timestamp;
+                Manager._localTimestamp = Manager._getLocalTimestamp();
+                return;
+            }
+
+            var idle = Manager._getLocalTimestamp() - Manager._localTimestamp;
+            // check to see if the session has expired
+            if (idle > Manager._inactivityPeriod) {
+                Manager.logout();
+                return;
+            }
+
+            // see if only two minutes remain
+            if (idle > Manager._inactivityNotice) {
+                Manager.notifyUser();
+            }
+        },
+
+        /**
+         * Notifies the user of an eminent timeout and prompts to continue session.
+         *
+         * @method notifyUser
+         * @public
+         * @static
+         */
+        notifyUser: function() {
+            if (YAHOO.lang.isNull(Manager._inactivityPanel)) {
+                var content = document.createElement("div");
+                content.innerHTML = "Your session will expire soon, please click Continue to continue working.";
+                var buttonDiv = document.createElement("div");
+                YAHOO.util.Dom.setStyle(buttonDiv, "text-align", "right");
+                Manager._inactivityPanelButton = new YAHOO.widget.Button({
+                    type: "push",
+                    label: "Continue",
+                    container: buttonDiv,
+                    onclick: {fn: Manager.continueSession}
+                });
+                content.appendChild(buttonDiv);
+                var panel = new YAHOO.widget.Panel(
+                    "inactivity-notice",
+                    {width: "320px", fixedcenter: true, draggable: false, modal: true, close: false}
+                );
+                panel.setHeader("Your Session Will Expire");
+                panel.setBody(content);
+                panel.render(document.body);
+                Manager._inactivityPanel = panel;
+            }
+            Manager._inactivityPanel.show();
+        },
+
+        /**
+         * Action taken when the user ops to continue their session, responsible for contacting the server.
+         *
+         * @method continueSession
+         * @public
+         * @static
+         */
+        continueSession: function() {
+            if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                Manager._inactivityPanelButton.set("disabled", true);
+            }
+            var callback = function() {
+                if (YAHOO.lang.isObject(Manager._inactivityPanel)) {
+                    Manager._inactivityPanel.hide();
+                }
+                if (YAHOO.lang.isObject(Manager._inactivityPanelButton)) {
+                    Manager._inactivityPanelButton.set("disabled", false);
+                }
+            };
+            YAHOO.util.Connect.asyncRequest(
+                "GET",
+                Manager.REFRESH_SESSION_URI,
+                {success: callback, failure: callback});
+        },
+
+        /**
+         * Called when the users session has been determined to be expired. Redirects the user to the Log In screen.
+         *
+         * @method logout
+         * @public
+         * @static
+         */
+        logout: function() {
+            document.location.href = "/auth/logout";
+        },
+
+        /**
+         * Get the current local unix time.
+         *
+         * @method _getLocalTimestamp
+         * @return integer
+         * @public
+         * @static
+         */
+        _getLocalTimestamp: function() {
+            return Math.round((new Date()).getTime() / 1000);
+        },
+
+        /**
+         * Callback function for mouse clicks and key press events.
+         *
+         * @method onActivityEvent
+         * @return void
+         * @public
+         * @static
+         */
+        onActivityEvent: function() {
+            // disable activity listening when the inactivity panel is being displayed to the user
+            if (YAHOO.lang.isObject(Manager._inactivityPanel) && Manager._inactivityPanel.getProperty("visible")) {
+                return;
+            }
+            if (Manager._recentSessionRefresh) {
+                return;
+            }
+            Manager._recentSessionRefresh = true;
+            Manager.continueSession();
+            YAHOO.lang.later(15000, null, function() {Manager._recentSessionRefresh = false;});
+        }
+    };
+    Fisma.SessionManager = Manager;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7593,7 +11136,6 @@ Fisma.Search.Panel.prototype = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -7615,7 +11157,7 @@ Fisma.Spinner = function (container) {
     
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
-}
+};
 
 Fisma.Spinner.prototype.show = function () {
     this.spinner.style.visibility = 'visible';
@@ -7648,7 +11190,6 @@ Fisma.Spinner.prototype.hide = function () {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -7693,13 +11234,13 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     // Set click handler
     this.element.onclick = function () {
         that.toggleSwitch.call(that);
-    }
+    };
     
     /* 
      * Callback will be a string like 'Fisma.Module.handleSwitchButtonStateChange', which needs to be converted into a 
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
-    if ('' != callback) {
+    if ('' !== callback) {
         callbackObj = Fisma.Util.getObjectFromName(callback);
         
         // At this point, the current value of callbackParent should be the callback function itself
@@ -7709,7 +11250,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
             throw "Specified callback is not a function: " + callback;
         }
     }
-}
+};
 
 Fisma.SwitchButton.prototype = {
     
@@ -7766,7 +11307,7 @@ Fisma.SwitchButton.prototype = {
                     to : -54,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = false;
         } else {
@@ -7778,14 +11319,14 @@ Fisma.SwitchButton.prototype = {
                     to : 0,
                     unit : 'px'
                 }                
-            }
+            };
 
             this.state = true;
         }        
         
         var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
                                                   animationAttributes, 
-                                                  .1, 
+                                                  0.1, 
                                                   YAHOO.util.Easing.easeOut);
 
         toggleAnimation.onTween.subscribe(
@@ -7796,7 +11337,7 @@ Fisma.SwitchButton.prototype = {
                  */
                 that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
             }
-        )
+        );
 
         toggleAnimation.animate();
 
@@ -7845,7 +11386,6 @@ Fisma.SwitchButton.prototype = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.System = {
@@ -7859,25 +11399,99 @@ Fisma.System = {
     },
 
     /**
-     * Displays the hidden block on the FIPS-199 page to add information types to a system 
+     * removeSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    showInformationTypes : function () {
-        document.getElementById('addInformationTypes').style.display = 'block';
+    removeSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.organizationId = config.organizationId;
+        data.userRoles = userRoles;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/remove-user-roles/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+        }});
     },
 
     /**
-     * Build URL for adding information type to the system 
+     * addUser 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
+    addUser : function (event, config) {
+        var data = new Object();
+
+        data.userId = $('#addUserId').val();
+        data.roleId = $('#roles').val();
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/system/add-user/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     },
 
-
     /**
-     * Build URL for removing information types from a system 
+     * addSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Remove</a>";
+    addSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.userRoles = userRoles;
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/add-user-roles-to-organization/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     }
 };
 /**
@@ -7899,7 +11513,6 @@ Fisma.System = {
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView = {};
@@ -7924,7 +11537,6 @@ Fisma.TabView = {};
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView.Roles = function() {
@@ -7932,13 +11544,14 @@ Fisma.TabView.Roles = function() {
         init : function(roles, userid, readOnly) {
             YAHOO.util.Event.addListener('role', 'change', function(e) {
                 YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
+                    var i;
                     var tabView = Fisma.tabView;
                     var tabs = tabView.get('tabs');
 
                     if (el.selected) {
                         var found = 0;
                         
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 found = 1;
                                 break;
@@ -7946,9 +11559,9 @@ Fisma.TabView.Roles = function() {
                         }
 
                         if (!found) {
-                            for (var i in roles) {
+                            for (i in roles) {
                                 if (roles[i]['id'] == el.value) {
-                                    var label = roles[i]['nickname'];
+                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
                                     break;
                                 }
                             }
@@ -7956,8 +11569,7 @@ Fisma.TabView.Roles = function() {
                             var newTab = new YAHOO.widget.Tab({
                                 id: el.value,
                                 label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' 
-                                    + el.value + '/readOnly/' + readOnly,
+                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' + el.value + '/readOnly/' + readOnly,
                                 cacheData: true,
                                 active: true
                             });
@@ -7965,7 +11577,7 @@ Fisma.TabView.Roles = function() {
                             tabView.addTab(newTab);
                         }
                     } else {
-                        for (var i in tabs) {
+                        for (i in tabs) {
                             if (tabs[i].get('id') == el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
@@ -7974,7 +11586,7 @@ Fisma.TabView.Roles = function() {
                 });
             });
         }
-    }
+    };
 }();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -7997,7 +11609,6 @@ Fisma.TabView.Roles = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
 
 Fisma.TableFormat = {
@@ -8193,27 +11804,32 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list?q=';
 
         // Handle organization field
         var organization = oRecord.getData('System');
 
         if (organization) {
-            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
+        
+            // Since organization may be html-encoded, decode the html before (url)-escaping it
+            organization = $P.html_entity_decode(organization);
+            
+            overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
         // Handle status field
         var status = oRecord.getData('Status');
 
         if (status) {
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
+            status = PHP_JS().html_entity_decode(status);
+            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
         var parameters = oColumn.formatterParameters;
 
         if (parameters.source) {
-            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
+            overdueFindingSearchUrl += "/source/textExactMatch/" + encodeURIComponent(parameters.source);
         }
 
         // Handle date fields
@@ -8221,7 +11837,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -8230,33 +11846,32 @@ Fisma.TableFormat = {
 
         if (parameters.to) {
             toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
             
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+                                        encodeURIComponent(to) +
+                                        "/" +
+                                        encodeURIComponent(from);
         } else if (from) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
             // This is the TOTAL column
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear() 
-                                + '-' 
-                                + (yesterday.getMonth() + 1) 
-                                + '-' 
-                                + yesterday.getDate();
+            var yesterdayString = yesterday.getFullYear();
+            yesterdayString += '-';
+            yesterdayString += (yesterday.getMonth() + 1);
+            yesterdayString += '-';
+            yesterdayString += yesterday.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
         }
 
-        elCell.innerHTML = "<a href="
-                         + overdueFindingSearchUrl
-                         + ">"
-                         + oData
-                         + "</a>";
+        elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
     },
 
     /**
@@ -8269,11 +11884,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData, 10);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData !== null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {
@@ -8295,9 +11910,9 @@ Fisma.TableFormat = {
     incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
         var docTypeNames = '';
         if (oData.length > 0) {
-            docTypeNames += '<ul><li>'
-                          + oData.replace(/,/g, '</li><li>')
-                          + '</li></ul>';
+            docTypeNames += '<ul><li>';
+            docTypeNames += oData.replace(/,/g, '</li><li>');
+            docTypeNames += '</li></ul>';
         }
 
         elCell.innerHTML = docTypeNames;
@@ -8332,7 +11947,333 @@ Fisma.TableFormat = {
             elCell.appendChild(checkbox);
         }        
     }
-};/**
+};
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Adds drag-and-drop functionality to a yui treeview widget
+     * 
+     * @namespace Fisma
+     * @class TreeNodeDragBehavior
+     * @extends n/a
+     * @constructor
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @param element {YAHOO.widget.TreeView} A reference to a tree node that is made draggable 
+     */
+    var TNDB = function(treeView, callback, callbackContext, element) {
+        if (typeof(callback) != "function") {
+            throw "The callback parameter must be a function";
+        }
+
+        this._dragDropGroup = YAHOO.util.Dom.generateId;
+        this._treeView = treeView;
+        this._dragFinishedCallback = callback;
+        this._dragFinishedCallbackContext = callbackContext;
+
+        TNDB.superclass.constructor.call(this, element, this._dragDropGroup, null);
+
+        // Style the proxy element
+        YAHOO.util.Dom.addClass(this.getDragEl(), "treeNodeDragProxy");
+    };
+    
+    YAHOO.lang.extend(TNDB, YAHOO.util.DDProxy, {
+
+        /**
+         * The tree view whose behavior is being modified
+         * 
+         * @property _treeview
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */        
+        _treeView: null,
+
+        /**
+         * The element which is the target of any current drag/drop operation
+         * 
+         * @property _currentDragTarget
+         * @type HTMLElement
+         * @protected
+         */                
+        _currentDragTarget: null,
+
+        /**
+         * Tracks if the current drag was successful across several event handlers
+         * 
+         * @property _currentDragSuccessful
+         * @type boolean
+         * @protected
+         */                
+        _currentDragSuccessful: false,
+
+        /**
+         * Unique ID for this drag and drop group
+         * 
+         * @property _dragDropGroup
+         * @type string
+         * @protected
+         */                
+        _dragDropGroup: null,
+
+        /**
+         * A callback when the user attempts to move a tree node
+         * 
+         * @property _dragFinishedCallback
+         * @type string
+         * @protected
+         */                        
+        _dragFinishedCallback: null,
+
+        /**
+         * The scope for the callback function
+         * 
+         * @property _dragFinishedCallbackContext
+         * @type string
+         * @protected
+         */                
+        _dragFinishedCallbackContext: null,
+        
+        /**
+         * Override DDProxy to handle the start of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.startDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        startDrag: function (event, id) {
+            // Make the dragged proxy look like the source elemnt
+            var dragEl = this.getDragEl();
+            var clickEl = this.getEl();
+    
+            dragEl.innerHTML = clickEl.innerHTML;
+            YAHOO.util.Dom.setStyle(dragEl, "background", "white");
+            YAHOO.util.Dom.setStyle(dragEl, "border", "none");
+        },
+
+        /**
+         * Override DDProxy to handle the end of a drag/drop event
+         *
+         * @method TreeNodeDragBehavior.endDrag
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */        
+        endDrag: function (event, id) {
+            var srcEl = this.getEl();
+            var proxy = this.getDragEl();
+
+            // Remove any visual highlighting
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+    
+            if (!this._currentDragSuccessful) {
+                // Animate the proxy element returning to its origin
+                YAHOO.util.Dom.setStyle(proxy, "visibility", "");
+                var anim = new YAHOO.util.Motion(
+                    proxy, 
+                    { points: { to: YAHOO.util.Dom.getXY(srcEl) } },
+                    0.2,
+                    YAHOO.util.Easing.easeOut
+                );
+            
+                // Hide the proxy element when the animation finishes
+                anim.onComplete.subscribe(function () {
+                    YAHOO.util.Dom.setStyle(proxy.id, "visibility", "hidden");
+                });
+                anim.animate();
+                this._currentDragSuccessful = false;
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy hovers over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOver
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOver: function (event, id) {
+            var dragLocation = this._getDragLocation(id, event);
+            
+            /* If the drag is near the top of the element, then we set the top border. 
+             * If its near the middle, we highlight the entire element. If its near the
+             * bottom, we set the bottom border.
+             */
+            this._currentDragTarget = YAHOO.util.Dom.get(id);   
+
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+
+            if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
+            } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragOnto');
+            } else {
+                YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragBelow');
+            }
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy stops hovering over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragOut: function (event, id) {
+            // The drag out event removes provides visual feedback.
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
+            YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
+        },
+
+        /**
+         * Override DDProxy to handle when a drag/drop proxy is moused up over a potential target
+         *
+         * @method TreeNodeDragBehavior.onDragDrop
+         * @param event {YAHOO.util.Event} The mousemove event
+         * @param id {String} The element id this is hovering over
+         */
+        onDragDrop: function(event, id) {
+            var srcNode = this._treeView.getNodeByElement(this.getEl());
+            var destNode = this._treeView.getNodeByElement(document.getElementById(id));
+            var dragLocation = this._getDragLocation(id, event);
+    
+            var success = this._dragFinishedCallback.call(
+                this._dragFinishedCallbackContext, 
+                this, 
+                srcNode, 
+                destNode, 
+                dragLocation
+            );
+
+            this._currentDragSuccessful = success;
+        },
+
+        /**
+         * Implementers should call this function when they have successfully run their callback
+         * 
+         * This method will reorder the nodes in the tree view to match the requested drag/drop event
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param srcNode {YAHOO.util.Event} The tree node being dragged
+         * @param destNode {String} The tree node that is being hovered over
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} A target location relative to the destination node
+         */
+        completeDragDrop: function(srcNode, destNode, dragLocation) {
+            this._treeView.popNode(srcNode);
+
+            switch (dragLocation) {
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ABOVE:
+                    srcNode.insertBefore(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO:
+                    srcNode.appendTo(destNode);
+                    break;
+                case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
+                    srcNode.insertAfter(destNode);
+                    break;
+            }
+
+            this._treeView.getRoot().refresh();
+            
+            // YUI discards all the event handlers after refreshing a treeview, so we need to make it
+            // draggable all over again.
+            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                this._treeView,
+                this._dragFinishedCallback,
+                this._dragFinishedCallbackContext
+            );            
+        },
+
+        /**
+         * Determines where the user intends to drop the current node, based on where the mouse is relative to the
+         * target node.
+         *
+         * @method TreeNodeDragBehavior.onDragOut
+         * @param targetElement {HTMLElement} The DOM element that the mouse is over
+         * @param event {YAHOO.util.Event} The mouse event
+         * @returns {TreeNodeDragBehavior.DRAG_LOCATION}
+         */
+        _getDragLocation: function (targetElement, event) {
+            var targetRegion = YAHOO.util.Dom.getRegion(targetElement);
+            var height = targetRegion.bottom - targetRegion.top;
+            var dragVerticalOffset = YAHOO.util.Event.getPageY(event) - targetRegion.top;
+
+            // This ratio indicates how far down the drag was inside the element. This is used for deciding 
+            // whether the mouse is near the top, near the bottom, or somewhere in the middle.
+            var verticalRatio = dragVerticalOffset / height;
+
+            if (verticalRatio < 0.25) {
+                return TNDB.DRAG_LOCATION.ABOVE;
+            } else if (verticalRatio < 0.75) {
+                return TNDB.DRAG_LOCATION.ONTO;
+            } else {
+                return TNDB.DRAG_LOCATION.BELOW;
+            }
+        }
+    });
+
+    /**
+     * Adds the draggable behavior to an existing tree view
+     *
+     * @method TreeNodeDragBehavior.onReady
+     * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
+     * @param callback {function} This is called when a drag and drop is attempted by the user
+     * @param callbackContext {object} The scope that the callback is called from
+     * @static
+     */
+    TNDB.makeTreeViewDraggable = function (treeView, callback, callbackContext) {
+
+        // Get a list of all nodes in the tree
+        var nodes = treeView.getNodesBy(function (node) {return true;});
+
+        for (var nodeIndex in nodes) {
+            var node = nodes[nodeIndex];
+
+            var yuiNodeDrag = new TNDB(treeView, callback, callbackContext, node.contentElId, this._dragDropGroup);
+        }
+    };
+    
+    /**
+     * Constants that represent drag targets relative to a destination node
+     *
+     * @property DRAG_LOCATION
+     * @static
+     */
+    TNDB.DRAG_LOCATION = {
+        ABOVE: 0,
+        ONTO: 1,
+        BELOW: 2
+    };
+
+    Fisma.TreeNodeDragBehavior = TNDB;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8355,7 +12296,6 @@ Fisma.TableFormat = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.UrlPanel = function() {
@@ -8373,12 +12313,12 @@ Fisma.UrlPanel = function() {
          */
         showPanel : function(title, url, callback, element, userConfig) {
             // Initialize element or its id representing the panel with default value if necessary
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -8396,7 +12336,7 @@ Fisma.UrlPanel = function() {
             panel.show();
             
             // Load panel content from url
-            if (url != '') {
+            if (url !== '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
                         o.argument.setBody(o.responseText);
@@ -8408,7 +12348,7 @@ Fisma.UrlPanel = function() {
                     },
                     failure : function(o) {
                         /** @todo english */
-                        alert('Failed to load the specified panel.');
+                        Fisma.Util.showAlertDialog('Failed to load the specific panel.');
                     },
                     argument : panel
                 }, null);
@@ -8439,7 +12379,6 @@ Fisma.UrlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.User = {
@@ -8460,7 +12399,56 @@ Fisma.User = {
      * A boolean which indicates if an account is currently being checked in LDAP
      */
     checkAccountBusy : false,
-    
+
+    /**
+     * A reference to a YUI table which contains comments for the current page
+     * 
+     * This reference will be set when the page loads by the script which initializes the table
+     */
+    commentTable : null,
+
+    /**
+     * Handle successful comment events by inserting the latest comment into the top of the comment table
+     * 
+     * @param comment An object containing the comment record values
+     * @param yuiPanel A reference to the modal YUI dialog
+     */
+    commentCallback : function (comment, yuiPanel) {
+        var that = this;
+
+        var commentRow = {
+            timestamp : comment.createdTs,
+            username : comment.username,
+            comment : comment.comment
+        };
+
+        this.commentTable.addRow(commentRow);
+
+        /*
+         * Redo the sort. If the user had some other sort applied, then our element might be inserted in
+         * the wrong place and the sort would be wrong.
+         */
+        this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
+        
+        // Highlight the added row so the user can see that it worked
+        var rowBlinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                that.commentTable.highlightRow(0);
+            },
+            function () {
+                that.commentTable.unhighlightRow(0);
+            }
+        );
+
+        rowBlinker.start();
+
+        // Hide YUI dialog
+        yuiPanel.hide();
+        yuiPanel.destroy();
+    },
+
     /**
      * Display a dialog which shows user information for the specified user.
      * 
@@ -8540,8 +12528,7 @@ Fisma.User = {
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
             }, 
-            null
-        );
+            null);
 
         return panel;
     },
@@ -8549,7 +12536,7 @@ Fisma.User = {
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
-            return;
+            return true;
         }
 
         Fisma.User.generatePasswordBusy = true;
@@ -8576,11 +12563,11 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    alert('Failed to generate password: ' + o.statusText);
+                    var alertMessage = 'Failed to generate password: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
-            null
-        );
+            null);
 
         return false;
     },
@@ -8627,7 +12614,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo != null) {
+                    if (data.accountInfo !== null) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -8635,7 +12622,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue != null) {
+                            if (columnValue !== null) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -8651,11 +12638,76 @@ Fisma.User = {
                 failure : function(o) {
                     spinner.hide();
 
-                    alert('Failed to check account password: ' + o.statusText);
+                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
-            null
-        );
+            null);
+    },
+
+    /**
+     * Show the comment panel
+     * 
+     * @return void
+     */
+    showCommentPanel : function () {
+        var lockedElement = YAHOO.util.Dom.get('locked');
+
+        // Only show panel in locked status
+        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
+            YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
+            return false;
+        }
+
+        // Create a panel
+        var content = document.createElement('div');
+
+        var messageContainer = document.createElement('span');
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
+                                                     " this user's account.");
+        messageContainer.appendChild(warningMessage);
+        content.appendChild(messageContainer);
+
+        var p = document.createElement('p');
+        var contentTitle = document.createTextNode('Comments (OPTIONAL):');
+        p.appendChild(contentTitle);
+        content.appendChild(p);
+
+        // Add comment textarea to panel
+        var commentTextArea = document.createElement('textarea');
+        commentTextArea.id = 'commentTextArea';
+        commentTextArea.name = 'commentTextArea';
+        commentTextArea.rows = 5;
+        commentTextArea.cols = 60;
+        content.appendChild(commentTextArea);
+
+        // Add line spacing to panel
+        var lineSpacingDiv = document.createElement('div');
+        lineSpacingDiv.style.height = '10px';
+        content.appendChild(lineSpacingDiv);
+
+        // Add submmit button to panel
+        var buttonContainer = document.createElement('span');
+        var submitButton = new YAHOO.widget.Button({type: 'button', label: "Save", container: buttonContainer});
+        content.appendChild(buttonContainer);
+
+        Fisma.HtmlPanel.showPanel('Add Comment', content);
+
+        submitButton.on('click', Fisma.User.submitUserForm);
+
+        return true;
+    },
+
+    /*
+     * Submit user form after assign comment value to comment element
+     */
+    submitUserForm : function () {
+
+        // Get commentTextArea value from panel and assign its value to comment element
+        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
+        YAHOO.util.Dom.get('comment').value = commentElement;
+        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
+        form.submit();
     }
 };
 /**
@@ -8679,7 +12731,6 @@ Fisma.User = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Util = {
@@ -8747,8 +12798,7 @@ Fisma.Util = {
                 YAHOO.widget.Overlay.BOTTOM_LEFT,
                 null,
                 [0, VERTICAL_OFFSET]
-            ]
-        );        
+            ]);        
     },
     
     /**
@@ -8776,7 +12826,109 @@ Fisma.Util = {
         }
 
         return hours + ":" + minutes + ":" + seconds;
+    },
+
+    /**
+     * Show confirm window with warning message. config object can have width, text, isLink, url and func
+     * 
+     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
+     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
+     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
+     * "YES" button is clicked.
+     *
+     * @param event
+     * @param config 
+     */
+    showConfirmDialog : function (event, config) {
+        var confirmDialog = Fisma.Util.getDialog();
+ 
+        var buttons = [ { text:"Yes", handler : function () {
+                            if (config.url) {
+                                document.location = config.url;
+                             }else if(config.func) {
+                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 if (YAHOO.lang.isFunction(funcObj)) {
+                                     if (config.args) {
+                                         funcObj.apply(this, config.args);
+                                     } else {
+                                         funcObj.call();
+                                     }
+                                 }
+                             }
+                             this.destroy();
+                            }
+                        },
+                        { text:"No",  handler : function () {
+                            this.destroy();
+                            }    
+                        } 
+                     ]; 
+ 
+        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setBody(config.text); 
+        confirmDialog.cfg.queueProperty("buttons", buttons); 
+        if (config.width) {
+            confirmDialog.cfg.setProperty("width", config.width); 
+        }
+        confirmDialog.render(document.body);
+        confirmDialog.show();
+        if (config.isLink) {
+            YAHOO.util.Event.preventDefault(event);
+        }
+    },
+ 
+    /**
+     * Show alert warning message. The config object can have width and zIndex property
+     *
+     * Generanlly, it can just pass alert message string if it does not need to override default config 
+     *
+     * @param message string
+     * @param config object
+     */
+    showAlertDialog : function (alertMessage, config) {
+        var alertDialog = Fisma.Util.getDialog();
+ 
+        var handleOk =  function() {
+            this.destroy();
+        };
+        var button = [ { text: "Ok", handler: handleOk } ];
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(alertMessage); 
+        alertDialog.cfg.queueProperty("buttons", button); 
+
+        if (!YAHOO.lang.isUndefined(config) && config.width) {
+            alertDialog.cfg.setProperty("width", config.width); 
+        }
+        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
+            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
+        }
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+    },
+
+    /**
+     * Generate a YUI SimpleDialog
+     * 
+     * @return a YUI SimpleDialog
+     */
+    getDialog : function(){
+        var dialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "400px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  close: true,
+                  modal: true,
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  draggable: false
+                } ); 
+
+        return dialog;
     }
+
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -8855,2624 +13007,19 @@ Fisma.Vulnerability = {
         yuiPanel.hide();
         yuiPanel.destroy();
     }
-}
-
-// Constants
-    var CHART_CREATE_SUCCESS = 1;
-    var CHART_CREATE_FAILURE = 2;
-    var CHART_CREATE_EXTERNAL = 3;
-
-// Defaults for global chart settings definition:
-var globalSettingsDefaults = {
-    fadingEnabled:      false,
-    barShadows:         false,
-    barShadowDepth:     3,
-    dropShadows:        false,
-    gridLines:          false,
-    pointLabels:        false,
-    pointLabelsOutline: false,
-    showDataTable: false
-}
-
-// Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
-var chartsOnDOM = {};
-
-// Is this client/browser Internet Explorer?
-isIE = (window.ActiveXObject) ? true : false;
-
+};
 /**
- * Creates a chart within a div by the name of chartParamsObj['uniqueid'].
- * All paramiters needed to create the chart are expected to be within the chartParamsObj object.
- * This function may return before the actual creation of a chart if there is an external source.
- *
- * @return boolean
- */
-function createJQChart(chartParamsObj)
-{
-
-    // load in default values for paramiters, and replace it with any given params
-    var defaultParams = {
-        concatXLabel: false,
-        nobackground: true,
-        drawGridLines: false,
-        pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
-        pointLabelAdjustX: -3,
-        pointLabelAdjustY: -7,
-        AxisLabelX: '',
-        AxisLabelY: '',
-        DataTextAngle: -30
-    };
-    chartParamsObj = jQuery.extend(true, defaultParams, chartParamsObj);
-
-    // param validation
-    if (document.getElementById(chartParamsObj['uniqueid']) == false) {
-        throw 'createJQChart Error - The target div/uniqueid does not exists' + chartParamsObj['uniqueid'];
-        return CHART_CREATE_FAILURE;
-    }
-
-    // set chart width to chartParamsObj['width']
-    setChartWidthAttribs(chartParamsObj);
-
-    // Ensure the load spinner is visible
-    makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
-
-    // is the data being loaded from an external source? (Or is it all in the chartParamsObj obj?)
-    if (chartParamsObj['externalSource']) {
-        
-        /*
-         * If it is being loaded from an external source
-         *   setup a json request
-         *   have the json request return to createJQChart_asynchReturn
-         *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj['externalSource'] taken out
-        */
-
-        document.getElementById(chartParamsObj['uniqueid']).innerHTML = 'Loading chart data...';
-
-        // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
-        var externalSource = chartParamsObj['externalSource'];
-        if (!chartParamsObj['oldExternalSource']) {
-            chartParamsObj['oldExternalSource'] = chartParamsObj['externalSource'];
-        }
-        chartParamsObj['externalSource'] = undefined;
-        
-        // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
-        chartParamsObj = buildExternalSourceParams(chartParamsObj);
-        externalSource += String(chartParamsObj['externalSourceParams']).replace(/ /g,'%20');
-        chartParamsObj['lastURLpull'] = externalSource;
-
-        var myDataSource = new YAHOO.util.DataSource(externalSource);
-        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-        myDataSource.responseSchema = {resultsList: "chart"};
-
-        var callback1 = {
-            success : createJQChart_asynchReturn,
-            failure : createJQChart_asynchReturn,
-            argument: chartParamsObj
-        };
-        myDataSource.sendRequest("", callback1);
-
-        return CHART_CREATE_EXTERNAL;
-    }
-
-    // clear the chart area
-    document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
-    document.getElementById(chartParamsObj['uniqueid']).className = '';
-    document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
-
-    // handel aliases and short-cut vars
-    if (typeof chartParamsObj['barMargin'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj['barMargin']}}});
-        chartParamsObj['barMargin'] = undefined;
-    }
-    if (typeof chartParamsObj['legendLocation'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj['legendLocation'] }});
-        chartParamsObj['legendLocation'] = undefined;
-    }
-    if (typeof chartParamsObj['legendRowCount'] != 'undefined') {
-        chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj['legendRowCount']}}});
-        chartParamsObj['legendRowCount'] = undefined;
-    }
-        
-    // make sure the numbers to be plotted in chartParamsObj['chartData'] are infact numbers and not an array of strings of numbers
-    chartParamsObj['chartData'] = forceIntegerArray(chartParamsObj['chartData']);
-
-    // hide the loading spinner and show the canvas target
-    document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.display = '';
-    makeElementInvisible(chartParamsObj['uniqueid'] + 'holder');
-    document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.position = 'absolute';
-    document.getElementById(chartParamsObj['uniqueid'] + 'loader').finnishFadeCallback = new Function ("fadeIn('" + chartParamsObj['uniqueid'] + "holder', 500);");
-    fadeOut(chartParamsObj['uniqueid'] + 'loader', 500);
-
-    // now that we have the chartParamsObj['chartData'], do we need to make the chart larger and scrollable?
-    setChartWidthAttribs(chartParamsObj);
-
-    // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
-    // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
-    chartsOnDOM[chartParamsObj['uniqueid']] = jQuery.extend(true, {}, chartParamsObj);
-    
-    // call the correct function based on chartType, or state there will be no chart created
-    if (!chartIsEmpty(chartParamsObj)) {
-    
-        switch(chartParamsObj['chartType'])
-        {
-            case 'stackedbar':
-                chartParamsObj['varyBarColor'] = false;
-                            if (typeof chartParamsObj['showlegend'] == 'undefined') { chartParamsObj['showlegend'] = true; }
-                var rtn = createJQChart_StackedBar(chartParamsObj);
-                break;
-            case 'bar':
-
-                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-                if (typeof chartParamsObj['chartData'][0] =='object') {
-
-                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
-
-                    chartParamsObj['varyBarColor'] = false;
-                    chartParamsObj['showlegend'] = true;
-
-                } else {
-                    chartParamsObj['chartData'] = [chartParamsObj['chartData']];  // force to 2 dimensional array
-                    chartParamsObj['links'] = [chartParamsObj['links']];
-                    chartParamsObj['varyBarColor'] = true;
-                    chartParamsObj['showlegend'] = false;
-                }
-
-                chartParamsObj['stackSeries'] = false;
-                var rtn = createJQChart_StackedBar(chartParamsObj);
-                break;
-
-            case 'line':
-                var rtn = createChartJQStackedLine(chartParamsObj);
-                break;
-            case 'stackedline':
-                var rtn = createChartJQStackedLine(chartParamsObj);
-                break;
-            case 'pie':
-                chartParamsObj['links'] = [chartParamsObj['links']];
-                var rtn = createChartJQPie(chartParamsObj);
-                break;
-            default:
-                throw 'createJQChart Error - chartType is invalid (' + chartParamsObj['chartType'] + ')';
-                return CHART_CREATE_FAILURE;
-        }
-    }
-
-    // chart tweeking external to the jqPlot library
-    removeOverlappingPointLabels(chartParamsObj);
-    applyChartBackground(chartParamsObj);
-    applyChartWidgets(chartParamsObj);
-    createChartThreatLegend(chartParamsObj);
-    applyChartBorders(chartParamsObj);
-    globalSettingRefreashUI(chartParamsObj);
-    showMsgOnEmptyChart(chartParamsObj);
-    getTableFromChartData(chartParamsObj);
-
-    return rtn;
-}
-
-
-/**
- * When an external source is needed, this function should handel the returned JSON request
- * The chartParamsObj object that went into createJQChart(obj) would be the chartParamsObj here, and
- * the "value" parameter should be the returned JSON request.
- * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
- * returns the return value of createJQChart(), or false on external source failure.
- *
- * @return integer
- */
-function createJQChart_asynchReturn(requestNumber, value, chartParamsObj)
-{
-    // If anything (json) was returned at all...
-    if (value) {
-        
-        // YAHOO.util.DataSource puts its JSON responce within value['results'][0]
-        if (value['results'][0]) {
-        
-            chartParamsObj = mergeExtrnIntoParamObjectByInheritance(chartParamsObj, value)
-            
-        } else {
-            if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-                document.location = chartParamsObj['lastURLpull'];
-            }
-        }
-
-        if (typeof chartParamsObj['chartData'] == 'undefined') {
-            throw 'Chart Error - The remote data source for chart "' + chartParamsObj['uniqueid'] + '" located at ' + chartParamsObj['lastURLpull'] + ' did not return data to plot on a chart';
-            return CHART_CREATE_FAILURE;
-        }
-
-        // call the createJQChart() with the chartParamsObj-object initally given to createJQChart() and the merged responce object
-        return createJQChart(chartParamsObj);
-        
-    } else {
-        if (confirm('Error - Chart creation failed due to data source error.\nIf you continuously see this message, please click Ok to navigate to data source, and copy-and-pase the text&data from there into email to Endeavor Systems.\n\nNavigate to the error-source?')) {
-            document.location = chartParamsObj['lastURLpull'];
-        }
-    }
-    
-    return CHART_CREATE_FAILURE;
-}
-
-/**
- * Takes a chartParamsObj and merges content of 
- * ExternResponce-object into it based in the inheritance mode
- * set in ExternResponce.
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- * 
-*/
-function mergeExtrnIntoParamObjectByInheritance(chartParamsObj, ExternResponce)
-{
-    var joinedParam = {};
-
-    // Is there an inheritance mode? 
-    if (ExternResponce['results'][0]['inheritCtl']) {
-        if (ExternResponce['results'][0]['inheritCtl'] == 'minimal') {
-            // Inheritance mode set to minimal, retain certain attribs and merge
-            var joinedParam = ExternResponce['results'][0];
-            joinedParam['width'] = chartParamsObj['width'];
-            joinedParam['height'] = chartParamsObj['height'];
-            joinedParam['uniqueid'] = chartParamsObj['uniqueid'];
-            joinedParam['externalSource'] = chartParamsObj['externalSource'];
-            joinedParam['oldExternalSource'] = chartParamsObj['oldExternalSource'];
-            joinedParam['widgets'] = chartParamsObj['widgets'];
-        } else if (ExternResponce['results'][0]['inheritCtl'] == 'none') {
-            // Inheritance mode set to none, replace the joinedParam object
-            var joinedParam = ExternResponce['results'][0];
-        } else {
-            throw 'Error - Unknown chart inheritance mode';
-            return;
-        }
-    } else {
-        // No inheritance mode, by default, merge everything
-        var joinedParam = jQuery.extend(true, chartParamsObj, ExternResponce['results'][0],true);
-    }
-
-    return joinedParam;
-}
-
- /**
-  * Fires the jqPlot library, and creates a pie chart
-  * based on input chart object
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return void
- */
-function createChartJQPie(chartParamsObj)
-{
-    usedLabelsPie = chartParamsObj['chartDataText'];
-
-    var dataSet = [];
-
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-        chartParamsObj['chartDataText'][x] += ' (' + chartParamsObj['chartData'][x]  + ')';
-        dataSet[dataSet.length] = [chartParamsObj['chartDataText'][x], chartParamsObj['chartData'][x]];
-    }
-    
-
-    var jPlotParamObj = {
-        title: chartParamsObj['title'],
-        seriesColors: chartParamsObj['colors'],
-        grid: {
-            drawBorder: false,
-            drawGridlines: false,
-            shadow: false
-        },
-        axes: {
-            xaxis:{
-                tickOptions: {
-                    angle: chartParamsObj['DataTextAngle'],
-                    fontSize: '10pt',
-                    formatString: '%.0f'
-                }
-            },
-            yaxis:{
-                tickOptions: {
-                    formatString: '%.0f'
-                }
-            }
-
-        },
-        seriesDefaults:{
-            renderer:$.jqplot.PieRenderer,
-            rendererOptions: {
-                sliceMargin: 0,
-                showDataLabels: true,
-                shadowAlpha: 0.15,
-                shadowOffset: 0,
-                lineLabels: true,
-                lineLabelsLineColor: '#777',
-                diameter: chartParamsObj['height'] * 0.55
-            }
-        },
-        legend: {
-            location: 's',
-            show: false,
-            rendererOptions: {
-                numberRows: 1
-            }
-        }
-    }
-    
-    jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
-
-    // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
-
-    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
-
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], [dataSet], jPlotParamObj);
-
-    // create an event handeling function that calls chartClickEvent while preserving the parm object
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
-    
-    // use the created function as the click-event-handeler
-    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
-
-    return CHART_CREATE_SUCCESS;
-}
-
- /**
-  * Fires the jqPlot library, and creates a stacked
-  * bar chart based on input chart object
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return void
- */
-function createJQChart_StackedBar(chartParamsObj)
-{
-    var dataSet = [];
-    var thisSum = 0;
-    var maxSumOfAll = 0;
-    var chartCeilingValue = 0;
-
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-    
-        thisSum = 0;
-        
-        for (var y = 0; y < chartParamsObj['chartData'].length; y++) {
-            thisSum += chartParamsObj['chartData'][y][x];
-        }
-        
-        if (thisSum > maxSumOfAll) { maxSumOfAll = thisSum; }
-
-        if (chartParamsObj['concatXLabel'] == true) {
-            chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
-        }
-        
-    }
-
-    var seriesParam = [];
-    if (chartParamsObj['chartLayerText']) {
-        for (x = 0; x < chartParamsObj['chartLayerText'].length; x++) {
-            seriesParam[x] = {label: chartParamsObj['chartLayerText'][x]};
-        }
-    }
-
-    // Make sure the Y-axis (row labels) are not offset by the formatter string rounding their values...
-    // (make the top most row label divisible by 5)
-    chartCeilingValue = getNextNumberDivisibleBy5(maxSumOfAll);
-    
-    // Force Y-axis row labels to be divisible by 5
-    yAxisTicks = [];
-    yAxisTicks[0] = 0;
-    yAxisTicks[1] = (chartCeilingValue/5) * 1;
-    yAxisTicks[2] = (chartCeilingValue/5) * 2;
-    yAxisTicks[3] = (chartCeilingValue/5) * 3;
-    yAxisTicks[4] = (chartCeilingValue/5) * 4;
-    yAxisTicks[5] = (chartCeilingValue/5) * 5;
-    
-
-    $.jqplot.config.enablePlugins = true
-
-    var jPlotParamObj = {
-        title: chartParamsObj['title'],
-        seriesColors: chartParamsObj['colors'],
-        stackSeries: true,
-        series: seriesParam,
-        seriesDefaults:{
-            renderer: $.jqplot.BarRenderer,
-            rendererOptions:{
-                barWidth: 35,
-                showDataLabels: true,
-                varyBarColor: chartParamsObj['varyBarColor'],
-                shadowAlpha: 0.15,
-                shadowOffset: 0
-            },
-            pointLabels:{show: false, location: 's'}
-        },
-        axesDefaults: {
-            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-            borderWidth: 0,
-            labelOptions: {
-                enableFontSupport: true,
-                fontFamily: 'arial, helvetica, clean, sans-serif',
-                fontSize: '12pt',
-                textColor: '#555555'
-            }
-        },
-        axes: {
-            xaxis:{
-                label: chartParamsObj['AxisLabelX'],
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                renderer: $.jqplot.CategoryAxisRenderer,
-                ticks: chartParamsObj['chartDataText'],
-                tickOptions: {
-                    angle: chartParamsObj['DataTextAngle'],
-                    fontFamily: 'arial, helvetica, clean, sans-serif',
-                    fontSize: '10pt',
-                    textColor: '#555555'
-                }
-            },
-            yaxis:{
-                label: chartParamsObj['AxisLabelY'],
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                min: 0,
-                max: chartCeilingValue,
-                autoscale: true,
-                ticks: yAxisTicks,
-                tickOptions: {
-                    formatString: '%.0f',
-                    fontFamily: 'arial, helvetica, clean, sans-serif',
-                    fontSize: '10pt',
-                    textColor: '#555555'
-                }
-            }
-
-        },
-        highlighter: { 
-            show: false 
-            },
-        grid: {
-            gridLineWidth: 0,
-            shadow: false,
-            borderWidth: 1,
-            gridLineColor: '#FFFFFF',
-            background: 'transparent',
-            drawGridLines: chartParamsObj['drawGridLines'],
-            show: chartParamsObj['drawGridLines']
-            },
-        legend: {
-                    show: chartParamsObj['showlegend'],
-                    rendererOptions: {
-                        numberRows: 1
-                    },
-                    location: 'nw'
-                }
-    };
-    
-    // bug killer - The canvas object for IE does not understand what transparency is...
-    if (isIE) {
-        jPlotParamObj.grid.background = '#FFFFFF';
-    }
-    
-    // bug killer (for IE7) - state the height for the container div for emulated excanvas
-    $("[id="+chartParamsObj['uniqueid']+"]").css('height', chartParamsObj['height']);
-    
-    // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
-    jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
-    
-    // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
-    jPlotParamObj = alterChartByGlobals(jPlotParamObj);
-
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], jPlotParamObj);
-
-    
-    var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
-    $('#' + chartParamsObj['uniqueid']).bind('jqplotDataClick', EvntHandler);
-
-    removeDecFromPointLabels(chartParamsObj);
-
-    return CHART_CREATE_SUCCESS;
-}
-
-function createChartJQStackedLine(chartParamsObj)
-{
-    var dataSet = [];
-    var thisSum = 0;
-
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-    
-        thisSum = 0;
-        
-        for (var y = 0; y < ['chartData'].length; y++) {
-            thisSum += ['chartData'][y][x];
-        }
-        
-        chartParamsObj['chartDataText'][x] += ' (' + thisSum  + ')';
-    }
-        
-    plot1 = $.jqplot(chartParamsObj['uniqueid'], chartParamsObj['chartData'], {
-        title: chartParamsObj['title'],
-        seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-        series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
-        seriesDefaults:{
-            fill:false,
-            showMarker: true,
-            showLine: true
-        },
-        axes: {
-            xaxis:{
-                renderer:$.jqplot.CategoryAxisRenderer,
-                ticks:chartParamsObj['chartDataText']
-            },
-            yaxis:{
-                min: 0
-            }
-        },
-        highlighter: { show: false },
-        legend: {
-                    show: true,
-                    rendererOptions: {
-                        numberRows: 1
-                    },
-                    location: 'nw'
-                }
-    });
-
-}
-
-/**
- * Creates the red-orange-yello threat-legend that shows above charts
- * The generated HTML code should go into the div with the id of the
- * chart's uniqueId + "toplegend"
- *
- * @return boolean/integer
- */
-function createChartThreatLegend(chartParamsObj)
-{
-    /*
-        Creates a red-orange-yellow legent above the chart
-    */
-
-    if (chartParamsObj['showThreatLegend'] && !chartIsEmpty(chartParamsObj)) {
-        if (chartParamsObj['showThreatLegend'] == true) {
-
-            // Is a width given for the width of the legend? OR should we assume 100%?
-            var tLegWidth = '100%';
-            if (chartParamsObj['threatLegendWidth']) {
-                tLegWidth = chartParamsObj['threatLegendWidth'];
-            }
-
-            var injectHTML = '<table style="font-size: 12px; color: #555555;" width="' + tLegWidth + '">  <tr>    <td style="text-align: center;" width="40%">Threat Level</td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF0000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;High</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FF6600" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Moderate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>      </tr>    </table>    </td>    <td width="20%">    <table>      <tr>        <td bgcolor="#FFC000" width="1px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>        <td>&nbsp;Low</td>      </tr>    </table>    </td>  </tr></table>';
-            var thisChartId = chartParamsObj['uniqueid'];
-            var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
-
-            topLegendOnDOM.innerHTML = injectHTML;
-        }
-    }        
-}
-
-function chartClickEvent(ev, seriesIndex, pointIndex, data, paramObj)
-{
-    
-    var theLink = false;
-    if (paramObj['links']) {
-        if (typeof paramObj['links'] == 'string') {
-            theLink = paramObj['links'];
-        } else {
-            if (paramObj['links'][seriesIndex]) {
-                if (typeof paramObj['links'][seriesIndex] == "object") {
-                    theLink = paramObj['links'][seriesIndex][pointIndex];
-                } else {
-                    theLink = paramObj['links'][seriesIndex];
-                }
-            }
-        }
-    }
-    
-    // unescape
-    theLink = unescape(theLink);
-    
-    // Does the link contain a variable?
-    if (theLink != false) {
-        theLink = String(theLink).replace('#ColumnLabel#', paramObj['chartDataText'][pointIndex]);
-    }
-    
-    if (paramObj['linksdebug'] == true) {
-        var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
-        msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
-        if (theLink != false) { msg += "The link with this element is " + theLink; }
-        alert(msg);
-    } else {
-    
-        // We are not in link-debug mode, navigate if there is a link
-        if (theLink != false && String(theLink) != 'null') {
-            document.location = theLink;
-        }
-        
-    }
-}
-
-/**
- * Converts an array from strings to integers, for example;
- * ["1", 2, "3", 4] would become [1, 2, 3, 4]
- * This is a bug killer for external source plotting data as
- * the jqPlot lib expects integers, and JSON may not always 
- * be encoded that way
- *
- * @return array
- */
-function forceIntegerArray(inptArray)
-{
-    for (var x = 0; x < inptArray.length; x++) {
-        if (typeof inptArray[x] == 'object') {
-            inptArray[x] = forceIntegerArray(inptArray[x]);
-        } else {
-            inptArray[x] = parseInt(inptArray[x]);    // make sure this is an int, and not a string of a number
-        }
-    }
-
-    return inptArray;
-}
-
-/**
- * Manually draws borders onto the shadow canvas
- * This function is nessesary as jqPlot's API does not allow 
- * you to choose which borders are drawn and which are not.
- * If "L" exists within chartParamsObj['borders'], the left border is
- * drawn, if "R" does (too), then the right is drawn and so on.
- *
- * @return void
- */
-function applyChartBorders(chartParamsObj)
-{
-
-    // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
-    if (typeof chartParamsObj['borders'] == 'undefined') {
-        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
-            // default for bar and stacked bar charts are bottom-left (BL)
-            chartParamsObj['borders'] = 'BL';
-        } else {
-            // assume no default for other chart types
-            return;
-        }
-    }
-
-    // Get the area of our containing divs
-    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-    var children = targDiv.childNodes;
-    
-    for (var x = children.length - 1; x > 0; x++) {
-        // search for a canvs
-        if (typeof children[x].nodeName != 'undefined') {
-            if (String(children[x].nodeName).toLowerCase() == 'canvas') {
-
-                // search for a canvas that is the shadow canvas
-                if (children[x].className = 'jqplot-series-shadowCanvas') {
-
-                    // this is the canvas we want to draw on
-                    var targCanv = children[x];
-                    var context = targCanv.getContext('2d');
-
-                    var h = children[x].height;
-                    var w = children[x].width;
-
-                    context.strokeStyle = '#777777'
-                    context.lineWidth = 3;
-                    context.beginPath();
-
-                    // Draw left border?
-                    if (chartParamsObj['borders'].indexOf('L') != -1) {
-                        context.moveTo(0,0);
-                        context.lineTo(0, h);
-                        context.stroke();
-                    }               
-
-                    // Draw bottom border?
-                    if (chartParamsObj['borders'].indexOf('B') != -1) {
-                        context.moveTo(0, h);
-                        context.lineTo(w, h);
-                        context.stroke();
-                    }
-
-                    // Draw right border?
-                    if (chartParamsObj['borders'].indexOf('R') != -1) {
-                        context.moveTo(w, 0);
-                        context.lineTo(w, h);
-                        context.stroke();
-                    }
-
-                    // Draw top border?
-                    if (chartParamsObj['borders'].indexOf('T') != -1) {
-                        context.moveTo(0, 0);
-                        context.lineTo(w, 0);
-                        context.stroke();
-                    }
-
-                        return;
-                }
-            }
-        }
-    }
-    
-}
-
-function applyChartBackground(chartParamsObj)
-{
-
-    var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-
-    // Dont display a background? Defined in either nobackground or background.nobackground
-    if (chartParamsObj['nobackground']) {
-        if (chartParamsObj['nobackground'] == true) { return; }
-    }
-    if (chartParamsObj['background']) {
-        if (chartParamsObj['background']['nobackground']) {
-            if (chartParamsObj['background']['nobackground'] == true) { return; }
-        }
-    }
-    
-    // What is the HTML we should inject?
-    var backURL = '/images/logoShark.png'; // default location
-    if (chartParamsObj['background']) { if (chartParamsObj['background']['URL']) { backURL = chartParamsObj['background']['URL']; } }
-    var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
-
-    // But wait, is there an override issued for the HTML of the background to inject?
-    if (chartParamsObj['background']) {
-        if (chartParamsObj['background']['overrideHTML']) {
-            backURL = chartParamsObj['background']['overrideHTML'];
-        }
-    }
-
-    // Where do we inject the background in the DOM? (different for differnt chart rederers)
-    if (chartParamsObj['chartType'] == 'pie') {
-        var cpy = targDiv.childNodes[3];
-        var insertBeforeChild = targDiv.childNodes[4];
-    } else {    
-        var cpy = targDiv.childNodes[6];
-        var insertBeforeChild = targDiv.childNodes[5];
-    }
-
-    var cpyStyl = cpy.style;
-
-    injectedBackgroundImg = document.createElement('span');
-    injectedBackgroundImg.setAttribute('align', 'center');
-    injectedBackgroundImg.setAttribute('style' , 'position: absolute; left: ' + cpyStyl.left + '; top: ' + cpyStyl.top + '; width: ' + cpy.width + 'px; height: ' + cpy.height + 'px;');
-
-    var inserted = targDiv.insertBefore(injectedBackgroundImg, insertBeforeChild);
-    inserted.innerHTML = injectHTML;
-}
-
-/**
- * Creates the chart widgets/options (regular options, not global-settings).
- * The generated HTML for these "widgets" as placed in a div by the id of the
- * chart's uniqueId + "WidgetSpace"
- *
- * @return void
- */
-function applyChartWidgets(chartParamsObj)
-{
-
-    var wigSpace = document.getElementById(chartParamsObj['uniqueid'] + 'WidgetSpace');
-
-    // Are there widgets for this chart?
-    if (typeof chartParamsObj['widgets'] == 'undefined') {
-        wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
-        return;
-    } else if (chartParamsObj['widgets'].length == 0) {
-        wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
-        return;
-    }
-
-    if (chartParamsObj['widgets']) {
-
-        var addHTML = '';
-
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            
-            // create a widget id if one is not explicitly given
-            if (!thisWidget['uniqueid']) {
-                thisWidget['uniqueid'] = chartParamsObj['uniqueid'] + '_widget' + x;
-                chartParamsObj['widgets'][x]['uniqueid'] = thisWidget['uniqueid'];
-            }
-
-            // print the label text to be displayed to the left of the widget if one is given
-            addHTML += '<tr><td nowrap align=left>' + thisWidget['label'] + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
-
-            switch(thisWidget['type']) {
-                case 'combo':
-
-                    addHTML += '<select id="' + thisWidget['uniqueid'] + '" onChange="widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
-                                        // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-
-                    for (var y = 0; y < thisWidget['options'].length; y++) {
-                        addHTML += '<option value="' + thisWidget['options'][y] + '">' + thisWidget['options'][y] + '</option><br/>';
-                    }
-                    
-                    addHTML += '</select>';
-
-                    break;
-
-                case 'text':
-    
-                    addHTML += '<input onKeyDown="if(event.keyCode==13){widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget['uniqueid'] + '" />';
-                                        // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-                    break;
-
-                default:
-                    throw 'Error - Widget ' + x + "'s type (" + thisWidget['type'] + ') is not a known widget type';
-                    return false;
-            }
-
-            
-            addHTML += '</td></tr>';
-            
-        }
-
-        // add this widget HTML to the DOM
-        wigSpace.innerHTML = '<table>' + addHTML + '</table>';
-        
-    }
-
-    applyChartWidgetSettings(chartParamsObj);
-}
-
-/**
- * Looks at chartParamsObj["widget"], or for every chart-options/widget, loads the
- * values for this opt/widget into the user-interface object for this option.
- * This value may be loaded froma saved cookie, fallback to a default, or
- * be foreced to a certain value every time if the PHP wrapper demands it.
- *
- * @return void
- */
-function applyChartWidgetSettings(chartParamsObj)
-{
-
-    if (chartParamsObj['widgets']) {
-
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            
-            // load the value for widgets
-            var thisWigInDOM = document.getElementById(thisWidget['uniqueid']);
-            if (thisWidget['forcevalue']) {
-                // this widget value is forced to a certain value upon every load/reload
-                thisWigInDOM.value = thisWidget['forcevalue'];
-                thisWigInDOM.text = thisWidget['forcevalue'];
-            } else {
-                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != '') {
-                    // the value has been coosen in the past and is stored as a cookie
-                    thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
-                    thisWigInDOM.value = thisWigCookieValue;
-                    thisWigInDOM.text = thisWigCookieValue;
-                } else {
-                    // no saved value/cookie. Is there a default given in the chartParamsObj object
-                    if (thisWidget['defaultvalue']) {
-                        thisWigInDOM.value = thisWidget['defaultvalue'];
-                        thisWigInDOM.text = thisWidget['defaultvalue'];
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-/**
- * When an external source is queried (JSON query), all chart parameters/options/widgets
- * are placed into the query URL. This function builds the trailing query to be appended
- * to the static external source URL.
- * Returns the chartParamsObj object given to this function with chartParamsObj['externalSourceParams'] altered.
- *
- * @return Array
- */
-function buildExternalSourceParams(chartParamsObj)
-{
-
-    // build arguments to send to the remote data source
-
-    var thisWidgetValue = '';
-    chartParamsObj['externalSourceParams'] = '';
-
-    if (chartParamsObj['widgets']) {
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-
-            var thisWidget = chartParamsObj['widgets'][x];
-            var thisWidgetName = thisWidget['uniqueid'];
-            var thisWidgetOnDOM = document.getElementById(thisWidgetName);
-
-            // is this widget actully on the DOM? Or should we load the cookie?         
-            if (thisWidgetOnDOM) {
-                // widget is on the DOM
-                thisWidgetValue = thisWidgetOnDOM.value;
-            } else {
-                // not on DOM, is there a cookie?
-                var thisWigCookieValue = getCookie(chartParamsObj['uniqueid'] + '_' + thisWidget['uniqueid']);
-                if (thisWigCookieValue != '') {
-                    // there is a cookie value, us it
-                    thisWidgetValue = thisWigCookieValue;
-                } else {
-                    // there is no cookie, is there a default value?
-                    if (thisWidget['defaultvalue']) {
-                        thisWidgetValue = thisWidget['defaultvalue'];
-                    }
-                }
-            }
-
-            chartParamsObj['externalSourceParams'] += '/' + thisWidgetName + '/' + thisWidgetValue 
-        }
-    }
-
-    return chartParamsObj;
-}
-
- /**
-  * Event handeler for when a user changes combo-boxes or textboxes 
-  * of chart settings.
-  *
-  * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-  *
-  * @param object
-  * @return void
- */
-function widgetEvent(chartParamsObj)
-{
-
-    // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
-    if (chartParamsObj['widgets']) {
-        for (var x = 0; x < chartParamsObj['widgets'].length; x++) {
-            var thisWidgetName = chartParamsObj['widgets'][x]['uniqueid'];
-            var thisWidgetValue = document.getElementById(thisWidgetName).value;
-            setCookie(chartParamsObj['uniqueid'] + '_' + thisWidgetName,thisWidgetValue,400);
-        }
-    }
-
-    // build arguments to send to the remote data source
-    chartParamsObj = buildExternalSourceParams(chartParamsObj);
-
-    // restore externalSource so a json request is fired when calling createJQPChart
-    chartParamsObj['externalSource'] = chartParamsObj['oldExternalSource'];
-    chartParamsObj['oldExternalSource'] = undefined;
-
-    chartParamsObj['chartData'] = undefined;
-    chartParamsObj['chartDataText'] = undefined;
-
-    // re-create chart entirly
-    document.getElementById(chartParamsObj['uniqueid'] + 'holder').finnishFadeCallback = new Function ("makeElementVisible('" + chartParamsObj['uniqueid'] + "loader'); createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); this.finnishFadeCallback = '';");
-    fadeOut(chartParamsObj['uniqueid'] + 'holder', 300);
-
-}
-
-function makeElementVisible(eleId)
-{
-    var ele = document.getElementById(eleId);
-    ele.style.opacity = '1';
-    ele.style.filter = "alpha(opacity = '100')";
-}
-
-function makeElementInvisible(eleId)
-{
-    var ele = document.getElementById(eleId);
-    ele.style.opacity = '0';
-    ele.style.filter = "alpha(opacity = '0')";
-}
-
-function fadeIn(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-    
-    
-    var fadingEnabled = getGlobalSetting('fadingEnabled');
-    if (fadingEnabled == 'false') {
-        makeElementVisible(eid);
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = undefined;
-        }
-        return;
-    }
-    
-    if (typeof element.isFadingNow != 'undefined') {
-        if (element.isFadingNow == true) {
-            return;
-        }
-    }
-    element.isFadingNow = true;
-
-    element.FadeState = null;
-    element.FadeTimeLeft = undefined;
-
-    makeElementInvisible(eid);
-    element.style.opacity = '0';
-    element.style.filter = "alpha(opacity = '0')";
-
-    fade(eid, TimeToFade);
-}
-
-function fadeOut(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-
-    var fadingEnabled = getGlobalSetting('fadingEnabled');
-    if (fadingEnabled == 'false') {
-        makeElementInvisible(eid);
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = undefined;
-        }
-        return;
-    }
-
-    if (typeof element.isFadingNow != 'undefined') {
-        if (element.isFadingNow == true) {
-            return;
-        }
-    }
-    element.isFadingNow = true;
-
-    element.FadeState = null;
-    element.FadeTimeLeft = undefined;
-
-    makeElementVisible(eid);
-    element.style.opacity = '1';
-    element.style.filter = "alpha(opacity = '100')";
-
-    fade(eid, TimeToFade);
-}
-
-function fade(eid, TimeToFade)
-{
-
-    var element = document.getElementById(eid);
-    if (element == null) return;
-
-//  element.style = '';
-
-    if(element.FadeState == null)
-    {
-        if(element.style.opacity == null || element.style.opacity == '' || element.style.opacity == '1')
-        {
-            element.FadeState = 2;
-        } else {
-            element.FadeState = -2;
-        }
-    }
-
-    if (element.FadeState == 1 || element.FadeState == -1) {
-        element.FadeState = element.FadeState == 1 ? -1 : 1;
-        element.FadeTimeLeft = TimeToFade - element.FadeTimeLeft;
-    } else {
-        element.FadeState = element.FadeState == 2 ? -1 : 1;
-        element.FadeTimeLeft = TimeToFade;
-        setTimeout("animateFade(" + new Date().getTime() + ",'" + eid + "'," + TimeToFade + ")", 33);
-    }  
-}
-
-function animateFade(lastTick, eid, TimeToFade)
-{  
-    var curTick = new Date().getTime();
-    var elapsedTicks = curTick - lastTick;
-
-    var element = document.getElementById(eid);
-
-    if(element.FadeTimeLeft <= elapsedTicks)
-    {
-        if (element.FadeState == 1) {
-            element.style.filter = 'alpha(opacity = 100)';
-            element.style.opacity = '1';
-        } else {
-            element.style.filter = 'alpha(opacity = 0)';
-            element.style.opacity = '0';
-        }
-        element.isFadingNow = false;
-        element.FadeState = element.FadeState == 1 ? 2 : -2;
-        
-        if (element.finnishFadeCallback) {
-            element.finnishFadeCallback();
-            element.finnishFadeCallback = '';
-        }
-        return;
-    }
-
-    element.FadeTimeLeft -= elapsedTicks;
-    var newOpVal = element.FadeTimeLeft/TimeToFade;
-    if(element.FadeState == 1) newOpVal = 1 - newOpVal;
-
-    element.style.opacity = newOpVal;
-    element.style.filter = 'alpha(opacity = "' + (newOpVal*100) + '")';
-
-    setTimeout("animateFade(" + curTick + ",'" + eid + "'," + TimeToFade + ")", 33);
-}
-
-/**
- * This function controles how width and scrolling is handeled with the chart's canvase's
- * parent div. If autoWidth (or in PHP Fisma_Chart->widthAuto(true);) is set, the parent
- * div will always be scrollable. If not, it may still be automatically set scrollable if
- * the with in chartParamsObj['width'] is less than the minimum with required by the chart (calculated
- * in this function).
- *
- * NOTE: This function does not actully look at the DOM. It assumes the author to used
- *       Fisma_Chart->setWidth() knew what he was doing and set it correctly.
- *       The static width given to charts is considered a minimum width.
- *
- * @return void
- */
-function setChartWidthAttribs(chartParamsObj)
-{
-
-    var makeScrollable = false;
-
-    // Determin if we need to make this chart scrollable...
-    // Do we really have the chart data to plot?
-    if (chartParamsObj['chartData']) {
-        // Is this a bar chart?
-        if (chartParamsObj['chartType'] == 'bar' || chartParamsObj['chartType'] == 'stackedbar') {
-
-            // How many bars does it have?
-            if (chartParamsObj['chartType'] == 'stackedbar') {
-                var barCount = chartParamsObj['chartData'][0].length;
-            } else if (chartParamsObj['chartType'] == 'bar') {
-                var barCount = chartParamsObj['chartData'].length;
-            }
-
-            // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
-            var minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
-
-            // Do we not have enough space for a non-scrolling chart?
-            if (chartParamsObj['width'] < minSpaceRequired) {
-                
-                // We need to make this chart scrollable
-                makeScrollable = true;
-            }
-        }
-    }
-
-    // Is auto-width enabeled? (set width to 100% and make scrollable)
-    if (typeof chartParamsObj['autoWidth'] != 'undefined') {
-        if (chartParamsObj['autoWidth'] == true) {
-            makeScrollable = true;
-        }
-    }
-
-    if (makeScrollable == true) {
-
-        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = 'auto';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = minSpaceRequired + 'px';
-        document.getElementById(chartParamsObj['uniqueid']  + 'toplegend').style.width = minSpaceRequired + 'px';
-
-        // handel alignment
-        if (chartParamsObj['align'] == 'center') {
-            document.getElementById(chartParamsObj['uniqueid']).style.marginLeft = 'auto';
-            document.getElementById(chartParamsObj['uniqueid']).style.marginRight = 'auto';
-            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginLeft = 'auto';
-            document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.marginRight = 'auto';
-        }
-        
-    } else {
-
-        document.getElementById(chartParamsObj['uniqueid'] + 'loader').style.width = '100%';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.width = chartParamsObj['width'] + 'px';
-        document.getElementById(chartParamsObj['uniqueid'] + 'holder').style.overflow = '';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = chartParamsObj['width'] + 'px';
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').width = chartParamsObj['width'] + 'px';
-    }
-    
-}
-
-/**
- * Builds a table based on the data to plot on the chart for screen readers.
- * The generated HTML should generally be placed in a div by the Id of the
- * chart's uniqueId + "table"
- *
- * @param object
- * @return String
- */
-function getTableFromChartData(chartParamsObj)
-{
-    if (chartIsEmpty(chartParamsObj)) {
-        return;
-    }
-
-    var dataTableObj = document.getElementById(chartParamsObj['uniqueid'] + 'table');
-    dataTableObj.innerHTML = '';
-    
-    if (getGlobalSetting('showDataTable') === 'true') {
-    
-        if (chartParamsObj['chartType'] === 'pie') {
-            getTableFromCharPieChart(chartParamsObj);
-        } else {
-            getTableFromBarChart(chartParamsObj);
-        }
-
-        // Show the table generated based on chart data
-        dataTableObj.style.display = '';
-        // Hide, erase, and collapse the container of the chart divs
-        document.getElementById(chartParamsObj['uniqueid']).innerHTML = '';
-        document.getElementById(chartParamsObj['uniqueid']).style.width = 0;
-        document.getElementById(chartParamsObj['uniqueid']).style.height = 0;
-        // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').style.display = 'none';
-
-    } else {
-        dataTableObj.style.display = 'none';
-    }
-}
-
-function getTableFromCharPieChart(chartParamsObj)
-{
-    var tbl     = document.createElement("table");
-    var tblBody = document.createElement("tbody");
-
-    // row of slice-labels
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
-        cell.setAttribute("style", "font-style: bold;");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-
-    // row of data
-    var row = document.createElement("tr");
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(chartParamsObj['chartData'][x]);
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-
-    tbl.appendChild(tblBody);
-    tbl.setAttribute("border", "1");
-    tbl.setAttribute("width", "100%");
-    
-    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
-}
-
-function getTableFromBarChart(chartParamsObj)
-{
-    var tbl     = document.createElement("table");
-    var tblBody = document.createElement("tbody");
-    var row = document.createElement("tr");
-    
-    // add a column for layer names if this is a stacked chart
-    if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
-        var cell = document.createElement("td");
-        var cellText = document.createTextNode(" ");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    
-    for (var x = 0; x < chartParamsObj['chartDataText'].length; x++) {
-        var cell = document.createElement("th");
-        var cellText = document.createTextNode(chartParamsObj['chartDataText'][x]);
-        cell.setAttribute("style", "font-style: bold;");
-        cell.appendChild(cellText);
-        row.appendChild(cell);
-    }
-    tblBody.appendChild(row);
-    
-
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-
-        var thisEle = chartParamsObj['chartData'][x];
-        var row = document.createElement("tr");
-        
-        // each layer label
-        if (typeof chartParamsObj['chartLayerText'] != 'undefined') {
-            var cell = document.createElement("th");
-            var cellText = document.createTextNode(chartParamsObj['chartLayerText'][x]);
-            cell.setAttribute("style", "font-style: bold;");
-            cell.appendChild(cellText);
-            row.appendChild(cell);
-        }
-        
-        if (typeof(thisEle) == 'object') {
-
-            for (var y = 0; y < thisEle.length; y++) {
-                var cell = document.createElement("td");
-                var cellText = document.createTextNode(thisEle[y]);
-                cell.setAttribute("style", "font-style: bold;");
-                cell.appendChild(cellText);
-                row.appendChild(cell);
-            }
-            
-        } else {
-
-            var cell = document.createElement("td");
-            var cellText = document.createTextNode(thisEle);
-            cell.appendChild(cellText);
-            row.appendChild(cell);
-        }
-
-        tblBody.appendChild(row);
-
-    }
-
-    tbl.appendChild(tblBody);
-    tbl.setAttribute("border", "1");
-    tbl.setAttribute("width", "100%");
-    
-    document.getElementById(chartParamsObj['uniqueid'] + 'table').appendChild(tbl);
-}
-
-/**
- * Removes decimals from point labels, along with some other minor maintenance
- * - removes data/point-labels that are 0s
- * - Applies outlines if the globalSettings is set so
- * - forces color to black, and bolds the font
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function removeDecFromPointLabels(chartParamsObj)
-{
-        var outlineStyle = '';
-        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
-    
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
-                
-                var thisChld = chartOnDOM.childNodes[x];
-                
-                // IE Support - IE does not support .classList, manually make this
-                if (typeof thisChld.classList == 'undefined') {
-                    thisChld.classList = String(thisChld.className).split(' ');
-                }
-                
-                if (thisChld.classList) {
-                    if (thisChld.classList[0] == 'jqplot-point-label') {
-
-                            // convert this from a string to a number to a string again (removes decimal if its needless)
-                            thisLabelValue = parseInt(thisChld.innerHTML);
-                            thisChld.innerHTML = thisLabelValue;
-                            thisChld.value = thisLabelValue;
-
-                            // if this number is 0, hide it (0s overlap with other numbers on bar charts)
-                            if (parseInt(thisChld.innerHTM) == 0) {
-                                thisChld.innerHTML = '';
-                            }
-
-                            // add outline to this point label so it is easily visible on dark color backgrounds (outlines are done through white-shadows)
-                            if (getGlobalSetting('pointLabelsOutline') == 'true') {
-
-                                outlineStyle = 'text-shadow: ';
-                                outlineStyle += '#FFFFFF 0px -1px 0px, ';
-                                outlineStyle += '#FFFFFF 0px 1px 0px, ';
-                                outlineStyle += '#FFFFFF 1px 0px 0px, ';
-                                outlineStyle += '#FFFFFF -1px 1px 0px, ';
-                                outlineStyle += '#FFFFFF -1px -1px 0px, ';
-                                outlineStyle += '#FFFFFF 1px 1px 0px; ';
-                                
-                                thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
-                                thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
-                                
-                            } else {
-                                thisChld.innerHTML = '<span style="' + chartParamsObj['pointLabelStyle'] + '">' + thisChld.innerHTML + '</span>';
-                            }
-
-                            // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                            var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''));       // remove "px" from string, and conver to number
-                            var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''));       // remove "px" from string, and conver to number
-                            thisLeftNbrValue += chartParamsObj['pointLabelAdjustX'];
-                            thisTopNbrValue += chartParamsObj['pointLabelAdjustY'];
-                            if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
-                            if (thisLabelValue >= 1000) { thisLeftNbrValue -= 3; }
-                            thisChld.style.left = thisLeftNbrValue + 'px';
-                            thisChld.style.top = thisTopNbrValue + 'px';
-
-                            // force color to black
-                            thisChld.style.color = 'black';
-
-                    }
-                }
-        }
-        
-}
-
-function removeOverlappingPointLabels(chartParamsObj)
-{
-
-        // This function will deal with removing point labels that collie with eachother
-        // There is no need for this unless this is a stacked-bar or stacked-line chart
-        if (chartParamsObj['chartType'] != 'stackedbar' && chartParamsObj['chartType'] != 'stackedline') {
-            return;
-        }
-
-        var chartOnDOM = document.getElementById(chartParamsObj['uniqueid']);
-
-        var pointLabels_info = {};
-        var pointLabels_indexes = [];
-        var thisLabelValue = 0;
-        var d = 0;
-
-        for (var x = 0; x < chartOnDOM.childNodes.length; x++) {
-
-            var thisChld = chartOnDOM.childNodes[x];
-            
-            // IE support - IE dosnt supply .classList array, just a className string. Manually build this....
-            if (typeof thisChld.classList == 'undefined') {
-                thisChld.classList = String(thisChld.className).split(' ');
-            }
-            
-            if (thisChld.classList[0] == 'jqplot-point-label') {
-
-                var chldIsRemoved = false;
-
-                if (typeof thisChld.isRemoved != 'undefined') {
-                    chldIsRemoved = thisChld.isRemoved;
-                }
-
-                if (chldIsRemoved == false) {
-                    // index this point labels position
-
-                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', '')); // remove "px" from string, and conver to number
-                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', '')); // remove "px" from string, and conver to number
-                    thisLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
-
-                    var thisIndex = 'left_' + thisLeftNbrValue;
-                    if (typeof pointLabels_info[thisIndex] == 'undefined') {
-                        pointLabels_info[thisIndex] = [];
-                        pointLabels_indexes.push(thisIndex);
-                    }
-
-                    var thispLabelInfo = {
-                        left: thisLeftNbrValue, 
-                        top: thisTopNbrValue, 
-                        value: thisLabelValue, 
-                        obj: thisChld
-                    };
-
-                    pointLabels_info[thisIndex].push(thispLabelInfo);
-                }
-            }
-        }
-        
-        // Ensure point labels do not collide with others
-        for (var x = 0; x < pointLabels_indexes.length; x++) {
-            
-            var thisIndex = pointLabels_indexes[x];
-            
-            for (var y = 0; y < pointLabels_info[thisIndex].length; y++) {
-                
-                /* now determin the distance between this point label, and all
-                   point labels within this column. pointLabels_info[thisIndex]
-                   holds all point labels within this column. */
-                
-                var thisPointLabel = pointLabels_info[thisIndex][y];
-                
-                for (var c = 0; c < pointLabels_info[thisIndex].length; c++) {
-                
-                    var checkAgainst = pointLabels_info[thisIndex][c];
-                    
-                    // get the distance from thisPointLabel to checkAgainst point label
-                    d = Math.abs(checkAgainst['top'] - thisPointLabel['top']);
-                    
-                    if (d < 12 && d != 0) {
-                        
-                        // remove whichever label has the lower number
-                        
-                        if (checkAgainst['value'] < thisPointLabel['value']) {
-                            checkAgainst['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
-                        } else {
-                            thisPointLabel['obj'].innerHTML = '';
-                            checkAgainst['obj'].isRemoved = true;
-                        }
-                        
-                        // We jave just removed a point label, so this function will need to be run again
-                        // as the labels will need to be reindexed.
-                        
-                        removeOverlappingPointLabels(chartParamsObj)
-                        return;
-                    }
-                }
-            }
-            
-        }
-        
-}
-
-function hideButtonClick(scope, chartParamsObj, obj)
-{
-    setChartSettingsVisibility(chartParamsObj , false);
-}
-
-/**
- * Controles if the YUI-tab-view of the settings for a given drawn chart on the DOM
- * is visible or not.
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function setChartSettingsVisibility(chartId, boolVisible)
-{
-    var menuHolderId = chartId + 'WidgetSpaceHolder';
-    var menuObj = document.getElementById(menuHolderId);
-    
-    if (boolVisible == 'toggle') {
-        if (menuObj.style.display == 'none') {
-            boolVisible = true;
-        } else {
-            boolVisible = false;
-        }
-    }
-    
-    if (boolVisible == true) {
-        menuObj.style.display = '';
-    } else {
-        menuObj.style.display = 'none';
-    }
-}
-
-/**
- * Will take values from checkboxes/textboxes within the Global Settings tab of
- * a chart and save each settings into cookies, and then trigger redrawAllCharts()
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function globalSettingUpdate(chartUniqueId)
-{
-    // get this chart's GlobSettings menue
-    var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
-    
-    // get all elements of this chart's GlobSettings menue
-    var settingOpts = settingsMenue.childNodes;
-    
-    for (var x = 0; x < settingOpts.length; x++) {
-        var thisOpt = settingOpts[x];
-        if (thisOpt.nodeName == 'INPUT') {
-            if (thisOpt.type == 'checkbox') {
-                setGlobalSetting(thisOpt.id, thisOpt.checked);
-            } else {
-                setGlobalSetting(thisOpt.id, thisOpt.value);
-            }
-        }
-    }
-    
-    redrawAllCharts();
-}
-
-/**
- * Will update checkboxes/textboxes within the Global Settings tab of
- * the chart to be equal to the current cookie state for each setting 
- * or the default stored in globalSettingsDefaults.
- *
- * Expects: A (chart-)object generated from Fisma_Chart->export('array')
- *
- * @param object
- * @return void
- */
-function globalSettingRefreashUI(chartParamsObj)
-{
-    /*
-        Every input-element (setting UI) has an id equal to the cookie name 
-        to which its value is stored. So wee we have to do is look for a
-        cookie based on the id for each input element
-    */
-    
-    // get this chart's GlobSettings menue
-    var settingsMenue = document.getElementById(chartParamsObj['uniqueid'] + 'GlobSettings');
-    
-    // get all elements of this chart's GlobSettings menue
-    var settingOpts = settingsMenue.childNodes;
-    
-    for (var x = 0; x < settingOpts.length; x++) {
-        var thisOpt = settingOpts[x];
-        if (thisOpt.nodeName == 'INPUT') {
-        
-            // By this line (and in this block), we know we have found an input element on this GlobSettings menue
-            
-            if (thisOpt.type == 'checkbox') {
-                thisOpt.checked = (getGlobalSetting(thisOpt.id)=='true') ? true : false;
-            } else {
-                thisOpt.value = getGlobalSetting(thisOpt.id);
-                thisOpt.text = thisOpt.value;
-            }
-        }
-    }
-}
-
-function showSetingMode(showBasic)
-{
-    if (showBasic == true) {
-        var showThese = document.getElementsByName('chartSettingsBasic')
-        var hideThese = document.getElementsByName('chartSettingsGlobal')
-    } else {
-        var hideThese = document.getElementsByName('chartSettingsBasic')
-        var showThese = document.getElementsByName('chartSettingsGlobal')
-    }
-    
-    for (var x = 0; x < hideThese.length; x++) {
-        hideThese[x].style.display = 'none';
-    }
-    
-    for (var x = 0; x < hideThese.length; x++) {
-            showThese[x].style.display = '';
-        }
-    
-}
-
-function getGlobalSetting(settingName)
-{
-
-    var rtnValue = getCookie('chartGlobSetting_' + settingName, '-RETURN-DEFAULT-SETTING-');
-
-    if (rtnValue != '-RETURN-DEFAULT-SETTING-') {
-        return rtnValue;
-    } else {
-    
-        if (typeof globalSettingsDefaults[settingName] == 'undefined') {
-            throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
-        } else {
-            return String(globalSettingsDefaults[settingName]);
-        }
-    }
-
-}
-
-function setGlobalSetting(settingName, newValue)
-{
-    setCookie('chartGlobSetting_' + settingName, newValue);
-}
-
-/**
- * Will alter the input chart object based on 
- * settings(cookies) or defaults stored in globalSettingsDefaults.
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * Returns: The given object, which may or may not have alterations
- *
- * @param object
- * @return object
- */
-function alterChartByGlobals(chartParamObj)
-{
-    
-    // Show bar shadows?
-    if (getGlobalSetting('barShadows') == 'true') {
-        chartParamObj.seriesDefaults.rendererOptions.shadowDepth = 3;
-        chartParamObj.seriesDefaults.rendererOptions.shadowOffset = 3;
-    }
-    
-    // Depth of bar shadows?
-    if (getGlobalSetting('barShadowDepth') != 'no-setting' && getGlobalSetting('barShadows') == 'true') {
-        chartParamObj.seriesDefaults.rendererOptions.shadowDepth = getGlobalSetting('barShadowDepth');
-        chartParamObj.seriesDefaults.rendererOptions.shadowOffset = getGlobalSetting('barShadowDepth');
-    }
-    
-    // grid-lines?
-    if (getGlobalSetting('gridLines') == 'true') {
-        chartParamObj.grid.gridLineWidth = 1;
-        chartParamObj.grid.borderWidth = 0;
-        chartParamObj.grid.gridLineColor = undefined;
-        chartParamObj.grid.drawGridLines = true;
-        chartParamObj.grid.show = true;
-    }
-    
-    // grid-lines?
-    if (getGlobalSetting('dropShadows') != 'false') {
-        chartParamObj.grid.shadow = true;
-    }   
-
-    // point labels?
-    if (getGlobalSetting('pointLabels') == 'true') {
-        chartParamObj.seriesDefaults.pointLabels.show = true;
-    }
-    
-    // point labels outline?
-        /* no alterations to the chartParamObject needs to be done here, this is handeled by removeDecFromPointLabels() */  
-    
-    
-    return chartParamObj;
-}
-
-function redrawAllCharts()
-{
-
-    for (var uniqueid in chartsOnDOM) {
-    
-        var thisParamObj = chartsOnDOM[uniqueid];
-        
-        // redraw chart
-        createJQChart(thisParamObj);
-        
-        // refreash Global Settings UI
-        globalSettingRefreashUI(thisParamObj);
-    }
-
-}
-
-/**
- * Will insert a "No data to plot" message when there is no 
- * data to plot, or all plot data are 0s
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * @param object
- * @return void
- */
-function showMsgOnEmptyChart(chartParamsObj)
-{
-
-    if (chartIsEmpty(chartParamsObj)) {
-        var targDiv = document.getElementById(chartParamsObj['uniqueid']);
-        var injectHTML = 'No data to plot.';
-        var insertBeforeChild = targDiv.childNodes[1];
-        var msgOnDom = document.createElement('div');
-        msgOnDom.height = '100%';
-        msgOnDom.style.align = 'center';
-        msgOnDom.style.position = 'absolute';
-        msgOnDom.style.width = chartParamsObj['width'] + 'px';
-        msgOnDom.style.height = '100%';
-        msgOnDom.style.textAlign = 'center';
-        msgOnDom.style.verticalAlign = 'middle';
-        var inserted = targDiv.insertBefore(msgOnDom, insertBeforeChild);
-        inserted.innerHTML = injectHTML;
-    }
-}
-
-/**
- * Returns true if there is no data to 
- * plot, or if all plot data are 0s
- *
- * Expects: A (chart) object generated from Fisma_Chart->export('array')
- * @param object
- * @return boolean
- */
-function chartIsEmpty(chartParamsObj)
-{
-
-    // Is all data 0?
-    var isAll0Data = true;
-    for (var x = 0; x < chartParamsObj['chartData'].length; x++) {
-    
-        if (typeof chartParamsObj['chartData'][x] == 'object') {
-            
-            for (var y = 0; y < chartParamsObj['chartData'][x].length; y++) {
-                if (parseInt(chartParamsObj['chartData'][x][y]) > 0) { isAll0Data = false; }
-            }
-            
-        } else {
-            if (parseInt(chartParamsObj['chartData'][x]) > 0)
-                isAll0Data = false;
-        }
-    
-    }
-    
-    return isAll0Data;
-}
-
-function getNextNumberDivisibleBy5(nbr)
-{
-
-    nbr = Math.round(nbr);
-
-    for (var x = 0; x < 8; x++ ) {
-    
-        var dividedBy5 = (nbr / 5);
-
-        // is this a whole number?
-        if (dividedBy5 == Math.round(dividedBy5)) {
-            return nbr;
-        } else {
-            // currently nbr is not divisible by 5, increment and keep searching
-            nbr++;
-        }
-    }
-
-}
-
-function setCookie(c_name,value,expiredays)
-{
-    var exdate=new Date();
-    exdate.setDate(exdate.getDate()+expiredays);
-    document.cookie = c_name + "=" + escape(value)+((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
-}
-
-function getCookie(c_name, defaultValue)
-{
-    if (document.cookie.length>0) {
-
-        c_start=document.cookie.indexOf(c_name + "=");
-
-        if (c_start!=-1) {
-            c_start = c_start + c_name.length + 1;
-            c_end = document.cookie.indexOf(";",c_start);
-            if (c_end==-1) c_end=document.cookie.length;
-            return unescape(document.cookie.substring(c_start,c_end));
-        }
-    }
-
-    if (typeof defaultValue != 'undefined') {
-        return defaultValue;
-    } else {
-        return '';
-    }
-}
-/*!
- * jQuery UI 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI
- */
-jQuery.ui||function(c){c.ui={version:"1.8.1",plugin:{add:function(a,b,d){a=c.ui[a].prototype;for(var e in d){a.plugins[e]=a.plugins[e]||[];a.plugins[e].push([b,d[e]])}},call:function(a,b,d){if((b=a.plugins[b])&&a.element[0].parentNode)for(var e=0;e<b.length;e++)a.options[b[e][0]]&&b[e][1].apply(a.element,d)}},contains:function(a,b){return document.compareDocumentPosition?a.compareDocumentPosition(b)&16:a!==b&&a.contains(b)},hasScroll:function(a,b){if(c(a).css("overflow")=="hidden")return false;
-b=b&&b=="left"?"scrollLeft":"scrollTop";var d=false;if(a[b]>0)return true;a[b]=1;d=a[b]>0;a[b]=0;return d},isOverAxis:function(a,b,d){return a>b&&a<b+d},isOver:function(a,b,d,e,f,g){return c.ui.isOverAxis(a,d,f)&&c.ui.isOverAxis(b,e,g)},keyCode:{ALT:18,BACKSPACE:8,CAPS_LOCK:20,COMMA:188,CONTROL:17,DELETE:46,DOWN:40,END:35,ENTER:13,ESCAPE:27,HOME:36,INSERT:45,LEFT:37,NUMPAD_ADD:107,NUMPAD_DECIMAL:110,NUMPAD_DIVIDE:111,NUMPAD_ENTER:108,NUMPAD_MULTIPLY:106,NUMPAD_SUBTRACT:109,PAGE_DOWN:34,PAGE_UP:33,
-PERIOD:190,RIGHT:39,SHIFT:16,SPACE:32,TAB:9,UP:38}};c.fn.extend({_focus:c.fn.focus,focus:function(a,b){return typeof a==="number"?this.each(function(){var d=this;setTimeout(function(){c(d).focus();b&&b.call(d)},a)}):this._focus.apply(this,arguments)},enableSelection:function(){return this.attr("unselectable","off").css("MozUserSelect","")},disableSelection:function(){return this.attr("unselectable","on").css("MozUserSelect","none")},scrollParent:function(){var a;a=c.browser.msie&&/(static|relative)/.test(this.css("position"))||
-/absolute/.test(this.css("position"))?this.parents().filter(function(){return/(relative|absolute|fixed)/.test(c.curCSS(this,"position",1))&&/(auto|scroll)/.test(c.curCSS(this,"overflow",1)+c.curCSS(this,"overflow-y",1)+c.curCSS(this,"overflow-x",1))}).eq(0):this.parents().filter(function(){return/(auto|scroll)/.test(c.curCSS(this,"overflow",1)+c.curCSS(this,"overflow-y",1)+c.curCSS(this,"overflow-x",1))}).eq(0);return/fixed/.test(this.css("position"))||!a.length?c(document):a},zIndex:function(a){if(a!==
-undefined)return this.css("zIndex",a);if(this.length){a=c(this[0]);for(var b;a.length&&a[0]!==document;){b=a.css("position");if(b=="absolute"||b=="relative"||b=="fixed"){b=parseInt(a.css("zIndex"));if(!isNaN(b)&&b!=0)return b}a=a.parent()}}return 0}});c.extend(c.expr[":"],{data:function(a,b,d){return!!c.data(a,d[3])},focusable:function(a){var b=a.nodeName.toLowerCase(),d=c.attr(a,"tabindex");return(/input|select|textarea|button|object/.test(b)?!a.disabled:"a"==b||"area"==b?a.href||!isNaN(d):!isNaN(d))&&
-!c(a)["area"==b?"parents":"closest"](":hidden").length},tabbable:function(a){var b=c.attr(a,"tabindex");return(isNaN(b)||b>=0)&&c(a).is(":focusable")}})}(jQuery);
-;/*!
- * jQuery UI Widget 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Widget
- */
-(function(b){var j=b.fn.remove;b.fn.remove=function(a,c){return this.each(function(){if(!c)if(!a||b.filter(a,[this]).length)b("*",this).add(this).each(function(){b(this).triggerHandler("remove")});return j.call(b(this),a,c)})};b.widget=function(a,c,d){var e=a.split(".")[0],f;a=a.split(".")[1];f=e+"-"+a;if(!d){d=c;c=b.Widget}b.expr[":"][f]=function(h){return!!b.data(h,a)};b[e]=b[e]||{};b[e][a]=function(h,g){arguments.length&&this._createWidget(h,g)};c=new c;c.options=b.extend({},c.options);b[e][a].prototype=
-b.extend(true,c,{namespace:e,widgetName:a,widgetEventPrefix:b[e][a].prototype.widgetEventPrefix||a,widgetBaseClass:f},d);b.widget.bridge(a,b[e][a])};b.widget.bridge=function(a,c){b.fn[a]=function(d){var e=typeof d==="string",f=Array.prototype.slice.call(arguments,1),h=this;d=!e&&f.length?b.extend.apply(null,[true,d].concat(f)):d;if(e&&d.substring(0,1)==="_")return h;e?this.each(function(){var g=b.data(this,a),i=g&&b.isFunction(g[d])?g[d].apply(g,f):g;if(i!==g&&i!==undefined){h=i;return false}}):this.each(function(){var g=
-b.data(this,a);if(g){d&&g.option(d);g._init()}else b.data(this,a,new c(d,this))});return h}};b.Widget=function(a,c){arguments.length&&this._createWidget(a,c)};b.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",options:{disabled:false},_createWidget:function(a,c){this.element=b(c).data(this.widgetName,this);this.options=b.extend(true,{},this.options,b.metadata&&b.metadata.get(c)[this.widgetName],a);var d=this;this.element.bind("remove."+this.widgetName,function(){d.destroy()});this._create();
-this._init()},_create:function(){},_init:function(){},destroy:function(){this.element.unbind("."+this.widgetName).removeData(this.widgetName);this.widget().unbind("."+this.widgetName).removeAttr("aria-disabled").removeClass(this.widgetBaseClass+"-disabled ui-state-disabled")},widget:function(){return this.element},option:function(a,c){var d=a,e=this;if(arguments.length===0)return b.extend({},e.options);if(typeof a==="string"){if(c===undefined)return this.options[a];d={};d[a]=c}b.each(d,function(f,
-h){e._setOption(f,h)});return e},_setOption:function(a,c){this.options[a]=c;if(a==="disabled")this.widget()[c?"addClass":"removeClass"](this.widgetBaseClass+"-disabled ui-state-disabled").attr("aria-disabled",c);return this},enable:function(){return this._setOption("disabled",false)},disable:function(){return this._setOption("disabled",true)},_trigger:function(a,c,d){var e=this.options[a];c=b.Event(c);c.type=(a===this.widgetEventPrefix?a:this.widgetEventPrefix+a).toLowerCase();d=d||{};if(c.originalEvent){a=
-b.event.props.length;for(var f;a;){f=b.event.props[--a];c[f]=c.originalEvent[f]}}this.element.trigger(c,d);return!(b.isFunction(e)&&e.call(this.element[0],c,d)===false||c.isDefaultPrevented())}}})(jQuery);
-;/*!
- * jQuery UI Mouse 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Mouse
- *
- * Depends:
- *	jquery.ui.widget.js
- */
-(function(c){c.widget("ui.mouse",{options:{cancel:":input,option",distance:1,delay:0},_mouseInit:function(){var a=this;this.element.bind("mousedown."+this.widgetName,function(b){return a._mouseDown(b)}).bind("click."+this.widgetName,function(b){if(a._preventClickEvent){a._preventClickEvent=false;b.stopImmediatePropagation();return false}});this.started=false},_mouseDestroy:function(){this.element.unbind("."+this.widgetName)},_mouseDown:function(a){a.originalEvent=a.originalEvent||{};if(!a.originalEvent.mouseHandled){this._mouseStarted&&
-this._mouseUp(a);this._mouseDownEvent=a;var b=this,e=a.which==1,f=typeof this.options.cancel=="string"?c(a.target).parents().add(a.target).filter(this.options.cancel).length:false;if(!e||f||!this._mouseCapture(a))return true;this.mouseDelayMet=!this.options.delay;if(!this.mouseDelayMet)this._mouseDelayTimer=setTimeout(function(){b.mouseDelayMet=true},this.options.delay);if(this._mouseDistanceMet(a)&&this._mouseDelayMet(a)){this._mouseStarted=this._mouseStart(a)!==false;if(!this._mouseStarted){a.preventDefault();
-return true}}this._mouseMoveDelegate=function(d){return b._mouseMove(d)};this._mouseUpDelegate=function(d){return b._mouseUp(d)};c(document).bind("mousemove."+this.widgetName,this._mouseMoveDelegate).bind("mouseup."+this.widgetName,this._mouseUpDelegate);c.browser.safari||a.preventDefault();return a.originalEvent.mouseHandled=true}},_mouseMove:function(a){if(c.browser.msie&&!a.button)return this._mouseUp(a);if(this._mouseStarted){this._mouseDrag(a);return a.preventDefault()}if(this._mouseDistanceMet(a)&&
-this._mouseDelayMet(a))(this._mouseStarted=this._mouseStart(this._mouseDownEvent,a)!==false)?this._mouseDrag(a):this._mouseUp(a);return!this._mouseStarted},_mouseUp:function(a){c(document).unbind("mousemove."+this.widgetName,this._mouseMoveDelegate).unbind("mouseup."+this.widgetName,this._mouseUpDelegate);if(this._mouseStarted){this._mouseStarted=false;this._preventClickEvent=a.target==this._mouseDownEvent.target;this._mouseStop(a)}return false},_mouseDistanceMet:function(a){return Math.max(Math.abs(this._mouseDownEvent.pageX-
-a.pageX),Math.abs(this._mouseDownEvent.pageY-a.pageY))>=this.options.distance},_mouseDelayMet:function(){return this.mouseDelayMet},_mouseStart:function(){},_mouseDrag:function(){},_mouseStop:function(){},_mouseCapture:function(){return true}})})(jQuery);
-;/*
- * jQuery UI Position 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Position
- */
-(function(c){c.ui=c.ui||{};var m=/left|center|right/,n=/top|center|bottom/,p=c.fn.position,q=c.fn.offset;c.fn.position=function(a){if(!a||!a.of)return p.apply(this,arguments);a=c.extend({},a);var b=c(a.of),d=(a.collision||"flip").split(" "),e=a.offset?a.offset.split(" "):[0,0],g,h,i;if(a.of.nodeType===9){g=b.width();h=b.height();i={top:0,left:0}}else if(a.of.scrollTo&&a.of.document){g=b.width();h=b.height();i={top:b.scrollTop(),left:b.scrollLeft()}}else if(a.of.preventDefault){a.at="left top";g=h=
-0;i={top:a.of.pageY,left:a.of.pageX}}else{g=b.outerWidth();h=b.outerHeight();i=b.offset()}c.each(["my","at"],function(){var f=(a[this]||"").split(" ");if(f.length===1)f=m.test(f[0])?f.concat(["center"]):n.test(f[0])?["center"].concat(f):["center","center"];f[0]=m.test(f[0])?f[0]:"center";f[1]=n.test(f[1])?f[1]:"center";a[this]=f});if(d.length===1)d[1]=d[0];e[0]=parseInt(e[0],10)||0;if(e.length===1)e[1]=e[0];e[1]=parseInt(e[1],10)||0;if(a.at[0]==="right")i.left+=g;else if(a.at[0]==="center")i.left+=
-g/2;if(a.at[1]==="bottom")i.top+=h;else if(a.at[1]==="center")i.top+=h/2;i.left+=e[0];i.top+=e[1];return this.each(function(){var f=c(this),k=f.outerWidth(),l=f.outerHeight(),j=c.extend({},i);if(a.my[0]==="right")j.left-=k;else if(a.my[0]==="center")j.left-=k/2;if(a.my[1]==="bottom")j.top-=l;else if(a.my[1]==="center")j.top-=l/2;j.left=parseInt(j.left);j.top=parseInt(j.top);c.each(["left","top"],function(o,r){c.ui.position[d[o]]&&c.ui.position[d[o]][r](j,{targetWidth:g,targetHeight:h,elemWidth:k,
-elemHeight:l,offset:e,my:a.my,at:a.at})});c.fn.bgiframe&&f.bgiframe();f.offset(c.extend(j,{using:a.using}))})};c.ui.position={fit:{left:function(a,b){var d=c(window);b=a.left+b.elemWidth-d.width()-d.scrollLeft();a.left=b>0?a.left-b:Math.max(0,a.left)},top:function(a,b){var d=c(window);b=a.top+b.elemHeight-d.height()-d.scrollTop();a.top=b>0?a.top-b:Math.max(0,a.top)}},flip:{left:function(a,b){if(b.at[0]!=="center"){var d=c(window);d=a.left+b.elemWidth-d.width()-d.scrollLeft();var e=b.my[0]==="left"?
--b.elemWidth:b.my[0]==="right"?b.elemWidth:0,g=-2*b.offset[0];a.left+=a.left<0?e+b.targetWidth+g:d>0?e-b.targetWidth+g:0}},top:function(a,b){if(b.at[1]!=="center"){var d=c(window);d=a.top+b.elemHeight-d.height()-d.scrollTop();var e=b.my[1]==="top"?-b.elemHeight:b.my[1]==="bottom"?b.elemHeight:0,g=b.at[1]==="top"?b.targetHeight:-b.targetHeight,h=-2*b.offset[1];a.top+=a.top<0?e+b.targetHeight+h:d>0?e+g+h:0}}}};if(!c.offset.setOffset){c.offset.setOffset=function(a,b){if(/static/.test(c.curCSS(a,"position")))a.style.position=
-"relative";var d=c(a),e=d.offset(),g=parseInt(c.curCSS(a,"top",true),10)||0,h=parseInt(c.curCSS(a,"left",true),10)||0;e={top:b.top-e.top+g,left:b.left-e.left+h};"using"in b?b.using.call(a,e):d.css(e)};c.fn.offset=function(a){var b=this[0];if(!b||!b.ownerDocument)return null;if(a)return this.each(function(){c.offset.setOffset(this,a)});return q.call(this)}}})(jQuery);
-;/*
- * jQuery UI Draggable 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Draggables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
- */
-(function(d){d.widget("ui.draggable",d.ui.mouse,{widgetEventPrefix:"drag",options:{addClasses:true,appendTo:"parent",axis:false,connectToSortable:false,containment:false,cursor:"auto",cursorAt:false,grid:false,handle:false,helper:"original",iframeFix:false,opacity:false,refreshPositions:false,revert:false,revertDuration:500,scope:"default",scroll:true,scrollSensitivity:20,scrollSpeed:20,snap:false,snapMode:"both",snapTolerance:20,stack:false,zIndex:false},_create:function(){if(this.options.helper==
-"original"&&!/^(?:r|a|f)/.test(this.element.css("position")))this.element[0].style.position="relative";this.options.addClasses&&this.element.addClass("ui-draggable");this.options.disabled&&this.element.addClass("ui-draggable-disabled");this._mouseInit()},destroy:function(){if(this.element.data("draggable")){this.element.removeData("draggable").unbind(".draggable").removeClass("ui-draggable ui-draggable-dragging ui-draggable-disabled");this._mouseDestroy();return this}},_mouseCapture:function(a){var b=
-this.options;if(this.helper||b.disabled||d(a.target).is(".ui-resizable-handle"))return false;this.handle=this._getHandle(a);if(!this.handle)return false;return true},_mouseStart:function(a){var b=this.options;this.helper=this._createHelper(a);this._cacheHelperProportions();if(d.ui.ddmanager)d.ui.ddmanager.current=this;this._cacheMargins();this.cssPosition=this.helper.css("position");this.scrollParent=this.helper.scrollParent();this.offset=this.positionAbs=this.element.offset();this.offset={top:this.offset.top-
-this.margins.top,left:this.offset.left-this.margins.left};d.extend(this.offset,{click:{left:a.pageX-this.offset.left,top:a.pageY-this.offset.top},parent:this._getParentOffset(),relative:this._getRelativeOffset()});this.originalPosition=this.position=this._generatePosition(a);this.originalPageX=a.pageX;this.originalPageY=a.pageY;b.cursorAt&&this._adjustOffsetFromHelper(b.cursorAt);b.containment&&this._setContainment();if(this._trigger("start",a)===false){this._clear();return false}this._cacheHelperProportions();
-d.ui.ddmanager&&!b.dropBehaviour&&d.ui.ddmanager.prepareOffsets(this,a);this.helper.addClass("ui-draggable-dragging");this._mouseDrag(a,true);return true},_mouseDrag:function(a,b){this.position=this._generatePosition(a);this.positionAbs=this._convertPositionTo("absolute");if(!b){b=this._uiHash();if(this._trigger("drag",a,b)===false){this._mouseUp({});return false}this.position=b.position}if(!this.options.axis||this.options.axis!="y")this.helper[0].style.left=this.position.left+"px";if(!this.options.axis||
-this.options.axis!="x")this.helper[0].style.top=this.position.top+"px";d.ui.ddmanager&&d.ui.ddmanager.drag(this,a);return false},_mouseStop:function(a){var b=false;if(d.ui.ddmanager&&!this.options.dropBehaviour)b=d.ui.ddmanager.drop(this,a);if(this.dropped){b=this.dropped;this.dropped=false}if(!this.element[0]||!this.element[0].parentNode)return false;if(this.options.revert=="invalid"&&!b||this.options.revert=="valid"&&b||this.options.revert===true||d.isFunction(this.options.revert)&&this.options.revert.call(this.element,
-b)){var c=this;d(this.helper).animate(this.originalPosition,parseInt(this.options.revertDuration,10),function(){c._trigger("stop",a)!==false&&c._clear()})}else this._trigger("stop",a)!==false&&this._clear();return false},cancel:function(){this.helper.is(".ui-draggable-dragging")?this._mouseUp({}):this._clear();return this},_getHandle:function(a){var b=!this.options.handle||!d(this.options.handle,this.element).length?true:false;d(this.options.handle,this.element).find("*").andSelf().each(function(){if(this==
-a.target)b=true});return b},_createHelper:function(a){var b=this.options;a=d.isFunction(b.helper)?d(b.helper.apply(this.element[0],[a])):b.helper=="clone"?this.element.clone():this.element;a.parents("body").length||a.appendTo(b.appendTo=="parent"?this.element[0].parentNode:b.appendTo);a[0]!=this.element[0]&&!/(fixed|absolute)/.test(a.css("position"))&&a.css("position","absolute");return a},_adjustOffsetFromHelper:function(a){if(typeof a=="string")a=a.split(" ");if(d.isArray(a))a={left:+a[0],top:+a[1]||
-0};if("left"in a)this.offset.click.left=a.left+this.margins.left;if("right"in a)this.offset.click.left=this.helperProportions.width-a.right+this.margins.left;if("top"in a)this.offset.click.top=a.top+this.margins.top;if("bottom"in a)this.offset.click.top=this.helperProportions.height-a.bottom+this.margins.top},_getParentOffset:function(){this.offsetParent=this.helper.offsetParent();var a=this.offsetParent.offset();if(this.cssPosition=="absolute"&&this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],
-this.offsetParent[0])){a.left+=this.scrollParent.scrollLeft();a.top+=this.scrollParent.scrollTop()}if(this.offsetParent[0]==document.body||this.offsetParent[0].tagName&&this.offsetParent[0].tagName.toLowerCase()=="html"&&d.browser.msie)a={top:0,left:0};return{top:a.top+(parseInt(this.offsetParent.css("borderTopWidth"),10)||0),left:a.left+(parseInt(this.offsetParent.css("borderLeftWidth"),10)||0)}},_getRelativeOffset:function(){if(this.cssPosition=="relative"){var a=this.element.position();return{top:a.top-
-(parseInt(this.helper.css("top"),10)||0)+this.scrollParent.scrollTop(),left:a.left-(parseInt(this.helper.css("left"),10)||0)+this.scrollParent.scrollLeft()}}else return{top:0,left:0}},_cacheMargins:function(){this.margins={left:parseInt(this.element.css("marginLeft"),10)||0,top:parseInt(this.element.css("marginTop"),10)||0}},_cacheHelperProportions:function(){this.helperProportions={width:this.helper.outerWidth(),height:this.helper.outerHeight()}},_setContainment:function(){var a=this.options;if(a.containment==
-"parent")a.containment=this.helper[0].parentNode;if(a.containment=="document"||a.containment=="window")this.containment=[0-this.offset.relative.left-this.offset.parent.left,0-this.offset.relative.top-this.offset.parent.top,d(a.containment=="document"?document:window).width()-this.helperProportions.width-this.margins.left,(d(a.containment=="document"?document:window).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top];if(!/^(document|window|parent)$/.test(a.containment)&&
-a.containment.constructor!=Array){var b=d(a.containment)[0];if(b){a=d(a.containment).offset();var c=d(b).css("overflow")!="hidden";this.containment=[a.left+(parseInt(d(b).css("borderLeftWidth"),10)||0)+(parseInt(d(b).css("paddingLeft"),10)||0)-this.margins.left,a.top+(parseInt(d(b).css("borderTopWidth"),10)||0)+(parseInt(d(b).css("paddingTop"),10)||0)-this.margins.top,a.left+(c?Math.max(b.scrollWidth,b.offsetWidth):b.offsetWidth)-(parseInt(d(b).css("borderLeftWidth"),10)||0)-(parseInt(d(b).css("paddingRight"),
-10)||0)-this.helperProportions.width-this.margins.left,a.top+(c?Math.max(b.scrollHeight,b.offsetHeight):b.offsetHeight)-(parseInt(d(b).css("borderTopWidth"),10)||0)-(parseInt(d(b).css("paddingBottom"),10)||0)-this.helperProportions.height-this.margins.top]}}else if(a.containment.constructor==Array)this.containment=a.containment},_convertPositionTo:function(a,b){if(!b)b=this.position;a=a=="absolute"?1:-1;var c=this.cssPosition=="absolute"&&!(this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],
-this.offsetParent[0]))?this.offsetParent:this.scrollParent,f=/(html|body)/i.test(c[0].tagName);return{top:b.top+this.offset.relative.top*a+this.offset.parent.top*a-(d.browser.safari&&d.browser.version<526&&this.cssPosition=="fixed"?0:(this.cssPosition=="fixed"?-this.scrollParent.scrollTop():f?0:c.scrollTop())*a),left:b.left+this.offset.relative.left*a+this.offset.parent.left*a-(d.browser.safari&&d.browser.version<526&&this.cssPosition=="fixed"?0:(this.cssPosition=="fixed"?-this.scrollParent.scrollLeft():
-f?0:c.scrollLeft())*a)}},_generatePosition:function(a){var b=this.options,c=this.cssPosition=="absolute"&&!(this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],this.offsetParent[0]))?this.offsetParent:this.scrollParent,f=/(html|body)/i.test(c[0].tagName),e=a.pageX,g=a.pageY;if(this.originalPosition){if(this.containment){if(a.pageX-this.offset.click.left<this.containment[0])e=this.containment[0]+this.offset.click.left;if(a.pageY-this.offset.click.top<this.containment[1])g=this.containment[1]+
-this.offset.click.top;if(a.pageX-this.offset.click.left>this.containment[2])e=this.containment[2]+this.offset.click.left;if(a.pageY-this.offset.click.top>this.containment[3])g=this.containment[3]+this.offset.click.top}if(b.grid){g=this.originalPageY+Math.round((g-this.originalPageY)/b.grid[1])*b.grid[1];g=this.containment?!(g-this.offset.click.top<this.containment[1]||g-this.offset.click.top>this.containment[3])?g:!(g-this.offset.click.top<this.containment[1])?g-b.grid[1]:g+b.grid[1]:g;e=this.originalPageX+
-Math.round((e-this.originalPageX)/b.grid[0])*b.grid[0];e=this.containment?!(e-this.offset.click.left<this.containment[0]||e-this.offset.click.left>this.containment[2])?e:!(e-this.offset.click.left<this.containment[0])?e-b.grid[0]:e+b.grid[0]:e}}return{top:g-this.offset.click.top-this.offset.relative.top-this.offset.parent.top+(d.browser.safari&&d.browser.version<526&&this.cssPosition=="fixed"?0:this.cssPosition=="fixed"?-this.scrollParent.scrollTop():f?0:c.scrollTop()),left:e-this.offset.click.left-
-this.offset.relative.left-this.offset.parent.left+(d.browser.safari&&d.browser.version<526&&this.cssPosition=="fixed"?0:this.cssPosition=="fixed"?-this.scrollParent.scrollLeft():f?0:c.scrollLeft())}},_clear:function(){this.helper.removeClass("ui-draggable-dragging");this.helper[0]!=this.element[0]&&!this.cancelHelperRemoval&&this.helper.remove();this.helper=null;this.cancelHelperRemoval=false},_trigger:function(a,b,c){c=c||this._uiHash();d.ui.plugin.call(this,a,[b,c]);if(a=="drag")this.positionAbs=
-this._convertPositionTo("absolute");return d.Widget.prototype._trigger.call(this,a,b,c)},plugins:{},_uiHash:function(){return{helper:this.helper,position:this.position,originalPosition:this.originalPosition,offset:this.positionAbs}}});d.extend(d.ui.draggable,{version:"1.8.1"});d.ui.plugin.add("draggable","connectToSortable",{start:function(a,b){var c=d(this).data("draggable"),f=c.options,e=d.extend({},b,{item:c.element});c.sortables=[];d(f.connectToSortable).each(function(){var g=d.data(this,"sortable");
-if(g&&!g.options.disabled){c.sortables.push({instance:g,shouldRevert:g.options.revert});g._refreshItems();g._trigger("activate",a,e)}})},stop:function(a,b){var c=d(this).data("draggable"),f=d.extend({},b,{item:c.element});d.each(c.sortables,function(){if(this.instance.isOver){this.instance.isOver=0;c.cancelHelperRemoval=true;this.instance.cancelHelperRemoval=false;if(this.shouldRevert)this.instance.options.revert=true;this.instance._mouseStop(a);this.instance.options.helper=this.instance.options._helper;
-c.options.helper=="original"&&this.instance.currentItem.css({top:"auto",left:"auto"})}else{this.instance.cancelHelperRemoval=false;this.instance._trigger("deactivate",a,f)}})},drag:function(a,b){var c=d(this).data("draggable"),f=this;d.each(c.sortables,function(){this.instance.positionAbs=c.positionAbs;this.instance.helperProportions=c.helperProportions;this.instance.offset.click=c.offset.click;if(this.instance._intersectsWith(this.instance.containerCache)){if(!this.instance.isOver){this.instance.isOver=
-1;this.instance.currentItem=d(f).clone().appendTo(this.instance.element).data("sortable-item",true);this.instance.options._helper=this.instance.options.helper;this.instance.options.helper=function(){return b.helper[0]};a.target=this.instance.currentItem[0];this.instance._mouseCapture(a,true);this.instance._mouseStart(a,true,true);this.instance.offset.click.top=c.offset.click.top;this.instance.offset.click.left=c.offset.click.left;this.instance.offset.parent.left-=c.offset.parent.left-this.instance.offset.parent.left;
-this.instance.offset.parent.top-=c.offset.parent.top-this.instance.offset.parent.top;c._trigger("toSortable",a);c.dropped=this.instance.element;c.currentItem=c.element;this.instance.fromOutside=c}this.instance.currentItem&&this.instance._mouseDrag(a)}else if(this.instance.isOver){this.instance.isOver=0;this.instance.cancelHelperRemoval=true;this.instance.options.revert=false;this.instance._trigger("out",a,this.instance._uiHash(this.instance));this.instance._mouseStop(a,true);this.instance.options.helper=
-this.instance.options._helper;this.instance.currentItem.remove();this.instance.placeholder&&this.instance.placeholder.remove();c._trigger("fromSortable",a);c.dropped=false}})}});d.ui.plugin.add("draggable","cursor",{start:function(){var a=d("body"),b=d(this).data("draggable").options;if(a.css("cursor"))b._cursor=a.css("cursor");a.css("cursor",b.cursor)},stop:function(){var a=d(this).data("draggable").options;a._cursor&&d("body").css("cursor",a._cursor)}});d.ui.plugin.add("draggable","iframeFix",{start:function(){var a=
-d(this).data("draggable").options;d(a.iframeFix===true?"iframe":a.iframeFix).each(function(){d('<div class="ui-draggable-iframeFix" style="background: #fff;"></div>').css({width:this.offsetWidth+"px",height:this.offsetHeight+"px",position:"absolute",opacity:"0.001",zIndex:1E3}).css(d(this).offset()).appendTo("body")})},stop:function(){d("div.ui-draggable-iframeFix").each(function(){this.parentNode.removeChild(this)})}});d.ui.plugin.add("draggable","opacity",{start:function(a,b){a=d(b.helper);b=d(this).data("draggable").options;
-if(a.css("opacity"))b._opacity=a.css("opacity");a.css("opacity",b.opacity)},stop:function(a,b){a=d(this).data("draggable").options;a._opacity&&d(b.helper).css("opacity",a._opacity)}});d.ui.plugin.add("draggable","scroll",{start:function(){var a=d(this).data("draggable");if(a.scrollParent[0]!=document&&a.scrollParent[0].tagName!="HTML")a.overflowOffset=a.scrollParent.offset()},drag:function(a){var b=d(this).data("draggable"),c=b.options,f=false;if(b.scrollParent[0]!=document&&b.scrollParent[0].tagName!=
-"HTML"){if(!c.axis||c.axis!="x")if(b.overflowOffset.top+b.scrollParent[0].offsetHeight-a.pageY<c.scrollSensitivity)b.scrollParent[0].scrollTop=f=b.scrollParent[0].scrollTop+c.scrollSpeed;else if(a.pageY-b.overflowOffset.top<c.scrollSensitivity)b.scrollParent[0].scrollTop=f=b.scrollParent[0].scrollTop-c.scrollSpeed;if(!c.axis||c.axis!="y")if(b.overflowOffset.left+b.scrollParent[0].offsetWidth-a.pageX<c.scrollSensitivity)b.scrollParent[0].scrollLeft=f=b.scrollParent[0].scrollLeft+c.scrollSpeed;else if(a.pageX-
-b.overflowOffset.left<c.scrollSensitivity)b.scrollParent[0].scrollLeft=f=b.scrollParent[0].scrollLeft-c.scrollSpeed}else{if(!c.axis||c.axis!="x")if(a.pageY-d(document).scrollTop()<c.scrollSensitivity)f=d(document).scrollTop(d(document).scrollTop()-c.scrollSpeed);else if(d(window).height()-(a.pageY-d(document).scrollTop())<c.scrollSensitivity)f=d(document).scrollTop(d(document).scrollTop()+c.scrollSpeed);if(!c.axis||c.axis!="y")if(a.pageX-d(document).scrollLeft()<c.scrollSensitivity)f=d(document).scrollLeft(d(document).scrollLeft()-
-c.scrollSpeed);else if(d(window).width()-(a.pageX-d(document).scrollLeft())<c.scrollSensitivity)f=d(document).scrollLeft(d(document).scrollLeft()+c.scrollSpeed)}f!==false&&d.ui.ddmanager&&!c.dropBehaviour&&d.ui.ddmanager.prepareOffsets(b,a)}});d.ui.plugin.add("draggable","snap",{start:function(){var a=d(this).data("draggable"),b=a.options;a.snapElements=[];d(b.snap.constructor!=String?b.snap.items||":data(draggable)":b.snap).each(function(){var c=d(this),f=c.offset();this!=a.element[0]&&a.snapElements.push({item:this,
-width:c.outerWidth(),height:c.outerHeight(),top:f.top,left:f.left})})},drag:function(a,b){for(var c=d(this).data("draggable"),f=c.options,e=f.snapTolerance,g=b.offset.left,n=g+c.helperProportions.width,m=b.offset.top,o=m+c.helperProportions.height,h=c.snapElements.length-1;h>=0;h--){var i=c.snapElements[h].left,k=i+c.snapElements[h].width,j=c.snapElements[h].top,l=j+c.snapElements[h].height;if(i-e<g&&g<k+e&&j-e<m&&m<l+e||i-e<g&&g<k+e&&j-e<o&&o<l+e||i-e<n&&n<k+e&&j-e<m&&m<l+e||i-e<n&&n<k+e&&j-e<o&&
-o<l+e){if(f.snapMode!="inner"){var p=Math.abs(j-o)<=e,q=Math.abs(l-m)<=e,r=Math.abs(i-n)<=e,s=Math.abs(k-g)<=e;if(p)b.position.top=c._convertPositionTo("relative",{top:j-c.helperProportions.height,left:0}).top-c.margins.top;if(q)b.position.top=c._convertPositionTo("relative",{top:l,left:0}).top-c.margins.top;if(r)b.position.left=c._convertPositionTo("relative",{top:0,left:i-c.helperProportions.width}).left-c.margins.left;if(s)b.position.left=c._convertPositionTo("relative",{top:0,left:k}).left-c.margins.left}var t=
-p||q||r||s;if(f.snapMode!="outer"){p=Math.abs(j-m)<=e;q=Math.abs(l-o)<=e;r=Math.abs(i-g)<=e;s=Math.abs(k-n)<=e;if(p)b.position.top=c._convertPositionTo("relative",{top:j,left:0}).top-c.margins.top;if(q)b.position.top=c._convertPositionTo("relative",{top:l-c.helperProportions.height,left:0}).top-c.margins.top;if(r)b.position.left=c._convertPositionTo("relative",{top:0,left:i}).left-c.margins.left;if(s)b.position.left=c._convertPositionTo("relative",{top:0,left:k-c.helperProportions.width}).left-c.margins.left}if(!c.snapElements[h].snapping&&
-(p||q||r||s||t))c.options.snap.snap&&c.options.snap.snap.call(c.element,a,d.extend(c._uiHash(),{snapItem:c.snapElements[h].item}));c.snapElements[h].snapping=p||q||r||s||t}else{c.snapElements[h].snapping&&c.options.snap.release&&c.options.snap.release.call(c.element,a,d.extend(c._uiHash(),{snapItem:c.snapElements[h].item}));c.snapElements[h].snapping=false}}}});d.ui.plugin.add("draggable","stack",{start:function(){var a=d(this).data("draggable").options;a=d.makeArray(d(a.stack)).sort(function(c,f){return(parseInt(d(c).css("zIndex"),
-10)||0)-(parseInt(d(f).css("zIndex"),10)||0)});if(a.length){var b=parseInt(a[0].style.zIndex)||0;d(a).each(function(c){this.style.zIndex=b+c});this[0].style.zIndex=b+a.length}}});d.ui.plugin.add("draggable","zIndex",{start:function(a,b){a=d(b.helper);b=d(this).data("draggable").options;if(a.css("zIndex"))b._zIndex=a.css("zIndex");a.css("zIndex",b.zIndex)},stop:function(a,b){a=d(this).data("draggable").options;a._zIndex&&d(b.helper).css("zIndex",a._zIndex)}})})(jQuery);
-;/*
- * jQuery UI Droppable 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Droppables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- *	jquery.ui.mouse.js
- *	jquery.ui.draggable.js
- */
-(function(d){d.widget("ui.droppable",{widgetEventPrefix:"drop",options:{accept:"*",activeClass:false,addClasses:true,greedy:false,hoverClass:false,scope:"default",tolerance:"intersect"},_create:function(){var a=this.options,b=a.accept;this.isover=0;this.isout=1;this.accept=d.isFunction(b)?b:function(c){return c.is(b)};this.proportions={width:this.element[0].offsetWidth,height:this.element[0].offsetHeight};d.ui.ddmanager.droppables[a.scope]=d.ui.ddmanager.droppables[a.scope]||[];d.ui.ddmanager.droppables[a.scope].push(this);
-a.addClasses&&this.element.addClass("ui-droppable")},destroy:function(){for(var a=d.ui.ddmanager.droppables[this.options.scope],b=0;b<a.length;b++)a[b]==this&&a.splice(b,1);this.element.removeClass("ui-droppable ui-droppable-disabled").removeData("droppable").unbind(".droppable");return this},_setOption:function(a,b){if(a=="accept")this.accept=d.isFunction(b)?b:function(c){return c.is(b)};d.Widget.prototype._setOption.apply(this,arguments)},_activate:function(a){var b=d.ui.ddmanager.current;this.options.activeClass&&
-this.element.addClass(this.options.activeClass);b&&this._trigger("activate",a,this.ui(b))},_deactivate:function(a){var b=d.ui.ddmanager.current;this.options.activeClass&&this.element.removeClass(this.options.activeClass);b&&this._trigger("deactivate",a,this.ui(b))},_over:function(a){var b=d.ui.ddmanager.current;if(!(!b||(b.currentItem||b.element)[0]==this.element[0]))if(this.accept.call(this.element[0],b.currentItem||b.element)){this.options.hoverClass&&this.element.addClass(this.options.hoverClass);
-this._trigger("over",a,this.ui(b))}},_out:function(a){var b=d.ui.ddmanager.current;if(!(!b||(b.currentItem||b.element)[0]==this.element[0]))if(this.accept.call(this.element[0],b.currentItem||b.element)){this.options.hoverClass&&this.element.removeClass(this.options.hoverClass);this._trigger("out",a,this.ui(b))}},_drop:function(a,b){var c=b||d.ui.ddmanager.current;if(!c||(c.currentItem||c.element)[0]==this.element[0])return false;var e=false;this.element.find(":data(droppable)").not(".ui-draggable-dragging").each(function(){var g=
-d.data(this,"droppable");if(g.options.greedy&&!g.options.disabled&&g.options.scope==c.options.scope&&g.accept.call(g.element[0],c.currentItem||c.element)&&d.ui.intersect(c,d.extend(g,{offset:g.element.offset()}),g.options.tolerance)){e=true;return false}});if(e)return false;if(this.accept.call(this.element[0],c.currentItem||c.element)){this.options.activeClass&&this.element.removeClass(this.options.activeClass);this.options.hoverClass&&this.element.removeClass(this.options.hoverClass);this._trigger("drop",
-a,this.ui(c));return this.element}return false},ui:function(a){return{draggable:a.currentItem||a.element,helper:a.helper,position:a.position,offset:a.positionAbs}}});d.extend(d.ui.droppable,{version:"1.8.1"});d.ui.intersect=function(a,b,c){if(!b.offset)return false;var e=(a.positionAbs||a.position.absolute).left,g=e+a.helperProportions.width,f=(a.positionAbs||a.position.absolute).top,h=f+a.helperProportions.height,i=b.offset.left,k=i+b.proportions.width,j=b.offset.top,l=j+b.proportions.height;
-switch(c){case "fit":return i<e&&g<k&&j<f&&h<l;case "intersect":return i<e+a.helperProportions.width/2&&g-a.helperProportions.width/2<k&&j<f+a.helperProportions.height/2&&h-a.helperProportions.height/2<l;case "pointer":return d.ui.isOver((a.positionAbs||a.position.absolute).top+(a.clickOffset||a.offset.click).top,(a.positionAbs||a.position.absolute).left+(a.clickOffset||a.offset.click).left,j,i,b.proportions.height,b.proportions.width);case "touch":return(f>=j&&f<=l||h>=j&&h<=l||f<j&&h>l)&&(e>=i&&
-e<=k||g>=i&&g<=k||e<i&&g>k);default:return false}};d.ui.ddmanager={current:null,droppables:{"default":[]},prepareOffsets:function(a,b){var c=d.ui.ddmanager.droppables[a.options.scope]||[],e=b?b.type:null,g=(a.currentItem||a.element).find(":data(droppable)").andSelf(),f=0;a:for(;f<c.length;f++)if(!(c[f].options.disabled||a&&!c[f].accept.call(c[f].element[0],a.currentItem||a.element))){for(var h=0;h<g.length;h++)if(g[h]==c[f].element[0]){c[f].proportions.height=0;continue a}c[f].visible=c[f].element.css("display")!=
-"none";if(c[f].visible){c[f].offset=c[f].element.offset();c[f].proportions={width:c[f].element[0].offsetWidth,height:c[f].element[0].offsetHeight};e=="mousedown"&&c[f]._activate.call(c[f],b)}}},drop:function(a,b){var c=false;d.each(d.ui.ddmanager.droppables[a.options.scope]||[],function(){if(this.options){if(!this.options.disabled&&this.visible&&d.ui.intersect(a,this,this.options.tolerance))c=c||this._drop.call(this,b);if(!this.options.disabled&&this.visible&&this.accept.call(this.element[0],a.currentItem||
-a.element)){this.isout=1;this.isover=0;this._deactivate.call(this,b)}}});return c},drag:function(a,b){a.options.refreshPositions&&d.ui.ddmanager.prepareOffsets(a,b);d.each(d.ui.ddmanager.droppables[a.options.scope]||[],function(){if(!(this.options.disabled||this.greedyChild||!this.visible)){var c=d.ui.intersect(a,this,this.options.tolerance);if(c=!c&&this.isover==1?"isout":c&&this.isover==0?"isover":null){var e;if(this.options.greedy){var g=this.element.parents(":data(droppable):eq(0)");if(g.length){e=
-d.data(g[0],"droppable");e.greedyChild=c=="isover"?1:0}}if(e&&c=="isover"){e.isover=0;e.isout=1;e._out.call(e,b)}this[c]=1;this[c=="isout"?"isover":"isout"]=0;this[c=="isover"?"_over":"_out"].call(this,b);if(e&&c=="isout"){e.isout=0;e.isover=1;e._over.call(e,b)}}}})}}})(jQuery);
-;/*
- * jQuery UI Resizable 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Resizables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
- */
-(function(d){d.widget("ui.resizable",d.ui.mouse,{widgetEventPrefix:"resize",options:{alsoResize:false,animate:false,animateDuration:"slow",animateEasing:"swing",aspectRatio:false,autoHide:false,containment:false,ghost:false,grid:false,handles:"e,s,se",helper:false,maxHeight:null,maxWidth:null,minHeight:10,minWidth:10,zIndex:1E3},_create:function(){var b=this,a=this.options;this.element.addClass("ui-resizable");d.extend(this,{_aspectRatio:!!a.aspectRatio,aspectRatio:a.aspectRatio,originalElement:this.element,
-_proportionallyResizeElements:[],_helper:a.helper||a.ghost||a.animate?a.helper||"ui-resizable-helper":null});if(this.element[0].nodeName.match(/canvas|textarea|input|select|button|img/i)){/relative/.test(this.element.css("position"))&&d.browser.opera&&this.element.css({position:"relative",top:"auto",left:"auto"});this.element.wrap(d('<div class="ui-wrapper" style="overflow: hidden;"></div>').css({position:this.element.css("position"),width:this.element.outerWidth(),height:this.element.outerHeight(),
-top:this.element.css("top"),left:this.element.css("left")}));this.element=this.element.parent().data("resizable",this.element.data("resizable"));this.elementIsWrapper=true;this.element.css({marginLeft:this.originalElement.css("marginLeft"),marginTop:this.originalElement.css("marginTop"),marginRight:this.originalElement.css("marginRight"),marginBottom:this.originalElement.css("marginBottom")});this.originalElement.css({marginLeft:0,marginTop:0,marginRight:0,marginBottom:0});this.originalResizeStyle=
-this.originalElement.css("resize");this.originalElement.css("resize","none");this._proportionallyResizeElements.push(this.originalElement.css({position:"static",zoom:1,display:"block"}));this.originalElement.css({margin:this.originalElement.css("margin")});this._proportionallyResize()}this.handles=a.handles||(!d(".ui-resizable-handle",this.element).length?"e,s,se":{n:".ui-resizable-n",e:".ui-resizable-e",s:".ui-resizable-s",w:".ui-resizable-w",se:".ui-resizable-se",sw:".ui-resizable-sw",ne:".ui-resizable-ne",
-nw:".ui-resizable-nw"});if(this.handles.constructor==String){if(this.handles=="all")this.handles="n,e,s,w,se,sw,ne,nw";var c=this.handles.split(",");this.handles={};for(var e=0;e<c.length;e++){var g=d.trim(c[e]),f=d('<div class="ui-resizable-handle '+("ui-resizable-"+g)+'"></div>');/sw|se|ne|nw/.test(g)&&f.css({zIndex:++a.zIndex});"se"==g&&f.addClass("ui-icon ui-icon-gripsmall-diagonal-se");this.handles[g]=".ui-resizable-"+g;this.element.append(f)}}this._renderAxis=function(h){h=h||this.element;for(var i in this.handles){if(this.handles[i].constructor==
-String)this.handles[i]=d(this.handles[i],this.element).show();if(this.elementIsWrapper&&this.originalElement[0].nodeName.match(/textarea|input|select|button/i)){var j=d(this.handles[i],this.element),l=0;l=/sw|ne|nw|se|n|s/.test(i)?j.outerHeight():j.outerWidth();j=["padding",/ne|nw|n/.test(i)?"Top":/se|sw|s/.test(i)?"Bottom":/^e$/.test(i)?"Right":"Left"].join("");h.css(j,l);this._proportionallyResize()}d(this.handles[i])}};this._renderAxis(this.element);this._handles=d(".ui-resizable-handle",this.element).disableSelection();
-this._handles.mouseover(function(){if(!b.resizing){if(this.className)var h=this.className.match(/ui-resizable-(se|sw|ne|nw|n|e|s|w)/i);b.axis=h&&h[1]?h[1]:"se"}});if(a.autoHide){this._handles.hide();d(this.element).addClass("ui-resizable-autohide").hover(function(){d(this).removeClass("ui-resizable-autohide");b._handles.show()},function(){if(!b.resizing){d(this).addClass("ui-resizable-autohide");b._handles.hide()}})}this._mouseInit()},destroy:function(){this._mouseDestroy();var b=function(c){d(c).removeClass("ui-resizable ui-resizable-disabled ui-resizable-resizing").removeData("resizable").unbind(".resizable").find(".ui-resizable-handle").remove()};
-if(this.elementIsWrapper){b(this.element);var a=this.element;a.after(this.originalElement.css({position:a.css("position"),width:a.outerWidth(),height:a.outerHeight(),top:a.css("top"),left:a.css("left")})).remove()}this.originalElement.css("resize",this.originalResizeStyle);b(this.originalElement);return this},_mouseCapture:function(b){var a=false;for(var c in this.handles)if(d(this.handles[c])[0]==b.target)a=true;return!this.options.disabled&&a},_mouseStart:function(b){var a=this.options,c=this.element.position(),
-e=this.element;this.resizing=true;this.documentScroll={top:d(document).scrollTop(),left:d(document).scrollLeft()};if(e.is(".ui-draggable")||/absolute/.test(e.css("position")))e.css({position:"absolute",top:c.top,left:c.left});d.browser.opera&&/relative/.test(e.css("position"))&&e.css({position:"relative",top:"auto",left:"auto"});this._renderProxy();c=m(this.helper.css("left"));var g=m(this.helper.css("top"));if(a.containment){c+=d(a.containment).scrollLeft()||0;g+=d(a.containment).scrollTop()||0}this.offset=
-this.helper.offset();this.position={left:c,top:g};this.size=this._helper?{width:e.outerWidth(),height:e.outerHeight()}:{width:e.width(),height:e.height()};this.originalSize=this._helper?{width:e.outerWidth(),height:e.outerHeight()}:{width:e.width(),height:e.height()};this.originalPosition={left:c,top:g};this.sizeDiff={width:e.outerWidth()-e.width(),height:e.outerHeight()-e.height()};this.originalMousePosition={left:b.pageX,top:b.pageY};this.aspectRatio=typeof a.aspectRatio=="number"?a.aspectRatio:
-this.originalSize.width/this.originalSize.height||1;a=d(".ui-resizable-"+this.axis).css("cursor");d("body").css("cursor",a=="auto"?this.axis+"-resize":a);e.addClass("ui-resizable-resizing");this._propagate("start",b);return true},_mouseDrag:function(b){var a=this.helper,c=this.originalMousePosition,e=this._change[this.axis];if(!e)return false;c=e.apply(this,[b,b.pageX-c.left||0,b.pageY-c.top||0]);if(this._aspectRatio||b.shiftKey)c=this._updateRatio(c,b);c=this._respectSize(c,b);this._propagate("resize",
-b);a.css({top:this.position.top+"px",left:this.position.left+"px",width:this.size.width+"px",height:this.size.height+"px"});!this._helper&&this._proportionallyResizeElements.length&&this._proportionallyResize();this._updateCache(c);this._trigger("resize",b,this.ui());return false},_mouseStop:function(b){this.resizing=false;var a=this.options,c=this;if(this._helper){var e=this._proportionallyResizeElements,g=e.length&&/textarea/i.test(e[0].nodeName);e=g&&d.ui.hasScroll(e[0],"left")?0:c.sizeDiff.height;
-g={width:c.size.width-(g?0:c.sizeDiff.width),height:c.size.height-e};e=parseInt(c.element.css("left"),10)+(c.position.left-c.originalPosition.left)||null;var f=parseInt(c.element.css("top"),10)+(c.position.top-c.originalPosition.top)||null;a.animate||this.element.css(d.extend(g,{top:f,left:e}));c.helper.height(c.size.height);c.helper.width(c.size.width);this._helper&&!a.animate&&this._proportionallyResize()}d("body").css("cursor","auto");this.element.removeClass("ui-resizable-resizing");this._propagate("stop",
-b);this._helper&&this.helper.remove();return false},_updateCache:function(b){this.offset=this.helper.offset();if(k(b.left))this.position.left=b.left;if(k(b.top))this.position.top=b.top;if(k(b.height))this.size.height=b.height;if(k(b.width))this.size.width=b.width},_updateRatio:function(b){var a=this.position,c=this.size,e=this.axis;if(b.height)b.width=c.height*this.aspectRatio;else if(b.width)b.height=c.width/this.aspectRatio;if(e=="sw"){b.left=a.left+(c.width-b.width);b.top=null}if(e=="nw"){b.top=
-a.top+(c.height-b.height);b.left=a.left+(c.width-b.width)}return b},_respectSize:function(b){var a=this.options,c=this.axis,e=k(b.width)&&a.maxWidth&&a.maxWidth<b.width,g=k(b.height)&&a.maxHeight&&a.maxHeight<b.height,f=k(b.width)&&a.minWidth&&a.minWidth>b.width,h=k(b.height)&&a.minHeight&&a.minHeight>b.height;if(f)b.width=a.minWidth;if(h)b.height=a.minHeight;if(e)b.width=a.maxWidth;if(g)b.height=a.maxHeight;var i=this.originalPosition.left+this.originalSize.width,j=this.position.top+this.size.height,
-l=/sw|nw|w/.test(c);c=/nw|ne|n/.test(c);if(f&&l)b.left=i-a.minWidth;if(e&&l)b.left=i-a.maxWidth;if(h&&c)b.top=j-a.minHeight;if(g&&c)b.top=j-a.maxHeight;if((a=!b.width&&!b.height)&&!b.left&&b.top)b.top=null;else if(a&&!b.top&&b.left)b.left=null;return b},_proportionallyResize:function(){if(this._proportionallyResizeElements.length)for(var b=this.helper||this.element,a=0;a<this._proportionallyResizeElements.length;a++){var c=this._proportionallyResizeElements[a];if(!this.borderDif){var e=[c.css("borderTopWidth"),
-c.css("borderRightWidth"),c.css("borderBottomWidth"),c.css("borderLeftWidth")],g=[c.css("paddingTop"),c.css("paddingRight"),c.css("paddingBottom"),c.css("paddingLeft")];this.borderDif=d.map(e,function(f,h){f=parseInt(f,10)||0;h=parseInt(g[h],10)||0;return f+h})}d.browser.msie&&(d(b).is(":hidden")||d(b).parents(":hidden").length)||c.css({height:b.height()-this.borderDif[0]-this.borderDif[2]||0,width:b.width()-this.borderDif[1]-this.borderDif[3]||0})}},_renderProxy:function(){var b=this.options;this.elementOffset=
-this.element.offset();if(this._helper){this.helper=this.helper||d('<div style="overflow:hidden;"></div>');var a=d.browser.msie&&d.browser.version<7,c=a?1:0;a=a?2:-1;this.helper.addClass(this._helper).css({width:this.element.outerWidth()+a,height:this.element.outerHeight()+a,position:"absolute",left:this.elementOffset.left-c+"px",top:this.elementOffset.top-c+"px",zIndex:++b.zIndex});this.helper.appendTo("body").disableSelection()}else this.helper=this.element},_change:{e:function(b,a){return{width:this.originalSize.width+
-a}},w:function(b,a){return{left:this.originalPosition.left+a,width:this.originalSize.width-a}},n:function(b,a,c){return{top:this.originalPosition.top+c,height:this.originalSize.height-c}},s:function(b,a,c){return{height:this.originalSize.height+c}},se:function(b,a,c){return d.extend(this._change.s.apply(this,arguments),this._change.e.apply(this,[b,a,c]))},sw:function(b,a,c){return d.extend(this._change.s.apply(this,arguments),this._change.w.apply(this,[b,a,c]))},ne:function(b,a,c){return d.extend(this._change.n.apply(this,
-arguments),this._change.e.apply(this,[b,a,c]))},nw:function(b,a,c){return d.extend(this._change.n.apply(this,arguments),this._change.w.apply(this,[b,a,c]))}},_propagate:function(b,a){d.ui.plugin.call(this,b,[a,this.ui()]);b!="resize"&&this._trigger(b,a,this.ui())},plugins:{},ui:function(){return{originalElement:this.originalElement,element:this.element,helper:this.helper,position:this.position,size:this.size,originalSize:this.originalSize,originalPosition:this.originalPosition}}});d.extend(d.ui.resizable,
-{version:"1.8.1"});d.ui.plugin.add("resizable","alsoResize",{start:function(){var b=d(this).data("resizable").options,a=function(c){d(c).each(function(){d(this).data("resizable-alsoresize",{width:parseInt(d(this).width(),10),height:parseInt(d(this).height(),10),left:parseInt(d(this).css("left"),10),top:parseInt(d(this).css("top"),10)})})};if(typeof b.alsoResize=="object"&&!b.alsoResize.parentNode)if(b.alsoResize.length){b.alsoResize=b.alsoResize[0];a(b.alsoResize)}else d.each(b.alsoResize,function(c){a(c)});
-else a(b.alsoResize)},resize:function(){var b=d(this).data("resizable"),a=b.options,c=b.originalSize,e=b.originalPosition,g={height:b.size.height-c.height||0,width:b.size.width-c.width||0,top:b.position.top-e.top||0,left:b.position.left-e.left||0},f=function(h,i){d(h).each(function(){var j=d(this),l=d(this).data("resizable-alsoresize"),p={};d.each((i&&i.length?i:["width","height","top","left"])||["width","height","top","left"],function(n,o){if((n=(l[o]||0)+(g[o]||0))&&n>=0)p[o]=n||null});if(/relative/.test(j.css("position"))&&
-d.browser.opera){b._revertToRelativePosition=true;j.css({position:"absolute",top:"auto",left:"auto"})}j.css(p)})};typeof a.alsoResize=="object"&&!a.alsoResize.nodeType?d.each(a.alsoResize,function(h,i){f(h,i)}):f(a.alsoResize)},stop:function(){var b=d(this).data("resizable");if(b._revertToRelativePosition&&d.browser.opera){b._revertToRelativePosition=false;el.css({position:"relative"})}d(this).removeData("resizable-alsoresize-start")}});d.ui.plugin.add("resizable","animate",{stop:function(b){var a=
-d(this).data("resizable"),c=a.options,e=a._proportionallyResizeElements,g=e.length&&/textarea/i.test(e[0].nodeName),f=g&&d.ui.hasScroll(e[0],"left")?0:a.sizeDiff.height;g={width:a.size.width-(g?0:a.sizeDiff.width),height:a.size.height-f};f=parseInt(a.element.css("left"),10)+(a.position.left-a.originalPosition.left)||null;var h=parseInt(a.element.css("top"),10)+(a.position.top-a.originalPosition.top)||null;a.element.animate(d.extend(g,h&&f?{top:h,left:f}:{}),{duration:c.animateDuration,easing:c.animateEasing,
-step:function(){var i={width:parseInt(a.element.css("width"),10),height:parseInt(a.element.css("height"),10),top:parseInt(a.element.css("top"),10),left:parseInt(a.element.css("left"),10)};e&&e.length&&d(e[0]).css({width:i.width,height:i.height});a._updateCache(i);a._propagate("resize",b)}})}});d.ui.plugin.add("resizable","containment",{start:function(){var b=d(this).data("resizable"),a=b.element,c=b.options.containment;if(a=c instanceof d?c.get(0):/parent/.test(c)?a.parent().get(0):c){b.containerElement=
-d(a);if(/document/.test(c)||c==document){b.containerOffset={left:0,top:0};b.containerPosition={left:0,top:0};b.parentData={element:d(document),left:0,top:0,width:d(document).width(),height:d(document).height()||document.body.parentNode.scrollHeight}}else{var e=d(a),g=[];d(["Top","Right","Left","Bottom"]).each(function(i,j){g[i]=m(e.css("padding"+j))});b.containerOffset=e.offset();b.containerPosition=e.position();b.containerSize={height:e.innerHeight()-g[3],width:e.innerWidth()-g[1]};c=b.containerOffset;
-var f=b.containerSize.height,h=b.containerSize.width;h=d.ui.hasScroll(a,"left")?a.scrollWidth:h;f=d.ui.hasScroll(a)?a.scrollHeight:f;b.parentData={element:a,left:c.left,top:c.top,width:h,height:f}}}},resize:function(b){var a=d(this).data("resizable"),c=a.options,e=a.containerOffset,g=a.position;b=a._aspectRatio||b.shiftKey;var f={top:0,left:0},h=a.containerElement;if(h[0]!=document&&/static/.test(h.css("position")))f=e;if(g.left<(a._helper?e.left:0)){a.size.width+=a._helper?a.position.left-e.left:
-a.position.left-f.left;if(b)a.size.height=a.size.width/c.aspectRatio;a.position.left=c.helper?e.left:0}if(g.top<(a._helper?e.top:0)){a.size.height+=a._helper?a.position.top-e.top:a.position.top;if(b)a.size.width=a.size.height*c.aspectRatio;a.position.top=a._helper?e.top:0}a.offset.left=a.parentData.left+a.position.left;a.offset.top=a.parentData.top+a.position.top;c=Math.abs((a._helper?a.offset.left-f.left:a.offset.left-f.left)+a.sizeDiff.width);e=Math.abs((a._helper?a.offset.top-f.top:a.offset.top-
-e.top)+a.sizeDiff.height);g=a.containerElement.get(0)==a.element.parent().get(0);f=/relative|absolute/.test(a.containerElement.css("position"));if(g&&f)c-=a.parentData.left;if(c+a.size.width>=a.parentData.width){a.size.width=a.parentData.width-c;if(b)a.size.height=a.size.width/a.aspectRatio}if(e+a.size.height>=a.parentData.height){a.size.height=a.parentData.height-e;if(b)a.size.width=a.size.height*a.aspectRatio}},stop:function(){var b=d(this).data("resizable"),a=b.options,c=b.containerOffset,e=b.containerPosition,
-g=b.containerElement,f=d(b.helper),h=f.offset(),i=f.outerWidth()-b.sizeDiff.width;f=f.outerHeight()-b.sizeDiff.height;b._helper&&!a.animate&&/relative/.test(g.css("position"))&&d(this).css({left:h.left-e.left-c.left,width:i,height:f});b._helper&&!a.animate&&/static/.test(g.css("position"))&&d(this).css({left:h.left-e.left-c.left,width:i,height:f})}});d.ui.plugin.add("resizable","ghost",{start:function(){var b=d(this).data("resizable"),a=b.options,c=b.size;b.ghost=b.originalElement.clone();b.ghost.css({opacity:0.25,
-display:"block",position:"relative",height:c.height,width:c.width,margin:0,left:0,top:0}).addClass("ui-resizable-ghost").addClass(typeof a.ghost=="string"?a.ghost:"");b.ghost.appendTo(b.helper)},resize:function(){var b=d(this).data("resizable");b.ghost&&b.ghost.css({position:"relative",height:b.size.height,width:b.size.width})},stop:function(){var b=d(this).data("resizable");b.ghost&&b.helper&&b.helper.get(0).removeChild(b.ghost.get(0))}});d.ui.plugin.add("resizable","grid",{resize:function(){var b=
-d(this).data("resizable"),a=b.options,c=b.size,e=b.originalSize,g=b.originalPosition,f=b.axis;a.grid=typeof a.grid=="number"?[a.grid,a.grid]:a.grid;var h=Math.round((c.width-e.width)/(a.grid[0]||1))*(a.grid[0]||1);a=Math.round((c.height-e.height)/(a.grid[1]||1))*(a.grid[1]||1);if(/^(se|s|e)$/.test(f)){b.size.width=e.width+h;b.size.height=e.height+a}else if(/^(ne)$/.test(f)){b.size.width=e.width+h;b.size.height=e.height+a;b.position.top=g.top-a}else{if(/^(sw)$/.test(f)){b.size.width=e.width+h;b.size.height=
-e.height+a}else{b.size.width=e.width+h;b.size.height=e.height+a;b.position.top=g.top-a}b.position.left=g.left-h}}});var m=function(b){return parseInt(b,10)||0},k=function(b){return!isNaN(parseInt(b,10))}})(jQuery);
-;/*
- * jQuery UI Selectable 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Selectables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
- */
-(function(e){e.widget("ui.selectable",e.ui.mouse,{options:{appendTo:"body",autoRefresh:true,distance:0,filter:"*",tolerance:"touch"},_create:function(){var d=this;this.element.addClass("ui-selectable");this.dragged=false;var f;this.refresh=function(){f=e(d.options.filter,d.element[0]);f.each(function(){var c=e(this),b=c.offset();e.data(this,"selectable-item",{element:this,$element:c,left:b.left,top:b.top,right:b.left+c.outerWidth(),bottom:b.top+c.outerHeight(),startselected:false,selected:c.hasClass("ui-selected"),
-selecting:c.hasClass("ui-selecting"),unselecting:c.hasClass("ui-unselecting")})})};this.refresh();this.selectees=f.addClass("ui-selectee");this._mouseInit();this.helper=e(document.createElement("div")).css({border:"1px dotted black"}).addClass("ui-selectable-helper")},destroy:function(){this.selectees.removeClass("ui-selectee").removeData("selectable-item");this.element.removeClass("ui-selectable ui-selectable-disabled").removeData("selectable").unbind(".selectable");this._mouseDestroy();return this},
-_mouseStart:function(d){var f=this;this.opos=[d.pageX,d.pageY];if(!this.options.disabled){var c=this.options;this.selectees=e(c.filter,this.element[0]);this._trigger("start",d);e(c.appendTo).append(this.helper);this.helper.css({"z-index":100,position:"absolute",left:d.clientX,top:d.clientY,width:0,height:0});c.autoRefresh&&this.refresh();this.selectees.filter(".ui-selected").each(function(){var b=e.data(this,"selectable-item");b.startselected=true;if(!d.metaKey){b.$element.removeClass("ui-selected");
-b.selected=false;b.$element.addClass("ui-unselecting");b.unselecting=true;f._trigger("unselecting",d,{unselecting:b.element})}});e(d.target).parents().andSelf().each(function(){var b=e.data(this,"selectable-item");if(b){b.$element.removeClass("ui-unselecting").addClass("ui-selecting");b.unselecting=false;b.selecting=true;b.selected=true;f._trigger("selecting",d,{selecting:b.element});return false}})}},_mouseDrag:function(d){var f=this;this.dragged=true;if(!this.options.disabled){var c=this.options,
-b=this.opos[0],g=this.opos[1],h=d.pageX,i=d.pageY;if(b>h){var j=h;h=b;b=j}if(g>i){j=i;i=g;g=j}this.helper.css({left:b,top:g,width:h-b,height:i-g});this.selectees.each(function(){var a=e.data(this,"selectable-item");if(!(!a||a.element==f.element[0])){var k=false;if(c.tolerance=="touch")k=!(a.left>h||a.right<b||a.top>i||a.bottom<g);else if(c.tolerance=="fit")k=a.left>b&&a.right<h&&a.top>g&&a.bottom<i;if(k){if(a.selected){a.$element.removeClass("ui-selected");a.selected=false}if(a.unselecting){a.$element.removeClass("ui-unselecting");
-a.unselecting=false}if(!a.selecting){a.$element.addClass("ui-selecting");a.selecting=true;f._trigger("selecting",d,{selecting:a.element})}}else{if(a.selecting)if(d.metaKey&&a.startselected){a.$element.removeClass("ui-selecting");a.selecting=false;a.$element.addClass("ui-selected");a.selected=true}else{a.$element.removeClass("ui-selecting");a.selecting=false;if(a.startselected){a.$element.addClass("ui-unselecting");a.unselecting=true}f._trigger("unselecting",d,{unselecting:a.element})}if(a.selected)if(!d.metaKey&&
-!a.startselected){a.$element.removeClass("ui-selected");a.selected=false;a.$element.addClass("ui-unselecting");a.unselecting=true;f._trigger("unselecting",d,{unselecting:a.element})}}}});return false}},_mouseStop:function(d){var f=this;this.dragged=false;e(".ui-unselecting",this.element[0]).each(function(){var c=e.data(this,"selectable-item");c.$element.removeClass("ui-unselecting");c.unselecting=false;c.startselected=false;f._trigger("unselected",d,{unselected:c.element})});e(".ui-selecting",this.element[0]).each(function(){var c=
-e.data(this,"selectable-item");c.$element.removeClass("ui-selecting").addClass("ui-selected");c.selecting=false;c.selected=true;c.startselected=true;f._trigger("selected",d,{selected:c.element})});this._trigger("stop",d);this.helper.remove();return false}});e.extend(e.ui.selectable,{version:"1.8.1"})})(jQuery);
-;/*
- * jQuery UI Sortable 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Sortables
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
- */
-(function(d){d.widget("ui.sortable",d.ui.mouse,{widgetEventPrefix:"sort",options:{appendTo:"parent",axis:false,connectWith:false,containment:false,cursor:"auto",cursorAt:false,dropOnEmpty:true,forcePlaceholderSize:false,forceHelperSize:false,grid:false,handle:false,helper:"original",items:"> *",opacity:false,placeholder:false,revert:false,scroll:true,scrollSensitivity:20,scrollSpeed:20,scope:"default",tolerance:"intersect",zIndex:1E3},_create:function(){this.containerCache={};this.element.addClass("ui-sortable");
-this.refresh();this.floating=this.items.length?/left|right/.test(this.items[0].item.css("float")):false;this.offset=this.element.offset();this._mouseInit()},destroy:function(){this.element.removeClass("ui-sortable ui-sortable-disabled").removeData("sortable").unbind(".sortable");this._mouseDestroy();for(var a=this.items.length-1;a>=0;a--)this.items[a].item.removeData("sortable-item");return this},_setOption:function(a,b){if(a==="disabled"){this.options[a]=b;this.widget()[b?"addClass":"removeClass"]("ui-sortable-disabled")}else d.Widget.prototype._setOption.apply(self,
-arguments)},_mouseCapture:function(a,b){if(this.reverting)return false;if(this.options.disabled||this.options.type=="static")return false;this._refreshItems(a);var c=null,e=this;d(a.target).parents().each(function(){if(d.data(this,"sortable-item")==e){c=d(this);return false}});if(d.data(a.target,"sortable-item")==e)c=d(a.target);if(!c)return false;if(this.options.handle&&!b){var f=false;d(this.options.handle,c).find("*").andSelf().each(function(){if(this==a.target)f=true});if(!f)return false}this.currentItem=
-c;this._removeCurrentsFromItems();return true},_mouseStart:function(a,b,c){b=this.options;var e=this;this.currentContainer=this;this.refreshPositions();this.helper=this._createHelper(a);this._cacheHelperProportions();this._cacheMargins();this.scrollParent=this.helper.scrollParent();this.offset=this.currentItem.offset();this.offset={top:this.offset.top-this.margins.top,left:this.offset.left-this.margins.left};this.helper.css("position","absolute");this.cssPosition=this.helper.css("position");d.extend(this.offset,
-{click:{left:a.pageX-this.offset.left,top:a.pageY-this.offset.top},parent:this._getParentOffset(),relative:this._getRelativeOffset()});this.originalPosition=this._generatePosition(a);this.originalPageX=a.pageX;this.originalPageY=a.pageY;b.cursorAt&&this._adjustOffsetFromHelper(b.cursorAt);this.domPosition={prev:this.currentItem.prev()[0],parent:this.currentItem.parent()[0]};this.helper[0]!=this.currentItem[0]&&this.currentItem.hide();this._createPlaceholder();b.containment&&this._setContainment();
-if(b.cursor){if(d("body").css("cursor"))this._storedCursor=d("body").css("cursor");d("body").css("cursor",b.cursor)}if(b.opacity){if(this.helper.css("opacity"))this._storedOpacity=this.helper.css("opacity");this.helper.css("opacity",b.opacity)}if(b.zIndex){if(this.helper.css("zIndex"))this._storedZIndex=this.helper.css("zIndex");this.helper.css("zIndex",b.zIndex)}if(this.scrollParent[0]!=document&&this.scrollParent[0].tagName!="HTML")this.overflowOffset=this.scrollParent.offset();this._trigger("start",
-a,this._uiHash());this._preserveHelperProportions||this._cacheHelperProportions();if(!c)for(c=this.containers.length-1;c>=0;c--)this.containers[c]._trigger("activate",a,e._uiHash(this));if(d.ui.ddmanager)d.ui.ddmanager.current=this;d.ui.ddmanager&&!b.dropBehaviour&&d.ui.ddmanager.prepareOffsets(this,a);this.dragging=true;this.helper.addClass("ui-sortable-helper");this._mouseDrag(a);return true},_mouseDrag:function(a){this.position=this._generatePosition(a);this.positionAbs=this._convertPositionTo("absolute");
-if(!this.lastPositionAbs)this.lastPositionAbs=this.positionAbs;if(this.options.scroll){var b=this.options,c=false;if(this.scrollParent[0]!=document&&this.scrollParent[0].tagName!="HTML"){if(this.overflowOffset.top+this.scrollParent[0].offsetHeight-a.pageY<b.scrollSensitivity)this.scrollParent[0].scrollTop=c=this.scrollParent[0].scrollTop+b.scrollSpeed;else if(a.pageY-this.overflowOffset.top<b.scrollSensitivity)this.scrollParent[0].scrollTop=c=this.scrollParent[0].scrollTop-b.scrollSpeed;if(this.overflowOffset.left+
-this.scrollParent[0].offsetWidth-a.pageX<b.scrollSensitivity)this.scrollParent[0].scrollLeft=c=this.scrollParent[0].scrollLeft+b.scrollSpeed;else if(a.pageX-this.overflowOffset.left<b.scrollSensitivity)this.scrollParent[0].scrollLeft=c=this.scrollParent[0].scrollLeft-b.scrollSpeed}else{if(a.pageY-d(document).scrollTop()<b.scrollSensitivity)c=d(document).scrollTop(d(document).scrollTop()-b.scrollSpeed);else if(d(window).height()-(a.pageY-d(document).scrollTop())<b.scrollSensitivity)c=d(document).scrollTop(d(document).scrollTop()+
-b.scrollSpeed);if(a.pageX-d(document).scrollLeft()<b.scrollSensitivity)c=d(document).scrollLeft(d(document).scrollLeft()-b.scrollSpeed);else if(d(window).width()-(a.pageX-d(document).scrollLeft())<b.scrollSensitivity)c=d(document).scrollLeft(d(document).scrollLeft()+b.scrollSpeed)}c!==false&&d.ui.ddmanager&&!b.dropBehaviour&&d.ui.ddmanager.prepareOffsets(this,a)}this.positionAbs=this._convertPositionTo("absolute");if(!this.options.axis||this.options.axis!="y")this.helper[0].style.left=this.position.left+
-"px";if(!this.options.axis||this.options.axis!="x")this.helper[0].style.top=this.position.top+"px";for(b=this.items.length-1;b>=0;b--){c=this.items[b];var e=c.item[0],f=this._intersectsWithPointer(c);if(f)if(e!=this.currentItem[0]&&this.placeholder[f==1?"next":"prev"]()[0]!=e&&!d.ui.contains(this.placeholder[0],e)&&(this.options.type=="semi-dynamic"?!d.ui.contains(this.element[0],e):true)){this.direction=f==1?"down":"up";if(this.options.tolerance=="pointer"||this._intersectsWithSides(c))this._rearrange(a,
-c);else break;this._trigger("change",a,this._uiHash());break}}this._contactContainers(a);d.ui.ddmanager&&d.ui.ddmanager.drag(this,a);this._trigger("sort",a,this._uiHash());this.lastPositionAbs=this.positionAbs;return false},_mouseStop:function(a,b){if(a){d.ui.ddmanager&&!this.options.dropBehaviour&&d.ui.ddmanager.drop(this,a);if(this.options.revert){var c=this;b=c.placeholder.offset();c.reverting=true;d(this.helper).animate({left:b.left-this.offset.parent.left-c.margins.left+(this.offsetParent[0]==
-document.body?0:this.offsetParent[0].scrollLeft),top:b.top-this.offset.parent.top-c.margins.top+(this.offsetParent[0]==document.body?0:this.offsetParent[0].scrollTop)},parseInt(this.options.revert,10)||500,function(){c._clear(a)})}else this._clear(a,b);return false}},cancel:function(){var a=this;if(this.dragging){this._mouseUp();this.options.helper=="original"?this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper"):this.currentItem.show();for(var b=this.containers.length-1;b>=0;b--){this.containers[b]._trigger("deactivate",
-null,a._uiHash(this));if(this.containers[b].containerCache.over){this.containers[b]._trigger("out",null,a._uiHash(this));this.containers[b].containerCache.over=0}}}this.placeholder[0].parentNode&&this.placeholder[0].parentNode.removeChild(this.placeholder[0]);this.options.helper!="original"&&this.helper&&this.helper[0].parentNode&&this.helper.remove();d.extend(this,{helper:null,dragging:false,reverting:false,_noFinalSort:null});this.domPosition.prev?d(this.domPosition.prev).after(this.currentItem):
-d(this.domPosition.parent).prepend(this.currentItem);return this},serialize:function(a){var b=this._getItemsAsjQuery(a&&a.connected),c=[];a=a||{};d(b).each(function(){var e=(d(a.item||this).attr(a.attribute||"id")||"").match(a.expression||/(.+)[-=_](.+)/);if(e)c.push((a.key||e[1]+"[]")+"="+(a.key&&a.expression?e[1]:e[2]))});return c.join("&")},toArray:function(a){var b=this._getItemsAsjQuery(a&&a.connected),c=[];a=a||{};b.each(function(){c.push(d(a.item||this).attr(a.attribute||"id")||"")});return c},
-_intersectsWith:function(a){var b=this.positionAbs.left,c=b+this.helperProportions.width,e=this.positionAbs.top,f=e+this.helperProportions.height,g=a.left,h=g+a.width,i=a.top,k=i+a.height,j=this.offset.click.top,l=this.offset.click.left;j=e+j>i&&e+j<k&&b+l>g&&b+l<h;return this.options.tolerance=="pointer"||this.options.forcePointerForContainers||this.options.tolerance!="pointer"&&this.helperProportions[this.floating?"width":"height"]>a[this.floating?"width":"height"]?j:g<b+this.helperProportions.width/
-2&&c-this.helperProportions.width/2<h&&i<e+this.helperProportions.height/2&&f-this.helperProportions.height/2<k},_intersectsWithPointer:function(a){var b=d.ui.isOverAxis(this.positionAbs.top+this.offset.click.top,a.top,a.height);a=d.ui.isOverAxis(this.positionAbs.left+this.offset.click.left,a.left,a.width);b=b&&a;a=this._getDragVerticalDirection();var c=this._getDragHorizontalDirection();if(!b)return false;return this.floating?c&&c=="right"||a=="down"?2:1:a&&(a=="down"?2:1)},_intersectsWithSides:function(a){var b=
-d.ui.isOverAxis(this.positionAbs.top+this.offset.click.top,a.top+a.height/2,a.height);a=d.ui.isOverAxis(this.positionAbs.left+this.offset.click.left,a.left+a.width/2,a.width);var c=this._getDragVerticalDirection(),e=this._getDragHorizontalDirection();return this.floating&&e?e=="right"&&a||e=="left"&&!a:c&&(c=="down"&&b||c=="up"&&!b)},_getDragVerticalDirection:function(){var a=this.positionAbs.top-this.lastPositionAbs.top;return a!=0&&(a>0?"down":"up")},_getDragHorizontalDirection:function(){var a=
-this.positionAbs.left-this.lastPositionAbs.left;return a!=0&&(a>0?"right":"left")},refresh:function(a){this._refreshItems(a);this.refreshPositions();return this},_connectWith:function(){var a=this.options;return a.connectWith.constructor==String?[a.connectWith]:a.connectWith},_getItemsAsjQuery:function(a){var b=[],c=[],e=this._connectWith();if(e&&a)for(a=e.length-1;a>=0;a--)for(var f=d(e[a]),g=f.length-1;g>=0;g--){var h=d.data(f[g],"sortable");if(h&&h!=this&&!h.options.disabled)c.push([d.isFunction(h.options.items)?
-h.options.items.call(h.element):d(h.options.items,h.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"),h])}c.push([d.isFunction(this.options.items)?this.options.items.call(this.element,null,{options:this.options,item:this.currentItem}):d(this.options.items,this.element).not(".ui-sortable-helper").not(".ui-sortable-placeholder"),this]);for(a=c.length-1;a>=0;a--)c[a][0].each(function(){b.push(this)});return d(b)},_removeCurrentsFromItems:function(){for(var a=this.currentItem.find(":data(sortable-item)"),
-b=0;b<this.items.length;b++)for(var c=0;c<a.length;c++)a[c]==this.items[b].item[0]&&this.items.splice(b,1)},_refreshItems:function(a){this.items=[];this.containers=[this];var b=this.items,c=[[d.isFunction(this.options.items)?this.options.items.call(this.element[0],a,{item:this.currentItem}):d(this.options.items,this.element),this]],e=this._connectWith();if(e)for(var f=e.length-1;f>=0;f--)for(var g=d(e[f]),h=g.length-1;h>=0;h--){var i=d.data(g[h],"sortable");if(i&&i!=this&&!i.options.disabled){c.push([d.isFunction(i.options.items)?
-i.options.items.call(i.element[0],a,{item:this.currentItem}):d(i.options.items,i.element),i]);this.containers.push(i)}}for(f=c.length-1;f>=0;f--){a=c[f][1];e=c[f][0];h=0;for(g=e.length;h<g;h++){i=d(e[h]);i.data("sortable-item",a);b.push({item:i,instance:a,width:0,height:0,left:0,top:0})}}},refreshPositions:function(a){if(this.offsetParent&&this.helper)this.offset.parent=this._getParentOffset();for(var b=this.items.length-1;b>=0;b--){var c=this.items[b],e=this.options.toleranceElement?d(this.options.toleranceElement,
-c.item):c.item;if(!a){c.width=e.outerWidth();c.height=e.outerHeight()}e=e.offset();c.left=e.left;c.top=e.top}if(this.options.custom&&this.options.custom.refreshContainers)this.options.custom.refreshContainers.call(this);else for(b=this.containers.length-1;b>=0;b--){e=this.containers[b].element.offset();this.containers[b].containerCache.left=e.left;this.containers[b].containerCache.top=e.top;this.containers[b].containerCache.width=this.containers[b].element.outerWidth();this.containers[b].containerCache.height=
-this.containers[b].element.outerHeight()}return this},_createPlaceholder:function(a){var b=a||this,c=b.options;if(!c.placeholder||c.placeholder.constructor==String){var e=c.placeholder;c.placeholder={element:function(){var f=d(document.createElement(b.currentItem[0].nodeName)).addClass(e||b.currentItem[0].className+" ui-sortable-placeholder").removeClass("ui-sortable-helper")[0];if(!e)f.style.visibility="hidden";return f},update:function(f,g){if(!(e&&!c.forcePlaceholderSize)){g.height()||g.height(b.currentItem.innerHeight()-
-parseInt(b.currentItem.css("paddingTop")||0,10)-parseInt(b.currentItem.css("paddingBottom")||0,10));g.width()||g.width(b.currentItem.innerWidth()-parseInt(b.currentItem.css("paddingLeft")||0,10)-parseInt(b.currentItem.css("paddingRight")||0,10))}}}}b.placeholder=d(c.placeholder.element.call(b.element,b.currentItem));b.currentItem.after(b.placeholder);c.placeholder.update(b,b.placeholder)},_contactContainers:function(a){for(var b=null,c=null,e=this.containers.length-1;e>=0;e--)if(!d.ui.contains(this.currentItem[0],
-this.containers[e].element[0]))if(this._intersectsWith(this.containers[e].containerCache)){if(!(b&&d.ui.contains(this.containers[e].element[0],b.element[0]))){b=this.containers[e];c=e}}else if(this.containers[e].containerCache.over){this.containers[e]._trigger("out",a,this._uiHash(this));this.containers[e].containerCache.over=0}if(b)if(this.containers.length===1){this.containers[c]._trigger("over",a,this._uiHash(this));this.containers[c].containerCache.over=1}else if(this.currentContainer!=this.containers[c]){b=
-1E4;e=null;for(var f=this.positionAbs[this.containers[c].floating?"left":"top"],g=this.items.length-1;g>=0;g--)if(d.ui.contains(this.containers[c].element[0],this.items[g].item[0])){var h=this.items[g][this.containers[c].floating?"left":"top"];if(Math.abs(h-f)<b){b=Math.abs(h-f);e=this.items[g]}}if(e||this.options.dropOnEmpty){this.currentContainer=this.containers[c];e?this._rearrange(a,e,null,true):this._rearrange(a,null,this.containers[c].element,true);this._trigger("change",a,this._uiHash());this.containers[c]._trigger("change",
-a,this._uiHash(this));this.options.placeholder.update(this.currentContainer,this.placeholder);this.containers[c]._trigger("over",a,this._uiHash(this));this.containers[c].containerCache.over=1}}},_createHelper:function(a){var b=this.options;a=d.isFunction(b.helper)?d(b.helper.apply(this.element[0],[a,this.currentItem])):b.helper=="clone"?this.currentItem.clone():this.currentItem;a.parents("body").length||d(b.appendTo!="parent"?b.appendTo:this.currentItem[0].parentNode)[0].appendChild(a[0]);if(a[0]==
-this.currentItem[0])this._storedCSS={width:this.currentItem[0].style.width,height:this.currentItem[0].style.height,position:this.currentItem.css("position"),top:this.currentItem.css("top"),left:this.currentItem.css("left")};if(a[0].style.width==""||b.forceHelperSize)a.width(this.currentItem.width());if(a[0].style.height==""||b.forceHelperSize)a.height(this.currentItem.height());return a},_adjustOffsetFromHelper:function(a){if(typeof a=="string")a=a.split(" ");if(d.isArray(a))a={left:+a[0],top:+a[1]||
-0};if("left"in a)this.offset.click.left=a.left+this.margins.left;if("right"in a)this.offset.click.left=this.helperProportions.width-a.right+this.margins.left;if("top"in a)this.offset.click.top=a.top+this.margins.top;if("bottom"in a)this.offset.click.top=this.helperProportions.height-a.bottom+this.margins.top},_getParentOffset:function(){this.offsetParent=this.helper.offsetParent();var a=this.offsetParent.offset();if(this.cssPosition=="absolute"&&this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],
-this.offsetParent[0])){a.left+=this.scrollParent.scrollLeft();a.top+=this.scrollParent.scrollTop()}if(this.offsetParent[0]==document.body||this.offsetParent[0].tagName&&this.offsetParent[0].tagName.toLowerCase()=="html"&&d.browser.msie)a={top:0,left:0};return{top:a.top+(parseInt(this.offsetParent.css("borderTopWidth"),10)||0),left:a.left+(parseInt(this.offsetParent.css("borderLeftWidth"),10)||0)}},_getRelativeOffset:function(){if(this.cssPosition=="relative"){var a=this.currentItem.position();return{top:a.top-
-(parseInt(this.helper.css("top"),10)||0)+this.scrollParent.scrollTop(),left:a.left-(parseInt(this.helper.css("left"),10)||0)+this.scrollParent.scrollLeft()}}else return{top:0,left:0}},_cacheMargins:function(){this.margins={left:parseInt(this.currentItem.css("marginLeft"),10)||0,top:parseInt(this.currentItem.css("marginTop"),10)||0}},_cacheHelperProportions:function(){this.helperProportions={width:this.helper.outerWidth(),height:this.helper.outerHeight()}},_setContainment:function(){var a=this.options;
-if(a.containment=="parent")a.containment=this.helper[0].parentNode;if(a.containment=="document"||a.containment=="window")this.containment=[0-this.offset.relative.left-this.offset.parent.left,0-this.offset.relative.top-this.offset.parent.top,d(a.containment=="document"?document:window).width()-this.helperProportions.width-this.margins.left,(d(a.containment=="document"?document:window).height()||document.body.parentNode.scrollHeight)-this.helperProportions.height-this.margins.top];if(!/^(document|window|parent)$/.test(a.containment)){var b=
-d(a.containment)[0];a=d(a.containment).offset();var c=d(b).css("overflow")!="hidden";this.containment=[a.left+(parseInt(d(b).css("borderLeftWidth"),10)||0)+(parseInt(d(b).css("paddingLeft"),10)||0)-this.margins.left,a.top+(parseInt(d(b).css("borderTopWidth"),10)||0)+(parseInt(d(b).css("paddingTop"),10)||0)-this.margins.top,a.left+(c?Math.max(b.scrollWidth,b.offsetWidth):b.offsetWidth)-(parseInt(d(b).css("borderLeftWidth"),10)||0)-(parseInt(d(b).css("paddingRight"),10)||0)-this.helperProportions.width-
-this.margins.left,a.top+(c?Math.max(b.scrollHeight,b.offsetHeight):b.offsetHeight)-(parseInt(d(b).css("borderTopWidth"),10)||0)-(parseInt(d(b).css("paddingBottom"),10)||0)-this.helperProportions.height-this.margins.top]}},_convertPositionTo:function(a,b){if(!b)b=this.position;a=a=="absolute"?1:-1;var c=this.cssPosition=="absolute"&&!(this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],this.offsetParent[0]))?this.offsetParent:this.scrollParent,e=/(html|body)/i.test(c[0].tagName);return{top:b.top+
-this.offset.relative.top*a+this.offset.parent.top*a-(d.browser.safari&&this.cssPosition=="fixed"?0:(this.cssPosition=="fixed"?-this.scrollParent.scrollTop():e?0:c.scrollTop())*a),left:b.left+this.offset.relative.left*a+this.offset.parent.left*a-(d.browser.safari&&this.cssPosition=="fixed"?0:(this.cssPosition=="fixed"?-this.scrollParent.scrollLeft():e?0:c.scrollLeft())*a)}},_generatePosition:function(a){var b=this.options,c=this.cssPosition=="absolute"&&!(this.scrollParent[0]!=document&&d.ui.contains(this.scrollParent[0],
-this.offsetParent[0]))?this.offsetParent:this.scrollParent,e=/(html|body)/i.test(c[0].tagName);if(this.cssPosition=="relative"&&!(this.scrollParent[0]!=document&&this.scrollParent[0]!=this.offsetParent[0]))this.offset.relative=this._getRelativeOffset();var f=a.pageX,g=a.pageY;if(this.originalPosition){if(this.containment){if(a.pageX-this.offset.click.left<this.containment[0])f=this.containment[0]+this.offset.click.left;if(a.pageY-this.offset.click.top<this.containment[1])g=this.containment[1]+this.offset.click.top;
-if(a.pageX-this.offset.click.left>this.containment[2])f=this.containment[2]+this.offset.click.left;if(a.pageY-this.offset.click.top>this.containment[3])g=this.containment[3]+this.offset.click.top}if(b.grid){g=this.originalPageY+Math.round((g-this.originalPageY)/b.grid[1])*b.grid[1];g=this.containment?!(g-this.offset.click.top<this.containment[1]||g-this.offset.click.top>this.containment[3])?g:!(g-this.offset.click.top<this.containment[1])?g-b.grid[1]:g+b.grid[1]:g;f=this.originalPageX+Math.round((f-
-this.originalPageX)/b.grid[0])*b.grid[0];f=this.containment?!(f-this.offset.click.left<this.containment[0]||f-this.offset.click.left>this.containment[2])?f:!(f-this.offset.click.left<this.containment[0])?f-b.grid[0]:f+b.grid[0]:f}}return{top:g-this.offset.click.top-this.offset.relative.top-this.offset.parent.top+(d.browser.safari&&this.cssPosition=="fixed"?0:this.cssPosition=="fixed"?-this.scrollParent.scrollTop():e?0:c.scrollTop()),left:f-this.offset.click.left-this.offset.relative.left-this.offset.parent.left+
-(d.browser.safari&&this.cssPosition=="fixed"?0:this.cssPosition=="fixed"?-this.scrollParent.scrollLeft():e?0:c.scrollLeft())}},_rearrange:function(a,b,c,e){c?c[0].appendChild(this.placeholder[0]):b.item[0].parentNode.insertBefore(this.placeholder[0],this.direction=="down"?b.item[0]:b.item[0].nextSibling);this.counter=this.counter?++this.counter:1;var f=this,g=this.counter;window.setTimeout(function(){g==f.counter&&f.refreshPositions(!e)},0)},_clear:function(a,b){this.reverting=false;var c=[];!this._noFinalSort&&
-this.currentItem[0].parentNode&&this.placeholder.before(this.currentItem);this._noFinalSort=null;if(this.helper[0]==this.currentItem[0]){for(var e in this._storedCSS)if(this._storedCSS[e]=="auto"||this._storedCSS[e]=="static")this._storedCSS[e]="";this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper")}else this.currentItem.show();this.fromOutside&&!b&&c.push(function(f){this._trigger("receive",f,this._uiHash(this.fromOutside))});if((this.fromOutside||this.domPosition.prev!=this.currentItem.prev().not(".ui-sortable-helper")[0]||
-this.domPosition.parent!=this.currentItem.parent()[0])&&!b)c.push(function(f){this._trigger("update",f,this._uiHash())});if(!d.ui.contains(this.element[0],this.currentItem[0])){b||c.push(function(f){this._trigger("remove",f,this._uiHash())});for(e=this.containers.length-1;e>=0;e--)if(d.ui.contains(this.containers[e].element[0],this.currentItem[0])&&!b){c.push(function(f){return function(g){f._trigger("receive",g,this._uiHash(this))}}.call(this,this.containers[e]));c.push(function(f){return function(g){f._trigger("update",
-g,this._uiHash(this))}}.call(this,this.containers[e]))}}for(e=this.containers.length-1;e>=0;e--){b||c.push(function(f){return function(g){f._trigger("deactivate",g,this._uiHash(this))}}.call(this,this.containers[e]));if(this.containers[e].containerCache.over){c.push(function(f){return function(g){f._trigger("out",g,this._uiHash(this))}}.call(this,this.containers[e]));this.containers[e].containerCache.over=0}}this._storedCursor&&d("body").css("cursor",this._storedCursor);this._storedOpacity&&this.helper.css("opacity",
-this._storedOpacity);if(this._storedZIndex)this.helper.css("zIndex",this._storedZIndex=="auto"?"":this._storedZIndex);this.dragging=false;if(this.cancelHelperRemoval){if(!b){this._trigger("beforeStop",a,this._uiHash());for(e=0;e<c.length;e++)c[e].call(this,a);this._trigger("stop",a,this._uiHash())}return false}b||this._trigger("beforeStop",a,this._uiHash());this.placeholder[0].parentNode.removeChild(this.placeholder[0]);this.helper[0]!=this.currentItem[0]&&this.helper.remove();this.helper=null;if(!b){for(e=
-0;e<c.length;e++)c[e].call(this,a);this._trigger("stop",a,this._uiHash())}this.fromOutside=false;return true},_trigger:function(){d.Widget.prototype._trigger.apply(this,arguments)===false&&this.cancel()},_uiHash:function(a){var b=a||this;return{helper:b.helper,placeholder:b.placeholder||d([]),position:b.position,originalPosition:b.originalPosition,offset:b.positionAbs,item:b.currentItem,sender:a?a.element:null}}});d.extend(d.ui.sortable,{version:"1.8.1"})})(jQuery);
-;/*
- * jQuery UI Accordion 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Accordion
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- */
-(function(c){c.widget("ui.accordion",{options:{active:0,animated:"slide",autoHeight:true,clearStyle:false,collapsible:false,event:"click",fillSpace:false,header:"> li > :first-child,> :not(li):even",icons:{header:"ui-icon-triangle-1-e",headerSelected:"ui-icon-triangle-1-s"},navigation:false,navigationFilter:function(){return this.href.toLowerCase()==location.href.toLowerCase()}},_create:function(){var a=this.options,b=this;this.running=0;this.element.addClass("ui-accordion ui-widget ui-helper-reset");
-this.element[0].nodeName=="UL"&&this.element.children("li").addClass("ui-accordion-li-fix");this.headers=this.element.find(a.header).addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-all").bind("mouseenter.accordion",function(){c(this).addClass("ui-state-hover")}).bind("mouseleave.accordion",function(){c(this).removeClass("ui-state-hover")}).bind("focus.accordion",function(){c(this).addClass("ui-state-focus")}).bind("blur.accordion",function(){c(this).removeClass("ui-state-focus")});
-this.headers.next().addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom");if(a.navigation){var d=this.element.find("a").filter(a.navigationFilter);if(d.length){var f=d.closest(".ui-accordion-header");this.active=f.length?f:d.closest(".ui-accordion-content").prev()}}this.active=this._findActive(this.active||a.active).toggleClass("ui-state-default").toggleClass("ui-state-active").toggleClass("ui-corner-all").toggleClass("ui-corner-top");this.active.next().addClass("ui-accordion-content-active");
-this._createIcons();this.resize();this.element.attr("role","tablist");this.headers.attr("role","tab").bind("keydown",function(g){return b._keydown(g)}).next().attr("role","tabpanel");this.headers.not(this.active||"").attr("aria-expanded","false").attr("tabIndex","-1").next().hide();this.active.length?this.active.attr("aria-expanded","true").attr("tabIndex","0"):this.headers.eq(0).attr("tabIndex","0");c.browser.safari||this.headers.find("a").attr("tabIndex","-1");a.event&&this.headers.bind(a.event+
-".accordion",function(g){b._clickHandler.call(b,g,this);g.preventDefault()})},_createIcons:function(){var a=this.options;if(a.icons){c("<span/>").addClass("ui-icon "+a.icons.header).prependTo(this.headers);this.active.find(".ui-icon").toggleClass(a.icons.header).toggleClass(a.icons.headerSelected);this.element.addClass("ui-accordion-icons")}},_destroyIcons:function(){this.headers.children(".ui-icon").remove();this.element.removeClass("ui-accordion-icons")},destroy:function(){var a=this.options;this.element.removeClass("ui-accordion ui-widget ui-helper-reset").removeAttr("role").unbind(".accordion").removeData("accordion");
-this.headers.unbind(".accordion").removeClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-all ui-state-active ui-corner-top").removeAttr("role").removeAttr("aria-expanded").removeAttr("tabIndex");this.headers.find("a").removeAttr("tabIndex");this._destroyIcons();var b=this.headers.next().css("display","").removeAttr("role").removeClass("ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content ui-accordion-content-active");if(a.autoHeight||a.fillHeight)b.css("height",
-"");return this},_setOption:function(a,b){c.Widget.prototype._setOption.apply(this,arguments);a=="active"&&this.activate(b);if(a=="icons"){this._destroyIcons();b&&this._createIcons()}},_keydown:function(a){var b=c.ui.keyCode;if(!(this.options.disabled||a.altKey||a.ctrlKey)){var d=this.headers.length,f=this.headers.index(a.target),g=false;switch(a.keyCode){case b.RIGHT:case b.DOWN:g=this.headers[(f+1)%d];break;case b.LEFT:case b.UP:g=this.headers[(f-1+d)%d];break;case b.SPACE:case b.ENTER:this._clickHandler({target:a.target},
-a.target);a.preventDefault()}if(g){c(a.target).attr("tabIndex","-1");c(g).attr("tabIndex","0");g.focus();return false}return true}},resize:function(){var a=this.options,b;if(a.fillSpace){if(c.browser.msie){var d=this.element.parent().css("overflow");this.element.parent().css("overflow","hidden")}b=this.element.parent().height();c.browser.msie&&this.element.parent().css("overflow",d);this.headers.each(function(){b-=c(this).outerHeight(true)});this.headers.next().each(function(){c(this).height(Math.max(0,
-b-c(this).innerHeight()+c(this).height()))}).css("overflow","auto")}else if(a.autoHeight){b=0;this.headers.next().each(function(){b=Math.max(b,c(this).height())}).height(b)}return this},activate:function(a){this.options.active=a;a=this._findActive(a)[0];this._clickHandler({target:a},a);return this},_findActive:function(a){return a?typeof a=="number"?this.headers.filter(":eq("+a+")"):this.headers.not(this.headers.not(a)):a===false?c([]):this.headers.filter(":eq(0)")},_clickHandler:function(a,b){var d=
-this.options;if(!d.disabled)if(a.target){a=c(a.currentTarget||b);b=a[0]==this.active[0];d.active=d.collapsible&&b?false:c(".ui-accordion-header",this.element).index(a);if(!(this.running||!d.collapsible&&b)){this.active.removeClass("ui-state-active ui-corner-top").addClass("ui-state-default ui-corner-all").find(".ui-icon").removeClass(d.icons.headerSelected).addClass(d.icons.header);if(!b){a.removeClass("ui-state-default ui-corner-all").addClass("ui-state-active ui-corner-top").find(".ui-icon").removeClass(d.icons.header).addClass(d.icons.headerSelected);
-a.next().addClass("ui-accordion-content-active")}e=a.next();f=this.active.next();g={options:d,newHeader:b&&d.collapsible?c([]):a,oldHeader:this.active,newContent:b&&d.collapsible?c([]):e,oldContent:f};d=this.headers.index(this.active[0])>this.headers.index(a[0]);this.active=b?c([]):a;this._toggle(e,f,g,b,d)}}else if(d.collapsible){this.active.removeClass("ui-state-active ui-corner-top").addClass("ui-state-default ui-corner-all").find(".ui-icon").removeClass(d.icons.headerSelected).addClass(d.icons.header);
-this.active.next().addClass("ui-accordion-content-active");var f=this.active.next(),g={options:d,newHeader:c([]),oldHeader:d.active,newContent:c([]),oldContent:f},e=this.active=c([]);this._toggle(e,f,g)}},_toggle:function(a,b,d,f,g){var e=this.options,k=this;this.toShow=a;this.toHide=b;this.data=d;var i=function(){if(k)return k._completed.apply(k,arguments)};this._trigger("changestart",null,this.data);this.running=b.size()===0?a.size():b.size();if(e.animated){d={};d=e.collapsible&&f?{toShow:c([]),
-toHide:b,complete:i,down:g,autoHeight:e.autoHeight||e.fillSpace}:{toShow:a,toHide:b,complete:i,down:g,autoHeight:e.autoHeight||e.fillSpace};if(!e.proxied)e.proxied=e.animated;if(!e.proxiedDuration)e.proxiedDuration=e.duration;e.animated=c.isFunction(e.proxied)?e.proxied(d):e.proxied;e.duration=c.isFunction(e.proxiedDuration)?e.proxiedDuration(d):e.proxiedDuration;f=c.ui.accordion.animations;var h=e.duration,j=e.animated;if(j&&!f[j]&&!c.easing[j])j="slide";f[j]||(f[j]=function(l){this.slide(l,{easing:j,
-duration:h||700})});f[j](d)}else{if(e.collapsible&&f)a.toggle();else{b.hide();a.show()}i(true)}b.prev().attr("aria-expanded","false").attr("tabIndex","-1").blur();a.prev().attr("aria-expanded","true").attr("tabIndex","0").focus()},_completed:function(a){var b=this.options;this.running=a?0:--this.running;if(!this.running){b.clearStyle&&this.toShow.add(this.toHide).css({height:"",overflow:""});this.toHide.removeClass("ui-accordion-content-active");this._trigger("change",null,this.data)}}});c.extend(c.ui.accordion,
-{version:"1.8.1",animations:{slide:function(a,b){a=c.extend({easing:"swing",duration:300},a,b);if(a.toHide.size())if(a.toShow.size()){var d=a.toShow.css("overflow"),f=0,g={},e={},k;b=a.toShow;k=b[0].style.width;b.width(parseInt(b.parent().width(),10)-parseInt(b.css("paddingLeft"),10)-parseInt(b.css("paddingRight"),10)-(parseInt(b.css("borderLeftWidth"),10)||0)-(parseInt(b.css("borderRightWidth"),10)||0));c.each(["height","paddingTop","paddingBottom"],function(i,h){e[h]="hide";i=(""+c.css(a.toShow[0],
-h)).match(/^([\d+-.]+)(.*)$/);g[h]={value:i[1],unit:i[2]||"px"}});a.toShow.css({height:0,overflow:"hidden"}).show();a.toHide.filter(":hidden").each(a.complete).end().filter(":visible").animate(e,{step:function(i,h){if(h.prop=="height")f=h.end-h.start===0?0:(h.now-h.start)/(h.end-h.start);a.toShow[0].style[h.prop]=f*g[h.prop].value+g[h.prop].unit},duration:a.duration,easing:a.easing,complete:function(){a.autoHeight||a.toShow.css("height","");a.toShow.css("width",k);a.toShow.css({overflow:d});a.complete()}})}else a.toHide.animate({height:"hide"},
-a);else a.toShow.animate({height:"show"},a)},bounceslide:function(a){this.slide(a,{easing:a.down?"easeOutBounce":"swing",duration:a.down?1E3:200})}}})})(jQuery);
-;/*
- * jQuery UI Autocomplete 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Autocomplete
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- *	jquery.ui.position.js
- */
-(function(e){e.widget("ui.autocomplete",{options:{minLength:1,delay:300},_create:function(){var a=this,b=this.element[0].ownerDocument;this.element.addClass("ui-autocomplete-input").attr("autocomplete","off").attr({role:"textbox","aria-autocomplete":"list","aria-haspopup":"true"}).bind("keydown.autocomplete",function(c){var d=e.ui.keyCode;switch(c.keyCode){case d.PAGE_UP:a._move("previousPage",c);break;case d.PAGE_DOWN:a._move("nextPage",c);break;case d.UP:a._move("previous",c);c.preventDefault();
-break;case d.DOWN:a._move("next",c);c.preventDefault();break;case d.ENTER:a.menu.active&&c.preventDefault();case d.TAB:if(!a.menu.active)return;a.menu.select(c);break;case d.ESCAPE:a.element.val(a.term);a.close(c);break;case d.LEFT:case d.RIGHT:case d.SHIFT:case d.CONTROL:case d.ALT:break;default:clearTimeout(a.searching);a.searching=setTimeout(function(){a.search(null,c)},a.options.delay);break}}).bind("focus.autocomplete",function(){a.selectedItem=null;a.previous=a.element.val()}).bind("blur.autocomplete",
-function(c){clearTimeout(a.searching);a.closing=setTimeout(function(){a.close(c);a._change(c)},150)});this._initSource();this.response=function(){return a._response.apply(a,arguments)};this.menu=e("<ul></ul>").addClass("ui-autocomplete").appendTo("body",b).menu({focus:function(c,d){d=d.item.data("item.autocomplete");false!==a._trigger("focus",null,{item:d})&&/^key/.test(c.originalEvent.type)&&a.element.val(d.value)},selected:function(c,d){d=d.item.data("item.autocomplete");false!==a._trigger("select",
-c,{item:d})&&a.element.val(d.value);a.close(c);c=a.previous;if(a.element[0]!==b.activeElement){a.element.focus();a.previous=c}a.selectedItem=d},blur:function(){a.menu.element.is(":visible")&&a.element.val(a.term)}}).zIndex(this.element.zIndex()+1).css({top:0,left:0}).hide().data("menu");e.fn.bgiframe&&this.menu.element.bgiframe()},destroy:function(){this.element.removeClass("ui-autocomplete-input").removeAttr("autocomplete").removeAttr("role").removeAttr("aria-autocomplete").removeAttr("aria-haspopup");
-this.menu.element.remove();e.Widget.prototype.destroy.call(this)},_setOption:function(a){e.Widget.prototype._setOption.apply(this,arguments);a==="source"&&this._initSource()},_initSource:function(){var a,b;if(e.isArray(this.options.source)){a=this.options.source;this.source=function(c,d){d(e.ui.autocomplete.filter(a,c.term))}}else if(typeof this.options.source==="string"){b=this.options.source;this.source=function(c,d){e.getJSON(b,c,d)}}else this.source=this.options.source},search:function(a,b){a=
-a!=null?a:this.element.val();if(a.length<this.options.minLength)return this.close(b);clearTimeout(this.closing);if(this._trigger("search")!==false)return this._search(a)},_search:function(a){this.term=this.element.addClass("ui-autocomplete-loading").val();this.source({term:a},this.response)},_response:function(a){if(a.length){a=this._normalize(a);this._suggest(a);this._trigger("open")}else this.close();this.element.removeClass("ui-autocomplete-loading")},close:function(a){clearTimeout(this.closing);
-if(this.menu.element.is(":visible")){this._trigger("close",a);this.menu.element.hide();this.menu.deactivate()}},_change:function(a){this.previous!==this.element.val()&&this._trigger("change",a,{item:this.selectedItem})},_normalize:function(a){if(a.length&&a[0].label&&a[0].value)return a;return e.map(a,function(b){if(typeof b==="string")return{label:b,value:b};return e.extend({label:b.label||b.value,value:b.value||b.label},b)})},_suggest:function(a){var b=this.menu.element.empty().zIndex(this.element.zIndex()+
-1),c;this._renderMenu(b,a);this.menu.deactivate();this.menu.refresh();this.menu.element.show().position({my:"left top",at:"left bottom",of:this.element,collision:"none"});a=b.width("").width();c=this.element.width();b.width(Math.max(a,c))},_renderMenu:function(a,b){var c=this;e.each(b,function(d,f){c._renderItem(a,f)})},_renderItem:function(a,b){return e("<li></li>").data("item.autocomplete",b).append("<a>"+b.label+"</a>").appendTo(a)},_move:function(a,b){if(this.menu.element.is(":visible"))if(this.menu.first()&&
-/^previous/.test(a)||this.menu.last()&&/^next/.test(a)){this.element.val(this.term);this.menu.deactivate()}else this.menu[a](b);else this.search(null,b)},widget:function(){return this.menu.element}});e.extend(e.ui.autocomplete,{escapeRegex:function(a){return a.replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi,"\\$1")},filter:function(a,b){var c=new RegExp(e.ui.autocomplete.escapeRegex(b),"i");return e.grep(a,function(d){return c.test(d.label||d.value||d)})}})})(jQuery);
-(function(e){e.widget("ui.menu",{_create:function(){var a=this;this.element.addClass("ui-menu ui-widget ui-widget-content ui-corner-all").attr({role:"listbox","aria-activedescendant":"ui-active-menuitem"}).click(function(b){if(e(b.target).closest(".ui-menu-item a").length){b.preventDefault();a.select(b)}});this.refresh()},refresh:function(){var a=this;this.element.children("li:not(.ui-menu-item):has(a)").addClass("ui-menu-item").attr("role","menuitem").children("a").addClass("ui-corner-all").attr("tabindex",
--1).mouseenter(function(b){a.activate(b,e(this).parent())}).mouseleave(function(){a.deactivate()})},activate:function(a,b){this.deactivate();if(this.hasScroll()){var c=b.offset().top-this.element.offset().top,d=this.element.attr("scrollTop"),f=this.element.height();if(c<0)this.element.attr("scrollTop",d+c);else c>f&&this.element.attr("scrollTop",d+c-f+b.height())}this.active=b.eq(0).children("a").addClass("ui-state-hover").attr("id","ui-active-menuitem").end();this._trigger("focus",a,{item:b})},deactivate:function(){if(this.active){this.active.children("a").removeClass("ui-state-hover").removeAttr("id");
-this._trigger("blur");this.active=null}},next:function(a){this.move("next",".ui-menu-item:first",a)},previous:function(a){this.move("prev",".ui-menu-item:last",a)},first:function(){return this.active&&!this.active.prev().length},last:function(){return this.active&&!this.active.next().length},move:function(a,b,c){if(this.active){a=this.active[a+"All"](".ui-menu-item").eq(0);a.length?this.activate(c,a):this.activate(c,this.element.children(b))}else this.activate(c,this.element.children(b))},nextPage:function(a){if(this.hasScroll())if(!this.active||
-this.last())this.activate(a,this.element.children(":first"));else{var b=this.active.offset().top,c=this.element.height(),d=this.element.children("li").filter(function(){var f=e(this).offset().top-b-c+e(this).height();return f<10&&f>-10});d.length||(d=this.element.children(":last"));this.activate(a,d)}else this.activate(a,this.element.children(!this.active||this.last()?":first":":last"))},previousPage:function(a){if(this.hasScroll())if(!this.active||this.first())this.activate(a,this.element.children(":last"));
-else{var b=this.active.offset().top,c=this.element.height();result=this.element.children("li").filter(function(){var d=e(this).offset().top-b+c-e(this).height();return d<10&&d>-10});result.length||(result=this.element.children(":first"));this.activate(a,result)}else this.activate(a,this.element.children(!this.active||this.first()?":last":":first"))},hasScroll:function(){return this.element.height()<this.element.attr("scrollHeight")},select:function(a){this._trigger("selected",a,{item:this.active})}})})(jQuery);
-;/*
- * jQuery UI Button 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Button
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- */
-(function(a){var g,i=function(b){a(":ui-button",b.target.form).each(function(){var c=a(this).data("button");setTimeout(function(){c.refresh()},1)})},h=function(b){var c=b.name,d=b.form,e=a([]);if(c)e=d?a(d).find("[name='"+c+"']"):a("[name='"+c+"']",b.ownerDocument).filter(function(){return!this.form});return e};a.widget("ui.button",{options:{text:true,label:null,icons:{primary:null,secondary:null}},_create:function(){this.element.closest("form").unbind("reset.button").bind("reset.button",i);this._determineButtonType();
-this.hasTitle=!!this.buttonElement.attr("title");var b=this,c=this.options,d=this.type==="checkbox"||this.type==="radio",e="ui-state-hover"+(!d?" ui-state-active":"");if(c.label===null)c.label=this.buttonElement.html();if(this.element.is(":disabled"))c.disabled=true;this.buttonElement.addClass("ui-button ui-widget ui-state-default ui-corner-all").attr("role","button").bind("mouseenter.button",function(){if(!c.disabled){a(this).addClass("ui-state-hover");this===g&&a(this).addClass("ui-state-active")}}).bind("mouseleave.button",
-function(){c.disabled||a(this).removeClass(e)}).bind("focus.button",function(){a(this).addClass("ui-state-focus")}).bind("blur.button",function(){a(this).removeClass("ui-state-focus")});d&&this.element.bind("change.button",function(){b.refresh()});if(this.type==="checkbox")this.buttonElement.bind("click.button",function(){if(c.disabled)return false;a(this).toggleClass("ui-state-active");b.buttonElement.attr("aria-pressed",b.element[0].checked)});else if(this.type==="radio")this.buttonElement.bind("click.button",
-function(){if(c.disabled)return false;a(this).addClass("ui-state-active");b.buttonElement.attr("aria-pressed",true);var f=b.element[0];h(f).not(f).map(function(){return a(this).button("widget")[0]}).removeClass("ui-state-active").attr("aria-pressed",false)});else{this.buttonElement.bind("mousedown.button",function(){if(c.disabled)return false;a(this).addClass("ui-state-active");g=this;a(document).one("mouseup",function(){g=null})}).bind("mouseup.button",function(){if(c.disabled)return false;a(this).removeClass("ui-state-active")}).bind("keydown.button",
-function(f){if(c.disabled)return false;if(f.keyCode==a.ui.keyCode.SPACE||f.keyCode==a.ui.keyCode.ENTER)a(this).addClass("ui-state-active")}).bind("keyup.button",function(){a(this).removeClass("ui-state-active")});this.buttonElement.is("a")&&this.buttonElement.keyup(function(f){f.keyCode===a.ui.keyCode.SPACE&&a(this).click()})}this._setOption("disabled",c.disabled)},_determineButtonType:function(){this.type=this.element.is(":checkbox")?"checkbox":this.element.is(":radio")?"radio":this.element.is("input")?
-"input":"button";if(this.type==="checkbox"||this.type==="radio"){this.buttonElement=this.element.parents().last().find("[for="+this.element.attr("id")+"]");this.element.addClass("ui-helper-hidden-accessible");var b=this.element.is(":checked");b&&this.buttonElement.addClass("ui-state-active");this.buttonElement.attr("aria-pressed",b)}else this.buttonElement=this.element},widget:function(){return this.buttonElement},destroy:function(){this.element.removeClass("ui-helper-hidden-accessible");this.buttonElement.removeClass("ui-button ui-widget ui-state-default ui-corner-all ui-state-hover ui-state-active ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon ui-button-text-only").removeAttr("role").removeAttr("aria-pressed").html(this.buttonElement.find(".ui-button-text").html());
-this.hasTitle||this.buttonElement.removeAttr("title");a.Widget.prototype.destroy.call(this)},_setOption:function(b,c){a.Widget.prototype._setOption.apply(this,arguments);if(b==="disabled")c?this.element.attr("disabled",true):this.element.removeAttr("disabled");this._resetButton()},refresh:function(){var b=this.element.is(":disabled");b!==this.options.disabled&&this._setOption("disabled",b);if(this.type==="radio")h(this.element[0]).each(function(){a(this).is(":checked")?a(this).button("widget").addClass("ui-state-active").attr("aria-pressed",
-true):a(this).button("widget").removeClass("ui-state-active").attr("aria-pressed",false)});else if(this.type==="checkbox")this.element.is(":checked")?this.buttonElement.addClass("ui-state-active").attr("aria-pressed",true):this.buttonElement.removeClass("ui-state-active").attr("aria-pressed",false)},_resetButton:function(){if(this.type==="input")this.options.label&&this.element.val(this.options.label);else{var b=this.buttonElement,c=a("<span></span>").addClass("ui-button-text").html(this.options.label).appendTo(b.empty()).text(),
-d=this.options.icons,e=d.primary&&d.secondary;if(d.primary||d.secondary){b.addClass("ui-button-text-icon"+(e?"s":""));d.primary&&b.prepend("<span class='ui-button-icon-primary ui-icon "+d.primary+"'></span>");d.secondary&&b.append("<span class='ui-button-icon-secondary ui-icon "+d.secondary+"'></span>");if(!this.options.text){b.addClass(e?"ui-button-icons-only":"ui-button-icon-only").removeClass("ui-button-text-icons ui-button-text-icon");this.hasTitle||b.attr("title",c)}}else b.addClass("ui-button-text-only")}}});
-a.widget("ui.buttonset",{_create:function(){this.element.addClass("ui-buttonset");this._init()},_init:function(){this.refresh()},_setOption:function(b,c){b==="disabled"&&this.buttons.button("option",b,c);a.Widget.prototype._setOption.apply(this,arguments)},refresh:function(){this.buttons=this.element.find(":button, :submit, :reset, :checkbox, :radio, a, :data(button)").filter(":ui-button").button("refresh").end().not(":ui-button").button().end().map(function(){return a(this).button("widget")[0]}).removeClass("ui-corner-all ui-corner-left ui-corner-right").filter(":first").addClass("ui-corner-left").end().filter(":last").addClass("ui-corner-right").end().end()},
-destroy:function(){this.element.removeClass("ui-buttonset");this.buttons.map(function(){return a(this).button("widget")[0]}).removeClass("ui-corner-left ui-corner-right").end().button("destroy");a.Widget.prototype.destroy.call(this)}})})(jQuery);
-;/*
- * jQuery UI Dialog 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Dialog
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- *  jquery.ui.button.js
- *	jquery.ui.draggable.js
- *	jquery.ui.mouse.js
- *	jquery.ui.position.js
- *	jquery.ui.resizable.js
- */
-(function(c){c.widget("ui.dialog",{options:{autoOpen:true,buttons:{},closeOnEscape:true,closeText:"close",dialogClass:"",draggable:true,hide:null,height:"auto",maxHeight:false,maxWidth:false,minHeight:150,minWidth:150,modal:false,position:"center",resizable:true,show:null,stack:true,title:"",width:300,zIndex:1E3},_create:function(){this.originalTitle=this.element.attr("title");var a=this,b=a.options,d=b.title||a.originalTitle||"&#160;",e=c.ui.dialog.getTitleId(a.element),g=(a.uiDialog=c("<div></div>")).appendTo(document.body).hide().addClass("ui-dialog ui-widget ui-widget-content ui-corner-all "+
-b.dialogClass).css({zIndex:b.zIndex}).attr("tabIndex",-1).css("outline",0).keydown(function(i){if(b.closeOnEscape&&i.keyCode&&i.keyCode===c.ui.keyCode.ESCAPE){a.close(i);i.preventDefault()}}).attr({role:"dialog","aria-labelledby":e}).mousedown(function(i){a.moveToTop(false,i)});a.element.show().removeAttr("title").addClass("ui-dialog-content ui-widget-content").appendTo(g);var f=(a.uiDialogTitlebar=c("<div></div>")).addClass("ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix").prependTo(g),
-h=c('<a href="#"></a>').addClass("ui-dialog-titlebar-close ui-corner-all").attr("role","button").hover(function(){h.addClass("ui-state-hover")},function(){h.removeClass("ui-state-hover")}).focus(function(){h.addClass("ui-state-focus")}).blur(function(){h.removeClass("ui-state-focus")}).click(function(i){a.close(i);return false}).appendTo(f);(a.uiDialogTitlebarCloseText=c("<span></span>")).addClass("ui-icon ui-icon-closethick").text(b.closeText).appendTo(h);c("<span></span>").addClass("ui-dialog-title").attr("id",
-e).html(d).prependTo(f);if(c.isFunction(b.beforeclose)&&!c.isFunction(b.beforeClose))b.beforeClose=b.beforeclose;f.find("*").add(f).disableSelection();b.draggable&&c.fn.draggable&&a._makeDraggable();b.resizable&&c.fn.resizable&&a._makeResizable();a._createButtons(b.buttons);a._isOpen=false;c.fn.bgiframe&&g.bgiframe()},_init:function(){this.options.autoOpen&&this.open()},destroy:function(){var a=this;a.overlay&&a.overlay.destroy();a.uiDialog.hide();a.element.unbind(".dialog").removeData("dialog").removeClass("ui-dialog-content ui-widget-content").hide().appendTo("body");
-a.uiDialog.remove();a.originalTitle&&a.element.attr("title",a.originalTitle);return a},widget:function(){return this.uiDialog},close:function(a){var b=this,d;if(false!==b._trigger("beforeClose",a)){b.overlay&&b.overlay.destroy();b.uiDialog.unbind("keypress.ui-dialog");b._isOpen=false;if(b.options.hide)b.uiDialog.hide(b.options.hide,function(){b._trigger("close",a)});else{b.uiDialog.hide();b._trigger("close",a)}c.ui.dialog.overlay.resize();if(b.options.modal){d=0;c(".ui-dialog").each(function(){if(this!==
-b.uiDialog[0])d=Math.max(d,c(this).css("z-index"))});c.ui.dialog.maxZ=d}return b}},isOpen:function(){return this._isOpen},moveToTop:function(a,b){var d=this,e=d.options;if(e.modal&&!a||!e.stack&&!e.modal)return d._trigger("focus",b);if(e.zIndex>c.ui.dialog.maxZ)c.ui.dialog.maxZ=e.zIndex;if(d.overlay){c.ui.dialog.maxZ+=1;d.overlay.$el.css("z-index",c.ui.dialog.overlay.maxZ=c.ui.dialog.maxZ)}a={scrollTop:d.element.attr("scrollTop"),scrollLeft:d.element.attr("scrollLeft")};c.ui.dialog.maxZ+=1;d.uiDialog.css("z-index",
-c.ui.dialog.maxZ);d.element.attr(a);d._trigger("focus",b);return d},open:function(){if(!this._isOpen){var a=this,b=a.options,d=a.uiDialog;a.overlay=b.modal?new c.ui.dialog.overlay(a):null;d.next().length&&d.appendTo("body");a._size();a._position(b.position);d.show(b.show);a.moveToTop(true);b.modal&&d.bind("keypress.ui-dialog",function(e){if(e.keyCode===c.ui.keyCode.TAB){var g=c(":tabbable",this),f=g.filter(":first");g=g.filter(":last");if(e.target===g[0]&&!e.shiftKey){f.focus(1);return false}else if(e.target===
-f[0]&&e.shiftKey){g.focus(1);return false}}});c([]).add(d.find(".ui-dialog-content :tabbable:first")).add(d.find(".ui-dialog-buttonpane :tabbable:first")).add(d).filter(":first").focus();a._trigger("open");a._isOpen=true;return a}},_createButtons:function(a){var b=this,d=false,e=c("<div></div>").addClass("ui-dialog-buttonpane ui-widget-content ui-helper-clearfix");b.uiDialog.find(".ui-dialog-buttonpane").remove();typeof a==="object"&&a!==null&&c.each(a,function(){return!(d=true)});if(d){c.each(a,
-function(g,f){g=c('<button type="button"></button>').text(g).click(function(){f.apply(b.element[0],arguments)}).appendTo(e);c.fn.button&&g.button()});e.appendTo(b.uiDialog)}},_makeDraggable:function(){function a(f){return{position:f.position,offset:f.offset}}var b=this,d=b.options,e=c(document),g;b.uiDialog.draggable({cancel:".ui-dialog-content, .ui-dialog-titlebar-close",handle:".ui-dialog-titlebar",containment:"document",start:function(f,h){g=d.height==="auto"?"auto":c(this).height();c(this).height(c(this).height()).addClass("ui-dialog-dragging");
-b._trigger("dragStart",f,a(h))},drag:function(f,h){b._trigger("drag",f,a(h))},stop:function(f,h){d.position=[h.position.left-e.scrollLeft(),h.position.top-e.scrollTop()];c(this).removeClass("ui-dialog-dragging").height(g);b._trigger("dragStop",f,a(h));c.ui.dialog.overlay.resize()}})},_makeResizable:function(a){function b(f){return{originalPosition:f.originalPosition,originalSize:f.originalSize,position:f.position,size:f.size}}a=a===undefined?this.options.resizable:a;var d=this,e=d.options,g=d.uiDialog.css("position");
-a=typeof a==="string"?a:"n,e,s,w,se,sw,ne,nw";d.uiDialog.resizable({cancel:".ui-dialog-content",containment:"document",alsoResize:d.element,maxWidth:e.maxWidth,maxHeight:e.maxHeight,minWidth:e.minWidth,minHeight:d._minHeight(),handles:a,start:function(f,h){c(this).addClass("ui-dialog-resizing");d._trigger("resizeStart",f,b(h))},resize:function(f,h){d._trigger("resize",f,b(h))},stop:function(f,h){c(this).removeClass("ui-dialog-resizing");e.height=c(this).height();e.width=c(this).width();d._trigger("resizeStop",
-f,b(h));c.ui.dialog.overlay.resize()}}).css("position",g).find(".ui-resizable-se").addClass("ui-icon ui-icon-grip-diagonal-se")},_minHeight:function(){var a=this.options;return a.height==="auto"?a.minHeight:Math.min(a.minHeight,a.height)},_position:function(a){var b=[],d=[0,0];a=a||c.ui.dialog.prototype.options.position;if(typeof a==="string"||typeof a==="object"&&"0"in a){b=a.split?a.split(" "):[a[0],a[1]];if(b.length===1)b[1]=b[0];c.each(["left","top"],function(e,g){if(+b[e]===b[e]){d[e]=b[e];b[e]=
-g}})}else if(typeof a==="object"){if("left"in a){b[0]="left";d[0]=a.left}else if("right"in a){b[0]="right";d[0]=-a.right}if("top"in a){b[1]="top";d[1]=a.top}else if("bottom"in a){b[1]="bottom";d[1]=-a.bottom}}(a=this.uiDialog.is(":visible"))||this.uiDialog.show();this.uiDialog.css({top:0,left:0}).position({my:b.join(" "),at:b.join(" "),offset:d.join(" "),of:window,collision:"fit",using:function(e){var g=c(this).css(e).offset().top;g<0&&c(this).css("top",e.top-g)}});a||this.uiDialog.hide()},_setOption:function(a,
-b){var d=this,e=d.uiDialog,g=e.is(":data(resizable)"),f=false;switch(a){case "beforeclose":a="beforeClose";break;case "buttons":d._createButtons(b);break;case "closeText":d.uiDialogTitlebarCloseText.text(""+b);break;case "dialogClass":e.removeClass(d.options.dialogClass).addClass("ui-dialog ui-widget ui-widget-content ui-corner-all "+b);break;case "disabled":b?e.addClass("ui-dialog-disabled"):e.removeClass("ui-dialog-disabled");break;case "draggable":b?d._makeDraggable():e.draggable("destroy");break;
-case "height":f=true;break;case "maxHeight":g&&e.resizable("option","maxHeight",b);f=true;break;case "maxWidth":g&&e.resizable("option","maxWidth",b);f=true;break;case "minHeight":g&&e.resizable("option","minHeight",b);f=true;break;case "minWidth":g&&e.resizable("option","minWidth",b);f=true;break;case "position":d._position(b);break;case "resizable":g&&!b&&e.resizable("destroy");g&&typeof b==="string"&&e.resizable("option","handles",b);!g&&b!==false&&d._makeResizable(b);break;case "title":c(".ui-dialog-title",
-d.uiDialogTitlebar).html(""+(b||"&#160;"));break;case "width":f=true;break}c.Widget.prototype._setOption.apply(d,arguments);f&&d._size()},_size:function(){var a=this.options,b;this.element.css({width:"auto",minHeight:0,height:0});b=this.uiDialog.css({height:"auto",width:a.width}).height();this.element.css(a.height==="auto"?{minHeight:Math.max(a.minHeight-b,0),height:"auto"}:{minHeight:0,height:Math.max(a.height-b,0)}).show();this.uiDialog.is(":data(resizable)")&&this.uiDialog.resizable("option","minHeight",
-this._minHeight())}});c.extend(c.ui.dialog,{version:"1.8.1",uuid:0,maxZ:0,getTitleId:function(a){a=a.attr("id");if(!a){this.uuid+=1;a=this.uuid}return"ui-dialog-title-"+a},overlay:function(a){this.$el=c.ui.dialog.overlay.create(a)}});c.extend(c.ui.dialog.overlay,{instances:[],oldInstances:[],maxZ:0,events:c.map("focus,mousedown,mouseup,keydown,keypress,click".split(","),function(a){return a+".dialog-overlay"}).join(" "),create:function(a){if(this.instances.length===0){setTimeout(function(){c.ui.dialog.overlay.instances.length&&
-c(document).bind(c.ui.dialog.overlay.events,function(d){return c(d.target).zIndex()>=c.ui.dialog.overlay.maxZ})},1);c(document).bind("keydown.dialog-overlay",function(d){if(a.options.closeOnEscape&&d.keyCode&&d.keyCode===c.ui.keyCode.ESCAPE){a.close(d);d.preventDefault()}});c(window).bind("resize.dialog-overlay",c.ui.dialog.overlay.resize)}var b=(this.oldInstances.pop()||c("<div></div>").addClass("ui-widget-overlay")).appendTo(document.body).css({width:this.width(),height:this.height()});c.fn.bgiframe&&
-b.bgiframe();this.instances.push(b);return b},destroy:function(a){this.oldInstances.push(this.instances.splice(c.inArray(a,this.instances),1)[0]);this.instances.length===0&&c([document,window]).unbind(".dialog-overlay");a.remove();var b=0;c.each(this.instances,function(){b=Math.max(b,this.css("z-index"))});this.maxZ=b},height:function(){var a,b;if(c.browser.msie&&c.browser.version<7){a=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);b=Math.max(document.documentElement.offsetHeight,
-document.body.offsetHeight);return a<b?c(window).height()+"px":a+"px"}else return c(document).height()+"px"},width:function(){var a,b;if(c.browser.msie&&c.browser.version<7){a=Math.max(document.documentElement.scrollWidth,document.body.scrollWidth);b=Math.max(document.documentElement.offsetWidth,document.body.offsetWidth);return a<b?c(window).width()+"px":a+"px"}else return c(document).width()+"px"},resize:function(){var a=c([]);c.each(c.ui.dialog.overlay.instances,function(){a=a.add(this)});a.css({width:0,
-height:0}).css({width:c.ui.dialog.overlay.width(),height:c.ui.dialog.overlay.height()})}});c.extend(c.ui.dialog.overlay.prototype,{destroy:function(){c.ui.dialog.overlay.destroy(this.$el)}})})(jQuery);
-;/*
- * jQuery UI Slider 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Slider
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
- */
-(function(d){d.widget("ui.slider",d.ui.mouse,{widgetEventPrefix:"slide",options:{animate:false,distance:0,max:100,min:0,orientation:"horizontal",range:false,step:1,value:0,values:null},_create:function(){var b=this,a=this.options;this._mouseSliding=this._keySliding=false;this._animateOff=true;this._handleIndex=null;this._detectOrientation();this._mouseInit();this.element.addClass("ui-slider ui-slider-"+this.orientation+" ui-widget ui-widget-content ui-corner-all");a.disabled&&this.element.addClass("ui-slider-disabled ui-disabled");
-this.range=d([]);if(a.range){if(a.range===true){this.range=d("<div></div>");if(!a.values)a.values=[this._valueMin(),this._valueMin()];if(a.values.length&&a.values.length!==2)a.values=[a.values[0],a.values[0]]}else this.range=d("<div></div>");this.range.appendTo(this.element).addClass("ui-slider-range");if(a.range==="min"||a.range==="max")this.range.addClass("ui-slider-range-"+a.range);this.range.addClass("ui-widget-header")}d(".ui-slider-handle",this.element).length===0&&d("<a href='#'></a>").appendTo(this.element).addClass("ui-slider-handle");
-if(a.values&&a.values.length)for(;d(".ui-slider-handle",this.element).length<a.values.length;)d("<a href='#'></a>").appendTo(this.element).addClass("ui-slider-handle");this.handles=d(".ui-slider-handle",this.element).addClass("ui-state-default ui-corner-all");this.handle=this.handles.eq(0);this.handles.add(this.range).filter("a").click(function(c){c.preventDefault()}).hover(function(){a.disabled||d(this).addClass("ui-state-hover")},function(){d(this).removeClass("ui-state-hover")}).focus(function(){if(a.disabled)d(this).blur();
-else{d(".ui-slider .ui-state-focus").removeClass("ui-state-focus");d(this).addClass("ui-state-focus")}}).blur(function(){d(this).removeClass("ui-state-focus")});this.handles.each(function(c){d(this).data("index.ui-slider-handle",c)});this.handles.keydown(function(c){var e=true,f=d(this).data("index.ui-slider-handle"),g,h,i;if(!b.options.disabled){switch(c.keyCode){case d.ui.keyCode.HOME:case d.ui.keyCode.END:case d.ui.keyCode.PAGE_UP:case d.ui.keyCode.PAGE_DOWN:case d.ui.keyCode.UP:case d.ui.keyCode.RIGHT:case d.ui.keyCode.DOWN:case d.ui.keyCode.LEFT:e=
-false;if(!b._keySliding){b._keySliding=true;d(this).addClass("ui-state-active");g=b._start(c,f);if(g===false)return}break}i=b.options.step;g=b.options.values&&b.options.values.length?(h=b.values(f)):(h=b.value());switch(c.keyCode){case d.ui.keyCode.HOME:h=b._valueMin();break;case d.ui.keyCode.END:h=b._valueMax();break;case d.ui.keyCode.PAGE_UP:h=g+(b._valueMax()-b._valueMin())/5;break;case d.ui.keyCode.PAGE_DOWN:h=g-(b._valueMax()-b._valueMin())/5;break;case d.ui.keyCode.UP:case d.ui.keyCode.RIGHT:if(g===
-b._valueMax())return;h=g+i;break;case d.ui.keyCode.DOWN:case d.ui.keyCode.LEFT:if(g===b._valueMin())return;h=g-i;break}b._slide(c,f,h);return e}}).keyup(function(c){var e=d(this).data("index.ui-slider-handle");if(b._keySliding){b._keySliding=false;b._stop(c,e);b._change(c,e);d(this).removeClass("ui-state-active")}});this._refreshValue();this._animateOff=false},destroy:function(){this.handles.remove();this.range.remove();this.element.removeClass("ui-slider ui-slider-horizontal ui-slider-vertical ui-slider-disabled ui-widget ui-widget-content ui-corner-all").removeData("slider").unbind(".slider");
-this._mouseDestroy();return this},_mouseCapture:function(b){var a=this.options,c,e,f,g,h,i;if(a.disabled)return false;this.elementSize={width:this.element.outerWidth(),height:this.element.outerHeight()};this.elementOffset=this.element.offset();c={x:b.pageX,y:b.pageY};e=this._normValueFromMouse(c);f=this._valueMax()-this._valueMin()+1;h=this;this.handles.each(function(j){var k=Math.abs(e-h.values(j));if(f>k){f=k;g=d(this);i=j}});if(a.range===true&&this.values(1)===a.min){i+=1;g=d(this.handles[i])}if(this._start(b,
-i)===false)return false;this._mouseSliding=true;h._handleIndex=i;g.addClass("ui-state-active").focus();a=g.offset();this._clickOffset=!d(b.target).parents().andSelf().is(".ui-slider-handle")?{left:0,top:0}:{left:b.pageX-a.left-g.width()/2,top:b.pageY-a.top-g.height()/2-(parseInt(g.css("borderTopWidth"),10)||0)-(parseInt(g.css("borderBottomWidth"),10)||0)+(parseInt(g.css("marginTop"),10)||0)};e=this._normValueFromMouse(c);this._slide(b,i,e);return this._animateOff=true},_mouseStart:function(){return true},
-_mouseDrag:function(b){var a=this._normValueFromMouse({x:b.pageX,y:b.pageY});this._slide(b,this._handleIndex,a);return false},_mouseStop:function(b){this.handles.removeClass("ui-state-active");this._mouseSliding=false;this._stop(b,this._handleIndex);this._change(b,this._handleIndex);this._clickOffset=this._handleIndex=null;return this._animateOff=false},_detectOrientation:function(){this.orientation=this.options.orientation==="vertical"?"vertical":"horizontal"},_normValueFromMouse:function(b){var a;
-if(this.orientation==="horizontal"){a=this.elementSize.width;b=b.x-this.elementOffset.left-(this._clickOffset?this._clickOffset.left:0)}else{a=this.elementSize.height;b=b.y-this.elementOffset.top-(this._clickOffset?this._clickOffset.top:0)}a=b/a;if(a>1)a=1;if(a<0)a=0;if(this.orientation==="vertical")a=1-a;b=this._valueMax()-this._valueMin();return this._trimAlignValue(this._valueMin()+a*b)},_start:function(b,a){var c={handle:this.handles[a],value:this.value()};if(this.options.values&&this.options.values.length){c.value=
-this.values(a);c.values=this.values()}return this._trigger("start",b,c)},_slide:function(b,a,c){var e;if(this.options.values&&this.options.values.length){e=this.values(a?0:1);if(this.options.values.length===2&&this.options.range===true&&(a===0&&c>e||a===1&&c<e))c=e;if(c!==this.values(a)){e=this.values();e[a]=c;b=this._trigger("slide",b,{handle:this.handles[a],value:c,values:e});this.values(a?0:1);b!==false&&this.values(a,c,true)}}else if(c!==this.value()){b=this._trigger("slide",b,{handle:this.handles[a],
-value:c});b!==false&&this.value(c)}},_stop:function(b,a){var c={handle:this.handles[a],value:this.value()};if(this.options.values&&this.options.values.length){c.value=this.values(a);c.values=this.values()}this._trigger("stop",b,c)},_change:function(b,a){if(!this._keySliding&&!this._mouseSliding){var c={handle:this.handles[a],value:this.value()};if(this.options.values&&this.options.values.length){c.value=this.values(a);c.values=this.values()}this._trigger("change",b,c)}},value:function(b){if(arguments.length){this.options.value=
-this._trimAlignValue(b);this._refreshValue();this._change(null,0)}return this._value()},values:function(b,a){var c,e,f;if(arguments.length>1){this.options.values[b]=this._trimAlignValue(a);this._refreshValue();this._change(null,b)}if(arguments.length)if(d.isArray(arguments[0])){c=this.options.values;e=arguments[0];for(f=0;f<c.length;f+=1){c[f]=this._trimAlignValue(e[f]);this._change(null,f)}this._refreshValue()}else return this.options.values&&this.options.values.length?this._values(b):this.value();
-else return this._values()},_setOption:function(b,a){var c,e=0;if(d.isArray(this.options.values))e=this.options.values.length;d.Widget.prototype._setOption.apply(this,arguments);switch(b){case "disabled":if(a){this.handles.filter(".ui-state-focus").blur();this.handles.removeClass("ui-state-hover");this.handles.attr("disabled","disabled");this.element.addClass("ui-disabled")}else{this.handles.removeAttr("disabled");this.element.removeClass("ui-disabled")}break;case "orientation":this._detectOrientation();
-this.element.removeClass("ui-slider-horizontal ui-slider-vertical").addClass("ui-slider-"+this.orientation);this._refreshValue();break;case "value":this._animateOff=true;this._refreshValue();this._change(null,0);this._animateOff=false;break;case "values":this._animateOff=true;this._refreshValue();for(c=0;c<e;c+=1)this._change(null,c);this._animateOff=false;break}},_value:function(){var b=this.options.value;return b=this._trimAlignValue(b)},_values:function(b){var a,c;if(arguments.length){a=this.options.values[b];
-return a=this._trimAlignValue(a)}else{a=this.options.values.slice();for(c=0;c<a.length;c+=1)a[c]=this._trimAlignValue(a[c]);return a}},_trimAlignValue:function(b){if(b<this._valueMin())return this._valueMin();if(b>this._valueMax())return this._valueMax();var a=this.options.step,c=b%a;b=b-c;if(c>=a/2)b+=a;return parseFloat(b.toFixed(5))},_valueMin:function(){return this.options.min},_valueMax:function(){return this.options.max},_refreshValue:function(){var b=this.options.range,a=this.options,c=this,
-e=!this._animateOff?a.animate:false,f,g={},h,i,j,k;if(this.options.values&&this.options.values.length)this.handles.each(function(l){f=(c.values(l)-c._valueMin())/(c._valueMax()-c._valueMin())*100;g[c.orientation==="horizontal"?"left":"bottom"]=f+"%";d(this).stop(1,1)[e?"animate":"css"](g,a.animate);if(c.options.range===true)if(c.orientation==="horizontal"){if(l===0)c.range.stop(1,1)[e?"animate":"css"]({left:f+"%"},a.animate);if(l===1)c.range[e?"animate":"css"]({width:f-h+"%"},{queue:false,duration:a.animate})}else{if(l===
-0)c.range.stop(1,1)[e?"animate":"css"]({bottom:f+"%"},a.animate);if(l===1)c.range[e?"animate":"css"]({height:f-h+"%"},{queue:false,duration:a.animate})}h=f});else{i=this.value();j=this._valueMin();k=this._valueMax();f=k!==j?(i-j)/(k-j)*100:0;g[c.orientation==="horizontal"?"left":"bottom"]=f+"%";this.handle.stop(1,1)[e?"animate":"css"](g,a.animate);if(b==="min"&&this.orientation==="horizontal")this.range.stop(1,1)[e?"animate":"css"]({width:f+"%"},a.animate);if(b==="max"&&this.orientation==="horizontal")this.range[e?
-"animate":"css"]({width:100-f+"%"},{queue:false,duration:a.animate});if(b==="min"&&this.orientation==="vertical")this.range.stop(1,1)[e?"animate":"css"]({height:f+"%"},a.animate);if(b==="max"&&this.orientation==="vertical")this.range[e?"animate":"css"]({height:100-f+"%"},{queue:false,duration:a.animate})}}});d.extend(d.ui.slider,{version:"1.8.1"})})(jQuery);
-;/*
- * jQuery UI Tabs 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Tabs
- *
- * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- */
-(function(d){var s=0,u=0;d.widget("ui.tabs",{options:{add:null,ajaxOptions:null,cache:false,cookie:null,collapsible:false,disable:null,disabled:[],enable:null,event:"click",fx:null,idPrefix:"ui-tabs-",load:null,panelTemplate:"<div></div>",remove:null,select:null,show:null,spinner:"<em>Loading&#8230;</em>",tabTemplate:'<li><a href="#{href}"><span>#{label}</span></a></li>'},_create:function(){this._tabify(true)},_setOption:function(c,e){if(c=="selected")this.options.collapsible&&e==this.options.selected||
-this.select(e);else{this.options[c]=e;this._tabify()}},_tabId:function(c){return c.title&&c.title.replace(/\s/g,"_").replace(/[^A-Za-z0-9\-_:\.]/g,"")||this.options.idPrefix+ ++s},_sanitizeSelector:function(c){return c.replace(/:/g,"\\:")},_cookie:function(){var c=this.cookie||(this.cookie=this.options.cookie.name||"ui-tabs-"+ ++u);return d.cookie.apply(null,[c].concat(d.makeArray(arguments)))},_ui:function(c,e){return{tab:c,panel:e,index:this.anchors.index(c)}},_cleanup:function(){this.lis.filter(".ui-state-processing").removeClass("ui-state-processing").find("span:data(label.tabs)").each(function(){var c=
-d(this);c.html(c.data("label.tabs")).removeData("label.tabs")})},_tabify:function(c){function e(g,f){g.css({display:""});!d.support.opacity&&f.opacity&&g[0].style.removeAttribute("filter")}this.list=this.element.find("ol,ul").eq(0);this.lis=d("li:has(a[href])",this.list);this.anchors=this.lis.map(function(){return d("a",this)[0]});this.panels=d([]);var a=this,b=this.options,h=/^#.+/;this.anchors.each(function(g,f){var j=d(f).attr("href"),l=j.split("#")[0],p;if(l&&(l===location.toString().split("#")[0]||
-(p=d("base")[0])&&l===p.href)){j=f.hash;f.href=j}if(h.test(j))a.panels=a.panels.add(a._sanitizeSelector(j));else if(j!="#"){d.data(f,"href.tabs",j);d.data(f,"load.tabs",j.replace(/#.*$/,""));j=a._tabId(f);f.href="#"+j;f=d("#"+j);if(!f.length){f=d(b.panelTemplate).attr("id",j).addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").insertAfter(a.panels[g-1]||a.list);f.data("destroy.tabs",true)}a.panels=a.panels.add(f)}else b.disabled.push(g)});if(c){this.element.addClass("ui-tabs ui-widget ui-widget-content ui-corner-all");
-this.list.addClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all");this.lis.addClass("ui-state-default ui-corner-top");this.panels.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom");if(b.selected===undefined){location.hash&&this.anchors.each(function(g,f){if(f.hash==location.hash){b.selected=g;return false}});if(typeof b.selected!="number"&&b.cookie)b.selected=parseInt(a._cookie(),10);if(typeof b.selected!="number"&&this.lis.filter(".ui-tabs-selected").length)b.selected=
-this.lis.index(this.lis.filter(".ui-tabs-selected"));b.selected=b.selected||(this.lis.length?0:-1)}else if(b.selected===null)b.selected=-1;b.selected=b.selected>=0&&this.anchors[b.selected]||b.selected<0?b.selected:0;b.disabled=d.unique(b.disabled.concat(d.map(this.lis.filter(".ui-state-disabled"),function(g){return a.lis.index(g)}))).sort();d.inArray(b.selected,b.disabled)!=-1&&b.disabled.splice(d.inArray(b.selected,b.disabled),1);this.panels.addClass("ui-tabs-hide");this.lis.removeClass("ui-tabs-selected ui-state-active");
-if(b.selected>=0&&this.anchors.length){this.panels.eq(b.selected).removeClass("ui-tabs-hide");this.lis.eq(b.selected).addClass("ui-tabs-selected ui-state-active");a.element.queue("tabs",function(){a._trigger("show",null,a._ui(a.anchors[b.selected],a.panels[b.selected]))});this.load(b.selected)}d(window).bind("unload",function(){a.lis.add(a.anchors).unbind(".tabs");a.lis=a.anchors=a.panels=null})}else b.selected=this.lis.index(this.lis.filter(".ui-tabs-selected"));this.element[b.collapsible?"addClass":
-"removeClass"]("ui-tabs-collapsible");b.cookie&&this._cookie(b.selected,b.cookie);c=0;for(var i;i=this.lis[c];c++)d(i)[d.inArray(c,b.disabled)!=-1&&!d(i).hasClass("ui-tabs-selected")?"addClass":"removeClass"]("ui-state-disabled");b.cache===false&&this.anchors.removeData("cache.tabs");this.lis.add(this.anchors).unbind(".tabs");if(b.event!="mouseover"){var k=function(g,f){f.is(":not(.ui-state-disabled)")&&f.addClass("ui-state-"+g)},n=function(g,f){f.removeClass("ui-state-"+g)};this.lis.bind("mouseover.tabs",
-function(){k("hover",d(this))});this.lis.bind("mouseout.tabs",function(){n("hover",d(this))});this.anchors.bind("focus.tabs",function(){k("focus",d(this).closest("li"))});this.anchors.bind("blur.tabs",function(){n("focus",d(this).closest("li"))})}var m,o;if(b.fx)if(d.isArray(b.fx)){m=b.fx[0];o=b.fx[1]}else m=o=b.fx;var q=o?function(g,f){d(g).closest("li").addClass("ui-tabs-selected ui-state-active");f.hide().removeClass("ui-tabs-hide").animate(o,o.duration||"normal",function(){e(f,o);a._trigger("show",
-null,a._ui(g,f[0]))})}:function(g,f){d(g).closest("li").addClass("ui-tabs-selected ui-state-active");f.removeClass("ui-tabs-hide");a._trigger("show",null,a._ui(g,f[0]))},r=m?function(g,f){f.animate(m,m.duration||"normal",function(){a.lis.removeClass("ui-tabs-selected ui-state-active");f.addClass("ui-tabs-hide");e(f,m);a.element.dequeue("tabs")})}:function(g,f){a.lis.removeClass("ui-tabs-selected ui-state-active");f.addClass("ui-tabs-hide");a.element.dequeue("tabs")};this.anchors.bind(b.event+".tabs",
-function(){var g=this,f=d(this).closest("li"),j=a.panels.filter(":not(.ui-tabs-hide)"),l=d(a._sanitizeSelector(this.hash));if(f.hasClass("ui-tabs-selected")&&!b.collapsible||f.hasClass("ui-state-disabled")||f.hasClass("ui-state-processing")||a._trigger("select",null,a._ui(this,l[0]))===false){this.blur();return false}b.selected=a.anchors.index(this);a.abort();if(b.collapsible)if(f.hasClass("ui-tabs-selected")){b.selected=-1;b.cookie&&a._cookie(b.selected,b.cookie);a.element.queue("tabs",function(){r(g,
-j)}).dequeue("tabs");this.blur();return false}else if(!j.length){b.cookie&&a._cookie(b.selected,b.cookie);a.element.queue("tabs",function(){q(g,l)});a.load(a.anchors.index(this));this.blur();return false}b.cookie&&a._cookie(b.selected,b.cookie);if(l.length){j.length&&a.element.queue("tabs",function(){r(g,j)});a.element.queue("tabs",function(){q(g,l)});a.load(a.anchors.index(this))}else throw"jQuery UI Tabs: Mismatching fragment identifier.";d.browser.msie&&this.blur()});this.anchors.bind("click.tabs",
-function(){return false})},destroy:function(){var c=this.options;this.abort();this.element.unbind(".tabs").removeClass("ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-collapsible").removeData("tabs");this.list.removeClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all");this.anchors.each(function(){var e=d.data(this,"href.tabs");if(e)this.href=e;var a=d(this).unbind(".tabs");d.each(["href","load","cache"],function(b,h){a.removeData(h+".tabs")})});this.lis.unbind(".tabs").add(this.panels).each(function(){d.data(this,
-"destroy.tabs")?d(this).remove():d(this).removeClass("ui-state-default ui-corner-top ui-tabs-selected ui-state-active ui-state-hover ui-state-focus ui-state-disabled ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide")});c.cookie&&this._cookie(null,c.cookie);return this},add:function(c,e,a){if(a===undefined)a=this.anchors.length;var b=this,h=this.options;e=d(h.tabTemplate.replace(/#\{href\}/g,c).replace(/#\{label\}/g,e));c=!c.indexOf("#")?c.replace("#",""):this._tabId(d("a",e)[0]);e.addClass("ui-state-default ui-corner-top").data("destroy.tabs",
-true);var i=d("#"+c);i.length||(i=d(h.panelTemplate).attr("id",c).data("destroy.tabs",true));i.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide");if(a>=this.lis.length){e.appendTo(this.list);i.appendTo(this.list[0].parentNode)}else{e.insertBefore(this.lis[a]);i.insertBefore(this.panels[a])}h.disabled=d.map(h.disabled,function(k){return k>=a?++k:k});this._tabify();if(this.anchors.length==1){h.selected=0;e.addClass("ui-tabs-selected ui-state-active");i.removeClass("ui-tabs-hide");
-this.element.queue("tabs",function(){b._trigger("show",null,b._ui(b.anchors[0],b.panels[0]))});this.load(0)}this._trigger("add",null,this._ui(this.anchors[a],this.panels[a]));return this},remove:function(c){var e=this.options,a=this.lis.eq(c).remove(),b=this.panels.eq(c).remove();if(a.hasClass("ui-tabs-selected")&&this.anchors.length>1)this.select(c+(c+1<this.anchors.length?1:-1));e.disabled=d.map(d.grep(e.disabled,function(h){return h!=c}),function(h){return h>=c?--h:h});this._tabify();this._trigger("remove",
-null,this._ui(a.find("a")[0],b[0]));return this},enable:function(c){var e=this.options;if(d.inArray(c,e.disabled)!=-1){this.lis.eq(c).removeClass("ui-state-disabled");e.disabled=d.grep(e.disabled,function(a){return a!=c});this._trigger("enable",null,this._ui(this.anchors[c],this.panels[c]));return this}},disable:function(c){var e=this.options;if(c!=e.selected){this.lis.eq(c).addClass("ui-state-disabled");e.disabled.push(c);e.disabled.sort();this._trigger("disable",null,this._ui(this.anchors[c],this.panels[c]))}return this},
-select:function(c){if(typeof c=="string")c=this.anchors.index(this.anchors.filter("[href$="+c+"]"));else if(c===null)c=-1;if(c==-1&&this.options.collapsible)c=this.options.selected;this.anchors.eq(c).trigger(this.options.event+".tabs");return this},load:function(c){var e=this,a=this.options,b=this.anchors.eq(c)[0],h=d.data(b,"load.tabs");this.abort();if(!h||this.element.queue("tabs").length!==0&&d.data(b,"cache.tabs"))this.element.dequeue("tabs");else{this.lis.eq(c).addClass("ui-state-processing");
-if(a.spinner){var i=d("span",b);i.data("label.tabs",i.html()).html(a.spinner)}this.xhr=d.ajax(d.extend({},a.ajaxOptions,{url:h,success:function(k,n){d(e._sanitizeSelector(b.hash)).html(k);e._cleanup();a.cache&&d.data(b,"cache.tabs",true);e._trigger("load",null,e._ui(e.anchors[c],e.panels[c]));try{a.ajaxOptions.success(k,n)}catch(m){}},error:function(k,n){e._cleanup();e._trigger("load",null,e._ui(e.anchors[c],e.panels[c]));try{a.ajaxOptions.error(k,n,c,b)}catch(m){}}}));e.element.dequeue("tabs");return this}},
-abort:function(){this.element.queue([]);this.panels.stop(false,true);this.element.queue("tabs",this.element.queue("tabs").splice(-2,2));if(this.xhr){this.xhr.abort();delete this.xhr}this._cleanup();return this},url:function(c,e){this.anchors.eq(c).removeData("cache.tabs").data("load.tabs",e);return this},length:function(){return this.anchors.length}});d.extend(d.ui.tabs,{version:"1.8.1"});d.extend(d.ui.tabs.prototype,{rotation:null,rotate:function(c,e){var a=this,b=this.options,h=a._rotate||(a._rotate=
-function(i){clearTimeout(a.rotation);a.rotation=setTimeout(function(){var k=b.selected;a.select(++k<a.anchors.length?k:0)},c);i&&i.stopPropagation()});e=a._unrotate||(a._unrotate=!e?function(i){i.clientX&&a.rotate(null)}:function(){t=b.selected;h()});if(c){this.element.bind("tabsshow",h);this.anchors.bind(b.event+".tabs",e);h()}else{clearTimeout(a.rotation);this.element.unbind("tabsshow",h);this.anchors.unbind(b.event+".tabs",e);delete this._rotate;delete this._unrotate}return this}})})(jQuery);
-;/*
- * jQuery UI Datepicker 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Datepicker
- *
- * Depends:
- *	jquery.ui.core.js
- */
-(function(d){function J(){this.debug=false;this._curInst=null;this._keyEvent=false;this._disabledInputs=[];this._inDialog=this._datepickerShowing=false;this._mainDivId="ui-datepicker-div";this._inlineClass="ui-datepicker-inline";this._appendClass="ui-datepicker-append";this._triggerClass="ui-datepicker-trigger";this._dialogClass="ui-datepicker-dialog";this._disableClass="ui-datepicker-disabled";this._unselectableClass="ui-datepicker-unselectable";this._currentClass="ui-datepicker-current-day";this._dayOverClass=
-"ui-datepicker-days-cell-over";this.regional=[];this.regional[""]={closeText:"Done",prevText:"Prev",nextText:"Next",currentText:"Today",monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],dayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],dayNamesShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],dayNamesMin:["Su",
-"Mo","Tu","We","Th","Fr","Sa"],weekHeader:"Wk",dateFormat:"mm/dd/yy",firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:""};this._defaults={showOn:"focus",showAnim:"show",showOptions:{},defaultDate:null,appendText:"",buttonText:"...",buttonImage:"",buttonImageOnly:false,hideIfNoPrevNext:false,navigationAsDateFormat:false,gotoCurrent:false,changeMonth:false,changeYear:false,yearRange:"c-10:c+10",showOtherMonths:false,selectOtherMonths:false,showWeek:false,calculateWeek:this.iso8601Week,shortYearCutoff:"+10",
-minDate:null,maxDate:null,duration:"_default",beforeShowDay:null,beforeShow:null,onSelect:null,onChangeMonthYear:null,onClose:null,numberOfMonths:1,showCurrentAtPos:0,stepMonths:1,stepBigMonths:12,altField:"",altFormat:"",constrainInput:true,showButtonPanel:false,autoSize:false};d.extend(this._defaults,this.regional[""]);this.dpDiv=d('<div id="'+this._mainDivId+'" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div>')}function E(a,b){d.extend(a,
-b);for(var c in b)if(b[c]==null||b[c]==undefined)a[c]=b[c];return a}d.extend(d.ui,{datepicker:{version:"1.8.1"}});var y=(new Date).getTime();d.extend(J.prototype,{markerClassName:"hasDatepicker",log:function(){this.debug&&console.log.apply("",arguments)},_widgetDatepicker:function(){return this.dpDiv},setDefaults:function(a){E(this._defaults,a||{});return this},_attachDatepicker:function(a,b){var c=null;for(var e in this._defaults){var f=a.getAttribute("date:"+e);if(f){c=c||{};try{c[e]=eval(f)}catch(h){c[e]=
-f}}}e=a.nodeName.toLowerCase();f=e=="div"||e=="span";if(!a.id)a.id="dp"+ ++this.uuid;var i=this._newInst(d(a),f);i.settings=d.extend({},b||{},c||{});if(e=="input")this._connectDatepicker(a,i);else f&&this._inlineDatepicker(a,i)},_newInst:function(a,b){return{id:a[0].id.replace(/([^A-Za-z0-9_])/g,"\\\\$1"),input:a,selectedDay:0,selectedMonth:0,selectedYear:0,drawMonth:0,drawYear:0,inline:b,dpDiv:!b?this.dpDiv:d('<div class="'+this._inlineClass+' ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div>')}},
-_connectDatepicker:function(a,b){var c=d(a);b.append=d([]);b.trigger=d([]);if(!c.hasClass(this.markerClassName)){this._attachments(c,b);c.addClass(this.markerClassName).keydown(this._doKeyDown).keypress(this._doKeyPress).keyup(this._doKeyUp).bind("setData.datepicker",function(e,f,h){b.settings[f]=h}).bind("getData.datepicker",function(e,f){return this._get(b,f)});this._autoSize(b);d.data(a,"datepicker",b)}},_attachments:function(a,b){var c=this._get(b,"appendText"),e=this._get(b,"isRTL");b.append&&
-b.append.remove();if(c){b.append=d('<span class="'+this._appendClass+'">'+c+"</span>");a[e?"before":"after"](b.append)}a.unbind("focus",this._showDatepicker);b.trigger&&b.trigger.remove();c=this._get(b,"showOn");if(c=="focus"||c=="both")a.focus(this._showDatepicker);if(c=="button"||c=="both"){c=this._get(b,"buttonText");var f=this._get(b,"buttonImage");b.trigger=d(this._get(b,"buttonImageOnly")?d("<img/>").addClass(this._triggerClass).attr({src:f,alt:c,title:c}):d('<button type="button"></button>').addClass(this._triggerClass).html(f==
-""?c:d("<img/>").attr({src:f,alt:c,title:c})));a[e?"before":"after"](b.trigger);b.trigger.click(function(){d.datepicker._datepickerShowing&&d.datepicker._lastInput==a[0]?d.datepicker._hideDatepicker():d.datepicker._showDatepicker(a[0]);return false})}},_autoSize:function(a){if(this._get(a,"autoSize")&&!a.inline){var b=new Date(2009,11,20),c=this._get(a,"dateFormat");if(c.match(/[DM]/)){var e=function(f){for(var h=0,i=0,g=0;g<f.length;g++)if(f[g].length>h){h=f[g].length;i=g}return i};b.setMonth(e(this._get(a,
-c.match(/MM/)?"monthNames":"monthNamesShort")));b.setDate(e(this._get(a,c.match(/DD/)?"dayNames":"dayNamesShort"))+20-b.getDay())}a.input.attr("size",this._formatDate(a,b).length)}},_inlineDatepicker:function(a,b){var c=d(a);if(!c.hasClass(this.markerClassName)){c.addClass(this.markerClassName).append(b.dpDiv).bind("setData.datepicker",function(e,f,h){b.settings[f]=h}).bind("getData.datepicker",function(e,f){return this._get(b,f)});d.data(a,"datepicker",b);this._setDate(b,this._getDefaultDate(b),
-true);this._updateDatepicker(b);this._updateAlternate(b)}},_dialogDatepicker:function(a,b,c,e,f){a=this._dialogInst;if(!a){a="dp"+ ++this.uuid;this._dialogInput=d('<input type="text" id="'+a+'" style="position: absolute; top: -100px; width: 0px; z-index: -10;"/>');this._dialogInput.keydown(this._doKeyDown);d("body").append(this._dialogInput);a=this._dialogInst=this._newInst(this._dialogInput,false);a.settings={};d.data(this._dialogInput[0],"datepicker",a)}E(a.settings,e||{});b=b&&b.constructor==Date?
-this._formatDate(a,b):b;this._dialogInput.val(b);this._pos=f?f.length?f:[f.pageX,f.pageY]:null;if(!this._pos)this._pos=[document.documentElement.clientWidth/2-100+(document.documentElement.scrollLeft||document.body.scrollLeft),document.documentElement.clientHeight/2-150+(document.documentElement.scrollTop||document.body.scrollTop)];this._dialogInput.css("left",this._pos[0]+20+"px").css("top",this._pos[1]+"px");a.settings.onSelect=c;this._inDialog=true;this.dpDiv.addClass(this._dialogClass);this._showDatepicker(this._dialogInput[0]);
-d.blockUI&&d.blockUI(this.dpDiv);d.data(this._dialogInput[0],"datepicker",a);return this},_destroyDatepicker:function(a){var b=d(a),c=d.data(a,"datepicker");if(b.hasClass(this.markerClassName)){var e=a.nodeName.toLowerCase();d.removeData(a,"datepicker");if(e=="input"){c.append.remove();c.trigger.remove();b.removeClass(this.markerClassName).unbind("focus",this._showDatepicker).unbind("keydown",this._doKeyDown).unbind("keypress",this._doKeyPress).unbind("keyup",this._doKeyUp)}else if(e=="div"||e=="span")b.removeClass(this.markerClassName).empty()}},
-_enableDatepicker:function(a){var b=d(a),c=d.data(a,"datepicker");if(b.hasClass(this.markerClassName)){var e=a.nodeName.toLowerCase();if(e=="input"){a.disabled=false;c.trigger.filter("button").each(function(){this.disabled=false}).end().filter("img").css({opacity:"1.0",cursor:""})}else if(e=="div"||e=="span")b.children("."+this._inlineClass).children().removeClass("ui-state-disabled");this._disabledInputs=d.map(this._disabledInputs,function(f){return f==a?null:f})}},_disableDatepicker:function(a){var b=
-d(a),c=d.data(a,"datepicker");if(b.hasClass(this.markerClassName)){var e=a.nodeName.toLowerCase();if(e=="input"){a.disabled=true;c.trigger.filter("button").each(function(){this.disabled=true}).end().filter("img").css({opacity:"0.5",cursor:"default"})}else if(e=="div"||e=="span")b.children("."+this._inlineClass).children().addClass("ui-state-disabled");this._disabledInputs=d.map(this._disabledInputs,function(f){return f==a?null:f});this._disabledInputs[this._disabledInputs.length]=a}},_isDisabledDatepicker:function(a){if(!a)return false;
-for(var b=0;b<this._disabledInputs.length;b++)if(this._disabledInputs[b]==a)return true;return false},_getInst:function(a){try{return d.data(a,"datepicker")}catch(b){throw"Missing instance data for this datepicker";}},_optionDatepicker:function(a,b,c){var e=this._getInst(a);if(arguments.length==2&&typeof b=="string")return b=="defaults"?d.extend({},d.datepicker._defaults):e?b=="all"?d.extend({},e.settings):this._get(e,b):null;var f=b||{};if(typeof b=="string"){f={};f[b]=c}if(e){this._curInst==e&&
-this._hideDatepicker();var h=this._getDateDatepicker(a,true);E(e.settings,f);this._attachments(d(a),e);this._autoSize(e);this._setDateDatepicker(a,h);this._updateDatepicker(e)}},_changeDatepicker:function(a,b,c){this._optionDatepicker(a,b,c)},_refreshDatepicker:function(a){(a=this._getInst(a))&&this._updateDatepicker(a)},_setDateDatepicker:function(a,b){if(a=this._getInst(a)){this._setDate(a,b);this._updateDatepicker(a);this._updateAlternate(a)}},_getDateDatepicker:function(a,b){(a=this._getInst(a))&&
-!a.inline&&this._setDateFromField(a,b);return a?this._getDate(a):null},_doKeyDown:function(a){var b=d.datepicker._getInst(a.target),c=true,e=b.dpDiv.is(".ui-datepicker-rtl");b._keyEvent=true;if(d.datepicker._datepickerShowing)switch(a.keyCode){case 9:d.datepicker._hideDatepicker();c=false;break;case 13:c=d("td."+d.datepicker._dayOverClass,b.dpDiv).add(d("td."+d.datepicker._currentClass,b.dpDiv));c[0]?d.datepicker._selectDay(a.target,b.selectedMonth,b.selectedYear,c[0]):d.datepicker._hideDatepicker();
-return false;case 27:d.datepicker._hideDatepicker();break;case 33:d.datepicker._adjustDate(a.target,a.ctrlKey?-d.datepicker._get(b,"stepBigMonths"):-d.datepicker._get(b,"stepMonths"),"M");break;case 34:d.datepicker._adjustDate(a.target,a.ctrlKey?+d.datepicker._get(b,"stepBigMonths"):+d.datepicker._get(b,"stepMonths"),"M");break;case 35:if(a.ctrlKey||a.metaKey)d.datepicker._clearDate(a.target);c=a.ctrlKey||a.metaKey;break;case 36:if(a.ctrlKey||a.metaKey)d.datepicker._gotoToday(a.target);c=a.ctrlKey||
-a.metaKey;break;case 37:if(a.ctrlKey||a.metaKey)d.datepicker._adjustDate(a.target,e?+1:-1,"D");c=a.ctrlKey||a.metaKey;if(a.originalEvent.altKey)d.datepicker._adjustDate(a.target,a.ctrlKey?-d.datepicker._get(b,"stepBigMonths"):-d.datepicker._get(b,"stepMonths"),"M");break;case 38:if(a.ctrlKey||a.metaKey)d.datepicker._adjustDate(a.target,-7,"D");c=a.ctrlKey||a.metaKey;break;case 39:if(a.ctrlKey||a.metaKey)d.datepicker._adjustDate(a.target,e?-1:+1,"D");c=a.ctrlKey||a.metaKey;if(a.originalEvent.altKey)d.datepicker._adjustDate(a.target,
-a.ctrlKey?+d.datepicker._get(b,"stepBigMonths"):+d.datepicker._get(b,"stepMonths"),"M");break;case 40:if(a.ctrlKey||a.metaKey)d.datepicker._adjustDate(a.target,+7,"D");c=a.ctrlKey||a.metaKey;break;default:c=false}else if(a.keyCode==36&&a.ctrlKey)d.datepicker._showDatepicker(this);else c=false;if(c){a.preventDefault();a.stopPropagation()}},_doKeyPress:function(a){var b=d.datepicker._getInst(a.target);if(d.datepicker._get(b,"constrainInput")){b=d.datepicker._possibleChars(d.datepicker._get(b,"dateFormat"));
-var c=String.fromCharCode(a.charCode==undefined?a.keyCode:a.charCode);return a.ctrlKey||c<" "||!b||b.indexOf(c)>-1}},_doKeyUp:function(a){a=d.datepicker._getInst(a.target);if(a.input.val()!=a.lastVal)try{if(d.datepicker.parseDate(d.datepicker._get(a,"dateFormat"),a.input?a.input.val():null,d.datepicker._getFormatConfig(a))){d.datepicker._setDateFromField(a);d.datepicker._updateAlternate(a);d.datepicker._updateDatepicker(a)}}catch(b){d.datepicker.log(b)}return true},_showDatepicker:function(a){a=a.target||
-a;if(a.nodeName.toLowerCase()!="input")a=d("input",a.parentNode)[0];if(!(d.datepicker._isDisabledDatepicker(a)||d.datepicker._lastInput==a)){var b=d.datepicker._getInst(a);d.datepicker._curInst&&d.datepicker._curInst!=b&&d.datepicker._curInst.dpDiv.stop(true,true);var c=d.datepicker._get(b,"beforeShow");E(b.settings,c?c.apply(a,[a,b]):{});b.lastVal=null;d.datepicker._lastInput=a;d.datepicker._setDateFromField(b);if(d.datepicker._inDialog)a.value="";if(!d.datepicker._pos){d.datepicker._pos=d.datepicker._findPos(a);
-d.datepicker._pos[1]+=a.offsetHeight}var e=false;d(a).parents().each(function(){e|=d(this).css("position")=="fixed";return!e});if(e&&d.browser.opera){d.datepicker._pos[0]-=document.documentElement.scrollLeft;d.datepicker._pos[1]-=document.documentElement.scrollTop}c={left:d.datepicker._pos[0],top:d.datepicker._pos[1]};d.datepicker._pos=null;b.dpDiv.css({position:"absolute",display:"block",top:"-1000px"});d.datepicker._updateDatepicker(b);c=d.datepicker._checkOffset(b,c,e);b.dpDiv.css({position:d.datepicker._inDialog&&
-d.blockUI?"static":e?"fixed":"absolute",display:"none",left:c.left+"px",top:c.top+"px"});if(!b.inline){c=d.datepicker._get(b,"showAnim");var f=d.datepicker._get(b,"duration"),h=function(){d.datepicker._datepickerShowing=true;var i=d.datepicker._getBorders(b.dpDiv);b.dpDiv.find("iframe.ui-datepicker-cover").css({left:-i[0],top:-i[1],width:b.dpDiv.outerWidth(),height:b.dpDiv.outerHeight()})};b.dpDiv.zIndex(d(a).zIndex()+1);d.effects&&d.effects[c]?b.dpDiv.show(c,d.datepicker._get(b,"showOptions"),f,
-h):b.dpDiv[c||"show"](c?f:null,h);if(!c||!f)h();b.input.is(":visible")&&!b.input.is(":disabled")&&b.input.focus();d.datepicker._curInst=b}}},_updateDatepicker:function(a){var b=this,c=d.datepicker._getBorders(a.dpDiv);a.dpDiv.empty().append(this._generateHTML(a)).find("iframe.ui-datepicker-cover").css({left:-c[0],top:-c[1],width:a.dpDiv.outerWidth(),height:a.dpDiv.outerHeight()}).end().find("button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a").bind("mouseout",function(){d(this).removeClass("ui-state-hover");
-this.className.indexOf("ui-datepicker-prev")!=-1&&d(this).removeClass("ui-datepicker-prev-hover");this.className.indexOf("ui-datepicker-next")!=-1&&d(this).removeClass("ui-datepicker-next-hover")}).bind("mouseover",function(){if(!b._isDisabledDatepicker(a.inline?a.dpDiv.parent()[0]:a.input[0])){d(this).parents(".ui-datepicker-calendar").find("a").removeClass("ui-state-hover");d(this).addClass("ui-state-hover");this.className.indexOf("ui-datepicker-prev")!=-1&&d(this).addClass("ui-datepicker-prev-hover");
-this.className.indexOf("ui-datepicker-next")!=-1&&d(this).addClass("ui-datepicker-next-hover")}}).end().find("."+this._dayOverClass+" a").trigger("mouseover").end();c=this._getNumberOfMonths(a);var e=c[1];e>1?a.dpDiv.addClass("ui-datepicker-multi-"+e).css("width",17*e+"em"):a.dpDiv.removeClass("ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4").width("");a.dpDiv[(c[0]!=1||c[1]!=1?"add":"remove")+"Class"]("ui-datepicker-multi");a.dpDiv[(this._get(a,"isRTL")?"add":"remove")+"Class"]("ui-datepicker-rtl");
-a==d.datepicker._curInst&&d.datepicker._datepickerShowing&&a.input&&a.input.is(":visible")&&!a.input.is(":disabled")&&a.input.focus()},_getBorders:function(a){var b=function(c){return{thin:1,medium:2,thick:3}[c]||c};return[parseFloat(b(a.css("border-left-width"))),parseFloat(b(a.css("border-top-width")))]},_checkOffset:function(a,b,c){var e=a.dpDiv.outerWidth(),f=a.dpDiv.outerHeight(),h=a.input?a.input.outerWidth():0,i=a.input?a.input.outerHeight():0,g=document.documentElement.clientWidth+d(document).scrollLeft(),
-k=document.documentElement.clientHeight+d(document).scrollTop();b.left-=this._get(a,"isRTL")?e-h:0;b.left-=c&&b.left==a.input.offset().left?d(document).scrollLeft():0;b.top-=c&&b.top==a.input.offset().top+i?d(document).scrollTop():0;b.left-=Math.min(b.left,b.left+e>g&&g>e?Math.abs(b.left+e-g):0);b.top-=Math.min(b.top,b.top+f>k&&k>f?Math.abs(f+i):0);return b},_findPos:function(a){for(var b=this._get(this._getInst(a),"isRTL");a&&(a.type=="hidden"||a.nodeType!=1);)a=a[b?"previousSibling":"nextSibling"];
-a=d(a).offset();return[a.left,a.top]},_hideDatepicker:function(a){var b=this._curInst;if(!(!b||a&&b!=d.data(a,"datepicker")))if(this._datepickerShowing){a=this._get(b,"showAnim");var c=this._get(b,"duration"),e=function(){d.datepicker._tidyDialog(b);this._curInst=null};d.effects&&d.effects[a]?b.dpDiv.hide(a,d.datepicker._get(b,"showOptions"),c,e):b.dpDiv[a=="slideDown"?"slideUp":a=="fadeIn"?"fadeOut":"hide"](a?c:null,e);a||e();if(a=this._get(b,"onClose"))a.apply(b.input?b.input[0]:null,[b.input?b.input.val():
-"",b]);this._datepickerShowing=false;this._lastInput=null;if(this._inDialog){this._dialogInput.css({position:"absolute",left:"0",top:"-100px"});if(d.blockUI){d.unblockUI();d("body").append(this.dpDiv)}}this._inDialog=false}},_tidyDialog:function(a){a.dpDiv.removeClass(this._dialogClass).unbind(".ui-datepicker-calendar")},_checkExternalClick:function(a){if(d.datepicker._curInst){a=d(a.target);a[0].id!=d.datepicker._mainDivId&&a.parents("#"+d.datepicker._mainDivId).length==0&&!a.hasClass(d.datepicker.markerClassName)&&
-!a.hasClass(d.datepicker._triggerClass)&&d.datepicker._datepickerShowing&&!(d.datepicker._inDialog&&d.blockUI)&&d.datepicker._hideDatepicker()}},_adjustDate:function(a,b,c){a=d(a);var e=this._getInst(a[0]);if(!this._isDisabledDatepicker(a[0])){this._adjustInstDate(e,b+(c=="M"?this._get(e,"showCurrentAtPos"):0),c);this._updateDatepicker(e)}},_gotoToday:function(a){a=d(a);var b=this._getInst(a[0]);if(this._get(b,"gotoCurrent")&&b.currentDay){b.selectedDay=b.currentDay;b.drawMonth=b.selectedMonth=b.currentMonth;
-b.drawYear=b.selectedYear=b.currentYear}else{var c=new Date;b.selectedDay=c.getDate();b.drawMonth=b.selectedMonth=c.getMonth();b.drawYear=b.selectedYear=c.getFullYear()}this._notifyChange(b);this._adjustDate(a)},_selectMonthYear:function(a,b,c){a=d(a);var e=this._getInst(a[0]);e._selectingMonthYear=false;e["selected"+(c=="M"?"Month":"Year")]=e["draw"+(c=="M"?"Month":"Year")]=parseInt(b.options[b.selectedIndex].value,10);this._notifyChange(e);this._adjustDate(a)},_clickMonthYear:function(a){a=this._getInst(d(a)[0]);
-a.input&&a._selectingMonthYear&&!d.browser.msie&&a.input.focus();a._selectingMonthYear=!a._selectingMonthYear},_selectDay:function(a,b,c,e){var f=d(a);if(!(d(e).hasClass(this._unselectableClass)||this._isDisabledDatepicker(f[0]))){f=this._getInst(f[0]);f.selectedDay=f.currentDay=d("a",e).html();f.selectedMonth=f.currentMonth=b;f.selectedYear=f.currentYear=c;this._selectDate(a,this._formatDate(f,f.currentDay,f.currentMonth,f.currentYear))}},_clearDate:function(a){a=d(a);this._getInst(a[0]);this._selectDate(a,
-"")},_selectDate:function(a,b){a=this._getInst(d(a)[0]);b=b!=null?b:this._formatDate(a);a.input&&a.input.val(b);this._updateAlternate(a);var c=this._get(a,"onSelect");if(c)c.apply(a.input?a.input[0]:null,[b,a]);else a.input&&a.input.trigger("change");if(a.inline)this._updateDatepicker(a);else{this._hideDatepicker();this._lastInput=a.input[0];typeof a.input[0]!="object"&&a.input.focus();this._lastInput=null}},_updateAlternate:function(a){var b=this._get(a,"altField");if(b){var c=this._get(a,"altFormat")||
-this._get(a,"dateFormat"),e=this._getDate(a),f=this.formatDate(c,e,this._getFormatConfig(a));d(b).each(function(){d(this).val(f)})}},noWeekends:function(a){a=a.getDay();return[a>0&&a<6,""]},iso8601Week:function(a){a=new Date(a.getTime());a.setDate(a.getDate()+4-(a.getDay()||7));var b=a.getTime();a.setMonth(0);a.setDate(1);return Math.floor(Math.round((b-a)/864E5)/7)+1},parseDate:function(a,b,c){if(a==null||b==null)throw"Invalid arguments";b=typeof b=="object"?b.toString():b+"";if(b=="")return null;
-for(var e=(c?c.shortYearCutoff:null)||this._defaults.shortYearCutoff,f=(c?c.dayNamesShort:null)||this._defaults.dayNamesShort,h=(c?c.dayNames:null)||this._defaults.dayNames,i=(c?c.monthNamesShort:null)||this._defaults.monthNamesShort,g=(c?c.monthNames:null)||this._defaults.monthNames,k=c=-1,l=-1,u=-1,j=false,o=function(p){(p=z+1<a.length&&a.charAt(z+1)==p)&&z++;return p},m=function(p){o(p);p=new RegExp("^\\d{1,"+(p=="@"?14:p=="!"?20:p=="y"?4:p=="o"?3:2)+"}");p=b.substring(s).match(p);if(!p)throw"Missing number at position "+
-s;s+=p[0].length;return parseInt(p[0],10)},n=function(p,w,G){p=o(p)?G:w;for(w=0;w<p.length;w++)if(b.substr(s,p[w].length)==p[w]){s+=p[w].length;return w+1}throw"Unknown name at position "+s;},r=function(){if(b.charAt(s)!=a.charAt(z))throw"Unexpected literal at position "+s;s++},s=0,z=0;z<a.length;z++)if(j)if(a.charAt(z)=="'"&&!o("'"))j=false;else r();else switch(a.charAt(z)){case "d":l=m("d");break;case "D":n("D",f,h);break;case "o":u=m("o");break;case "m":k=m("m");break;case "M":k=n("M",i,g);break;
-case "y":c=m("y");break;case "@":var v=new Date(m("@"));c=v.getFullYear();k=v.getMonth()+1;l=v.getDate();break;case "!":v=new Date((m("!")-this._ticksTo1970)/1E4);c=v.getFullYear();k=v.getMonth()+1;l=v.getDate();break;case "'":if(o("'"))r();else j=true;break;default:r()}if(c==-1)c=(new Date).getFullYear();else if(c<100)c+=(new Date).getFullYear()-(new Date).getFullYear()%100+(c<=e?0:-100);if(u>-1){k=1;l=u;do{e=this._getDaysInMonth(c,k-1);if(l<=e)break;k++;l-=e}while(1)}v=this._daylightSavingAdjust(new Date(c,
-k-1,l));if(v.getFullYear()!=c||v.getMonth()+1!=k||v.getDate()!=l)throw"Invalid date";return v},ATOM:"yy-mm-dd",COOKIE:"D, dd M yy",ISO_8601:"yy-mm-dd",RFC_822:"D, d M y",RFC_850:"DD, dd-M-y",RFC_1036:"D, d M y",RFC_1123:"D, d M yy",RFC_2822:"D, d M yy",RSS:"D, d M y",TICKS:"!",TIMESTAMP:"@",W3C:"yy-mm-dd",_ticksTo1970:(718685+Math.floor(492.5)-Math.floor(19.7)+Math.floor(4.925))*24*60*60*1E7,formatDate:function(a,b,c){if(!b)return"";var e=(c?c.dayNamesShort:null)||this._defaults.dayNamesShort,f=(c?
-c.dayNames:null)||this._defaults.dayNames,h=(c?c.monthNamesShort:null)||this._defaults.monthNamesShort;c=(c?c.monthNames:null)||this._defaults.monthNames;var i=function(o){(o=j+1<a.length&&a.charAt(j+1)==o)&&j++;return o},g=function(o,m,n){m=""+m;if(i(o))for(;m.length<n;)m="0"+m;return m},k=function(o,m,n,r){return i(o)?r[m]:n[m]},l="",u=false;if(b)for(var j=0;j<a.length;j++)if(u)if(a.charAt(j)=="'"&&!i("'"))u=false;else l+=a.charAt(j);else switch(a.charAt(j)){case "d":l+=g("d",b.getDate(),2);break;
-case "D":l+=k("D",b.getDay(),e,f);break;case "o":l+=g("o",(b.getTime()-(new Date(b.getFullYear(),0,0)).getTime())/864E5,3);break;case "m":l+=g("m",b.getMonth()+1,2);break;case "M":l+=k("M",b.getMonth(),h,c);break;case "y":l+=i("y")?b.getFullYear():(b.getYear()%100<10?"0":"")+b.getYear()%100;break;case "@":l+=b.getTime();break;case "!":l+=b.getTime()*1E4+this._ticksTo1970;break;case "'":if(i("'"))l+="'";else u=true;break;default:l+=a.charAt(j)}return l},_possibleChars:function(a){for(var b="",c=false,
-e=function(h){(h=f+1<a.length&&a.charAt(f+1)==h)&&f++;return h},f=0;f<a.length;f++)if(c)if(a.charAt(f)=="'"&&!e("'"))c=false;else b+=a.charAt(f);else switch(a.charAt(f)){case "d":case "m":case "y":case "@":b+="0123456789";break;case "D":case "M":return null;case "'":if(e("'"))b+="'";else c=true;break;default:b+=a.charAt(f)}return b},_get:function(a,b){return a.settings[b]!==undefined?a.settings[b]:this._defaults[b]},_setDateFromField:function(a,b){if(a.input.val()!=a.lastVal){var c=this._get(a,"dateFormat"),
-e=a.lastVal=a.input?a.input.val():null,f,h;f=h=this._getDefaultDate(a);var i=this._getFormatConfig(a);try{f=this.parseDate(c,e,i)||h}catch(g){this.log(g);e=b?"":e}a.selectedDay=f.getDate();a.drawMonth=a.selectedMonth=f.getMonth();a.drawYear=a.selectedYear=f.getFullYear();a.currentDay=e?f.getDate():0;a.currentMonth=e?f.getMonth():0;a.currentYear=e?f.getFullYear():0;this._adjustInstDate(a)}},_getDefaultDate:function(a){return this._restrictMinMax(a,this._determineDate(a,this._get(a,"defaultDate"),new Date))},
-_determineDate:function(a,b,c){var e=function(h){var i=new Date;i.setDate(i.getDate()+h);return i},f=function(h){try{return d.datepicker.parseDate(d.datepicker._get(a,"dateFormat"),h,d.datepicker._getFormatConfig(a))}catch(i){}var g=(h.toLowerCase().match(/^c/)?d.datepicker._getDate(a):null)||new Date,k=g.getFullYear(),l=g.getMonth();g=g.getDate();for(var u=/([+-]?[0-9]+)\s*(d|D|w|W|m|M|y|Y)?/g,j=u.exec(h);j;){switch(j[2]||"d"){case "d":case "D":g+=parseInt(j[1],10);break;case "w":case "W":g+=parseInt(j[1],
-10)*7;break;case "m":case "M":l+=parseInt(j[1],10);g=Math.min(g,d.datepicker._getDaysInMonth(k,l));break;case "y":case "Y":k+=parseInt(j[1],10);g=Math.min(g,d.datepicker._getDaysInMonth(k,l));break}j=u.exec(h)}return new Date(k,l,g)};if(b=(b=b==null?c:typeof b=="string"?f(b):typeof b=="number"?isNaN(b)?c:e(b):b)&&b.toString()=="Invalid Date"?c:b){b.setHours(0);b.setMinutes(0);b.setSeconds(0);b.setMilliseconds(0)}return this._daylightSavingAdjust(b)},_daylightSavingAdjust:function(a){if(!a)return null;
-a.setHours(a.getHours()>12?a.getHours()+2:0);return a},_setDate:function(a,b,c){var e=!b,f=a.selectedMonth,h=a.selectedYear;b=this._restrictMinMax(a,this._determineDate(a,b,new Date));a.selectedDay=a.currentDay=b.getDate();a.drawMonth=a.selectedMonth=a.currentMonth=b.getMonth();a.drawYear=a.selectedYear=a.currentYear=b.getFullYear();if((f!=a.selectedMonth||h!=a.selectedYear)&&!c)this._notifyChange(a);this._adjustInstDate(a);if(a.input)a.input.val(e?"":this._formatDate(a))},_getDate:function(a){return!a.currentYear||
-a.input&&a.input.val()==""?null:this._daylightSavingAdjust(new Date(a.currentYear,a.currentMonth,a.currentDay))},_generateHTML:function(a){var b=new Date;b=this._daylightSavingAdjust(new Date(b.getFullYear(),b.getMonth(),b.getDate()));var c=this._get(a,"isRTL"),e=this._get(a,"showButtonPanel"),f=this._get(a,"hideIfNoPrevNext"),h=this._get(a,"navigationAsDateFormat"),i=this._getNumberOfMonths(a),g=this._get(a,"showCurrentAtPos"),k=this._get(a,"stepMonths"),l=i[0]!=1||i[1]!=1,u=this._daylightSavingAdjust(!a.currentDay?
-new Date(9999,9,9):new Date(a.currentYear,a.currentMonth,a.currentDay)),j=this._getMinMaxDate(a,"min"),o=this._getMinMaxDate(a,"max");g=a.drawMonth-g;var m=a.drawYear;if(g<0){g+=12;m--}if(o){var n=this._daylightSavingAdjust(new Date(o.getFullYear(),o.getMonth()-i[0]*i[1]+1,o.getDate()));for(n=j&&n<j?j:n;this._daylightSavingAdjust(new Date(m,g,1))>n;){g--;if(g<0){g=11;m--}}}a.drawMonth=g;a.drawYear=m;n=this._get(a,"prevText");n=!h?n:this.formatDate(n,this._daylightSavingAdjust(new Date(m,g-k,1)),this._getFormatConfig(a));
-n=this._canAdjustMonth(a,-1,m,g)?'<a class="ui-datepicker-prev ui-corner-all" onclick="DP_jQuery_'+y+".datepicker._adjustDate('#"+a.id+"', -"+k+", 'M');\" title=\""+n+'"><span class="ui-icon ui-icon-circle-triangle-'+(c?"e":"w")+'">'+n+"</span></a>":f?"":'<a class="ui-datepicker-prev ui-corner-all ui-state-disabled" title="'+n+'"><span class="ui-icon ui-icon-circle-triangle-'+(c?"e":"w")+'">'+n+"</span></a>";var r=this._get(a,"nextText");r=!h?r:this.formatDate(r,this._daylightSavingAdjust(new Date(m,
-g+k,1)),this._getFormatConfig(a));f=this._canAdjustMonth(a,+1,m,g)?'<a class="ui-datepicker-next ui-corner-all" onclick="DP_jQuery_'+y+".datepicker._adjustDate('#"+a.id+"', +"+k+", 'M');\" title=\""+r+'"><span class="ui-icon ui-icon-circle-triangle-'+(c?"w":"e")+'">'+r+"</span></a>":f?"":'<a class="ui-datepicker-next ui-corner-all ui-state-disabled" title="'+r+'"><span class="ui-icon ui-icon-circle-triangle-'+(c?"w":"e")+'">'+r+"</span></a>";k=this._get(a,"currentText");r=this._get(a,"gotoCurrent")&&
-a.currentDay?u:b;k=!h?k:this.formatDate(k,r,this._getFormatConfig(a));h=!a.inline?'<button type="button" class="ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all" onclick="DP_jQuery_'+y+'.datepicker._hideDatepicker();">'+this._get(a,"closeText")+"</button>":"";e=e?'<div class="ui-datepicker-buttonpane ui-widget-content">'+(c?h:"")+(this._isInRange(a,r)?'<button type="button" class="ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all" onclick="DP_jQuery_'+
-y+".datepicker._gotoToday('#"+a.id+"');\">"+k+"</button>":"")+(c?"":h)+"</div>":"";h=parseInt(this._get(a,"firstDay"),10);h=isNaN(h)?0:h;k=this._get(a,"showWeek");r=this._get(a,"dayNames");this._get(a,"dayNamesShort");var s=this._get(a,"dayNamesMin"),z=this._get(a,"monthNames"),v=this._get(a,"monthNamesShort"),p=this._get(a,"beforeShowDay"),w=this._get(a,"showOtherMonths"),G=this._get(a,"selectOtherMonths");this._get(a,"calculateWeek");for(var K=this._getDefaultDate(a),H="",C=0;C<i[0];C++){for(var L=
-"",D=0;D<i[1];D++){var M=this._daylightSavingAdjust(new Date(m,g,a.selectedDay)),t=" ui-corner-all",x="";if(l){x+='<div class="ui-datepicker-group';if(i[1]>1)switch(D){case 0:x+=" ui-datepicker-group-first";t=" ui-corner-"+(c?"right":"left");break;case i[1]-1:x+=" ui-datepicker-group-last";t=" ui-corner-"+(c?"left":"right");break;default:x+=" ui-datepicker-group-middle";t="";break}x+='">'}x+='<div class="ui-datepicker-header ui-widget-header ui-helper-clearfix'+t+'">'+(/all|left/.test(t)&&C==0?c?
-f:n:"")+(/all|right/.test(t)&&C==0?c?n:f:"")+this._generateMonthYearHeader(a,g,m,j,o,C>0||D>0,z,v)+'</div><table class="ui-datepicker-calendar"><thead><tr>';var A=k?'<th class="ui-datepicker-week-col">'+this._get(a,"weekHeader")+"</th>":"";for(t=0;t<7;t++){var q=(t+h)%7;A+="<th"+((t+h+6)%7>=5?' class="ui-datepicker-week-end"':"")+'><span title="'+r[q]+'">'+s[q]+"</span></th>"}x+=A+"</tr></thead><tbody>";A=this._getDaysInMonth(m,g);if(m==a.selectedYear&&g==a.selectedMonth)a.selectedDay=Math.min(a.selectedDay,
-A);t=(this._getFirstDayOfMonth(m,g)-h+7)%7;A=l?6:Math.ceil((t+A)/7);q=this._daylightSavingAdjust(new Date(m,g,1-t));for(var N=0;N<A;N++){x+="<tr>";var O=!k?"":'<td class="ui-datepicker-week-col">'+this._get(a,"calculateWeek")(q)+"</td>";for(t=0;t<7;t++){var F=p?p.apply(a.input?a.input[0]:null,[q]):[true,""],B=q.getMonth()!=g,I=B&&!G||!F[0]||j&&q<j||o&&q>o;O+='<td class="'+((t+h+6)%7>=5?" ui-datepicker-week-end":"")+(B?" ui-datepicker-other-month":"")+(q.getTime()==M.getTime()&&g==a.selectedMonth&&
-a._keyEvent||K.getTime()==q.getTime()&&K.getTime()==M.getTime()?" "+this._dayOverClass:"")+(I?" "+this._unselectableClass+" ui-state-disabled":"")+(B&&!w?"":" "+F[1]+(q.getTime()==u.getTime()?" "+this._currentClass:"")+(q.getTime()==b.getTime()?" ui-datepicker-today":""))+'"'+((!B||w)&&F[2]?' title="'+F[2]+'"':"")+(I?"":' onclick="DP_jQuery_'+y+".datepicker._selectDay('#"+a.id+"',"+q.getMonth()+","+q.getFullYear()+', this);return false;"')+">"+(B&&!w?"&#xa0;":I?'<span class="ui-state-default">'+q.getDate()+
-"</span>":'<a class="ui-state-default'+(q.getTime()==b.getTime()?" ui-state-highlight":"")+(q.getTime()==u.getTime()?" ui-state-active":"")+(B?" ui-priority-secondary":"")+'" href="#">'+q.getDate()+"</a>")+"</td>";q.setDate(q.getDate()+1);q=this._daylightSavingAdjust(q)}x+=O+"</tr>"}g++;if(g>11){g=0;m++}x+="</tbody></table>"+(l?"</div>"+(i[0]>0&&D==i[1]-1?'<div class="ui-datepicker-row-break"></div>':""):"");L+=x}H+=L}H+=e+(d.browser.msie&&parseInt(d.browser.version,10)<7&&!a.inline?'<iframe src="javascript:false;" class="ui-datepicker-cover" frameborder="0"></iframe>':
-"");a._keyEvent=false;return H},_generateMonthYearHeader:function(a,b,c,e,f,h,i,g){var k=this._get(a,"changeMonth"),l=this._get(a,"changeYear"),u=this._get(a,"showMonthAfterYear"),j='<div class="ui-datepicker-title">',o="";if(h||!k)o+='<span class="ui-datepicker-month">'+i[b]+"</span>";else{i=e&&e.getFullYear()==c;var m=f&&f.getFullYear()==c;o+='<select class="ui-datepicker-month" onchange="DP_jQuery_'+y+".datepicker._selectMonthYear('#"+a.id+"', this, 'M');\" onclick=\"DP_jQuery_"+y+".datepicker._clickMonthYear('#"+
-a.id+"');\">";for(var n=0;n<12;n++)if((!i||n>=e.getMonth())&&(!m||n<=f.getMonth()))o+='<option value="'+n+'"'+(n==b?' selected="selected"':"")+">"+g[n]+"</option>";o+="</select>"}u||(j+=o+(h||!(k&&l)?"&#xa0;":""));if(h||!l)j+='<span class="ui-datepicker-year">'+c+"</span>";else{g=this._get(a,"yearRange").split(":");var r=(new Date).getFullYear();i=function(s){s=s.match(/c[+-].*/)?c+parseInt(s.substring(1),10):s.match(/[+-].*/)?r+parseInt(s,10):parseInt(s,10);return isNaN(s)?r:s};b=i(g[0]);g=Math.max(b,
-i(g[1]||""));b=e?Math.max(b,e.getFullYear()):b;g=f?Math.min(g,f.getFullYear()):g;for(j+='<select class="ui-datepicker-year" onchange="DP_jQuery_'+y+".datepicker._selectMonthYear('#"+a.id+"', this, 'Y');\" onclick=\"DP_jQuery_"+y+".datepicker._clickMonthYear('#"+a.id+"');\">";b<=g;b++)j+='<option value="'+b+'"'+(b==c?' selected="selected"':"")+">"+b+"</option>";j+="</select>"}j+=this._get(a,"yearSuffix");if(u)j+=(h||!(k&&l)?"&#xa0;":"")+o;j+="</div>";return j},_adjustInstDate:function(a,b,c){var e=
-a.drawYear+(c=="Y"?b:0),f=a.drawMonth+(c=="M"?b:0);b=Math.min(a.selectedDay,this._getDaysInMonth(e,f))+(c=="D"?b:0);e=this._restrictMinMax(a,this._daylightSavingAdjust(new Date(e,f,b)));a.selectedDay=e.getDate();a.drawMonth=a.selectedMonth=e.getMonth();a.drawYear=a.selectedYear=e.getFullYear();if(c=="M"||c=="Y")this._notifyChange(a)},_restrictMinMax:function(a,b){var c=this._getMinMaxDate(a,"min");a=this._getMinMaxDate(a,"max");b=c&&b<c?c:b;return b=a&&b>a?a:b},_notifyChange:function(a){var b=this._get(a,
-"onChangeMonthYear");if(b)b.apply(a.input?a.input[0]:null,[a.selectedYear,a.selectedMonth+1,a])},_getNumberOfMonths:function(a){a=this._get(a,"numberOfMonths");return a==null?[1,1]:typeof a=="number"?[1,a]:a},_getMinMaxDate:function(a,b){return this._determineDate(a,this._get(a,b+"Date"),null)},_getDaysInMonth:function(a,b){return 32-(new Date(a,b,32)).getDate()},_getFirstDayOfMonth:function(a,b){return(new Date(a,b,1)).getDay()},_canAdjustMonth:function(a,b,c,e){var f=this._getNumberOfMonths(a);
-c=this._daylightSavingAdjust(new Date(c,e+(b<0?b:f[0]*f[1]),1));b<0&&c.setDate(this._getDaysInMonth(c.getFullYear(),c.getMonth()));return this._isInRange(a,c)},_isInRange:function(a,b){var c=this._getMinMaxDate(a,"min");a=this._getMinMaxDate(a,"max");return(!c||b.getTime()>=c.getTime())&&(!a||b.getTime()<=a.getTime())},_getFormatConfig:function(a){var b=this._get(a,"shortYearCutoff");b=typeof b!="string"?b:(new Date).getFullYear()%100+parseInt(b,10);return{shortYearCutoff:b,dayNamesShort:this._get(a,
-"dayNamesShort"),dayNames:this._get(a,"dayNames"),monthNamesShort:this._get(a,"monthNamesShort"),monthNames:this._get(a,"monthNames")}},_formatDate:function(a,b,c,e){if(!b){a.currentDay=a.selectedDay;a.currentMonth=a.selectedMonth;a.currentYear=a.selectedYear}b=b?typeof b=="object"?b:this._daylightSavingAdjust(new Date(e,c,b)):this._daylightSavingAdjust(new Date(a.currentYear,a.currentMonth,a.currentDay));return this.formatDate(this._get(a,"dateFormat"),b,this._getFormatConfig(a))}});d.fn.datepicker=
-function(a){if(!d.datepicker.initialized){d(document).mousedown(d.datepicker._checkExternalClick).find("body").append(d.datepicker.dpDiv);d.datepicker.initialized=true}var b=Array.prototype.slice.call(arguments,1);if(typeof a=="string"&&(a=="isDisabled"||a=="getDate"||a=="widget"))return d.datepicker["_"+a+"Datepicker"].apply(d.datepicker,[this[0]].concat(b));if(a=="option"&&arguments.length==2&&typeof arguments[1]=="string")return d.datepicker["_"+a+"Datepicker"].apply(d.datepicker,[this[0]].concat(b));
-return this.each(function(){typeof a=="string"?d.datepicker["_"+a+"Datepicker"].apply(d.datepicker,[this].concat(b)):d.datepicker._attachDatepicker(this,a)})};d.datepicker=new J;d.datepicker.initialized=false;d.datepicker.uuid=(new Date).getTime();d.datepicker.version="1.8.1";window["DP_jQuery_"+y]=d})(jQuery);
-;/*
- * jQuery UI Progressbar 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Progressbar
- *
- * Depends:
- *   jquery.ui.core.js
- *   jquery.ui.widget.js
- */
-(function(b){b.widget("ui.progressbar",{options:{value:0},_create:function(){this.element.addClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").attr({role:"progressbar","aria-valuemin":this._valueMin(),"aria-valuemax":this._valueMax(),"aria-valuenow":this._value()});this.valueDiv=b("<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>").appendTo(this.element);this._refreshValue()},destroy:function(){this.element.removeClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").removeAttr("role").removeAttr("aria-valuemin").removeAttr("aria-valuemax").removeAttr("aria-valuenow");
-this.valueDiv.remove();b.Widget.prototype.destroy.apply(this,arguments)},value:function(a){if(a===undefined)return this._value();this._setOption("value",a);return this},_setOption:function(a,c){switch(a){case "value":this.options.value=c;this._refreshValue();this._trigger("change");break}b.Widget.prototype._setOption.apply(this,arguments)},_value:function(){var a=this.options.value;if(typeof a!=="number")a=0;if(a<this._valueMin())a=this._valueMin();if(a>this._valueMax())a=this._valueMax();return a},
-_valueMin:function(){return 0},_valueMax:function(){return 100},_refreshValue:function(){var a=this.value();this.valueDiv[a===this._valueMax()?"addClass":"removeClass"]("ui-corner-right").width(a+"%");this.element.attr("aria-valuenow",a)}});b.extend(b.ui.progressbar,{version:"1.8.1"})})(jQuery);
-;/*
- * jQuery UI Effects 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/
- */
-jQuery.effects||function(f){function k(c){var a;if(c&&c.constructor==Array&&c.length==3)return c;if(a=/rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(c))return[parseInt(a[1],10),parseInt(a[2],10),parseInt(a[3],10)];if(a=/rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(c))return[parseFloat(a[1])*2.55,parseFloat(a[2])*2.55,parseFloat(a[3])*2.55];if(a=/#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(c))return[parseInt(a[1],
-16),parseInt(a[2],16),parseInt(a[3],16)];if(a=/#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(c))return[parseInt(a[1]+a[1],16),parseInt(a[2]+a[2],16),parseInt(a[3]+a[3],16)];if(/rgba\(0, 0, 0, 0\)/.exec(c))return l.transparent;return l[f.trim(c).toLowerCase()]}function q(c,a){var b;do{b=f.curCSS(c,a);if(b!=""&&b!="transparent"||f.nodeName(c,"body"))break;a="backgroundColor"}while(c=c.parentNode);return k(b)}function m(){var c=document.defaultView?document.defaultView.getComputedStyle(this,null):this.currentStyle,
-a={},b,d;if(c&&c.length&&c[0]&&c[c[0]])for(var e=c.length;e--;){b=c[e];if(typeof c[b]=="string"){d=b.replace(/\-(\w)/g,function(g,h){return h.toUpperCase()});a[d]=c[b]}}else for(b in c)if(typeof c[b]==="string")a[b]=c[b];return a}function n(c){var a,b;for(a in c){b=c[a];if(b==null||f.isFunction(b)||a in r||/scrollbar/.test(a)||!/color/i.test(a)&&isNaN(parseFloat(b)))delete c[a]}return c}function s(c,a){var b={_:0},d;for(d in a)if(c[d]!=a[d])b[d]=a[d];return b}function j(c,a,b,d){if(typeof c=="object"){d=
-a;b=null;a=c;c=a.effect}if(f.isFunction(a)){d=a;b=null;a={}}if(f.isFunction(b)){d=b;b=null}if(typeof a=="number"||f.fx.speeds[a]){d=b;b=a;a={}}a=a||{};b=b||a.duration;b=f.fx.off?0:typeof b=="number"?b:f.fx.speeds[b]||f.fx.speeds._default;d=d||a.complete;return[c,a,b,d]}f.effects={};f.each(["backgroundColor","borderBottomColor","borderLeftColor","borderRightColor","borderTopColor","color","outlineColor"],function(c,a){f.fx.step[a]=function(b){if(!b.colorInit){b.start=q(b.elem,a);b.end=k(b.end);b.colorInit=
-true}b.elem.style[a]="rgb("+Math.max(Math.min(parseInt(b.pos*(b.end[0]-b.start[0])+b.start[0],10),255),0)+","+Math.max(Math.min(parseInt(b.pos*(b.end[1]-b.start[1])+b.start[1],10),255),0)+","+Math.max(Math.min(parseInt(b.pos*(b.end[2]-b.start[2])+b.start[2],10),255),0)+")"}});var l={aqua:[0,255,255],azure:[240,255,255],beige:[245,245,220],black:[0,0,0],blue:[0,0,255],brown:[165,42,42],cyan:[0,255,255],darkblue:[0,0,139],darkcyan:[0,139,139],darkgrey:[169,169,169],darkgreen:[0,100,0],darkkhaki:[189,
-183,107],darkmagenta:[139,0,139],darkolivegreen:[85,107,47],darkorange:[255,140,0],darkorchid:[153,50,204],darkred:[139,0,0],darksalmon:[233,150,122],darkviolet:[148,0,211],fuchsia:[255,0,255],gold:[255,215,0],green:[0,128,0],indigo:[75,0,130],khaki:[240,230,140],lightblue:[173,216,230],lightcyan:[224,255,255],lightgreen:[144,238,144],lightgrey:[211,211,211],lightpink:[255,182,193],lightyellow:[255,255,224],lime:[0,255,0],magenta:[255,0,255],maroon:[128,0,0],navy:[0,0,128],olive:[128,128,0],orange:[255,
-165,0],pink:[255,192,203],purple:[128,0,128],violet:[128,0,128],red:[255,0,0],silver:[192,192,192],white:[255,255,255],yellow:[255,255,0],transparent:[255,255,255]},o=["add","remove","toggle"],r={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};f.effects.animateClass=function(c,a,b,d){if(f.isFunction(b)){d=b;b=null}return this.each(function(){var e=f(this),g=e.attr("style")||" ",h=n(m.call(this)),p,t=e.attr("className");f.each(o,function(u,
-i){c[i]&&e[i+"Class"](c[i])});p=n(m.call(this));e.attr("className",t);e.animate(s(h,p),a,b,function(){f.each(o,function(u,i){c[i]&&e[i+"Class"](c[i])});if(typeof e.attr("style")=="object"){e.attr("style").cssText="";e.attr("style").cssText=g}else e.attr("style",g);d&&d.apply(this,arguments)})})};f.fn.extend({_addClass:f.fn.addClass,addClass:function(c,a,b,d){return a?f.effects.animateClass.apply(this,[{add:c},a,b,d]):this._addClass(c)},_removeClass:f.fn.removeClass,removeClass:function(c,a,b,d){return a?
-f.effects.animateClass.apply(this,[{remove:c},a,b,d]):this._removeClass(c)},_toggleClass:f.fn.toggleClass,toggleClass:function(c,a,b,d,e){return typeof a=="boolean"||a===undefined?b?f.effects.animateClass.apply(this,[a?{add:c}:{remove:c},b,d,e]):this._toggleClass(c,a):f.effects.animateClass.apply(this,[{toggle:c},a,b,d])},switchClass:function(c,a,b,d,e){return f.effects.animateClass.apply(this,[{add:a,remove:c},b,d,e])}});f.extend(f.effects,{version:"1.8.1",save:function(c,a){for(var b=0;b<a.length;b++)a[b]!==
-null&&c.data("ec.storage."+a[b],c[0].style[a[b]])},restore:function(c,a){for(var b=0;b<a.length;b++)a[b]!==null&&c.css(a[b],c.data("ec.storage."+a[b]))},setMode:function(c,a){if(a=="toggle")a=c.is(":hidden")?"show":"hide";return a},getBaseline:function(c,a){var b;switch(c[0]){case "top":b=0;break;case "middle":b=0.5;break;case "bottom":b=1;break;default:b=c[0]/a.height}switch(c[1]){case "left":c=0;break;case "center":c=0.5;break;case "right":c=1;break;default:c=c[1]/a.width}return{x:c,y:b}},createWrapper:function(c){if(c.parent().is(".ui-effects-wrapper"))return c.parent();
-var a={width:c.outerWidth(true),height:c.outerHeight(true),"float":c.css("float")},b=f("<div></div>").addClass("ui-effects-wrapper").css({fontSize:"100%",background:"transparent",border:"none",margin:0,padding:0});c.wrap(b);b=c.parent();if(c.css("position")=="static"){b.css({position:"relative"});c.css({position:"relative"})}else{f.extend(a,{position:c.css("position"),zIndex:c.css("z-index")});f.each(["top","left","bottom","right"],function(d,e){a[e]=c.css(e);if(isNaN(parseInt(a[e],10)))a[e]="auto"});
-c.css({position:"relative",top:0,left:0})}return b.css(a).show()},removeWrapper:function(c){if(c.parent().is(".ui-effects-wrapper"))return c.parent().replaceWith(c);return c},setTransition:function(c,a,b,d){d=d||{};f.each(a,function(e,g){unit=c.cssUnit(g);if(unit[0]>0)d[g]=unit[0]*b+unit[1]});return d}});f.fn.extend({effect:function(c){var a=j.apply(this,arguments);a={options:a[1],duration:a[2],callback:a[3]};var b=f.effects[c];return b&&!f.fx.off?b.call(this,a):this},_show:f.fn.show,show:function(c){if(!c||
-typeof c=="number"||f.fx.speeds[c])return this._show.apply(this,arguments);else{var a=j.apply(this,arguments);a[1].mode="show";return this.effect.apply(this,a)}},_hide:f.fn.hide,hide:function(c){if(!c||typeof c=="number"||f.fx.speeds[c])return this._hide.apply(this,arguments);else{var a=j.apply(this,arguments);a[1].mode="hide";return this.effect.apply(this,a)}},__toggle:f.fn.toggle,toggle:function(c){if(!c||typeof c=="number"||f.fx.speeds[c]||typeof c=="boolean"||f.isFunction(c))return this.__toggle.apply(this,
-arguments);else{var a=j.apply(this,arguments);a[1].mode="toggle";return this.effect.apply(this,a)}},cssUnit:function(c){var a=this.css(c),b=[];f.each(["em","px","%","pt"],function(d,e){if(a.indexOf(e)>0)b=[parseFloat(a),e]});return b}});f.easing.jswing=f.easing.swing;f.extend(f.easing,{def:"easeOutQuad",swing:function(c,a,b,d,e){return f.easing[f.easing.def](c,a,b,d,e)},easeInQuad:function(c,a,b,d,e){return d*(a/=e)*a+b},easeOutQuad:function(c,a,b,d,e){return-d*(a/=e)*(a-2)+b},easeInOutQuad:function(c,
-a,b,d,e){if((a/=e/2)<1)return d/2*a*a+b;return-d/2*(--a*(a-2)-1)+b},easeInCubic:function(c,a,b,d,e){return d*(a/=e)*a*a+b},easeOutCubic:function(c,a,b,d,e){return d*((a=a/e-1)*a*a+1)+b},easeInOutCubic:function(c,a,b,d,e){if((a/=e/2)<1)return d/2*a*a*a+b;return d/2*((a-=2)*a*a+2)+b},easeInQuart:function(c,a,b,d,e){return d*(a/=e)*a*a*a+b},easeOutQuart:function(c,a,b,d,e){return-d*((a=a/e-1)*a*a*a-1)+b},easeInOutQuart:function(c,a,b,d,e){if((a/=e/2)<1)return d/2*a*a*a*a+b;return-d/2*((a-=2)*a*a*a-2)+
-b},easeInQuint:function(c,a,b,d,e){return d*(a/=e)*a*a*a*a+b},easeOutQuint:function(c,a,b,d,e){return d*((a=a/e-1)*a*a*a*a+1)+b},easeInOutQuint:function(c,a,b,d,e){if((a/=e/2)<1)return d/2*a*a*a*a*a+b;return d/2*((a-=2)*a*a*a*a+2)+b},easeInSine:function(c,a,b,d,e){return-d*Math.cos(a/e*(Math.PI/2))+d+b},easeOutSine:function(c,a,b,d,e){return d*Math.sin(a/e*(Math.PI/2))+b},easeInOutSine:function(c,a,b,d,e){return-d/2*(Math.cos(Math.PI*a/e)-1)+b},easeInExpo:function(c,a,b,d,e){return a==0?b:d*Math.pow(2,
-10*(a/e-1))+b},easeOutExpo:function(c,a,b,d,e){return a==e?b+d:d*(-Math.pow(2,-10*a/e)+1)+b},easeInOutExpo:function(c,a,b,d,e){if(a==0)return b;if(a==e)return b+d;if((a/=e/2)<1)return d/2*Math.pow(2,10*(a-1))+b;return d/2*(-Math.pow(2,-10*--a)+2)+b},easeInCirc:function(c,a,b,d,e){return-d*(Math.sqrt(1-(a/=e)*a)-1)+b},easeOutCirc:function(c,a,b,d,e){return d*Math.sqrt(1-(a=a/e-1)*a)+b},easeInOutCirc:function(c,a,b,d,e){if((a/=e/2)<1)return-d/2*(Math.sqrt(1-a*a)-1)+b;return d/2*(Math.sqrt(1-(a-=2)*
-a)+1)+b},easeInElastic:function(c,a,b,d,e){c=1.70158;var g=0,h=d;if(a==0)return b;if((a/=e)==1)return b+d;g||(g=e*0.3);if(h<Math.abs(d)){h=d;c=g/4}else c=g/(2*Math.PI)*Math.asin(d/h);return-(h*Math.pow(2,10*(a-=1))*Math.sin((a*e-c)*2*Math.PI/g))+b},easeOutElastic:function(c,a,b,d,e){c=1.70158;var g=0,h=d;if(a==0)return b;if((a/=e)==1)return b+d;g||(g=e*0.3);if(h<Math.abs(d)){h=d;c=g/4}else c=g/(2*Math.PI)*Math.asin(d/h);return h*Math.pow(2,-10*a)*Math.sin((a*e-c)*2*Math.PI/g)+d+b},easeInOutElastic:function(c,
-a,b,d,e){c=1.70158;var g=0,h=d;if(a==0)return b;if((a/=e/2)==2)return b+d;g||(g=e*0.3*1.5);if(h<Math.abs(d)){h=d;c=g/4}else c=g/(2*Math.PI)*Math.asin(d/h);if(a<1)return-0.5*h*Math.pow(2,10*(a-=1))*Math.sin((a*e-c)*2*Math.PI/g)+b;return h*Math.pow(2,-10*(a-=1))*Math.sin((a*e-c)*2*Math.PI/g)*0.5+d+b},easeInBack:function(c,a,b,d,e,g){if(g==undefined)g=1.70158;return d*(a/=e)*a*((g+1)*a-g)+b},easeOutBack:function(c,a,b,d,e,g){if(g==undefined)g=1.70158;return d*((a=a/e-1)*a*((g+1)*a+g)+1)+b},easeInOutBack:function(c,
-a,b,d,e,g){if(g==undefined)g=1.70158;if((a/=e/2)<1)return d/2*a*a*(((g*=1.525)+1)*a-g)+b;return d/2*((a-=2)*a*(((g*=1.525)+1)*a+g)+2)+b},easeInBounce:function(c,a,b,d,e){return d-f.easing.easeOutBounce(c,e-a,0,d,e)+b},easeOutBounce:function(c,a,b,d,e){return(a/=e)<1/2.75?d*7.5625*a*a+b:a<2/2.75?d*(7.5625*(a-=1.5/2.75)*a+0.75)+b:a<2.5/2.75?d*(7.5625*(a-=2.25/2.75)*a+0.9375)+b:d*(7.5625*(a-=2.625/2.75)*a+0.984375)+b},easeInOutBounce:function(c,a,b,d,e){if(a<e/2)return f.easing.easeInBounce(c,a*2,0,
-d,e)*0.5+b;return f.easing.easeOutBounce(c,a*2-e,0,d,e)*0.5+d*0.5+b}})}(jQuery);
-;/*
- * jQuery UI Effects Blind 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Blind
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(b){b.effects.blind=function(c){return this.queue(function(){var a=b(this),g=["position","top","left"],f=b.effects.setMode(a,c.options.mode||"hide"),d=c.options.direction||"vertical";b.effects.save(a,g);a.show();var e=b.effects.createWrapper(a).css({overflow:"hidden"}),h=d=="vertical"?"height":"width";d=d=="vertical"?e.height():e.width();f=="show"&&e.css(h,0);var i={};i[h]=f=="show"?d:0;e.animate(i,c.duration,c.options.easing,function(){f=="hide"&&a.hide();b.effects.restore(a,g);b.effects.removeWrapper(a);
-c.callback&&c.callback.apply(a[0],arguments);a.dequeue()})})}})(jQuery);
-;/*
- * jQuery UI Effects Bounce 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Bounce
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(e){e.effects.bounce=function(b){return this.queue(function(){var a=e(this),l=["position","top","left"],h=e.effects.setMode(a,b.options.mode||"effect"),d=b.options.direction||"up",c=b.options.distance||20,m=b.options.times||5,i=b.duration||250;/show|hide/.test(h)&&l.push("opacity");e.effects.save(a,l);a.show();e.effects.createWrapper(a);var f=d=="up"||d=="down"?"top":"left";d=d=="up"||d=="left"?"pos":"neg";c=b.options.distance||(f=="top"?a.outerHeight({margin:true})/3:a.outerWidth({margin:true})/
-3);if(h=="show")a.css("opacity",0).css(f,d=="pos"?-c:c);if(h=="hide")c/=m*2;h!="hide"&&m--;if(h=="show"){var g={opacity:1};g[f]=(d=="pos"?"+=":"-=")+c;a.animate(g,i/2,b.options.easing);c/=2;m--}for(g=0;g<m;g++){var j={},k={};j[f]=(d=="pos"?"-=":"+=")+c;k[f]=(d=="pos"?"+=":"-=")+c;a.animate(j,i/2,b.options.easing).animate(k,i/2,b.options.easing);c=h=="hide"?c*2:c/2}if(h=="hide"){g={opacity:0};g[f]=(d=="pos"?"-=":"+=")+c;a.animate(g,i/2,b.options.easing,function(){a.hide();e.effects.restore(a,l);e.effects.removeWrapper(a);
-b.callback&&b.callback.apply(this,arguments)})}else{j={};k={};j[f]=(d=="pos"?"-=":"+=")+c;k[f]=(d=="pos"?"+=":"-=")+c;a.animate(j,i/2,b.options.easing).animate(k,i/2,b.options.easing,function(){e.effects.restore(a,l);e.effects.removeWrapper(a);b.callback&&b.callback.apply(this,arguments)})}a.queue("fx",function(){a.dequeue()});a.dequeue()})}})(jQuery);
-;/*
- * jQuery UI Effects Clip 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Clip
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(b){b.effects.clip=function(e){return this.queue(function(){var a=b(this),i=["position","top","left","height","width"],f=b.effects.setMode(a,e.options.mode||"hide"),c=e.options.direction||"vertical";b.effects.save(a,i);a.show();var d=b.effects.createWrapper(a).css({overflow:"hidden"});d=a[0].tagName=="IMG"?d:a;var g={size:c=="vertical"?"height":"width",position:c=="vertical"?"top":"left"};c=c=="vertical"?d.height():d.width();if(f=="show"){d.css(g.size,0);d.css(g.position,c/2)}var h={};h[g.size]=
-f=="show"?c:0;h[g.position]=f=="show"?0:c/2;d.animate(h,{queue:false,duration:e.duration,easing:e.options.easing,complete:function(){f=="hide"&&a.hide();b.effects.restore(a,i);b.effects.removeWrapper(a);e.callback&&e.callback.apply(a[0],arguments);a.dequeue()}})})}})(jQuery);
-;/*
- * jQuery UI Effects Drop 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Drop
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(c){c.effects.drop=function(d){return this.queue(function(){var a=c(this),h=["position","top","left","opacity"],e=c.effects.setMode(a,d.options.mode||"hide"),b=d.options.direction||"left";c.effects.save(a,h);a.show();c.effects.createWrapper(a);var f=b=="up"||b=="down"?"top":"left";b=b=="up"||b=="left"?"pos":"neg";var g=d.options.distance||(f=="top"?a.outerHeight({margin:true})/2:a.outerWidth({margin:true})/2);if(e=="show")a.css("opacity",0).css(f,b=="pos"?-g:g);var i={opacity:e=="show"?1:
-0};i[f]=(e=="show"?b=="pos"?"+=":"-=":b=="pos"?"-=":"+=")+g;a.animate(i,{queue:false,duration:d.duration,easing:d.options.easing,complete:function(){e=="hide"&&a.hide();c.effects.restore(a,h);c.effects.removeWrapper(a);d.callback&&d.callback.apply(this,arguments);a.dequeue()}})})}})(jQuery);
-;/*
- * jQuery UI Effects Explode 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Explode
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(j){j.effects.explode=function(a){return this.queue(function(){var c=a.options.pieces?Math.round(Math.sqrt(a.options.pieces)):3,d=a.options.pieces?Math.round(Math.sqrt(a.options.pieces)):3;a.options.mode=a.options.mode=="toggle"?j(this).is(":visible")?"hide":"show":a.options.mode;var b=j(this).show().css("visibility","hidden"),g=b.offset();g.top-=parseInt(b.css("marginTop"),10)||0;g.left-=parseInt(b.css("marginLeft"),10)||0;for(var h=b.outerWidth(true),i=b.outerHeight(true),e=0;e<c;e++)for(var f=
-0;f<d;f++)b.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-f*(h/d),top:-e*(i/c)}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:h/d,height:i/c,left:g.left+f*(h/d)+(a.options.mode=="show"?(f-Math.floor(d/2))*(h/d):0),top:g.top+e*(i/c)+(a.options.mode=="show"?(e-Math.floor(c/2))*(i/c):0),opacity:a.options.mode=="show"?0:1}).animate({left:g.left+f*(h/d)+(a.options.mode=="show"?0:(f-Math.floor(d/2))*(h/d)),top:g.top+
-e*(i/c)+(a.options.mode=="show"?0:(e-Math.floor(c/2))*(i/c)),opacity:a.options.mode=="show"?1:0},a.duration||500);setTimeout(function(){a.options.mode=="show"?b.css({visibility:"visible"}):b.css({visibility:"visible"}).hide();a.callback&&a.callback.apply(b[0]);b.dequeue();j("div.ui-effects-explode").remove()},a.duration||500)})}})(jQuery);
-;/*
- * jQuery UI Effects Fold 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Fold
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(c){c.effects.fold=function(a){return this.queue(function(){var b=c(this),j=["position","top","left"],d=c.effects.setMode(b,a.options.mode||"hide"),g=a.options.size||15,h=!!a.options.horizFirst,k=a.duration?a.duration/2:c.fx.speeds._default/2;c.effects.save(b,j);b.show();var e=c.effects.createWrapper(b).css({overflow:"hidden"}),f=d=="show"!=h,l=f?["width","height"]:["height","width"];f=f?[e.width(),e.height()]:[e.height(),e.width()];var i=/([0-9]+)%/.exec(g);if(i)g=parseInt(i[1],10)/100*
-f[d=="hide"?0:1];if(d=="show")e.css(h?{height:0,width:g}:{height:g,width:0});h={};i={};h[l[0]]=d=="show"?f[0]:g;i[l[1]]=d=="show"?f[1]:0;e.animate(h,k,a.options.easing).animate(i,k,a.options.easing,function(){d=="hide"&&b.hide();c.effects.restore(b,j);c.effects.removeWrapper(b);a.callback&&a.callback.apply(b[0],arguments);b.dequeue()})})}})(jQuery);
-;/*
- * jQuery UI Effects Highlight 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Highlight
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(b){b.effects.highlight=function(c){return this.queue(function(){var a=b(this),e=["backgroundImage","backgroundColor","opacity"],d=b.effects.setMode(a,c.options.mode||"show"),f={backgroundColor:a.css("backgroundColor")};if(d=="hide")f.opacity=0;b.effects.save(a,e);a.show().css({backgroundImage:"none",backgroundColor:c.options.color||"#ffff99"}).animate(f,{queue:false,duration:c.duration,easing:c.options.easing,complete:function(){d=="hide"&&a.hide();b.effects.restore(a,e);d=="show"&&!b.support.opacity&&
-this.style.removeAttribute("filter");c.callback&&c.callback.apply(this,arguments);a.dequeue()}})})}})(jQuery);
-;/*
- * jQuery UI Effects Pulsate 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Pulsate
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(d){d.effects.pulsate=function(a){return this.queue(function(){var b=d(this),c=d.effects.setMode(b,a.options.mode||"show");times=(a.options.times||5)*2-1;duration=a.duration?a.duration/2:d.fx.speeds._default/2;isVisible=b.is(":visible");animateTo=0;if(!isVisible){b.css("opacity",0).show();animateTo=1}if(c=="hide"&&isVisible||c=="show"&&!isVisible)times--;for(c=0;c<times;c++){b.animate({opacity:animateTo},duration,a.options.easing);animateTo=(animateTo+1)%2}b.animate({opacity:animateTo},duration,
-a.options.easing,function(){animateTo==0&&b.hide();a.callback&&a.callback.apply(this,arguments)});b.queue("fx",function(){b.dequeue()}).dequeue()})}})(jQuery);
-;/*
- * jQuery UI Effects Scale 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Scale
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(c){c.effects.puff=function(b){return this.queue(function(){var a=c(this),e=c.effects.setMode(a,b.options.mode||"hide"),g=parseInt(b.options.percent,10)||150,h=g/100,i={height:a.height(),width:a.width()};c.extend(b.options,{fade:true,mode:e,percent:e=="hide"?g:100,from:e=="hide"?i:{height:i.height*h,width:i.width*h}});a.effect("scale",b.options,b.duration,b.callback);a.dequeue()})};c.effects.scale=function(b){return this.queue(function(){var a=c(this),e=c.extend(true,{},b.options),g=c.effects.setMode(a,
-b.options.mode||"effect"),h=parseInt(b.options.percent,10)||(parseInt(b.options.percent,10)==0?0:g=="hide"?0:100),i=b.options.direction||"both",f=b.options.origin;if(g!="effect"){e.origin=f||["middle","center"];e.restore=true}f={height:a.height(),width:a.width()};a.from=b.options.from||(g=="show"?{height:0,width:0}:f);h={y:i!="horizontal"?h/100:1,x:i!="vertical"?h/100:1};a.to={height:f.height*h.y,width:f.width*h.x};if(b.options.fade){if(g=="show"){a.from.opacity=0;a.to.opacity=1}if(g=="hide"){a.from.opacity=
-1;a.to.opacity=0}}e.from=a.from;e.to=a.to;e.mode=g;a.effect("size",e,b.duration,b.callback);a.dequeue()})};c.effects.size=function(b){return this.queue(function(){var a=c(this),e=["position","top","left","width","height","overflow","opacity"],g=["position","top","left","overflow","opacity"],h=["width","height","overflow"],i=["fontSize"],f=["borderTopWidth","borderBottomWidth","paddingTop","paddingBottom"],k=["borderLeftWidth","borderRightWidth","paddingLeft","paddingRight"],p=c.effects.setMode(a,
-b.options.mode||"effect"),n=b.options.restore||false,m=b.options.scale||"both",l=b.options.origin,j={height:a.height(),width:a.width()};a.from=b.options.from||j;a.to=b.options.to||j;if(l){l=c.effects.getBaseline(l,j);a.from.top=(j.height-a.from.height)*l.y;a.from.left=(j.width-a.from.width)*l.x;a.to.top=(j.height-a.to.height)*l.y;a.to.left=(j.width-a.to.width)*l.x}var d={from:{y:a.from.height/j.height,x:a.from.width/j.width},to:{y:a.to.height/j.height,x:a.to.width/j.width}};if(m=="box"||m=="both"){if(d.from.y!=
-d.to.y){e=e.concat(f);a.from=c.effects.setTransition(a,f,d.from.y,a.from);a.to=c.effects.setTransition(a,f,d.to.y,a.to)}if(d.from.x!=d.to.x){e=e.concat(k);a.from=c.effects.setTransition(a,k,d.from.x,a.from);a.to=c.effects.setTransition(a,k,d.to.x,a.to)}}if(m=="content"||m=="both")if(d.from.y!=d.to.y){e=e.concat(i);a.from=c.effects.setTransition(a,i,d.from.y,a.from);a.to=c.effects.setTransition(a,i,d.to.y,a.to)}c.effects.save(a,n?e:g);a.show();c.effects.createWrapper(a);a.css("overflow","hidden").css(a.from);
-if(m=="content"||m=="both"){f=f.concat(["marginTop","marginBottom"]).concat(i);k=k.concat(["marginLeft","marginRight"]);h=e.concat(f).concat(k);a.find("*[width]").each(function(){child=c(this);n&&c.effects.save(child,h);var o={height:child.height(),width:child.width()};child.from={height:o.height*d.from.y,width:o.width*d.from.x};child.to={height:o.height*d.to.y,width:o.width*d.to.x};if(d.from.y!=d.to.y){child.from=c.effects.setTransition(child,f,d.from.y,child.from);child.to=c.effects.setTransition(child,
-f,d.to.y,child.to)}if(d.from.x!=d.to.x){child.from=c.effects.setTransition(child,k,d.from.x,child.from);child.to=c.effects.setTransition(child,k,d.to.x,child.to)}child.css(child.from);child.animate(child.to,b.duration,b.options.easing,function(){n&&c.effects.restore(child,h)})})}a.animate(a.to,{queue:false,duration:b.duration,easing:b.options.easing,complete:function(){a.to.opacity===0&&a.css("opacity",a.from.opacity);p=="hide"&&a.hide();c.effects.restore(a,n?e:g);c.effects.removeWrapper(a);b.callback&&
-b.callback.apply(this,arguments);a.dequeue()}})})}})(jQuery);
-;/*
- * jQuery UI Effects Shake 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Shake
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(d){d.effects.shake=function(a){return this.queue(function(){var b=d(this),j=["position","top","left"];d.effects.setMode(b,a.options.mode||"effect");var c=a.options.direction||"left",e=a.options.distance||20,l=a.options.times||3,f=a.duration||a.options.duration||140;d.effects.save(b,j);b.show();d.effects.createWrapper(b);var g=c=="up"||c=="down"?"top":"left",h=c=="up"||c=="left"?"pos":"neg";c={};var i={},k={};c[g]=(h=="pos"?"-=":"+=")+e;i[g]=(h=="pos"?"+=":"-=")+e*2;k[g]=(h=="pos"?"-=":"+=")+
-e*2;b.animate(c,f,a.options.easing);for(e=1;e<l;e++)b.animate(i,f,a.options.easing).animate(k,f,a.options.easing);b.animate(i,f,a.options.easing).animate(c,f/2,a.options.easing,function(){d.effects.restore(b,j);d.effects.removeWrapper(b);a.callback&&a.callback.apply(this,arguments)});b.queue("fx",function(){b.dequeue()});b.dequeue()})}})(jQuery);
-;/*
- * jQuery UI Effects Slide 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Slide
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(c){c.effects.slide=function(d){return this.queue(function(){var a=c(this),h=["position","top","left"],e=c.effects.setMode(a,d.options.mode||"show"),b=d.options.direction||"left";c.effects.save(a,h);a.show();c.effects.createWrapper(a).css({overflow:"hidden"});var f=b=="up"||b=="down"?"top":"left";b=b=="up"||b=="left"?"pos":"neg";var g=d.options.distance||(f=="top"?a.outerHeight({margin:true}):a.outerWidth({margin:true}));if(e=="show")a.css(f,b=="pos"?-g:g);var i={};i[f]=(e=="show"?b=="pos"?
-"+=":"-=":b=="pos"?"-=":"+=")+g;a.animate(i,{queue:false,duration:d.duration,easing:d.options.easing,complete:function(){e=="hide"&&a.hide();c.effects.restore(a,h);c.effects.removeWrapper(a);d.callback&&d.callback.apply(this,arguments);a.dequeue()}})})}})(jQuery);
-;/*
- * jQuery UI Effects Transfer 1.8.1
- *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * http://docs.jquery.com/UI/Effects/Transfer
- *
- * Depends:
- *	jquery.effects.core.js
- */
-(function(e){e.effects.transfer=function(a){return this.queue(function(){var b=e(this),c=e(a.options.to),d=c.offset();c={top:d.top,left:d.left,height:c.innerHeight(),width:c.innerWidth()};d=b.offset();var f=e('<div class="ui-effects-transfer"></div>').appendTo(document.body).addClass(a.options.className).css({top:d.top,left:d.left,height:b.innerHeight(),width:b.innerWidth(),position:"absolute"}).animate(c,a.duration,a.options.easing,function(){f.remove();a.callback&&a.callback.apply(b[0],arguments);
-b.dequeue()})})}})(jQuery);
-;/**
  * Title: jqPlot Charts
  * 
  * Pure JavaScript plotting plugin for jQuery.
  * 
  * About: Version
  * 
- * 0.9.7r597 
+ * 1.0.0b1_r746 
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -11480,23 +13027,14 @@ b.dequeue()})})}})(jQuery);
  * See <GPL Version 2> and <MIT License> contained within this distribution for further information. 
  *
  * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php.  This is, of course, not required.
+ * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
+ * or see http://www.jqplot.com/info.php.  This is, of course, not required.
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php.
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
  * 
- * jqPlot includes `date instance methods and printf/sprintf functions by other authors:
- * 
- * Date instance methods:
- *
- *     author Ken Snyder (ken d snyder at gmail dot com)
- *     date 2008-09-10
- *     version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
- *     license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
- *
- * JavaScript printf/sprintf functions:
- *
  *     version 2007.04.27
  *     author Ash Searle
  *     http://hexmen.com/blog/2007/03/printf-sprintf/
@@ -11507,12 +13045,12 @@ b.dequeue()})})}})(jQuery);
  * 
  * About: Introduction
  * 
- * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.1 is included in the distribution.  
+ * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.2 is included in the distribution.  
  * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
  * the excanvas script for IE support in your web page:
  * 
- * > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
- * > <script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
+ * > <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+ * > <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
  * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
  * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 
@@ -11571,7 +13109,7 @@ b.dequeue()})})}})(jQuery);
      * 
      * attributes:
      * enablePlugins - False to disable plugins by default.  Plugins must then be explicitly 
-     *   enabled in the individual plot options.  Default: true.
+     *   enabled in the individual plot options.  Default: false.
      *   This property sets the "show" property of certain plugins to true or false.
      *   Only plugins that can be immediately active upon loading are affected.  This includes
      *   non-renderer plugins like cursor, dragable, highlighter, and trendline.
@@ -11585,12 +13123,12 @@ b.dequeue()})})}})(jQuery);
         var _data, _options;
         
         if (options == null) {
-            if (data instanceof Array) {
+            if (jQuery.isArray(data)) {
                 _data = data;
                 _options = null;   
             }
             
-            else if (data.constructor == Object) {
+            else if (typeof(data) === 'object') {
                 _data = null;
                 _options = data;
             }
@@ -11629,10 +13167,16 @@ b.dequeue()})})}})(jQuery);
             return plot;
         }
     };
+
+            
+    // Convienence function that won't hang IE of FF without FireBug.
+    $.jqplot.log = function() {
+        if (window.console) {
+            console.log.apply(console, arguments);
+        }
+    };
         
-    $.jqplot.debug = 1;
     $.jqplot.config = {
-        debug:1,
         enablePlugins:false,
         defaultHeight:300,
         defaultWidth:400,
@@ -11646,10 +13190,35 @@ b.dequeue()})})}})(jQuery);
         errorFontStyle: '',
         errorFontWeight: '',
         catchErrors: false,
-        defaultTickFormatString: "%.1f"
+        defaultTickFormatString: "%.1f",
+        defaultColors: [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+        defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"]
+    };
+    
+    
+    $.jqplot.arrayMax = function( array ){
+        return Math.max.apply( Math, array );
+    };
+    
+    $.jqplot.arrayMin = function( array ){
+        return Math.min.apply( Math, array );
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
+    
+    // canvas related tests taken from modernizer:
+    // Copyright (c) 2009 - 2010 Faruk Ates.
+    // http://www.modernizr.com
+    
+    $.jqplot.support_canvas = function() {
+        return !!document.createElement('canvas').getContext;
+    };
+            
+    $.jqplot.support_canvas_text = function() {
+        return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+    };
+    
+    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -11713,6 +13282,8 @@ b.dequeue()})})}})(jQuery);
         this._elem.addClass(klass);
         this._elem.css(cssopts);
         this._elem.attr(attrib);
+        // avoid memory leak;
+        elem = null;
         return this._elem;
     };
     
@@ -11853,10 +13424,12 @@ b.dequeue()})})}})(jQuery);
         // renderer specific options.  See <$.jqplot.LinearAxisRenderer> for options.
         this.rendererOptions = {};
         // prop: showTicks
-        // wether to show the ticks (both marks and labels) or not.
+        // Wether to show the ticks (both marks and labels) or not.
+        // Will not override showMark and showLabel options if specified on the ticks themselves.
         this.showTicks = true;
         // prop: showTickMarks
-        // wether to show the tick marks (line crossing grid) or not.
+        // Wether to show the tick marks (line crossing grid) or not.
+        // Overridden by showTicks and showMark option of tick itself.
         this.showTickMarks = true;
         // prop: showMinorTicks
         // Wether or not to show minor ticks.  This is renderer dependent.
@@ -11875,6 +13448,9 @@ b.dequeue()})})}})(jQuery);
         this.borderColor = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
+        // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
+        // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
+        this._intervalStats = [];
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
         this._ticks=[];
@@ -11905,6 +13481,18 @@ b.dequeue()})})}})(jQuery);
         this.renderer = new this.renderer();
         // set the axis name
         this.tickOptions.axis = this.name;
+        // if showMark or showLabel tick options not specified, use value of axis option.
+        // showTicks overrides showTickMarks.
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTicks;
+        }
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTickMarks;
+        }
+        if (this.tickOptions.showLabel == null) {
+            this.tickOptions.showLabel = this.showTicks;
+        }
+        
         if (this.label == null || this.label == '') {
             this.showLabel = false;
         }
@@ -11977,11 +13565,46 @@ b.dequeue()})})}})(jQuery);
         this.renderer.reset.call(this);
     };
     
-    Axis.prototype.resetScale = function() {
-        this.min = null;
-        this.max = null;
-        this.numberTicks = null;
-        this.tickInterval = null;
+    Axis.prototype.resetScale = function(opts) {
+        $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
+        this.resetDataBounds();
+    };
+    
+    Axis.prototype.resetDataBounds = function() {
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        var db = this._dataBounds;
+        db.min = null;
+        db.max = null;
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s._plotData;
+            var minyidx = 1, maxyidx = 1;
+
+            if (s._type != null && s._type == 'ohlc') {
+                minyidx = 3;
+                maxyidx = 2;
+            }
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
+                        db.min = d[j][0];
+                    }
+                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
+                        db.max = d[j][0];
+                    }
+                }              
+                else {
+                    if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
+                        db.min = d[j][minyidx];
+                    }
+                    if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
+                        db.max = d[j][maxyidx];
+                    }
+                }              
+            }
+        }
     };
 
     /**
@@ -12092,7 +13715,9 @@ b.dequeue()})})}})(jQuery);
         // if user has specified xoffset or yoffset, copy these to
         // the margin properties.
         
-        if (this.placement ==  'inside') this.placement = 'insideGrid';
+        if (this.placement ==  'inside') {
+            this.placement = 'insideGrid';
+        }
         
         if (this.xoffset >0) {
             if (this.placement == 'insideGrid') {
@@ -12317,6 +13942,12 @@ b.dequeue()})})}})(jQuery);
         // prop: lineWidth
         // width of the line in pixels.  May have different meanings depending on renderer.
         this.lineWidth = 2.5;
+        // prop: lineJoin
+        // Canvas lineJoin style between segments of series.
+        this.lineJoin = 'round';
+        // prop: lineCap
+        // Canvas lineCap style at ends of line.
+        this.lineCap = 'round';
         // prop: shadow
         // wether or not to draw a shadow on the line
         this.shadow = true;
@@ -12333,7 +13964,7 @@ b.dequeue()})})}})(jQuery);
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.1';
         // prop: breakOnNull
-        // Not implemented. wether line segments should be be broken at null value.
+        // Wether line segments should be be broken at null value.
         // False will join point on either side of line.
         this.breakOnNull = false;
         // prop: markerRenderer
@@ -12418,6 +14049,7 @@ b.dequeue()})})}})(jQuery);
         // sum of y values in this series.
         this._sumy = 0;
         this._sumx = 0;
+        this._type = '';
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
@@ -12476,9 +14108,12 @@ b.dequeue()})})}})(jQuery);
     Series.prototype.draw = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
             $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
         if (this.show) {
@@ -12486,7 +14121,7 @@ b.dequeue()})})}})(jQuery);
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -12496,27 +14131,32 @@ b.dequeue()})})}})(jQuery);
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
             this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
+        
+        sctx = opts = plot = j = data = gridData = null;
     };
     
     Series.prototype.drawShadow = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
             $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         if (this.shadow) {
             this.renderer.setGridData.call(this, plot);
 
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -12526,14 +14166,16 @@ b.dequeue()})})}})(jQuery);
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
             this.renderer.drawShadow.call(this, sctx, gridData, options);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
+        
+        sctx = opts = plot = j = data = gridData = null;
         
     };
     
@@ -12708,10 +14350,12 @@ b.dequeue()})})}})(jQuery);
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         
         this._elem.addClass(klass);
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -12783,6 +14427,34 @@ b.dequeue()})})}})(jQuery);
         // The data should be in the form of an array of 2D or 1D arrays like
         // > [ [[x1, y1], [x2, y2],...], [y1, y2, ...] ].
         this.data = [];
+        // prop dataRenderer
+        // A callable which can be used to preprocess data passed into the plot.
+        // Will be called with 2 arguments, the plot data and a reference to the plot.
+        this.dataRenderer;
+        // prop dataRendererOptions
+        // Options that will be passed to the dataRenderer.
+        // Can be of any type.
+        this.dataRendererOptions;
+        // prop noDataIndicator
+        // Options to set up a mock plot with a data loading indicator if no data is specified.
+        this.noDataIndicator = {    
+            show: false,
+            indicator: 'Loading Data...',
+            axes: {
+                xaxis: {
+                    min: 0,
+                    max: 10,
+                    tickInterval: 2,
+                    show: true
+                },
+                yaxis: {
+                    min: 0,
+                    max: 12,
+                    tickInterval: 3,
+                    show: true
+                }
+            }
+        };
         // The id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
@@ -12797,7 +14469,6 @@ b.dequeue()})})}})(jQuery);
             // default options that will be applied to all series.
             // see <Series> for series options.
             seriesDefaults: {},
-            gridPadding: {top:10, right:10, bottom:23, left:10},
             series:[]
         };
         // prop: series
@@ -12824,7 +14495,8 @@ b.dequeue()})})}})(jQuery);
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
-        this._gridPadding = {top:10, right:10, bottom:10, left:10};
+        this._gridPadding = {top:null, right:null, bottom:null, left:null};
+        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncXTicks = true;
         // a shortcut for axis syncTicks options.  Not implemented yet.
@@ -12834,8 +14506,8 @@ b.dequeue()})})}})(jQuery);
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
-        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"];
-        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"];
+        this.seriesColors = $.jqplot.config.defaultColors;
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
@@ -12862,6 +14534,12 @@ b.dequeue()})})}})(jQuery);
         // true or false, creates a stack or "mountain" plot.
         // Not all series renderers may implement this option.
         this.stackSeries = false;
+        // prop: defaultAxisStart
+        // 1-D data series are internally converted into 2-D [x,y] data point arrays
+        // by jqPlot.  This is the default starting value for the missing x or y value.
+        // The added data will be a monotonically increasing series (e.g. [1, 2, 3, ...])
+        // starting at this value.
+        this.defaultAxisStart = 1;
         // array to hold the cumulative stacked series data.
         // used to ajust the individual series data, which won't have access to other
         // series data.
@@ -12919,6 +14597,7 @@ b.dequeue()})})}})(jQuery);
         // sets the plot target, checks data and applies user
         // options to plot.
         this.init = function(target, data, options) {
+            options = options || {};
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
@@ -12959,7 +14638,7 @@ b.dequeue()})})}})(jQuery);
                 this.target.css('height', h+'px');
             }
             else {
-                this._height = this.target.height();
+                this._height = h = this.target.height();
             }
             if (!this.target.width()) {
                 var w;
@@ -12976,7 +14655,7 @@ b.dequeue()})})}})(jQuery);
                 this.target.css('width', w+'px');
             }
             else {
-                this._width = this.target.width();
+                this._width = w = this.target.width();
             }
             
             this._plotDimensions.height = this._height;
@@ -12990,17 +14669,59 @@ b.dequeue()})})}})(jQuery);
                 throw "Canvas dimension not set";
             }
             
-            if (data == null) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
+            if (options.dataRenderer && jQuery.isFunction(options.dataRenderer)) {
+                if (options.dataRendererOptions) {
+                    this.dataRendererOptions = options.dataRendererOptions;
+                }
+                this.dataRenderer = options.dataRenderer;
+                data = this.dataRenderer(data, this, this.dataRendererOptions);
             }
-            if (data.constructor != Array || data.length == 0 || data[0].constructor != Array || data[0].length == 0) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
+            
+            if (options.noDataIndicator && jQuery.isPlainObject(options.noDataIndicator)) {
+                $.extend(true, this.noDataIndicator, options.noDataIndicator);
+            }
+            
+            if (data == null || jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
+                
+                if (this.noDataIndicator.show == false) {
+                    throw{
+                        name: "DataError",
+                        message: "No data to plot."
+                    };
+                }
+                
+                else {
+                    // have to be descructive here in order for plot to not try and render series.
+                    // This means that $.jqplot() will have to be called again when there is data.
+                    //delete options.series;
+                    
+                    for (var ax in this.noDataIndicator.axes) {
+                        for (var prop in this.noDataIndicator.axes[ax]) {
+                            this.axes[ax][prop] = this.noDataIndicator.axes[ax][prop];
+                        }
+                    }
+                    
+                    this.postDrawHooks.add(function() {
+                        var eh = this.eventCanvas.getHeight();
+                        var ew = this.eventCanvas.getWidth();
+                        var temp = $('<div class="jqplot-noData-container" style="position:absolute;"></div>');
+                        this.target.append(temp);
+                        temp.height(eh);
+                        temp.width(ew);
+                        temp.css('top', this.eventCanvas._offsets.top);
+                        temp.css('left', this.eventCanvas._offsets.left);
+                        
+                        var temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
+                        temp.append(temp2);
+                        temp2.html(this.noDataIndicator.indicator);
+                        var th = temp2.height();
+                        var tw = temp2.width();
+                        temp2.height(th);
+                        temp2.width(tw);
+                        temp2.css('top', (eh - th)/2 + 'px');
+                    });
+
+                }
             }
             
             this.data = data;
@@ -13074,19 +14795,20 @@ b.dequeue()})})}})(jQuery);
         //
         // Parameters:
         // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
-        this.resetAxesScale = function(axes) {
-            var ax = (axes != undefined) ? axes : this.axes;
+        this.resetAxesScale = function(axes, options) {
+            var opts = options || {};
+            var ax = axes || this.axes;
             if (ax === true) {
                 ax = this.axes;
             }
-            if (ax.constructor === Array) {
+            if (jQuery.isArray(ax)) {
                 for (var i = 0; i < ax.length; i++) {
-                    this.axes[ax[i]].resetScale();
+                    this.axes[ax[i]].resetScale(opts[ax[i]]);
                 }
             }
-            else if (ax.constructor === Object) {
+            else if (typeof(ax) === 'object') {
                 for (var name in ax) {
-                    this.axes[name].resetScale();
+                    this.axes[name].resetScale(opts[name]);
                 }
             }
         };
@@ -13098,6 +14820,10 @@ b.dequeue()})})}})(jQuery);
             // If plot doesn't have height and width for some
             // reason, set it by other means.  Plot must not have
             // a display:none attribute, however.
+            
+            //
+            // Wont have options here
+            /*
             if (!this.target.height()) {
                 var h;
                 if (options && options.height) {
@@ -13132,6 +14858,10 @@ b.dequeue()})})}})(jQuery);
             else {
                 this._width = this.target.width();
             }
+            */
+            
+            this._height = this.target.height();
+            this._width = this.target.width();
             
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
                 throw "Target dimension not set";
@@ -13292,6 +15022,13 @@ b.dequeue()})})}})(jQuery);
                 series._sumx += series.data[i][0];
             }
         };
+
+        // this.setData = function(seriesIndex, newdata) {
+        //     // if newdata is null, assume all data is passed in as first argument
+        //     if (newdata == null) {
+                
+        //     }
+        // };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -13327,6 +15064,7 @@ b.dequeue()})})}})(jQuery);
             if (this.options.captureRightClick) {
                 this.captureRightClick = this.options.captureRightClick;
             }
+            this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
@@ -13337,29 +15075,29 @@ b.dequeue()})})}})(jQuery);
                 axis._plotWidth = this._width;
                 axis._plotHeight = this._height;
             }
-            if (this.data.length == 0) {
-                this.data = [];
-                for (var i=0; i<this.options.series.length; i++) {
-                    this.data.push(this.options.series.data);
-                }    
-            }
+            // if (this.data.length == 0) {
+            //     this.data = [];
+            //     for (var i=0; i<this.options.series.length; i++) {
+            //         this.data.push(this.options.series.data);
+            //     }    
+            // }
                 
-            var normalizeData = function(data, dir) {
+            var normalizeData = function(data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
                 var i;
                 dir = dir || 'vertical';
-                if (!(data[0] instanceof Array)) {
+                if (!jQuery.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
                     for (i=0; i<data.length; i++) {
                         if (dir == 'vertical') {
-                            temp.push([i+1, data[i]]);   
+                            temp.push([start + i, data[i]]);   
                         }
                         else {
-                            temp.push([data[i], i+1]);
+                            temp.push([data[i], start+i]);
                         }
                     }
                 }            
@@ -13370,7 +15108,7 @@ b.dequeue()})})}})(jQuery);
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) { 
+            for (var i=0; i<this.data.length; i++) {
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
@@ -13383,7 +15121,7 @@ b.dequeue()})})}})(jQuery);
                 if (temp.renderer.constructor == $.jqplot.barRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
                 }
-                temp.data = normalizeData(this.data[i], dir);
+                temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
                     case 'xaxis':
                         temp._xaxis = this.axes.xaxis;
@@ -13468,17 +15206,21 @@ b.dequeue()})})}})(jQuery);
         // resetAxes - true to reset all axes min, max, numberTicks and tickInterval setting so axes will rescale themselves.
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
-            var opts = (options != undefined) ? options : {};
-            var clear = (opts.clear != undefined) ? opts.clear : true;
-            var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
+            var opts =  options || {};
+            var clear = opts.clear || true;
+            var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
-            if (resetAxes) {
-                this.resetAxesScale(resetAxes);
-            }
             this.reInitialize();
+            if (resetAxes) {
+                this.resetAxesScale(resetAxes, opts.axes);
+            }
             this.draw();
             this.target.trigger('jqplotPostReplot');
         };
@@ -13498,6 +15240,10 @@ b.dequeue()})})}})(jQuery);
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
              for (var ax in this.axes) {
@@ -13599,8 +15345,11 @@ b.dequeue()})})}})(jQuery);
                 // end of gridPadding adjustments.
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
-                    if (gridPadding[arr[n]]) {
+                    if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
                         this._gridPadding[arr[n]] = gridPadding[arr[n]];
+                    }
+                    else if (this._gridPadding[arr[n]] == null) {
+                        this._gridPadding[arr[n]] = this._defaultGridPadding[arr[n]];
                     }
                 }
                 
@@ -13658,7 +15407,9 @@ b.dequeue()})})}})(jQuery);
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-                    $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    if (this.series.length) {
+                        $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    }
                     this.legend.pack(legendPadding);                
                 }
             
@@ -13702,8 +15453,8 @@ b.dequeue()})})}})(jQuery);
             if (this.captureRightClick) {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
                 this.eventCanvas._elem.get(0).oncontextmenu = function() {
-					return false;
-				};
+                    return false;
+                };
             }
             else {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -13728,59 +15479,9 @@ b.dequeue()})})}})(jQuery);
             return {offsets:go, gridPos:gridPos, dataPos:dataPos};
         }
         
-        function getNeighborPoint(plot, x, y) {
-            var ret = null;
-            var s, i, d0, d, j, r, k;
-            var threshold, t;
-            for (var k=plot.seriesStack.length-1; k>-1; k--) {
-                i = plot.seriesStack[k];
-                s = plot.series[i];
-                r = s.renderer;
-                if (s.show) {
-                    t = s.markerRenderer.size/2+s.neighborThreshold;
-                    threshold = (t > 0) ? t : 0;
-                    for (var j=0; j<s.gridData.length; j++) {
-                        p = s.gridData[j];
-                        // neighbor looks different to OHLC chart.
-                        if (r.constructor == $.jqplot.OHLCRenderer) {
-                            if (r.candleStick) {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // if an open hi low close chart
-                            else if (!r.hlc){
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // a hi low close chart
-                            else {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            
-                        }
-                        else {
-                            d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
-                            if (d <= threshold && (d <= d0 || d0 == null)) {
-                               d0 = d;
-                               return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                            }
-                        }
-                    } 
-                }
-            }
-            return ret;
-        }
-        
         
         // function to check if event location is over a area area
-        function checkIntersection(gridpos, plot, theCanvas) {
+        function checkIntersection(gridpos, plot) {
             var series = plot.series;
             var i, j, k, s, r, x, y, theta, sm, sa, minang, maxang;
             var d0, d, p, pp, points, bw;
@@ -13792,8 +15493,9 @@ b.dequeue()})})}})(jQuery);
                     case $.jqplot.BarRenderer:
                         x = gridpos.x;
                         y = gridpos.y;
-                        for (j=s.gridData.length-1; j>=0; j--) {
+                        for (j=0; j<s._barPoints.length; j++) {
                             points = s._barPoints[j];
+                            p = s.gridData[j];
                             if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
                                 return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
                             }
@@ -13847,8 +15549,8 @@ b.dequeue()})})}})(jQuery);
                         
                     case $.jqplot.PieRenderer:
                         sa = s.startAngle/180*Math.PI;
-                        x = gridpos.x - (theCanvas.width / 2); // s._center[0];
-                        y = gridpos.y - (theCanvas.height / 2); //s._center[1];
+                        x = gridpos.x - s._center[0];
+                        y = gridpos.y - s._center[1];
                         r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
                         if (x > 0 && -y >= 0) {
                             theta = 2*Math.PI - Math.atan(-y/x);
@@ -13904,7 +15606,9 @@ b.dequeue()})})}})(jQuery);
                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
-                            if (ret != null) return ret;
+                            if (ret != null) {
+                                return ret;
+                            }
                         }
                         break;
                         
@@ -13915,7 +15619,8 @@ b.dequeue()})})}})(jQuery);
                             vfirst = v[0],
                             vlast = v[v.length-1],
                             lex,
-                            rex;
+                            rex,
+                            cv;
     
                         // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
     
@@ -13944,8 +15649,6 @@ b.dequeue()})})}})(jQuery);
                         r = s.renderer;
                         if (s.show) {
                             if (s.fill) {
-                                x = gridpos.x;
-                                y = gridpos.y;
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
@@ -13956,16 +15659,16 @@ b.dequeue()})})}})(jQuery);
                                     var j = numPoints-1;
 
                                     for(var ii=0; ii < numPoints; ii++) { 
-                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                        var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                        var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
-                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                    			inside = !inside;
-                                    		}
-                                    	}
+                                        if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)     {
+                                            if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                                inside = !inside;
+                                            }
+                                        }
 
-                                    	j = ii;
+                                        j = ii;
                                     }        
                                 }
                                 if (inside) {
@@ -14003,7 +15706,7 @@ b.dequeue()})})}})(jQuery);
                                         }
                             
                                     }
-                                    else {
+                                    else if (p[0] != null && p[1] != null){
                                         d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
                                         if (d <= threshold && (d <= d0 || d0 == null)) {
                                            d0 = d;
@@ -14071,7 +15774,7 @@ b.dequeue()})})}})(jQuery);
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14083,7 +15786,7 @@ b.dequeue()})})}})(jQuery);
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotDblClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14093,7 +15796,7 @@ b.dequeue()})})}})(jQuery);
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotMouseDown');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14111,7 +15814,7 @@ b.dequeue()})})}})(jQuery);
         this.onRightClick = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             if (p.captureRightClick) {
                 if (ev.which == 3) {
                 var evt = jQuery.Event('jqplotRightClick');
@@ -14131,7 +15834,7 @@ b.dequeue()})})}})(jQuery);
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotMouseMove');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14165,8 +15868,8 @@ b.dequeue()})})}})(jQuery);
         this.drawSeries = function(options, idx){
             var i, series, ctx;
             // if only one argument passed in and it is a number, use it ad idx.
-            idx = (typeof(options) == "number" && idx == null) ? options : idx;
-            options = (typeof(options) == "object") ? options : {};
+            idx = (typeof(options) === "number" && idx == null) ? options : idx;
+            options = (typeof(options) === "object") ? options : {};
             // draw specified series
             if (idx != undefined) {
                 series = this.series[idx];
@@ -14198,6 +15901,7 @@ b.dequeue()})})}})(jQuery);
                     series.draw(ctx, options, this);
                 }
             }
+            options = idx = i = series = ctx = null;
         };
         
         // method: moveSeriesToFront
@@ -14260,7 +15964,7 @@ b.dequeue()})})}})(jQuery);
         // Useful to put a series back where it belongs after moving
         // it to the front.
         this.restorePreviousSeriesOrder = function () {
-            var i, j, serelem, shadelem, temp;
+            var i, j, serelem, shadelem, temp, move, keep;
             // if no change, return.
             if (this.seriesStack == this.previousSeriesStack) {
                 return;
@@ -14283,7 +15987,7 @@ b.dequeue()})})}})(jQuery);
         // Restore the series canvas order to its original order
         // when the plot was created.
         this.restoreOriginalSeriesOrder = function () {
-            var i, j, arr=[];
+            var i, j, arr=[], serelem, shadelem;
             for (i=0; i<this.series.length; i++) {
                 arr.push(i);
             }
@@ -14309,7 +16013,7 @@ b.dequeue()})})}})(jQuery);
     // conpute a highlight color or array of highlight colors from given colors.
     $.jqplot.computeHighlightColors  = function(colors) {
         var ret;
-        if (typeof(colors) == "array") {
+        if (jQuery.isArray(colors)) {
             ret = [];
             for (var i=0; i<colors.length; i++){
                 var rgba = $.jqplot.getColorComponents(colors[i]);
@@ -14338,6 +16042,7 @@ b.dequeue()})})}})(jQuery);
     };
         
    $.jqplot.ColorGenerator = function(colors) {
+        colors = colors || $.jqplot.config.defaultColors;
         var idx = 0;
         
         this.next = function () { 
@@ -14381,7 +16086,7 @@ b.dequeue()})})}})(jQuery);
     $.jqplot.hex2rgb = function(h, a) {
         h = h.replace('#', '');
         if (h.length == 3) {
-            h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+            h = h.charAt(0)+h.charAt(0)+h.charAt(1)+h.charAt(1)+h.charAt(2)+h.charAt(2);
         }
         var rgb;
         rgb = 'rgba('+parseInt(h.slice(0,2), 16)+', '+parseInt(h.slice(2,4), 16)+', '+parseInt(h.slice(4,6), 16);
@@ -14397,7 +16102,7 @@ b.dequeue()})})}})(jQuery);
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/;
         var m = s.match(pat);
         var h = '#';
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             var temp;
             if (m[i].search(/%/) != -1) {
                 temp = parseInt(255*m[i]/100, 10).toString(16);
@@ -14437,7 +16142,7 @@ b.dequeue()})})}})(jQuery);
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/;
         var m = rgb.match(pat);
         var ret = [];
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             if (m[i].search(/%/) != -1) {
                 ret[i-1] = parseInt(255*m[i]/100, 10);
             }
@@ -14450,19 +16155,7 @@ b.dequeue()})})}})(jQuery);
     };
     
     $.jqplot.colorKeywordMap = {aliceblue: 'rgb(240, 248, 255)', antiquewhite: 'rgb(250, 235, 215)', aqua: 'rgb( 0, 255, 255)', aquamarine: 'rgb(127, 255, 212)', azure: 'rgb(240, 255, 255)', beige: 'rgb(245, 245, 220)', bisque: 'rgb(255, 228, 196)', black: 'rgb( 0, 0, 0)', blanchedalmond: 'rgb(255, 235, 205)', blue: 'rgb( 0, 0, 255)', blueviolet: 'rgb(138, 43, 226)', brown: 'rgb(165, 42, 42)', burlywood: 'rgb(222, 184, 135)', cadetblue: 'rgb( 95, 158, 160)', chartreuse: 'rgb(127, 255, 0)', chocolate: 'rgb(210, 105, 30)', coral: 'rgb(255, 127, 80)', cornflowerblue: 'rgb(100, 149, 237)', cornsilk: 'rgb(255, 248, 220)', crimson: 'rgb(220, 20, 60)', cyan: 'rgb( 0, 255, 255)', darkblue: 'rgb( 0, 0, 139)', darkcyan: 'rgb( 0, 139, 139)', darkgoldenrod: 'rgb(184, 134, 11)', darkgray: 'rgb(169, 169, 169)', darkgreen: 'rgb( 0, 100, 0)', darkgrey: 'rgb(169, 169, 169)', darkkhaki: 'rgb(189, 183, 107)', darkmagenta: 'rgb(139, 0, 139)', darkolivegreen: 'rgb( 85, 107, 47)', darkorange: 'rgb(255, 140, 0)', darkorchid: 'rgb(153, 50, 204)', darkred: 'rgb(139, 0, 0)', darksalmon: 'rgb(233, 150, 122)', darkseagreen: 'rgb(143, 188, 143)', darkslateblue: 'rgb( 72, 61, 139)', darkslategray: 'rgb( 47, 79, 79)', darkslategrey: 'rgb( 47, 79, 79)', darkturquoise: 'rgb( 0, 206, 209)', darkviolet: 'rgb(148, 0, 211)', deeppink: 'rgb(255, 20, 147)', deepskyblue: 'rgb( 0, 191, 255)', dimgray: 'rgb(105, 105, 105)', dimgrey: 'rgb(105, 105, 105)', dodgerblue: 'rgb( 30, 144, 255)', firebrick: 'rgb(178, 34, 34)', floralwhite: 'rgb(255, 250, 240)', forestgreen: 'rgb( 34, 139, 34)', fuchsia: 'rgb(255, 0, 255)', gainsboro: 'rgb(220, 220, 220)', ghostwhite: 'rgb(248, 248, 255)', gold: 'rgb(255, 215, 0)', goldenrod: 'rgb(218, 165, 32)', gray: 'rgb(128, 128, 128)', grey: 'rgb(128, 128, 128)', green: 'rgb( 0, 128, 0)', greenyellow: 'rgb(173, 255, 47)', honeydew: 'rgb(240, 255, 240)', hotpink: 'rgb(255, 105, 180)', indianred: 'rgb(205, 92, 92)', indigo: 'rgb( 75, 0, 130)', ivory: 'rgb(255, 255, 240)', khaki: 'rgb(240, 230, 140)', lavender: 'rgb(230, 230, 250)', lavenderblush: 'rgb(255, 240, 245)', lawngreen: 'rgb(124, 252, 0)', lemonchiffon: 'rgb(255, 250, 205)', lightblue: 'rgb(173, 216, 230)', lightcoral: 'rgb(240, 128, 128)', lightcyan: 'rgb(224, 255, 255)', lightgoldenrodyellow: 'rgb(250, 250, 210)', lightgray: 'rgb(211, 211, 211)', lightgreen: 'rgb(144, 238, 144)', lightgrey: 'rgb(211, 211, 211)', lightpink: 'rgb(255, 182, 193)', lightsalmon: 'rgb(255, 160, 122)', lightseagreen: 'rgb( 32, 178, 170)', lightskyblue: 'rgb(135, 206, 250)', lightslategray: 'rgb(119, 136, 153)', lightslategrey: 'rgb(119, 136, 153)', lightsteelblue: 'rgb(176, 196, 222)', lightyellow: 'rgb(255, 255, 224)', lime: 'rgb( 0, 255, 0)', limegreen: 'rgb( 50, 205, 50)', linen: 'rgb(250, 240, 230)', magenta: 'rgb(255, 0, 255)', maroon: 'rgb(128, 0, 0)', mediumaquamarine: 'rgb(102, 205, 170)', mediumblue: 'rgb( 0, 0, 205)', mediumorchid: 'rgb(186, 85, 211)', mediumpurple: 'rgb(147, 112, 219)', mediumseagreen: 'rgb( 60, 179, 113)', mediumslateblue: 'rgb(123, 104, 238)', mediumspringgreen: 'rgb( 0, 250, 154)', mediumturquoise: 'rgb( 72, 209, 204)', mediumvioletred: 'rgb(199, 21, 133)', midnightblue: 'rgb( 25, 25, 112)', mintcream: 'rgb(245, 255, 250)', mistyrose: 'rgb(255, 228, 225)', moccasin: 'rgb(255, 228, 181)', navajowhite: 'rgb(255, 222, 173)', navy: 'rgb( 0, 0, 128)', oldlace: 'rgb(253, 245, 230)', olive: 'rgb(128, 128, 0)', olivedrab: 'rgb(107, 142, 35)', orange: 'rgb(255, 165, 0)', orangered: 'rgb(255, 69, 0)', orchid: 'rgb(218, 112, 214)', palegoldenrod: 'rgb(238, 232, 170)', palegreen: 'rgb(152, 251, 152)', paleturquoise: 'rgb(175, 238, 238)', palevioletred: 'rgb(219, 112, 147)', papayawhip: 'rgb(255, 239, 213)', peachpuff: 'rgb(255, 218, 185)', peru: 'rgb(205, 133, 63)', pink: 'rgb(255, 192, 203)', plum: 'rgb(221, 160, 221)', powderblue: 'rgb(176, 224, 230)', purple: 'rgb(128, 0, 128)', red: 'rgb(255, 0, 0)', rosybrown: 'rgb(188, 143, 143)', royalblue: 'rgb( 65, 105, 225)', saddlebrown: 'rgb(139, 69, 19)', salmon: 'rgb(250, 128, 114)', sandybrown: 'rgb(244, 164, 96)', seagreen: 'rgb( 46, 139, 87)', seashell: 'rgb(255, 245, 238)', sienna: 'rgb(160, 82, 45)', silver: 'rgb(192, 192, 192)', skyblue: 'rgb(135, 206, 235)', slateblue: 'rgb(106, 90, 205)', slategray: 'rgb(112, 128, 144)', slategrey: 'rgb(112, 128, 144)', snow: 'rgb(255, 250, 250)', springgreen: 'rgb( 0, 255, 127)', steelblue: 'rgb( 70, 130, 180)', tan: 'rgb(210, 180, 140)', teal: 'rgb( 0, 128, 128)', thistle: 'rgb(216, 191, 216)', tomato: 'rgb(255, 99, 71)', turquoise: 'rgb( 64, 224, 208)', violet: 'rgb(238, 130, 238)', wheat: 'rgb(245, 222, 179)', white: 'rgb(255, 255, 255)', whitesmoke: 'rgb(245, 245, 245)', yellow: 'rgb(255, 255, 0)', yellowgreen: 'rgb(154, 205, 50)'};
-        
-    // Convienence function that won't hang IE.
-    $.jqplot.log = function() {
-        if (window.console && $.jqplot.debug) {
-           if (arguments.length == 1) {
-               console.log (arguments[0]);
-            }
-           else {
-               console.log(arguments);
-            }
-        }
-    };
-    var log = $.jqplot.log;
+
     
 
     // class: $.jqplot.AxisLabelRenderer
@@ -14582,6 +16275,7 @@ b.dequeue()})})}})(jQuery);
         // css spec for the color attribute.
         this.textColor;
         this._elem;
+		this._breakTick = false;
         
         $.extend(true, this, options);
     };
@@ -14610,7 +16304,7 @@ b.dequeue()})})}})(jQuery);
         if (this.prefix && !this.formatString) {
             this.label = this.prefix + this.label;
         }
-        style ='style="position:absolute;';
+        var style ='style="position:absolute;';
         if (Number(this.label)) {
             style +='white-space:nowrap;';
         }
@@ -14628,6 +16322,9 @@ b.dequeue()})})}})(jQuery);
         if (this.textColor) {
             this._elem.css('color', this.textColor);
         }
+		if (this._breakTick) {
+			this._elem.addClass('jqplot-breakTick');
+		}
         return this._elem;
     };
         
@@ -14672,10 +16369,10 @@ b.dequeue()})})}})(jQuery);
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
         }
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
         this._top = this._offsets.top;
@@ -14684,6 +16381,8 @@ b.dequeue()})})}})(jQuery);
         this._right = w - this._offsets.right;
         this._width = this._right - this._left;
         this._height = this._bottom - this._top;
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -14697,13 +16396,13 @@ b.dequeue()})})}})(jQuery);
         ctx.fillStyle = this.backgroundColor || this.background;
         ctx.fillRect(this._left, this._top, this._width, this._height);
         
-        if (this.drawGridlines) {
+        if (true) {
             ctx.save();
             ctx.lineJoin = 'miter';
             ctx.lineCap = 'butt';
             ctx.lineWidth = this.gridLineWidth;
             ctx.strokeStyle = this.gridLineColor;
-            var b, e;
+            var b, e, s, m;
             var ax = ['xaxis', 'yaxis', 'x2axis', 'y2axis'];
             for (var i=4; i>0; i--) {
                 var name = ax[i-1];
@@ -14717,12 +16416,12 @@ b.dequeue()})})}})(jQuery);
                             switch (name) {
                                 case 'xaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._top, pos, this._bottom);
                                     }
                                     
                                     // draw the mark
-                                    if (t.showMark && t.mark) {
+	                                if (t.showMark && t.mark) {
                                         s = t.markSize;
                                         m = t.mark;
                                         var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -14754,7 +16453,7 @@ b.dequeue()})})}})(jQuery);
                                     break;
                                 case 'yaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._right, pos, this._left, pos);
                                     }
                                     // draw the mark
@@ -14789,7 +16488,7 @@ b.dequeue()})})}})(jQuery);
                                     break;
                                 case 'x2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._bottom, pos, this._top);
                                     }
                                     // draw the mark
@@ -14824,7 +16523,7 @@ b.dequeue()})})}})(jQuery);
                                     break;
                                 case 'y2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._left, pos, this._right, pos);
                                     }
                                     // draw the mark
@@ -14862,7 +16561,10 @@ b.dequeue()})})}})(jQuery);
                             }
                         }
                     }
+                    t = null;
                 }
+                axis = null;
+                ticks = null;
             }
             // Now draw grid lines for additional y axes
             ax = ['y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
@@ -14913,8 +16615,12 @@ b.dequeue()})})}})(jQuery);
                             // draw the line
                             drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                         }
+                        t = null;
                     }
+                    t0 = null;
                 }
+                axis = null;
+                ticks =  null;
             }
             
             ctx.restore();
@@ -14949,576 +16655,11 @@ b.dequeue()})})}})(jQuery);
         // ctx.strokeStyle = this.borderColor;
         // ctx.strokeRect(this._left, this._top, this._width, this._height);
         
-    
         ctx.restore();
+        ctx =  null;
+        axes = null;
     };
-   
-    /**
-     * Date instance methods
-     *
-     * @author Ken Snyder (ken d snyder at gmail dot com)
-     * @date 2008-09-10
-     * @version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
-     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
-     *
-     * @contributions Chris Leonello
-     * @comment Bug fix to 12 hour time and additions to handle milliseconds and 
-     * @comment 24 hour time without am/pm suffix
-     *
-     */
  
-    // begin by creating a scope for utility variables
-    
-    //
-    // pre-calculate the number of milliseconds in a day
-    //  
-    
-    var day = 24 * 60 * 60 * 1000;
-    //
-    // function to add leading zeros
-    //
-    var zeroPad = function(number, digits) {
-        number = String(number);
-        while (number.length < digits) {
-            number = '0' + number;
-        }
-        return number;
-    };
-    //
-    // set up integers and functions for adding to a date or subtracting two dates
-    //
-    var multipliers = {
-        millisecond: 1,
-        second: 1000,
-        minute: 60 * 1000,
-        hour: 60 * 60 * 1000,
-        day: day,
-        week: 7 * day,
-        month: {
-            // add a number of months
-            add: function(d, number) {
-                // add any years needed (increments of 12)
-                multipliers.year.add(d, Math[number > 0 ? 'floor' : 'ceil'](number / 12));
-                // ensure that we properly wrap betwen December and January
-                var prevMonth = d.getMonth() + (number % 12);
-                if (prevMonth == 12) {
-                    prevMonth = 0;
-                    d.setYear(d.getFullYear() + 1);
-                } else if (prevMonth == -1) {
-                    prevMonth = 11;
-                    d.setYear(d.getFullYear() - 1);
-                }
-                d.setMonth(prevMonth);
-            },
-            // get the number of months between two Date objects (decimal to the nearest day)
-            diff: function(d1, d2) {
-                // get the number of years
-                var diffYears = d1.getFullYear() - d2.getFullYear();
-                // get the number of remaining months
-                var diffMonths = d1.getMonth() - d2.getMonth() + (diffYears * 12);
-                // get the number of remaining days
-                var diffDays = d1.getDate() - d2.getDate();
-                // return the month difference with the days difference as a decimal
-                return diffMonths + (diffDays / 30);
-            }
-        },
-        year: {
-            // add a number of years
-            add: function(d, number) {
-                d.setYear(d.getFullYear() + Math[number > 0 ? 'floor' : 'ceil'](number));
-            },
-            // get the number of years between two Date objects (decimal to the nearest day)
-            diff: function(d1, d2) {
-                return multipliers.month.diff(d1, d2) / 12;
-            }
-        }        
-    };
-    //
-    // alias each multiplier with an 's' to allow 'year' and 'years' for example
-    //
-    for (var unit in multipliers) {
-        if (unit.substring(unit.length - 1) != 's') { // IE will iterate newly added properties :|
-            multipliers[unit + 's'] = multipliers[unit];
-        }
-    }
-    //
-    // take a date instance and a format code and return the formatted value
-    //
-    var format = function(d, code) {
-            if (Date.prototype.strftime.formatShortcuts[code]) {
-                    // process any shortcuts recursively
-                    return d.strftime(Date.prototype.strftime.formatShortcuts[code]);
-            } else {
-                    // get the format code function and toPaddedString() argument
-                    var getter = (Date.prototype.strftime.formatCodes[code] || '').split('.');
-                    var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
-                    // run toPaddedString() if specified
-                    if (getter[1]) {
-                        nbr = zeroPad(nbr, getter[1]);
-                    }
-                    // prepend the leading character
-                    return nbr;
-            }       
-    };
-    //
-    // Add methods to Date instances
-    //
-    var instanceMethods = {
-        //
-        // Return a date one day ahead (or any other unit)
-        //
-        // @param string unit
-        // units: year | month | day | week | hour | minute | second | millisecond
-        // @return object Date
-        //
-        succ: function(unit) {
-            return this.clone().add(1, unit);
-        },
-        //
-        // Add an arbitrary amount to the currently stored date
-        //
-        // @param integer/float number      
-        // @param string unit
-        // @return object Date (chainable)      
-        //
-        add: function(number, unit) {
-            var factor = multipliers[unit] || multipliers.day;
-            if (typeof factor == 'number') {
-                this.setTime(this.getTime() + (factor * number));
-            } else {
-                factor.add(this, number);
-            }
-            return this;
-        },
-        //
-        // Find the difference between the current and another date
-        //
-        // @param string/object dateObj
-        // @param string unit
-        // @param boolean allowDecimal
-        // @return integer/float
-        //
-        diff: function(dateObj, unit, allowDecimal) {
-            // ensure we have a Date object
-            dateObj = Date.create(dateObj);
-            if (dateObj === null) {
-                return null;
-            }
-            // get the multiplying factor integer or factor function
-            var factor = multipliers[unit] || multipliers.day;
-            if (typeof factor == 'number') {
-                // multiply
-                var unitDiff = (this.getTime() - dateObj.getTime()) / factor;
-            } else {
-                // run function
-                var unitDiff = factor.diff(this, dateObj);
-            }
-            // if decimals are not allowed, round toward zero
-            return (allowDecimal ? unitDiff : Math[unitDiff > 0 ? 'floor' : 'ceil'](unitDiff));          
-        },
-        //
-        // Convert a date to a string using traditional strftime format codes
-        //
-        // @param string formatStr
-        // @return string
-        //
-        strftime: function(formatStr) {
-            // default the format string to year-month-day
-            var source = formatStr || '%Y-%m-%d', result = '', match;
-            // Account for display of time in local time or as UTC time
-            // var val = ($.jqplot.comfig.convertUTCtoLocaltime) ? this : 
-            // replace each format code
-            while (source.length > 0) {
-                if (match = source.match(Date.prototype.strftime.formatCodes.matcher)) {
-                    result += source.slice(0, match.index);
-                    result += (match[1] || '') + format(this, match[2]);
-                    source = source.slice(match.index + match[0].length);
-                } else {
-                    result += source;
-                    source = '';
-                }
-            }
-            return result;
-        },
-        //
-        // Return a proper two-digit year integer
-        //
-        // @return integer
-        //
-        getShortYear: function() {
-            return this.getYear() % 100;
-        },
-        //
-        // Get the number of the current month, 1-12
-        //
-        // @return integer
-        //
-        getMonthNumber: function() {
-            return this.getMonth() + 1;
-        },
-        //
-        // Get the name of the current month
-        //
-        // @return string
-        //
-        getMonthName: function() {
-            return Date.MONTHNAMES[this.getMonth()];
-        },
-        //
-        // Get the abbreviated name of the current month
-        //
-        // @return string
-        //
-        getAbbrMonthName: function() {
-            return Date.ABBR_MONTHNAMES[this.getMonth()];
-        },
-        //
-        // Get the name of the current week day
-        //
-        // @return string
-        //      
-        getDayName: function() {
-            return Date.DAYNAMES[this.getDay()];
-        },
-        //
-        // Get the abbreviated name of the current week day
-        //
-        // @return string
-        //      
-        getAbbrDayName: function() {
-            return Date.ABBR_DAYNAMES[this.getDay()];
-        },
-        //
-        // Get the ordinal string associated with the day of the month (i.e. st, nd, rd, th)
-        //
-        // @return string
-        //      
-        getDayOrdinal: function() {
-            return Date.ORDINALNAMES[this.getDate() % 10];
-        },
-        //
-        // Get the current hour on a 12-hour scheme
-        //
-        // @return integer
-        //
-        getHours12: function() {
-            var hours = this.getHours();
-            return hours > 12 ? hours - 12 : (hours == 0 ? 12 : hours);
-        },
-        //
-        // Get the AM or PM for the current time
-        //
-        // @return string
-        //
-        getAmPm: function() {
-            return this.getHours() >= 12 ? 'PM' : 'AM';
-        },
-        //
-        // Get the current date as a Unix timestamp
-        //
-        // @return integer
-        //
-        getUnix: function() {
-            return Math.round(this.getTime() / 1000, 0);
-        },
-        //
-        // Get the GMT offset in hours and minutes (e.g. +06:30)
-        //
-        // @return string
-        //
-        getGmtOffset: function() {
-            // divide the minutes offset by 60
-            var hours = this.getTimezoneOffset() / 60;
-            // decide if we are ahead of or behind GMT
-            var prefix = hours < 0 ? '+' : '-';
-            // remove the negative sign if any
-            hours = Math.abs(hours);
-            // add the +/- to the padded number of hours to : to the padded minutes
-            return prefix + zeroPad(Math.floor(hours), 2) + ':' + zeroPad((hours % 1) * 60, 2);
-        },
-        //
-        // Get the browser-reported name for the current timezone (e.g. MDT, Mountain Daylight Time)
-        //
-        // @return string
-        //
-        getTimezoneName: function() {
-            var match = /(?:\((.+)\)$| ([A-Z]{3}) )/.exec(this.toString());
-            return match[1] || match[2] || 'GMT' + this.getGmtOffset();
-        },
-        //
-        // Convert the current date to an 8-digit integer (%Y%m%d)
-        //
-        // @return int
-        //
-        toYmdInt: function() {
-            return (this.getFullYear() * 10000) + (this.getMonthNumber() * 100) + this.getDate();
-        },  
-        //
-        // Create a copy of a date object
-        //
-        // @return object
-        //       
-        clone: function() {
-                return new Date(this.getTime());
-        }
-    };
-    for (var name in instanceMethods) {
-        Date.prototype[name] = instanceMethods[name];
-    }
-    //
-    // Add static methods to the date object
-    //
-    var staticMethods = {
-        //
-        // The heart of the date functionality: returns a date object if given a convertable value
-        //
-        // @param string/object/integer date
-        // @return object Date
-        //
-        create: function(date) {
-            // If the passed value is already a date object, return it
-            if (date instanceof Date) {
-                return date;
-            }
-            // if (typeof date == 'number') return new Date(date);
-            // If the passed value is an integer, interpret it as a javascript timestamp
-            if (typeof date == 'number') {
-                return new Date(date);
-            }
-            // If the passed value is a string, attempt to parse it using Date.parse()
-            var parsable = String(date).replace(/^\s*(.+)\s*$/, '$1'), i = 0, length = Date.create.patterns.length, pattern;
-            var current = parsable;
-            while (i < length) {
-                ms = Date.parse(current);
-                if (!isNaN(ms)) {
-                    return new Date(ms);
-                }
-                pattern = Date.create.patterns[i];
-                if (typeof pattern == 'function') {
-                    obj = pattern(current);
-                    if (obj instanceof Date) {
-                        return obj;
-                    }
-                } else {
-                    current = parsable.replace(pattern[0], pattern[1]);
-                }
-                i++;
-            }
-            return NaN;
-        },
-        //
-        // constants representing month names, day names, and ordinal names
-        // (same names as Ruby Date constants)
-        //
-        MONTHNAMES          : 'January February March April May June July August September October November December'.split(' '),
-        ABBR_MONTHNAMES : 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),
-        DAYNAMES                : 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '),
-        ABBR_DAYNAMES       : 'Sun Mon Tue Wed Thu Fri Sat'.split(' '),
-        ORDINALNAMES        : 'th st nd rd th th th th th th'.split(' '),
-        //
-        // Shortcut for full ISO-8601 date conversion
-        //
-        ISO: '%Y-%m-%dT%H:%M:%S.%N%G',
-        //
-        // Shortcut for SQL-type formatting
-        //
-        SQL: '%Y-%m-%d %H:%M:%S',
-        //
-        // Setter method for month, day, and ordinal names for i18n
-        //
-        // @param object newNames
-        //
-        daysInMonth: function(year, month) {
-            if (month == 2) {
-                return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
-            }
-            return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
-        }
-    };
-    for (var name in staticMethods) {
-        Date[name] = staticMethods[name];
-    }
-    //
-    // format codes for strftime
-    //
-    // each code must be an array where the first member is the name of a Date.prototype function
-    // and optionally a second member indicating the number to pass to Number#toPaddedString()
-    //
-    Date.prototype.strftime.formatCodes = {
-        //
-        // 2-part regex matcher for format codes
-        //
-        // first match must be the character before the code (to account for escaping)
-        // second match must be the format code character(s)
-        //
-        matcher: /()%(#?(%|[a-z]))/i,
-        // year
-        Y: 'FullYear',
-        y: 'ShortYear.2',
-        // month
-        m: 'MonthNumber.2',
-        '#m': 'MonthNumber',
-        B: 'MonthName',
-        b: 'AbbrMonthName',
-        // day
-        d: 'Date.2',
-        '#d': 'Date',
-        e: 'Date',
-        A: 'DayName',
-        a: 'AbbrDayName',
-        w: 'Day',
-        o: 'DayOrdinal',
-        // hours
-        H: 'Hours.2',
-        '#H': 'Hours',
-        I: 'Hours12.2',
-        '#I': 'Hours12',
-        p: 'AmPm',
-        // minutes
-        M: 'Minutes.2',
-        '#M': 'Minutes',
-        // seconds
-        S: 'Seconds.2',
-        '#S': 'Seconds',
-        s: 'Unix',
-        // milliseconds
-        N: 'Milliseconds.3',
-        '#N': 'Milliseconds',
-        // timezone
-        O: 'TimezoneOffset',
-        Z: 'TimezoneName',
-        G: 'GmtOffset'  
-    };
-    //
-    // shortcuts that will be translated into their longer version
-    //
-    // be sure that format shortcuts do not refer to themselves: this will cause an infinite loop
-    //
-    Date.prototype.strftime.formatShortcuts = {
-        // date
-        F: '%Y-%m-%d',
-        // time
-        T: '%H:%M:%S',
-        X: '%H:%M:%S',
-        // local format date
-        x: '%m/%d/%y',
-        D: '%m/%d/%y',
-        // local format extended
-        '#c': '%a %b %e %H:%M:%S %Y',
-        // local format short
-        v: '%e-%b-%Y',
-        R: '%H:%M',
-        r: '%I:%M:%S %p',
-        // tab and newline
-        t: '\t',
-        n: '\n',
-        '%': '%'
-    };
-    //
-    // A list of conversion patterns (array arguments sent directly to gsub)
-    // Add, remove or splice a patterns to customize date parsing ability
-    //
-    Date.create.patterns = [
-        [/-/g, '/'], // US-style time with dashes => Parsable US-style time
-        [/st|nd|rd|th/g, ''], // remove st, nd, rd and th        
-        [/(3[01]|[0-2]\d)\s*\.\s*(1[0-2]|0\d)\s*\.\s*([1-9]\d{3})/, '$2/$1/$3'], // World time => Parsable US-style time
-        [/([1-9]\d{3})\s*-\s*(1[0-2]|0\d)\s*-\s*(3[01]|[0-2]\d)/, '$2/$3/$1'], // ISO-style time => Parsable US-style time
-        function(str) { // 12-hour or 24 hour time with milliseconds
-            // var match = str.match(/^(?:(.+)\s+)?([1-9]|1[012])(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d))?\s*(am|pm)\s*$/i);
-            var match = str.match(/^(?:(.+)\s+)?([012]?\d)(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d(\.\d*)?))?\s*(am|pm)?\s*$/i);
-            //                   opt. date      hour       opt. minute     opt. second       opt. msec   opt. am or pm
-            if (match) {
-                if (match[1]) {
-                    var d = Date.create(match[1]);
-                    if (isNaN(d)) {
-                        return;
-                    }
-                } else {
-                    var d = new Date();
-                    d.setMilliseconds(0);
-                }
-                var hour = parseFloat(match[2]);
-                if (match[6]) {
-                    hour = match[6].toLowerCase() == 'am' ? (hour == 12 ? 0 : hour) : (hour == 12 ? 12 : hour + 12);
-                }
-                d.setHours(hour, parseInt(match[3] || 0, 10), parseInt(match[4] || 0, 10), ((parseFloat(match[5] || 0)) || 0)*1000);
-                return d;
-            }
-            else {
-                return str;
-            }
-        },
-        function(str) { // ISO timestamp with time zone.
-            var match = str.match(/^(?:(.+))[T|\s+]([012]\d)(?:\:(\d\d))(?:\:(\d\d))(?:\.\d+)([\+\-]\d\d\:\d\d)$/i);
-            if (match) {
-                if (match[1]) {
-                    var d = Date.create(match[1]);
-                    if (isNaN(d)) {
-                        return;
-                    }
-                } else {
-                    var d = new Date();
-                    d.setMilliseconds(0);
-                }
-                var hour = parseFloat(match[2]);
-                d.setHours(hour, parseInt(match[3], 10), parseInt(match[4], 10), parseFloat(match[5])*1000);
-                return d;
-            }
-            else {
-                    return str;
-            }
-        },
-        function(str) {
-            var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
-            if (match) {
-                var d = new Date();
-                var y = parseFloat(String(d.getFullYear()).slice(2,4));
-                var cent = parseInt(String(d.getFullYear())/100, 10)*100;
-                var centoffset = 1;
-                var m1 = parseFloat(match[1]);
-                var m3 = parseFloat(match[3]);
-                var ny, nd, nm;
-                if (m1 > 31) { // first number is a year
-                    nd = match[3];
-                    if (m1 < y+centoffset) { // if less than 1 year out, assume it is this century.
-                        ny = cent + m1;
-                    }
-                    else {
-                        ny = cent - 100 + m1;
-                    }
-                }
-                
-                else { // last number is the year
-                    nd = match[1];
-                    if (m3 < y+centoffset) { // if less than 1 year out, assume it is this century.
-                        ny = cent + m3;
-                    }
-                    else {
-                        ny = cent - 100 + m3;
-                    }
-                }
-                
-                var nm = $.inArray(match[2], Date.ABBR_MONTHNAMES);
-                
-                if (nm == -1) {
-                    nm = $.inArray(match[2], Date.MONTHNAMES);
-                }
-            
-                d.setFullYear(ny, nm, nd);
-                d.setHours(0,0,0,0);
-                return d;
-            }
-            
-            else {
-                return str;
-            }
-        }        
-    ];
-    
-    if ($.jqplot.config.debug) {
-        $.date = Date.create;
-    }
-
     // Class: $.jqplot.DivTitleRenderer
     // The default title renderer for jqPlot.  This class has no options beyond the <Title> class. 
     $.jqplot.DivTitleRenderer = function() {
@@ -15573,6 +16714,7 @@ b.dequeue()})})}})(jQuery);
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
+        this._type='line';
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
@@ -15581,7 +16723,7 @@ b.dequeue()})})}})(jQuery);
         
         $.extend(true, this.renderer, options);
         // set the shape renderer options
-        var opts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
@@ -15593,7 +16735,7 @@ b.dequeue()})})}})(jQuery);
         else {
             var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
         }
-        var sopts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
         this._boundingBox = [[],[]];
@@ -15601,11 +16743,11 @@ b.dequeue()})})}})(jQuery);
         if (!this.isTrendline && this.fill) {
         
             // prop: highlightMouseOver
-            // True to highlight slice when moused over.
+            // True to highlight area on a filled plot when moused over.
             // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
             this.highlightMouseOver = true;
             // prop: highlightMouseDown
-            // True to highlight when a mouse button is pressed over a area on a filled plot.
+            // True to highlight when a mouse button is pressed over an area on a filled plot.
             // This will be disabled if highlightMouseOver is true.
             this.highlightMouseDown = false;
             // prop: highlightColor
@@ -15621,10 +16763,14 @@ b.dequeue()})})}})(jQuery);
             if (!this.highlightColor) {
                 this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
             }
-            // turn off traditional highlighter
+            // turn off (disable) the highlighter plugin
             if (this.highlighter) {
                 this.highlighter.show = false;
             }
+        }
+        
+        if (!this.isTrendline && plot) {
+            plot.plugins.lineRenderer = {};
             plot.postInitHooks.addOnce(postInit);
             plot.postDrawHooks.addOnce(postPlotDraw);
             plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
@@ -15649,11 +16795,27 @@ b.dequeue()})})}})(jQuery);
         this.gridData = [];
         this._prevGridData = [];
         for (var i=0; i<this.data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
             }
-            if (pdata[i] != null) {
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                this.gridData.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
+            }
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (pdata[i] != null && pdata[i][0] == null) {
+                this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
+            }  
+            else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
+                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
     };
@@ -15671,8 +16833,16 @@ b.dequeue()})})}})(jQuery);
         var gd = [];
         var pgd = [];
         for (var i=0; i<data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                gd.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                gd.push([xp.call(this._xaxis, data[i][0]), null]);
             }
         }
         return gd;
@@ -15786,6 +16956,9 @@ b.dequeue()})})}})(jQuery);
                             this.renderer.shapeRenderer.draw(ctx, gd, opts);
                         }
                     }
+                    /////////////////////////
+                    // Not filled to zero
+                    ////////////////////////
                     else {                    
                         // if stoking line as well as filling, get a copy of line data.
                         if (fillAndStroke) {
@@ -15797,7 +16970,7 @@ b.dequeue()})})}})(jQuery);
                             var gridymin = ctx.canvas.height;
                             // IE doesn't return new length on unshift
                             gd.unshift([gd[0][0], gridymin]);
-                            len = gd.length;
+                            var len = gd.length;
                             gd.push([gd[len - 1][0], gridymin]);                   
                         }
                         // if stacked, fill to line below 
@@ -15861,7 +17034,9 @@ b.dequeue()})})}})(jQuery);
             // now draw the markers
             if (this.markerRenderer.show && !fill) {
                 for (i=0; i<gd.length; i++) {
-                    this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    if (gd[i][0] != null && gd[i][1] != null) {
+                        this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    }
                 }
             }
         }
@@ -15876,7 +17051,7 @@ b.dequeue()})})}})(jQuery);
     // called with scope of plot.
     // make sure to not leave anything highlighted.
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.LineRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -15891,11 +17066,11 @@ b.dequeue()})})}})(jQuery);
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
-        this.plugins.lineRenderer = {highlightedSeriesIndex:null};
+        this.plugins.lineRenderer.highlightedSeriesIndex = null;
         this.plugins.lineRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.lineRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-lineRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.lineRenderer.highlightCanvas.setContext();
+        this.plugins.lineRenderer.highlightCanvas.setContext();
     } 
     
     function highlight (plot, sidx, pidx, points) {
@@ -15906,6 +17081,7 @@ b.dequeue()})})}})(jQuery);
         plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColor};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
     }
     
     function unhighlight (plot) {
@@ -15916,6 +17092,7 @@ b.dequeue()})})}})(jQuery);
         }
         plot.plugins.lineRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
+        canvas = null;
     }
     
     
@@ -15995,33 +17172,47 @@ b.dequeue()})})}})(jQuery);
     
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+		// prop: breakPoints
+		// EXPERIMENTAL!! Use at your own risk!
+		// Works only with linear axes and the default tick renderer.
+		// Array of [start, stop] points to create a broken axis.
+		// Broken axes have a "jump" in them, which is an immediate 
+		// transition from a smaller value to a larger value.
+		// Currently, axis ticks MUST be manually assigned if using breakPoints
+		// by using the axis ticks array option.
+		this.breakPoints = null;
+		// prop: breakTickLabel
+		// Label to use at the axis break if breakPoints are specified.
+		this.breakTickLabel = "&asymp;";
+        // prop: forceTickAt0
+        // This will ensure that there is always a tick mark at 0.
+        // If data range is strictly positive or negative,
+        // this will force 0 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 0.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt0 = false;
+        // prop: forceTickAt100
+        // This will ensure that there is always a tick mark at 100.
+        // If data range is strictly above or below 100,
+        // this will force 100 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 100.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt100 = false;
+        this._autoFormatString = '';
         $.extend(true, this, options);
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if (d[j][0] > db.max || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if (d[j][1] < db.min || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if (d[j][1] > db.max || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }              
-            }
-        }
+		if (this.breakPoints) {
+			if (!$.isArray(this.breakPoints)) {
+				this.breakPoints = null;
+			}
+			else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
+				this.breakPoints = null;
+			}
+		}
+		this.resetDataBounds();
     };
     
     // called with scope of axis
@@ -16053,21 +17244,21 @@ b.dequeue()})})}})(jQuery);
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
+            var elem;
             if (this._label.show) {
-                var elem = this._label.draw(ctx);
+                elem = this._label.draw(ctx);
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
+            elem = null;
         }
         return this._elem;
     };
@@ -16088,11 +17279,11 @@ b.dequeue()})})}})(jQuery);
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
-                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     if (this.name == 'xaxis' || this.name == 'x2axis') {
                         temp = tick._elem.outerHeight(true);
                     }
@@ -16161,28 +17352,44 @@ b.dequeue()})})}})(jQuery);
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if (ut.constructor == Array) {
-                    t.value = ut[0];
-                    t.label = ut[1];
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
+	                t.value = ut[0];
+					if (this.breakPoints) {
+						if (ut[0] == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+		                    t.label = ut[1];
+						}
+						else {
+		                    t.label = ut[1];
+						}
+					}
+					else {
+	                    t.label = ut[1];
+					}
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
                 
                 else {
-                    t.value = ut;
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
+	                t.value = ut;
+					if (this.breakPoints) {
+						if (ut == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+						}
+					}
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -16216,270 +17423,365 @@ b.dequeue()})})}})(jQuery);
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
-            
-            // if min and max are same, space them out a bit
-            if (min == max) {
-                var adj = 0.05;
-                if (min > 0) {
-                    adj = Math.max(Math.log(min)/Math.LN10, 0.05);
-                }
-                min -= adj;
-                max += adj;
-            }
 
             var range = max - min;
             var rmin, rmax;
             var temp;
-            
-            // autoscale.  Can't autoscale if min or max is supplied.
-            // Will use numberTicks and tickInterval if supplied.  Ticks
-            // across multiple axes may not line up depending on how
-            // bars are to be plotted.
-            if (this.autoscale && this.min == null && this.max == null) {
-                var rrange, ti, margin;
-                var forceMinZero = false;
-                var forceZeroLine = false;
-                var intervals = {min:null, max:null, average:null, stddev:null};
-                // if any series are bars, or if any are fill to zero, and if this
-                // is the axis to fill toward, check to see if we can start axis at zero.
-                for (var i=0; i<this._series.length; i++) {
-                    var s = this._series[i];
-                    var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
-                    // check to see if this is the fill axis
-                    if (this.name == faname) {
-                        var vals = s._plotValues[s.fillAxis];
-                        var vmin = vals[0];
-                        var vmax = vals[0];
-                        for (var j=1; j<vals.length; j++) {
-                            if (vals[j] < vmin) {
-                                vmin = vals[j];
+
+            // Doing complete autoscaling
+            if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
+                // Check if user must have tick at 0 or 100 and ensure they are in range.
+                // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
+                if (this.forceTickAt0) {
+                    if (min > 0) {
+                        min = 0;
+                    }
+                    if (max < 0) {
+                        max = 0;
+                    }
+                }
+
+                if (this.forceTickAt100) {
+                    if (min > 100) {
+                        min = 100;
+                    }
+                    if (max < 100) {
+                        max = 100;
+                    }
+                }
+
+                var ret = $.jqplot.LinearTickGenerator(min, max); 
+                // calculate a padded max and min, points should be less than these
+                // so that they aren't too close to the edges of the plot.
+                // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
+                var tumin = min + range*(this.padMin - 1);
+                var tumax = max - range*(this.padMax - 1);
+
+                if (min <=tumin || max >= tumax) {
+                    tumin = min - range*(this.padMin - 1);
+                    tumax = max + range*(this.padMax - 1);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax);
+                }
+
+                this.min = ret[0];
+                this.max = ret[1];
+                this.numberTicks = ret[2];
+                this._autoFormatString = ret[3];
+                //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
+                this.tickInterval = ret[4];
+            }
+
+            // User has specified some axis scale related option, can use auto algorithm
+            else {
+                
+                // if min and max are same, space them out a bit
+                if (min == max) {
+                    var adj = 0.05;
+                    if (min > 0) {
+                        adj = Math.max(Math.log(min)/Math.LN10, 0.05);
+                    }
+                    min -= adj;
+                    max += adj;
+                }
+                
+                // autoscale.  Can't autoscale if min or max is supplied.
+                // Will use numberTicks and tickInterval if supplied.  Ticks
+                // across multiple axes may not line up depending on how
+                // bars are to be plotted.
+                if (this.autoscale && this.min == null && this.max == null) {
+                    var rrange, ti, margin;
+                    var forceMinZero = false;
+                    var forceZeroLine = false;
+                    var intervals = {min:null, max:null, average:null, stddev:null};
+                    // if any series are bars, or if any are fill to zero, and if this
+                    // is the axis to fill toward, check to see if we can start axis at zero.
+                    for (var i=0; i<this._series.length; i++) {
+                        var s = this._series[i];
+                        var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
+                        // check to see if this is the fill axis
+                        if (this.name == faname) {
+                            var vals = s._plotValues[s.fillAxis];
+                            var vmin = vals[0];
+                            var vmax = vals[0];
+                            for (var j=1; j<vals.length; j++) {
+                                if (vals[j] < vmin) {
+                                    vmin = vals[j];
+                                }
+                                else if (vals[j] > vmax) {
+                                    vmax = vals[j];
+                                }
                             }
-                            else if (vals[j] > vmax) {
-                                vmax = vals[j];
+                            var dp = (vmax - vmin) / vmax;
+                            // is this sries a bar?
+                            if (s.renderer.constructor == $.jqplot.BarRenderer) {
+                                // if no negative values and could also check range.
+                                if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
+                                    forceMinZero = true;
+                                }
+                                else {
+                                    forceMinZero = false;
+                                    if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
+                                        forceZeroLine = true;
+                                    }
+                                    else {
+                                        forceZeroLine = false;
+                                    }
+                                }
                             }
-                        }
-                        var dp = (vmax - vmin) / vmax;
-                        // is this sries a bar?
-                        if (s.renderer.constructor == $.jqplot.BarRenderer) {
-                            // if no negative values and could also check range.
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
+                            
+                            // if not a bar and filling, use appropriate method.
+                            else if (s.fill) {
+                                if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
+                                    forceMinZero = true;
+                                }
+                                else if (vmin < 0 && vmax > 0 && s.fillToZero) {
+                                    forceMinZero = false;
                                     forceZeroLine = true;
                                 }
                                 else {
+                                    forceMinZero = false;
                                     forceZeroLine = false;
                                 }
                             }
-                        }
-                        
-                        // if not a bar and filling, use appropriate method.
-                        else if (s.fill) {
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else if (vmin < 0 && vmax > 0 && s.fillToZero) {
+                            
+                            // if not a bar and not filling, only change existing state
+                            // if it doesn't make sense
+                            else if (vmin < 0) {
                                 forceMinZero = false;
-                                forceZeroLine = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                forceZeroLine = false;
                             }
                         }
-                        
-                        // if not a bar and not filling, only change existing state
-                        // if it doesn't make sense
-                        else if (vmin < 0) {
-                            forceMinZero = false;
-                        }
-                    }
-                }
-                
-                // check if we need make axis min at 0.
-                if (forceMinZero) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    this.min = 0;
-                    userMin = 0;
-                    // what order is this range?
-                    // what tick interval does that give us?
-                    ti = max/(this.numberTicks-1);
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    if (ti/temp == parseInt(ti/temp, 10)) {
-                        ti += temp;
-                    }
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * (this.numberTicks - 1);
-                }
-                
-                // check if we need to make sure there is a tick at 0.
-                else if (forceZeroLine) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
-                    var ntmax = this.numberTicks - 1  - ntmin;
-                    ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * ntmax;
-                    this.min = -this.tickInterval * ntmin;                  
-                }
-                
-                // if nothing else, do autoscaling which will try to line up ticks across axes.
-                else {  
-                    if (this.numberTicks == null){
-                        if (this.tickInterval) {
-                            this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
-                        }
-                        else {
-                            this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                        }
-                    }
-            
-                    if (this.tickInterval == null) {
-                        // get a tick interval
-                        ti = range/(this.numberTicks - 1);
-
-                        if (ti < 1) {
-                            temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                        }
-                        else {
-                            temp = 1;
-                        }
-                        this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
-                    }
-                    else {
-                        temp = 1 / this.tickInterval;
                     }
                     
-                    // try to compute a nicer, more even tick interval
-                    // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
-                    // this.tickInterval = Math.ceil(ti/temp) * temp;
-                    rrange = this.tickInterval * (this.numberTicks - 1);
-                    margin = (rrange - range)/2;
-       
-                    if (this.min == null) {
-                        this.min = Math.floor(temp*(min-margin))/temp;
+                    // check if we need make axis min at 0.
+                    if (forceMinZero) {
+                        // compute number of ticks
+                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        this.min = 0;
+                        userMin = 0;
+                        // what order is this range?
+                        // what tick interval does that give us?
+                        ti = max/(this.numberTicks-1);
+                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                        if (ti/temp == parseInt(ti/temp, 10)) {
+                            ti += temp;
+                        }
+                        this.tickInterval = Math.ceil(ti/temp) * temp;
+                        this.max = this.tickInterval * (this.numberTicks - 1);
                     }
-                    if (this.max == null) {
-                        this.max = this.min + rrange;
+                    
+                    // check if we need to make sure there is a tick at 0.
+                    else if (forceZeroLine) {
+                        // compute number of ticks
+                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
+                        var ntmax = this.numberTicks - 1  - ntmin;
+                        ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
+                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                        this.tickInterval = Math.ceil(ti/temp) * temp;
+                        this.max = this.tickInterval * ntmax;
+                        this.min = -this.tickInterval * ntmin;
                     }
-                }
-            }
-            
-            // Use the default algorithm which pads each axis to make the chart
-            // centered nicely on the grid.
-            else {
-                rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
-                rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
-                this.min = rmin;
-                this.max = rmax;
-                range = this.max - this.min;
-    
-                if (this.numberTicks == null){
-                    // if tickInterval is specified by user, we will ignore computed maximum.
-                    // max will be equal or greater to fit even # of ticks.
-                    if (this.tickInterval != null) {
-                        this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
-                        this.max = this.min + this.tickInterval*(this.numberTicks-1);
-                    }
-                    else if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
-                    }
-                    else {
-                        this.numberTicks = 2;
-                    }
-                }
-            
-                if (this.tickInterval == null) {
-                    this.tickInterval = range / (this.numberTicks-1);
-                }
-            }
-            
-            if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
-                // fix for misleading tick display with small range and low precision.
-                range = this.max - this.min;
-                // figure out precision
-                var temptick = new this.tickRenderer(this.tickOptions);
-                // use the tick formatString or, the default.
-                var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
-                var fs = fs.match($.jqplot.sprintf.regex)[0];
-                var precision = 0;
-                if (fs) {
-                    if (fs.search(/[fFeEgGpP]/) > -1) {
-                        var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
-                        if (m) precision = parseInt(m[1], 10);
-                        else precision = 6;
-                    }
-                    else if (fs.search(/[di]/) > -1) {
-                        precision = 0;
-                    }
-                    // fact will be <= 1;
-                    var fact = Math.pow(10, -precision);
-                    if (this.tickInterval < fact) {
-                        // need to correct underrange
-                        if (userNT == null && userTI == null) {
-                            this.tickInterval = fact;
-                            if (userMax == null && userMin == null) {
-                                // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
-                                this.min = Math.floor(this._dataBounds.min/fact) * fact;
-                                if (this.min == this._dataBounds.min) {
-                                    this.min = this._dataBounds.min - this.tickInterval;
-                                }
-                                // this.max = Math.ceil((this._dataBounds.max + this.tickInterval)/fact) * fact;
-                                this.max = Math.ceil(this._dataBounds.max/fact) * fact;
-                                if (this.max == this._dataBounds.max) {
-                                    this.max = this._dataBounds.max + this.tickInterval;
-                                }
-                                var n = (this.max - this.min)/this.tickInterval;
-                                n = n.toFixed(11);
-                                n = Math.ceil(n);
-                                this.numberTicks = n + 1;
+                    
+                    // if nothing else, do autoscaling which will try to line up ticks across axes.
+                    else {  
+                        if (this.numberTicks == null){
+                            if (this.tickInterval) {
+                                this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
                             }
-                            else if (userMax == null) {
-                                // add one tick for top of range.
-                                var n = (this._dataBounds.max - this.min) / this.tickInterval;
-                                n = n.toFixed(11);
-                                this.numberTicks = Math.ceil(n) + 2;
-                                this.max = this.min + this.tickInterval * (this.numberTicks-1);
+                            else {
+                                this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
                             }
-                            else if (userMin == null) {
-                                // add one tick for bottom of range.
-                                var n = (this.max - this._dataBounds.min) / this.tickInterval;
-                                n = n.toFixed(11);
-                                this.numberTicks = Math.ceil(n) + 2;
-                                this.min = this.max - this.tickInterval * (this.numberTicks-1);
+                        }
+                
+                        if (this.tickInterval == null) {
+                            // get a tick interval
+                            ti = range/(this.numberTicks - 1);
+
+                            if (ti < 1) {
+                                temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                            }
+                            else {
+                                temp = 1;
+                            }
+                            this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
+                        }
+                        else {
+                            temp = 1 / this.tickInterval;
+                        }
+                        
+                        // try to compute a nicer, more even tick interval
+                        // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
+                        // this.tickInterval = Math.ceil(ti/temp) * temp;
+                        rrange = this.tickInterval * (this.numberTicks - 1);
+                        margin = (rrange - range)/2;
+           
+                        if (this.min == null) {
+                            this.min = Math.floor(temp*(min-margin))/temp;
+                        }
+                        if (this.max == null) {
+                            this.max = this.min + rrange;
+                        }
+                    }
+                }
+                
+                // Use the default algorithm which pads each axis to make the chart
+                // centered nicely on the grid.
+                else {
+                    rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
+                    rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
+                    this.min = rmin;
+                    this.max = rmax;
+                    range = this.max - this.min;
+        
+                    if (this.numberTicks == null){
+                        // if tickInterval is specified by user, we will ignore computed maximum.
+                        // max will be equal or greater to fit even # of ticks.
+                        if (this.tickInterval != null) {
+                            this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
+                            this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                        }
+                        else if (dim > 100) {
+                            this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                        }
+                        else {
+                            this.numberTicks = 2;
+                        }
+                    }
+                
+                    if (this.tickInterval == null) {
+                        this.tickInterval = range / (this.numberTicks-1);
+                    }
+                }
+                
+                if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
+                    // fix for misleading tick display with small range and low precision.
+                    range = this.max - this.min;
+                    // figure out precision
+                    var temptick = new this.tickRenderer(this.tickOptions);
+                    // use the tick formatString or, the default.
+                    var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
+                    var fs = fs.match($.jqplot.sprintf.regex)[0];
+                    var precision = 0;
+                    if (fs) {
+                        if (fs.search(/[fFeEgGpP]/) > -1) {
+                            var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
+                            if (m) {
+                                precision = parseInt(m[1], 10);
+                            }
+                            else {
+                                precision = 6;
+                            }
+                        }
+                        else if (fs.search(/[di]/) > -1) {
+                            precision = 0;
+                        }
+                        // fact will be <= 1;
+                        var fact = Math.pow(10, -precision);
+                        if (this.tickInterval < fact) {
+                            // need to correct underrange
+                            if (userNT == null && userTI == null) {
+                                this.tickInterval = fact;
+                                if (userMax == null && userMin == null) {
+                                    // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
+                                    this.min = Math.floor(this._dataBounds.min/fact) * fact;
+                                    if (this.min == this._dataBounds.min) {
+                                        this.min = this._dataBounds.min - this.tickInterval;
+                                    }
+                                    // this.max = Math.ceil((this._dataBounds.max + this.tickInterval)/fact) * fact;
+                                    this.max = Math.ceil(this._dataBounds.max/fact) * fact;
+                                    if (this.max == this._dataBounds.max) {
+                                        this.max = this._dataBounds.max + this.tickInterval;
+                                    }
+                                    var n = (this.max - this.min)/this.tickInterval;
+                                    n = n.toFixed(11);
+                                    n = Math.ceil(n);
+                                    this.numberTicks = n + 1;
+                                }
+                                else if (userMax == null) {
+                                    // add one tick for top of range.
+                                    var n = (this._dataBounds.max - this.min) / this.tickInterval;
+                                    n = n.toFixed(11);
+                                    this.numberTicks = Math.ceil(n) + 2;
+                                    this.max = this.min + this.tickInterval * (this.numberTicks-1);
+                                }
+                                else if (userMin == null) {
+                                    // add one tick for bottom of range.
+                                    var n = (this.max - this._dataBounds.min) / this.tickInterval;
+                                    n = n.toFixed(11);
+                                    this.numberTicks = Math.ceil(n) + 2;
+                                    this.min = this.max - this.tickInterval * (this.numberTicks-1);
+                                }
+                                else {
+                                    // calculate a number of ticks so max is within axis scale
+                                    this.numberTicks = Math.ceil((userMax - userMin)/this.tickInterval) + 1;
+                                    // if user's min and max don't fit evenly in ticks, adjust.
+                                    // This takes care of cases such as user min set to 0, max set to 3.5 but tick
+                                    // format string set to %d (integer ticks)
+                                    this.min =  Math.floor(userMin*Math.pow(10, precision))/Math.pow(10, precision);
+                                    this.max =  Math.ceil(userMax*Math.pow(10, precision))/Math.pow(10, precision);
+                                    // this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval) + 1;
+                                }
                             }
                         }
                     }
                 }
+                
             }
             
-            
+            if ((this.tickOptions == null || !this.tickOptions.formatString) && this._autoFormatString != '') {
+                this.tickOptions = this.tickOptions || {};
+                this.tickOptions.formatString = this._autoFormatString;
+            }
 
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
+
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
         }
     };
+	
+	// Used to reset just the values of the ticks and then repack, which will
+	// recalculate the positioning functions.  It is assuemd that the 
+	// number of ticks is the same and the values of the new array are at the
+	// proper interval.
+	// This method needs to be called with the scope of an axis object, like:
+	//
+	// > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
+	//
+	$.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
+		if ($.isArray(opts) && opts.length == this._ticks.length) {
+			var t;
+			for (var i=0; i<opts.length; i++) {
+				t = this._ticks[i];
+				t.value = opts[i];
+				t.label = t.formatter(t.formatString, opts[i]);
+				// add prefix if needed
+				if (t.prefix && !t.formatString) {
+					t.label = t.prefix + t.label;
+				}
+				t._elem.html(t.label);
+			}
+			this.min = $.jqplot.arrayMin(opts);
+			this.max = $.jqplot.arrayMax(opts);
+			this.pack();
+		}
+		// Not implemented yet.
+        // else if ($.isPlainObject(opts)) {
+        // 
+        // }
+	};
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
+		// Add defaults for repacking from resetTickValues function.
+		pos = pos || {};
+		offsets = offsets || this._offsets;
+		
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
@@ -16497,35 +17799,90 @@ b.dequeue()})})}})(jQuery);
         var unitlength = max - min;
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
-        this.p2u = function(p){
-            return (p - offmin) * unitlength / pixellength + min;
-        };
+		if (this.breakPoints) {
+			unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
+			
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
         
-        this.u2p = function(u){
-            return (u - min) * pixellength / unitlength + offmin;
-        };
+	        this.u2p = function(u){
+				if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+					u = this.breakPoints[0];
+				}
+				if (u <= this.breakPoints[0]) {
+	            	return (u - min) * pixellength / unitlength + offmin;
+				}
+				else {
+					return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
+				}
+	        };
                 
-        if (this.name == 'xaxis' || this.name == 'x2axis'){
-            this.series_u2p = function(u){
-                return (u - min) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + min;
-            };
-        }
+	        if (this.name.charAt(0) == 'x'){
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u <= this.breakPoints[0]) {
+		            	return (u - min) * pixellength / unitlength;
+					}
+					else {
+						return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
         
-        else {
-            this.series_u2p = function(u){
-                return (u - max) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + max;
-            };
-        }
+	        else {
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u >= this.breakPoints[1]) {
+		            	return (u - max) * pixellength / unitlength;
+					}
+					else {
+						return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
+		else {
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
+        
+	        this.u2p = function(u){
+	            return (u - min) * pixellength / unitlength + offmin;
+	        };
+                
+	        if (this.name == 'xaxis' || this.name == 'x2axis'){
+	            this.series_u2p = function(u){
+	                return (u - min) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
+        
+	        else {
+	            this.series_u2p = function(u){
+	                return (u - max) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
                         var shim;
@@ -16579,7 +17936,7 @@ b.dequeue()})})}})(jQuery);
                 }
             }
             else {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;
@@ -16641,6 +17998,81 @@ b.dequeue()})})}})(jQuery);
                 }
             }
         }
+    };
+
+
+    /**
+    * The following code was generaously given to me a while back by Scott Prahl.
+    * He did a good job at computing axes min, max and number of ticks for the 
+    * case where the user has not set any scale related parameters (tickInterval,
+    * numberTicks, min or max).  I had ignored this use case for a long time,
+    * focusing on the more difficult case where user has set some option controlling
+    * tick generation.  Anyway, about time I got this into jqPlot.
+    * Thanks Scott!!
+    */
+    
+    /**
+    * Copyright (c) 2010 Scott Prahl
+    * The next three routines are currently available for use in all personal 
+    * or commercial projects under both the MIT and GPL version 2.0 licenses. 
+    * This means that you can choose the license that best suits your project 
+    * and use it accordingly. 
+    */
+
+    // A good format string depends on the interval. If the interval is greater 
+    // than 1 then there is no need to show any decimal digits. If it is < 1.0, then
+    // use the magnitude of the interval to determine the number of digits to show.
+    function bestFormatString (interval)
+    {
+        interval = Math.abs(interval);
+        if (interval > 1) {return '%d';}
+
+        var expv = -Math.floor(Math.log(interval)/Math.LN10);
+        return '%.' + expv + 'f'; 
+    }
+
+    // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
+    function bestLinearInterval(range) {
+        var expv = Math.floor(Math.log(range)/Math.LN10);
+        var magnitude = Math.pow(10, expv);
+        var f = range / magnitude;
+
+        if (f<=1.6) {return 0.2*magnitude;}
+        if (f<=4.0) {return 0.5*magnitude;}
+        if (f<=8.0) {return magnitude;}
+        return 2*magnitude; 
+    }
+
+    // Given the min and max for a dataset, return suitable endpoints
+    // for the graphing, a good number for the number of ticks, and a
+    // format string so that extraneous digits are not displayed.
+    // returned is an array containing [min, max, nTicks, format]
+    $.jqplot.LinearTickGenerator = function(axis_min, axis_max) {
+        // if endpoints are equal try to include zero otherwise include one
+        if (axis_min == axis_max) {
+        axis_max = (axis_max) ? 0 : 1;
+        }
+
+        // make sure range is positive
+        if (axis_max < axis_min) {
+        var a = axis_max;
+        axis_max = axis_min;
+        axis_min = a;
+        }
+
+        var ss = bestLinearInterval(axis_max - axis_min);
+        var r = [];
+
+        // Figure out the axis min, max and number of ticks
+        // the min and max will be some multiple of the tick interval,
+        // 1*10^n, 2*10^n or 5*10^n.  This gaurantees that, if the
+        // axis min is negative, 0 will be a tick.
+        r[0] = Math.floor(axis_min / ss) * ss;  // min
+        r[1] = Math.ceil(axis_max / ss) * ss;   // max
+        r[2] = Math.round((r[1]-r[0])/ss+1);    // number of ticks
+        r[3] = bestFormatString(ss);            // format string
+        r[4] = ss;                              // tick Interval
+        return r;
     };
 
 
@@ -16721,8 +18153,6 @@ b.dequeue()})})}})(jQuery);
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawPlus = function(x, y, ctx, fill, options) {
@@ -16738,8 +18168,6 @@ b.dequeue()})})}})(jQuery);
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawX = function(x, y, ctx, fill, options) {
@@ -16755,8 +18183,6 @@ b.dequeue()})})}})(jQuery);
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawDash = function(x, y, ctx, fill, options) {
@@ -16768,8 +18194,14 @@ b.dequeue()})})}})(jQuery);
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
+    };
+    
+    $.jqplot.MarkerRenderer.prototype.drawLine = function(p1, p2, ctx, fill, options) {
+        var points = [p1, p2];
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points);
+        }
+        this.shapeRenderer.draw(ctx, points, options);
     };
     
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
@@ -16781,8 +18213,6 @@ b.dequeue()})})}})(jQuery);
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill, options) {
@@ -16793,8 +18223,6 @@ b.dequeue()})})}})(jQuery);
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-        
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
@@ -16835,6 +18263,9 @@ b.dequeue()})})}})(jQuery);
                     break;
                 case 'dash':
                     this.drawDash(x,y,ctx, true, options);
+                    break;
+                case 'line':
+                    this.drawLine(x, y, ctx, false, options);
                     break;
                 default:
                     this.drawDiamond(x,y,ctx, false, options);
@@ -16912,10 +18343,22 @@ b.dequeue()})})}})(jQuery);
             if (isarc) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
             }
-            else {
-                ctx.moveTo(points[0][0], points[0][1]);
-                for (var i=1; i<points.length; i++) {
-                    ctx.lineTo(points[i][0], points[i][1]);
+            else if (points && points.length){
+                var move = true;
+                for (var i=0; i<points.length; i++) {
+                    // skip to the first non-null point and move to it.
+                    if (points[i][0] != null && points[i][1] != null) {
+                        if (move) {
+                            ctx.moveTo(points[i][0], points[i][1]);
+                            move = false;
+                        }
+                        else {
+                            ctx.lineTo(points[i][0], points[i][1]);
+                        }
+                    }
+                    else {
+                        move = true;
+                    }
                 }
                 
             }
@@ -16995,7 +18438,7 @@ b.dequeue()})})}})(jQuery);
         var clearRect = (opts.clearRect != null) ? opts.clearRect : this.clearRect;
         var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
-        ctx.lineJoin = opts.lineJoing || this.lineJoin;
+        ctx.lineJoin = opts.lineJoin || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
         ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
         ctx.fillStyle = opts.fillStyle || this.fillStyle;
@@ -17029,10 +18472,22 @@ b.dequeue()})})}})(jQuery);
                 return;
             }
         }
-        else {
-            ctx.moveTo(points[0][0], points[0][1]);
-            for (var i=1; i<points.length; i++) {
-                ctx.lineTo(points[i][0], points[i][1]);
+        else if (points && points.length){
+            var move = true;
+            for (var i=0; i<points.length; i++) {
+                // skip to the first non-null point and move to it.
+                if (points[i][0] != null && points[i][1] != null) {
+                    if (move) {
+                        ctx.moveTo(points[i][0], points[i][1]);
+                        move = false;
+                    }
+                    else {
+                        ctx.lineTo(points[i][0], points[i][1]);
+                    }
+                }
+                else {
+                    move = true;
+                }
             }
             if (closePath) {
                 ctx.closePath();
@@ -17059,11 +18514,13 @@ b.dequeue()})})}})(jQuery);
         
     $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
         var rs = (pad) ? this.rowSpacing : '0';
+        var tr,
+        	elem;
         if (reverse){
-            var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
         }
         else{
-            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
         }
         if (this.showSwatches) {
             $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
@@ -17071,7 +18528,7 @@ b.dequeue()})})}})(jQuery);
             '</div></td>').appendTo(tr);
         }
         if (this.showLabels) {
-            var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+            elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
             elem.appendTo(tr);
             if (this.escapeHtml) {
                 elem.text(label);
@@ -17080,6 +18537,8 @@ b.dequeue()})})}})(jQuery);
                 elem.html(label);
             }
         }
+        tr = null;
+        elem = null;
     };
     
     // called with scope of legend
@@ -17101,7 +18560,8 @@ b.dequeue()})})}})(jQuery);
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false, 
-                reverse = false;
+                reverse = false,
+				s;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
                 if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer){
@@ -17128,6 +18588,7 @@ b.dequeue()})})}})(jQuery);
                             pad = true;
                         } 
                     }
+                    lt = null;
                 }
             }
         }
@@ -17464,7 +18925,7 @@ b.dequeue()})})}})(jQuery);
     $.jqplot.ThemeEngine.prototype.init = function() {
         // get the Default theme from the current plot settings.
         var th = new $.jqplot.Theme({_name:'Default'});
-        var n, i;
+        var n, i, nn;
         
         for (n in th.target) {
             if (n == "textColor") {
@@ -17666,7 +19127,7 @@ b.dequeue()})})}})(jQuery);
                 }
             }
             
-            for (axname in plot.axes) {
+            for (var axname in plot.axes) {
                 var axis = plot.axes[axname];
                 if (axis.show) {
                     var thaxis = th.axes[axname] || {};
@@ -17683,7 +19144,7 @@ b.dequeue()})})}})(jQuery);
                         redrawPlot = true;
                     }
                     if (axis._ticks && axis._ticks[0]) {
-                        for (nn in thax.ticks) {
+                        for (var nn in thax.ticks) {
                             // val = null;
                             // if (th.axesStyles.ticks && th.axesStyles.ticks[nn] != null) {
                             //     val = th.axesStyles.ticks[nn];
@@ -17700,7 +19161,7 @@ b.dequeue()})})}})(jQuery);
                         }
                     }
                     if (axis._label && axis._label.show) {
-                        for (nn in thax.label) {
+                        for (var nn in thax.label) {
                             // val = null;
                             // if (th.axesStyles.label && th.axesStyles.label[nn] != null) {
                             //     val = th.axesStyles.label[nn];
@@ -17898,50 +19359,50 @@ b.dequeue()})})}})(jQuery);
     
         // Use the jQuery 1.3.2 extend function since behaviour in jQuery 1.4 seems problematic
     $.jqplot.extend = function() {
-    	// copy reference to target object
-    	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+        // copy reference to target object
+        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-    	// Handle a deep copy situation
-    	if ( typeof target === "boolean" ) {
-    		deep = target;
-    		target = arguments[1] || {};
-    		// skip the boolean and the target
-    		i = 2;
-    	}
-
-    	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
-    	    target = {};
-    	}
-
-    	for ( ; i < length; i++ ){
-    		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null ) {
-    			// Extend the base object
-    			for ( var name in options ) {
-    				var src = target[ name ], copy = options[ name ];
-
-    				// Prevent never-ending loop
-    				if ( target === copy ) {
-    					continue;
-    				}
-
-    				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
-    					target[ name ] = $.jqplot.extend( deep, 
-    						// Never move original objects, clone them
-    						src || ( copy.length != null ? [ ] : { } )
-    					, copy );
-                    }
-    				// Don't bring in undefined values
-    				else if ( copy !== undefined ) {
-    					target[ name ] = copy;
-    				}
-    			}
-    		}
+        // Handle a deep copy situation
+        if ( typeof target === "boolean" ) {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
         }
-    	// Return the modified object
-    	return target;
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+            target = {};
+        }
+
+        for ( ; i < length; i++ ){
+            // Only deal with non-null/undefined values
+            if ( (options = arguments[ i ]) != null ) {
+                // Extend the base object
+                for ( var name in options ) {
+                    var src = target[ name ], copy = options[ name ];
+
+                    // Prevent never-ending loop
+                    if ( target === copy ) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object values
+                    if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
+                        target[ name ] = $.jqplot.extend( deep, 
+                            // Never move original objects, clone them
+                            src || ( copy.length != null ? [ ] : { } )
+                        , copy );
+                    }
+                    // Don't bring in undefined values
+                    else if ( copy !== undefined ) {
+                        target[ name ] = copy;
+                    }
+                }
+            }
+        }
+        // Return the modified object
+        return target;
     };
 
     /**
@@ -18160,6 +19621,1434 @@ b.dequeue()})})}})(jQuery);
     };
         
 
+
+
+    /** 
+     * @description
+     * <p>Object with extended date parsing and formatting capabilities.
+     * This library borrows many concepts and ideas from the Date Instance 
+     * Methods by Ken Snyder along with some parts of Ken's actual code.</p>
+     *
+     * <p>jsDate takes a different approach by not extending the built-in 
+     * Date Object, improving date parsing, allowing for multiple formatting 
+     * syntaxes and multiple and more easily expandable localization.</p>
+     * 
+     * @author Chris Leonello
+     * @date #date#
+     * @version #VERSION#
+     * @copyright (c) 2010 Chris Leonello
+     * jsDate is currently available for use in all personal or commercial projects 
+     * under both the MIT and GPL version 2.0 licenses. This means that you can 
+     * choose the license that best suits your project and use it accordingly.
+     * 
+     * <p>Ken's origianl Date Instance Methods and copyright notice:</p>
+     * <pre>
+     * Ken Snyder (ken d snyder at gmail dot com)
+     * 2008-09-10
+     * version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
+     * Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
+     * </pre>
+     * 
+     * @class
+     * @name jsDate
+     * @param  {String | Number | Array | Date&nbsp;Object | Options&nbsp;Object} arguments Optional arguments, either a parsable date/time string,
+     * a JavaScript timestamp, an array of numbers of form [year, month, day, hours, minutes, seconds, milliseconds],
+     * a Date object, or an options object of form {syntax: "perl", date:some Date} where all options are optional.
+     */
+     
+    var jsDate = function () {
+    
+        this.syntax = jsDate.config.syntax;
+        this._type = "jsDate";
+        this.utcOffset = new Date().getTimezoneOffset * 60000;
+        this.proxy = new Date();
+        this.options = {};
+        this.locale = jsDate.regional.getLocale();
+        this.formatString = '';
+        this.defaultCentury = jsDate.config.defaultCentury;
+
+        switch ( arguments.length ) {
+            case 0:
+                break;
+            case 1:
+                // other objects either won't have a _type property or,
+                // if they do, it shouldn't be set to "jsDate", so
+                // assume it is an options argument.
+                if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
+                    var opts = this.options = arguments[0];
+                    this.syntax = opts.syntax || this.syntax;
+                    this.defaultCentury = opts.defaultCentury || this.defaultCentury;
+                    this.proxy = jsDate.createDate(opts.date);
+                }
+                else {
+                    this.proxy = jsDate.createDate(arguments[0]);
+                }
+                break;
+            default:
+                var a = [];
+                for ( var i=0; i<arguments.length; i++ ) {
+                    a.push(arguments[i]);
+                }
+                this.proxy = new Date( this.utcOffset );
+                this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
+                if ( a.slice(3).length ) {
+                    this.proxy.setHours.apply( this.proxy, a.slice(3) );
+                }
+                break;
+        }
+    };
+    
+    /**
+     * @namespace Configuration options that will be used as defaults for all instances on the page.
+     * @property {String} defaultLocale The default locale to use [en].
+     * @property {String} syntax The default syntax to use [perl].
+     */
+    jsDate.config = {
+        defaultLocale: 'en',
+        syntax: 'perl',
+        defaultCentury: 1900
+    };
+        
+    /**
+     * Add an arbitrary amount to the currently stored date
+     * 
+     * @param {Number} number      
+     * @param {String} unit
+     * @returns {jsDate}       
+     */
+     
+    jsDate.prototype.add = function(number, unit) {
+        var factor = multipliers[unit] || multipliers.day;
+        if (typeof factor == 'number') {
+            this.proxy.setTime(this.proxy.getTime() + (factor * number));
+        } else {
+            factor.add(this, number);
+        }
+        return this;
+    };
+        
+    /**
+     * Create a new jqplot.date object with the same date
+     * 
+     * @returns {jsDate}
+     */  
+     
+    jsDate.prototype.clone = function() {
+            return new jsDate(this.proxy.getTime());
+    };
+
+    /**
+     * Find the difference between this jsDate and another date.
+     * 
+     * @param {String| Number| Array| jsDate&nbsp;Object| Date&nbsp;Object} dateObj
+     * @param {String} unit
+     * @param {Boolean} allowDecimal
+     * @returns {Number} Number of units difference between dates.
+     */
+     
+    jsDate.prototype.diff = function(dateObj, unit, allowDecimal) {
+        // ensure we have a Date object
+        dateObj = new jsDate(dateObj);
+        if (dateObj === null) {
+            return null;
+        }
+        // get the multiplying factor integer or factor function
+        var factor = multipliers[unit] || multipliers.day;
+        if (typeof factor == 'number') {
+            // multiply
+            var unitDiff = (this.proxy.getTime() - dateObj.proxy.getTime()) / factor;
+        } else {
+            // run function
+            var unitDiff = factor.diff(this.proxy, dateObj.proxy);
+        }
+        // if decimals are not allowed, round toward zero
+        return (allowDecimal ? unitDiff : Math[unitDiff > 0 ? 'floor' : 'ceil'](unitDiff));          
+    };
+    
+    /**
+     * Get the abbreviated name of the current week day
+     * 
+     * @returns {String}
+     */   
+     
+    jsDate.prototype.getAbbrDayName = function() {
+        return jsDate.regional[this.locale]["dayNamesShort"][this.proxy.getDay()];
+    };
+    
+    /**
+     * Get the abbreviated name of the current month
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAbbrMonthName = function() {
+        return jsDate.regional[this.locale]["monthNamesShort"][this.proxy.getMonth()];
+    };
+    
+    /**
+     * Get UPPER CASE AM or PM for the current time
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAMPM = function() {
+        return this.proxy.getHours() >= 12 ? 'PM' : 'AM';
+    };
+    
+    /**
+     * Get lower case am or pm for the current time
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAmPm = function() {
+        return this.proxy.getHours() >= 12 ? 'pm' : 'am';
+    };
+    
+    /**
+     * Get the century (19 for 20th Century)
+     *
+     * @returns {Integer} Century (19 for 20th century).
+     */
+    jsDate.prototype.getCentury = function() { 
+        return parseInt(this.proxy.getFullYear()/100, 10);
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getDate = function() {
+        return this.proxy.getDate();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getDay = function() {
+        return this.proxy.getDay();
+    };
+    
+    /**
+     * Get the Day of week 1 (Monday) thru 7 (Sunday)
+     * 
+     * @returns {Integer} Day of week 1 (Monday) thru 7 (Sunday)
+     */
+    jsDate.prototype.getDayOfWeek = function() { 
+        var dow = this.proxy.getDay(); 
+        return dow===0?7:dow; 
+    };
+    
+    /**
+     * Get the day of the year
+     * 
+     * @returns {Integer} 1 - 366, day of the year
+     */
+    jsDate.prototype.getDayOfYear = function() {
+        var d = this.proxy;
+        var ms = d - new Date('' + d.getFullYear() + '/1/1 GMT');
+        ms += d.getTimezoneOffset()*60000;
+        d = null;
+        return parseInt(ms/60000/60/24, 10)+1;
+    };
+    
+    /**
+     * Get the name of the current week day
+     * 
+     * @returns {String}
+     */  
+     
+    jsDate.prototype.getDayName = function() {
+        return jsDate.regional[this.locale]["dayNames"][this.proxy.getDay()];
+    };
+    
+    /**
+     * Get the week number of the given year, starting with the first Sunday as the first week
+     * @returns {Integer} Week number (13 for the 13th full week of the year).
+     */
+    jsDate.prototype.getFullWeekOfYear = function() {
+        var d = this.proxy;
+        var doy = this.getDayOfYear();
+        var rdow = 6-d.getDay();
+        var woy = parseInt((doy+rdow)/7, 10);
+        return woy;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getFullYear = function() {
+        return this.proxy.getFullYear();
+    };
+    
+    /**
+     * Get the GMT offset in hours and minutes (e.g. +06:30)
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getGmtOffset = function() {
+        // divide the minutes offset by 60
+        var hours = this.proxy.getTimezoneOffset() / 60;
+        // decide if we are ahead of or behind GMT
+        var prefix = hours < 0 ? '+' : '-';
+        // remove the negative sign if any
+        hours = Math.abs(hours);
+        // add the +/- to the padded number of hours to : to the padded minutes
+        return prefix + addZeros(Math.floor(hours), 2) + ':' + addZeros((hours % 1) * 60, 2);
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getHours = function() {
+        return this.proxy.getHours();
+    };
+    
+    /**
+     * Get the current hour on a 12-hour scheme
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getHours12  = function() {
+        var hours = this.proxy.getHours();
+        return hours > 12 ? hours - 12 : (hours == 0 ? 12 : hours);
+    };
+    
+    
+    jsDate.prototype.getIsoWeek = function() {
+        var d = this.proxy;
+        var woy = d.getWeekOfYear();
+        var dow1_1 = (new Date('' + d.getFullYear() + '/1/1')).getDay();
+        // First week is 01 and not 00 as in the case of %U and %W,
+        // so we add 1 to the final result except if day 1 of the year
+        // is a Monday (then %W returns 01).
+        // We also need to subtract 1 if the day 1 of the year is 
+        // Friday-Sunday, so the resulting equation becomes:
+        var idow = woy + (dow1_1 > 4 || dow1_1 <= 1 ? 0 : 1);
+        if(idow == 53 && (new Date('' + d.getFullYear() + '/12/31')).getDay() < 4)
+        {
+            idow = 1;
+        }
+        else if(idow === 0)
+        {
+            d = new jsDate(new Date('' + (d.getFullYear()-1) + '/12/31'));
+            idow = d.getIsoWeek();
+        }
+        d = null;
+        return idow;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMilliseconds = function() {
+        return this.proxy.getMilliseconds();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMinutes = function() {
+        return this.proxy.getMinutes();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMonth = function() {
+        return this.proxy.getMonth();
+    };
+    
+    /**
+     * Get the name of the current month
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getMonthName = function() {
+        return jsDate.regional[this.locale]["monthNames"][this.proxy.getMonth()];
+    };
+    
+    /**
+     * Get the number of the current month, 1-12
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getMonthNumber = function() {
+        return this.proxy.getMonth() + 1;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getSeconds = function() {
+        return this.proxy.getSeconds();
+    };
+    
+    /**
+     * Return a proper two-digit year integer
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getShortYear = function() {
+        return this.proxy.getYear() % 100;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getTime = function() {
+        return this.proxy.getTime();
+    };
+    
+    /**
+     * Get the timezone abbreviation
+     *
+     * @returns {String} Abbreviation for the timezone
+     */
+    jsDate.prototype.getTimezoneAbbr = function() {
+        return this.proxy.toString().replace(/^.*\(([^)]+)\)$/, '$1'); 
+    };
+    
+    /**
+     * Get the browser-reported name for the current timezone (e.g. MDT, Mountain Daylight Time)
+     * 
+     * @returns {String}
+     */
+    jsDate.prototype.getTimezoneName = function() {
+        var match = /(?:\((.+)\)$| ([A-Z]{3}) )/.exec(this.toString());
+        return match[1] || match[2] || 'GMT' + this.getGmtOffset();
+    }; 
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getTimezoneOffset = function() {
+        return this.proxy.getTimezoneOffset();
+    };
+    
+    
+    /**
+     * Get the week number of the given year, starting with the first Monday as the first week
+     * @returns {Integer} Week number (13 for the 13th week of the year).
+     */
+    jsDate.prototype.getWeekOfYear = function() {
+        var doy = this.getDayOfYear();
+        var rdow = 7 - this.getDayOfWeek();
+        var woy = parseInt((doy+rdow)/7, 10);
+        return woy;
+    };
+    
+    /**
+     * Get the current date as a Unix timestamp
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getUnix = function() {
+        return Math.round(this.proxy.getTime() / 1000, 0);
+    }; 
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getYear = function() {
+        return this.proxy.getYear();
+    };
+    
+    /**
+     * Return a date one day ahead (or any other unit)
+     * 
+     * @param {String} unit Optional, year | month | day | week | hour | minute | second | millisecond
+     * @returns {jsDate}
+     */
+     
+    jsDate.prototype.next = function(unit) {
+        unit = unit || 'day';
+        return this.clone().add(1, unit);
+    };
+    
+    /**
+     * Set the jsDate instance to a new date.
+     *
+     * @param  {String | Number | Array | Date Object | jsDate Object | Options Object} arguments Optional arguments, 
+     * either a parsable date/time string,
+     * a JavaScript timestamp, an array of numbers of form [year, month, day, hours, minutes, seconds, milliseconds],
+     * a Date object, jsDate Object or an options object of form {syntax: "perl", date:some Date} where all options are optional.
+     */
+    jsDate.prototype.set = function() {
+        switch ( arguments.length ) {
+            case 0:
+                this.proxy = new Date();
+                break;
+            case 1:
+                // other objects either won't have a _type property or,
+                // if they do, it shouldn't be set to "jsDate", so
+                // assume it is an options argument.
+                if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
+                    var opts = this.options = arguments[0];
+                    this.syntax = opts.syntax || this.syntax;
+                    this.defaultCentury = opts.defaultCentury || this.defaultCentury;
+                    this.proxy = jsDate.createDate(opts.date);
+                }
+                else {
+                    this.proxy = jsDate.createDate(arguments[0]);
+                }
+                break;
+            default:
+                var a = [];
+                for ( var i=0; i<arguments.length; i++ ) {
+                    a.push(arguments[i]);
+                }
+                this.proxy = new Date( this.utcOffset );
+                this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
+                if ( a.slice(3).length ) {
+                    this.proxy.setHours.apply( this.proxy, a.slice(3) );
+                }
+                break;
+        }
+    };
+    
+    /**
+     * Sets the day of the month for a specified date according to local time.
+     * @param {Integer} dayValue An integer from 1 to 31, representing the day of the month. 
+     */
+    jsDate.prototype.setDate = function(n) {
+        return this.proxy.setDate(n);
+    };
+    
+    /**
+     * Sets the full year for a specified date according to local time.
+     * @param {Integer} yearValue The numeric value of the year, for example, 1995.  
+     * @param {Integer} monthValue Optional, between 0 and 11 representing the months January through December.  
+     * @param {Integer} dayValue Optional, between 1 and 31 representing the day of the month. If you specify the dayValue parameter, you must also specify the monthValue. 
+     */
+    jsDate.prototype.setFullYear = function() {
+        return this.proxy.setFullYear.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Sets the hours for a specified date according to local time.
+     * 
+     * @param {Integer} hoursValue An integer between 0 and 23, representing the hour.  
+     * @param {Integer} minutesValue Optional, An integer between 0 and 59, representing the minutes.  
+     * @param {Integer} secondsValue Optional, An integer between 0 and 59, representing the seconds. 
+     * If you specify the secondsValue parameter, you must also specify the minutesValue.  
+     * @param {Integer} msValue Optional, A number between 0 and 999, representing the milliseconds. 
+     * If you specify the msValue parameter, you must also specify the minutesValue and secondsValue. 
+     */
+    jsDate.prototype.setHours = function() {
+        return this.proxy.setHours.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMilliseconds = function(n) {
+        return this.proxy.setMilliseconds(n);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMinutes = function() {
+        return this.proxy.setMinutes.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMonth = function() {
+        return this.proxy.setMonth.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setSeconds = function() {
+        return this.proxy.setSeconds.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setTime = function(n) {
+        return this.proxy.setTime(n);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setYear = function() {
+        return this.proxy.setYear.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Provide a formatted string representation of this date.
+     * 
+     * @param {String} formatString A format string.  
+     * See: {@link jsDate.formats}.
+     * @returns {String} Date String.
+     */
+            
+    jsDate.prototype.strftime = function(formatString) {
+        formatString = formatString || this.formatString || jsDate.regional[this.locale]['formatString'];
+        return jsDate.strftime(this, formatString, this.syntax);
+    };
+        
+    /**
+     * Return a String representation of this jsDate object.
+     * @returns {String} Date string.
+     */
+    
+    jsDate.prototype.toString = function() {
+        return this.proxy.toString();
+    };
+        
+    /**
+     * Convert the current date to an 8-digit integer (%Y%m%d)
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.toYmdInt = function() {
+        return (this.proxy.getFullYear() * 10000) + (this.getMonthNumber() * 100) + this.proxy.getDate();
+    };
+    
+    /**
+     * @namespace Holds localizations for month/day names.
+     * <p>jsDate attempts to detect locale when loaded and defaults to 'en'.
+     * If a localization is detected which is not available, jsDate defaults to 'en'.
+     * Additional localizations can be added after jsDate loads.  After adding a localization,
+     * call the jsDate.regional.getLocale() method.  Currently, en, fr and de are defined.</p>
+     * 
+     * <p>Localizations must be an object and have the following properties defined:  monthNames, monthNamesShort, dayNames, dayNamesShort and Localizations are added like:</p>
+     * <pre class="code">
+     * jsDate.regional['en'] = {
+     * monthNames      : 'January February March April May June July August September October November December'.split(' '),
+     * monthNamesShort : 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),
+     * dayNames        : 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '),
+     * dayNamesShort   : 'Sun Mon Tue Wed Thu Fri Sat'.split(' ')
+     * };
+     * </pre>
+     * <p>After adding localizations, call <code>jsDate.regional.getLocale();</code> to update the locale setting with the
+     * new localizations.</p>
+     */
+     
+    jsDate.regional = {
+        'en': {
+            monthNames: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'fr': {
+            monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+            monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+            dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+            dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'de': {
+            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+            dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+            dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'es': {
+            monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+            monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun', 'Jul','Ago','Sep','Oct','Nov','Dic'],
+            dayNames: ['Domingo','Lunes','Martes','Mi&eacute;rcoles','Jueves','Viernes','S&aacute;bado'],
+            dayNamesShort: ['Dom','Lun','Mar','Mi&eacute;','Juv','Vie','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'ru': {
+            monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+            monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
+            dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+            dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'ar': {
+            monthNames: ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'آذار', 'حزيران','تموز', 'آب', 'أيلول',   'تشرين الأول', 'تشرين الثاني', 'كانون الأول'],
+            monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'],
+            dayNames: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+            dayNamesShort: ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'pt': {
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'   
+        },
+        
+        'pt-BR': {
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho', 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        }
+        
+    
+    };
+    
+    // Set english variants to 'en'
+    jsDate.regional['en-US'] = jsDate.regional['en-GB'] = jsDate.regional['en'];
+    
+    /**
+     * Try to determine the users locale based on the lang attribute of the html page.  Defaults to 'en'
+     * if it cannot figure out a locale of if the locale does not have a localization defined.
+     * @returns {String} locale
+     */
+     
+    jsDate.regional.getLocale = function () {
+        var l = jsDate.config.defaultLocale;
+        
+        if ( document && document.getElementsByTagName('html') && document.getElementsByTagName('html')[0].lang ) {
+            l = document.getElementsByTagName('html')[0].lang;
+            if (!jsDate.regional.hasOwnProperty(l)) {
+                l = jsDate.config.defaultLocale;
+            }
+        }
+        
+        return l;
+    };
+    
+    // ms in day
+    var day = 24 * 60 * 60 * 1000;
+    
+    // padd a number with zeros
+    var addZeros = function(num, digits) {
+        num = String(num);
+        var i = digits - num.length;
+        var s = String(Math.pow(10, i)).slice(1);
+        return s.concat(num);
+    };
+
+    // representations used for calculating differences between dates.
+    // This borrows heavily from Ken Snyder's work.
+    var multipliers = {
+        millisecond: 1,
+        second: 1000,
+        minute: 60 * 1000,
+        hour: 60 * 60 * 1000,
+        day: day,
+        week: 7 * day,
+        month: {
+            // add a number of months
+            add: function(d, number) {
+                // add any years needed (increments of 12)
+                multipliers.year.add(d, Math[number > 0 ? 'floor' : 'ceil'](number / 12));
+                // ensure that we properly wrap betwen December and January
+                var prevMonth = d.getMonth() + (number % 12);
+                if (prevMonth == 12) {
+                    prevMonth = 0;
+                    d.setYear(d.getFullYear() + 1);
+                } else if (prevMonth == -1) {
+                    prevMonth = 11;
+                    d.setYear(d.getFullYear() - 1);
+                }
+                d.setMonth(prevMonth);
+            },
+            // get the number of months between two Date objects (decimal to the nearest day)
+            diff: function(d1, d2) {
+                // get the number of years
+                var diffYears = d1.getFullYear() - d2.getFullYear();
+                // get the number of remaining months
+                var diffMonths = d1.getMonth() - d2.getMonth() + (diffYears * 12);
+                // get the number of remaining days
+                var diffDays = d1.getDate() - d2.getDate();
+                // return the month difference with the days difference as a decimal
+                return diffMonths + (diffDays / 30);
+            }
+        },
+        year: {
+            // add a number of years
+            add: function(d, number) {
+                d.setYear(d.getFullYear() + Math[number > 0 ? 'floor' : 'ceil'](number));
+            },
+            // get the number of years between two Date objects (decimal to the nearest day)
+            diff: function(d1, d2) {
+                return multipliers.month.diff(d1, d2) / 12;
+            }
+        }        
+    };
+    //
+    // Alias each multiplier with an 's' to allow 'year' and 'years' for example.
+    // This comes from Ken Snyders work.
+    //
+    for (var unit in multipliers) {
+        if (unit.substring(unit.length - 1) != 's') { // IE will iterate newly added properties :|
+            multipliers[unit + 's'] = multipliers[unit];
+        }
+    }
+    
+    //
+    // take a jsDate instance and a format code and return the formatted value.
+    // This is a somewhat modified version of Ken Snyder's method.
+    //
+    var format = function(d, code, syntax) {
+        // if shorcut codes are used, recursively expand those.
+        if (jsDate.formats[syntax]["shortcuts"][code]) {
+            return jsDate.strftime(d, jsDate.formats[syntax]["shortcuts"][code], syntax);
+        } else {
+            // get the format code function and addZeros() argument
+            var getter = (jsDate.formats[syntax]["codes"][code] || '').split('.');
+            var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
+            if (getter[1]) {
+                nbr = addZeros(nbr, getter[1]);
+            }
+            return nbr;
+        }       
+    };
+    
+    /**
+     * @static
+     * Static function for convert a date to a string according to a given format.  Also acts as namespace for strftime format codes.
+     * <p>strftime formatting can be accomplished without creating a jsDate object by calling jsDate.strftime():</p>
+     * <pre class="code">
+     * var formattedDate = jsDate.strftime('Feb 8, 2006 8:48:32', '%Y-%m-%d %H:%M:%S');
+     * </pre>
+     * @param {String | Number | Array | jsDate&nbsp;Object | Date&nbsp;Object} date A parsable date string, JavaScript time stamp, Array of form [year, month, day, hours, minutes, seconds, milliseconds], jsDate Object or Date object.
+     * @param {String} formatString String with embedded date formatting codes.  
+     * See: {@link jsDate.formats}. 
+     * @param {String} syntax Optional syntax to use [default perl].
+     * @param {String} locale Optional locale to use.
+     * @returns {String} Formatted representation of the date.
+    */
+    //
+    // Logic as implemented here is very similar to Ken Snyder's Date Instance Methods.
+    //
+    jsDate.strftime = function(d, formatString, syntax, locale) {
+        var syn = 'perl';
+        var loc = jsDate.regional.getLocale();
+        
+        // check if syntax and locale are available or reversed
+        if (syntax && jsDate.formats.hasOwnProperty(syntax)) {
+            syn = syntax;
+        }
+        else if (syntax && jsDate.regional.hasOwnProperty(syntax)) {
+            loc = syntax;
+        }
+        
+        if (locale && jsDate.formats.hasOwnProperty(locale)) {
+            syn = locale;
+        }
+        else if (locale && jsDate.regional.hasOwnProperty(locale)) {
+            loc = locale;
+        }
+        
+        if (get_type(d) != "[object Object]" || d._type != "jsDate") {
+            d = new jsDate(d);
+            d.locale = loc;
+        }
+        if (!formatString) {
+            formatString = d.formatString || jsDate.regional[loc]['formatString'];
+        }
+        // default the format string to year-month-day
+        var source = formatString || '%Y-%m-%d', 
+            result = '', 
+            match;
+        // replace each format code
+        while (source.length > 0) {
+            if (match = source.match(jsDate.formats[syn].codes.matcher)) {
+                result += source.slice(0, match.index);
+                result += (match[1] || '') + format(d, match[2], syn);
+                source = source.slice(match.index + match[0].length);
+            } else {
+                result += source;
+                source = '';
+            }
+        }
+        return result;
+    };
+    
+    /**
+     * @namespace
+     * Namespace to hold format codes and format shortcuts.  "perl" and "php" format codes 
+     * and shortcuts are defined by default.  Additional codes and shortcuts can be
+     * added like:
+     * 
+     * <pre class="code">
+     * jsDate.formats["perl"] = {
+     *     "codes": {
+     *         matcher: /someregex/,
+     *         Y: "fullYear",  // name of "get" method without the "get",
+     *         ...,            // more codes
+     *     },
+     *     "shortcuts": {
+     *         F: '%Y-%m-%d',
+     *         ...,            // more shortcuts
+     *     }
+     * };
+     * </pre>
+     * 
+     * <p>Additionally, ISO and SQL shortcuts are defined and can be accesses via:
+     * <code>jsDate.formats.ISO</code> and <code>jsDate.formats.SQL</code>
+     */
+    
+    jsDate.formats = {
+        ISO:'%Y-%m-%dT%H:%M:%S.%N%G',
+        SQL:'%Y-%m-%d %H:%M:%S'
+    };
+    
+    /**
+     * Perl format codes and shortcuts for strftime.
+     * 
+     * A hash (object) of codes where each code must be an array where the first member is 
+     * the name of a Date.prototype or jsDate.prototype function to call
+     * and optionally a second member indicating the number to pass to addZeros()
+     * 
+     * <p>The following format codes are defined:</p>
+     * 
+     * <pre class="code">
+     * Code    Result                    Description
+     * == Years ==           
+     * %Y      2008                      Four-digit year
+     * %y      08                        Two-digit year
+     * 
+     * == Months ==          
+     * %m      09                        Two-digit month
+     * %#m     9                         One or two-digit month
+     * %B      September                 Full month name
+     * %b      Sep                       Abbreviated month name
+     * 
+     * == Days ==            
+     * %d      05                        Two-digit day of month
+     * %#d     5                         One or two-digit day of month
+     * %e      5                         One or two-digit day of month
+     * %A      Sunday                    Full name of the day of the week
+     * %a      Sun                       Abbreviated name of the day of the week
+     * %w      0                         Number of the day of the week (0 = Sunday, 6 = Saturday)
+     * 
+     * == Hours ==           
+     * %H      23                        Hours in 24-hour format (two digits)
+     * %#H     3                         Hours in 24-hour integer format (one or two digits)
+     * %I      11                        Hours in 12-hour format (two digits)
+     * %#I     3                         Hours in 12-hour integer format (one or two digits)
+     * %p      PM                        AM or PM
+     * 
+     * == Minutes ==         
+     * %M      09                        Minutes (two digits)
+     * %#M     9                         Minutes (one or two digits)
+     * 
+     * == Seconds ==         
+     * %S      02                        Seconds (two digits)
+     * %#S     2                         Seconds (one or two digits)
+     * %s      1206567625723             Unix timestamp (Seconds past 1970-01-01 00:00:00)
+     * 
+     * == Milliseconds ==    
+     * %N      008                       Milliseconds (three digits)
+     * %#N     8                         Milliseconds (one to three digits)
+     * 
+     * == Timezone ==        
+     * %O      360                       difference in minutes between local time and GMT
+     * %Z      Mountain Standard Time    Name of timezone as reported by browser
+     * %G      06:00                     Hours and minutes between GMT
+     * 
+     * == Shortcuts ==       
+     * %F      2008-03-26                %Y-%m-%d
+     * %T      05:06:30                  %H:%M:%S
+     * %X      05:06:30                  %H:%M:%S
+     * %x      03/26/08                  %m/%d/%y
+     * %D      03/26/08                  %m/%d/%y
+     * %#c     Wed Mar 26 15:31:00 2008  %a %b %e %H:%M:%S %Y
+     * %v      3-Sep-2008                %e-%b-%Y
+     * %R      15:31                     %H:%M
+     * %r      03:31:00 PM               %I:%M:%S %p
+     * 
+     * == Characters ==      
+     * %n      \n                        Newline
+     * %t      \t                        Tab
+     * %%      %                         Percent Symbol
+     * </pre>
+     * 
+     * <p>Formatting shortcuts that will be translated into their longer version.
+     * Be sure that format shortcuts do not refer to themselves: this will cause an infinite loop.</p>
+     * 
+     * <p>Format codes and format shortcuts can be redefined after the jsDate
+     * module is imported.</p>
+     * 
+     * <p>Note that if you redefine the whole hash (object), you must supply a "matcher"
+     * regex for the parser.  The default matcher is:</p>
+     * 
+     * <code>/()%(#?(%|[a-z]))/i</code>
+     * 
+     * <p>which corresponds to the Perl syntax used by default.</p>
+     * 
+     * <p>By customizing the matcher and format codes, nearly any strftime functionality is possible.</p>
+     */
+     
+    jsDate.formats.perl = {
+        codes: {
+            //
+            // 2-part regex matcher for format codes
+            //
+            // first match must be the character before the code (to account for escaping)
+            // second match must be the format code character(s)
+            //
+            matcher: /()%(#?(%|[a-z]))/i,
+            // year
+            Y: 'FullYear',
+            y: 'ShortYear.2',
+            // month
+            m: 'MonthNumber.2',
+            '#m': 'MonthNumber',
+            B: 'MonthName',
+            b: 'AbbrMonthName',
+            // day
+            d: 'Date.2',
+            '#d': 'Date',
+            e: 'Date',
+            A: 'DayName',
+            a: 'AbbrDayName',
+            w: 'Day',
+            // hours
+            H: 'Hours.2',
+            '#H': 'Hours',
+            I: 'Hours12.2',
+            '#I': 'Hours12',
+            p: 'AMPM',
+            // minutes
+            M: 'Minutes.2',
+            '#M': 'Minutes',
+            // seconds
+            S: 'Seconds.2',
+            '#S': 'Seconds',
+            s: 'Unix',
+            // milliseconds
+            N: 'Milliseconds.3',
+            '#N': 'Milliseconds',
+            // timezone
+            O: 'TimezoneOffset',
+            Z: 'TimezoneName',
+            G: 'GmtOffset'  
+        },
+        
+        shortcuts: {
+            // date
+            F: '%Y-%m-%d',
+            // time
+            T: '%H:%M:%S',
+            X: '%H:%M:%S',
+            // local format date
+            x: '%m/%d/%y',
+            D: '%m/%d/%y',
+            // local format extended
+            '#c': '%a %b %e %H:%M:%S %Y',
+            // local format short
+            v: '%e-%b-%Y',
+            R: '%H:%M',
+            r: '%I:%M:%S %p',
+            // tab and newline
+            t: '\t',
+            n: '\n',
+            '%': '%'
+        }
+    };
+    
+    /**
+     * PHP format codes and shortcuts for strftime.
+     * 
+     * A hash (object) of codes where each code must be an array where the first member is 
+     * the name of a Date.prototype or jsDate.prototype function to call
+     * and optionally a second member indicating the number to pass to addZeros()
+     * 
+     * <p>The following format codes are defined:</p>
+     * 
+     * <pre class="code">
+     * Code    Result                    Description
+     * === Days ===        
+     * %a      Sun through Sat           An abbreviated textual representation of the day
+     * %A      Sunday - Saturday         A full textual representation of the day
+     * %d      01 to 31                  Two-digit day of the month (with leading zeros)
+     * %e      1 to 31                   Day of the month, with a space preceding single digits.
+     * %j      001 to 366                Day of the year, 3 digits with leading zeros
+     * %u      1 - 7 (Mon - Sun)         ISO-8601 numeric representation of the day of the week
+     * %w      0 - 6 (Sun - Sat)         Numeric representation of the day of the week
+     *                                  
+     * === Week ===                     
+     * %U      13                        Full Week number, starting with the first Sunday as the first week
+     * %V      01 through 53             ISO-8601:1988 week number, starting with the first week of the year 
+     *                                   with at least 4 weekdays, with Monday being the start of the week
+     * %W      46                        A numeric representation of the week of the year, 
+     *                                   starting with the first Monday as the first week
+     * === Month ===                    
+     * %b      Jan through Dec           Abbreviated month name, based on the locale
+     * %B      January - December        Full month name, based on the locale
+     * %h      Jan through Dec           Abbreviated month name, based on the locale (an alias of %b)
+     * %m      01 - 12 (Jan - Dec)       Two digit representation of the month
+     * 
+     * === Year ===                     
+     * %C      19                        Two digit century (year/100, truncated to an integer)
+     * %y      09 for 2009               Two digit year
+     * %Y      2038                      Four digit year
+     * 
+     * === Time ===                     
+     * %H      00 through 23             Two digit representation of the hour in 24-hour format
+     * %I      01 through 12             Two digit representation of the hour in 12-hour format
+     * %l      1 through 12              Hour in 12-hour format, with a space preceeding single digits
+     * %M      00 through 59             Two digit representation of the minute
+     * %p      AM/PM                     UPPER-CASE 'AM' or 'PM' based on the given time
+     * %P      am/pm                     lower-case 'am' or 'pm' based on the given time
+     * %r      09:34:17 PM               Same as %I:%M:%S %p
+     * %R      00:35                     Same as %H:%M
+     * %S      00 through 59             Two digit representation of the second
+     * %T      21:34:17                  Same as %H:%M:%S
+     * %X      03:59:16                  Preferred time representation based on locale, without the date
+     * %z      -0500 or EST              Either the time zone offset from UTC or the abbreviation
+     * %Z      -0500 or EST              The time zone offset/abbreviation option NOT given by %z
+     * 
+     * === Time and Date ===            
+     * %D      02/05/09                  Same as %m/%d/%y
+     * %F      2009-02-05                Same as %Y-%m-%d (commonly used in database datestamps)
+     * %s      305815200                 Unix Epoch Time timestamp (same as the time() function)
+     * %x      02/05/09                  Preferred date representation, without the time
+     * 
+     * === Miscellaneous ===            
+     * %n        ---                     A newline character (\n)
+     * %t        ---                     A Tab character (\t)
+     * %%        ---                     A literal percentage character (%)
+     * </pre>
+     */
+ 
+    jsDate.formats.php = {
+        codes: {
+            //
+            // 2-part regex matcher for format codes
+            //
+            // first match must be the character before the code (to account for escaping)
+            // second match must be the format code character(s)
+            //
+            matcher: /()%((%|[a-z]))/i,
+            // day
+            a: 'AbbrDayName',
+            A: 'DayName',
+            d: 'Date.2',
+            e: 'Date',
+            j: 'DayOfYear.3',
+            u: 'DayOfWeek',
+            w: 'Day',
+            // week
+            U: 'FullWeekOfYear.2',
+            V: 'IsoWeek.2',
+            W: 'WeekOfYear.2',
+            // month
+            b: 'AbbrMonthName',
+            B: 'MonthName',
+            m: 'MonthNumber.2',
+            h: 'AbbrMonthName',
+            // year
+            C: 'Century.2',
+            y: 'ShortYear.2',
+            Y: 'FullYear',
+            // time
+            H: 'Hours.2',
+            I: 'Hours12.2',
+            l: 'Hours12',
+            p: 'AMPM',
+            P: 'AmPm',
+            M: 'Minutes.2',
+            S: 'Seconds.2',
+            s: 'Unix',
+            O: 'TimezoneOffset',
+            z: 'GmtOffset',
+            Z: 'TimezoneAbbr'
+        },
+        
+        shortcuts: {
+            D: '%m/%d/%y',
+            F: '%Y-%m-%d',
+            T: '%H:%M:%S',
+            X: '%H:%M:%S',
+            x: '%m/%d/%y',
+            R: '%H:%M',
+            r: '%I:%M:%S %p',
+            t: '\t',
+            n: '\n',
+            '%': '%'
+        }
+    };   
+    //
+    // Conceptually, the logic implemented here is similar to Ken Snyder's Date Instance Methods.
+    // I use his idea of a set of parsers which can be regular expressions or functions,
+    // iterating through those, and then seeing if Date.parse() will create a date.
+    // The parser expressions and functions are a little different and some bugs have been
+    // worked out.  Also, a lot of "pre-parsing" is done to fix implementation
+    // variations of Date.parse() between browsers.
+    //
+    jsDate.createDate = function(date) {
+        // if passing in multiple arguments, try Date constructor
+        if (date == null) {
+            return new Date();
+        }
+        // If the passed value is already a date object, return it
+        if (date instanceof Date) {
+            return date;
+        }
+        // if (typeof date == 'number') return new Date(date * 1000);
+        // If the passed value is an integer, interpret it as a javascript timestamp
+        if (typeof date == 'number') {
+            return new Date(date);
+        }
+        
+        // Before passing strings into Date.parse(), have to normalize them for certain conditions.
+        // If strings are not formatted staccording to the EcmaScript spec, results from Date parse will be implementation dependent.  
+        // 
+        // For example: 
+        //  * FF and Opera assume 2 digit dates are pre y2k, Chome assumes <50 is pre y2k, 50+ is 21st century.  
+        //  * Chrome will correctly parse '1984-1-25' into localtime, FF and Opera will not parse.
+        //  * Both FF, Chrome and Opera will parse '1984/1/25' into localtime.
+        
+        // remove leading and trailing spaces
+        var parsable = String(date).replace(/^\s*(.+)\s*$/g, '$1');
+        
+        // replace dahses (-) with slashes (/) in dates like n[nnn]/n[n]/n[nnn]
+        parsable = parsable.replace(/^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,4})/, "$1/$2/$3");
+        
+        /////////
+        // Need to check for '15-Dec-09' also.
+        // FF will not parse, but Chrome will.
+        // Chrome will set date to 2009 as well.
+        /////////
+        
+        // first check for 'dd-mmm-yyyy' or 'dd/mmm/yyyy' like '15-Dec-2010'
+        parsable = parsable.replace(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{4})/i, "$1 $2 $3");
+        
+        // Now check for 'dd-mmm-yy' or 'dd/mmm/yy' and normalize years to default century.
+        var match = parsable.match(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{2})\D*/i);
+        if (match && match.length > 3) {
+            var m3 = parseFloat(match[3]);
+            var ny = jsDate.config.defaultCentury + m3;
+            ny = String(ny);
+            
+            // now replace 2 digit year with 4 digit year
+            parsable = parsable.replace(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{2})\D*/i, match[1] +' '+ match[2] +' '+ ny);
+            
+        }
+        
+        // Check for '1/19/70 8:14PM'
+        // where starts with mm/dd/yy or yy/mm/dd and have something after
+        // Check if 1st postiion is greater than 31, assume it is year.
+        // Assme all 2 digit years are 1900's.
+        // Finally, change them into US style mm/dd/yyyy representations.
+        match = parsable.match(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})[^0-9]/);
+        
+        function h1(parsable, match) {
+            var m1 = parseFloat(match[1]);
+            var m2 = parseFloat(match[2]);
+            var m3 = parseFloat(match[3]);
+            var cent = jsDate.config.defaultCentury;
+            var ny, nd, nm, str;
+            
+            if (m1 > 31) { // first number is a year
+                nd = m3;
+                nm = m2;
+                ny = cent + m1;
+            }
+            
+            else { // last number is the year
+                nd = m2;
+                nm = m1;
+                ny = cent + m3;
+            }
+            
+            str = nm+'/'+nd+'/'+ny;
+            
+            // now replace 2 digit year with 4 digit year
+            return  parsable.replace(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})/, str);
+        
+        }
+        
+        if (match && match.length > 3) {
+            parsable = h1(parsable, match);
+        }
+        
+        // Now check for '1/19/70' with nothing after and do as above
+        var match = parsable.match(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})$/);
+        
+        if (match && match.length > 3) {
+            parsable = h1(parsable, match);
+        }
+                
+        
+        var i = 0;
+        var length = jsDate.matchers.length;
+        var pattern,
+            ms,
+            current = parsable;
+        while (i < length) {
+            ms = Date.parse(current);
+            if (!isNaN(ms)) {
+                return new Date(ms);
+            }
+            pattern = jsDate.matchers[i];
+            if (typeof pattern == 'function') {
+                var obj = pattern.call(jsDate, current);
+                if (obj instanceof Date) {
+                    return obj;
+                }
+            } else {
+                current = parsable.replace(pattern[0], pattern[1]);
+            }
+            i++;
+        }
+        return NaN;
+    };
+    
+
+    /**
+     * @static
+     * Handy static utility function to return the number of days in a given month.
+     * @param {Integer} year Year
+     * @param {Integer} month Month (1-12)
+     * @returns {Integer} Number of days in the month.
+    */
+    //
+    // handy utility method Borrowed right from Ken Snyder's Date Instance Mehtods.
+    // 
+    jsDate.daysInMonth = function(year, month) {
+        if (month == 2) {
+            return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
+        }
+        return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
+    };
+
+
+    //
+    // An Array of regular expressions or functions that will attempt to match the date string.
+    // Functions are called with scope of a jsDate instance.
+    //
+    jsDate.matchers = [
+        // convert dd.mmm.yyyy to mm/dd/yyyy (world date to US date).
+        [/(3[01]|[0-2]\d)\s*\.\s*(1[0-2]|0\d)\s*\.\s*([1-9]\d{3})/, '$2/$1/$3'],
+        // convert yyyy-mm-dd to mm/dd/yyyy (ISO date to US date).
+        [/([1-9]\d{3})\s*-\s*(1[0-2]|0\d)\s*-\s*(3[01]|[0-2]\d)/, '$2/$3/$1'],
+        // Handle 12 hour or 24 hour time with milliseconds am/pm and optional date part.
+        function(str) { 
+            var match = str.match(/^(?:(.+)\s+)?([012]?\d)(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d(\.\d*)?))?\s*(am|pm)?\s*$/i);
+            //                   opt. date      hour       opt. minute     opt. second       opt. msec   opt. am or pm
+            if (match) {
+                if (match[1]) {
+                    var d = this.createDate(match[1]);
+                    if (isNaN(d)) {
+                        return;
+                    }
+                } else {
+                    var d = new Date();
+                    d.setMilliseconds(0);
+                }
+                var hour = parseFloat(match[2]);
+                if (match[6]) {
+                    hour = match[6].toLowerCase() == 'am' ? (hour == 12 ? 0 : hour) : (hour == 12 ? 12 : hour + 12);
+                }
+                d.setHours(hour, parseInt(match[3] || 0, 10), parseInt(match[4] || 0, 10), ((parseFloat(match[5] || 0)) || 0)*1000);
+                return d;
+            }
+            else {
+                return str;
+            }
+        },
+        // Handle ISO timestamp with time zone.
+        function(str) {
+            var match = str.match(/^(?:(.+))[T|\s+]([012]\d)(?:\:(\d\d))(?:\:(\d\d))(?:\.\d+)([\+\-]\d\d\:\d\d)$/i);
+            if (match) {
+                if (match[1]) {
+                    var d = this.createDate(match[1]);
+                    if (isNaN(d)) {
+                        return;
+                    }
+                } else {
+                    var d = new Date();
+                    d.setMilliseconds(0);
+                }
+                var hour = parseFloat(match[2]);
+                d.setHours(hour, parseInt(match[3], 10), parseInt(match[4], 10), parseFloat(match[5])*1000);
+                return d;
+            }
+            else {
+                    return str;
+            }
+        },
+        // Try to match ambiguous strings like 12/8/22.
+        // Use FF date assumption that 2 digit years are 20th century (i.e. 1900's).
+        // This may be redundant with pre processing of date already performed.
+        function(str) {
+            var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
+            if (match) {
+                var d = new Date();
+                var cent = jsDate.config.defaultCentury;
+                var m1 = parseFloat(match[1]);
+                var m3 = parseFloat(match[3]);
+                var ny, nd, nm;
+                if (m1 > 31) { // first number is a year
+                    nd = m3;
+                    ny = cent + m1;
+                }
+                
+                else { // last number is the year
+                    nd = m1;
+                    ny = cent + m3;
+                }
+                
+                var nm = inArray(match[2], jsDate.regional[this.locale]["monthNamesShort"]);
+                
+                if (nm == -1) {
+                    nm = inArray(match[2], jsDate.regional[this.locale]["monthNames"]);
+                }
+            
+                d.setFullYear(ny, nm, nd);
+                d.setHours(0,0,0,0);
+                return d;
+            }
+            
+            else {
+                return str;
+            }
+        }      
+    ];
+
+    //
+    // I think John Reisig published this method on his blog, ejohn.
+    //
+    function inArray( elem, array ) {
+        if ( array.indexOf ) {
+            return array.indexOf( elem );
+        }
+
+        for ( var i = 0, length = array.length; i < length; i++ ) {
+            if ( array[ i ] === elem ) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+    
+    //
+    // Thanks to Kangax, Christian Sciberras and Stack Overflow for this method.
+    //
+    function get_type(thing){
+        if(thing===null) return "[object Null]"; // special case
+        return Object.prototype.toString.call(thing);
+    }
+    
+    $.jsDate = jsDate;
+
       
     /**
      * JavaScript printf/sprintf functions.
@@ -18224,6 +21113,14 @@ b.dequeue()})})}})(jQuery);
 
         }
 
+		function thousand_separate(value) {
+			var value_str = new String(value);
+			for (var i=10; i>0; i--) {
+				if (value_str == (value_str = value_str.replace(/^(\d+)(\d{3})/, "$1"+$.jqplot.sprintf.thousandsSeparator+"$2"))) break;
+			}
+			return value_str; 
+		}
+
         function justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace) {
             var diff = minWidth - value.length;
             if (diff > 0) {
@@ -18259,14 +21156,15 @@ b.dequeue()})})}})(jQuery);
             if (substring == '%%') { return '%'; }
 
             // parse flags
-            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false;
-                for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
+            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false, thousandSeparation = false;
+            for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
                 case ' ': positivePrefix = ' '; break;
                 case '+': positivePrefix = '+'; break;
                 case '-': leftJustify = true; break;
                 case '0': zeroPad = true; break;
                 case '#': prefixBaseX = true; break;
                 case '&': htmlSpace = true; break;
+				case '\'': thousandSeparation = true; break;
             }
 
             // parameters may be null, undefined, empty-string or real valued
@@ -18330,7 +21228,9 @@ b.dequeue()})})}})(jQuery);
                 return '';
               }
               var prefix = number < 0 ? '-' : positivePrefix;
-              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
+			  value = prefix + pad(number_str, precision, '0', false);
+              //value = prefix + pad(String(Math.abs(number)), precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'd': {
@@ -18339,7 +21239,8 @@ b.dequeue()})})}})(jQuery);
                 return '';
               }
               var prefix = number < 0 ? '-' : positivePrefix;
-              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
+			  value = prefix + pad(number_str, precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'e':
@@ -18356,7 +21257,9 @@ b.dequeue()})})}})(jQuery);
                       var prefix = number < 0 ? '-' : positivePrefix;
                       var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
                       var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
-                      value = prefix + Math.abs(number)[method](precision);
+                      var number_str = Math.abs(number)[method](precision);
+                      number_str = thousandSeparation ? thousand_separate(number_str): number_str;
+                      value = prefix + number_str;
                       return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
                   }
             case 'p':
@@ -18398,24 +21301,39 @@ b.dequeue()})})}})(jQuery);
             }
         });
     };
-    
-    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0& ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
-})(jQuery);  /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+	$.jqplot.sprintf.thousandsSeparator = ',';
+    
+    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
+
+})(jQuery);  
+/**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -18575,33 +21493,45 @@ b.dequeue()})})}})(jQuery);
         this._elem = $(domelem);
         this._elem.addClass('jqplot-'+this.axis+'-label');
         
+        domelem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
+        this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -18800,33 +21730,45 @@ b.dequeue()})})}})(jQuery);
         this._elem.css(this._styles);
         this._elem.addClass('jqplot-'+this.axis+'-tick');
         
+        domelem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
+        this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {    
@@ -18866,7 +21808,7 @@ b.dequeue()})})}})(jQuery);
     // returns float
     $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
         sz = String(sz);
-        n = parseFloat(sz);
+        var n = parseFloat(sz);
         if (sz.indexOf('px') > -1) {
             return n/this.pt2px;
         }
@@ -18975,7 +21917,7 @@ b.dequeue()})})}})(jQuery);
         var total = 0;
         var len = str.length;
  
-        for ( i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             var c = this.letter(str.charAt(i));
             if (c) {
                 total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
@@ -19220,20 +22162,32 @@ b.dequeue()})})}})(jQuery);
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {   
@@ -19354,12 +22308,12 @@ b.dequeue()})})}})(jQuery);
                 // need a marker before and after the tick
                 var t = new this.tickRenderer(this.tickOptions);
                 t.showLabel = false;
-                t.showMark = true;
+                // t.showMark = true;
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
                 var t = new this.tickRenderer(this.tickOptions);
                 t.label = userTicks[i];
-                t.showLabel = true;
+                // t.showLabel = true;
                 t.showMark = false;
                 t.showGridline = false;
                 t.setTick(tt+0.5, this.name);
@@ -19368,7 +22322,7 @@ b.dequeue()})})}})(jQuery);
             // now add the last tick at the end
             var t = new this.tickRenderer(this.tickOptions);
             t.showLabel = false;
-            t.showMark = true;
+            // t.showMark = true;
             t.setTick(tt+1, this.name);
             this._ticks.push(t);
         }
@@ -19498,13 +22452,6 @@ b.dequeue()})})}})(jQuery);
                     t.showMark = false;
                     t.showGridline = false;
                 }
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
@@ -19546,14 +22493,12 @@ b.dequeue()})})}})(jQuery);
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    var elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
         
@@ -19577,7 +22522,7 @@ b.dequeue()})})}})(jQuery);
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
@@ -19645,7 +22590,8 @@ b.dequeue()})})}})(jQuery);
         var offmax = offsets.max;
         var offmin = offsets.min;
         var lshow = (this._label == null) ? false : this._label.show;
-        
+        var i;
+		
         for (var p in pos) {
             this._elem.css(p, pos[p]);
         }
@@ -19849,20 +22795,437 @@ b.dequeue()})})}})(jQuery);
     
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
+ * 
+ */
+(function($) {
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    
+    /**
+     * Class: $.jqplot.Highlighter
+     * Plugin which will highlight data points when they are moused over.
+     * 
+     * To use this plugin, include the js
+     * file in your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
+     * 
+     * A tooltip providing information about the data point is enabled by default.
+     * To disable the tooltip, set "showTooltip" to false.
+     * 
+     * You can control what data is displayed in the tooltip with various
+     * options.  The "tooltipAxes" option controls wether the x, y or both
+     * data values are displayed.
+     * 
+     * Some chart types (e.g. hi-low-close) have more than one y value per
+     * data point. To display the additional values in the tooltip, set the
+     * "yvalues" option to the desired number of y values present (3 for a hlc chart).
+     * 
+     * By default, data values will be formatted with the same formatting
+     * specifiers as used to format the axis ticks.  A custom format code
+     * can be supplied with the tooltipFormatString option.  This will apply 
+     * to all values in the tooltip.  
+     * 
+     * For more complete control, the "formatString" option can be set.  This
+     * Allows conplete control over tooltip formatting.  Values are passed to
+     * the format string in an order determined by the "tooltipAxes" and "yvalues"
+     * options.  So, if you have a hi-low-close chart and you just want to display 
+     * the hi-low-close values in the tooltip, you could set a formatString like:
+     * 
+     * > highlighter: {
+     * >     tooltipAxes: 'y',
+     * >     yvalues: 3,
+     * >     formatString:'<table class="jqplot-highlighter">
+     * >         <tr><td>hi:</td><td>%s</td></tr>
+     * >         <tr><td>low:</td><td>%s</td></tr>
+     * >         <tr><td>close:</td><td>%s</td></tr></table>'
+     * > }
+     * 
+     */
+    $.jqplot.Highlighter = function(options) {
+        // Group: Properties
+        //
+        //prop: show
+        // true to show the highlight.
+        this.show = $.jqplot.config.enablePlugins;
+        // prop: markerRenderer
+        // Renderer used to draw the marker of the highlighted point.
+        // Renderer will assimilate attributes from the data point being highlighted,
+        // so no attributes need set on the renderer directly.
+        // Default is to turn off shadow drawing on the highlighted point.
+        this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+        // prop: showMarker
+        // true to show the marker
+        this.showMarker  = true;
+        // prop: lineWidthAdjust
+        // Pixels to add to the lineWidth of the highlight.
+        this.lineWidthAdjust = 2.5;
+        // prop: sizeAdjust
+        // Pixels to add to the overall size of the highlight.
+        this.sizeAdjust = 5;
+        // prop: showTooltip
+        // Show a tooltip with data point values.
+        this.showTooltip = true;
+        // prop: tooltipLocation
+        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        this.tooltipLocation = 'nw';
+        // prop: fadeTooltip
+        // true = fade in/out tooltip, flase = show/hide tooltip
+        this.fadeTooltip = true;
+        // prop: tooltipFadeSpeed
+        // 'slow', 'def', 'fast', or number of milliseconds.
+        this.tooltipFadeSpeed = "fast";
+        // prop: tooltipOffset
+        // Pixel offset of tooltip from the highlight.
+        this.tooltipOffset = 2;
+        // prop: tooltipAxes
+        // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
+        // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
+        this.tooltipAxes = 'both';
+        // prop; tooltipSeparator
+        // String to use to separate x and y axes in tooltip.
+        this.tooltipSeparator = ', ';
+        // prop; tooltipContentEditor
+        // Function used to edit/augment/replace the formatted tooltip contents.
+        // Called as str = tooltipContentEditor(str, seriesIndex, pointIndex)
+        // where str is the generated tooltip html and seriesIndex and pointIndex identify
+        // the data point being highlighted. Should return the html for the tooltip contents.
+        this.tooltipContentEditor = null;
+        // prop: useAxesFormatters
+        // Use the x and y axes formatters to format the text in the tooltip.
+        this.useAxesFormatters = true;
+        // prop: tooltipFormatString
+        // sprintf format string for the tooltip.
+        // Uses Ash Searle's javascript sprintf implementation
+        // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+        // See http://perldoc.perl.org/functions/sprintf.html for reference.
+        // Additional "p" and "P" format specifiers added by Chris Leonello.
+        this.tooltipFormatString = '%.5P';
+        // prop: formatString
+        // alternative to tooltipFormatString
+        // will format the whole tooltip text, populating with x, y values as
+        // indicated by tooltipAxes option.  So, you could have a tooltip like:
+        // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
+        // If useAxesFormatters is true, values will be formatted according to
+        // Axes formatters and you can populate your tooltip string with 
+        // %s placeholders.
+        this.formatString = null;
+        // prop: yvalues
+        // Number of y values to expect in the data point array.
+        // Typically this is 1.  Certain plots, like OHLC, will
+        // have more y values in each data point array.
+        this.yvalues = 1;
+        // prop: bringSeriesToFront
+        // This option requires jQuery 1.4+
+        // True to bring the series of the highlighted point to the front
+        // of other series.
+        this.bringSeriesToFront = false;
+        this._tooltipElem;
+        this.isHighlighting = false;
+
+        $.extend(true, this, options);
+    };
+    
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
+    
+    // axis.renderer.tickrenderer.formatter
+    
+    // called with scope of plot
+    $.jqplot.Highlighter.init = function (target, data, opts){
+        var options = opts || {};
+        // add a highlighter attribute to the plot
+        this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
+    };
+    
+    // called within scope of series
+    $.jqplot.Highlighter.parseOptions = function (defaults, options) {
+        // Add a showHighlight option to the series 
+        // and set it to true by default.
+        this.showHighlight = true;
+    };
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    $.jqplot.Highlighter.postPlotDraw = function() {
+        this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
+        this.plugins.highlighter.highlightCanvas.setContext();
+        
+        var p = this.plugins.highlighter;
+        p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
+        this.eventCanvas._elem.before(p._tooltipElem);
+    };
+    
+    $.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
+    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
+    $.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
+    
+    function draw(plot, neighbor) {
+        var hl = plot.plugins.highlighter;
+        var s = plot.series[neighbor.seriesIndex];
+        var smr = s.markerRenderer;
+        var mr = hl.markerRenderer;
+        mr.style = smr.style;
+        mr.lineWidth = smr.lineWidth + hl.lineWidthAdjust;
+        mr.size = smr.size + hl.sizeAdjust;
+        var rgba = $.jqplot.getColorComponents(smr.color);
+        var newrgb = [rgba[0], rgba[1], rgba[2]];
+        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
+        mr.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
+        mr.init();
+        mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
+    }
+    
+    function showTooltip(plot, series, neighbor) {
+        // neighbor looks like: {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]}
+        // gridData should be x,y pixel coords on the grid.
+        // add the plot._gridPadding to that to get x,y in the target.
+        var hl = plot.plugins.highlighter;
+        var elem = hl._tooltipElem;
+        if (hl.useAxesFormatters) {
+            var xf = series._xaxis._ticks[0].formatter;
+            var yf = series._yaxis._ticks[0].formatter;
+            var xfstr = series._xaxis._ticks[0].formatString;
+            var yfstr = series._yaxis._ticks[0].formatString;
+            var str;
+            var xstr = xf(xfstr, neighbor.data[0]);
+            var ystrs = [];
+            for (var i=1; i<hl.yvalues+1; i++) {
+                ystrs.push(yf(yfstr, neighbor.data[i]));
+            }
+            if (hl.formatString) {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'yx':
+                        ystrs.push(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'x':
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, [hl.formatString, xstr]);
+                        break;
+                    case 'y':
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    default: // same as xy
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                } 
+            }
+            else {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    case 'yx':
+                        str = '';
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += ystrs[i] + hl.tooltipSeparator;
+                        }
+                        str += xstr;
+                        break;
+                    case 'x':
+                        str = xstr;
+                        break;
+                    case 'y':
+                        str = ystrs.join(hl.tooltipSeparator);
+                        break;
+                    default: // same as 'xy'
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    
+                }                
+            }
+        }
+        else {
+            var str;
+            if (hl.tooltipAxes == 'both' || hl.tooltipAxes == 'xy') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'yx') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'x') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'y') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            } 
+        }
+        if ($.isFunction(hl.tooltipContentEditor)) {
+            // args str, seriesIndex, pointIndex are essential so the hook can look up
+            // extra data for the point.
+            str = hl.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
+        }
+        elem.html(str);
+        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
+        var ms = 0;
+        var fact = 0.707;
+        if (series.markerRenderer.show == true) { 
+            ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
+        }
+		
+		var loc = locations;
+		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+			loc = oppositeLocations;
+		}
+		
+        switch (loc[locationIndicies[hl.tooltipLocation]]) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+        }
+        elem.css('left', x);
+        elem.css('top', y);
+        if (hl.fadeTooltip) {
+            // Fix for stacked up animations.  Thnanks Trevor!
+            elem.stop(true,true).fadeIn(hl.tooltipFadeSpeed);
+        }
+        else {
+            elem.show();
+        }
+        elem = null;
+        
+    }
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var hl = plot.plugins.highlighter;
+        var c = plot.plugins.cursor;
+        if (hl.show) {
+            if (neighbor == null && hl.isHighlighting) {
+               var ctx = hl.highlightCanvas._ctx;
+               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                if (hl.fadeTooltip) {
+                    hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
+                }
+                else {
+                    hl._tooltipElem.hide();
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.restorePreviousSeriesOrder();
+                }
+               hl.isHighlighting = false;
+        	  ctx = null;
+            
+            }
+            else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
+                hl.isHighlighting = true;
+                if (hl.showMarker) {
+                    draw(plot, neighbor);
+                }
+                if (hl.showTooltip && (!c || !c._zoom.started)) {
+                    showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.moveSeriesToFront(neighbor.seriesIndex);
+                }
+            }
+        }
+    }
+})(jQuery);/**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -19912,7 +23275,12 @@ b.dequeue()})})}})(jQuery);
         // group bars into this many groups
         this.groups = 1;
         // prop: varyBarColor
-        // true to color each bar separately.
+        // true to color each bar of a series separately rather than
+        // have every bar of a given series the same color.
+        // If used for non-stacked multiple series bar plots, user should
+        // specify a separate 'seriesColors' array for each series.
+        // Otherwise, each series will set their bars to the same color array.
+        // This option has no Effect for stacked bar charts and is disabled.
         this.varyBarColor = false;
         // prop: highlightMouseOver
         // True to highlight slice when moused over.
@@ -19925,6 +23293,7 @@ b.dequeue()})})}})(jQuery);
         // prop: highlightColors
         // an array of colors to use when highlighting a bar.
         this.highlightColors = [];
+        this._type = 'bar';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -20091,7 +23460,8 @@ b.dequeue()})})}})(jQuery);
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        // Ughhh, have to make a copy of options b/c it may be modified later.
+        var opts = $.extend({}, options);
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
@@ -20099,7 +23469,7 @@ b.dequeue()})})}})(jQuery);
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, pointy;
         // clear out data colors.
         this._dataColors = [];
         this._barPoints = [];
@@ -20109,9 +23479,10 @@ b.dequeue()})})}})(jQuery);
         }
         
         var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        pos = temp[2];
+        var nvals = temp[0];
+        var nseries = temp[1];
+        var pos = temp[2];
+		var points = [];
         
         if (this._stack) {
             this._barNudge = 0;
@@ -20127,6 +23498,9 @@ b.dequeue()})})}})(jQuery);
                 negativeColor = opts.fillStyle;
             }
             var positiveColor = opts.fillStyle;
+			var base;
+			var xstart; 
+			var ystart;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -20134,8 +23508,8 @@ b.dequeue()})})}})(jQuery);
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][0] + this._barNudge;
-                    var ystart;
+                    base = gridData[i][0] + this._barNudge;
+                    ystart;
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
@@ -20149,12 +23523,34 @@ b.dequeue()})})}})(jQuery);
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             ystart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
                         else {
                             ystart = ctx.canvas.height;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -20167,18 +23563,27 @@ b.dequeue()})})}})(jQuery);
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
                             opts.fillStyle = positiveColor;
                         }
                     }
-                    
-                    points.push([base-this.barWidth/2, ystart]);
-                    points.push([base-this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, ystart]);
+					
+					if (!this.fillToZero || this._plotData[i][1] >= 0) { 
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, ystart]);
+					}
+					// for negative bars make sure points are always ordered clockwise
+					else {              
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+					}
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
@@ -20200,8 +23605,8 @@ b.dequeue()})})}})(jQuery);
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][1] - this._barNudge;
-                    var xstart;
+                    base = gridData[i][1] - this._barNudge;
+                    xstart;
                     
                     if (this._stack && this._prevGridData.length) {
                         xstart = this._prevGridData[i][0];
@@ -20214,12 +23619,34 @@ b.dequeue()})})}})(jQuery);
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             xstart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
                         else {
                             xstart = 0;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -20229,7 +23656,7 @@ b.dequeue()})})}})(jQuery);
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
@@ -20282,7 +23709,7 @@ b.dequeue()})})}})(jQuery);
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, points, pointy, nvals, nseries, pos;
         
         if (this._stack && this.shadow) {
             if (this.barWidth == null) {
@@ -20360,7 +23787,7 @@ b.dequeue()})})}})(jQuery);
     };
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -20379,7 +23806,7 @@ b.dequeue()})})}})(jQuery);
         this.plugins.barRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
+        this.plugins.barRenderer.highlightCanvas.setContext();
     }   
     
     function highlight (plot, sidx, pidx, points) {
@@ -20390,6 +23817,7 @@ b.dequeue()})})}})(jQuery);
         plot.plugins.barRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColors[pidx]};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
     }
     
     function unhighlight (plot) {
@@ -20400,6 +23828,7 @@ b.dequeue()})})}})(jQuery);
         }
         plot.plugins.barRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
+        canvas =  null;
     }
     
     
@@ -20472,20 +23901,32 @@ b.dequeue()})})}})(jQuery);
     
     
 })(jQuery);    /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -20604,10 +24045,11 @@ b.dequeue()})})}})(jQuery);
         // -90 = on the positive y axis.
         // 90 = on the negaive y axis.
         // 180 or - 180 = on the negative x axis.
-        this.startAngle = -90;
+        this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
         // Used as check for conditions where pie shouldn't be drawn.
         this._drawData = true;
+        this._type = 'pie';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -20615,9 +24057,6 @@ b.dequeue()})})}})(jQuery);
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
         this._diameter = null;
         this._radius = null;
         // array of [start,end] angles arrays, one for each slice.  In radians.
@@ -20711,27 +24150,43 @@ b.dequeue()})})}})(jQuery);
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
-            var r = this._diameter / 2;
+            var r = this._diameter / 2.0;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
+            var sm = this.sliceMargin;
+            if (this.fill == false) {
+                sm += this.lineWidth;
+            }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-    
+            var rprime = 0;
+            if (Math.abs(ang2-ang1) > 0) {
+                rprime = parseFloat(sm) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            }
+            var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
+            var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
+            if ((ang2 - ang1) <= Math.PI) {
+                r -= rprime;  
+            }
+            else {
+                r += rprime;
+            }
+            ctx.translate(transx, transy);
+            
             if (isShadow) {
                 for (var i=0; i<this.shadowDepth; i++) {
                     ctx.save();
                     ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
-                    doDraw();
+                    doDraw(r);
                 }
             }
     
             else {
-                doDraw();
+                doDraw(r);
             }
         }
     
-        function doDraw () {
+        function doDraw (rad) {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
              if (ang2 > 6.282 + this.startAngle) {
@@ -20750,7 +24205,7 @@ b.dequeue()})})}})(jQuery);
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.arc(0, 0, rad, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
         
@@ -20826,38 +24281,30 @@ b.dequeue()})})}})(jQuery);
         var mindim = Math.min(w,h);
         var d = mindim;
         // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d - this.sliceMargin;
+        this._diameter = this.diameter  || d; // - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
+        
+        // Fixes issue #272.  Thanks hugwijst!
+        // reset slice angles array.
+        this._sliceAngles = [];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
                 var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
                 // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
+                // ang1 += this.sliceMargin/180*Math.PI;
                 this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
             }
             
         }
-        
-         // damian: required for line labels
-         var origin = {
-                 x: parseInt(ctx.canvas.style.left) + cw/2,
-                 y: parseInt(ctx.canvas.style.top) + ch/2
-         };
-
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
-        
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
+            // ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
                       
@@ -20901,40 +24348,6 @@ b.dequeue()})})}})(jQuery);
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-            
-             // damian: line labels
-             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
-             
-                 // percentage
-                 var percentage = this._plotData[i][1] * 100 / total;
-                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-                    
-                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898; //(3 * Math.pi) / 2 ; // 4.71238898;
-                 
-                 // line 1
-                 var incDiameter = 10;
-                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 
-                 // line 2
-                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
-                 var line2_end_x = line1_end_x + line2_end_x_offset;
-                 var line2_end_y = line1_end_y;    
-                 
-                 // label
-                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
-                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
-                 var l_y_offset = -1 * l.height() / 2;
-                 var l_x = line2_end_x + origin.x + l_x_offset;
-                 var l_y = line2_end_y + origin.y + l_y_offset;
-                 l_x -= 30;
-                 //l_y += 10;
-                 l.css({left: l_x+"px", top: l_y+"px"});
-            }    
-            
         }
                
     };
@@ -21016,7 +24429,8 @@ b.dequeue()})})}})(jQuery);
             
             var pad = false, 
                 reverse = false,
-                nr, nc;
+                nr, 
+                nc;
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             
@@ -21146,7 +24560,7 @@ b.dequeue()})})}})(jQuery);
     }
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -21283,20 +24697,32 @@ b.dequeue()})})}})(jQuery);
 })(jQuery);
     
     /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -21361,7 +24787,7 @@ b.dequeue()})})}})(jQuery);
         this.labelsFromSeries = false;
         // prop: seriesLabelIndex
         // array index for location of labels within data point arrays.
-        // if null, will use the last element of teh data point array.
+        // if null, will use the last element of the data point array.
         this.seriesLabelIndex = null;
         // prop: labels
         // array of arrays of labels, one array for each series.
@@ -21425,7 +24851,7 @@ b.dequeue()})})}})(jQuery);
         if (p.seriesLabelIndex != null) {
             labelIdx = p.seriesLabelIndex;
         }
-        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+        else if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
             labelIdx = 0;
         }
         else {
@@ -21574,7 +25000,7 @@ b.dequeue()})})}})(jQuery);
                     elem.html(label);
                 }
                 var location = p.location;
-                if (this.waterfall && parseInt(label, 10) < 0) {
+                if ((this.fillToZero && pd[i][1] < 0) || (this.waterfall && parseInt(label, 10)) < 0) {
                     location = oppositeLocations[locationIndicies[location]];
                 }
                 var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);

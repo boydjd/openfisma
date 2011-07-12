@@ -20,7 +20,6 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license
- * @version   $Id$
  * @package   View_Helper
  */
 
@@ -49,7 +48,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
                                       '/javascripts/Fisma/Calendar.js',
-                                      '/javascripts/Fisma/Chart.js',
                                       '/javascripts/Fisma/CheckboxTree.js',
                                       '/javascripts/Fisma/Commentable.js',
                                       '/javascripts/Fisma/ControlTree.js',
@@ -60,7 +58,9 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
                                       '/javascripts/Fisma/Ldap.js',
+                                      '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/Module.js',
+                                      '/javascripts/Fisma/OrganizationTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
@@ -69,44 +69,51 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Search/CriteriaRenderer.js',
                                       '/javascripts/Fisma/Search/Panel.js',
                                       '/javascripts/Fisma/SecurityControlTable.js',
+                                      '/javascripts/Fisma/SessionManager.js',
                                       '/javascripts/Fisma/Spinner.js',
+                                      '/javascripts/Fisma/Storage.js',
+                                      '/javascripts/Fisma/PersistentStorage.js',
+                                      '/javascripts/Fisma/Search/TablePreferences.js',
+                                      '/javascripts/Fisma/Search/QueryState.js',
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
+                                      '/javascripts/Fisma/TreeNodeDragBehavior.js',
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
-                                      '/javascripts/AC_RunActiveContent.js',
                                       '/javascripts/jquery-min.js',
-                                      '/javascripts/jqPlot/core/jquery-ui-181custom_min.js',
                                       '/javascripts/jqPlot/core/jquery_jqplot.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisTickRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_categoryAxisRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_highlighter.js',
                                       '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',
-                                      '/javascripts/Fisma/jqplotWrapper.js'
+                                      '/javascripts/Fisma/Chart.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
                                       '/stylesheets/AutoComplete.css',
                                       '/stylesheets/AttachArtifacts.css',
+                                      '/stylesheets/chart.css',
                                       '/stylesheets/Dashboard.css',
                                       '/stylesheets/Finding.css',
                                       '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
+                                      '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',
                                       '/stylesheets/SecurityAuthorization.css',
                                       '/stylesheets/SwitchButton.css',
+                                      '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css',
-
                                       '/stylesheets/nesteddatatable.css',
                                       '/stylesheets/jquery_jqplot.css'
                                 )

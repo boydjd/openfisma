@@ -27,6 +27,7 @@ displayGroups.incident.elements.hostIp="hostIp"
 
 elements.hostOs.type="select"
 elements.hostOs.options.label="Asset Operating System"
+elements.hostOs.options.filters.null.filter = "Null"
 displayGroups.incident.elements.hostOs="hostOs"
 
 elements.hostAdditional.type="textarea"

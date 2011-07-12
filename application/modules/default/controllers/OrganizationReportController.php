@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
- * @version    $Id$
  */
 class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
 {
@@ -67,6 +66,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                           ->andWhere('o.orgType = ?', array('system'))
                           ->andWhere('s.sdlcPhase <> ?', 'disposal')
                           ->andWhere('r.nickname LIKE ? OR r.nickname LIKE ?', array('ISO', 'ISSO'))
+                          ->andWhere("u.locktype IS NULL OR u.locktype<>'manual'")
                           ->orderBy('o.lft, o.rgt, u.nameLast, u.nameFirst')
                           ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
@@ -219,7 +219,10 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                    new Fisma_Report_Column(
                        'Percentage',
                        true,
-                       'Fisma.TableFormat.completeDocTypePercentage'
+                       'Fisma.TableFormat.completeDocTypePercentage',
+                       null,
+                       false,
+                       'number'
                    )
                )
                ->addColumn(

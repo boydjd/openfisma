@@ -15,12 +15,15 @@ User:
         password:
             type: string(255)
             extra:
+                doNotModify: true
                 logicalName: Password
                 notify: true
         passwordSalt:
             type: string(10)
             fixed: true
             comment: A randomly generated salt, used to discourage rainbow table attacks against the password database
+            extra:
+                doNotModify: true
         passwordTs: timestamp
         passwordHistory: string
         hashType:
@@ -99,6 +102,10 @@ User:
         notifyFrequency: integer
         mostRecentNotifyTs: timestamp
 
+        mustResetPassword:
+            type: boolean
+            default: false
+
     relations:
         # Roles is a many-to-many relation
         Roles:
@@ -122,7 +129,6 @@ User:
             refClass: IrIncidentUser
 
     actAs:
-        SoftDelete:
         Timestampable:
             created:
                 name: createdTs
@@ -134,3 +140,5 @@ User:
             logCreateObject: true
             logUpdateObject: true
             logDeleteObject: true
+
+        Fisma_Doctrine_Behavior_Commentable: true

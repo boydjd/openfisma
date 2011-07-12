@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class OrganizationController extends Fisma_Zend_Controller_Action_Object
 {
@@ -199,11 +198,20 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $organization = $subject;
                 
                 $organization->merge($orgValues);
-                
-                if ($orgValues['parent'] != $organization->getNode()->getParent()->id) {
+                if (isset($orgValues['parent']) && $orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
-                    $organization->getNode()
-                                 ->moveAsLastChildOf($organization->getTable()->find($orgValues['parent']));
+                    // Check whether $parentOrg is in the subtree under $organization. If it is, show warning message   
+                    // because it might break organization tree structure
+                    $parentOrg = Doctrine::getTable('Organization')->find($orgValues['parent']);
+                    if ($parentOrg->getNode()->isDescendantOf($organization)) {
+                        $msg = "Unable to save: " . $parentOrg->nickname . " can't be parent organization";
+                        $this->view->priorityMessenger($msg, 'warning');
+
+                        return $objectId;
+                    } else {
+                        $organization->getNode()
+                                     ->moveAsLastChildOf($parentOrg);
+                    }    
                 }
                 $organization->save();
             }
@@ -221,30 +229,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function _isDeletable()
     {
         return false;
-    }
-
-    /**
-     * Delete a specified organization.
-     *
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        if ($organization) {
-            $this->_acl->requirePrivilegeForObject('delete', $organization);
-
-            if ($organization->delete()) {
-                $msg = "Organization deleted successfully";
-                $model = 'notice';
-            } else {
-                $msg = "Failed to delete the Organization";
-                $model = 'warning';
-            }
-            $this->view->priorityMessenger($msg, $model);
-        }
-        $this->_redirect('/organization/list');
     }
 
     /**
@@ -347,6 +331,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $this->view->toolbarButtons = $this->getToolbarButtons();
+        
+        // "Return To Search Results" doesn't make sense on this screen, so rename that button:
+        $this->view->toolbarButtons['list']->setValue("View Organization List");
+        
+        // We're already on the tree screen, so don't show a "view tree" button
+        unset($this->view->toolbarButtons['tree']);
 
         $this->render('tree');
     }
@@ -354,14 +344,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Gets the organization tree for the current user.
      *
-     * This should be refactored into the user class, but I'm in a hurry.
+     * @param boolean $includeDisposal Whether display disposal system or not
      *
      * @return array The array representation of organization tree
      */
-    public function getOrganizationTree()
+    public function getOrganizationTree($includeDisposal = false)
     {
-        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read');
-        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type')
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
+        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type, s.sdlcPhase')
                      ->leftJoin('o.System s')
                      ->orderBy('o.lft');
         $orgTree = Doctrine::getTable('Organization')->getTree();
@@ -381,7 +371,24 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->treeData = $this->getOrganizationTree();
+        $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
+        
+        // Save preferences for this screen
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Organization.Tree';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        if (empty($storage)) {
+            $storage = new Storage();
+            $storage->userId = $userId;
+            $storage->namespace = $namespace;
+            $storage->data = array();
+        }
+        $data = $storage->data;
+        $data['includeDisposalSystem'] = $includeDisposalSystem;
+        $storage->data = $data;
+        $storage->save();
+
+        $this->view->treeData = $this->getOrganizationTree($includeDisposalSystem);
     }
 
     /**
@@ -493,10 +500,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 // Get refreshed organization tree data
-                $return['treeData'] = $this->getOrganizationTree();
+                $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
             } else {
                 $return['success'] = false;
-                $return['message'] = 'Cannot move an organization into itself.';
+                $return['message'] = 'Cannot move an organization or system into itself.';
             }
         } else {
             $return['success'] = false;
@@ -516,7 +523,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $buttons = array();
 
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
                 array(
                     'value' => 'View Organization Hierarchy',

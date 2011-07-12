@@ -25,7 +25,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class DashboardController extends Fisma_Zend_Controller_Action_Security
 {
@@ -58,6 +57,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('total-type', 'json')
+                      ->addActionContext('chart-finding', 'json')
                       ->initContext();
     }
 
@@ -118,25 +118,14 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $result = $eoFindingsQuery->fetchOne();
         $alert['EO']  = $result['count'];
 
-        if ($this->_acl->hasPrivilegeForClass('approve', 'Finding')) {
-            $pendingFindingsQuery = Doctrine_Query::create()
-                                    ->select('COUNT(*) as count')
-                                    ->from('Finding f')
-                                    ->where('f.status = ?', 'PEND')
-                                    ->andWhereIn('f.responsibleorganizationid', $this->_myOrgSystemIds);
-            $result = $pendingFindingsQuery->fetchOne();
-            $alert['PEND'] = $result['count'];
-        }
-
         $this->view->alert = $alert;
 
         // URLs for "Alerts" panel
-        $baseUrl = '/finding/remediation/list/queryType/advanced';
+        $baseUrl = '/finding/remediation/list?q=';
 
         $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/NEW';
         $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/DRAFT';
-        $this->view->pendingFindingUrl = '/finding/index/approve';
-        
+
         $today = Zend_Date::now()->toString('yyyy-MM-dd');        
         $this->view->evidenceNeededOntimeUrl = $baseUrl 
                                              . '/denormalizedStatus/textExactMatch/EN'
@@ -166,7 +155,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         }
         
         // left-side chart (bar) - Finding Status chart
-        $extSrcUrl = '/finding/dashboard/chart-finding/format/json';
+        $extSrcUrl = '/dashboard/chart-finding/format/json';
 
         $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
         $chartTotalStatus
@@ -197,12 +186,197 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     }
     
     /**
+     * Calculate the finding statistics by status
+     *
+     * @return void
+     */    
+    public function chartFindingAction()
+    {
+        $findingType = urldecode($this->getRequest()->getParam('findingType'));
+
+        $thisChart = new Fisma_Chart();
+        $thisChart->setChartType('stackedbar')
+            ->setThreatLegendVisibility(true)
+            ->setColors(
+                array(
+                    "#FF0000",
+                    "#FF6600",
+                    "#FFC000"
+                )
+            )
+            ->setLayerLabels(
+                array(
+                    'Null',
+                    'High',
+                    'Moderate',
+                    'Low'
+                )
+            );
+
+        // Dont query if there are no organizations this user can see
+        $visibleOrgs = FindingTable::getOrganizationIds();
+        if (empty($visibleOrgs)) {
+            // Export as array, the context switch will translate it to a JSON responce
+            $this->view->chart = $thisChart->export('array');
+            return;
+        }
+
+        $q = Doctrine_Query::create()
+            ->select('count(f.id), threatlevel, denormalizedstatus')
+            ->from('Finding f')
+            ->where('f.status <> "CLOSED"')
+            ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
+            ->groupBy('f.denormalizedstatus, f.threatlevel')
+            ->orderBy('f.denormalizedstatus, f.threatlevel')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $rslts = $q->execute();
+
+        // Sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
+        $sortedRslts = array();
+        foreach ($rslts as $thisRslt) {
+
+            if (empty($sortedRslts[$thisRslt['denormalizedStatus']])) {
+                $sortedRslts[$thisRslt['denormalizedStatus']] = array();
+            }
+
+            if ($thisRslt['threatLevel'] === NULL || $thisRslt['threatLevel'] === '') {
+                $thisRslt['threatLevel'] = 'NULL';
+            }
+
+            $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
+        }
+        
+        $nonStackedLinks = array();
+        
+        // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
+        $statusArray = Finding::getAllStatuses();
+        
+        // Removed the string element 'CLOSED' from the $statusArray array
+        if ($statusArray[count($statusArray) - 1] === 'CLOSED') {
+            array_pop($statusArray);
+        }
+        
+        foreach ($statusArray as $thisStatus) {
+
+            // get Counts of High,MOd,Low. Also MySQL may not return 0s, assume 0 on empty
+            if (!empty($sortedRslts[$thisStatus]['HIGH'])) {
+                $highCount = $sortedRslts[$thisStatus]['HIGH'];
+            } else {
+                $highCount = 0;
+            }
+            
+            if (!empty($sortedRslts[$thisStatus]['MODERATE'])) {
+                $modCount = $sortedRslts[$thisStatus]['MODERATE'];
+            } else {
+                $modCount = 0;
+            }
+            
+            if (!empty($sortedRslts[$thisStatus]['LOW'])) {
+                $lowCount = $sortedRslts[$thisStatus]['LOW'];
+            } else {
+                $lowCount = 0;
+            }
+            
+            if (!empty($sortedRslts[$thisStatus]['NULL'])) {
+                $nullCount = $sortedRslts[$thisStatus]['NULL'];
+            } else {
+                $nullCount = 0;
+            }
+
+            // Prepare for a stacked-bar chart (these are the counts on each stack within the column)
+            $addColumnCounts = array($nullCount, $highCount, $modCount, $lowCount);
+
+            // Make each area of the chart link
+            $basicLink = '/finding/remediation/list?q=' .
+                '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
+            $nonStackedLinks[] = $basicLink;
+            $stackedLinks = array(
+                '',
+                $basicLink . '/threatLevel/enumIs/HIGH',
+                $basicLink . '/threatLevel/enumIs/MODERATE',
+                $basicLink . '/threatLevel/enumIs/LOW'
+            );
+            
+            // Create this column as a stacked-bar chart for now (filtration later in function)
+            $thisChart->addColumn(
+                $thisStatus,
+                $addColumnCounts,
+                $stackedLinks
+            );
+        }
+
+        // Show, hide and filter chart data as requested
+        switch (strtolower($findingType)) {
+            case "totals":
+                // Crunch numbers
+                $thisChart->convertFromStackedToRegular()
+                    ->setLinks($nonStackedLinks)
+                    ->setThreatLegendVisibility(false)
+                    ->setColors(
+                        array(
+                            '#CECECE',
+                            '#67F967',
+                            '#FFCACA',
+                            '#FF2424',
+                            '#FF9E3D',
+                            '#CACAFF',
+                            '#2424FF'
+                        )
+                    );
+                break;
+            case "high, moderate, and low":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
+                break;
+            case "high":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
+                // Remove the Low and Moderate columns/layers
+                $thisChart->deleteLayer(2);
+                $thisChart->deleteLayer(1);
+                $thisChart->setColors(array('#FF0000'));
+                break;
+            case "moderate":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
+                // Remove the Low and High columns/layers
+                $thisChart->deleteLayer(2);
+                $thisChart->deleteLayer(0);
+                $thisChart->setColors(array('#FF6600'));
+                break;
+            case "low":
+                // Remove null-count layer/stack in this stacked bar chart
+                $thisChart->deleteLayer(0);
+                // Remove the Moderate and High columns/layers
+                $thisChart->deleteLayer(1);
+                $thisChart->deleteLayer(0);
+                $thisChart->setColors(array('#FFC000'));
+                break;
+        }
+
+        // Export as array, the context switch will translate it to a JSON responce
+        $this->view->chart = $thisChart->export('array');
+    }
+    
+    /**
      * Calculate the statistics by type
      * 
      * @return void
      */
     public function totalTypeAction()
     {
+        $thisChart = new Fisma_Chart();
+        $thisChart->setTitle('Mitigation Strategy Distribution')
+            ->setChartType('pie')
+            ->setColors(
+                array(
+                    '#75FF75',
+                    '#FFA347',
+                    '#FF2B2B',
+                    '#47D147'
+                )
+            );
+            
         $summary = array(
             'NONE' => 0,
             'CAP' => 0,
@@ -220,32 +394,37 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $types = array_keys($summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
-                $summary[$result['type']] = $result['typeCount'];
+                
+                // State what the abbreviation means in the tooltip
+                switch ($result['type']) {
+                    case "NONE":
+                        $pieSliceTooltip = 'Uncategorized Type';
+                        break;
+                    case "CAP":
+                        $pieSliceTooltip = 'Corrective Action Plan';
+                        break;
+                    case "FP":
+                        $pieSliceTooltip = 'False Positive:';
+                        break;
+                    case "AR":
+                        $pieSliceTooltip = 'Accepted Risk Risk';
+                        break;
+                }
+                
+                // Formate the tooltip
+                $pieSliceTooltip = '<b>' . $pieSliceTooltip . '</b><hr/>';
+                $pieSliceTooltip .= '#count# total findings<br/>';
+                $pieSliceTooltip .= '#percent#% of all findings are ' . $result['type'];
+                
+                $thisChart->addColumn(
+                    $result['type'],
+                    $result['typeCount'],
+                    '/finding/remediation/list?q=/type/enumIs/' . $result['type'],
+                    $pieSliceTooltip
+                );
+                
             }
         }
-        
-        $thisChart = new Fisma_Chart();
-        $thisChart
-            ->setTitle('Mitigation Strategy Distribution')
-            ->setChartType('pie')
-            ->setData(array_values($summary))
-            ->setAxisLabelsX(array_keys($summary))
-            ->setColors(
-                array(
-                    '#FFA347',
-                    '#75FF75',
-                    '#47D147',
-                    '#FF2B2B'
-                )
-            )
-            ->setLinks(
-                array(
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/NONE',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/CAP',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/FP',
-                        '/finding/remediation/list/queryType/advanced/type/enumIs/AR'
-                    )
-            );
         
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');

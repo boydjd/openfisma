@@ -1,7 +1,24 @@
 <?php Fisma_Format_Section::startSection("Search Configuration "); ?>
 
-<div>
-    <?php echo $this->escape($this->form, 'none'); ?>
-</div>
+<p>
+    <i>
+        Search configuration is set in the search.ini file and cannot be configured through the user interface,
+        but you can view the configuration here and test connectivity to the search engine.
+    </i>
+</p>
+
+<input id="csrfToken" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
+<table class="keyValues">
+    <?php foreach ($this->parameters as $key => $value): ?>
+        <tr>
+            <td><?php echo $this->escape($key); ?></td>
+            <td><?php echo $this->escape($value); ?></td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+
+<p>
+    <?php echo $this->escape($this->testSearchButton, 'none'); ?>
+</p>
 
 <?php Fisma_Format_Section::stopSection(); ?>

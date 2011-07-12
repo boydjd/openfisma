@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.System = {
@@ -33,24 +32,98 @@ Fisma.System = {
     },
 
     /**
-     * Displays the hidden block on the FIPS-199 page to add information types to a system 
+     * removeSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    showInformationTypes : function () {
-        document.getElementById('addInformationTypes').style.display = 'block';
+    removeSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.organizationId = config.organizationId;
+        data.userRoles = userRoles;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/remove-user-roles/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+        }});
     },
 
     /**
-     * Build URL for adding information type to the system 
+     * addUser 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Add</a>";
+    addUser : function (event, config) {
+        var data = new Object();
+
+        data.userId = $('#addUserId').val();
+        data.roleId = $('#roles').val();
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/system/add-user/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     },
 
-
     /**
-     * Build URL for removing information types from a system 
+     * addSelectedUsers 
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
      */
-    removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" + oRecord.getData('system') + "/sitId/" + oData + "'>Remove</a>";
+    addSelectedUsers : function (event, config) {
+        var userRoles = [];
+        var data = new Object();
+
+        $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
+            function() {
+                if ($(this).val() !== "") {
+                    userRoles.push($(this).val());
+                }
+            }
+        );
+
+        data.userRoles = userRoles;
+        data.organizationId = config.organizationId;
+        data.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/user/add-user-roles-to-organization/',
+            data: data,
+            dataType: "json",
+            success: function() {
+                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+            }
+        });
     }
 };

@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
 
 Fisma.TableFormat = {
@@ -215,27 +214,32 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list/queryType/advanced';
+        overdueFindingSearchUrl = '/finding/remediation/list?q=';
 
         // Handle organization field
         var organization = oRecord.getData('System');
 
         if (organization) {
-            overdueFindingSearchUrl += "/organization/textExactMatch/" + escape(organization);
+        
+            // Since organization may be html-encoded, decode the html before (url)-escaping it
+            organization = $P.html_entity_decode(organization);
+            
+            overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
         // Handle status field
         var status = oRecord.getData('Status');
 
         if (status) {
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + escape(status);
+            status = PHP_JS().html_entity_decode(status);
+            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
         var parameters = oColumn.formatterParameters;
 
         if (parameters.source) {
-            overdueFindingSearchUrl += "/source/textExactMatch/" + escape(parameters.source);
+            overdueFindingSearchUrl += "/source/textExactMatch/" + encodeURIComponent(parameters.source);
         }
 
         // Handle date fields
@@ -243,7 +247,7 @@ Fisma.TableFormat = {
 
         if (parameters.from) {
             fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from));
+            fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
             
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
@@ -252,33 +256,32 @@ Fisma.TableFormat = {
 
         if (parameters.to) {
             toDate = new Date();
-            toDate.setDate(toDate.getDate() - parseInt(parameters.to));
+            toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
             
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + to + "/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+                                        encodeURIComponent(to) +
+                                        "/" +
+                                        encodeURIComponent(from);
         } else if (from) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + from;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
             // This is the TOTAL column
             var yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear() 
-                                + '-' 
-                                + (yesterday.getMonth() + 1) 
-                                + '-' 
-                                + yesterday.getDate();
+            var yesterdayString = yesterday.getFullYear();
+            yesterdayString += '-';
+            yesterdayString += (yesterday.getMonth() + 1);
+            yesterdayString += '-';
+            yesterdayString += yesterday.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + yesterdayString;
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
         }
 
-        elCell.innerHTML = "<a href="
-                         + overdueFindingSearchUrl
-                         + ">"
-                         + oData
-                         + "</a>";
+        elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
     },
 
     /**
@@ -291,11 +294,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = oData;
+        percentage = parseInt(oData, 10);
 
-        percentage = parseInt(oData.replace(/%/g, ''));
+        if (oData !== null) {
+            elCell.innerHTML = oData + "%";
 
-        if (percentage != null) {
             if (percentage >= 95 && percentage <= 100) {
                 Fisma.TableFormat.green(elCell.parentNode);
             } else if (percentage >= 80 && percentage < 95) {
@@ -317,9 +320,9 @@ Fisma.TableFormat = {
     incompleteDocumentType : function (elCell, oRecord, oColumn, oData) {
         var docTypeNames = '';
         if (oData.length > 0) {
-            docTypeNames += '<ul><li>'
-                          + oData.replace(/,/g, '</li><li>')
-                          + '</li></ul>';
+            docTypeNames += '<ul><li>';
+            docTypeNames += oData.replace(/,/g, '</li><li>');
+            docTypeNames += '</li></ul>';
         }
 
         elCell.innerHTML = docTypeNames;

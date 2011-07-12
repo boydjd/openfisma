@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -83,8 +82,7 @@ Fisma.Commentable = {
 
                  argument: newPanel
              }, 
-             null
-         );
+             null);
          
          // Prevent form submission
          return false;
@@ -100,11 +98,7 @@ Fisma.Commentable = {
       */
      postComment : function() {
          
-         var postUrl = "/comment/add/id/"
-                     + encodeURIComponent(Fisma.Commentable.config.id)
-                     + "/type/"
-                     + encodeURIComponent(Fisma.Commentable.config.type)
-                     + "/format/json";
+         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -116,11 +110,10 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     Fisma.Util.showAlertDialog('Document upload failed.');
                  }
              }, 
-             null
-         );
+             null);
                   
          // Prevent form submission
          return false;
@@ -144,14 +137,15 @@ Fisma.Commentable = {
                  // Handle a JSON syntax error by constructing a fake response object
                  responseStatus = new Object();
                  responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server."
+                 responseStatus.message = "Invalid response from server.";
              } else {
                  throw e;
              }
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var alertMessage = "Error: " + responseStatus.message;
+             Fisma.Util.showAlertDialog(alertMessage);
 
              return;
          }

@@ -1,5 +1,5 @@
 SecurityControl:
-    listeners: [XssListener, IndexListener]
+    listeners: [IndexListener]
 
     columns:
         code: 
@@ -37,6 +37,11 @@ SecurityControl:
         securityControlCatalogId:
             type: integer
             comment: Foreign key to the catalog which this control belongs to
+
+    indexes:
+        codeSecurityControlCatalogIdIndex:
+            fields: [code, securityControlCatalogId]
+            type: unique
 
     relations:
         Catalog:

@@ -5,7 +5,10 @@ echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), '
 $actions = '';
 
 foreach ($this->links as $label => $url) {
-    $actions .= "&nbsp;&nbsp;[<a href='$url'>$label</a>]";
+    if ('delete' === strtolower($label)) {
+        $deleteUrl = $url;
+    }
+    $actions .= "&nbsp;&nbsp;[<a href='$url' id = '" . $label . "Link' >$label</a>]";
 }
 
 Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions); 
@@ -18,4 +21,18 @@ Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions);
 
 <?php
 Fisma_Format_Section::stopSection(); 
+
+if (!empty($deleteUrl)):
+?>
+<script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function () {
+        var config = {url : '<?php echo $this->escape($deleteUrl) ?>',
+                     isLink : true,
+                     text : 'WARNING: You are about to delete the record. This action cannot be undone. '
+                            + 'Do you want to continue?'};
+        YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showConfirmDialog, config);
+    });
+</script>
+<?php
+endif;
 ?>

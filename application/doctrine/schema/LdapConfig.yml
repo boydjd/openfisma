@@ -1,6 +1,4 @@
 LdapConfig:
-    listeners: [XssListener]
-
     columns:
         host:
             type: string(255)

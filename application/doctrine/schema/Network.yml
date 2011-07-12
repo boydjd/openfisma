@@ -1,5 +1,5 @@
 Network:
-    listeners: [XssListener, IndexListener, NotificationListener]
+    listeners: [IndexListener, NotificationListener]
     
     columns:
         name: 
@@ -20,3 +20,5 @@ Network:
                 purify: html
                 notify: true
             comment: Any extra information about this network, such as protocols used, geographic location, etc.
+    actAs:
+        SoftDelete: true

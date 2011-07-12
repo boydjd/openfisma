@@ -26,7 +26,6 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Model
- * @version    $Id$
  */
 class Test_Application_Models_User extends Test_FismaUnitTest
 {
@@ -198,9 +197,19 @@ class Test_Application_Models_User extends Test_FismaUnitTest
 
         $user->username = 'testuser';
 
+        // include disposal system 
         $this->assertEquals(
             "SELECT o.* FROM Organization o, o.UserRole ur WITH ur.userid =  LEFT JOIN ur.Role r LEFT JOIN " .
             "r.Privileges p WHERE p.resource = ? AND p.action = ? GROUP BY o.id ORDER BY o.nickname",
+            $user->getOrganizationsByPrivilegeQuery('finding', 'view', true)->getDql()
+        );
+
+        // do not include disposal system
+        $this->assertEquals(
+            "SELECT o.* FROM Organization o, o.UserRole ur WITH ur.userid =  LEFT JOIN ur.Role r LEFT JOIN " .
+            "r.Privileges p LEFT JOIN o.System s2 WHERE p.resource = ? AND p.action = ? " . 
+            "AND s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL " .
+            "GROUP BY o.id ORDER BY o.nickname",
             $user->getOrganizationsByPrivilegeQuery('finding', 'view')->getDql()
         );
     }

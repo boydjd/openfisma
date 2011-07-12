@@ -21,9 +21,7 @@
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
-
 Fisma.HtmlPanel = function() {
     return {
         /**
@@ -37,12 +35,12 @@ Fisma.HtmlPanel = function() {
          */
         showPanel : function(title, html, element, userConfig) {
             // Initialize element or its id representing the panel with default value conditionally
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -60,7 +58,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (typeof(html) != 'undefined' && html != null && html != '') {
+            if (html !== '') {
                 panel.setBody(html);
                 panel.center();
             }

@@ -21,7 +21,6 @@
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.UrlPanel = function() {
@@ -39,12 +38,12 @@ Fisma.UrlPanel = function() {
          */
         showPanel : function(title, url, callback, element, userConfig) {
             // Initialize element or its id representing the panel with default value if necessary
-            if (typeof(element) == 'undefined' || element == null)
+            if (typeof(element) === 'undefined' || element === null)
             {
                 element = "panel";
             }
             // Initialize user config with default config object if the user config is not specified or null
-            if (typeof(userConfig) == 'undefined' || userConfig == null)
+            if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
                 userConfig = {
                     width : "540px",
@@ -62,7 +61,7 @@ Fisma.UrlPanel = function() {
             panel.show();
             
             // Load panel content from url
-            if (url != '') {
+            if (url !== '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
                         o.argument.setBody(o.responseText);
@@ -74,7 +73,7 @@ Fisma.UrlPanel = function() {
                     },
                     failure : function(o) {
                         /** @todo english */
-                        alert('Failed to load the specified panel.');
+                        Fisma.Util.showAlertDialog('Failed to load the specific panel.');
                     },
                     argument : panel
                 }, null);

@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class Finding_SourceController extends Fisma_Zend_Controller_Action_Object
 {
@@ -35,4 +34,9 @@ class Finding_SourceController extends Fisma_Zend_Controller_Action_Object
      * @var string
      */
     protected $_modelName = 'Source';
+    
+    protected function _isDeletable()
+    {
+        return false;
+    }
 }

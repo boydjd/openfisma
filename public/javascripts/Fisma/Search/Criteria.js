@@ -107,33 +107,46 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-
+        
         this.container = document.createElement('div');
-
+        
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
-        this.queryFieldContainer = document.createElement('span');
-        this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
-
-        this.queryTypeContainer = document.createElement('span');
-        this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
-
-        this.queryInputContainer = document.createElement('span');
-        this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
-
+        // IE7 will display floated elements on the next line, not the current line, unless those floated elements
+        // are inserted before the unfloated content on current line.
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
+
+        this.queryFieldContainer = document.createElement('span');
+        this.renderQueryField(this.queryFieldContainer, fieldName);
+        this.containerForm.appendChild(this.queryFieldContainer);
+
+        this.queryTypeContainer = document.createElement('span');
+        this.renderQueryType(this.queryTypeContainer, operator);
+        this.containerForm.appendChild(this.queryTypeContainer);
+
+        this.queryInputContainer = document.createElement('span');
+        this.renderQueryInput(this.queryInputContainer, operands);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
-
         clearDiv.className = "clear";
+        this.containerForm.appendChild(clearDiv);
 
-        this.container.appendChild(clearDiv);
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -357,31 +370,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-
-        var queryString = '';
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
-        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
-
-        var operands = queryGenerator(this.queryInputContainer);
-        
-        // Make sure all operands are not blank
-        for (var i in operands) {
-            var operand = operands[i];
-            
-            if ('' == $P.trim(operand)) {
-                throw "Blank search criteria are not allowed in advanced search mode.";
-            }
-        }
-
-        var response = {
+        return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : operands
-        }
-
-        return response;
+            operands : this.getOperands()
+        };
     },
 
     /**
@@ -442,5 +435,24 @@ Fisma.Search.Criteria.prototype = {
         }
         
         throw "No field found with this name: " + fieldName;
+    },
+
+    getOperands: function() {
+        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
+        var queryGeneratorName = criteriaDefinitions[this.currentQueryType].query;
+        var queryGenerator = Fisma.Search.CriteriaQuery[queryGeneratorName];
+
+        return queryGenerator(this.queryInputContainer);
+    },
+
+    hasBlankOperands: function() {
+        var operands = this.getOperands();
+        for (var i in operands) {
+            if ('' === $P.trim(operands[i])) {
+                return true;
+            }
+        }
+        return false;
     }
+
 };

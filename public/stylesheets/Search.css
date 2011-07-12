@@ -45,7 +45,7 @@
 
 .searchCriteria {    
     border-top: 1px dotted #bfbfbf;
-    max-width: 50em;
+    max-width: 60em;
     padding-top: 5px;
     padding-bottom: 3px;
     -margin-left: auto;
@@ -76,3 +76,10 @@
 .highlight {
     background-color: yellow;
 }
+
+div#searchColumnsButtons div {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    float: right;
+}
+

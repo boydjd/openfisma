@@ -24,7 +24,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
- * @version    $Id$
  */
 class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependency
 {
@@ -76,7 +75,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      * 
      * @var array
      */
-    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'MSA'=>7, 'EN'=>0, 'EA'=>7);
+    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'EN'=>0);
 
     /**
      * Override the Doctrine hook to initialize new finding objects
@@ -227,10 +226,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
         
-        $commentHtml = htmlspecialchars($comment);
         $logMessage = 'Approved: '
                     . $this->getStatus() 
-                    . (preg_match('/^\s*$/', $comment) ? '' : '<p>Comment: <br> ' . $commentHtml . '</p>');
+                    . (preg_match('/^\s*$/', $comment) ? '' : "\n\nComment:\n" . $comment);
         
         $this->getAuditLog()->write($logMessage);
 
@@ -341,8 +339,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $commentHtml = htmlspecialchars($comment);
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . '<p>Comment: <br> ' . $commentHtml . '</p>');
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment . '</p>');
 
         switch ($this->status) {
             case 'MSA':
@@ -430,8 +427,16 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                         . " invalid status: '$this->status'");
         }
 
+        if (array_key_exists($this->status, $this->_overdue)) {
+            // This is a New, Draft, or EN status
+            $daysuntildue = $this->_overdue[$this->status];
+        } else {
+            // Get the daysUntilDue value for this workflow status on the Evaluation table
+            $daysuntildue = $this->CurrentEvaluation->daysUntilDue;
+        }
+
         $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
-        $nextDueDate->add($this->_overdue[$this->status], Zend_Date::DAY);
+        $nextDueDate->add($daysuntildue, Zend_Date::DAY);
         $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
     }
 
@@ -562,10 +567,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
 
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
-                if (isset(self::$_requiredPrivileges[$key])) {
-                    CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
-                        self::$_requiredPrivileges[$key], $this
-                    );
+                if (Fisma::mode() != Fisma::RUN_MODE_COMMAND_LINE) {
+                    if (isset(self::$_requiredPrivileges[$key])) {
+                        CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
+                            self::$_requiredPrivileges[$key], $this
+                        );
+                    }
                 }
             
                 // Check whether this field generates any notification events
