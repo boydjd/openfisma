@@ -165,10 +165,10 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             throw new Fisma_Zend_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
         }
         $this->status = 'MSA';
-        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                       ->findByDql('approvalGroup = "action" AND precedence = 0');
         $this->CurrentEvaluation = $evaluation[0];
+        $this->_updateNextDueDate();
 
         $this->updateDenormalizedStatus();
 
@@ -374,10 +374,11 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         }
         $this->status = 'EA';
         $this->ecdLocked = true;
-        $this->_updateNextDueDate();
         $evaluation = Doctrine::getTable('Evaluation')
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
+        $this->_updateNextDueDate();
+
         $evidence = new Evidence();
         $evidence->filename = $fileName;
         $evidence->Finding  = $this;
