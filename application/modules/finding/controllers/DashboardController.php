@@ -261,9 +261,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setLayerLabels(
                 array(
                     'Null',
-                    'HIGH',
-                    'MODERATE',
-                    'LOW'
+                    'High',
+                    'Moderate',
+                    'Low'
                 )
             );
             
@@ -286,7 +286,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 a different query will be used here */
                 
                 $systemCountsQuery = Doctrine_Query::create();
-                $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, f.threatLevel')
+                $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, o.name, f.threatLevel')
                     ->from('Finding f')
                     ->leftJoin('f.ResponsibleOrganization o')
                     ->where('o.orgtype = "system"')
@@ -312,7 +312,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                                 $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
                                 $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
                                 $basicLink . $orgName . '/threatLevel/enumIs/LOW'
-                            )
+                            ),
+                            $systemCountInfo['o_name'] . '<hr/>#columnReport#'
                         );
                         
                         $findingCounts = array('Null' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
@@ -365,7 +366,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/HIGH',
                         $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/MODERATE',
                         $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/LOW'
-                    )
+                    ),
+                    $thisParentOrg['name'] . '<hr/>#columnReport#'
                 );
 
             }
@@ -543,9 +545,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     }
     
     /**
-     * Gets a list of organizations that are at the leven given
+     * Gets a list of organizations that are at the level given
      * This is usefull for obtaining Agency and Bureau IDs
-     * Returns array('id','nickname') for each result in an array
+     * Returns array('id','nickname','name') for each result in an array
      *
      * @return array
      */
@@ -556,7 +558,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('o.id, o.nickname')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
                 ->leftJoin('o.System s')
                 ->where('s.type = ?', $orgType)
@@ -570,7 +572,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('o.id, o.nickname')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
                 ->leftJoin('o.System s')
                 ->where('s.type = "gss" OR s.type = "major"')
@@ -584,7 +586,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('id, nickname')
+                ->addSelect('id, nickname, name')
                 ->from('Organization o')
                 ->where('orgtype = ?', $orgType)
                 ->whereIn('o.id ', FindingTable::getOrganizationIds())
@@ -621,9 +623,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setLayerLabels(
                 array(
                     'Null',
-                    'HIGH',
-                    'MODERATE',
-                    'LOW'
+                    'High',
+                    'Moderate',
+                    'Low'
                 )
             );
 
@@ -1082,6 +1084,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Show, hide and filter data on the chart as requested
         switch (strtolower($threatLvl)) {
             case "totals":
+                // Remove the nullCount layer
+                $noMitChart->deleteLayer(0);
                 // Crunch numbers
                 $noMitChart
                     ->convertFromStackedToRegular()
