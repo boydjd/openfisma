@@ -244,7 +244,8 @@
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
                     },
                     scope: this
                 }, 
@@ -403,11 +404,13 @@
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
+
+            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {this._savePanel.hide();}
+                    fn: function () {that._savePanel.hide();}
                 }
             });
             

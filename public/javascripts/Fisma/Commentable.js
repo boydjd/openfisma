@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -111,7 +110,7 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     Fisma.Util.showAlertDialog('Document upload failed.');
                  }
              }, 
              null);
@@ -145,7 +144,8 @@ Fisma.Commentable = {
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var alertMessage = "Error: " + responseStatus.message;
+             Fisma.Util.showAlertDialog(alertMessage);
 
              return;
          }

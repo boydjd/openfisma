@@ -31,6 +31,7 @@ Fisma.Chart = {
     // Defaults for global chart settings definition:
     globalSettingsDefaults:{
         fadingEnabled:      false,
+        usePatterns:        false,
         barShadows:         false,
         barShadowDepth:     3,
         dropShadows:        false,
@@ -39,13 +40,27 @@ Fisma.Chart = {
         pointLabelsOutline: false,
         showDataTable: false
     },
-
+    
+    // URLs to all available pattern images
+    patternURLs: [
+        '/images/pattern-horizontal.png',
+        '/images/pattern-diamonds.png',
+        '/images/pattern-backbg-whitedots.png',
+        '/images/pattern-diagonal-45degree.png',
+        '/images/pattern-bubbles.png',
+        '/images/pattern-checkers.png',
+        '/images/pattern-diagonal-135degree.png',
+        '/images/pattern-diagonal-bricks.png'
+    ],
+    
     // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
     chartsOnDOM:{},
 
     // Is this client-browser Internet Explorer?
     isIE: (window.ActiveXObject) ? true : false,
     
+    // Class static variables
+    hasHookedPostDrawSeries: false,
     
     /**
      * When an external source is needed, this function should handel the returned JSON request
@@ -68,14 +83,13 @@ Fisma.Chart = {
                 Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
             }
-
+            
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            
             // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            } else if (chartParamsObj.chartData.length === 0) {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
-            }
+            } 
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
@@ -101,7 +115,7 @@ Fisma.Chart = {
             concatXLabel: false,
             nobackground: true,
             drawGridLines: false,
-            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: regular',
             pointLabelAdjustX: -3,
             pointLabelAdjustY: -7,
             AxisLabelX: '',
@@ -252,7 +266,7 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-        
+        Fisma.Chart.setTitle(chartParamsObj);
         Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
         
         return rtn;
@@ -318,7 +332,6 @@ Fisma.Chart = {
         }
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             grid: {
                 drawBorder: false,
@@ -349,14 +362,15 @@ Fisma.Chart = {
                     shadowOffset: 0,
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
-                    diameter: chartParamsObj.height * 0.55
+                    diameter: chartParamsObj.height * 0.55,
+                    dataLabelFormatString: "%d%"
                 }
             },
             legend: {
                 location: 's',
-                show: false,
+                show: true,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2
                 }
             }
         };
@@ -369,11 +383,48 @@ Fisma.Chart = {
         // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
         jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
 
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+
         plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
 
         // create an event handeling function that calls chartClickEvent while preserving the parm object
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
 
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );
+
+        // hook un-highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.hideAllChartTooltips();
+            }
+        );
+
+        /* Hook the onMouseMove even on the foward most event canvas for the pie tooltip
+           The reason for this is because the highlight event wont return the mouse X/Y location */
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        // Hook onMouseMove on it
+        canvases[0].onmousemove = function (e) {
+            Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
+        };
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
         // use the created function as the click-event-handeler
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
@@ -434,7 +485,6 @@ Fisma.Chart = {
         $.jqplot.config.enablePlugins = true;
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             stackSeries: true,
             series: seriesParam,
@@ -473,7 +523,7 @@ Fisma.Chart = {
                         angle: chartParamsObj.DataTextAngle,
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 },
                 yaxis:{
@@ -487,14 +537,20 @@ Fisma.Chart = {
                         formatString: '%.0f',
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 }
 
             },
-            highlighter: { 
-                show: false 
-                },
+            highlighter: {
+                show: true,
+                showMarker:false,
+                showTooltip: true,
+                tooltipAxes: 'xy',
+                yvalues: 1,
+                tooltipLocation: 'e',
+                formatString: "-"
+            },
             grid: {
                 gridLineWidth: 0,
                 shadow: false,
@@ -505,12 +561,12 @@ Fisma.Chart = {
                 show: chartParamsObj.drawGridLines
                 },
             legend: {
-                        show: chartParamsObj.showlegend,
-                        rendererOptions: {
-                            numberRows: 1
-                        },
-                        location: 'nw'
-                    }
+                show: chartParamsObj.showlegend,
+                rendererOptions: {
+                    numberRows: 1
+                },
+                location: 'nw'
+            }
         };
 
         // bug killer - The canvas object for IE does not understand what transparency is...
@@ -527,14 +583,106 @@ Fisma.Chart = {
         // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
         jPlotParamObj = Fisma.Chart.alterChartByGlobals(jPlotParamObj);
 
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+        
+        // implement hook nessesary for patterns
+        Fisma.Chart.hookPostDrawSeriesHooks();
+        
+        // trigger jqPlot lib to draw the chart
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
+        // hook click events for navigation/"drill-down"
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
-
+        
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );    
+        
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
+        // Hook the mouse events for column labels (make tooltips show on label hovering)
+        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
+        for (x = 0; x < columnLabelObjs.length; x++) {
+            
+            // note which column number this object represents
+            columnLabelObjs[x].columnNumber = x;
+            
+            // hook onMouseOver to show tooltip
+            columnLabelObjs[x].onmouseover = function (ev) {
+                var forceStyle = {
+                    'left': this.parentNode.offsetLeft + 'px',
+                    'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
+                    'top': ''
+                };
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
+            };
+            
+            // hook onMouseOut to hide tooltip
+            columnLabelObjs[x].onmouseout = function (ev) {
+                Fisma.Chart.hideAllChartTooltips();
+            };
+            
+            // bring this label to front, otherwise onmouseover will never fire
+            columnLabelObjs[x].style.zIndex = 1;
+        }
+        
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
         
         return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    /**
+     * Gets the tooltip div created for the chart 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return object[]
+     */
+    getTooltipObjOfChart : function (chartParamsObj) {
+        return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
+    },
+
+    getElementsByClassWithinObj : function (className, objectType, withinDiv) {
+        
+        // Is WithinDiv given? If not, assume we are looking from the document.body and down
+        if (withinDiv === null || withinDiv === '') {
+            withinDiv = document.body;
+        }
+        
+        // Is withinDiv an object, or object ID? - make it an object
+        if (typeof withinDiv !== 'object') {
+            withinDiv = document.getElementById(withinDiv);
+        }
+        
+        // Find the div that has the jqplot-highlighter-tooltip class
+        var objsFound = $(withinDiv).find(objectType).filter(
+            function() {
+                return $(this)[0].className.indexOf(className) !== -1;
+            }
+        );
+        
+        // Return results
+        return objsFound;
+    
     },
 
      /**
@@ -562,7 +710,6 @@ Fisma.Chart = {
         }
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
-            title: chartParamsObj.title,
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
             series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
             seriesDefaults:{
@@ -591,7 +738,93 @@ Fisma.Chart = {
 
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
+    
+    /**
+     * Setup the jqPlot library to hook its draw event. Upon postDrawSeriesHooks, create chart patterns if desiered.
+     * This function will return and do nothing if it was called before, this is to prevent multiple hooks being
+     * placed into jqPlot.
+     *
+     * @return void
+     */
+    hookPostDrawSeriesHooks : function ()
+    {
+        if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
+            // we only push one hook
+            return;
+        }
+        
+        // Note that we have push this hook
+        Fisma.Chart.hasHookedPostDrawSeries = true;
+        
+        // hook jqPlot's postDrawSeriesHook to draw patterns should the user want this options
+        $.jqplot.postDrawSeriesHooks.push(function (canvasObj) {
+        
+                /* This is called after everytime a layer on a stacked bar chart is drawn (either the high,
+                   moderate, or low), so each time this is called, it is being called for a different color
+                   of chartParamsObj.colors */
+                
+                // Is the checkbox to use patterns in place of colors checked?
+                var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                if (usePatterns === 'false') {
+                    return;
+                }
+                
+                // This code only works with bar charts
+                if (this._barPoints === undefined) {
+                    return;
+                }
+                
+                // Because this is a nested function, chartParamsObj may or may not be the true related
+                // instance to this trigger (it isnt in Firefox). Refreash this variable.
+                if (this.canvas._elem.context.parentNode.id !== undefined) {
+                    var uniqueId = this.canvas._elem.context.parentNode.id;
+                    chartParamsObj = Fisma.Chart.chartsOnDOM[uniqueId];
+                }
+                
+                /* chartParamsObj.patternCounter will be used (incremented for each call of this function) to
+                   keep track of which pattern should be used next (in Fisma.Chart.patternURLs). */
+                // Instance this variable if needed
+                if (Fisma.Chart.chartsOnDOM[uniqueId].patternCounter === undefined) {
+                    Fisma.Chart.chartsOnDOM[uniqueId].patternCounter = 0;
+                }
 
+                // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
+                var myPatternId = Fisma.Chart.chartsOnDOM[uniqueId].patternCounter;
+                var myPatternURL = Fisma.Chart.patternURLs[myPatternId];
+                Fisma.Chart.chartsOnDOM[uniqueId].patternCounter++;
+                
+                // For each bar drawn of this layer/series/color
+                for (var bar = 0; bar < this._barPoints.length; bar++) {
+
+                    var img = new Image();
+                    
+                    // because img.onload will fire within this function, store the bar information on the object
+                    img.barRect = {
+                        'x': this._barPoints[bar][0][0],
+                        'y': this._barPoints[bar][0][1],
+                        'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
+                        'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
+                    };
+                    
+                    img.onload = function () {
+                        // create pattern
+                        var ptrn = canvasObj.createPattern(img, 'repeat');
+                        canvasObj.fillStyle = ptrn;
+                        canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
+                        canvasObj.restore();
+                    };
+                    
+                    // load pattern
+                    img.src = myPatternURL;
+                }
+                
+                return;
+            }
+        );
+
+        return;
+    },
+    
     /**
      * Creates the red-orange-yellow threat-legend that shows above charts
      * The generated HTML code should go into the div with the id of the
@@ -627,24 +860,30 @@ Fisma.Chart = {
                 var textLabel = document.createTextNode('Threat Level');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
-
-                // Red block and "High"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF0000', 'High'));
-                row.appendChild(cell);
-
-                // Orange block and "Moderate"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF6600', 'Moderate'));
-                row.appendChild(cell);
-
-                // Yellow block and "Low"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FFC000', 'Low'));
-                row.appendChild(cell);
+                
+                var colorToUse;
+                var usePatterns;
+                var thisLayerText;
+                for(var layerIndex in chartParamsObj.chartLayerText)
+                {
+                    cell = document.createElement("td");
+                    cell.width = '20%';
+                    
+                    // Are we using colors, or patterns?
+                    usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    if (usePatterns === 'true') {
+                        colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                    } else {
+                        colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = colorToUse.replace('#', '');
+                    }
+                    
+                    thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    
+                    cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
+                    
+                    row.appendChild(cell);
+                }
 
                 // close and post table on DOM
                 tblBody.appendChild(row);
@@ -670,9 +909,13 @@ Fisma.Chart = {
 
         var colorCell;
 
-        // Create the colored box
+        // Create the colored box or pattern
         colorCell = document.createElement("td");
-        colorCell.style.backgroundColor= '#' + blockColor;
+        if (blockColor.indexOf('/') === -1) {                   // is this a URL, or color code?
+            colorCell.style.backgroundColor = '#' + blockColor;  // its a color
+        } else {                                                // its a URL
+            colorCell.style.backgroundImage = 'url(' + blockColor + ')';
+        }
         colorCell.width = '15px';
         colorRow.appendChild(colorCell);
 
@@ -693,6 +936,204 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    /**
+     * Event handler for the hilight event of charts. Upon hilighting is when the chart tooltip contents should
+     * be updated, and shown if not already.
+     *
+     * @return void
+     */
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
+    {
+        // Ensure all other tooltips are hidden 
+        Fisma.Chart.hideAllChartTooltips();
+        
+        var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
+        var defaultTooltip;
+        
+        /* The chartParamsObj.tooltip may have one of two structures -
+           either an array (of columns)
+           or an array (of layers) of arrays (of columns)   */
+        if (typeof chartParamsObj.tooltip[0] !== 'object') {
+            customTooltip = chartParamsObj.tooltip[pointIndex];
+        } else {
+            customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+        }
+        
+        // the same structure for the above applies to chartParamsObj.chartData
+        if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
+            defaultTooltip = chartParamsObj.chartData[pointIndex];
+        } else {
+            defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+        }
+        
+        // decide tooltip HTML
+        var ttHtml = '<span class="chartToolTipText">';
+        if (customTooltip !== '' && customTooltip !== undefined) {
+            ttHtml += customTooltip;
+        } else {
+            ttHtml += defaultTooltip;
+        }
+        ttHtml += '</span>';
+
+        // apply variables
+        ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
+        ttHtml = ttHtml.replace('#columnName#', chartParamsObj.chartDataText[pointIndex]);
+        if (data !== undefined && data !== null) {
+            ttHtml = ttHtml.replace('#count#', data[1]);
+        }
+        if (chartParamsObj.chartLayerText) {
+            ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
+        }
+        if (ttHtml.indexOf('#columnReport#') !== -1) {
+            ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
+        }
+        
+        // apply to tooltip
+        toolTipObj.innerHTML = ttHtml;
+        toolTipObj.style.display = 'block';
+        
+        // remove the .bottom and .right property - it should only exist if it is in forceTooltipStyle
+        toolTipObj.style.bottom = '';
+        toolTipObj.style.right = '';
+        
+        // IE7 (7 only) has a problem where it streatches the tooltip div
+        if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+            toolTipObj.style.width = '80px';
+        }
+        
+        // apply tooltip style if requested (this makes it possible to relocate the tooltip)
+        if (forceTooltipStyle !== undefined && forceTooltipStyle !== null) {
+            for(var key in forceTooltipStyle) {
+                toolTipObj.style[key] = forceTooltipStyle[key];
+            }
+        }
+        
+        /* By this line, we are done for bar charts. The tooltip will auto show itself
+           jqPlot Pie charts however, do not support the tooltip plugin, we need to make our own */
+        if (chartParamsObj.chartType === 'pie') {
+        
+            toolTipObj.style.display = 'none';
+            
+            var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+            pieTooltip.style.display = 'block';
+            pieTooltip.innerHTML = ttHtml;
+
+            // IE7 (7 only) has a problem where it streatches the tooltip div
+            if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+                pieTooltip.style.width = '200px';
+            }
+        }
+    },
+    
+    /**
+     * Returns HTML code to be injected into a tooltip. When rendered in a browser, is a human readable
+     * report showing information about the given column.
+     *
+     * @return string
+     */
+    getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
+    {
+        var report = '';
+        var total = 0;
+        
+        for (var L = 0; L < chartParamsObj.chartLayerText.length; L++) {
+            report += chartParamsObj.chartLayerText[L] + ": " + chartParamsObj.chartData[L][columnIndex] + '<br/>';
+            total += chartParamsObj.chartData[L][columnIndex];
+        }
+        
+        report += 'Total: ' + total;
+        return report;
+    },
+    
+    /**
+     * For pie-slice (or bar) referenced by pointIndex (which column/slice), returns the
+     * percentage that slice represents.
+     *
+     * @return int
+     */
+    getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
+    {
+        if (typeof chartParamsObj.chartData[0] === 'object') {
+            
+            // then this is a stacked bar chart
+            return 0;
+            
+        } else {
+            
+            // This is a basic-bar or pie chart
+            
+            var total = 0;
+            for (var i = 0; i < chartParamsObj.chartData.length; i++) {
+                total += chartParamsObj.chartData[i];
+            }
+            
+            var percentage = chartParamsObj.chartData[pointIndex] / total;
+            return Math.round(percentage * 100);
+        }
+    },
+    
+    /**
+     * Hides all chart tooltips throughout the entire DOM for all charts
+     *
+     * @return void
+     */
+    hideAllChartTooltips : function ()
+    {
+        // Find all divs that are chart tooltips
+        var tooltips = $(document.body).find('div').filter(
+            function() {
+                return $(this)[0].className.indexOf('jqplot-highlighter-tooltip') !== -1;
+            }
+        );
+        
+        // Hide them all
+        for(var x = 0; x < tooltips.length; x++)
+        {
+            tooltips[x].style.display = 'none';
+        }
+    },
+
+    /**
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * with the mouse
+     *
+     * @return void
+     */
+    chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
+        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+        
+        var offsetX; var offsetY;
+        if (window.event !== undefined) {
+            // We are in IE
+            offsetX = window.event.offsetX;
+            offsetY = window.event.offsetY;
+            offsetY += 65;
+        } else if (e.offsetX !== undefined) {
+            // We are not in IE nor FireFox
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+            offsetY += 45;
+        } else if (e.layerX !== undefined) {
+            // We are in Firefox
+            offsetX = e.layerX;
+            offsetY = e.layerY;
+            offsetY += 45;
+        } else {
+            // We are in a browser that clearly dosnt like standards... oh wait, none of them do
+            offsetX = 0;
+            offsetY = 0;
+        }
+        
+        pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
+        pieTooltip.style.top = offsetY + 'px';
+    },
+    
+    /**
+     * The event handeler for a chart click. This function should determine if the user needs to be
+     * navigated to another page or not
+     *
+     * @return void
+     */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
@@ -730,7 +1171,7 @@ Fisma.Chart = {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
             msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
             if (theLink !== false) { msg += "The link with this element is " + theLink; }
-            alert(msg);
+            Fisma.Util.showAlertDialog(msg);
         } else {
 
             // We are not in link-debug mode, navigate if there is a link
@@ -1126,7 +1567,7 @@ Fisma.Chart = {
             return;
         }
 
-        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        var fadingEnabled = ('fadingEnabled');
         if (fadingEnabled === 'false') {
             Fisma.Chart.makeElementVisible(eid);
             if (element.finnishFadeCallback) {
@@ -1374,6 +1815,17 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the pie chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
     {
         var tbl     = document.createElement("table");
@@ -1412,6 +1864,17 @@ Fisma.Chart = {
         dataTableObj.appendChild(tbl);
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the bar chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromBarChart : function (chartParamsObj, dataTableObj)
     {
         var x = 0;
@@ -1558,6 +2021,14 @@ Fisma.Chart = {
             }
     },
 
+    /**
+     * Removes data-labels that are within a certain range of eachother. If two labels are close,
+     * the data-label showing the lesser value is hidden.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
 
@@ -1654,6 +2125,11 @@ Fisma.Chart = {
                 });
     },
 
+    /**
+     * The event listener for the Hide button shown in chart options
+     *
+     * @return void
+     */
     hideButtonClick : function (scope, chartParamsObj, obj)
     {
         Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
@@ -1758,29 +2234,16 @@ Fisma.Chart = {
         }
     },
 
-    showSetingMode : function (showBasic)
-    {
-        var x = 0;
-        var hideThese;
-        var showThese;
-
-        if (showBasic === true) {
-            showThese = document.getElementsByName('chartSettingsBasic');
-            hideThese = document.getElementsByName('chartSettingsGlobal');
-        } else {
-            hideThese = document.getElementsByName('chartSettingsBasic');
-            showThese = document.getElementsByName('chartSettingsGlobal');
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-            hideThese[x].style.display = 'none';
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-                showThese[x].style.display = '';
-        }
-    },
-
+    /**
+     * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
+     * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
+     * will be returned.
+     * If the setting being looked for has never beem set, and there is no default value, an 
+     * exception is thown.
+     *
+     * @param string settingName
+     * @return string
+     */
     getGlobalSetting : function (settingName)
     {
 
@@ -1791,13 +2254,20 @@ Fisma.Chart = {
         } else {
 
             if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
-                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js';
             } else {
                 return String(Fisma.Chart.globalSettingsDefaults[settingName]);
             }
         }
     },
 
+    /**
+     * Saves a setting with the that can be recalled later with Fisma.Chart.getGlobalSetting()
+     *
+     * @param string settingName
+     * @param string newValue
+     * @return void
+     */
     setGlobalSetting : function (settingName, newValue)
     {
         YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
@@ -1898,10 +2368,18 @@ Fisma.Chart = {
 
     },
 
+    /**
+     * Shows the loading spinner in the place of the given chart on the DOM.
+     * If a chart has already been drawn, it will be destoryed.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     showChartLoadingMsg : function (chartParamsObj)
     {
         // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
 
         // Show spinner
         Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
@@ -1921,7 +2399,18 @@ Fisma.Chart = {
         chartContainer.appendChild(document.createElement('br'));
         chartContainer.appendChild(pTag);
     },
-
+    
+    setTitle : function (chartParamsObj)
+    {
+        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
+            var titleNode = document.createTextNode(chartParamsObj.title);
+            titleArea.innerHTML = '';
+            titleArea.appendChild(titleNode);
+            titleArea.appendChild(document.createElement('br'));
+        }
+    },
+    
     /**
      * Will insert a "No data to plot" message when there is no 
      * data to plot, or all plot data are 0s
@@ -1945,10 +2434,13 @@ Fisma.Chart = {
             msgOnDom.style.height = '100%';
             msgOnDom.style.textAlign = 'center';
             msgOnDom.style.verticalAlign = 'middle';
-            var textMsgOnDom = document.createTextNode('No data to plot.');
-            msgOnDom.appendChild(textMsgOnDom);
+            msgOnDom.appendChild( document.createTextNode("No data to plot. ") );
+            var changeParamsLink = document.createElement('a');
+            changeParamsLink.href = "JavaScript: Fisma.Chart.setChartSettingsVisibility('" + chartParamsObj.uniqueid + "', 'toggle');";
+            changeParamsLink.appendChild( document.createTextNode('Change chart parameters?') );
+            msgOnDom.appendChild(changeParamsLink);
             targDiv.appendChild(msgOnDom);
-
+            
             // Make sure screen-reader-table is not showing
             var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
             dataTableObj.style.display = 'none';
@@ -1956,8 +2448,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Returns true if there is no data to 
-     * plot, or if all plot data are 0s
+     * Returns true if there is no data to plot, or if all plot data is 0
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
      * @param object
@@ -2012,12 +2503,13 @@ Fisma.Chart = {
         // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
         canvases.wrap(
             function() {
+                var div;
                 var canvas = $(this);
 
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -2040,7 +2532,7 @@ Fisma.Chart = {
                 } else if (canvas.context.className == 'jqplot-xaxis-label') {
                     
                     // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             bottom: '0px'
@@ -2050,7 +2542,7 @@ Fisma.Chart = {
                 } else {
 
                     // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),

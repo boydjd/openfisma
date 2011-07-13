@@ -20,7 +20,6 @@
  * Add metadata for incident module
  * 
  * @package Migration
- * @version $Id: 1271182224_version37.php 3206 2010-04-13 23:48:46Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3

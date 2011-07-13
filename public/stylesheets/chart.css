@@ -35,6 +35,20 @@
     page-break-inside: avoid;
 }
 
+/* style for our cutom-made tooltip. This is nessesary for jqPlotPie charts as they do not support tooltips out of the box */
+.pieToolTip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: none
+}
+
+/* style for _text_ on jqPlot tool tips. For the rest of the tooltip, see jquery_jqplot.css/.jqplot-highlighter-tooltip */
+.chartToolTipText {
+    font-size: 14px;
+}
+
 /* style for the data-table for screen readers */
 .screenReaderTabel {
     width: 100%;

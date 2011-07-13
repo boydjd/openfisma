@@ -28,7 +28,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_Commentable
- * @version    $Id: Proxy.php 3143 2010-03-24 21:35:38Z mhaase $
  */
 class Fisma_Doctrine_Behavior_Commentable_Proxy
 {

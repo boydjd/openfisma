@@ -1,18 +1,30 @@
 /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -131,10 +143,11 @@
         // -90 = on the positive y axis.
         // 90 = on the negaive y axis.
         // 180 or - 180 = on the negative x axis.
-        this.startAngle = -90;
+        this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
         // Used as check for conditions where pie shouldn't be drawn.
         this._drawData = true;
+        this._type = 'pie';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -142,9 +155,6 @@
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
         this._diameter = null;
         this._radius = null;
         // array of [start,end] angles arrays, one for each slice.  In radians.
@@ -238,27 +248,43 @@
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
-            var r = this._diameter / 2;
+            var r = this._diameter / 2.0;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
+            var sm = this.sliceMargin;
+            if (this.fill == false) {
+                sm += this.lineWidth;
+            }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-    
+            var rprime = 0;
+            if (Math.abs(ang2-ang1) > 0) {
+                rprime = parseFloat(sm) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            }
+            var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
+            var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
+            if ((ang2 - ang1) <= Math.PI) {
+                r -= rprime;  
+            }
+            else {
+                r += rprime;
+            }
+            ctx.translate(transx, transy);
+            
             if (isShadow) {
                 for (var i=0; i<this.shadowDepth; i++) {
                     ctx.save();
                     ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
-                    doDraw();
+                    doDraw(r);
                 }
             }
     
             else {
-                doDraw();
+                doDraw(r);
             }
         }
     
-        function doDraw () {
+        function doDraw (rad) {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
              if (ang2 > 6.282 + this.startAngle) {
@@ -277,7 +303,7 @@
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.arc(0, 0, rad, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
         
@@ -353,47 +379,30 @@
         var mindim = Math.min(w,h);
         var d = mindim;
         // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d - this.sliceMargin;
-
-         // damian: required for line labels
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        this._diameter = this.diameter  || d; // - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
-
-        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
-        var percentage = this._plotData[0][1] * 100 / total;
-        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-        if (percentage === 100) {
-            sa = 0;
-        }
-
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
+        
+        // Fixes issue #272.  Thanks hugwijst!
+        // reset slice angles array.
+        this._sliceAngles = [];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
                 var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
                 // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
+                // ang1 += this.sliceMargin/180*Math.PI;
                 this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
             }
             
         }
-        
-        // damian: required for line labels
-        var origin = {
-            x: parseInt(ctx.canvas.style.left) + cw/2,
-            y: parseInt(ctx.canvas.style.top) + ch/2
-        };
-        
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
+            // ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
                       
@@ -437,40 +446,6 @@
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-
-             // damian: line labels
-             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
-             
-                 // percentage
-                 var percentage = this._plotData[i][1] * 100 / total;
-                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-                    
-                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898;
-                 
-                 // line 1
-                 var incDiameter = 10;
-                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 
-                 // line 2
-                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
-                 var line2_end_x = line1_end_x + line2_end_x_offset;
-                 var line2_end_y = line1_end_y;    
-                 
-                 // label
-                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
-                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
-                 var l_y_offset = -1 * l.height() / 2;
-                 var l_x = line2_end_x + origin.x + l_x_offset;
-                 var l_y = line2_end_y + origin.y + l_y_offset;
-                 l_x -= 30;
-                 //l_y += 10;
-                 l.css({left: l_x+"px", top: l_y+"px"});
-            }    
-            
         }
                
     };
@@ -552,7 +527,8 @@
             
             var pad = false, 
                 reverse = false,
-                nr, nc;
+                nr, 
+                nc;
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             
@@ -682,7 +658,7 @@
     }
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {

@@ -20,7 +20,6 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license
- * @version   $Id$
  * @package   View_Helper
  */
 
@@ -88,6 +87,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisTickRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_categoryAxisRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_highlighter.js',
                                       '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',

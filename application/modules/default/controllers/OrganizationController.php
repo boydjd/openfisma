@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class OrganizationController extends Fisma_Zend_Controller_Action_Object
 {
@@ -230,30 +229,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function _isDeletable()
     {
         return false;
-    }
-
-    /**
-     * Delete a specified organization.
-     *
-     * @return void
-     */
-    public function deleteAction()
-    {
-        $id = $this->_request->getParam('id');
-        $organization = Doctrine::getTable('Organization')->find($id);
-        if ($organization) {
-            $this->_acl->requirePrivilegeForObject('delete', $organization);
-
-            if ($organization->delete()) {
-                $msg = "Organization deleted successfully";
-                $model = 'notice';
-            } else {
-                $msg = "Failed to delete the Organization";
-                $model = 'warning';
-            }
-            $this->view->priorityMessenger($msg, $model);
-        }
-        $this->_redirect('/organization/list');
     }
 
     /**
