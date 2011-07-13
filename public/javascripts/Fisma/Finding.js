@@ -136,42 +136,10 @@ Fisma.Finding = {
                 },
                 
                 failure : function (connection) {
-                    alert('Unable to load security control definition.');
+                    Fisma.Util.showAlertDialog('Unable to load security control definition.');
                 }
             }
         );
-    },
-
-    /**
-     * Show the warning message before a find is deleted.
-     */
-    deleteFinding : function (event, config) {
-        var  warningDialog =  
-            new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "300px", 
-                  fixedcenter: true, 
-                  visible: false, 
-                  draggable: false, 
-                  close: true,
-                  modal: true,
-                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
-                        + "Do you want to continue?", 
-                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-                  constraintoviewport: true, 
-                  buttons: [ { text:"Yes", handler : function () {
-                                   document.location = "/finding/remediation/delete/id/" + config.id;
-                                   this.hide(); 
-                               }
-                             }, 
-                             { text:"No",  handler : function () {
-                                   this.hide(); 
-                               }
-                             } 
-                           ] 
-                } ); 
- 
-         warningDialog.setHeader("Are you sure?");
-         warningDialog.render(document.body);
-         warningDialog.show();
     }
+
 };

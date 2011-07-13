@@ -18,6 +18,8 @@ Evaluation:
         privilegeId: integer
         daysUntilDue:
             type: integer
+            default: 7
+            notnull: true
             comment: Number of days that a finding can remain in this workflow status before being considered overdue
 
     relations:

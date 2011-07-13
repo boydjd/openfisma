@@ -110,7 +110,7 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     alert('Document upload failed.');
+                     Fisma.Util.showAlertDialog('Document upload failed.');
                  }
              }, 
              null);
@@ -144,7 +144,8 @@ Fisma.Commentable = {
          }
 
          if (!responseStatus.success) {
-             alert("Error: " + responseStatus.message);
+             var alertMessage = "Error: " + responseStatus.message;
+             Fisma.Util.showAlertDialog(alertMessage);
 
              return;
          }

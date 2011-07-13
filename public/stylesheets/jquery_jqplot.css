@@ -7,7 +7,7 @@
 /*rules for the plot target div.  These will be cascaded down to all plot elements according to css rules*/
 .jqplot-target {
     position: relative;
-    color: #666666;
+    color: #000000;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     font-size: 1em;
 }
@@ -37,14 +37,15 @@
 /*rules applied to all axis tick divs*/
 .jqplot-axis-tick, .jqplot-xaxis-tick, .jqplot-yaxis-tick, .jqplot-x2axis-tick, .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
     position: absolute;
+    color: #000000;
 }
-
 
 .jqplot-xaxis-tick {
     top: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
     vertical-align: top;
+    color: #000000;
 }
 
 .jqplot-x2axis-tick {
@@ -59,6 +60,7 @@
     /* initial position untill tick is drawn in proper place */
     top: 15px;
     text-align: right;
+    color: #000000;
 }
 
 .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
@@ -105,6 +107,7 @@ table.jqplot-table-legend {
     margin-bottom: 12px;
     margin-left: 12px;
     margin-right: 12px;
+    color: 000000;
 }
 
 table.jqplot-table-legend, table.jqplot-cursor-legend {
@@ -152,12 +155,13 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
 }
 
-
 .jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
     background: rgba(208,208,208,0.5);
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
     padding: 1px;
 }
 
@@ -165,13 +169,19 @@ table.jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
-    background: rgba(208,208,208,0.5);
+    background-color: rgb(208,208,208);
+    background: rgba(208,208,208,0.8);
+    z-index: 1;
     padding: 1px;
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 }
 
 .jqplot-point-label {
     font-size: 0.75em;
     z-index: 1;
+    color: #000000;
 }
       
 td.jqplot-cursor-legend-swatch {
@@ -182,6 +192,10 @@ text-align:center;
 div.jqplot-cursor-legend-swatch {
 width:1.2em;
 height:0.7em;
+}
+
+.jqplot-data-label {
+    color: #000000;
 }
 
 .jqplot-error {

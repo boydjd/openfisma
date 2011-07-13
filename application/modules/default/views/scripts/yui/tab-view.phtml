@@ -28,8 +28,8 @@
                         try {
                             eval(scriptNodes[i].text);
                         } catch (e) {
-                            alert('Not able to execute one of the scripts embedded in this page: '
-                                  + e.message);
+                            var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                            Fisma.Util.showAlertDialog(message);
                         } 
                         // Set a flag that prevents this script from being executed more than once
                         scriptNodes[i].setAttribute('executeFlag', 'true');
