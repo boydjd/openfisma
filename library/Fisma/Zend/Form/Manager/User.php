@@ -67,6 +67,14 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
             }
         }
         
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+        
+        if ($user && 'root' === $user->username) {
+            $form->getElement('role')->setRequired(false);
+        }
+
         if ($user && $user->locked) {
             $reason = $user->getLockReason();
             $form->getElement('lockReason')->setValue($reason);

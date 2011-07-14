@@ -247,6 +247,9 @@
                 case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
                     srcNode.insertAfter(destNode);
                     break;
+                default:
+                    throw "Invalid drag location parameter";
+                    break;
             }
 
             this._treeView.getRoot().refresh();
