@@ -410,7 +410,7 @@ class Fisma_Chart
             // Ensure a stacked bar chart with N layers(stacks) has a value for each layer. count($addValue) should = N
             if (count($addValue) !== $this->getLayerCount()) {
                     throw new Fisma_Zend_Exception(
-                        "When adding a column to a stacked bar chart, you must add a value for each layer(stack)." . 
+                        "When adding a column to a stacked bar chart, you must add a value for each layer(stack). " . 
                         "Fisma_Chart->addColumn() was called to add a column with " . count($addValue) . " layers," . 
                         " expected " . $this->getLayerCount()
                     );
