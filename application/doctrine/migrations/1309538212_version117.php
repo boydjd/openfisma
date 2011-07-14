@@ -35,13 +35,6 @@ class Version117 extends Doctrine_Migration_Base
 
     public function down()
     {
-        $appExtra = array( 'notblank' => '1', 'comment' => 'The version of the application', 'default' => '0');
-        $yuiExtra = array(
-            'notblank' => '1',
-            'comment' => 'The version of YUI being used by the application',
-            'default' => '0'
-        );
-        $this->addColumn( 'configuration', 'app_version', 'string', '10', $appExtra);
-        $this->addColumn( 'configuration', 'yui_version', 'string', '10', $yuiExtra);
+        throw new Doctrine_Migration_IrreversibleMigrationException();
     }
 }
