@@ -116,9 +116,13 @@ Fisma.AutoComplete = function() {
              * @return {String} HTML markup of formatted result data.
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
-                var sMarkup = (sResultMatch) ? sResultMatch : "";
-                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
-                return sMarkup;
+                var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
+                
+                // Create a regex to match the query case insensitively
+                var regex = new RegExp('\\b(' + sQuery + ')', 'i');
+                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+
+                return sResultMatch;
             };
 
             ac.itemSelectEvent.subscribe(
