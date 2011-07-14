@@ -404,7 +404,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                         $pieSliceTooltip = 'Corrective Action Plan';
                         break;
                     case "FP":
-                        $pieSliceTooltip = 'False Positive:';
+                        $pieSliceTooltip = 'False Positive';
                         break;
                     case "AR":
                         $pieSliceTooltip = 'Accepted Risk Risk';
