@@ -149,6 +149,10 @@ Privilege:
         resource: finding
         action: update_finding_source
         description: Update Finding Source
+    findings_update_poc:
+        resource: finding
+        action: update_poc
+        description: Update Finding Point Of Contact
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
