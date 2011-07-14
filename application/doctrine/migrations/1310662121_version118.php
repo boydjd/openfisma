@@ -25,7 +25,7 @@
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version117 extends Doctrine_Migration_Base
+class Version118 extends Doctrine_Migration_Base
 {
     public function up()
     {
