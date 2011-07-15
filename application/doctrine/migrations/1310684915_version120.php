@@ -91,7 +91,7 @@ class Version120 extends Doctrine_Migration_Base
         $pocReadPrivilege->merge(array(
             'resource' => 'poc',
             'action' => 'read',
-            'pocReadPrivilege' => 'View Points of Contact'
+            'description' => 'View Points of Contact'
         ));
         $pocReadPrivilege->save();
 

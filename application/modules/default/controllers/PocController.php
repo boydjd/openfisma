@@ -41,9 +41,24 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         return 'Point of Contact';
     }
    
+    /**
+     * Override base class to prevent deletion of POC objects
+     */
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Set up context switch
+     */
+    public function init()
+    {
+        parent::init();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('autocomplete', 'json')
+                      ->initContext();
     }
 
     /**
@@ -67,5 +82,25 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;
+    }
+
+    /**
+     * A helper action for autocomplete text boxes
+     */
+    public function autocompleteAction()
+    {
+        $keyword = $this->getRequest()->getParam('keyword');
+
+        $pocQuery = Doctrine_Query::create()
+                    ->from('Poc p')
+                    ->select("p.id")
+                    ->addSelect("CONCAT(p.username, ' [', p.nameFirst, ' ', p.nameLast, ']') AS name")
+                    ->where('p.nameLast LIKE ?', "$keyword%")
+                    ->orWhere('p.nameFirst LIKE ?', "$keyword%")
+                    ->orWhere('p.username LIKE ?', "$keyword%")
+                    ->orderBy("p.nameFirst")
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+        $this->view->pointsOfContact = $pocQuery->execute();
     }
 }
