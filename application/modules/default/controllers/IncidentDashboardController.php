@@ -112,7 +112,7 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
         $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
 
         $orgOptions = array_values($orgTypes);
-        $orgOptions = array_map(ucwords, $orgOptions);
+        $orgOptions = array_map('ucwords', $orgOptions);
 
         $bureauChart = new Fisma_Chart(900, 300, 'incidentBureau', '/incident-chart/bureau/format/json');
         $bureauChart
