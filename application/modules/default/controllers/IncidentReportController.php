@@ -250,22 +250,33 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
+        $orgTypeId = $this->_helper->OrganizationType
+                          ->getOrganizationTypeId($this->_me->id, 'Incident_Bureau_Report', false);
+
+        $filterForm = $this->_helper->OrganizationType->getFilterForm(false);  
+
+        $this->view->orgTypeFilter = true;
+        $this->view->organizationTypeForm = $filterForm;
+        $this->view->namespace = 'Incident_Bureau_Report';
+        $this->view->url = "/incident-report/bureau/format/html";
+
         // Base query gets category names and joins to incidents
         $bureauQuery = Doctrine_Query::create()
                        ->from('Organization bureau')
                        ->select('bureau.nickname')
                        ->leftJoin('Organization child')
                        ->leftJoin('child.Incidents i')
-                       ->where('bureau.orgType = ?', 'bureau')
+                       ->where('bureau.orgTypeId = ?', $orgTypeId)
                        ->andWhere('child.lft BETWEEN bureau.lft AND bureau.rgt')
                        ->groupBy('bureau.id')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId);
         // Create the base report object -- additional columns are added below
         $report = new Fisma_Report();
 
-        $report->setTitle('Incidents Reported Per Bureau (Previous 12 Months)')
-               ->addColumn(new Fisma_Report_Column('Bureau', true));
+        $report->setTitle('Incidents Reported Per ' . $orgType->nickname .' (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column($orgType->nickname, true));
                        
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
@@ -304,9 +315,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         }
 
         $bureaus = $bureauQuery->execute();
-
         $report->setData($bureaus);
-
         $this->_helper->reportContextSwitch()->setReport($report);
     }
 }

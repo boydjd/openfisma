@@ -33,10 +33,6 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     public function getSearchableFields()
     {
-        // The org type should show all values *except* system
-        $orgTypeEnumValues = $this->getEnumValues('orgType');
-        unset($orgTypeEnumValues[array_search('system', $orgTypeEnumValues)]);
-
         return array (
             'name' => array(
                 'initiallyVisible' => true,
@@ -63,11 +59,15 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                 'type' => 'datetime'
             ),
             'orgType' => array(
-                'enumValues' => $orgTypeEnumValues,
                 'initiallyVisible' => true,
-                'label' => 'Type',
+                'label' => 'Organization Type',
+                'join' => array(
+                    'model' => 'organizationType',
+                    'relation' => 'OrganizationType',
+                    'field' => 'nickname'
+                ),
                 'sortable' => true,
-                'type' => 'enum'
+                'type' => 'text'
             ),
             'description' => array(
                 'initiallyVisible' => true,
@@ -119,8 +119,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     {
         // Table aliases are generated from doctrine metadata (without user input) and are safe to interpolate
         $baseTableAlias = $relationAliases['Organization'];
-
-        return $baseQuery->where("$baseTableAlias.orgType <> ?", 'system');
+        return $baseQuery->where("$baseTableAlias.nickname <> ?", 'system');
     }
 
     /**

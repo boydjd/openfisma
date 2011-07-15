@@ -1,0 +1,18 @@
+OrganizationType:
+    agency:
+        name: Agency
+        nickname: agency
+        icon: agency
+    bureau: 
+        name: Bureau
+        nickname: bureau
+        icon: bureau
+    organization:
+        name: Organization
+        nickname: organization
+        icon: organization
+    system:
+        name: System
+        nickname: system
+        icon: system
+

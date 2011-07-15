@@ -1,4 +1,4 @@
-Organization:    
+OrganizationType:    
     listeners: [IndexListener]
 
     columns:
@@ -13,29 +13,13 @@ Organization:
             unique: true
             notblank: true
             notnull: true
-            unique: true
-        orgTypeId:
-            type: integer
-        systemId:
-            type: integer
+        icon:
+            type: string(255)
         description: 
             type: string
             extra:
                 purify: html
-
-    relations:
-        System:
-            local: systemId
-            foreign: id
-            foreignType: one # Forces Doctrine to make this one-to-one instead of one-to-many
-
-        OrganizationType:
-            local: orgTypeId
-            foreign: id
-
     actAs:
-        NestedSet:
-        SoftDelete:
         Timestampable:
             created:
                 name: createdTs

@@ -585,9 +585,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('id, nickname, name')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
-                ->where('orgtype = ?', $orgType)
+                ->leftJoin('o.OrganizationType ot')
+                ->where('ot.nickname = ?', $orgType)
                 ->whereIn('o.id ', FindingTable::getOrganizationIds())
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                 ->orderBy('o.nickname');

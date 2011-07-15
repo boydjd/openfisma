@@ -109,8 +109,22 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
         $categoryChart->setTitle('Incident Categories');
         $this->view->categoryChart = $categoryChart->export('html');
 
+        $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+
+        $orgOptions = array_values($orgTypes);
+        $orgOptions = array_map(ucwords, $orgOptions);
+
         $bureauChart = new Fisma_Chart(900, 300, 'incidentBureau', '/incident-chart/bureau/format/json');
-        $bureauChart->setTitle('Reported Incidents By Bureau');
+        $bureauChart
+            ->setTitle('Reported Incidents By Organization Type')
+            ->addWidget(
+                'bureau',
+                'Show:',
+                'combo',
+                'none',
+                $orgOptions
+            );
+
         $this->view->bureauChart = $bureauChart->export('html');
     }
     
