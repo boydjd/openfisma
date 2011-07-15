@@ -141,6 +141,12 @@ class Fisma_Menu
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
                 }
 
+                if ($acl->hasPrivilegeForClass('read', 'OrganizationType')) {
+                    $systemInventoryAdminMenu->add(
+                        new Fisma_Yui_MenuItem('OrganizationTypes', '/organization-type/list')
+                    );
+                }
+
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
