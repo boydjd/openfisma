@@ -166,7 +166,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Privilege',
                 true,
-                'YAHOO.widget.DataTable.formatText',
+                'Fisma.TableFormat.formatHtml',
                 null,
                 'privilegeDescription'
             )
