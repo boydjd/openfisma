@@ -34,7 +34,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
      * 
      * @var int
      */
-    const INDEX_CHUNK_SIZE = 10;
+    const INDEX_CHUNK_SIZE = 200;
 
     /**
      * Implement the interface for Searchable
@@ -228,6 +228,15 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'pocOrg' => array(
                 'initiallyVisible' => false,
+                'extraCriteria' => array(
+                    'organizationSubtree' => array(
+                        'idField' => 'pocOrgId',
+                        'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
+                        'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    )
+                ),
                 'label' => 'POC Organization',
                 'join' => array(
                     'model' => 'Organization',
@@ -243,6 +252,15 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'responsibleOrganizationId' => array(
                 'hidden' => true,
+                'type' => 'integer'
+            ),
+            'pocOrgId' => array(
+                'hidden' => true,
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'field' => 'id'
+                ),
                 'type' => 'integer'
             )
         );
