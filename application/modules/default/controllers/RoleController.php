@@ -179,7 +179,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
                 'Privilege ID',
-                true,
+                false,
                 'YAHOO.widget.DataTable.formatText',
                 null,
                 'privilegeId',
@@ -205,7 +205,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $dataTable->addColumn(
                 new Fisma_Yui_DataTable_Column(
                     $role['nickname'],
-                    true,
+                    false,
                     'YAHOO.widget.DataTable.formatCheckbox',
                     'dataTableCheckboxClick',
                     $role['nickname']
