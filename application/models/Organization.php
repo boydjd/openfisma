@@ -49,7 +49,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
         if ('system' == $this->OrganizationType->nickname) {
             return $this->System->type;
         } else {
-            return $this->OrganizationType->nickname;
+            return $this->OrganizationType->icon;
         }
     }
     

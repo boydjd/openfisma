@@ -459,7 +459,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $summary->addSelect("COUNT(finding.id) total");
         }
 
-        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.nickname) orgType")
+        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) orgType")
             ->addSelect('parent.lft as lft')
             ->addSelect('parent.rgt as rgt')
             ->addSelect('parent.id as id')
