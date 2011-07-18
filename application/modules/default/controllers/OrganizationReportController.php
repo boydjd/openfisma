@@ -94,16 +94,16 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
     {
         $storageNamespace = 'Organization_Privacy_Report';
         $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, $storageNamespace);
-
         $filterForm = $this->_helper->OrganizationType->getFilterForm();  
-        $this->view->orgTypeFilter = true;
+
+        $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
         $this->view->namespace = $storageNamespace;
         $this->view->url = "/organization-report/privacy/format/html";
 
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $systemQuery = $baseQuery->select('bureau.nickname AS name')
                             ->addSelect('o.nickname AS name');
         } else {
@@ -133,7 +133,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                     ->orderBy('bureau.nickname, o.nickname')
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $systemQuery->andWhere('bureau.orgTypeId = ?', $orgTypeId);
         }
         $systems = $systemQuery->execute();
@@ -144,7 +144,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
          
         $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
                    ->addColumn(new Fisma_Report_Column('System', true));
         } else {
@@ -168,17 +168,16 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
     {
         $storageNamespace = 'Organization_SecurityAuth_Report';
         $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, $storageNamespace);
-
         $filterForm = $this->_helper->OrganizationType->getFilterForm();  
 
-        $this->view->orgTypeFilter = true;
+        $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
         $this->view->namespace = $storageNamespace;
         $this->view->url = "/organization-report/security-authorization/format/html";
 
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $systemQuery = $baseQuery->select('bureau.nickname AS name')
                             ->addSelect('o.nickname AS name');
         } else {
@@ -200,7 +199,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                     ->orderBy('bureau.nickname, o.nickname')
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $systemQuery->andWhere('bureau.orgTypeId = ?', $orgTypeId);
         }
 
@@ -211,7 +210,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $report->setTitle('Security Authorizations Report');
         $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
 
-        if ($orgTypeId && 'none' != $orgTypeId) {
+        if ('none' != $orgTypeId) {
             $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
                    ->addColumn(new Fisma_Report_Column('System', true));
         } else {

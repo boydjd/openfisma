@@ -255,7 +255,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
         $filterForm = $this->_helper->OrganizationType->getFilterForm(false);  
 
-        $this->view->orgTypeFilter = true;
+        $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
         $this->view->namespace = 'Incident_Bureau_Report';
         $this->view->url = "/incident-report/bureau/format/html";

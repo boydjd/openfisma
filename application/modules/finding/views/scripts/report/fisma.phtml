@@ -1,4 +1,4 @@
-<?php if (isset($this->orgTypeFilter)): ?> 
+<?php if (isset($this->orgTypeId)): ?> 
     <div  class="searchBox">
         <?php echo $this->escape($this->organizationTypeForm, 'none'); ?>
     <div class="clear"></div>        
@@ -31,26 +31,22 @@
     </p>
 </div>
 
-<?php if (isset($this->orgTypeFilter)): ?>
+<?php if (isset($this->orgTypeId)): ?>
 
 <script type="text/javascript">
 
     YAHOO.util.Event.onDOMReady(function () {
         var organizationTypeElement = YAHOO.util.Dom.get('orgTypeFilter');
-        var storageNamespace = "<?php echo $this->escape($this->namespace); ?>";
-        var orgTypeStorage = new Fisma.PersistentStorage(storageNamespace);
-        var orgTypeId = orgTypeStorage.get('orgType');
+        var orgTypeId = "<?php echo $this->escape($this->orgTypeId); ?>"; 
 
-        if (!YAHOO.lang.isUndefined(orgTypeId) && orgTypeId) {
-            for (var i=0; i < organizationTypeElement.options.length; i++) {
-                if (organizationTypeElement.options[i].value === orgTypeId) {
-                    organizationTypeElement.options[i].selected = true;
-                    break;
-                }
+        for (var i=0; i < organizationTypeElement.options.length; i++) {
+            if (organizationTypeElement.options[i].value === orgTypeId) {
+                organizationTypeElement.options[i].selected = true;
+                break;
             }
-        }        
+        }
 
-        var config = {namespace : storageNamespace, 
+        var config = {namespace : "<?php echo $this->escape($this->namespace);?>", 
                       url : "<?php echo $this->escape($this->url); ?>"}; 
         YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Util.organizationTypeHandle, config);
     });

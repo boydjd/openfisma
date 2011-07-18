@@ -129,11 +129,10 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     {        
        
         $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, 'finding_fisma');
-
         $filterForm = $this->_helper->OrganizationType->getFilterForm(false);  
 
         $this->view->organizationTypeForm = $filterForm;
-        $this->view->orgTypeFilter = true;
+        $this->view->orgTypeId = $orgTypeId;
         $this->view->namespace = 'Finding_Fisma_Report';
         $this->view->url = "/finding/report/fisma";
        
