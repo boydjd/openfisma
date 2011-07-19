@@ -247,21 +247,25 @@ class Version119 extends Doctrine_Migration_Base
         $agency = new OrganizationType();
         $agency->name = 'Agency';
         $agency->nickname = 'agency';
+        $agency->icon = 'agency';
         $organizationTypes[] = $agency;
 
         $bureau = new OrganizationType();
         $bureau->name = 'Bureau';
         $bureau->nickname = 'bureau';
+        $bureau->icon = 'bureau';
         $organizationTypes[] = $bureau;
 
         $organization = new OrganizationType();
         $organization->name = 'Organization';
         $organization->nickname = 'organization';
+        $organization->icon = 'organization';
         $organizationTypes[] = $organization;
 
         $system = new OrganizationType();
         $system->name = 'System';
         $system->nickname = 'system';
+        $system->icon = 'system';
         $organizationTypes[] = $system;
 
         $organizationTypes->save();
