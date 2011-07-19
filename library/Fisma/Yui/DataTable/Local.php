@@ -74,7 +74,8 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
             'data' => $this->_data,
             'columnDefinitions' => $this->_getYuiColumnDefinitions(),
             'responseSchema' => $this->_getYuiResponseSchema(),
-            'eventListeners' => $this->_eventListeners
+            'eventListeners' => $this->_eventListeners,
+            'groupBy' => $this->_groupBy
         );
         
         return $view->partial('yui/data-table-local.phtml', 'default', $data);

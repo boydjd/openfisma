@@ -19,7 +19,6 @@
         </tbody>
     </table>
 </div>
-
 <script type="text/javascript">
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
 
@@ -43,11 +42,15 @@
         dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
         dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
 
-        var dataTable = new YAHOO.widget.DataTable(
+        var dataTable = new YAHOO.widget.GroupedDataTable(
             "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 
             columnDefs, 
             dataSource, 
-            {}
+            {
+                <?php if (!empty($this->groupBy)): ?>
+                groupBy: "<?php echo $this->escape($this->groupBy, 'none'); ?>"
+                <?php endif; ?>
+            }
         );
         
         // Enable row highlighting for mouse over events

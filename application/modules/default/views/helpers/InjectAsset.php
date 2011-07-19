@@ -42,6 +42,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/fisma.js',
                                       '/javascripts/editable.js',
                                       '/javascripts/selectallselectnone.js',
+                                      '/javascripts/groupeddatatable.js',
                                       '/javascripts/Fisma/AttachArtifacts.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',

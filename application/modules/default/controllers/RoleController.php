@@ -154,6 +154,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable->setGroupBy('privilegeResource');
         
         // Each row (array) must be an array of ColumnName => CellValue
         $blankRow = array();
@@ -217,12 +218,23 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         }
 
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'privilegeResource',
+                false,
+                'YAHOO.widget.DataTable.formatText',
+                null,
+                'privilegeResource',
+                true 
+            )
+        );
+
         // Get a list of what role each privilege is associated with
         $privilegeQuery = Doctrine_Query::create()
-            ->select('r.nickname, p.description, p.action')
+            ->select('r.nickname, p.description, p.action, p.resource')
             ->from('Privilege p')
             ->leftJoin('p.Roles r')
-            ->orderBy('p.description')
+            ->orderBy('p.resource, p.description')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $privileges = $privilegeQuery->execute();
 
@@ -235,6 +247,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             
             $newRow['privilegeDescription'] = $privilege['description'];
             $newRow['privilegeId'] = $privilege['id'];
+            $newRow['privilegeResource'] = ucfirst($privilege['resource']);
 
             // Update (set true) any cell of this privilege row, that has this role
             foreach ($privilege['Roles'] as $role) {
@@ -242,9 +255,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             }
 
             // Add row to data-table
-            $dataTableRows[] = array_values($newRow);
+            $dataTableRows[] = $newRow;
         }
-        
+
         $dataTable->setData($dataTableRows);
         $this->view->dataTable = $dataTable;
      }
