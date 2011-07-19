@@ -43,6 +43,6 @@ class Version120 extends Doctrine_Migration_Base
      */
     public function down()
     {
-       throw new Doctrine_Migration_IrreversibleMigrationException();
+        throw new Doctrine_Migration_IrreversibleMigrationException();
     }
 }

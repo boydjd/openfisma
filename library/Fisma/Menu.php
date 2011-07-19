@@ -143,7 +143,7 @@ class Fisma_Menu
 
                 if ($acl->hasPrivilegeForClass('read', 'OrganizationType')) {
                     $systemInventoryAdminMenu->add(
-                        new Fisma_Yui_MenuItem('OrganizationTypes', '/organization-type/list')
+                        new Fisma_Yui_MenuItem('Organization Types', '/organization-type/list')
                     );
                 }
 

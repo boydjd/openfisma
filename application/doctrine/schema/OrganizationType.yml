@@ -1,5 +1,5 @@
-OrganizationType:    
-    listeners: [IndexListener]
+OrganizationType:
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
@@ -8,17 +8,25 @@ OrganizationType:
             type: string(255)
             notblank: true
             notnull: true
+            extra:
+                notify: true
         nickname:
             type: string(255)
             unique: true
             notblank: true
             notnull: true
+            extra:
+                notify: true
         icon:
             type: string(255)
+            extra:
+                notify: true
+            comment: Icon of organization types (agency, bureau, organization)
         description: 
             type: string
             extra:
                 purify: html
+                notify: true
     actAs:
         Timestampable:
             created:

@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -35,38 +36,53 @@ class Version119 extends Doctrine_Migration_Base
     public function up()
     {
         $this->createTable('organization_type', array(
-             'id' => 
-             array(
-                 'type' => 'integer',
-                 'length' => '8',
-                 'autoincrement' => '1',
-                 'primary' => '1',
-             ),
-             'name' => 
-             array(
-                 'type' => 'string',
-                 'length' => '255',
-                 'notblank' => true,
-                 'notnull' => true
-             ),
-             'nickname' => 
-             array(
-                 'type' => 'string',
-                 'length' => '255',
-                 'notblank' => true,
-                 'notnull' => true
-             ),
-             'icon' => 
-             array(
-                 'type' => 'string',
-                 'length' => '255',
-             ),
+            'id' => 
+            array(
+                'type' => 'integer',
+                'length' => '8',
+                'autoincrement' => '1',
+                'primary' => '1',
+            ),
+            'name' => 
+            array(
+                'type' => 'string',
+                'length' => '255',
+                'notblank' => true,
+                'notnull' => true,
+                'extra' => 
+                array(
+                    'notify' => true
+                ),
+            ),
+            'nickname' => 
+            array(
+                'type' => 'string',
+                'length' => '255',
+                'notblank' => true,
+                'notnull' => true,
+                'extra' => 
+                array(
+                    'notify' => true
+                ),
+            ),
+            'icon' => 
+            array(
+                'type' => 'string',
+                'length' => '255',
+                'extra' => 
+                array(
+                    'purify' => 'html',
+                    'notify' => true
+                ),
+                'comment' => 'Icon of organization types (agency, bureau, organization)'
+            ),
             'description' => 
             array(
                 'type' => 'string',
                 'extra' => 
                 array(
                     'purify' => 'html',
+                    'notify' => true
                 ),
                 'length' => '',
             ),
@@ -131,27 +147,13 @@ class Version119 extends Doctrine_Migration_Base
     }
 
     /**
-     * Remove organization type privileges, events and table
+     * Irreversible migration 
+     * 
+     * @return void
      */
     public function down()
     {
-        $conn = Doctrine_Manager::connection();
-        $conn->beginTransaction();
-        try {
-            $this->_deletePrivileges();
-
-            $this->_deleteEvents();
-
-            $conn->commit();
-        } catch (Doctrine_Exception $e) {
-            $conn->rollback();
-
-            throw $e;
-        }
-
-        $this->dropForeignKey('organization', 'organization_orgtypeid_organization_type_id');
-        $this->removeColumn('organization', 'orgtypeid');
-        $this->dropTable('organization_type');
+        throw new Doctrine_Migration_IrreversibleMigrationException();
     }
 
     /*
@@ -201,30 +203,6 @@ class Version119 extends Doctrine_Migration_Base
     }
 
     /*
-     * Remove organization type privileges
-     */
-    private function _deletePrivileges()
-    {
-        // Delete privilege
-        $privilegeQuery = Doctrine_Query::create()
-                          ->from('Privilege')
-                          ->where('resource = ?', 'organization_type')
-                          ->andWhereIn('action', array('create', 'read', 'update', 'delete'));
-
-        $orgTypePrivileges = $privilegeQuery->execute();
-
-        // Delete any associations those privileges have to roles
-        $deleteRolePrivilegesQuery = Doctrine_Query::create()
-                                     ->delete('RolePrivilege')
-                                     ->whereIn('privilegeid', $orgTypePrivileges->getPrimaryKeys());
-
-        $deleteRolePrivilegesQuery->execute();
-
-        // Delete the privileges themselves
-        $orgTypePrivileges->delete();
-    }
-
-    /*
      * Add organization type events
      */
     private function _addEvents()
@@ -255,38 +233,6 @@ class Version119 extends Doctrine_Migration_Base
         $events[] = $orgTypeDeletedEvent;
 
         $events->save();
-    }
-
-    /*
-     * Remove organization type events
-     */
-    private function _deleteEvents()
-    {
-        // Delete events
-        $events = Doctrine_Query::create()
-                  ->from('Event')
-                  ->whereIn(
-                      'name',
-                      array('ORGANIZATION_TYPE_CREATED', 'ORGANIZATION_TYPE_UPDATED', 'ORGANIZATION_TYPE_DELETED')
-                  )
-                  ->execute();
-
-        // Delete any associations those events have to users
-        $deleteUserEventsQuery = Doctrine_Query::create()
-                                ->delete('UserEvent')
-                                ->whereIn('eventid', $events->getPrimaryKeys());
-
-        $deleteUserEventsQuery->execute();
-
-        // Delete any associations those events have to notifications
-        $deleteNotificationsQuery = Doctrine_Query::create()
-                                   ->delete('Notification')
-                                   ->whereIn('eventid', $events->getPrimaryKeys());
-
-        $deleteNotificationsQuery->execute();
-
-        // Delete the events themselves
-        $events->delete();
     }
 
     /*
