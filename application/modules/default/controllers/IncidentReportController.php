@@ -275,8 +275,8 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         // Create the base report object -- additional columns are added below
         $report = new Fisma_Report();
 
-        $report->setTitle('Incidents Reported Per ' . $orgType->nickname .' (Previous 12 Months)')
-               ->addColumn(new Fisma_Report_Column($orgType->nickname, true));
+        $report->setTitle('Incidents Reported Per ' . ucwords($orgType->nickname) .' (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true));
                        
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);

@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
  */
-
 class OrganizationType extends BaseOrganizationType
 {
 

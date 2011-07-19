@@ -37,9 +37,9 @@ class Fisma_Zend_Controller_Action_Helper_OrganizationType extends Zend_Controll
         $organizationTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
 
         if ($includeNone) {
-            $organizationList = array('none' => 'None') + $organizationTypes;
+            $organizationList = array('none' => 'None') + array_map('ucwords', $organizationTypes);
         } else {
-            $organizationList = $organizationTypes;
+            $organizationList = array_map('ucwords', $organizationTypes);
         }
 
         // Set up the filter options 

@@ -80,10 +80,10 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     }
     
     /**
-     * Return a collection of bureaus for this agency
+     * Return a collection of organization
      *
      * @param orgTypeId
-     * @return Doctrine_Collection The collection of bureau node
+     * @return Doctrine_Collection The collection of organization node
      */
     public static function getBureaus($orgTypeId)
     {
@@ -304,7 +304,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     public function postInsert($event)
     {    
         // This model can generate events for organization objects AND system objects
-        if ('organization' != $this->OrganizationType->nickname) {
+        if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_CREATED';
         } else {
             $eventName = 'SYSTEM_CREATED';

@@ -107,7 +107,7 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
             }
             $orgTypeArray[$orgType['id']] = $orgType['nickname'];
         }   
-        
+        asort($orgTypeArray);        
         return $orgTypeArray;
     }
 }
