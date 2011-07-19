@@ -54,7 +54,9 @@
                       queryPrepend="/keyword/"
                       schemaObject="pointsOfContact"
                       schemaField="name"
-                      name="finding[pocId]" 
+                      name="finding[pocId]"
+                      noSelectionCallback="Fisma.Finding.displayPocNotFoundMessage"
+                      itemSelectCallback="Fisma.Finding.hidePocNotFoundMessage"
                       value="<?php echo $this->escape($finding->pocId); ?>"
                       defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
 

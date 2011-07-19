@@ -94,7 +94,16 @@ Fisma.AutoComplete = function() {
             ac.containerPopulateEvent.subscribe(function () {
                 Fisma.AutoComplete.resultsPopulated = true;
             });
-            
+
+            // Attach optional handlers
+            if (YAHOO.lang.isValue(params.noSelectionCallback)) {
+                ac.selectionEnforceEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
+            }
+
+            if (YAHOO.lang.isValue(params.itemSelectCallback)) {
+                ac.itemSelectEvent.subscribe(Fisma.Util.getObjectFromName(params.itemSelectCallback));
+            }            
+
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *

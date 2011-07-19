@@ -28,7 +28,22 @@ Fisma.Finding = {
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
+
+    /**
+     * The ID of the container that displays the "POC not found" message
+     */
+    POC_MESSAGE_CONTAINER_ID : "findingPocNotMatched",
+
+    /**
+     * A static reference to the POC create form panel
+     */
+    createPocPanel : null,
     
+    /**
+     * A static reference to the username that should prepopulate the POC create panel
+     */
+    createPocDefaultUsername : null,
+
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
      * 
@@ -140,6 +155,151 @@ Fisma.Finding = {
                 }
             }
         );
-    }
+    },
 
+    /**
+     * Display a message to let the user know that the POC they were looking for could not be found
+     * 
+     * @param type {String} Name of the event.
+     * @param args {Array} Event arguments.
+     */   
+    displayPocNotFoundMessage : function (type, args) {
+        var autocomplete = args[0];
+        var clearedValue = args[1];
+
+        // The cleared value can be empty if the user focuses and then blurs without typing anything
+        if (clearedValue.match(/^\s*$/)) {
+            return;
+        }
+
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isNull(container)) {
+            // No POC message exists yet, so create a new one
+            var container = document.createElement('div');
+            container.onclick = Fisma.Finding.displayCreatePocForm;
+            container.className = 'pocNotMatched';
+            container.id = Fisma.Finding.POC_MESSAGE_CONTAINER_ID;
+
+            var messageText = "No point of contact named \"" 
+                            + clearedValue
+                            + "\" was found. Click here to create one.";
+            container.appendChild(document.createTextNode(messageText));            
+
+            var inputTextField = autocomplete.getInputEl();        
+            inputTextField.parentNode.appendChild(container);
+        } else {
+            // Reuse an existing POC message container
+            container.firstChild.nodeValue = "No point of contact named \"" 
+                                  + clearedValue
+                                  + "\" was found. Click here to create one.";
+            container.style.display = 'block';
+        }
+        
+        Fisma.Finding.createPocDefaultUsername = clearedValue;
+    },
+
+    /**
+     * Hide the POC not found message
+     * 
+     * @param type {String} Name of the event.
+     * @param args {Array} Event arguments.
+     */
+    hidePocNotFoundMessage : function (type, args) {
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isValue(container)) {
+            container.style.display = 'none';
+        }
+    },
+
+    /**
+     * Display a POC creation form inside a modal dialog.
+     * 
+     * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
+     * they want to create a new POC instead.
+     */
+    displayCreatePocForm : function () {
+        var panelConfig = {width : "50em", modal : true};
+
+        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+            'Create New Point Of Contact',
+            '/poc/form',
+            Fisma.Finding.populatePocForm,
+            'createPocPanel',
+            panelConfig
+        );
+    },
+    
+    /**
+     * Populate the POC create form with some default values
+     */
+    populatePocForm : function () {
+        
+        // Fill in the username
+        var usernameEl = document.getElementById('username');
+        usernameEl.value = Fisma.Finding.createPocDefaultUsername;
+
+        // The form contains some scripts that need to be executed
+        var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');
+
+        for (var i=0; i < scriptNodes.length; i++) {
+            try {
+                eval(scriptNodes[i].text);
+            } catch (e) {
+                var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                Fisma.Util.showAlertDialog(message);
+            } 
+        }
+        
+        // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
+        var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+        
+        for (var index in tooltips) {
+            var tooltip = tooltips[index];
+
+            // The yui panel is usually 4, so anything higher is good.
+            tooltip.style.zIndex = 5;
+        }
+    },
+    
+    /**
+     * Submit an XHR to create a POC object
+     */
+    createPoc : function () {
+        // The scope is the button that was clicked, so save it for closures
+        var that = this;
+        var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
+        var errorContainer = document.getElementById("createPocErrorMessageContainer");
+
+        // Disable the submit button
+        this.set("disabled", true);
+
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/poc/create/format/json', {
+            success : function(o) {
+                var result;
+
+                try {
+                    result = YAHOO.lang.JSON.parse(o.responseText).result;
+                } catch (e) {
+                    result = {success : false, message : e};
+                }
+
+                if (result.success) {
+                    Fisma.Finding.createPocPanel.hide();
+                    message('A point of contact has been created.', 'info', true);
+                } else {
+                    errorContainer.innerHTML = result.message;
+                    errorContainer.style.display = 'block';
+                    that.set("disabled", false);
+                }
+            },
+            failure : function(o) {
+                var alertMessage = 'Failed to create new point of contact: ' + o.statusText;
+                Fisma.Finding.createPocPanel.setBody(alertMessage);
+            }
+        }, null);
+
+    }
 };

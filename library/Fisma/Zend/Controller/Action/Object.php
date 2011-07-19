@@ -168,6 +168,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->_helper->reportContextSwitch()
                       ->addActionContext('search', array('pdf', 'xls'))
                       ->initContext();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('create', 'json')
+                      ->initContext();
     }
 
     /**
@@ -302,6 +306,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
         }
 
+        $format = $this->getRequest()->getParam('format');
+        
+        if ($format == 'json') {
+            $jsonResponse = new Fisma_AsyncResponse;
+        }
+
         // Get the subject form
         $form   = $this->getForm();
         $form->setAction("{$this->_moduleName}/{$this->_controllerName}/create");
@@ -314,21 +324,38 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->beginTransaction();
                     $objectId = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    $msg   = $this->getSingularModelName() . ' created successfully';
-                    $type = 'notice';
-                    $this->view->priorityMessenger($msg, $type);
-                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
+                    
+                    if ($format != 'json') {
+                        $msg   = $this->getSingularModelName() . ' created successfully';
+                        $type = 'notice';
+                        $this->view->priorityMessenger($msg, $type);
+                        $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
+                    }
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
-                    $msg   = $e->getMessage();
-                    $model = 'warning';
-                    $this->view->priorityMessenger($msg, $model);
+
+                    if ($format == 'json') {
+                        $jsonResponse->fail($e->getMessage());
+                    } else {
+                        $msg   = $e->getMessage();
+                        $model = 'warning';
+                        $this->view->priorityMessenger($msg, $model);
+                    }
                 }
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $message = 'Unable to create a ' . $this->getSingularModelName();
-                $this->view->priorityMessenger("$message:<br>$errorString", 'warning');
+                
+                if ($format == 'json') {
+                    $jsonResponse->fail($errorString);
+                } else {
+                    $message = 'Unable to create a ' . $this->getSingularModelName();
+                    $this->view->priorityMessenger("$message:<br>$errorString", 'warning');
+                }
             }
+        }
+
+        if ($format == 'json') {
+            $this->view->result = $jsonResponse;
         }
 
         $this->view->form = $form;

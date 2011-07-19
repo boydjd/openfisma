@@ -54,7 +54,6 @@ Fisma.UrlPanel = function() {
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
-            /** @todo english */
             panel.setBody("Loading...");
             panel.render(document.body);
             panel.center();

@@ -191,7 +191,9 @@ if (window.HTMLElement) {
                 containerId: autocompleteResultsDiv.id,
                 hiddenFieldId: hiddenTextField.id,
                 queryPrepend: element.getAttribute("queryPrepend"),
-                callback: ''
+                callback: '',
+                noSelectionCallback: element.getAttribute('noSelectionCallback'),
+                itemSelectCallback: element.getAttribute('itemSelectCallback')
             }
         );        
     };

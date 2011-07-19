@@ -57,6 +57,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         parent::init();
 
         $this->_helper->fismaContextSwitch()
+                      ->addActionContext('create', 'json')
                       ->addActionContext('autocomplete', 'json')
                       ->initContext();
     }
@@ -102,5 +103,20 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $this->view->pointsOfContact = $pocQuery->execute();
+    }
+
+    /**
+     * Display the POC form without any layout
+     */
+    public function formAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        
+        // The standard form needs to be modified to work inside a modal yui dialog
+        $form = $this->getForm();
+        $submit = $form->getElement('save');
+        $submit->onClickFunction = 'Fisma.Finding.createPoc';
+
+        $this->view->form = $form;
     }
 }
