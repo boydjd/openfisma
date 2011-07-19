@@ -437,7 +437,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $username = $this->getRequest()->getParam('username');
 
         if ($username) {
-            $user = Doctrine::getTable('User')->findOneByUsername($username);
+            $user = Doctrine::getTable('Poc')->findOneByUsername($username);
         } else {
             $user = null;
         }
