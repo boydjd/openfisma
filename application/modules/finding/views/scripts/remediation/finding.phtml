@@ -49,9 +49,15 @@
                 <td>Point Of Contact:</td>
                 <td>
                 <span id="pointOfContact" 
-                      type="text" 
+                      type="autocomplete" 
+                      xhr="/poc/autocomplete/format/json"
+                      queryPrepend="/keyword/"
+                      schemaObject="pointsOfContact"
+                      schemaField="name"
                       name="finding[pocId]" 
-                      value="<?php echo $this->escape($finding->pocId); ?>">
+                      value="<?php echo $this->escape($finding->pocId); ?>"
+                      defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
+
                      <?php echo $this->escape($this->userInfo($finding->PointOfContact->username), 'none');?> 
                 </span>
 

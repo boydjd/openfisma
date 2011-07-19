@@ -29,8 +29,7 @@ function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
         var t_name = this.getAttribute('target');
-        YAHOO.util.Dom.removeClass(this, 'editable'); 
-        this.removeAttribute('target');
+        this.parentNode.removeChild(this);
         if(t_name) {
              var target = document.getElementById(t_name);
              var name = target.getAttribute('name');
@@ -63,6 +62,8 @@ function setupEditFields() {
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
+             } else if (type == 'autocomplete') {
+                 Fisma.Editable.makeAutocomplete(target);
              } else {
                  if (val = target.getAttribute('value')) {
                      cur_val = val;
@@ -138,3 +139,62 @@ if (window.HTMLElement) {
         return true;
      });
 }
+
+// Slowly trying to make the editable behavior more maintainable. Added for OFJ-792 but needs a general cleanup 
+// later on.
+(function() {
+    var FE = new Object();
+    
+    /**
+     * Convert an element into an autocomplete text field
+     */
+    FE.makeAutocomplete = function (element) {
+
+        // Create an autocomplete form control
+        var container = document.createElement('div');
+        container.className = "yui-ac";
+        YAHOO.util.Dom.generateId(container);
+        
+        var hiddenTextField = document.createElement('input');
+        hiddenTextField.type = "hidden";
+        hiddenTextField.name = element.getAttribute("name");
+        hiddenTextField.value = element.getAttribute("value");
+        YAHOO.util.Dom.generateId(hiddenTextField);
+        container.appendChild(hiddenTextField);
+        
+        var autocompleteTextField = document.createElement('input');
+        autocompleteTextField.type = "text";
+        autocompleteTextField.name = "autocomplete_" + element.id;
+        autocompleteTextField.value = element.getAttribute("defaultValue");
+        YAHOO.util.Dom.generateId(autocompleteTextField);
+        container.appendChild(autocompleteTextField);
+
+        var autocompleteResultsDiv = document.createElement('div');
+        YAHOO.util.Dom.generateId(autocompleteResultsDiv);
+        container.appendChild(autocompleteResultsDiv);
+
+        var spinner = document.createElement('img');
+        spinner.src = "/images/spinners/small.gif";
+        spinner.className = "spinner";
+        spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        container.appendChild(spinner);
+
+        element.parentNode.replaceChild(container, element);
+
+        // Set up the autocomplete hooks on the new form control
+        YAHOO.util.Event.onDOMReady(
+            Fisma.AutoComplete.init,
+            {
+                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
+                xhr : element.getAttribute("xhr"),
+                fieldId : autocompleteTextField.id,
+                containerId: autocompleteResultsDiv.id,
+                hiddenFieldId: hiddenTextField.id,
+                queryPrepend: element.getAttribute("queryPrepend"),
+                callback: ''
+            }
+        );        
+    };
+    
+    Fisma.Editable = FE;
+})();    
