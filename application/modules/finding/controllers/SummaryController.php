@@ -251,6 +251,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $newOrgArray[] = array(
                     'label' => $org['o_label'],
                     'nickname' => $org['o_nickname'],
+                    'id' => $org['o_id'],
                     'orgType' => $org['o_orgType'],
                     'orgTypeLabel' => $org['o_orgTypeLabel'],
                     'level' => $org['o_level']
@@ -260,6 +261,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $pocArray = array(
                     'label' => $org['p_nameLast'] . ', ' . $org['p_nameFirst'],
                     'nickname' => $org['p_username'],
+                    'id' => 'p' . $org['p_pocId'],
                     'orgType' => 'poc',
                     'orgTypeLabel' => 'Point of Contact',
                     'level' => $org['o_level'] + 1

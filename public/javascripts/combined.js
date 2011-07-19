@@ -1354,8 +1354,7 @@ function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
         var t_name = this.getAttribute('target');
-        YAHOO.util.Dom.removeClass(this, 'editable'); 
-        this.removeAttribute('target');
+        this.parentNode.removeChild(this);
         if(t_name) {
              var target = document.getElementById(t_name);
              var name = target.getAttribute('name');
@@ -1388,6 +1387,8 @@ function setupEditFields() {
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
+             } else if (type == 'autocomplete') {
+                 Fisma.Editable.makeAutocomplete(target);
              } else {
                  if (val = target.getAttribute('value')) {
                      cur_val = val;
@@ -1463,6 +1464,65 @@ if (window.HTMLElement) {
         return true;
      });
 }
+
+// Slowly trying to make the editable behavior more maintainable. Added for OFJ-792 but needs a general cleanup 
+// later on.
+(function() {
+    var FE = new Object();
+    
+    /**
+     * Convert an element into an autocomplete text field
+     */
+    FE.makeAutocomplete = function (element) {
+
+        // Create an autocomplete form control
+        var container = document.createElement('div');
+        container.className = "yui-ac";
+        YAHOO.util.Dom.generateId(container);
+        
+        var hiddenTextField = document.createElement('input');
+        hiddenTextField.type = "hidden";
+        hiddenTextField.name = element.getAttribute("name");
+        hiddenTextField.value = element.getAttribute("value");
+        YAHOO.util.Dom.generateId(hiddenTextField);
+        container.appendChild(hiddenTextField);
+        
+        var autocompleteTextField = document.createElement('input');
+        autocompleteTextField.type = "text";
+        autocompleteTextField.name = "autocomplete_" + element.id;
+        autocompleteTextField.value = element.getAttribute("defaultValue");
+        YAHOO.util.Dom.generateId(autocompleteTextField);
+        container.appendChild(autocompleteTextField);
+
+        var autocompleteResultsDiv = document.createElement('div');
+        YAHOO.util.Dom.generateId(autocompleteResultsDiv);
+        container.appendChild(autocompleteResultsDiv);
+
+        var spinner = document.createElement('img');
+        spinner.src = "/images/spinners/small.gif";
+        spinner.className = "spinner";
+        spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        container.appendChild(spinner);
+
+        element.parentNode.replaceChild(container, element);
+
+        // Set up the autocomplete hooks on the new form control
+        YAHOO.util.Event.onDOMReady(
+            Fisma.AutoComplete.init,
+            {
+                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
+                xhr : element.getAttribute("xhr"),
+                fieldId : autocompleteTextField.id,
+                containerId: autocompleteResultsDiv.id,
+                hiddenFieldId: hiddenTextField.id,
+                queryPrepend: element.getAttribute("queryPrepend"),
+                callback: ''
+            }
+        );        
+    };
+    
+    Fisma.Editable = FE;
+})();    
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -2382,9 +2442,13 @@ Fisma.AutoComplete = function() {
              * @return {String} HTML markup of formatted result data.
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
-                var sMarkup = (sResultMatch) ? sResultMatch : "";
-                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
-                return sMarkup;
+                var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
+                
+                // Create a regex to match the query case insensitively
+                var regex = new RegExp('\\b(' + sQuery + ')', 'i');
+                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+
+                return sResultMatch;
             };
 
             ac.itemSelectEvent.subscribe(
@@ -5845,7 +5909,7 @@ Fisma.FindingSummary = function() {
                         // The in between columns should have the ontime class
                         cell.className = 'onTime';                
                     }
-                    this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'ontime', node.expanded);
                     i += 1;
                 }
 
@@ -5854,7 +5918,7 @@ Fisma.FindingSummary = function() {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, c, 'overdue', node.expanded);
+                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'overdue', node.expanded);
                 }
 
                 // Hide both rows by default
@@ -5914,7 +5978,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', true);
                 i++;
             }
 
@@ -5925,7 +5989,7 @@ Fisma.FindingSummary = function() {
                 i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', true);
                     i++;
                 }
             } else {
@@ -5969,7 +6033,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', false);
                 i++;
             }
 
@@ -5985,7 +6049,7 @@ Fisma.FindingSummary = function() {
                 i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', false);
                     i++;
                 }
             }
@@ -6126,13 +6190,13 @@ Fisma.FindingSummary = function() {
          * @param ontime Used to generate link
          * @param expanded Used to generate link
          */
-        updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+        updateCellCount : function (cell, count, orgName, orgType, status, ontime, expanded) {
             var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
                     link = document.createElement('a');
-                    link.href = this.makeLink(orgName, status, ontime, expanded);
+                    link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
                 } else {
@@ -6145,7 +6209,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Update the anchor text
                         cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, status, ontime, expanded);
+                        cell.firstChild.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                     } else {
                         // Remove the anchor
                         cell.removeChild(cell.firstChild);
@@ -6157,7 +6221,7 @@ Fisma.FindingSummary = function() {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
                         link = document.createElement('a');
-                        link.href = this.makeLink(orgName, status, ontime, expanded);
+                        link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
                     } else {
@@ -6179,7 +6243,7 @@ Fisma.FindingSummary = function() {
          * @param expanded
          * @return String URI
          */
-        makeLink : function (orgName, status, ontime, expanded) {
+        makeLink : function (orgName, orgType, status, ontime, expanded) {
             // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
             var onTimeString = '';
             if (!(status == 'CLOSED' || status == 'TOTAL')) {
@@ -6215,12 +6279,20 @@ Fisma.FindingSummary = function() {
             var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             var summaryView = YAHOO.lang.isValue(this.summaryView) ? this.summaryView : 'OHV';
-            if (expanded) {
-                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
-            } else if (summaryView === 'SAV') {
-                uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
+            if (summaryView === 'POCV') {
+                if (orgType === 'poc') {
+                    uri += "/pocUser/textExactMatch/" + encodeURIComponent(orgName);
+                } else {
+                    uri += "/pocOrg/organizationSubtree/" + encodeURIComponent(orgName);
+                }
             } else {
-                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
+                if (expanded) {
+                    uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
+                } else if (summaryView === 'SAV') {
+                    uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
+                } else {
+                    uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
+                }
             }
 
             return uri;            
@@ -6232,7 +6304,8 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/summary/data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
+            var view = this.summaryView || "OHV";
+            var uri = '/finding/summary/data/format/' + format + "/view/" + view + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 
