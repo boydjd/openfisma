@@ -182,6 +182,9 @@ Finding:
             comment: Foreign key to the user who created this finding
         pocId:
             type: integer
+            extra:
+                auditLog: true
+                logicalName: Point Of Contact
             comment: Foreign key to the point of contact for this finding
         uploadId:
             type: integer

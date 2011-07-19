@@ -28,7 +28,17 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
  */
-class Poc extends BasePoc
+class Poc extends BasePoc implements Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
 {
-
+    /**
+     * Implement the audit log provider interface.
+     * 
+     * This represents what a POC will look like when it is rendered in an audit log.
+     * 
+     * @return string
+     */
+    public function getAuditLogValue()
+    {
+        return $this->username . ' [' . $this->nameFirst . ' ' . $this->nameLast . ']';
+    }
 }
