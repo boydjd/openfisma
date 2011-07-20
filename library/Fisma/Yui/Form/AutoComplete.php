@@ -81,13 +81,9 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
 
         $displayedValueAttrib = empty($this->_displayText) ? '' : "value=\"$this->_displayText\"";
 
-        $noSelectionCallback = $this->getAttrib('noSelectionCallback')
-                             ? "noSelectionCallback : '{$this->getAttrib('noSelectionCallback')}',"
-                             : '';
-
-        $itemSelectCallback = $this->getAttrib('itemSelectCallback')
-                            ? "itemSelectCallback : '{$this->getAttrib('itemSelectCallback')}',"
-                            : '';
+        $setupCallback = $this->getAttrib('setupCallback')
+                       ? "setupCallback : '{$this->getAttrib('setupCallback')}',"
+                       : '';
 
         $render  = "<div>
                     <input type='hidden' 
@@ -112,8 +108,7 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                             containerId: \"{$this->getAttrib('containerId')}\",
                             hiddenFieldId: \"$hiddenField\",
                             queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
-                            $noSelectionCallback
-                            $itemSelectCallback
+                            $setupCallback
                             callback : '{$this->getAttrib('callback')}'
                           } );
                     </script>";

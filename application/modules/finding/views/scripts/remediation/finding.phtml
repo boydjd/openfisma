@@ -55,8 +55,7 @@
                       schemaObject="pointsOfContact"
                       schemaField="name"
                       name="finding[pocId]"
-                      noSelectionCallback="Fisma.Finding.displayPocNotFoundMessage"
-                      itemSelectCallback="Fisma.Finding.hidePocNotFoundMessage"
+                      setupCallback="Fisma.Finding.setupPocAutocomplete"
                       value="<?php echo $this->escape($finding->pocId); ?>"
                       defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
 

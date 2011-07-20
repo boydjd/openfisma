@@ -43,6 +43,16 @@ Fisma.Finding = {
      * A static reference to the username that should prepopulate the POC create panel
      */
     createPocDefaultUsername : null,
+    
+    /**
+     * A static reference to the autocomplete which is used for matching a POC
+     */
+    pocAutocomplete : null,
+    
+    /**
+     * A static reference to the hidden input element that stores the POC id
+     */
+    pocHiddenEl : null,
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -158,6 +168,25 @@ Fisma.Finding = {
     },
 
     /**
+     * Configure the autocomplete that is used for selecting a POC
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupPocAutocomplete : function (autocomplete, params) {
+        Fisma.Finding.pocAutocomplete = autocomplete;
+        Fisma.Finding.pocHiddenEl = document.getElementById(params.hiddenFieldId);
+
+        // Set up the events to display the POC not found message
+        autocomplete.dataReturnEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+        autocomplete.containerCollapseEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+
+        // Set up the events to hide the POC not found message
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+        autocomplete.containerExpandEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+    },
+
+    /**
      * Display a message to let the user know that the POC they were looking for could not be found
      * 
      * This is registered as the event handler for both the data return event and the container collapse event, so it
@@ -167,8 +196,8 @@ Fisma.Finding = {
      * @param args {Array} Event arguments.
      */   
     displayPocNotFoundMessage : function (type, args) {
-        var autocomplete = args[0];
-        
+        var autocomplete = Fisma.Finding.pocAutocomplete;
+
         // This event handler handles 2 events, only 1 of which has a results array, so this setter is conditional.
         var results = args.length >= 2 ? args[2] : null;
 
@@ -178,7 +207,10 @@ Fisma.Finding = {
             return;
         }
 
-        // Don't show the POC message if the user selected an item
+        /* Don't show the POC message if the user selected an item.
+         * 
+         * There's no way to do this without using autocomplete's private member _bItemSelected.
+         */
         if (type == "containerCollapse" && autocomplete._bItemSelected) {
             return;
         }
@@ -217,12 +249,12 @@ Fisma.Finding = {
      * Create the container for the POC not found message
      * 
      * @param id {String} The ID to set on the container
-     * @param parent {HTMLElement} The parent container to put this message container into
+     * @param parent {HTMLElement} The autocomplete that this container belongs to
      */
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        container.onclick = Fisma.Finding.displayCreatePocForm;
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode());            
@@ -298,12 +330,12 @@ Fisma.Finding = {
      */
     createPoc : function () {
         // The scope is the button that was clicked, so save it for closures
-        var that = this;
+        var button = this;
         var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
         var errorContainer = document.getElementById("createPocErrorMessageContainer");
 
         // Disable the submit button
-        this.set("disabled", true);
+        button.set("disabled", true);
 
         // Save the username so we can populate it back on the create finding form
         var username = document.getElementById("username").value;
@@ -322,18 +354,23 @@ Fisma.Finding = {
                 if (result.success) {
                     Fisma.Finding.createPocPanel.hide();
                     Fisma.Finding.hidePocNotFoundMessage();
-                    
+
+                    /* Trick the autocomplete into think it has selected an item. This violates it's abstraction (by
+                     * accessing a private member) but there is no public api to do this. Otherwise, if the user clicks
+                     * on the field, YUI will clear it out due to the "enforce selection" feature. 
+                     */
+                    Fisma.Finding.pocAutocomplete._bItemSelected = true;
+
                     // Populate the autocomplete with the values corresponding to this new POC
                     var pocId = parseInt(result.message);
+                    Fisma.Finding.pocHiddenEl.value = pocId;
+                    Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 
-                    document.getElementById('pocId').value = pocId;
-                    document.getElementById('pocAutocomplete').value = username;
-                    
                     message('A point of contact has been created.', 'info', true);
                 } else {
                     errorContainer.innerHTML = result.message;
                     errorContainer.style.display = 'block';
-                    that.set("disabled", false);
+                    button.set("disabled", false);
                 }
             },
             failure : function(o) {

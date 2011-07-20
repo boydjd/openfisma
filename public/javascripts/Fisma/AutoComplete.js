@@ -95,17 +95,6 @@ Fisma.AutoComplete = function() {
                 Fisma.AutoComplete.resultsPopulated = true;
             });
 
-            // Attach optional handlers
-            if (YAHOO.lang.isValue(params.noSelectionCallback)) {
-                ac.dataReturnEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
-                ac.containerCollapseEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
-            }
-
-            if (YAHOO.lang.isValue(params.itemSelectCallback)) {
-                ac.itemSelectEvent.subscribe(Fisma.Util.getObjectFromName(params.itemSelectCallback));
-                ac.containerExpandEvent.subscribe(Fisma.Util.getObjectFromName(params.itemSelectCallback));
-            }            
-
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -143,6 +132,13 @@ Fisma.AutoComplete = function() {
                     callback : params.callback
                 }
             );
+            
+            // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
+            if (YAHOO.lang.isValue(params.setupCallback)) {
+                var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
+
+                setupCallback(ac, params);
+            }
         },
 
         /**

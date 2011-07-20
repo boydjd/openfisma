@@ -192,8 +192,7 @@ if (window.HTMLElement) {
                 hiddenFieldId: hiddenTextField.id,
                 queryPrepend: element.getAttribute("queryPrepend"),
                 callback: '',
-                noSelectionCallback: element.getAttribute('noSelectionCallback'),
-                itemSelectCallback: element.getAttribute('itemSelectCallback')
+                setupCallback: element.getAttribute('setupCallback')
             }
         );        
     };
