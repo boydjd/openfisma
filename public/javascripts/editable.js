@@ -191,7 +191,6 @@ if (window.HTMLElement) {
                 containerId: autocompleteResultsDiv.id,
                 hiddenFieldId: hiddenTextField.id,
                 queryPrepend: element.getAttribute("queryPrepend"),
-                callback: '',
                 setupCallback: element.getAttribute('setupCallback')
             }
         );        

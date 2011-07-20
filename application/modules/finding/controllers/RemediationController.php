@@ -163,6 +163,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
         $selectArray = $this->view->systemSelect($systems);
         $form->getElement('responsibleOrganizationId')->addMultiOptions($selectArray);
+        
+        // If the user can't create a POC object, then don't set up the POC create form
+        if (!$this->_acl->hasPrivilegeForClass('create', 'Poc')) {
+            $form->getElement('pocAutocomplete')->setAttrib('setupCallback', null);
+        }
 
         return $form;
     }

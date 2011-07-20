@@ -378,6 +378,15 @@ Fisma.Finding = {
                 Fisma.Finding.createPocPanel.setBody(alertMessage);
             }
         }, null);
+    },
 
+    /**
+     * Configure the autocomplete that is used for selecting a security control
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupSecurityControlAutocomplete : function (autocomplete, params) {
+        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
     }
 };

@@ -105,6 +105,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');
         $this->hasMutator('nextDueDate', 'setNextDueDate');
         $this->hasMutator('originalEcd', 'setOriginalEcd');
+        $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('status', 'setStatus');
         $this->hasMutator('threatLevel', 'setThreatLevel');
         $this->hasMutator('type', 'setType');
@@ -645,12 +646,33 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     /**
      * Original ECD cannot be set directly
      * 
-     * @param string $value The specofoed value of original ECD to set
+     * @param string $value The specified value of original ECD to set
      * @throws Fisma_Zend_Exception if the method is called
      */
     public function setOriginalEcd($value)
     {
         throw new Fisma_Zend_Exception('Original ECD cannot be set directly');
+    }
+
+    /**
+     * If the POC ID is blank or null, then unset it
+     * 
+     * I added this because I was getting validation errors about POC ID having the wrong type (string) when I didn't
+     * fill out the POC field on the form. Because AutoComplete is an unusual form element, I don't know how to add
+     * a filter to mask out null/blank values.
+     * 
+     * @param string $value The specified value of original ECD to set
+     * @throws Fisma_Zend_Exception if the method is called
+     */
+    public function setPocId($value)
+    {
+        $sanitized = (int)$value;
+
+        if (empty($sanitized)) {
+            $this->_set('pocId', null);
+        } else {
+            $this->_set('pocId', $sanitized);
+        }
     }
 
     /**

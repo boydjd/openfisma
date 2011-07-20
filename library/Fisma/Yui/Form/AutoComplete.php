@@ -107,9 +107,8 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                             fieldId : \"$name\",
                             containerId: \"{$this->getAttrib('containerId')}\",
                             hiddenFieldId: \"$hiddenField\",
-                            queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
                             $setupCallback
-                            callback : '{$this->getAttrib('callback')}'
+                            queryPrepend: \"{$this->getAttrib('queryPrepend')}\"
                           } );
                     </script>";
 

@@ -126,11 +126,13 @@ Fisma.AutoComplete = function() {
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.subscribe, 
-                {
-                    hiddenFieldId : params.hiddenFieldId,
-                    callback : params.callback
-                }
+                Fisma.AutoComplete.updateHiddenField, 
+                params.hiddenFieldId
+            );
+
+            ac.selectionEnforceEvent.subscribe(
+                Fisma.AutoComplete.clearHiddenField, 
+                params.hiddenFieldId
             );
             
             // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
@@ -144,23 +146,25 @@ Fisma.AutoComplete = function() {
         /**
          * Sets value of hiddenField to item selected
          *
-         * @param sType
-         * @param aArgs
-         * @param {Array} params
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
          */
-        subscribe : function(sType, aArgs, params) {
-            document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-            $('#' + params.hiddenFieldId).trigger('change');
-            // If a valid callback is specified, then call it
-            try {
-                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
-
-                if ('function' == typeof callbackFunction) {
-                    callbackFunction();
-                }
-            } catch (error) {
-                // do nothing
-            }
+        updateHiddenField : function(sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            $('#' + hiddenFieldId).trigger('change');
+        },
+        
+        /**
+         * Clears the value of the hidden field
+         *
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
+         */
+        clearHiddenField : function (sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = null;
+            $('#' + hiddenFieldId).trigger('change');            
         }
     };
 }();

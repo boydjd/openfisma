@@ -55,7 +55,13 @@
                       schemaObject="pointsOfContact"
                       schemaField="name"
                       name="finding[pocId]"
-                      setupCallback="Fisma.Finding.setupPocAutocomplete"
+                      <?php
+                      if ($this->acl()->hasPrivilegeForClass('create', 'Poc')):
+                      ?>
+                          setupCallback="Fisma.Finding.setupPocAutocomplete"
+                      <?php
+                      endif;
+                      ?>
                       value="<?php echo $this->escape($finding->pocId); ?>"
                       defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
 
