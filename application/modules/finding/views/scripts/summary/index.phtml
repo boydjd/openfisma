@@ -92,9 +92,11 @@ function menuHandler(source) {
     var summaryTypeEl = document.getElementById('summaryViews');
     var typeFilterEl = document.getElementById('types');
     var sourceFilterEl = document.getElementById('sources');
+    var agencyTooltipEl = document.getElementById("agencyTipTooltip");
     
     var selectedView = summaryTypeEl.options[summaryTypeEl.selectedIndex];
     findingSummary.summaryView = selectedView.value;
+    agencyTooltipEl.innerHTML = selectedView.innerHTML;
     
     var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
     findingSummary.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
@@ -198,7 +200,7 @@ echo $this->escape($exportPdf, 'none');
                                . "items exist, then a red row containing the overdue items will be displayed "
                                . "directly under the green row.</p>";
                 $tooltip = new Fisma_Yui_Tooltip('agencyTip', 
-                                           'Agency Organizations &amp; Information Systems', 
+                                           'Organization Hierarchy View', 
                                            $agencyTooltip);
                 echo $this->escape($tooltip, 'none');
             ?>

@@ -534,7 +534,8 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/summary/data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
+            var view = this.summaryView || "OHV";
+            var uri = '/finding/summary/data/format/' + format + "/view/" + view + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 

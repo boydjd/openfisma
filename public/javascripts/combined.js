@@ -1354,8 +1354,7 @@ function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
         var t_name = this.getAttribute('target');
-        YAHOO.util.Dom.removeClass(this, 'editable'); 
-        this.removeAttribute('target');
+        this.parentNode.removeChild(this);
         if(t_name) {
              var target = document.getElementById(t_name);
              var name = target.getAttribute('name');
@@ -1388,6 +1387,8 @@ function setupEditFields() {
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
+             } else if (type == 'autocomplete') {
+                 Fisma.Editable.makeAutocomplete(target);
              } else {
                  if (val = target.getAttribute('value')) {
                      cur_val = val;
@@ -1463,6 +1464,65 @@ if (window.HTMLElement) {
         return true;
      });
 }
+
+// Slowly trying to make the editable behavior more maintainable. Added for OFJ-792 but needs a general cleanup 
+// later on.
+(function() {
+    var FE = new Object();
+    
+    /**
+     * Convert an element into an autocomplete text field
+     */
+    FE.makeAutocomplete = function (element) {
+
+        // Create an autocomplete form control
+        var container = document.createElement('div');
+        container.className = "yui-ac";
+        YAHOO.util.Dom.generateId(container);
+        
+        var hiddenTextField = document.createElement('input');
+        hiddenTextField.type = "hidden";
+        hiddenTextField.name = element.getAttribute("name");
+        hiddenTextField.value = element.getAttribute("value");
+        YAHOO.util.Dom.generateId(hiddenTextField);
+        container.appendChild(hiddenTextField);
+        
+        var autocompleteTextField = document.createElement('input');
+        autocompleteTextField.type = "text";
+        autocompleteTextField.name = "autocomplete_" + element.id;
+        autocompleteTextField.value = element.getAttribute("defaultValue");
+        YAHOO.util.Dom.generateId(autocompleteTextField);
+        container.appendChild(autocompleteTextField);
+
+        var autocompleteResultsDiv = document.createElement('div');
+        YAHOO.util.Dom.generateId(autocompleteResultsDiv);
+        container.appendChild(autocompleteResultsDiv);
+
+        var spinner = document.createElement('img');
+        spinner.src = "/images/spinners/small.gif";
+        spinner.className = "spinner";
+        spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        container.appendChild(spinner);
+
+        element.parentNode.replaceChild(container, element);
+
+        // Set up the autocomplete hooks on the new form control
+        YAHOO.util.Event.onDOMReady(
+            Fisma.AutoComplete.init,
+            {
+                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
+                xhr : element.getAttribute("xhr"),
+                fieldId : autocompleteTextField.id,
+                containerId: autocompleteResultsDiv.id,
+                hiddenFieldId: hiddenTextField.id,
+                queryPrepend: element.getAttribute("queryPrepend"),
+                callback: ''
+            }
+        );        
+    };
+    
+    Fisma.Editable = FE;
+})();    
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -2382,9 +2442,13 @@ Fisma.AutoComplete = function() {
              * @return {String} HTML markup of formatted result data.
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
-                var sMarkup = (sResultMatch) ? sResultMatch : "";
-                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
-                return sMarkup;
+                var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
+                
+                // Create a regex to match the query case insensitively
+                var regex = new RegExp('\\b(' + sQuery + ')', 'i');
+                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+
+                return sResultMatch;
             };
 
             ac.itemSelectEvent.subscribe(
@@ -5845,7 +5909,7 @@ Fisma.FindingSummary = function() {
                         // The in between columns should have the ontime class
                         cell.className = 'onTime';                
                     }
-                    this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
+                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'ontime', node.expanded);
                     i += 1;
                 }
 
@@ -5854,7 +5918,7 @@ Fisma.FindingSummary = function() {
                     count = overdue[c];
                     cell = secondRow.insertCell(secondRow.childNodes.length);
                     cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, c, 'overdue', node.expanded);
+                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'overdue', node.expanded);
                 }
 
                 // Hide both rows by default
@@ -5914,7 +5978,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', true);
                 i++;
             }
 
@@ -5925,7 +5989,7 @@ Fisma.FindingSummary = function() {
                 i = 0;
                 for (c in treeNode.overdue) {
                     count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', true);
                     i++;
                 }
             } else {
@@ -5969,7 +6033,7 @@ Fisma.FindingSummary = function() {
             var i = 1; // start at 1 b/c the first column is the system name
             for (c in treeNode.ontime) {
                 count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
+                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', false);
                 i++;
             }
 
@@ -5985,7 +6049,7 @@ Fisma.FindingSummary = function() {
                 i = 0;
                 for (c in treeNode.all_overdue) {
                     count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
+                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', false);
                     i++;
                 }
             }
@@ -6126,13 +6190,13 @@ Fisma.FindingSummary = function() {
          * @param ontime Used to generate link
          * @param expanded Used to generate link
          */
-        updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
+        updateCellCount : function (cell, count, orgName, orgType, status, ontime, expanded) {
             var link;
             if (!cell.hasChildNodes()) {
                 // Initialize this cell
                 if (count > 0) {
                     link = document.createElement('a');
-                    link.href = this.makeLink(orgName, status, ontime, expanded);
+                    link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                     link.appendChild(document.createTextNode(count));
                     cell.appendChild(link);
                 } else {
@@ -6145,7 +6209,7 @@ Fisma.FindingSummary = function() {
                     if (count > 0) {
                         // Update the anchor text
                         cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, status, ontime, expanded);
+                        cell.firstChild.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                     } else {
                         // Remove the anchor
                         cell.removeChild(cell.firstChild);
@@ -6157,7 +6221,7 @@ Fisma.FindingSummary = function() {
                         // Need to add a new anchor
                         cell.removeChild(cell.firstChild);
                         link = document.createElement('a');
-                        link.href = this.makeLink(orgName, status, ontime, expanded);
+                        link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
                         link.appendChild(document.createTextNode(count));
                         cell.appendChild(link);
                     } else {
@@ -6179,7 +6243,7 @@ Fisma.FindingSummary = function() {
          * @param expanded
          * @return String URI
          */
-        makeLink : function (orgName, status, ontime, expanded) {
+        makeLink : function (orgName, orgType, status, ontime, expanded) {
             // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
             var onTimeString = '';
             if (!(status == 'CLOSED' || status == 'TOTAL')) {
@@ -6215,12 +6279,20 @@ Fisma.FindingSummary = function() {
             var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
 
             var summaryView = YAHOO.lang.isValue(this.summaryView) ? this.summaryView : 'OHV';
-            if (expanded) {
-                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
-            } else if (summaryView === 'SAV') {
-                uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
+            if (summaryView === 'POCV') {
+                if (orgType === 'poc') {
+                    uri += "/pocUser/textExactMatch/" + encodeURIComponent(orgName);
+                } else {
+                    uri += "/pocOrg/organizationSubtree/" + encodeURIComponent(orgName);
+                }
             } else {
-                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
+                if (expanded) {
+                    uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
+                } else if (summaryView === 'SAV') {
+                    uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
+                } else {
+                    uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
+                }
             }
 
             return uri;            
@@ -6232,7 +6304,8 @@ Fisma.FindingSummary = function() {
          * @param format Only 'pdf' is valid at the moment.
          */
         exportTable : function (format) {
-            var uri = '/finding/summary/data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
+            var view = this.summaryView || "OHV";
+            var uri = '/finding/summary/data/format/' + format + "/view/" + view + this.listExpandedNodes(this.treeRoot, '');
 
             document.location = uri;            
         }, 
@@ -7265,8 +7338,8 @@ Fisma.Module = {
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
                         this._buildContextMenu();
@@ -7383,7 +7456,7 @@ Fisma.Module = {
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -7485,9 +7558,9 @@ Fisma.Module = {
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                var url = '/organization/view/id/' + targetNode.data.organizationId;
+                url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                var url = '/system/view/id/' + targetNode.data.systemId;                
+                url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;
@@ -7847,8 +7920,7 @@ Fisma.Search = function() {
                         spinner.hide();
                     }
                 },
-                postData
-            );
+                postData );
         },
 
         /**
@@ -7858,12 +7930,18 @@ Fisma.Search = function() {
          * two to use while handling this event.
          *
          * @param form Reference to the search form
+         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission 
          */
-        executeSearch: function (form) {
+        executeSearch: function (form, fromSearchForm) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
+ 
+                    // It sets start to 0 when fromSearchForm is true, so does payload.pagination.recordOffset
+                    if (fromSearchForm) {
+                        payload.pagination.recordOffset = 0;
+                    }
                     dataTable.onDataReturnReplaceRows(request, response, payload);
 
                     // Update YUI's visual state to show sort on first data column
@@ -7888,7 +7966,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var postData = this.buildPostRequest(dataTable.getState());
+                var postData = this.buildPostRequest(dataTable.getState(), fromSearchForm);
 
                 dataTable.showTableMessage("Loading...");
 
@@ -7926,7 +8004,9 @@ Fisma.Search = function() {
             } catch (e) {
                 message(e);
             } finally {
-                Fisma.Search.executeSearch(form);
+
+                // Set the fromSearchForm to true when a search comes from search form submission
+                Fisma.Search.executeSearch(form, true);
             }
         },
 
@@ -8063,14 +8143,15 @@ Fisma.Search = function() {
          * Method to generate the post data for the current query and table state
          *
          * @param tableState From YUI
+         * @param fromSearchForm {Boolean} set start to 0 if it is true
          * @return {String} Post data representation of the current query
          */
-        buildPostRequest: function (tableState) {
+        buildPostRequest: function (tableState, fromSearchForm) {
             var searchType = document.getElementById('searchType').value;
             var postData = {
                 sort: tableState.sortedBy.key,
                 dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
-                start: tableState.pagination.recordOffset,
+                start: (fromSearchForm ? 0 : tableState.pagination.recordOffset),
                 count: tableState.pagination.rowsPerPage,
                 csrf: document.getElementById('searchForm').csrf.value,
                 showDeleted: Fisma.Search.showDeletedRecords,
@@ -8408,7 +8489,24 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        }
+        },
+
+        /**
+         * Key press listener
+         * 
+         * @param element The element to which the key event sould be attached
+         */
+        onKeyPress : function (element) {
+            var searchForm = YAHOO.util.Dom.get('searchForm');
+            var keyHandle = new YAHOO.util.KeyListener(
+                                    element,
+                                    // Just listen to 'Return' and 'Enter' key
+                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                    function () {
+                                        Fisma.Search.handleSearchEvent(searchForm);
+                                    });
+            keyHandle.enable();
+         }
     };
 }();
 /**
@@ -8523,11 +8621,6 @@ Fisma.Search.Criteria.prototype = {
         
         this.container = document.createElement('div');
         
-        this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
-        this.containerForm.enctype = "application/x-www-form-urlencoded";
-        this.containerForm.method = "post";
-        
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -8535,31 +8628,23 @@ Fisma.Search.Criteria.prototype = {
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.containerForm.appendChild(this.buttonsContainer);
+        this.container.appendChild(this.buttonsContainer);
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.containerForm.appendChild(this.queryFieldContainer);
+        this.container.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.containerForm.appendChild(this.queryTypeContainer);
+        this.container.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.containerForm.appendChild(this.queryInputContainer);
+        this.container.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
         clearDiv.className = "clear";
-        this.containerForm.appendChild(clearDiv);
-
-        var searchTypeField = document.createElement('input');
-        searchTypeField.type = 'hidden';
-        searchTypeField.name = 'searchType';
-        searchTypeField.value = 'advanced';
-        this.containerForm.appendChild(searchTypeField);
-
-        this.container.appendChild(this.containerForm);
+        this.container.appendChild(clearDiv);
 
         return this.container;
     },
@@ -9052,6 +9137,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9066,6 +9152,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9084,6 +9171,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9097,6 +9185,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9115,6 +9204,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9128,6 +9218,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9163,6 +9254,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -9184,6 +9276,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9203,6 +9296,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9221,6 +9315,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -11712,6 +11807,9 @@ Fisma.TableFormat = {
                     break;
                 case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
                     srcNode.insertAfter(destNode);
+                    break;
+                default:
+                    throw "Invalid drag location parameter";
                     break;
             }
 

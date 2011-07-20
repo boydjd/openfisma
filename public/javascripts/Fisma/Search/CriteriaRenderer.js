@@ -42,6 +42,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -56,6 +57,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -74,6 +76,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -87,6 +90,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -105,6 +109,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -118,6 +123,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -153,6 +159,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -174,6 +181,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -193,6 +201,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -211,6 +220,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
