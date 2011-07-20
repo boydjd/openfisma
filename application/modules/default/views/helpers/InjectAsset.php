@@ -110,7 +110,8 @@ class View_Helper_InjectAsset
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css'
+                                      '/stylesheets/User.css',
+                                      '/stylesheets/datatablegrouper.css'
                                 )
                             );
 

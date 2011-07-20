@@ -4,7 +4,7 @@
     border-top: 1px solid #CBCBCB;
     border-bottom: 1px solid #7f7f7f;
     font-weight: bold;
-    background-image: url(/lib/2.8.2/build/assets/skins/sam/sprite.png);
+    background-image: url('/lib/2.8.2/build/assets/skins/sam/sprite.png');
     background-position: 0px -1300px;
     color: black;
     cursor: pointer;
@@ -71,14 +71,14 @@
 /* The group icon when expanded */
 .yui-skin-sam .yui-dt .group-expanded .icon
 {
-   background-image: url(/images/dt-group-arrow-down.png);
+   background-image: url('/images/dt-group-arrow-down.png');
    background-repeat: no-repeat;
 }
 
 /* The group icon when collapsed */
 .yui-skin-sam .yui-dt .group-collapsed .icon
 {
-   background-image: url(/images/dt-group-arrow-up.png);
+   background-image: url('/images/dt-group-arrow-up.png');
    background-repeat: no-repeat;
 }
 
