@@ -161,8 +161,8 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
                 insertBeforeRow = true;
             }
 
-            // Row is expanded by default
-            group.className = "group group-expanded";
+            // Row is collapsed by default
+            group.className = "group group-collapsed";
             groupCell.colSpan = numberOfColumns;  // setAttribute doesn't work in IE7
             if (Dom.hasClass(row, "yui-dt-first")) {
                 // If this is the first row in the table, transfer the class to the group
@@ -212,6 +212,15 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
 
             this.fireEvent("insertGroupEvent", { group: group });
 
+            // @TODO Make this into a separate method
+            // Hide all subsequent rows in the group
+            var row = Dom.getNextSibling(group);
+            while (row && !Dom.hasClass(row, "group") &&
+                !Dom.hasClass(row, "group-collapsed")) {
+                    row.style.display = "none";
+
+                row = Dom.getNextSibling(row);
+            }
             return group;
         },
 
