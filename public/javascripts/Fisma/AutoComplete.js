@@ -97,11 +97,13 @@ Fisma.AutoComplete = function() {
 
             // Attach optional handlers
             if (YAHOO.lang.isValue(params.noSelectionCallback)) {
-                ac.selectionEnforceEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
+                ac.dataReturnEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
+                ac.containerCollapseEvent.subscribe(Fisma.Util.getObjectFromName(params.noSelectionCallback));
             }
 
             if (YAHOO.lang.isValue(params.itemSelectCallback)) {
                 ac.itemSelectEvent.subscribe(Fisma.Util.getObjectFromName(params.itemSelectCallback));
+                ac.containerExpandEvent.subscribe(Fisma.Util.getObjectFromName(params.itemSelectCallback));
             }            
 
             /**

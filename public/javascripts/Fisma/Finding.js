@@ -160,52 +160,82 @@ Fisma.Finding = {
     /**
      * Display a message to let the user know that the POC they were looking for could not be found
      * 
+     * This is registered as the event handler for both the data return event and the container collapse event, so it
+     * has some conditional logic based on what "type" and what arguments it receives.
+     * 
      * @param type {String} Name of the event.
      * @param args {Array} Event arguments.
      */   
     displayPocNotFoundMessage : function (type, args) {
         var autocomplete = args[0];
-        var clearedValue = args[1];
+        
+        // This event handler handles 2 events, only 1 of which has a results array, so this setter is conditional.
+        var results = args.length >= 2 ? args[2] : null;
 
-        // The cleared value can be empty if the user focuses and then blurs without typing anything
-        if (clearedValue.match(/^\s*$/)) {
+        // Don't show the POC message if there are autocomplete results available
+        if (YAHOO.lang.isValue(results) && results.length != 0) {
+            Fisma.Finding.hidePocNotFoundMessage();
             return;
         }
 
+        // Don't show the POC message if the user selected an item
+        if (type == "containerCollapse" && autocomplete._bItemSelected) {
+            return;
+        }
+
+        // Don't display the POC not found message if the autocomplete list is visible
+        if (autocomplete.isContainerOpen()) {
+            return;
+        }
+
+        var unmatchedQuery = autocomplete.getInputEl().value;
+
+        // Don't show the POC not found message if the 
+        if (unmatchedQuery.match(/^\s*$/)) {
+            return;
+        }
+
+        // Otherwise, display the POC not found message
         var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
 
         if (YAHOO.lang.isNull(container)) {
-            // No POC message exists yet, so create a new one
-            var container = document.createElement('div');
-            container.onclick = Fisma.Finding.displayCreatePocForm;
-            container.className = 'pocNotMatched';
-            container.id = Fisma.Finding.POC_MESSAGE_CONTAINER_ID;
-
-            var messageText = "No point of contact named \"" 
-                            + clearedValue
-                            + "\" was found. Click here to create one.";
-            container.appendChild(document.createTextNode(messageText));            
-
-            var inputTextField = autocomplete.getInputEl();        
-            inputTextField.parentNode.appendChild(container);
-        } else {
-            // Reuse an existing POC message container
-            container.firstChild.nodeValue = "No point of contact named \"" 
-                                  + clearedValue
-                                  + "\" was found. Click here to create one.";
-            container.style.display = 'block';
+            container = Fisma.Finding._createPocNotFoundContainer(
+                Fisma.Finding.POC_MESSAGE_CONTAINER_ID, 
+                autocomplete.getInputEl().parentNode
+            );
         }
+
+        container.firstChild.nodeValue = "No point of contact named \"" 
+                                       + unmatchedQuery
+                                       + "\" was found. Click here to create one.";
+        container.style.display = 'block';
+
+        Fisma.Finding.createPocDefaultUsername = unmatchedQuery;
+    },
+
+    /**
+     * Create the container for the POC not found message
+     * 
+     * @param id {String} The ID to set on the container
+     * @param parent {HTMLElement} The parent container to put this message container into
+     */
+    _createPocNotFoundContainer : function (id, parent) {
+        var container = document.createElement('div');
+
+        container.onclick = Fisma.Finding.displayCreatePocForm;
+        container.className = 'pocNotMatched';
+        container.id = id;
+        container.appendChild(document.createTextNode());            
+
+        parent.appendChild(container);
         
-        Fisma.Finding.createPocDefaultUsername = clearedValue;
+        return container;
     },
 
     /**
      * Hide the POC not found message
-     * 
-     * @param type {String} Name of the event.
-     * @param args {Array} Event arguments.
      */
-    hidePocNotFoundMessage : function (type, args) {
+    hidePocNotFoundMessage : function () {
         var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
 
         if (YAHOO.lang.isValue(container)) {
@@ -275,6 +305,9 @@ Fisma.Finding = {
         // Disable the submit button
         this.set("disabled", true);
 
+        // Save the username so we can populate it back on the create finding form
+        var username = document.getElementById("username").value;
+
         YAHOO.util.Connect.setForm(form);
         YAHOO.util.Connect.asyncRequest('POST', '/poc/create/format/json', {
             success : function(o) {
@@ -288,6 +321,14 @@ Fisma.Finding = {
 
                 if (result.success) {
                     Fisma.Finding.createPocPanel.hide();
+                    Fisma.Finding.hidePocNotFoundMessage();
+                    
+                    // Populate the autocomplete with the values corresponding to this new POC
+                    var pocId = parseInt(result.message);
+
+                    document.getElementById('pocId').value = pocId;
+                    document.getElementById('pocAutocomplete').value = username;
+                    
                     message('A point of contact has been created.', 'info', true);
                 } else {
                     errorContainer.innerHTML = result.message;
