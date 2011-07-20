@@ -248,18 +248,25 @@ class Version119 extends Doctrine_Migration_Base
         $agency->name = 'Agency';
         $agency->nickname = 'agency';
         $agency->icon = 'agency';
+        $agency->description = "The agency is the top level organizational unit. Generally there should "
+                             . "only be 1 agency, but it is possible to create multiple agency objects.";
         $organizationTypes[] = $agency;
 
         $bureau = new OrganizationType();
         $bureau->name = 'Bureau';
         $bureau->nickname = 'bureau';
         $bureau->icon = 'bureau';
+        $bureau->description = "Bureaus are organization types defined by OMB for the FISMA report. "
+                             . "Bureaus are generally the second level of organization hiearchies.";
         $organizationTypes[] = $bureau;
 
         $organization = new OrganizationType();
-        $organization->name = 'Organization';
-        $organization->nickname = 'organization';
+        $organization->name = 'Office';
+        $organization->nickname = 'office';
         $organization->icon = 'organization';
+        $organization->description = "Offices are the third level of the organization hiearchy. "
+                                   . "This organization type can be used to group together information systems "
+                                   . "that serve common business purposes, such as finance or accounting.";
         $organizationTypes[] = $organization;
 
         $system = new OrganizationType();
