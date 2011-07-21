@@ -635,7 +635,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             $sourceId = $source->id;            
         }
 
-        $sourceCondition = isset($source) ? "AND finding.sourceId = $sourceId" : "";
+        $sourceCondition = isset($source) ? "AND f.sourceId = $sourceId" : "";
 
         $allStatuses = Finding::getAllStatuses();
 
