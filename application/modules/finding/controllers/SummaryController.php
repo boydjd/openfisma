@@ -676,7 +676,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('f.CurrentEvaluation evaluation')
             ->where('o.orgType <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('o.id, p.id')
-            ->orderBy('o.lft')
+            ->orderBy('o.lft, p.nameLast, p.nameFirst')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         if (!empty($organization)) {
             $summary->andWhereIn('o.id', $organization);
