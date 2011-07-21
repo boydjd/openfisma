@@ -87,4 +87,4 @@ displayGroups.finding.elements.threat = "threat"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.value = "Create Finding"
-displayGroups.finding.elements.save = "save"
+displayGroups.finding.elements.save = "Save"

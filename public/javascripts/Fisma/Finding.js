@@ -297,6 +297,11 @@ Fisma.Finding = {
      * Populate the POC create form with some default values
      */
     populatePocForm : function () {
+        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
+         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
+         */
+        document.getElementById('msgbar').id = 'oldMessageBar';
+        document.getElementById('pocMessageBar').id = 'msgbar';
         
         // Fill in the username
         var usernameEl = document.getElementById('username');
@@ -332,7 +337,6 @@ Fisma.Finding = {
         // The scope is the button that was clicked, so save it for closures
         var button = this;
         var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
-        var errorContainer = document.getElementById("createPocErrorMessageContainer");
 
         // Disable the submit button
         button.set("disabled", true);
@@ -366,10 +370,13 @@ Fisma.Finding = {
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 
+                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
+                    document.getElementById('msgbar').id = 'pocMessageBar';
+                    document.getElementById('oldMessageBar').id = 'msgbar';
+
                     message('A point of contact has been created.', 'info', true);
                 } else {
-                    errorContainer.innerHTML = result.message;
-                    errorContainer.style.display = 'block';
+                    message(result.message, 'warning', true);
                     button.set("disabled", false);
                 }
             },

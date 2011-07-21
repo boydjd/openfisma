@@ -651,57 +651,73 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
      * 
      * @return void
-     * @todo code finish this function later
      */
     public function checkAccountAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'User');
 
-        $accountInfo = array();
+        try {
+            $ldapServerConfigurations = LdapConfig::getConfig();
 
-        $data = LdapConfig::getConfig();
-        $account = $this->_request->getParam('account');
-        $msg = '';
-        if (count($data) == 0) {
-            $type = 'warning';
-            $msg .= "No LDAP providers defined";
-        }
-
-        foreach ($data as $opt) {
-            try {
-                $srv = new Zend_Ldap($opt);
-
-                $type = 'message';
-                $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
-
-                // Just get specified standard LDAP attributes.
-                $accountInfo = $srv->getEntry(
-                    $dn,
-                    array('sn',
-                          'givenname',
-                          'mail',
-                          'telephonenumber',
-                          'mobile',
-                          'title')
-                );
-                $msg = "$account exists, the dn is: $dn";
-                
-                break;
-            } catch (Zend_Ldap_Exception $e) {
-                $type = 'warning';
-                // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
-                // DN does not exist.
-                if ($e->getErrorCode() ==
-                    Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
-                    $msg = "$account does NOT exist";
-                } else {
-                    $msg .= 'Error while checking account: '
-                          . $e->getMessage();
-                }
+            if (count($ldapServerConfigurations) == 0) {
+                throw new Fisma_Zend_Exception_User('No LDAP servers defined.');
             }
+
+            $accountInfo = array();
+            $account = $this->_request->getParam('account');
+
+            if (empty($account)) {
+                throw new Fisma_Zend_Exception_User('You did not specify any account name.');
+            }
+
+            $msg = '';
+
+            foreach ($ldapServerConfigurations as $ldapServerConfiguration) {        
+                $ldapServer = new Zend_Ldap($ldapServerConfiguration);
+                $type = 'message';
+            
+                // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
+                $searchFilter = Zend_Ldap_Filter::orFilter(
+                    Zend_Ldap_Filter::begins('sAMAccountName', $account),
+                    Zend_Ldap_Filter::begins('uid', $account)
+                );
+
+                $matchedAccounts = $ldapServer->search(
+                    $searchFilter,
+                    null,
+                    Zend_Ldap::SEARCH_SCOPE_SUB,
+                    array('givenname',
+                          'mail',
+                          'mobile',
+                          'sAMAccountName',
+                          'sn',
+                          'telephonenumber',
+                          'title',
+                          'uid'),
+                    'givenname',
+                    null,
+                    10 // limit 10 results to avoid crushing ldap server
+                );
+
+                break;
+            }
+        } catch (Zend_Ldap_Exception $zle) {
+            $type = 'warning';
+            $msg .= 'Error while checking account: ' . $zle->getMessage();
+        } catch (Fisma_Zend_Exception_User $fzeu) {
+            $type = 'warning';
+            $msg .= 'Error while checking account: ' . $fzeu->getMessage();
         }
 
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
+        echo Zend_Json::encode(
+            array(
+                'accounts' => is_object($matchedAccounts) ? $matchedAccounts->toArray() : null,
+                'msg' => $msg, 
+                'query' => $account,
+                'type' => $type, 
+            )
+        );
+
         $this->_helper->viewRenderer->setNoRender();
     }
 

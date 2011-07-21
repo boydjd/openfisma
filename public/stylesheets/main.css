@@ -409,16 +409,6 @@ div#msgbar {
     display: none;
 }
 
-.errorMsg {
-    font-weight: bold;
-    color: red;
-    border: 1px solid red;
-    background-color: pink;
-    margin-top: 10px;
-    padding: 3px;
-    display: none;    
-}
-
 /* This style adds a loading graphic to the YUI tab view */
 .yui-navset div.loading div {
     background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
