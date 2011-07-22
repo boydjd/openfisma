@@ -2,12 +2,17 @@
 .yui-skin-sam .yui-dt .group
 {
     border-top: 1px solid #CBCBCB;
-    border-bottom: 1px solid #7f7f7f;
     font-weight: bold;
-    background-image: url('/lib/2.8.2/build/assets/skins/sam/sprite.png');
-    background-position: 0px -1300px;
     color: black;
     cursor: pointer;
+    background-color: #f1f2f2;
+}
+
+.yui-skin-sam .yui-dt .group td
+{
+    border-color: #cbcbcb;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
 }
 
 /* Group inner style */

@@ -366,7 +366,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $buttons['editMatrix'] = new Fisma_Yui_Form_Button_Link(
                 'editMatrix',
                 array(
-                    'value' => 'Edit Privilege Matrix',
+                    'value' => 'View Privilege Matrix',
                     'href' => '/role/view-matrix'
                 )
             );

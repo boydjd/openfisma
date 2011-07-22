@@ -193,8 +193,8 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
                 Dom.insertAfter(group, row);
             }
 
-            // Attach visibility toggle to icon click
-            Event.addListener(icon, "click", this.toggleVisibility, this);
+            // Attach visibility toggle to group
+            Event.addListener(group, "click", this.toggleVisibility, this);
 
             // Set up DOM events
             if (name.length > 0) { // Only if the group has a value
