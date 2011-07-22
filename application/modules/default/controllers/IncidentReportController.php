@@ -254,7 +254,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         $orgTypeId = $this->_helper->OrganizationType
                           ->getOrganizationTypeId($this->_me->id, $storageNamespace, false);
 
-        $filterForm = $this->_helper->OrganizationType->getFilterForm($this->_me->id, $storageNamespace, false);
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId, false);
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
@@ -276,7 +276,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         // Create the base report object -- additional columns are added below
         $report = new Fisma_Report();
 
-        $report->setTitle('Incidents Reported Per ' . ucwords($orgType->nickname) .' (Previous 12 Months)')
+        $report->setTitle('Incidents Reported Per Organization (Previous 12 Months)')
                ->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true));
                        
         // Now add one column for each of last 12 months (including current month)
