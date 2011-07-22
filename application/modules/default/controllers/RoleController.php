@@ -144,6 +144,20 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         // Add button to save changes (submit form)
         $this->view->toolbarButtons = array();
+
+        $expandAll = new Fisma_Yui_Form_Button('expandAll', 
+                                               array('label' => 'Expand All', 
+                                                     'imageSrc' => '/images/expand.png',
+                                                     'onClickFunction' => 'YAHOO.widget.GroupedDataTable.expandAll'));
+
+        $collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
+                                                 array('label' => 'Collapse All', 
+                                                     'imageSrc' => '/images/collapse.png',
+                                                     'onClickFunction' => 'YAHOO.widget.GroupedDataTable.collapseAll'));
+
+        $this->view->toolbarButtons[] = $expandAll;
+        $this->view->toolbarButtons[] = $collapseAll;
+
         $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
             'saveChanges',
             'Save Changes',

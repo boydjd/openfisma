@@ -651,4 +651,44 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
         */
 
     });
+
+    /**
+     * Expand all groups. 
+     */
+    GroupedDataTable.expandAll = function() {
+            var group, row;
+            var groups = Dom.getElementsByClassName("group-collapsed");
+
+            Dom.replaceClass(groups, "group-collapsed", "group-expanded");
+
+            for (var i in groups) {
+                group = groups[i];
+                // Hide all subsequent rows in the group
+                row = Dom.getNextSibling(group);
+                while (row && !Dom.hasClass(row, "group")) {
+                    row.style.display = ""; 
+                    row = Dom.getNextSibling(row);
+                }
+            }
+    };
+
+    /**
+     * Collapse all groups. 
+     */
+    GroupedDataTable.collapseAll = function() {
+            var group, row;
+            var groups = Dom.getElementsByClassName("group-expanded");
+
+            Dom.replaceClass(groups, "group-expanded", "group-collapsed");
+
+            for (var i in groups) {
+                group = groups[i];
+                // Hide all subsequent rows in the group
+                row = Dom.getNextSibling(group);
+                while (row && !Dom.hasClass(row, "group")) {
+                    row.style.display = "none"; 
+                    row = Dom.getNextSibling(row);
+                }
+            }
+    };
 })();
