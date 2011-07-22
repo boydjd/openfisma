@@ -217,7 +217,7 @@ class Fisma_Menu
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
 
                 $reportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Incident Bureaus', '/incident-report/bureau/format/html')
+                    new Fisma_Yui_MenuItem('Incident Organizations', '/incident-report/organization/format/html')
                 );
 
                 $reportsSubmenu->add(

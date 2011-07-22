@@ -46,21 +46,15 @@ Fisma_Format_Section::stopSection();
 
 <script type="text/javascript">
     YAHOO.util.Event.onDOMReady(function () {
-        var organizationTypeElement = YAHOO.util.Dom.get('orgTypeFilter');
-        var orgTypeId = "<?php echo $this->escape($this->orgTypeId); ?>"; 
+        Fisma.Storage.onReady(function() {
+            var organizationTypeElement = YAHOO.util.Dom.get('orgTypeFilter');
+            var orgTypeId = "<?php echo $this->escape($this->orgTypeId); ?>"; 
 
-        for (var i=0; i < organizationTypeElement.options.length; i++) {
-            if (organizationTypeElement.options[i].value === orgTypeId) {
-                organizationTypeElement.options[i].selected = true;
-                break;
-            }
-        }
-
-        var config = {namespace : "<?php echo $this->escape($this->namespace); ?>",
-                      url : "<?php echo $this->escape($this->url); ?>"}; 
-        YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Util.organizationTypeHandle, config);
+            var config = {namespace : "<?php echo $this->escape($this->namespace); ?>",
+                          url : "<?php echo $this->escape($this->url); ?>"}; 
+            YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Util.organizationTypeHandle, config);
+        });
     });
-
 </script>
 
 <?php endif; ?>

@@ -30,9 +30,12 @@ class Fisma_Zend_Controller_Action_Helper_OrganizationType extends Zend_Controll
     /**
      * A helper function to create the objects required to render the organization type filter form
      * 
+     * @param $userId
+     * @namespace 
+     * @includNone default is true
      * @return Zend_Form
      */
-    public function getFilterForm($includeNone = true)
+    public function getFilterForm($userId, $namespace, $includeNone = true)
     {
         $organizationTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
 
@@ -41,17 +44,13 @@ class Fisma_Zend_Controller_Action_Helper_OrganizationType extends Zend_Controll
         } else {
             $organizationList = array_map('ucwords', $organizationTypes);
         }
+     
+        $id = $this->getOrganizationTypeId($userId, $namespace, $includeNone);
 
-        // Set up the filter options 
+        // Set up the filter options and set selected value
         $filterForm = Fisma_Zend_Form_Manager::loadForm('organization_type_filter');
+        $filterForm->getElement('orgTypeFilter')->setMultiOptions($organizationList)->setValue($id);
 
-        $filterForm->getElement('orgTypeFilter')->setMultiOptions($organizationList);
-
-        $filterForm->getElement('orgTypeFilter')
-                    ->setMultiOptions($organizationList);
-
-        $filterForm->setDefaults($this->getRequest()->getParams());
-         
         $filterForm->setDecorators(
             array(
                 'FormElements',

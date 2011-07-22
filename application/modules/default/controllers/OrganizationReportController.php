@@ -92,9 +92,9 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function privacyAction()
     {
-        $storageNamespace = 'Organization_Privacy_Report';
+        $storageNamespace = 'Organization.Privacy.Report';
         $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, $storageNamespace);
-        $filterForm = $this->_helper->OrganizationType->getFilterForm();  
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($this->_me->id, $storageNamespace);  
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
@@ -166,9 +166,9 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function securityAuthorizationAction()
     {
-        $storageNamespace = 'Organization_SecurityAuth_Report';
+        $storageNamespace = 'Organization.SecurityAuth.Report';
         $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, $storageNamespace);
-        $filterForm = $this->_helper->OrganizationType->getFilterForm();  
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($this->_me->id, $storageNamespace);  
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;

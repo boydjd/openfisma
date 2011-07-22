@@ -12,7 +12,7 @@ Organization:
                     NRL_ORG:
                         nickname: NRL
                         name: Nuclear Energy Lab
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             HAZMAT_ORG:
                                 nickname: HAZMAT
@@ -27,7 +27,7 @@ Organization:
                     RNI_ORG:
                         nickname: RNI
                         name: Renewable Energy Initiative
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             GREEN_NRG_ORG:
                                 nickname: GREEN-NRG
@@ -48,19 +48,19 @@ Organization:
                     MIDWEST_ORG:
                         nickname: MIDWEST
                         name: Mid-west Office
-                        OrganizationType: organization
+                        OrganizationType: office
                     NORTHEAST_ORG:
                         nickname: NORTHEAST
                         name: North-east Office
-                        OrganizationType: organization
+                        OrganizationType: office
                     SOUTHEAST_ORG:
                         nickname: SOUTHEAST
                         name: South-east Office
-                        OrganizationType: organization
+                        OrganizationType: office
                     WEST_COAST_ORG:
                         nickname: WEST-COAST
                         name: West Coast Office
-                        OrganizationType: organization
+                        OrganizationType: office
 
             OS_ORG:
                 nickname: OS
@@ -70,7 +70,7 @@ Organization:
                     OCIO_ORG:
                         nickname: OCIO
                         name: Office of the Chief Information Officer
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             OF_ORG:
                                 nickname: OF
@@ -90,7 +90,7 @@ Organization:
                     OCOO_ORG:
                         nickname: OCOO
                         name: Office of the Chief Operating Officer
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             CRMS_ORG:
                                 nickname: CRMS
@@ -105,7 +105,7 @@ Organization:
                     OIG_ORG:
                         nickname: OIG
                         name: Office of the Inspector General
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             CIT_ORG:
                                 nickname: CIT
@@ -126,7 +126,7 @@ Organization:
                     HIWAY_ORG:
                         nickname: HIWAY
                         name: Highway Management
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             HERNDON_ORG:
                                 nickname: HERNDON
@@ -157,7 +157,7 @@ Organization:
                     RAIL_ORG:
                         nickname: RAIL
                         name: Railway Management
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             RMTRP_ORG:
                                 nickname: RMTRP
@@ -172,7 +172,7 @@ Organization:
                     MARITIME_ORG:
                         nickname: MARITIME
                         name: Maritime and Freshwater Management
-                        OrganizationType: organization
+                        OrganizationType: office
                         children:
                             H20_RIGHTS_ORG:
                                 nickname: H2O-RIGHTS

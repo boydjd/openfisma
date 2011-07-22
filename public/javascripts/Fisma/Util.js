@@ -222,23 +222,21 @@ Fisma.Util = {
      * It set the default organization type, store the selected organization type and refresh window with url 
      */
     organizationTypeHandle : function (event, config) {
+            // Set the selected organization type   
+            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
+            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
 
-        // Set the selected organization type   
-        var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
-        var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
+            // Store the selected organizationTypeId to storage table
+            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
+            orgTypeStorage.set('orgType', selectedType.value); 
+            orgTypeStorage.sync();
 
-        // Store the selected organizationTypeId to storage table
-        var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-        orgTypeStorage.set('orgType', selectedType.value); 
-        orgTypeStorage.sync();
-
-        // Construct the url and refresh the result after a user changes organization type                
-        if (!YAHOO.lang.isUndefined(config) && config.url) {
-            var typeParam = selectedType.value == 'None' ? '' : '?orgTypeId=' + encodeURIComponent(selectedType.value);
-            var url = config.url + typeParam;
-            window.location.href = url;
-        }
-     }
-
-
+        Fisma.Storage.onReady(function() {
+            // Construct the url and refresh the result after a user changes organization type                
+            if (!YAHOO.lang.isUndefined(config) && config.url) {
+                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
+                window.location.href = url;
+            }
+        });
+    }
 };

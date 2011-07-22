@@ -34,7 +34,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         $this->_helper->reportContextSwitch()
                       ->addActionContext('category', array('html', 'pdf', 'xls'))
                       ->addActionContext('history', array('html', 'pdf', 'xls'))
-                      ->addActionContext('bureau', array('html', 'pdf', 'xls'))
+                      ->addActionContext('organization', array('html', 'pdf', 'xls'))
                       ->initContext();
         
         parent::init();        
@@ -246,19 +246,20 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
     }
     
     /**
-     * Show incidents by Bureau
+     * Show incidents by organization type
      */
-    public function bureauAction()
+    public function organizationAction()
     {
+        $storageNamespace = 'Incident.Organization.Report';
         $orgTypeId = $this->_helper->OrganizationType
-                          ->getOrganizationTypeId($this->_me->id, 'Incident_Bureau_Report', false);
+                          ->getOrganizationTypeId($this->_me->id, $storageNamespace, false);
 
-        $filterForm = $this->_helper->OrganizationType->getFilterForm(false);  
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($this->_me->id, $storageNamespace, false);
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
-        $this->view->namespace = 'Incident_Bureau_Report';
-        $this->view->url = "/incident-report/bureau/format/html";
+        $this->view->namespace = $storageNamespace;
+        $this->view->url = "/incident-report/organization/format/html";
 
         // Base query gets category names and joins to incidents
         $bureauQuery = Doctrine_Query::create()
